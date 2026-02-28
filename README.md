@@ -60,12 +60,91 @@ Visit http://localhost:4200 to view the application.
 
 #### Chapter 1.1.2: Introduction
 
+Create a new repository on GitHub, if you don't have one already you can create one at https://github.com/new.
+
+Once the repository is created you will be given a URL to clone the repository. You can clone the repository using the following command:
+
+```bash
+git clone <repository-url>
+```
+
+Alternatively using GitHub Desktop which can be downloaded from https://desktop.github.com/.
+
+Once the repository is cloned, you can make a folder within that called `frontend` and `backend`.
+
+Copy the content of the `data-engineering-for-machine-learning` directory into the `frontend` directory, including the hidden files that may be present.
+
+Once you have copied the content, you can remove the `data-engineering-for-machine-learning` directory and commit the changes to the git repository.
+
+In the git respository create a Dockerfile for the frontend, which should use Angular and Node as the base image and install the dependencies. The Dockerfile should also have a command to run the Angular development server.
+
+Example dockerfile:
+
+```dockerfile
+# Use the latest Node.js LTS version for building
+FROM node:20-alpine AS build
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN npm run build --prod
+
+# Production stage with Nginx
+FROM nginx:alpine
+
+# Copy built app from build stage
+COPY --from=build /app/dist/dataengineeringformachinelearning /usr/share/nginx/html
+
+# Copy custom nginx config if needed (optional)
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
+
+# Security: Run as non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S angular -u 1001
+USER angular
+```
+
+Once you have created the Dockerfile, you can build the image using the following command:
+
+```bash
+docker build -t data-engineering-for-machine-learning-frontend .
+```
+
+Using Docker desktop, you can run the container using the following command:
+
+```bash
+docker run -p 80:80 data-engineering-for-machine-learning-frontend
+```
+
+Visit http://localhost:80 to view the application.
+
+At this stage it is a good point to commit the changes to the git repository. Also deploy the application to a platform such as Railway (https://railway.app/) with Docker or as code with Google Firebase (https://firebase.google.com/).
+
+You can use a domain from the provideer or purchase a domain from Cloudflare (https://www.cloudflare.com/) or Namecheap (https://www.namecheap.com/). Cloudflare provides direct integration with Railway so it is a good choice, not including all of the security features that Cloudflare provides.
+
+#### Chapter 1.1.3: Introduction
+
 Pick a font from Google Fonts: https://fonts.google.com/
 
 Add the font to the styles.scss file:
 
 ```scss
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 ```
 
 Add the font to the index.html file:
@@ -88,7 +167,7 @@ mkdir src/theme
 Add the exported scss theme from coolors to the theme.scss file:
 
 ```scss
-@use './theme';
+@use "./theme";
 ```
 
 Install Angular Material:
@@ -133,7 +212,8 @@ Add a description of the application below the H1 tag in a p tag.
 
 ```html
 <p>
-  This is a sample application that uses Angular to create a modern and responsive user interface.
+  This is a sample application that uses Angular to create a modern and
+  responsive user interface.
 </p>
 ```
 
@@ -142,3 +222,5 @@ Add a footer at the bottom of the page in the app.html file.
 Use the main tag to wrap the content of the page, add a div tag with a class of content to wrap the logo, title, and description. Then add a div tag with a class of copyright to the footer to wrap the copyright information.
 
 Use the styles.scss file to style the page and use flexbox to align the content and footer as a column vertically. A good example of this is from CSS-Tricks: https://css-tricks.com/snippets/css/a-guide-to-flexbox/.
+
+Commit your changes to the git repository, always commit with a message that describes the changes and do this often, this will help you keep track of your progress and make it easier to revert to a previous state if needed, and the state of change, should be minor updates within a larger feature branch, that is then merged into the main branch and deployed to the production environment.
