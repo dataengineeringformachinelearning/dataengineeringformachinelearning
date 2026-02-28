@@ -137,6 +137,8 @@ At this stage it is a good point to commit the changes to the git repository. Al
 
 You can use a domain from the provideer or purchase a domain from Cloudflare (https://www.cloudflare.com/) or Namecheap (https://www.namecheap.com/). Cloudflare provides direct integration with Railway so it is a good choice, not including all of the security features that Cloudflare provides.
 
+When deploying on Railway, make sure to set the directory to the `/frontend` directory and when adding the domain use the default `8080` port as the listening port, connecting Cloudflare is the easiest way to manage the DNS records.
+
 #### Chapter 1.1.3: Introduction
 
 Pick a font from Google Fonts: https://fonts.google.com/
