@@ -1,67 +1,113 @@
-// theme - https://coolors.co/03045e-023e8a-0077b6-0096c7-00b4d8-48cae4-90e0ef-ade8f4-caf0f8
+// theme.scss - Ocean Blue Serenity palette
+// Source: https://coolors.co/03045e-023e8a-0077b6-0096c7-00b4d8-48cae4-90e0ef-ade8f4-caf0f8
 
-// /* CSS HEX */
-// --deep-twilight: #03045eff;
-// --french-blue: #023e8aff;
-// --bright-teal-blue: #0077b6ff;
-// --blue-green: #0096c7ff;
-// --turquoise-surf: #00b4d8ff;
-// --sky-aqua: #48cae4ff;
-// --frosted-blue: #90e0efff;
-// --frosted-blue-2: #ade8f4ff;
-// --light-cyan: #caf0f8ff;
+// Quick-access aliases (used in styles.scss & components)
+$turquoise-surf: #00b4d8;
+$bright-teal-blue: #0077b6;
+$french-blue: #023e8a;
+$frosted-blue: #90e0ef;
+$sky-aqua: #48cae4;       // Note: you had #ade8f4 earlier — corrected to match palette
+$light-cyan: #caf0f8;      // lightest
 
-// /* CSS HSL */
-// --deep-twilight: hsla(239, 94%, 19%, 1);
-// --french-blue: hsla(214, 97%, 27%, 1);
-// --bright-teal-blue: hsla(201, 100%, 36%, 1);
-// --blue-green: hsla(195, 100%, 39%, 1);
-// --turquoise-surf: hsla(190, 100%, 42%, 1);
-// --sky-aqua: hsla(190, 74%, 59%, 1);
-// --frosted-blue: hsla(189, 75%, 75%, 1);
-// --frosted-blue-2: hsla(190, 76%, 82%, 1);
-// --light-cyan: hsla(190, 77%, 88%, 1);
+// Semantic palette maps (HSL preferred for easy adjustments)
+$palette-light: (
+  deep:     hsla(239, 94%, 19%, 1),   // #03045e — headers, deep accents
+  primary:  hsla(214, 97%, 27%, 1),   // #023e8a — main brand
+  primary-medium: hsla(201, 100%, 36%, 1), // #0077b6
+  primary-light:  hsla(195, 100%, 39%, 1), // #0096c7
+  accent:   hsla(190, 100%, 42%, 1),  // #00b4d8 — calls-to-action, links
+  accent-soft: hsla(190, 74%, 59%, 1), // #48cae4
+  light-1:  hsla(189, 75%, 75%, 1),   // #90e0ef
+  light-2:  hsla(190, 76%, 82%, 1),   // #ade8f4
+  lightest: hsla(190, 77%, 88%, 1),   // #caf0f8 — cards, hover states
+  text:     hsla(220, 90%, 10%, 1),   // dark text on light bg
+  text-muted: hsla(220, 20%, 40%, 1),
+  bg:       hsla(190, 77%, 96%, 1),   // very light base background
+);
 
-// /* SCSS HEX */
-// $deep-twilight: #03045eff;
-// $french-blue: #023e8aff;
-// $bright-teal-blue: #0077b6ff;
-// $blue-green: #0096c7ff;
-// $turquoise-surf: #00b4d8ff;
-// $sky-aqua: #48cae4ff;
-// $frosted-blue: #90e0efff;
-// $frosted-blue-2: #ade8f4ff;
-// $light-cyan: #caf0f8ff;
+$palette-dark: (
+  deep:     hsla(239, 94%, 12%, 1),
+  primary:  hsla(214, 97%, 35%, 1),   // slightly brighter for contrast
+  primary-medium: hsla(201, 100%, 45%, 1),
+  primary-light:  hsla(195, 100%, 48%, 1),
+  accent:   hsla(190, 100%, 55%, 1),
+  accent-soft: hsla(190, 74%, 65%, 1),
+  light-1:  hsla(189, 75%, 30%, 1),
+  light-2:  hsla(190, 76%, 25%, 1),
+  lightest: hsla(190, 77%, 18%, 1),
+  text:     hsla(190, 20%, 95%, 1),   // light text on dark bg
+  text-muted: hsla(190, 20%, 70%, 1),
+  bg:       hsla(220, 20%, 12%, 1),   // deep dark base
+);
 
-/* SCSS HSL */
-$deep-twilight: hsla(239, 94%, 19%, 1);
-$french-blue: hsla(214, 97%, 27%, 1);
-$bright-teal-blue: hsla(201, 100%, 36%, 1);
-$blue-green: hsla(195, 100%, 39%, 1);
-$turquoise-surf: hsla(190, 100%, 42%, 1);
-$sky-aqua: hsla(190, 74%, 59%, 1);
-$frosted-blue: hsla(189, 75%, 75%, 1);
-$frosted-blue-2: hsla(190, 76%, 82%, 1);
-$light-cyan: hsla(190, 77%, 88%, 1);
+// Output CSS variables (light by default)
+:root {
+  @each $name, $color in $palette-light {
+    --color-#{$name}: #{$color};
+  }
 
-// /* SCSS RGB */
-// $deep-twilight: rgba(3, 4, 94, 1);
-// $french-blue: rgba(2, 62, 138, 1);
-// $bright-teal-blue: rgba(0, 119, 182, 1);
-// $blue-green: rgba(0, 150, 199, 1);
-// $turquoise-surf: rgba(0, 180, 216, 1);
-// $sky-aqua: rgba(72, 202, 228, 1);
-// $frosted-blue: rgba(144, 224, 239, 1);
-// $frosted-blue-2: rgba(173, 232, 244, 1);
-// $light-cyan: rgba(202, 240, 248, 1);
+  // Semantic shortcuts (use these in app styles)
+  --bg-primary: var(--color-bg);
+  --bg-secondary: var(--color-lightest);
+  --bg-tertiary: var(--color-light-2);  // added for variety
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+  --accent: var(--color-accent);
+  --accent-soft: var(--color-accent-soft);
+  --primary: var(--color-primary);
+  --border: var(--color-light-1);
+  --border-subtle: var(--color-light-2);
 
-/* SCSS Gradient */
-$gradient-top: linear-gradient(0deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-right: linear-gradient(90deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-bottom: linear-gradient(180deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-left: linear-gradient(270deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-top-right: linear-gradient(45deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-bottom-right: linear-gradient(135deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-top-left: linear-gradient(225deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-bottom-left: linear-gradient(315deg, #03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
-$gradient-radial: radial-gradient(#03045eff, #023e8aff, #0077b6ff, #0096c7ff, #00b4d8ff, #48cae4ff, #90e0efff, #ade8f4ff, #caf0f8ff);
+  color-scheme: light dark;  // Tell browser + forms to respect system preference
+}
+
+// Dark mode: system preference (preferred over class for auto-detection)
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {  // Respect manual light override
+    @each $name, $color in $palette-dark {
+      --color-#{$name}: #{$color};
+    }
+
+    --bg-primary: var(--color-bg);
+    --bg-secondary: var(--color-lightest);
+    --bg-tertiary: var(--color-light-2);
+    --text-primary: var(--color-text);
+    --text-secondary: var(--color-text-muted);
+    --accent: var(--color-accent);
+    --accent-soft: var(--color-accent-soft);
+    --primary: var(--color-primary);
+    --border: var(--color-light-1);
+    --border-subtle: var(--color-light-2);
+  }
+}
+
+// Manual toggle support (add .dark or data-theme="dark" to <html>)
+[data-theme="dark"],
+.dark {
+  @each $name, $color in $palette-dark {
+    --color-#{$name}: #{$color};
+  }
+
+  // Repeat semantic vars (same as above)
+  --bg-primary: var(--color-bg);
+  --bg-secondary: var(--color-lightest);
+  --bg-tertiary: var(--color-light-2);
+  --text-primary: var(--color-text);
+  --text-secondary: var(--color-text-muted);
+  --accent: var(--color-accent);
+  --accent-soft: var(--color-accent-soft);
+  --primary: var(--color-primary);
+  --border: var(--color-light-1);
+  --border-subtle: var(--color-light-2);
+}
+
+// Gradients — adapt automatically via vars
+$gradient-primary: linear-gradient(90deg, var(--color-deep), var(--color-primary), var(--color-accent), var(--color-lightest));
+$gradient-hero: linear-gradient(135deg, var(--color-deep), var(--color-accent-soft), var(--color-light-2));
+$gradient-radial: radial-gradient(circle at top left, var(--color-accent), var(--color-lightest));
+
+// Usage reminders (add to comments or docs):
+// - For Material components: rely on --mat-sys-surface, --mat-sys-on-surface, etc.
+// - For custom elements: background: var(--bg-primary); color: var(--text-primary);
+// - Buttons/links: background: var(--accent); color: white; (adjust contrast in dark)
+// - Test dark mode: Toggle system preference or add .dark to html in dev tools

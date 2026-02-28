@@ -1,52 +1,68 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
+@use './theme' as theme;  // Custom theme file with ocean-blue color variables
 
-// Include the theme from the theme.scss file
-@use './theme';
+// Custom color palettes derived from theme colors
+$custom-primary: (
+  50:   #e0f7ff,
+  100:  #b3ecff,
+  200:  #80e0ff,
+  300:  #4dd4ff,
+  400:  #26ccff,
+  500:  theme.$turquoise-surf,   // Core accent color #00b4d8
+  600:  #00a0c2,
+  700:  #008ca8,
+  800:  theme.$bright-teal-blue, // #0077b6
+  900:  theme.$french-blue,      // #023e8a
+  A100: #80e8ff,
+  A200: #4ddfff,
+  A400: #26d6ff,
+  A700: #00b4d8,
+);
 
+// Softer tertiary color palette
+$custom-tertiary: (
+  50:   #f0faff,
+  100:  #d6f5ff,
+  200:  #ade8f4,
+  300:  theme.$frosted-blue,
+  400:  theme.$sky-aqua,
+  500:  theme.$light-cyan,
+);
+
+// Custom typography settings with Raleway font
+$custom-typography: (
+  font-family: "'Raleway', sans-serif"
+  // Additional typography overrides can be added here if needed
+);
+
+// Apply the full Material 3 theme
 html {
+  @include mat.theme((
+    color: (
+      primary: $custom-primary,
+      tertiary: $custom-tertiary,  // Optional tertiary colors
+    ),
+    typography: $custom-typography,
+    density: 0,
+  ));
+
+  color-scheme: light dark;  // Support for system light/dark mode
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$cyan-palette,
-        tertiary: mat.$orange-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: light;
+  // Use custom theme colors for background and text that adapt to light/dark mode
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
   height: 100%;
-
-  // Custom styles
-  font-size: 1.5rem;
+  font-size: 1.2rem;  // Base font size optimized for mobile devices
 }
 
+// Global font fallback / overrides
 body,
 html {
-  color: theme.$light-cyan;
-  background-color: theme.$french-blue;
   font-family: 'Raleway', sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
@@ -54,84 +70,54 @@ html {
   line-height: normal;
 }
 
+// Main layout container
 main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  max-width: 1300px;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 3vh 3rem;
+  padding: 2vh 1rem;  // Base padding optimized for mobile screens
 }
 
-h1 {
+// Heading styles using CSS custom properties for theme adaptability
+h1, h2, h3, h4, h5, h6 {
   font-family: 'Raleway', sans-serif;
-  font-weight: 700;
   text-transform: uppercase;
-  font-size: 2.5rem;
-  color: theme.$turquoise-surf;
+  color: var(--color-accent, theme.$turquoise-surf); // Use fallback color if variable not defined
 }
 
-h2 {
-  font-family: 'Raleway', sans-serif;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 2rem;
-  color: theme.$turquoise-surf;
-}
-
-h3 {
-  font-family: 'Raleway', sans-serif;
-  font-size: 1.75rem;
-  font-weight: 500;
-  color: theme.$turquoise-surf;
-}
-
-h4 {
-  font-family: 'Raleway', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: theme.$turquoise-surf;
-}
-
-h5 {
-  font-family: 'Raleway', sans-serif;
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: theme.$turquoise-surf;
-}
-
-h6 {
-  font-family: 'Raleway', sans-serif;
-  font-size: 1rem;
-  font-weight: 400;
-  color: theme.$turquoise-surf;
-}
+h1 { font-weight: 700; font-size: 2rem; }  // Base size for mobile devices
+h2 { font-weight: 600; font-size: 1.5rem; }
+h3 { font-weight: 500; font-size: 1.4rem; }
+h4 { font-weight: 500; font-size: 1.3rem; }
+h5 { font-weight: 400; font-size: 1.2rem; }
+h6 { font-weight: 400; font-size: 1.1rem; }
 
 p {
   font-family: 'Raleway', sans-serif;
-  font-size: 3rem;
+  font-size: 1.3rem;  // Base size for mobile readability
   font-weight: 400;
 }
 
 a {
   font-family: 'Raleway', sans-serif;
-  font-size: 1rem;
+  font-size: 0.9rem;  // Base size for mobile links
   font-weight: 400;
-  color: theme.$light-cyan;
+  color: var(--color-accent-soft, theme.$light-cyan);
   text-decoration: none;
 
   &:hover {
-    color: theme.$frosted-blue;
+    color: var(--color-accent, theme.$frosted-blue);
   }
 }
 
-img{
-  max-width: 100%;
+img {
+  max-width: 100%;  // Ensure images are responsive
 }
 
-.logo{
-  width: 100px;
+.logo {
+  width: 80px;  // Base width for mobile logo
 }
 
 .content {
@@ -144,15 +130,42 @@ footer {
   flex-direction: column;
 }
 
-.copyright, .copyright a{
+.copyright,
+.copyright a {
   font-family: 'Raleway', sans-serif;
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 400;
-  color: theme.$turquoise-surf;
+  text-transform: uppercase;
 }
 
-.copyright a:hover{
-  color: theme.$frosted-blue;
+// Desktop enhancements for larger screens
+@media (min-width: 768px) {
+  body {
+    font-size: 1.5rem;
+  }
+
+  main {
+    padding: 3vh 3rem;
+    max-width: 1200px;
+  }
+
+  h1 { font-size: 2.5rem; }
+  h2 { font-size: 2rem; }
+  h3 { font-size: 1.75rem; }
+  h4 { font-size: 1.5rem; }
+  h5 { font-size: 1.25rem; }
+  h6 { font-size: 1rem; }
+
+  p {
+    font-size: 1.5rem;
+  }
+
+  a {
+    font-size: 1rem;
+  }
+
+  .logo {
+    width: 100px;
+  }
+
 }
-
-

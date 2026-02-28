@@ -1,6 +1,6 @@
 # Data Engineering for Machine Learning
 
-Interactive steps, working notes, and AI annotation for Data Engineering for Machine Learning book.
+Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
 
 ## Chapter 1: Introduction
 
@@ -262,6 +262,10 @@ Add the exported scss theme from coolors to the theme.scss file:
 ```scss
 @use "./theme";
 ```
+
+A lot of styling should be built mobile first, then enhanced for desktop. So make sure to make the media queries for desktop at the end of the stylesheet, and work from small to large.
+
+You can find good examples of media query sizes from https://www.w3schools.com/css/css_rwd_mediaqueries.asp.
 
 Install Angular Material:
 
