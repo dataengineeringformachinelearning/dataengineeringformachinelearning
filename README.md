@@ -81,17 +81,20 @@ In the git respository create a Dockerfile for the frontend, which should use An
 Example dockerfile:
 
 ```dockerfile
-# Use the latest Node.js LTS version for building
-FROM node:20-alpine AS build
+# Build stage
+FROM node:22-alpine AS builder
+
+# Install build dependencies
+RUN apk add --no-cache git
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+# Install dependencies (including dev dependencies for build)
+RUN npm install && npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -99,24 +102,104 @@ COPY . .
 # Build the application
 RUN npm run build --prod
 
-# Production stage with Nginx
-FROM nginx:alpine
+# Production stage
+FROM nginx:1.27-alpine
 
-# Copy built app from build stage
-COPY --from=build /app/dist/dataengineeringformachinelearning /usr/share/nginx/html
+# Install security updates and remove unnecessary packages
+RUN apk update && apk upgrade && \
+    apk add --no-cache dumb-init && \
+    rm -rf /var/cache/apk/*
 
-# Copy custom nginx config if needed (optional)
-# COPY nginx.conf /etc/nginx/nginx.conf
+# Create nginx cache directories and set permissions
+RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
+    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/run
 
-# Expose port 80
-EXPOSE 80
+# Copy built application from builder stage
+COPY --from=builder --chown=nginx:nginx /app/dist/dataengineeringformachinelearning/browser /usr/share/nginx/html
 
-# Start Nginx
+# Verify Angular build files exist
+RUN ls -la /usr/share/nginx/html/ && test -f /usr/share/nginx/html/index.html
+
+# Remove default nginx configuration and copy our config
+RUN rm -f /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port
+EXPOSE 8080
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["nginx", "-g", "daemon off;"]
+```
 
-# Security: Run as non-root user
-RUN addgroup -g 1001 -S nodejs && adduser -S angular -u 1001
-USER angular
+Also create an `nginx.conf` file to configure the nginx server which reverse proxies requests to the Angular application from the port 8080.
+
+```nginx
+server {
+    listen 8080;
+    server_name localhost;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # Enable gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_proxied any;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+
+    # Ensure we serve index.html for all routes (SPA fallback)
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Add explicit index.html handling
+    location = /index.html {
+        add_header Cache-Control "no-cache, no-store, must-revalidate";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+    }
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+
+    # Debug endpoint to verify nginx is working
+    location /nginx-status {
+        access_log off;
+        return 200 "nginx is running\n";
+        add_header Content-Type text/plain;
+    }
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}
+```
+
+Create a `.dockerignore` file to exclude unnecessary files from the Docker build context:
+
+```dockerignore
+node_modules
+.git
+.gitignore
+README.md
 ```
 
 Once you have created the Dockerfile, you can build the image using the following Docker CLIcommand:
