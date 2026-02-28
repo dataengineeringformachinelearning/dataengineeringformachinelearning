@@ -321,3 +321,36 @@ Use the main tag to wrap the content of the page, add a div tag with a class of 
 Use the styles.scss file to style the page and use flexbox to align the content and footer as a column vertically. A good example of this is from CSS-Tricks: https://css-tricks.com/snippets/css/a-guide-to-flexbox/.
 
 Commit your changes to the git repository, always commit with a message that describes the changes and do this often, this will help you keep track of your progress and make it easier to revert to a previous state if needed, and the state of change, should be minor updates within a larger feature branch, that is then merged into the main branch and deployed to the production environment.
+
+You can use the command line to commit your changes:
+
+```bash
+git add .
+git commit -m "Add logo and styling"
+```
+
+Then check the file changes added to the staging area with the command line:
+
+```bash
+git status
+```
+
+Followed by pushing the changes to the remote repository:
+
+```bash
+git push
+```
+
+If for some reason you have a remote repository that is not set up, you can use the following command to set it up:
+
+```bash
+git remote add origin <remote-repository-url>
+```
+
+Then you can push the changes to the remote repository:
+
+```bash
+git push -u origin main
+```
+
+You can read more about git commands here: https://git-scm.com/docs and remote repository management here: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories.
