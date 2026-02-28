@@ -1,36 +1,40 @@
-# Use the latest Node.js LTS version for building
-FROM node:20-alpine AS build
+# ────────────────────────────────────────────────
+# Stage 1: Build Angular (Node-based, throwaway)
+# ────────────────────────────────────────────────
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
+# Cache layers: dependencies first
 COPY package*.json ./
-
-# Install dependencies
 RUN npm ci
 
-# Copy source code
+# Source code → build
 COPY . .
+RUN npm run build -- --configuration production
 
-# Build the application
-RUN npm run build --prod
+# ────────────────────────────────────────────────
+# Stage 2: Production – secure, small, Railway-ready
+# ────────────────────────────────────────────────
+FROM nginxinc/nginx-unprivileged:alpine
 
-# Production stage with Nginx
-FROM nginx:alpine
+# Temporarily root to clean defaults
+USER root
+RUN rm -rf /usr/share/nginx/html/*
 
-# Copy built app from build stage
-COPY --from=build /app/dist/dataengineeringformachinelearning /usr/share/nginx/html
+# Back to non-root (nginx user = 101)
+USER 101
 
-# Copy custom nginx config if needed (optional)
-# COPY nginx.conf /etc/nginx/nginx.conf
+# Copy built Angular files (adjust subdir if your dist has /browser)
+COPY --from=builder --chown=101:101 /app/dist/dataengineeringformachinelearning /usr/share/nginx/html
 
-# Expose port 80
-EXPOSE 80
+# Copy custom config (listens on $PORT or 8080)
+# Must be root for /etc/nginx/conf.d
+USER root
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+USER 101
 
-# Start Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Railway expects EXPOSE on the dynamic port, but 8080 is fine as hint
+EXPOSE 8080
 
-# Security: Run as non-root user
-RUN addgroup -g 1001 -S nodejs && adduser -S angular -u 1001
-USER angular
+# Default CMD from base image is correct (nginx -g daemon off;)

@@ -8,7 +8,7 @@ Picking a language for data engineering is a personal preference. I chose Python
 
 ### Chapter 1.1: Introduction
 
-#### Chapter 1.1.1: Introduction
+#### Chapter 1.1.1: Setting up the frontend environment
 
 Install Windsurf AI:
 
@@ -58,7 +58,7 @@ npm start
 
 Visit http://localhost:4200 to view the application.
 
-#### Chapter 1.1.2: Introduction
+#### Chapter 1.1.2: Creating a repository for version control
 
 Create a new repository on GitHub, if you don't have one already you can create one at https://github.com/new.
 
@@ -137,7 +137,7 @@ At this stage it is a good point to commit the changes to the git repository. Al
 
 You can use a domain from the provideer or purchase a domain from Cloudflare (https://www.cloudflare.com/) or Namecheap (https://www.namecheap.com/). Cloudflare provides direct integration with Railway so it is a good choice, not including all of the security features that Cloudflare provides.
 
-When deploying on Railway, make sure to set the directory to the `/frontend` directory and when adding the domain use the default `8080` port as the listening port, connecting Cloudflare is the easiest way to manage the DNS records.
+When deploying on Railway, make sure to set the directory to the `/frontend` directory and when adding the domain use the default `8080` port as the listening port unless you have configured a different port in your Dockerfile, then use that port. Connecting Cloudflare is the easiest way to manage the DNS records.
 
 #### Chapter 1.1.3: Introduction
 
