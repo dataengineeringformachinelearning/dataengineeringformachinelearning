@@ -1,39 +1,49 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Set working directory
 WORKDIR /app
 
+# Copy package files for better caching
 COPY package*.json ./
-RUN npm ci
 
+# Install dependencies (including dev dependencies for build)
+RUN npm install && npm cache clean --force
+
+# Copy source code
 COPY . .
-RUN npm run build -- --configuration production
+
+# Build the application
+RUN npm run build --prod
 
 # Production stage
-FROM nginx:alpine
+FROM nginx:1.27-alpine
 
-# Optional: security updates + minimal extras (like your other app)
-RUN apk update && apk upgrade --no-cache && \
+# Install security updates and remove unnecessary packages
+RUN apk update && apk upgrade && \
     apk add --no-cache dumb-init && \
     rm -rf /var/cache/apk/*
 
-# Create/set up writable dirs (good habit, though not strictly needed for static serve)
+# Create nginx cache directories and set permissions
 RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
     chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/run
 
-# Copy built files – chown to nginx user
-COPY --from=builder --chown=nginx:nginx /app/dist/dataengineeringformachinelearning /usr/share/nginx/html
+# Copy built application from builder stage
+COPY --from=builder --chown=nginx:nginx /app/dist/dataengineeringformachinelearning/browser /usr/share/nginx/html
 
-# Verify files exist (helpful for debugging)
-RUN ls -la /usr/share/nginx/html && test -f /usr/share/nginx/html/index.html
+# Verify Angular build files exist
+RUN ls -la /usr/share/nginx/html/ && test -f /usr/share/nginx/html/index.html
 
-# Remove default config and copy yours
+# Remove default nginx configuration and copy our config
 RUN rm -f /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose 8080 (matches your conf and Railway preference)
+# Expose port
 EXPOSE 8080
 
-# Use dumb-init for clean shutdown (like your other app)
+# Use dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["nginx", "-g", "daemon off;"]

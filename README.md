@@ -119,17 +119,25 @@ RUN addgroup -g 1001 -S nodejs && adduser -S angular -u 1001
 USER angular
 ```
 
-Once you have created the Dockerfile, you can build the image using the following command:
+Once you have created the Dockerfile, you can build the image using the following Docker CLIcommand:
 
 ```bash
 docker build -t data-engineering-for-machine-learning-frontend .
 ```
 
-Using Docker desktop, you can run the container using the following command:
+Using Docker CLI, you can run the container using the following command:
 
 ```bash
 docker run -p 8080:8080 data-engineering-for-machine-learning-frontend
 ```
+
+Alternatively, you can run the container with a custom port to validate that the application is listening on the correct port:
+
+```bash
+docker run --rm -p 8080:8080 -e PORT=8080 data-engineering-for-machine-learning-frontend
+```
+
+You should see these containers and images in the Docker Desktop application.
 
 Visit http://localhost:8080 to view the application.
 
