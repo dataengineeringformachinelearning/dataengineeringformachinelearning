@@ -1,171 +1,117 @@
 @use '@angular/material' as mat;
-@use './theme' as theme;  // Custom theme file with ocean-blue color variables
+@use './theme' as theme;
 
-// Custom color palettes derived from theme colors
+// === CYBER-NOIR VAULT PALETTE ===
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap');
+
 $custom-primary: (
-  50:   #e0f7ff,
-  100:  #b3ecff,
-  200:  #80e0ff,
-  300:  #4dd4ff,
-  400:  #26ccff,
-  500:  theme.$turquoise-surf,   // Core accent color #00b4d8
-  600:  #00a0c2,
-  700:  #008ca8,
-  800:  theme.$bright-teal-blue, // #0077b6
-  900:  theme.$french-blue,      // #023e8a
+  50:   #e0f0ff,
+  100:  #b3d9ff,
+  200:  #80c2ff,
+  300:  #4daaff,
+  400:  #2693ff,
+  500:  theme.$key-light,
+  600:  #0088cc,
+  700:  #006699,
+  800:  #1c2526,
+  900:  #0a0f1c,
   A100: #80e8ff,
   A200: #4ddfff,
   A400: #26d6ff,
-  A700: #00b4d8,
+  A700: theme.$key-light,
 );
 
-// Softer tertiary color palette
-$custom-tertiary: (
-  50:   #f0faff,
-  100:  #d6f5ff,
-  200:  #ade8f4,
-  300:  theme.$frosted-blue,
-  400:  theme.$sky-aqua,
-  500:  theme.$light-cyan,
-);
-
-// Custom typography settings with Raleway font
 $custom-typography: (
   font-family: "'Raleway', sans-serif"
-  // Additional typography overrides can be added here if needed
 );
 
-// Apply the full Material 3 theme
-html {
-  @include mat.theme((
-    color: (
-      primary: $custom-primary,
-      tertiary: $custom-tertiary,  // Optional tertiary colors
-    ),
-    typography: $custom-typography,
-    density: 0,
-  ));
+@include mat.theme((
+  color: (primary: $custom-primary),
+  typography: $custom-typography,
+  density: 0,
+));
 
-  color-scheme: light dark;  // Support for system light/dark mode
+html {
+  color-scheme: dark;
   height: 100%;
 }
 
+// CYBER-NOIR VAULT LAYOUT
 body {
-  // Use custom theme colors for background and text that adapt to light/dark mode
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-
+  background-color: var(--vault-bg);
+  color: var(--vault-text);
   margin: 0;
   height: 100%;
-  font-size: 1.2rem;  // Base font size optimized for mobile devices
-}
-
-// Global font fallback / overrides
-body,
-html {
   font-family: 'Raleway', sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
+  font-size: 1.2rem;
+  line-height: 1.6;
 }
 
-// Main layout container
-main {
+main.main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 2vh 1rem;  // Base padding optimized for mobile screens
+  padding: 2vh 1rem;
 }
 
-// Heading styles using CSS custom properties for theme adaptability
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  width: 80px;
+  margin-bottom: 1rem;
+}
+
+// Headings — the key light
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Raleway', sans-serif;
   text-transform: uppercase;
-  color: var(--color-accent, theme.$turquoise-surf); // Use fallback color if variable not defined
+  color: var(--vault-key-light);
+  letter-spacing: 0.5px;
 }
 
-h1 { font-weight: 700; font-size: 2rem; }  // Base size for mobile devices
+h1 { font-weight: 700; font-size: 2rem; }
 h2 { font-weight: 600; font-size: 1.5rem; }
-h3 { font-weight: 500; font-size: 1.4rem; }
-h4 { font-weight: 500; font-size: 1.3rem; }
-h5 { font-weight: 400; font-size: 1.2rem; }
-h6 { font-weight: 400; font-size: 1.1rem; }
 
+// Paragraphs & links
 p {
-  font-family: 'Raleway', sans-serif;
-  font-size: 1.3rem;  // Base size for mobile readability
+  font-size: 1.3rem;
   font-weight: 400;
 }
 
 a {
-  font-family: 'Raleway', sans-serif;
-  font-size: 0.9rem;  // Base size for mobile links
-  font-weight: 400;
-  color: var(--color-accent-soft, theme.$light-cyan);
+  color: var(--vault-key-soft);
   text-decoration: none;
-
-  &:hover {
-    color: var(--color-accent, theme.$frosted-blue);
-  }
+  &:hover { color: var(--vault-key-light); }
 }
 
-img {
-  max-width: 100%;  // Ensure images are responsive
-}
-
-.logo {
-  width: 80px;  // Base width for mobile logo
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-}
-
+// Footer with subtle brass key touch
 footer {
-  display: flex;
-  flex-direction: column;
+  margin-top: auto;
 }
 
 .copyright,
 .copyright a {
-  font-family: 'Raleway', sans-serif;
   font-size: 0.8rem;
   font-weight: 400;
   text-transform: uppercase;
+  color: var(--vault-text-muted);
 }
 
-// Desktop enhancements for larger screens
+.copyright a:hover {
+  color: var(--vault-brass);
+}
+
+// Desktop
 @media (min-width: 768px) {
-  body {
-    font-size: 1.5rem;
-  }
-
-  main {
-    padding: 3vh 3rem;
-    max-width: 1200px;
-  }
-
+  body { font-size: 1.5rem; }
+  main.main { padding: 3vh 3rem; max-width: 1200px; }
+  .logo { width: 100px; }
   h1 { font-size: 2.5rem; }
-  h2 { font-size: 2rem; }
-  h3 { font-size: 1.75rem; }
-  h4 { font-size: 1.5rem; }
-  h5 { font-size: 1.25rem; }
-  h6 { font-size: 1rem; }
-
-  p {
-    font-size: 1.5rem;
-  }
-
-  a {
-    font-size: 1rem;
-  }
-
-  .logo {
-    width: 100px;
-  }
-
+  p { font-size: 1.5rem; }
 }

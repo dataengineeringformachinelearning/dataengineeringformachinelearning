@@ -10,6 +10,30 @@ Picking a language for data engineering is a personal preference. I chose Python
 
 #### Chapter 1.1.1: Setting up the frontend environment
 
+Open a terminal window, you can do this by pressing `Cmd + Space` and typing `Terminal` or finding it in your Applications folder under Utilities.
+
+Install Homebrew:
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Verify Homebrew installation:
+
+```bash
+brew --version
+```
+
+You should also install Rosetta 2 for Apple Silicon Macs:
+
+```bash
+softwareupdate --install-rosetta
+```
+
+This allows compatibility with x86_64 binaries on Apple Silicon Macs.
+
+You can read more about Homebrew at https://brew.sh/.
+
 Install Windsurf AI:
 
 ```bash
@@ -77,6 +101,16 @@ Copy the content of the `data-engineering-for-machine-learning` directory into t
 Once you have copied the content, you can remove the `data-engineering-for-machine-learning` directory and commit the changes to the git repository.
 
 In the git respository create a Dockerfile for the frontend, which should use Angular and Node as the base image and install the dependencies. The Dockerfile should also have a command to run the Angular development server.
+
+Install Docker CLI with homebrew:
+
+```bash
+brew install docker
+```
+
+You can read more about Docker at https://www.docker.com/.
+
+The Docker UI can be downloaded from https://www.docker.com/products/docker-desktop/ and should help familiarize you with Docker.
 
 Example dockerfile:
 
