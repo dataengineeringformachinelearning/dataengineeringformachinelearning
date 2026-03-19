@@ -1,0 +1,13 @@
+# Data Engineering for Machine Learning
+
+Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
+
+## Homepage
+/
+
+## Repository
+https://github.com/joealongi/dataengineeringformachinelearning
+
+## Notes
+- This site is an Angular application.
+- Prefer the repository README for the most complete project documentation.
