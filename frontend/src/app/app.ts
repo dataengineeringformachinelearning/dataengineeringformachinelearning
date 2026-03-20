@@ -8,7 +8,7 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('dataengineeringformachinelearning');
+  protected readonly title = signal('frontend');
 
   getCurrentYear() {
   return new Date().getFullYear();

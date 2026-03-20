@@ -32,7 +32,7 @@ RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
     chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/run
 
 # Copy built application from builder stage
-COPY --from=builder --chown=nginx:nginx /app/dist/dataengineeringformachinelearning/browser /usr/share/nginx/html
+COPY --from=builder --chown=nginx:nginx /app/dist/frontend/browser /usr/share/nginx/html
 
 # Verify Angular build files exist
 RUN ls -la /usr/share/nginx/html/ && test -f /usr/share/nginx/html/index.html
