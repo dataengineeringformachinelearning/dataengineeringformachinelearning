@@ -40,9 +40,31 @@ Install Windsurf AI:
 brew install windsurf
 ```
 
-Visit https://windsurfrs.com/ to learn more about Windsurf AI and installation instructions.
+Visit https://windsurf.com/ to learn more about Windsurf AI and installation instructions.
 
-Install Angular CLI:
+Install Node:
+
+```bash
+brew install node
+```
+
+Visit https://nodejs.org/ to learn more about Node and installation instructions.
+
+If you need to manage multiple versions of node, you can use nvm (Node Version Manager):
+
+```bash
+brew install nvm
+```
+
+Visit https://github.com/nvm-sh/nvm to learn more about nvm and installation instructions.
+
+Install Angular:
+
+```bash
+brew install angular-cli
+```
+
+Install Angular CLI with NPM:
 
 ```bash
 npm install -g @angular/cli
@@ -53,19 +75,25 @@ Visit https://angular.io/cli / https://angular.dev/installation to learn more ab
 Create a new Angular project:
 
 ```bash
-ng new data-engineering-for-machine-learning
+ng new frontend
 ```
 
 Change to the new directory:
 
 ```bash
-cd data-engineering-for-machine-learning
+cd frontend
 ```
 
 Check the directory files:
 
 ```bash
 ls
+```
+
+Change directory to the frontend directory:
+
+```bash
+cd frontend
 ```
 
 Install the Angular packages:
@@ -102,6 +130,8 @@ Once you have copied the content, you can remove the `data-engineering-for-machi
 
 In the git respository create a Dockerfile for the frontend, which should use Angular and Node as the base image and install the dependencies. The Dockerfile should also have a command to run the Angular development server.
 
+#### Chapter 1.1.3: Setting up Docker for the frontend
+
 Install Docker CLI with homebrew:
 
 ```bash
@@ -111,6 +141,8 @@ brew install docker
 You can read more about Docker at https://www.docker.com/.
 
 The Docker UI can be downloaded from https://www.docker.com/products/docker-desktop/ and should help familiarize you with Docker.
+
+Create a `Dockerfile` in the frontend folder
 
 Example dockerfile:
 
@@ -149,7 +181,7 @@ RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
     chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/run
 
 # Copy built application from builder stage
-COPY --from=builder --chown=nginx:nginx /app/dist/dataengineeringformachinelearning/browser /usr/share/nginx/html
+COPY --from=builder --chown=nginx:nginx /app/dist/frontend/browser /usr/share/nginx/html
 
 # Verify Angular build files exist
 RUN ls -la /usr/share/nginx/html/ && test -f /usr/share/nginx/html/index.html
@@ -264,7 +296,7 @@ You can use a domain from the provideer or purchase a domain from Cloudflare (ht
 
 When deploying on Railway, make sure to set the directory to the `/frontend` directory and when adding the domain use the default `8080` port as the listening port unless you have configured a different port in your Dockerfile, then use that port. Connecting Cloudflare is the easiest way to manage the DNS records.
 
-#### Chapter 1.1.3: Introduction
+#### Chapter 1.1.4: Implementing a basic user interface (UI)
 
 Pick a font from Google Fonts: https://fonts.google.com/
 
@@ -388,3 +420,269 @@ git push -u origin main
 ```
 
 You can read more about git commands here: https://git-scm.com/docs and remote repository management here: https://docs.github.com/en/get-started/getting-started-with-git/about-remote-repositories.
+
+#### Chapter 1.1.5: Setting up the backend environment
+
+Install Python with Homebrew:
+
+```bash
+brew install python
+```
+
+Visit https://www.python.org/ to learn more about Python and installation instructions.
+
+Set the homebrew origin for Python to the correct path:
+
+```bash
+echo 'export PATH="/opt/homebrew/opt/python@3.14/libexec/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+```
+
+Verify Python installation:
+
+```bash
+python --version
+```
+
+If you installed a newer version then you may need to update the path in the .zshrc file.
+
+You can open the file as a text document using the following command:
+
+```bash
+open -e ~/.zshrc
+```
+
+After making changes to the .zshrc file, you need to reload it:
+
+```bash
+source ~/.zshrc
+```
+
+Your python installation should now be working correctly. You should see the version and not need to use `python3`.
+
+Install pipx for managing Python libraries globally:
+
+```bash
+brew install pipx
+```
+
+Validate the pipx path using the following command:
+
+```bash
+pipx ensurepath
+```
+
+Then install Django using pipx:
+
+```bash
+pipx install django
+```
+
+Create a new folder change to the folder and create a new Django project:
+
+```bash
+mkdir backend
+cd backend
+django-admin startproject config .
+```
+
+Create the virtual environment:
+
+```bash
+python -m venv venv
+```
+
+Activate the virtual environment:
+
+```bash
+source venv/bin/activate
+```
+
+Install Django in the virtual environment:
+
+```bash
+pip install django
+```
+
+Save the dependencies:
+
+```bash
+pip freeze > requirements.txt
+```
+
+Create a gitignore:
+
+```bash
+cat > .gitignore << 'EOF'
+venv/
+__pycache__/
+*.pyc
+.DS_Store
+db.sqlite3
+media/
+staticfiles/
+EOF
+```
+
+You can start the django application with the following command:
+
+```bash
+python manage.py runserver
+```
+
+View the application at http://127.0.0.1:8000/
+
+Hit command + C to stop the server.
+
+You can run the migrations to set up the database:
+
+```bash
+python manage.py migrate
+```
+
+#### Chapter 1.1.6: Setting up Docker for the backend
+
+Update the requirements.txt file to include the following dependencies:
+
+```txt
+gunicorn==25.1.0
+whitenoise==6.12.0
+dj-database-url==3.1.2
+psycopg2-binary==2.9.11
+```
+
+Create a docker file for the backend using docker, you can find more information about docker here: https://www.docker.com/
+
+Create a `Dockerfile` in the backend folder
+
+Example dockerfile:
+
+```dockerfile
+FROM python:3.14-slim
+
+# Prevent Python from writing pyc files and buffer output
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+WORKDIR /app
+
+# Install system dependencies (required for PostgreSQL/psycopg2)
+RUN apt-get update && apt-get install -y \
+    libpq-dev gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project code
+COPY . .
+
+# Collect static files
+RUN python manage.py collectstatic --noinput --clear
+
+# Expose port
+EXPOSE 8000
+
+# Run migrations then start Gunicorn
+CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:${PORT:-8000} config.wsgi:application --workers 3 --timeout 120"]
+```
+
+Create a `.dockerignore` file in the backend folder to exclude unnecessary files from the Docker build context:
+
+```dockerignore
+.git
+.gitignore
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+.env.local
+media/
+staticfiles/
+.DS_Store
+node_modules/
+```
+
+Add to the INSTALLED_APPS list in `config/settings.py` after the Django apps:
+
+```python
+'whitenoise.runserver_nostatic',
+```
+
+Also add to the MIDDLEWARE list in `settings.py` after the Django SecurityMiddleware:
+
+```python
+'whitenoise.middleware.WhiteNoiseMiddleware',
+```
+
+Add the imports to the `settings.py` file:
+
+```python
+import os
+import dj_database_url
+```
+
+Replace the quick-start development settings in `settings.py`:
+
+```python
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-izn^)q(e0k=rklyawiv0*4(unp)%4%@v54**mnt!@tw!thaub9')
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+```
+
+Replace the databases settings in `settings.py`:
+
+```python
+# Database
+# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+
+DATABASES = {
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+}
+```
+
+Replace the static files settings in `settings.py`:
+
+```python
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/6.0/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+```
+
+Once you have created the Dockerfile, you can build the image using the following Docker CLI command:
+
+```bash
+docker build -t data-engineering-for-machine-learning-backend .
+```
+
+Using Docker CLI, you can run the container using the following command:
+
+```bash
+docker run -p 8000:8000 --env PORT=8000 data-engineering-for-machine-learning-backend
+```
+
+Alternatively, you can run the container with a custom port to validate that the application is listening on the correct port:
+
+```bash
+docker run --rm -p 8080:8080 -e PORT=8080 data-engineering-for-machine-learning-backend
+```
+
+You should see these containers and images in the Docker Desktop application.
+
+Visit http://localhost:8080 to view the application.
