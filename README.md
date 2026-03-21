@@ -540,6 +540,24 @@ You can run the migrations to set up the database:
 python manage.py migrate
 ```
 
+To reopen the application source the virtual environment:
+
+```bash
+source venv/bin/activate
+```
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then run the server:
+
+```bash
+python manage.py runserver
+```
+
 #### Chapter 1.1.6: Setting up Docker for the backend
 
 Update the requirements.txt file to include the following dependencies:
@@ -694,3 +712,5 @@ You can use the same domain as your frontend, adding a subdomain for the backend
 When deploying on Railway, make sure to set the directory to the `/backend` directory and when adding the domain use the gunicorn `8008` port unless you are using a different port in docker. Connecting Cloudflare is the easiest way to manage the DNS records.
 
 Also make sure to add the DEBUG (eg. False), SECRET_KEY which you can generate on djecrety https://djecrety.ir/ (eg. `$iu=$8m7f!sr_rzzl_2=1l)c7253nng1!adhyp7f@((nwyevve` - djecrety ir generates a 50 character string), and ALLOWED_HOSTS should be your domain (e.g., example.com, backend.example.com) environment variables to the Railway project.
+
+#### Chapter 1.1.7: Implementing a basic user interface (UI) for the backend
