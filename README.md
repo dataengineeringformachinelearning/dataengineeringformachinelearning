@@ -292,7 +292,7 @@ Visit http://localhost:8080 to view the application.
 
 At this stage it is a good point to commit the changes to the git repository. Also deploy the application to a platform such as Railway (https://railway.app/) with Docker or as code with Google Firebase (https://firebase.google.com/).
 
-You can use a domain from the provideer or purchase a domain from Cloudflare (https://www.cloudflare.com/) or Namecheap (https://www.namecheap.com/). Cloudflare provides direct integration with Railway so it is a good choice, not including all of the security features that Cloudflare provides.
+You can use a domain from the provider or purchase a domain from Cloudflare (https://www.cloudflare.com/) or Namecheap (https://www.namecheap.com/). Cloudflare provides direct integration with Railway so it is a good choice, not including all of the security features that Cloudflare provides.
 
 When deploying on Railway, make sure to set the directory to the `/frontend` directory and when adding the domain use the default `8080` port as the listening port unless you have configured a different port in your Dockerfile, then use that port. Connecting Cloudflare is the easiest way to manage the DNS records.
 
@@ -686,3 +686,11 @@ docker run --rm -p 8080:8080 -e PORT=8080 data-engineering-for-machine-learning-
 You should see these containers and images in the Docker Desktop application.
 
 Visit http://localhost:8080 to view the application.
+
+Once you have a working build, you can deploy to Railway.
+
+You can use the same domain as your frontend, adding a subdomain for the backend, such as backend.example.com.
+
+When deploying on Railway, make sure to set the directory to the `/backend` directory and when adding the domain use the gunicorn `8008` port unless you are using a different port in docker. Connecting Cloudflare is the easiest way to manage the DNS records.
+
+Also make sure to add the DEBUG (eg. False), SECRET_KEY which you can generate on djecrety https://djecrety.ir/ (eg. `$iu=$8m7f!sr_rzzl_2=1l)c7253nng1!adhyp7f@((nwyevve` - djecrety ir generates a 50 character string), and ALLOWED_HOSTS should be your domain (e.g., example.com, backend.example.com) environment variables to the Railway project.
