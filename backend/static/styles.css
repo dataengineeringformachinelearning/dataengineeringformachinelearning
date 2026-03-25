@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap');
+
+/* CYBER-NOIR VAULT PALETTE */
+:root {
+  --vault-bg: #0a0f1c;
+  --vault-surface: #1c2526;
+  --vault-text: #f0f4f8;
+  --vault-text-muted: #8a9ba3;
+  --vault-key-light: #00b4d8;
+  --vault-key-soft: #48cae4;
+  --vault-brass: #d4af37;
+}
+
+html {
+  color-scheme: dark;
+  height: 100%;
+}
+
+/* CYBER-NOIR VAULT LAYOUT */
+body {
+  background-color: var(--vault-bg);
+  color: var(--vault-text);
+  margin: 0;
+  height: 100%;
+  font-family: 'Raleway', sans-serif;
+  font-size: 1.2rem;
+  line-height: 1.6;
+}
+
+main.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 2vh 1rem;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  width: 80px;
+  margin-bottom: 1rem;
+}
+
+/* Headings — the key light */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Raleway', sans-serif;
+  text-transform: uppercase;
+  color: var(--vault-key-light);
+  letter-spacing: 0.5px;
+}
+
+h1 { font-weight: 700; font-size: 2rem; }
+h2 { font-weight: 600; font-size: 1.5rem; }
+
+/* Paragraphs & links */
+p {
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+a {
+  color: var(--vault-key-soft);
+  text-decoration: none;
+}
+a:hover { color: var(--vault-key-light); }
+
+/* Footer with subtle brass key touch */
+footer {
+  margin-top: auto;
+}
+
+.copyright,
+.copyright a {
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: var(--vault-text-muted);
+}
+
+.copyright a:hover {
+  color: var(--vault-brass);
+}
+
+/* Desktop */
+@media (min-width: 768px) {
+  body { font-size: 1.5rem; }
+  main.main { padding: 3vh 3rem; max-width: 1200px; }
+  .logo { width: 100px; }
+  h1 { font-size: 2.5rem; }
+  p { font-size: 1.5rem; }
+}

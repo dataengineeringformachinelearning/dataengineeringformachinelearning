@@ -763,7 +763,7 @@ Add an image in the static folder and you can reference it as a static asset in 
 
 {% block content %}
 <h1>Welcome to My Django App</h1>
-<img src="{% static 'data-engineering-for-machine-learning.png' %}" alt="Logo">
+<img class="logo" src="{% static 'data-engineering-for-machine-learning.svg' %}" alt="Data Engineering for Machine Learning" />
 {% endblock %}
 ```
 
@@ -799,3 +799,43 @@ Add css styling to the home page by creating a css file in the static folder and
 </html>
 ```
 
+Similary to the frontend you can re-use the same css file in the static folder and reference it in the base template.
+
+You can add a sitemap by creating a sitemaps.py file in the config folder and adding the following code:
+```python
+# config/sitemaps.py
+from django.contrib.sitemaps import Sitemap
+from django.urls import reverse
+
+class StaticViewSitemap(Sitemap):
+    priority = 0.5
+    changefreq = 'daily'
+
+    def items(self):
+        return ['home']
+
+    def location(self, item):
+        return reverse(item)
+```
+
+Then add the sitemap to the urls.py file:
+```python
+# config/urls.py
+from django.contrib import admin
+from django.urls import path
+from . import views
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import StaticViewSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap,
+}
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('admin/', admin.site.urls),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+]
+```
+
+While you are adding a sitemap here, make sure to add one and a robots file to your frontend as well.
