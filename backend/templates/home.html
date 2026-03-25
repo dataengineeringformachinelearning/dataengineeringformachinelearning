@@ -5,9 +5,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Engineering for Machine Learning - Backend</title>
+    <meta name="description" content="Backend API and services for the Data Engineering for Machine Learning application.">
+    <meta name="keywords" content="data engineering, machine learning, backend, API, services">
+    <meta name="author" content="Joe Alongi">
+    <link rel="canonical" href="{{ request.build_absolute_uri }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:title" content="Data Engineering for Machine Learning - Backend">
+    <meta property="og:description" content="Backend API and services for the Data Engineering for Machine Learning application.">
+    <meta property="og:image" content="{{ request.build_absolute_uri }}{% static 'data-engineering-for-machine-learning-preview.png' %}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
+    <meta property="twitter:title" content="Data Engineering for Machine Learning - Backend">
+    <meta property="twitter:description" content="Backend API and services for the Data Engineering for Machine Learning application.">
+    <meta property="twitter:image" content="{{ request.build_absolute_uri }}{% static 'data-engineering-for-machine-learning-preview.png' %}">
+
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
-    <h1>Data Engineering for Machine Learning</h1>
-    <img src="{% static 'data-engineering-for-machine-learning.png' %}" alt="Logo">
+    <main class="main">
+        <div class="content">
+            <img class="logo" src="{% static 'data-engineering-for-machine-learning.svg' %}" alt="Data Engineering for Machine Learning - Backend" />
+            <h1>Data Engineering for Machine Learning - Backend</h1>
+            <p>Backend API and services for the Data Engineering for Machine Learning application.</p>
+        </div>
+        <footer>
+            <div class="copyright">
+                <span>&copy; {% now "Y" %} Data Engineering for Machine Learning by <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a> | Hand-coded in Windsurf with Grok Code Fast | Powered by <a href="https://railway.com?referralCode=BpTk0g" target="_blank" rel="noopener noreferrer">Railway</a></span>
+            </div>
+        </footer>
+    </main>
 </body>
 </html>
