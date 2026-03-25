@@ -714,3 +714,88 @@ When deploying on Railway, make sure to set the directory to the `/backend` dire
 Also make sure to add the DEBUG (eg. False), SECRET_KEY which you can generate on djecrety https://djecrety.ir/ (eg. `$iu=$8m7f!sr_rzzl_2=1l)c7253nng1!adhyp7f@((nwyevve` - djecrety ir generates a 50 character string), and ALLOWED_HOSTS should be your domain (e.g., example.com, backend.example.com) environment variables to the Railway project.
 
 #### Chapter 1.1.7: Implementing a basic user interface (UI) for the backend
+
+Create a views file in the config folder to handle the home page:
+
+```python
+# config/views.py
+from django.shortcuts import render
+
+def home(request):
+    return render(request, 'home.html')
+```
+
+Edit the urls file in the config folder to handle the home page:
+
+```python
+# config/urls.py
+from django.contrib import admin
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('admin/', admin.site.urls),
+]
+```
+Create a base template in the templates folder:
+
+```html
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Django App</title>
+</head>
+<body>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
+```
+
+Add an image in the static folder and you can reference it as a static asset in the template like this:
+
+```html
+<!-- templates/home.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>Welcome to My Django App</h1>
+<img src="{% static 'data-engineering-for-machine-learning.png' %}" alt="Logo">
+{% endblock %}
+```
+
+Make sure you add the static files configuration in the settings.py file:
+
+```python
+# settings.py
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+```
+
+You need to run the `collectstatic` command to collect the static files:
+```bash
+python manage.py collectstatic
+```
+
+Add css styling to the home page by creating a css file in the static folder and referencing it in the base template:
+
+```html
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Django App</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    {% block content %}
+    {% endblock %}
+</body>
+</html>
+```
+
