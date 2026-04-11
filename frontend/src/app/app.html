@@ -1,12 +1,37 @@
 <main class="main">
   <div class="content">
-    <img class="logo" src="/data-engineering-for-machine-learning.svg" alt="Data Engineering for Machine Learning" />
+    <!-- Header / Intro -->
+    <img class="logo" 
+         src="/assets/data-engineering-for-machine-learning.svg" 
+         alt="Data Engineering for Machine Learning" />
+
     <h1>Data Engineering for Machine Learning</h1>
-    <p>Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.</p>
+    <p class="subtitle">
+      Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
+    </p>
+
+    <!-- Markdown Content -->
+    <app-page></app-page>
   </div>
+
+  <!-- Footer -->
   <footer>
     <div class="copyright">
-      <span>&copy; {{ getCurrentYear() }} Data Engineering for Machine Learning by <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a> | Hand-coded in Windsurf with Grok Code Fast | Powered by <a href="https://railway.com?referralCode=BpTk0g" target="_blank" rel="noopener noreferrer">Railway</a></span>
+      <span class="footer-line">
+        © {{ getCurrentYear() }} Data Engineering for Machine Learning 
+        <span class="by">by</span> 
+        <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>
+      </span>
+      
+      <span class="footer-line">
+        Hand-crafted in Windsurf with 
+        <span class="highlight">Grok</span>
+      </span>
+      
+      <span class="footer-line">
+        Powered by 
+        <a href="https://railway.com?referralCode=BpTk0g" target="_blank" rel="noopener noreferrer">Railway</a>
+      </span>
     </div>
   </footer>
 </main>
