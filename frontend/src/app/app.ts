@@ -6,7 +6,7 @@ import { PageComponent } from './components/page/page';
   selector: 'app-root',
   imports: [RouterOutlet, PageComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
   protected readonly title = signal('frontend');
