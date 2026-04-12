@@ -1,26 +1,39 @@
-// src/app/components/page/page.ts   (or wherever your file is)
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
+import { HttpClient } from '@angular/common/http';
+import { TransferState, makeStateKey } from '@angular/core';
+
+const MARKDOWN_KEY = makeStateKey<string>('pageMarkdown');
 
 @Component({
   selector: 'app-page',
   standalone: true,
   imports: [MarkdownComponent],
   template: `
-    <markdown
-      [src]="'assets/content/page.md'"
-      (load)="onLoad($event)"
-      (error)="onError($event)">
-    </markdown>
+    <markdown [data]="markdownContent"></markdown>
   `
 })
-export class PageComponent {
+export class PageComponent implements OnInit {
+  private http = inject(HttpClient);
+  private transferState = inject(TransferState);
 
-  onLoad(event: any) {
-    console.log('Markdown loaded successfully');
-  }
+  markdownContent = '';
 
-  onError(error: any) {
-    console.error('Error loading Markdown', error);
+  ngOnInit() {
+    const cached = this.transferState.get(MARKDOWN_KEY, '');
+
+    if (cached) {
+      this.markdownContent = cached;
+      return;
+    }
+
+    this.http.get('assets/content/page.md', { responseType: 'text' })
+      .subscribe({
+        next: (md) => {
+          this.markdownContent = md;
+          this.transferState.set(MARKDOWN_KEY, md);
+        },
+        error: (err) => console.error('Failed to load markdown', err)
+      });
   }
 }
