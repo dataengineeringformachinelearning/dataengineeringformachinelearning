@@ -299,7 +299,7 @@ Pick a font from Google Fonts: https://fonts.google.com/
 Add the font to the styles.scss file:
 
 ```scss
-@import url("https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 ```
 
 Add the font to the index.html file:
@@ -322,7 +322,7 @@ mkdir src/theme
 Add the exported scss theme from coolors to the theme.scss file:
 
 ```scss
-@use "./theme";
+@use './theme';
 ```
 
 A lot of styling should be built mobile first, then enhanced for desktop. So make sure to make the media queries for desktop at the end of the stylesheet, and work from small to large.
@@ -371,8 +371,7 @@ Add a description of the application below the H1 tag in a p tag.
 
 ```html
 <p>
-  This is a sample application that uses Angular to create a modern and
-  responsive user interface.
+  This is a sample application that uses Angular to create a modern and responsive user interface.
 </p>
 ```
 
@@ -734,19 +733,19 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 ```
+
 Create a base template in the templates folder:
 
 ```html
 <!-- templates/base.html -->
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>My Django App</title>
-</head>
-<body>
-    {% block content %}
-    {% endblock %}
-</body>
+  </head>
+  <body>
+    {% block content %} {% endblock %}
+  </body>
 </html>
 ```
 
@@ -754,12 +753,13 @@ Add an image in the static folder and you can reference it as a static asset in 
 
 ```html
 <!-- templates/home.html -->
-{% extends 'base.html' %}
-{% load static %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block content %}
 <h1>Welcome to My Django App</h1>
-<img class="logo" src="{% static 'data-engineering-for-machine-learning.svg' %}" alt="Data Engineering for Machine Learning" />
+<img
+  class="logo"
+  src="{% static 'data-engineering-for-machine-learning.svg' %}"
+  alt="Data Engineering for Machine Learning"
+/>
 {% endblock %}
 ```
 
@@ -774,6 +774,7 @@ STATICFILES_DIRS = [
 ```
 
 You need to run the `collectstatic` command to collect the static files:
+
 ```bash
 python manage.py collectstatic
 ```
@@ -784,20 +785,20 @@ Add css styling to the home page by creating a css file in the static folder and
 <!-- templates/base.html -->
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>My Django App</title>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    {% block content %}
-    {% endblock %}
-</body>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+  </head>
+  <body>
+    {% block content %} {% endblock %}
+  </body>
 </html>
 ```
 
 Similary to the frontend you can re-use the same css file in the static folder and reference it in the base template.
 
 You can add a sitemap by creating a sitemaps.py file in the config folder and adding the following code:
+
 ```python
 # config/sitemaps.py
 from django.contrib.sitemaps import Sitemap
@@ -815,6 +816,7 @@ class StaticViewSitemap(Sitemap):
 ```
 
 Then add the sitemap to the urls.py file:
+
 ```python
 # config/urls.py
 from django.contrib import admin
@@ -835,3 +837,60 @@ urlpatterns = [
 ```
 
 While you are adding a sitemap here, make sure to add one and a robots file to your frontend as well.
+
+Another consideration when writing JavaScript code is using a formatter like Prettier to ensure consistent code style.
+
+You can install Prettier in your repository by running:
+
+```bash
+npm install --save-dev prettier
+```
+
+After installing prettier you can create a configuration file in the root of your repository that will define the formatting rules:
+
+```json
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5"
+}
+```
+
+You should make sure you add a prettier ignore file to your repository to exclude generated files like the static files from the collectstatic command.
+
+```prettierignore
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Coverage reports
+coverage/
+
+# Angular cache
+.angular/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+```
+
+Read more about prettier in the [documentation](https://prettier.io/docs/en/index.html).
+
+ESLint is another tool that can be used to ensure consistent code style and catch potential errors in your code. It can be installed in your repository by running:
+
+```bash
+ng add @angular-eslint/schematics
+npm install --save-dev eslint-config-prettier eslint-plugin-prettier
+```
+
+This will align eslint with prettier and prevent conflicts between the two tools.

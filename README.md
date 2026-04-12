@@ -839,3 +839,60 @@ urlpatterns = [
 ```
 
 While you are adding a sitemap here, make sure to add one and a robots file to your frontend as well.
+
+Another consideration when writing JavaScript code is using a formatter like Prettier to ensure consistent code style.
+
+You can install Prettier in your repository by running:
+
+```bash
+npm install --save-dev prettier
+```
+
+After installing prettier you can create a configuration file in the root of your repository that will define the formatting rules:
+
+```json
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5"
+}
+```
+
+You should make sure you add a prettier ignore file to your repository to exclude generated files like the static files from the collectstatic command.
+
+```prettierignore
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Coverage reports
+coverage/
+
+# Angular cache
+.angular/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+```
+
+Read more about prettier in the [documentation](https://prettier.io/docs/en/index.html).
+
+ESLint is another tool that can be used to ensure consistent code style and catch potential errors in your code. It can be installed in your repository by running:
+
+```bash
+ng add @angular-eslint/schematics
+npm install --save-dev eslint-config-prettier eslint-plugin-prettier
+```
+
+This will align eslint with prettier and prevent conflicts between the two tools.

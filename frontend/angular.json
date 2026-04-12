@@ -3,7 +3,8 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": ["angular-eslint"]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -39,10 +40,7 @@
             "loader": {
               ".md": "text"
             },
-            "styles": [
-              "src/styles.scss",
-              "node_modules/prismjs/themes/prism-okaidia.css"
-            ],
+            "styles": ["src/styles.scss", "node_modules/prismjs/themes/prism-okaidia.css"],
             "scripts": [
               "node_modules/prismjs/prism.js",
               "node_modules/prismjs/components/prism-bash.min.js",
@@ -103,6 +101,12 @@
         },
         "test": {
           "builder": "@angular/build:unit-test"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
+          }
         }
       }
     }

@@ -7,9 +7,7 @@ import pageMarkdown from '../../../assets/content/page.md';
   selector: 'app-page',
   standalone: true,
   imports: [MarkdownComponent],
-  template: `
-    <markdown [data]="markdownContent"></markdown>
-  `
+  template: ` <markdown [data]="markdownContent"></markdown> `,
 })
 export class PageComponent {
   markdownContent: string = pageMarkdown;
