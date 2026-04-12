@@ -36,6 +36,9 @@
                 "output": "/assets"
               }
             ],
+            "loader": {
+              ".md": "text"
+            },
             "styles": [
               "src/styles.scss",
               "node_modules/prismjs/themes/prism-okaidia.css"
@@ -53,11 +56,12 @@
             ],
             "server": "src/main.server.ts",
             "outputMode": "static",
-            "security": {
-              "allowedHosts": []
-            },
+            "prerender": false,
             "ssr": {
               "entry": "src/server.ts"
+            },
+            "security": {
+              "allowedHosts": []
             }
           },
           "configurations": {
