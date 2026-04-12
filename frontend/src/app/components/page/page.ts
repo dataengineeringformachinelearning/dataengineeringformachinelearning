@@ -1,9 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
-import { HttpClient } from '@angular/common/http';
-import { TransferState, makeStateKey } from '@angular/core';
 
-const MARKDOWN_KEY = makeStateKey<string>('pageMarkdown');
+// Import the markdown file as raw text using the loader you already configured
+import pageMarkdownRaw from '../../../assets/content/page.md';
 
 @Component({
   selector: 'app-page',
@@ -13,27 +12,6 @@ const MARKDOWN_KEY = makeStateKey<string>('pageMarkdown');
     <markdown [data]="markdownContent"></markdown>
   `
 })
-export class PageComponent implements OnInit {
-  private http = inject(HttpClient);
-  private transferState = inject(TransferState);
-
-  markdownContent = '';
-
-  ngOnInit() {
-    const cached = this.transferState.get(MARKDOWN_KEY, '');
-
-    if (cached) {
-      this.markdownContent = cached;
-      return;
-    }
-
-    this.http.get('assets/content/page.md', { responseType: 'text' })
-      .subscribe({
-        next: (md) => {
-          this.markdownContent = md;
-          this.transferState.set(MARKDOWN_KEY, md);
-        },
-        error: (err) => console.error('Failed to load markdown', err)
-      });
-  }
+export class PageComponent {
+  markdownContent = pageMarkdownRaw;
 }
