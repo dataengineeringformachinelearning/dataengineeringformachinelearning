@@ -896,3 +896,55 @@ npm install --save-dev eslint-config-prettier eslint-plugin-prettier
 ```
 
 This will align eslint with prettier and prevent conflicts between the two tools.
+
+## Chapter 2: Integrating
+
+### Chapter 2.1: Introduction
+
+#### Chapter 2.1.1: Setting up backend APIs
+
+In many applications using a Node framework as a frontend, the backend APIs are often set up using a framework like Express.js. In this case, we will be using Django as our backend framework. We can briefl note that using a TypeScript based middleware is a good way to encrypt the data in transit, but it is not always necessary, data can be encrypted at rest using various methods.
+
+If you need to run a typescript middleware, which is common in these applications, or even the need for an independent web server, you can use the tsx package to run typescript files directly.
+
+You can install it with the following command:
+
+```bash
+npm install --save-dev tsx
+```
+
+You can run typescript files with the following command:
+
+```bash
+npx tsx your-file.ts
+```
+
+If you want to run it in development mode with hot reloading, you can use the following command:
+
+```bash
+npx tsx --watch your-file.ts
+```
+
+To find out more about tsx, check out the [documentation](https://tsx.is/).
+
+This is a great way to emulate a backend API in a development environment and test your frontend code, though we will review other options in Django this can be a great way to create an agentic API server that is structurally independent of your main application.
+
+## Chapter 3: Database design
+
+### Chapter 3.1: Introduction
+
+#### Chapter 3.1.1: Setting up data schemas
+
+A database is a collection of data that is organized in a way that allows for efficient storage, retrieval, and manipulation. In the context of machine learning, a database is used to store and manage the data that is used to train and test machine learning models.
+
+The primary tool for visualizing databases is a database management system (DBMS). A DBMS is a software application that allows users to create, manage, and manipulate databases. Some popular DBMSs include MySQL, PostgreSQL, and MongoDB.
+
+Using DBeaver is a great way to visualize and manage your databases. It is a free and open-source tool that allows you to connect to various databases and perform various operations on them.
+
+To install dbeaver, you can download it from the official website or use a package manager like Homebrew on macOS.
+
+```bash
+brew install --cask dbeaver-community
+```
+
+Then open DBeaver and connect to your database.
