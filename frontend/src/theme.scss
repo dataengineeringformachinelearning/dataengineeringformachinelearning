@@ -1,18 +1,18 @@
-// CYBER-NOIR VAULT PALETTE
+// CUSTOM PALETTE
 
-$key-light: #00b4d8;
-$gunmetal-shadow: #1c2526;
-$vault-black: #0a0f1c;
-$brass-accent: #d4af37;
+$key-light: #9fb8ad;
+$surface-color: #132a24;
+$bg-color: #132A24;
+$accent-dark: #183a37;
 
 $palette-vault: (
-  bg: $vault-black,
-  surface: $gunmetal-shadow,
-  text: #f0f4f8,
-  text-muted: #8a9ba3,
+  bg: $bg-color,
+  surface: $surface-color,
+  text: #ffffff,
+  text-muted: $key-light,
   key-light: $key-light,
-  key-soft: #48cae4,
-  brass: $brass-accent,
+  key-soft: $key-light,
+  brass: $accent-dark,
 );
 
 :root {

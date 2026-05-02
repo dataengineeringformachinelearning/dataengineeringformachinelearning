@@ -5,8 +5,8 @@
 @import 'prismjs/themes/prism-okaidia.css';
 
 pre[class*='language-'] {
-  background-color: #0f1626 !important;
-  border: 1px solid #1c2526;
+  background-color: #183A37 !important;
+  border: 1px solid #183a37;
   border-radius: 8px;
   padding: 1.5rem 1.6rem;
   margin: 2rem 0;
@@ -17,7 +17,7 @@ pre[class*='language-'] {
 code[class*='language-'] {
   font-size: 0.925rem;
   line-height: 1.65;
-  color: #e0f0ff;
+  color: #ffffff;
 }
 
 // Cyber-noir Prism color tweaks
@@ -25,11 +25,11 @@ code[class*='language-'] {
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #8a9ba3;
+  color: #9fb8ad;
 }
 
 .token.punctuation {
-  color: #c4c9d0;
+  color: #ffffff;
 }
 .token.operator,
 .token.keyword {
@@ -38,40 +38,40 @@ code[class*='language-'] {
 .token.string,
 .token.char,
 .token.attr-value {
-  color: #a3e6b5;
+  color: #9fb8ad;
 }
 .token.function,
 .token.method {
-  color: #48cae4;
+  color: #ffffff;
 }
 .token.number,
 .token.boolean,
 .token.constant {
-  color: #d4af37;
+  color: #9fb8ad;
 }
 .token.selector,
 .token.property,
 .token.tag {
-  color: #ff9dff;
+  color: #9fb8ad;
 }
 
 // ====================== GOOGLE FONT ======================
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap');
 
 $custom-primary: (
-  50: #e0f0ff,
-  100: #b3d9ff,
-  200: #80c2ff,
-  300: #4daaff,
-  400: #2693ff,
+  50: #ffffff,
+  100: #9fb8ad,
+  200: #9fb8ad,
+  300: #9fb8ad,
+  400: #9fb8ad,
   500: theme.$key-light,
-  600: #0088cc,
-  700: #006699,
-  800: #1c2526,
-  900: #0a0f1c,
-  A100: #80e8ff,
-  A200: #4ddfff,
-  A400: #26d6ff,
+  600: #183a37,
+  700: #183a37,
+  800: #132a24,
+  900: #000000,
+  A100: #9fb8ad,
+  A200: #9fb8ad,
+  A400: #9fb8ad,
   A700: theme.$key-light,
 );
 
@@ -171,7 +171,7 @@ a {
 
 // ====================== INLINE CODE ======================
 :not(pre) > code {
-  background-color: #1c2526;
+  background-color: #132a24;
   padding: 3px 7px;
   border-radius: 5px;
   font-size: 0.92rem;
@@ -188,7 +188,7 @@ a {
 footer {
   margin-top: 5rem;
   padding-top: 2.5rem;
-  border-top: 1px solid #1c2526;
+  border-top: 1px solid #183a37;
 }
 
 .copyright {
