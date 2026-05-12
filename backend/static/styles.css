@@ -2,13 +2,13 @@
 
 /* CYBER-NOIR VAULT PALETTE */
 :root {
-  --vault-bg: #0a0f1c;
-  --vault-surface: #1c2526;
-  --vault-text: #f0f4f8;
-  --vault-text-muted: #8a9ba3;
-  --vault-key-light: #00b4d8;
-  --vault-key-soft: #48cae4;
-  --vault-brass: #d4af37;
+  --vault-bg: #132A24;
+  --vault-surface: #132a24;
+  --vault-text: #ffffff;
+  --vault-text-muted: #9fb8ad;
+  --vault-key-light: #9fb8ad;
+  --vault-key-soft: #9fb8ad;
+  --vault-brass: #183a37;
 }
 
 html {
