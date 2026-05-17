@@ -937,9 +937,234 @@ A common architecture for applications is to use a web server to serve a fronten
 
 #### Chapter 3.1.1: Integrating fullstack endpoints
 
-RESTful APIs through HTTP are everywhere, and it's often best to start with something small to get a feel for how they work. These patterns will allow for scaled integrations. The backend healthcheck to the Python application, visible from the frontend Angular application, is one example of an API endpoint.
+Integrations through RESTful APIs with HTTP are a common way to build out fullstack applications. The backend healthcheck to the Python application, visible from the frontend Angular application, is one example of an API endpoint. The patterns established here will allow for scaled integrations.
 
 #### Chapter 3.1.2: Scalable integration patterns
+
+Starting with the Django backend we can add another endpoint in the `config/views.py` file:
+
+```python
+# backend/config/views.py
+from django.http import JsonResponse
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
+```
+
+The url to this endpoint is `/api/health` and that is configured in the `config/urls.py` file. This is a good example of how to add an entry for an endpoint to the Django backend.
+
+```python
+# backend/config/urls.py
+from django.contrib import admin
+from django.urls import path
+from . import views
+from django.contrib.sitemaps.views import sitemap
+from .sitemaps import StaticViewSitemap
+
+sitemaps = {
+    'static': StaticViewSitemap,
+}
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('api/health', views.health_check, name='health_check'),
+    path('admin/', admin.site.urls),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
+]
+```
+
+This will allow for a healthcheck endpoint to be visible from the frontend application or other HTTP clients. It will return a JSON response with the status of the backend application.
+
+To decide what origins (domain) are allowed to make a request to this endpoint, we can add the following to the `settings.py` file:
+
+```python
+# backend/config/settings.py
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:4200",
+    "https://dataengineeringformachinelearning.com",
+]
+```
+
+You can learn more about CORS and CORS_ALLOWED_ORIGINS in the [Django documentation](https://docs.djangoproject.com/en/5.1/ref/middleware/cors/#cors-settings).
+
+It is best practice to use environment variables to determine the allowed origins. This can be setup with fallbacks or without fallbacks depending on your use-case. We use the django-cors-headers package to handle this: https://github.com/adamchainz/django-cors-headers. You can learn more about django-cors-headers in the [django-cors-headers documentation](https://github.com/adamchainz/django-cors-headers).
+
+It can be installed with the following command:
+
+```bash
+pip install django-cors-headers
+```
+
+We will also need to add it to the `INSTALLED_APPS` list in `settings.py`:
+
+```python
+# backend/config/settings.py
+INSTALLED_APPS = [
+    'corsheaders',
+    # ... other apps
+]
+```
+
+This also needs to be added to the django middleware list:
+
+# backend/config/settings.py
+```python
+MIDDLEWARE = [
+    # ... other middleware
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    # ... other middleware
+]
+```
+
+Then, we can add the `CORS_ALLOWED_ORIGINS` variable to the `settings.py` file. We will also add an environment variable to the `settings.py` file to determine the allowed origins.
+
+```python
+# backend/config/settings.py
+import os
+
+cors_allowed_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_allowed_origins.split(',')] if cors_allowed_origins else []
+```
+
+The `CORS_ALLOWED_ORIGINS` variable will be set in the production environment and will be used to determine the allowed origins. When running locally it will default to an empty string and will not allow any origins.
+
+You need to access the environment variables by importing the `os` module and using the `os.getenv()` function. This is a common pattern in python projects. You can learn more about `os.getenv()` in the [python documentation](https://docs.python.org/3/library/os.html#os.getenv).
+
+You can test the endpoint by running the following command:
+
+```bash
+curl http://localhost:8000/api/health
+```
+
+You can learn more about python environment variables, check out the [python documentation](https://docs.python.org/3/library/os.html#os.getenv). The package python-dotenv is a great way to manage environment variables in your python projects. You can install it with the following command:
+
+```bash
+pip install python-dotenv
+```
+
+Then, you need to configure Django to load these variables when the server starts. Add this to the top of your settings file:
+
+```python
+# backend/config/settings.py
+from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from a .env file located at the BASE_DIR (backend/)
+load_dotenv(BASE_DIR / '.env')
+```
+
+When running in your local environment, you can create a `.env` file in the `backend/` directory with the following content:
+
+```ini
+CORS_ALLOWED_ORIGINS="http://localhost:4200,https://dataengineeringformachinelearning.com"
+```
+
+This can be added to the cloud environment and should be overriden by the production `CORS_ALLOWED_ORIGINS` variable. In Railway, you can set the `CORS_ALLOWED_ORIGINS` environment variable in the Railway dashboard when you are setting up your project variables.
+
+Now that the endpoint is responding, we need to enable Angular to invoke an HTTP call. In modern Angular (v16+) using standalone components, you enable HTTP client functionality in your `app.config.ts` file:
+
+```typescript
+// frontend/src/app/app.config.ts
+import { ApplicationConfig } from '@angular/core';
+import { provideHttpClient, withFetch } from '@angular/common/http';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(withFetch()),
+  ]
+};
+```
+
+Now that Angular can make HTTP calls, we can create a service to handle the HTTP requests to the backend API. We use the modern `inject()` syntax:
+
+```typescript
+// frontend/src/app/services/healthcheck.service.ts
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Injectable({
+  providedIn: 'root',
+})
+export class HealthcheckService {
+  private http = inject(HttpClient);
+
+  getHealthcheck() {
+    return this.http.get<{status: string}>('/api/health');
+  }
+}
+```
+
+In the `app.component.ts` file, we can invoke the healthcheck and display the status. We will use modern Angular **Signals** and **Standalone Components** to handle reactivity cleanly:
+
+```typescript
+// frontend/src/app/app.component.ts
+import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HealthcheckService } from '../services/healthcheck.service';
+
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+})
+export class AppComponent implements OnInit {
+  title = signal('data-engineering-for-machine-learning');
+  backendStatus = signal<'checking' | 'ok' | 'error'>('checking');
+
+  private healthcheckService = inject(HealthcheckService);
+  private platformId = inject(PLATFORM_ID);
+
+  ngOnInit(): void {
+    // Only run health check on client side
+    if (isPlatformBrowser(this.platformId)) {
+      this.healthcheckService.getHealthcheck().subscribe({
+        next: (response) => {
+          if (response.status === 'ok') {
+            this.backendStatus.set('ok');
+          } else {
+            this.backendStatus.set('error');
+          }
+        },
+        error: () => {
+          this.backendStatus.set('error');
+        }
+      });
+    }
+  }
+}
+```
+
+You can read more about signals in the [Angular signals documentation](https://angular.dev/guide/signals) that pair with standalone components. It is a great pattern for building reactive applications. Standalone components are a great pattern for building reactive applications. You can read more about standalone components in the [Angular standalone components documentation](https://angular.dev/guide/standalone-components).
+
+When the application renders, Angular will invoke the healthcheck service and display the status in the footer. To use Signals in the template, you invoke them like a function:
+
+```html
+<!-- frontend/src/app/app.component.html -->
+<footer>
+  <div class="status-indicator" [class]="backendStatus()"></div>
+  <span>Backend: {{ backendStatus() }}</span>
+</footer>
+```
+
+The healthcheck service can be added in a variety of places. I added it to the `app.component.ts` file because it is a simple example of how to invoke the healthcheck and display the status. You can also add it to other components in the application.
+
+This introduces the concept of environment variables for Angular applications. By default, Angular applications are built with the `environment.ts` file. This file is used to store environment-specific configuration. You can learn more about Angular environment variables in the [Angular documentation](https://angular.io/guide/build).
+
+For this application, the environment variables are stored in the `environment.ts` file and the `environment.development.ts` file. The `environment.ts` file is used to store the production environment variables. The `environment.development.ts` file is used to store the development environment variables.
+
+So far we have setup a backend API that can be invoked by the frontend application, and stored variables in `.env` and `environment.ts` files.
+
+The `CORS_ALLOWED_ORIGINS` is a list of origins that are allowed to make requests to the backend API, and you can see without this that the frotend writes out an error: "CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource." to the dev tools console.
+
+When this is set correctly the networking tab in the browser dev tools will show a 200 status code with no errors, and the footer will show the backend status as "ok" or green.
+
+When adding environment variables make sure to update the gitignore file to exclude the .env file so that secrets are not commited to the version control system. Without this step, you risk exposing secrets to the public internet if the repository is ever made public or if you are working in a team and accidentally commit the .env file. It is also a good habit to use local environment variables for local development to not expose secrets in code or version control if they are commited by accident.
 
 ## Chapter 4: Database design
 
