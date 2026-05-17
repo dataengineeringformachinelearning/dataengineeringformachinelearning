@@ -42,6 +42,12 @@
           >Railway</a
         >
       </span>
+      <span class="footer-line"> | </span>
+      <span class="footer-line backend-status">
+        Backend: 
+        <span class="status-dot" [class]="backendStatus()"></span>
+        <span class="status-text">{{ backendStatus() === 'ok' ? 'OK' : backendStatus() === 'error' ? 'Error' : 'Checking' }}</span>
+      </span>
     </div>
   </footer>
 </main>

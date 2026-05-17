@@ -26,6 +26,7 @@ sitemaps = {
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('api/health', views.health_check, name='health_check'),
     path('admin/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]

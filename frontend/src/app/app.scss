@@ -1,0 +1,28 @@
+.backend-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    
+    &.checking {
+      background-color: #eab308; /* yellow */
+    }
+    
+    &.ok {
+      background-color: #22c55e; /* green */
+    }
+    
+    &.error {
+      background-color: #ef4444; /* red */
+    }
+  }
+
+  .status-text {
+    font-size: 0.9em;
+  }
+}

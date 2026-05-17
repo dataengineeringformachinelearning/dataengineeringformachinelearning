@@ -929,11 +929,23 @@ To find out more about tsx, check out the [documentation](https://tsx.is/).
 
 This is a great way to emulate a backend API in a development environment and test your frontend code, though we will review other options in Django this can be a great way to create an agentic API server that is structurally independent of your main application.
 
-## Chapter 3: Database design
+## Chapter 3: Interfaces and data integration
+
+A common architecture for applications is to use a web server to serve a frontend application and a separate backend API to serve data. In this chapter, we will review how to set up a backend API and how to integrate it with the frontend application. The simple patterns established here will be repeated throughout the book, as they are fundamental to many data engineering and machine learning applications. We will make use of both internal and external APIs.
 
 ### Chapter 3.1: Introduction
 
-#### Chapter 3.1.1: Setting up data schemas
+#### Chapter 3.1.1: Integrating fullstack endpoints
+
+RESTful APIs through HTTP are everywhere, and it's often best to start with something small to get a feel for how they work. These patterns will allow for scaled integrations. The backend healthcheck to the Python application, visible from the frontend Angular application, is one example of an API endpoint.
+
+#### Chapter 3.1.2: Scalable integration patterns
+
+## Chapter 4: Database design
+
+### Chapter 4.1: Introduction
+
+#### Chapter 4.1.1: Setting up data schemas
 
 A database is a collection of data that is organized in a way that allows for efficient storage, retrieval, and manipulation. In the context of machine learning, a database is used to store and manage the data that is used to train and test machine learning models.
 
