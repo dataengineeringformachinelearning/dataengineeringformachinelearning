@@ -10,19 +10,25 @@
     <meta name="author" content="Joe Alongi">
     <link rel="canonical" href="{{ request.build_absolute_uri }}">
 
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" href="{% static 'favicon-96x96.png' %}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:title" content="Data Engineering for Machine Learning - Backend">
     <meta property="og:description" content="Backend API and services for the Data Engineering for Machine Learning application.">
-    <meta property="og:image" content="{{ request.build_absolute_uri }}{% static 'data-engineering-for-machine-learning-preview.png' %}">
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ request.build_absolute_uri }}">
     <meta property="twitter:title" content="Data Engineering for Machine Learning - Backend">
     <meta property="twitter:description" content="Backend API and services for the Data Engineering for Machine Learning application.">
-    <meta property="twitter:image" content="{{ request.build_absolute_uri }}{% static 'data-engineering-for-machine-learning-preview.png' %}">
+    <meta property="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}">
 
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
