@@ -939,8 +939,6 @@ A common architecture for applications is to use a web server to serve a fronten
 
 Integrations through RESTful APIs with HTTP are a common way to build out fullstack applications. The backend healthcheck to the Python application, visible from the frontend Angular application, is one example of an API endpoint. The patterns established here will allow for scaled integrations.
 
-#### Chapter 3.1.2: Scalable integration patterns
-
 Starting with the Django backend we can add another endpoint in the `config/views.py` file:
 
 ```python
@@ -1165,6 +1163,8 @@ The `CORS_ALLOWED_ORIGINS` is a list of origins that are allowed to make request
 When this is set correctly the networking tab in the browser dev tools will show a 200 status code with no errors, and the footer will show the backend status as "ok" or green.
 
 When adding environment variables make sure to update the gitignore file to exclude the .env file so that secrets are not commited to the version control system. Without this step, you risk exposing secrets to the public internet if the repository is ever made public or if you are working in a team and accidentally commit the .env file. It is also a good habit to use local environment variables for local development to not expose secrets in code or version control if they are commited by accident.
+
+#### Chapter 3.1.2: Scalable integration patterns
 
 ## Chapter 4: Database design
 
