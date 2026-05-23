@@ -1,4 +1,6 @@
 # Data Engineering for Machine Learning
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_shield)
+
 
 Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
 
@@ -1185,3 +1187,7 @@ brew install --cask dbeaver-community
 ```
 
 Then open DBeaver and connect to your database.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large)
