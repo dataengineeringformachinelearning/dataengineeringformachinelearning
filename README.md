@@ -1005,8 +1005,8 @@ INSTALLED_APPS = [
 
 This also needs to be added to the django middleware list:
 
-# backend/config/settings.py
 ```python
+# backend/config/settings.py
 MIDDLEWARE = [
     # ... other middleware
     'corsheaders.middleware.CorsMiddleware',
@@ -1164,8 +1164,6 @@ When this is set correctly the networking tab in the browser dev tools will show
 
 When adding environment variables make sure to update the gitignore file to exclude the .env file so that secrets are not commited to the version control system. Without this step, you risk exposing secrets to the public internet if the repository is ever made public or if you are working in a team and accidentally commit the .env file. It is also a good habit to use local environment variables for local development to not expose secrets in code or version control if they are commited by accident.
 
-#### Chapter 3.1.2: Scalable integration patterns
-
 ## Chapter 4: Database design
 
 ### Chapter 4.1: Introduction
@@ -1184,4 +1182,115 @@ To install dbeaver, you can download it from the official website or use a packa
 brew install --cask dbeaver-community
 ```
 
-Then open DBeaver and connect to your database.
+Then open DBeaver and connect to your database. You will need to create a new connection to your database. In the connection settings, you will need to provide the following information:
+
+- Database type
+- Host
+- Port
+- Database name
+- Username
+- Password
+
+In newely created applications the schema is often created throughout the development process, reflecting the data stored for various features of the application. This is an opportunity to identify the data that is needed for the application, and to design the database schema in a way that is efficient and effective.
+
+In the previous chapter we established a healthcheck endpoint that responded with status "ok" and status code 200. This is a great lightweight API to turn into a data point for tracking application uptime. This data can then be used to monitor the application's performance and availability over time and stored in a database table to show if the application is healthy.
+
+For an endpoint table you could store healthcheck status, ip address, and a timestamp of when the healthcheck was performed. Creating this in Postgres through Django is rather straightforward.
+
+Create a new app for your database models in the backend directory:
+
+```bash
+source venv/bin/activate
+python manage.py startapp monitoring
+python manage.py makemigrations monitoring
+python manage.py migrate
+```
+
+Add your new app to the `INSTALLED_APPS` list in `settings.py`:
+
+```python
+INSTALLED_APPS = [
+    # ...
+    'monitoring',
+    # ...
+]
+```
+
+Add a model for the table in the `models.py` file in your new app.
+
+```python
+import uuid
+from django.db import models
+
+class Endpoints(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    url = models.URLField()
+    last_tested = models.DateTimeField(auto_now=True)
+    status_code = models.IntegerField()
+    response_time = models.DurationField()
+    ip_address = models.GenericIPAddressField()
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        db_table = 'endpoints'
+
+    def __str__(self):
+        return self.url
+```
+
+Now when you run makemigrations and migrate, Django will create the table in the database.
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+When the table is created make sure to connect the Healthcheck endpoint to the database through the new Endpoints model.
+
+You can update the Healthcheck endpoint code in the views.py file in the config app to connect to the database through the new Endpoints model.
+
+```python
+import time
+from datetime import timedelta
+from django.shortcuts import render
+from django.http import JsonResponse
+from monitoring.models import Endpoints
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def home(request):
+    return render(request, 'home.html')
+
+def health_check(request):
+    start_time = time.time()
+    
+    response_data = {'status': 'ok'}
+    status_code = 200
+    
+    response = JsonResponse(response_data, status=status_code)
+    
+    end_time = time.time()
+    duration = timedelta(seconds=end_time - start_time)
+    
+    Endpoints.objects.create(
+        url=request.build_absolute_uri(),
+        status_code=status_code,
+        response_time=duration,
+        ip_address=get_client_ip(request),
+        is_active=True
+    )
+    
+    return response
+```
+
+## Chapter 5: Visualizing data
+
+### Chapter 5.1: Introduction
+
+#### Chapter 5.1.1: Developing interface visualizations
