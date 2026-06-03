@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'monitor',
     'model',
+    'telemetry',
 ]
 
 MIDDLEWARE = [

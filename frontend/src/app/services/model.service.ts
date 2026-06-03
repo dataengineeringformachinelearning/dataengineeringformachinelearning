@@ -17,13 +17,13 @@ export interface TrainingResponse {
 })
 export class ModelService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.backendUrl}/api/model`;
+  private apiUrl = `${environment.backendUrl}/api/v1/model`;
 
   trainModel(): Observable<TrainingResponse> {
-    return this.http.post<TrainingResponse>(`${this.apiUrl}/train/`, {});
+    return this.http.post<TrainingResponse>(`${this.apiUrl}/train`, {});
   }
 
   getLatestTraining(): Observable<TrainingResponse> {
-    return this.http.get<TrainingResponse>(`${this.apiUrl}/latest/`);
+    return this.http.get<TrainingResponse>(`${this.apiUrl}/latest`);
   }
 }
