@@ -3,11 +3,12 @@ import { isPlatformBrowser } from '@angular/common';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions, ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
 import { MonitorService } from '../../services/monitor.service';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [AgCharts],
+  imports: [AgCharts, MatCardModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
