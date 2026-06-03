@@ -54,6 +54,7 @@ export class Dashboard implements OnInit {
       next: (data) => {
         if (data.average_sla !== null && data.average_sla !== undefined) {
           this.latestStat = data.average_sla;
+          this.cdr.detectChanges();
         }
       },
       error: (err) => console.error('Error fetching latest training stat:', err)

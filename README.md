@@ -1534,3 +1534,118 @@ INSTALLED_APPS = [
 ```
 
 We will start with a very simple model that can predict the response time of an endpoint based on the current time, ip address, and other features. This model will be used to demonstrate the basic concepts of deep learning and how it can be applied to real-world problems.
+
+Next, we define a model in the database to record the results of our model training runs. Create this in `model/models.py`:
+
+```python
+import uuid
+from django.db import models
+
+class TrainingRun(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    average_sla = models.FloatField()
+    loss = models.FloatField()
+
+    class Meta:
+        db_table = 'training_runs'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"TrainingRun {self.id} (SLA: {self.average_sla:.2f})"
+```
+
+Make sure to run your migrations:
+```bash
+python manage.py makemigrations model
+python manage.py migrate
+```
+
+Now we will implement the PyTorch model inside our Django view. We define a simple multi-layer perceptron using `torch.nn.Module`, and a view function that takes data from the `Endpoints` model, formats it into PyTorch tensors, and trains the model using a standard MSE loss function.
+
+```python
+# backend/model/views.py
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from monitor.models import Endpoints
+from model.models import TrainingRun
+
+class SLAPredictor(nn.Module):
+    def __init__(self):
+        super(SLAPredictor, self).__init__()
+        self.fc1 = nn.Linear(3, 16)
+        self.fc2 = nn.Linear(16, 1)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+@csrf_exempt
+def train_model(request):
+    if request.method == 'POST' or request.method == 'GET':
+        endpoints = Endpoints.objects.all()
+        
+        if not endpoints:
+            return JsonResponse({'status': 'error', 'message': 'No data available for training'}, status=400)
+
+        # Prepare dummy dataset
+        x_data = []
+        y_data = []
+
+        for ep in endpoints:
+            status = float(ep.status_code) / 100.0
+            resp_time = ep.response_time.total_seconds()
+            active = 1.0 if ep.is_active else 0.0
+
+            x_data.append([status, resp_time, active])
+
+            # Dummy target
+            if not ep.is_active or ep.status_code >= 400:
+                target_sla = 0.0
+            else:
+                target_sla = max(0.0, 100.0 - (resp_time * 5.0))
+            
+            y_data.append([target_sla])
+
+        X = torch.tensor(x_data, dtype=torch.float32)
+        Y = torch.tensor(y_data, dtype=torch.float32)
+
+        model = SLAPredictor()
+        criterion = nn.MSELoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+        # Train for 50 epochs
+        final_loss = 0.0
+        for epoch in range(50):
+            optimizer.zero_grad()
+            outputs = model(X)
+            loss = criterion(outputs, Y)
+            loss.backward()
+            optimizer.step()
+            final_loss = loss.item()
+
+        # Evaluate (average predicted SLA)
+        model.eval()
+        with torch.no_grad():
+            preds = model(X)
+            avg_predicted_sla = preds.mean().item()
+
+        # Save to DB
+        run = TrainingRun.objects.create(
+            average_sla=avg_predicted_sla,
+            loss=final_loss
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'average_sla': avg_predicted_sla,
+            'loss': final_loss,
+        })
+```
+
+By connecting these views to URL routing, the Angular frontend can now trigger model training via API requests and fetch the latest prediction to visualize our expected system SLA.

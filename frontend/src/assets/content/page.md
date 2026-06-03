@@ -1,7 +1,3 @@
-# Data Engineering for Machine Learning
-
-Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
-
 ## Chapter 1: Introduction
 
 Picking a language for data engineering is a personal preference. I chose Python because it is easy to learn and has a large community. Angular provides a TypeScript interface for data engineering. Windsurf AI provides an AI based editor for data engineering. Through this book, I will be using Angular and Windsurf AI to build a data engineering application. Python will be used for data engineering tasks. I will cover everything from the basics to advanced topics, starting from square one to an enterprise level data engineering application.
@@ -1495,3 +1491,157 @@ export class EndpointsTableComponent {
 ```
 
 Through the AG Chart and AG Grid the data can be filtered on the different columns to understand performance across different endpoints.
+
+## Chapter 5: Modeling and training
+
+### Chapter 5.1: Introduction
+
+#### Chapter 5.1.1: Setting up modeling and prediction
+
+Now that we have a basis of data that can be recorded in the database, queried from the UI and visualized, we can use the historical data to build a simple understanding of the patterns that develop, reflecting a future expectation.
+
+We now want to introduct Pytorch to this problem and use the deep learning capabilities to improve our understanding of the system. Installing pytorch can be done through pip.
+
+```bash
+source venv/bin/activate
+pip install torch polars skops scikit-learn
+```
+
+This will install the latest version of pytorch and the necessary libraries for machine learning. You can find more information about pytorch at https://pytorch.org/ and the other libraries at https://pola.rs/, https://skops.readthedocs.io/, and https://scikit-learn.org/.
+
+Polars will help us more quickly process the data that is stored in the database. Scikit learn will help us with an initial understanding of the data through more traditional machine learning methods. Skops will help us to save and load models more easily. Pytorch will help us with deep learning capabilities.
+
+We will create a new django application to handle the modeling and prediction.
+
+```bash
+source venv/bin/activate
+python manage.py startapp model
+```
+
+This will create a new django application called model. You can find more information about django applications at https://docs.djangoproject.com/en/5.1/topics/apps/.
+
+Now we can add the new application to the INSTALLED_APPS in the settings.py file.
+
+```python
+INSTALLED_APPS = [
+    # ...
+    'model',
+]
+```
+
+We will start with a very simple model that can predict the response time of an endpoint based on the current time, ip address, and other features. This model will be used to demonstrate the basic concepts of deep learning and how it can be applied to real-world problems.
+
+Next, we define a model in the database to record the results of our model training runs. Create this in `model/models.py`:
+
+```python
+import uuid
+from django.db import models
+
+class TrainingRun(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    average_sla = models.FloatField()
+    loss = models.FloatField()
+
+    class Meta:
+        db_table = 'training_runs'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"TrainingRun {self.id} (SLA: {self.average_sla:.2f})"
+```
+
+Make sure to run your migrations:
+```bash
+python manage.py makemigrations model
+python manage.py migrate
+```
+
+Now we will implement the PyTorch model inside our Django view. We define a simple multi-layer perceptron using `torch.nn.Module`, and a view function that takes data from the `Endpoints` model, formats it into PyTorch tensors, and trains the model using a standard MSE loss function.
+
+```python
+# backend/model/views.py
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from monitor.models import Endpoints
+from model.models import TrainingRun
+
+class SLAPredictor(nn.Module):
+    def __init__(self):
+        super(SLAPredictor, self).__init__()
+        self.fc1 = nn.Linear(3, 16)
+        self.fc2 = nn.Linear(16, 1)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = self.relu(self.fc1(x))
+        x = self.fc2(x)
+        return x
+
+@csrf_exempt
+def train_model(request):
+    if request.method == 'POST' or request.method == 'GET':
+        endpoints = Endpoints.objects.all()
+        
+        if not endpoints:
+            return JsonResponse({'status': 'error', 'message': 'No data available for training'}, status=400)
+
+        # Prepare dummy dataset
+        x_data = []
+        y_data = []
+
+        for ep in endpoints:
+            status = float(ep.status_code) / 100.0
+            resp_time = ep.response_time.total_seconds()
+            active = 1.0 if ep.is_active else 0.0
+
+            x_data.append([status, resp_time, active])
+
+            # Dummy target
+            if not ep.is_active or ep.status_code >= 400:
+                target_sla = 0.0
+            else:
+                target_sla = max(0.0, 100.0 - (resp_time * 5.0))
+            
+            y_data.append([target_sla])
+
+        X = torch.tensor(x_data, dtype=torch.float32)
+        Y = torch.tensor(y_data, dtype=torch.float32)
+
+        model = SLAPredictor()
+        criterion = nn.MSELoss()
+        optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+        # Train for 50 epochs
+        final_loss = 0.0
+        for epoch in range(50):
+            optimizer.zero_grad()
+            outputs = model(X)
+            loss = criterion(outputs, Y)
+            loss.backward()
+            optimizer.step()
+            final_loss = loss.item()
+
+        # Evaluate (average predicted SLA)
+        model.eval()
+        with torch.no_grad():
+            preds = model(X)
+            avg_predicted_sla = preds.mean().item()
+
+        # Save to DB
+        run = TrainingRun.objects.create(
+            average_sla=avg_predicted_sla,
+            loss=final_loss
+        )
+
+        return JsonResponse({
+            'status': 'success',
+            'average_sla': avg_predicted_sla,
+            'loss': final_loss,
+        })
+```
+
+By connecting these views to URL routing, the Angular frontend can now trigger model training via API requests and fetch the latest prediction to visualize our expected system SLA.
