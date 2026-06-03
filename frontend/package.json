@@ -25,6 +25,8 @@
     "@angular/ssr": "^21.2.0",
     "ag-charts-angular": "^13.3.1",
     "ag-charts-community": "^13.3.1",
+    "ag-grid-angular": "^35.3.1",
+    "ag-grid-community": "^35.3.1",
     "express": "^5.1.0",
     "marked": "^17.0.6",
     "ngx-markdown": "^21.2.0",

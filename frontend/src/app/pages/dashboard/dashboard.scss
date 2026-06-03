@@ -14,9 +14,19 @@
   }
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 1.5rem;
+.dashboard-card {
+  padding: 1.5rem;
+  background-color: var(--card-bg, #1a1a1a);
+  border: 1px solid var(--border, #333);
+  border-radius: 8px;
+  box-sizing: border-box;
   width: 100%;
+}
+
+.dashboard-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }

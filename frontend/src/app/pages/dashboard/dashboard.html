@@ -2,6 +2,12 @@
   <h1>Dashboard</h1>
 </div>
 
-<div class="dashboard-grid">
-  <app-stability-chart></app-stability-chart>
-</div>
+<mat-card class="dashboard-card">
+  <mat-card-content class="dashboard-grid">
+    <app-endpoints-chart [data]="filteredEndpoints"></app-endpoints-chart>
+    <app-endpoints-table 
+      [rowData]="allEndpoints" 
+      (selectionChanged)="onSelectionChanged($event)">
+    </app-endpoints-table>
+  </mat-card-content>
+</mat-card>
