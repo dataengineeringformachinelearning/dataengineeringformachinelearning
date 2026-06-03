@@ -26,6 +26,8 @@ With Homebrew installed, you can easily install Node.js and the Angular CLI to g
 brew install node
 npm install -g @angular/cli
 ```
+
+```bash
 ng new frontend
 cd frontend
 npm start
