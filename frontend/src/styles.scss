@@ -196,3 +196,38 @@ app-page {
   color: var(--text-color) !important;
 }
 
+
+// ====================== MATERIAL BUTTONS (GOOGLE STYLE) ======================
+.mdc-button, .mat-mdc-button, .mat-mdc-raised-button {
+  border-radius: 100px !important;
+  text-transform: none !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1px !important;
+  padding: 0 24px !important;
+  height: 40px !important;
+}
+
+.mdc-button--raised, .mat-mdc-raised-button {
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15) !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease !important;
+}
+
+.mdc-button--raised:hover, .mat-mdc-raised-button:hover {
+  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15) !important;
+}
+
+/* Ensure contrast for primary button (primary is light green) */
+.mat-mdc-raised-button.mat-primary, 
+.mdc-button--raised.mat-primary {
+  color: #132a24 !important; /* Dark text for contrast */
+}
+
+/* Navbar buttons / standard text buttons */
+.mat-mdc-button {
+  color: var(--text-color) !important;
+}
+
+/* Exception for primary text buttons (e.g., links if any) */
+.mat-mdc-button.mat-primary {
+  color: var(--accent-color) !important;
+}
