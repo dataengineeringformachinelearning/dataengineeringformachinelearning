@@ -22,11 +22,12 @@
         >Railway</a
       >
     </span>
-    <span class="footer-line"> | </span>
-    <span class="footer-line backend-status">
-      Backend: 
+  </div>
+
+  <div class="sub-footer">
+    <div class="backend-chip">
       <span class="status-dot" [class]="backendStatus()"></span>
-      <span class="status-text">{{ backendStatus() === 'ok' ? 'OK' : backendStatus() === 'error' ? 'Error' : 'Checking' }}</span>
-    </span>
+      <span class="status-text">Backend: {{ backendStatus() === 'ok' ? 'Success' : backendStatus() === 'error' ? 'Error' : 'Checking' }}</span>
+    </div>
   </div>
 </footer>

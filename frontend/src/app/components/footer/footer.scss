@@ -40,10 +40,23 @@ footer {
   text-underline-offset: 4px;
 }
 
-.backend-status {
+.sub-footer {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.backend-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background-color: rgba(24, 58, 55, 0.3);
+  border: 1px solid rgba(159, 184, 173, 0.15);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  color: #9fb8ad;
+  backdrop-filter: blur(4px);
 
   .status-dot {
     display: inline-block;
@@ -53,19 +66,23 @@ footer {
     
     &.checking {
       background-color: #eab308;
+      box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
     }
     
     &.ok {
       background-color: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
     }
     
     &.error {
       background-color: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
     }
   }
 
   .status-text {
-    font-size: 0.9em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
   }
 }
 
