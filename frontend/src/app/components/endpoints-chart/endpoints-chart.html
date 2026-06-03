@@ -1,0 +1,11 @@
+<div class="chart-widget">
+  <div class="widget-header">
+    <h2 class="widget-title">Endpoints</h2>
+    <p class="widget-subtitle">Status Codes Over Time</p>
+  </div>
+  <div class="widget-content">
+    @if (isBrowser) {
+      <ag-charts [options]="chartOptions"></ag-charts>
+    }
+  </div>
+</div>

@@ -7,24 +7,40 @@
   display: flex;
   flex-direction: column;
   box-shadow: none !important;
-  border: 1px solid var(--border);
-  background-color: var(--card-bg);
+  border: none;
+  background-color: transparent;
 
-  mat-card-header {
+  .widget-header {
     flex: 0 0 auto;
     padding-bottom: 1rem;
+    
+    .widget-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      margin: 0;
+      color: var(--text-color);
+    }
+    
+    .widget-subtitle {
+      font-size: 0.875rem;
+      margin: 0;
+      color: var(--text-muted, #9fb8ad);
+    }
   }
 
-  mat-card-content {
+  .widget-content {
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    padding: 0 1rem 1rem 1rem;
+    padding: 0;
+    min-height: 350px;
+    position: relative;
   }
 
   ag-charts {
     flex: 1 1 auto;
     width: 100%;
+    min-height: 350px;
     height: 100%;
     display: block;
 

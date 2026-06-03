@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { StabilityChart } from './stability-chart';
+import { EndpointsTable } from './endpoints-table';
 
-describe('StabilityChart', () => {
-  let component: StabilityChart;
-  let fixture: ComponentFixture<StabilityChart>;
+describe('EndpointsTable', () => {
+  let component: EndpointsTable;
+  let fixture: ComponentFixture<EndpointsTable>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [StabilityChart],
+      imports: [EndpointsTable],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(StabilityChart);
+    fixture = TestBed.createComponent(EndpointsTable);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

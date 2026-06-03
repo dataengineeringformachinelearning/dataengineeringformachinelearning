@@ -1,20 +1,21 @@
-import { Component, OnInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
+import { Component, PLATFORM_ID, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions, ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
-import { MonitorService } from '../../services/monitor.service';
 import { MatCardModule } from '@angular/material/card';
+import { EndpointData } from '../../services/monitor.service';
 
 @Component({
-  selector: 'app-stability-chart',
+  selector: 'app-endpoints-chart',
   standalone: true,
   imports: [AgCharts, MatCardModule],
-  templateUrl: './stability-chart.html',
-  styleUrl: './stability-chart.scss'
+  templateUrl: './endpoints-chart.html',
+  styleUrl: './endpoints-chart.scss'
 })
-export class StabilityChart implements OnInit {
+export class EndpointsChart implements OnChanges {
+  @Input() data: EndpointData[] = [];
+
   public chartOptions: AgChartOptions;
-  private monitorService = inject(MonitorService);
   public isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   constructor() {
@@ -56,29 +57,24 @@ export class StabilityChart implements OnInit {
     } as any;
   }
 
-  ngOnInit() {
-    this.fetchData();
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['data'] && this.data) {
+      this.updateChartData();
+    }
   }
 
-  private fetchData() {
-    this.monitorService.getAllEndpoints().subscribe({
-      next: (data) => {
-        const sortedData = data.sort((a, b) => new Date(a.last_tested).getTime() - new Date(b.last_tested).getTime());
-        
-        const formattedData = sortedData.map(endpoint => ({
-          time: new Date(endpoint.last_tested).toLocaleTimeString(),
-          statusCode: endpoint.status_code,
-          url: endpoint.url
-        }));
+  private updateChartData() {
+    const sortedData = [...this.data].sort((a, b) => new Date(a.last_tested).getTime() - new Date(b.last_tested).getTime());
+    
+    const formattedData = sortedData.map(endpoint => ({
+      time: new Date(endpoint.last_tested).toLocaleTimeString(),
+      statusCode: endpoint.status_code,
+      url: endpoint.url
+    }));
 
-        this.chartOptions = {
-          ...this.chartOptions,
-          data: formattedData
-        } as any;
-      },
-      error: (error) => console.error('Error fetching endpoint data:', error)
-    });
+    this.chartOptions = {
+      ...this.chartOptions,
+      data: formattedData
+    } as any;
   }
-
-
 }
