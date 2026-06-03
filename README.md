@@ -1703,7 +1703,67 @@ Finally, we secure the compute-heavy actions, such as the "Train SLA Model" butt
 </button>
 ```
 
-This pattern prevents unauthorized users from easily triggering backend processes from the UI. While this is a frontend-only implementation, a complete solution would involve passing an authentication token (like a JWT) with the HTTP requests and validating it on the Django backend.
+This pattern prevents unauthorized users from easily triggering backend processes from the UI. To make this fully functional, we integrate it with Django's session authentication on the backend.
+
+First, we create authentication endpoints in our `views.py` that use Django's built-in `authenticate`, `login`, and `logout` functions. These endpoints expect JSON and respond with JSON, making them easy to consume from Angular.
+
+```python
+# backend/config/views.py
+import json
+from django.contrib.auth import authenticate, login, logout
+from django.http import JsonResponse
+
+def api_login(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user = authenticate(request, username=data.get('username'), password=data.get('password'))
+        if user is not None:
+            login(request, user)
+            return JsonResponse({'status': 'success', 'user': user.username})
+        return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=401)
+    return JsonResponse({'status': 'error'}, status=405)
+
+def api_logout(request):
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({'status': 'success'})
+
+def api_user(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'status': 'success', 'user': request.user.username})
+    return JsonResponse({'status': 'error'}, status=401)
+```
+
+Add these to your `urls.py`:
+
+```python
+# backend/config/urls.py
+path('api/auth/login', views.api_login),
+path('api/auth/logout', views.api_logout),
+path('api/auth/user', views.api_user),
+```
+
+To allow the frontend to send session cookies cross-origin, update your `settings.py`:
+
+```python
+# backend/config/settings.py
+CORS_ALLOW_CREDENTIALS = True
+CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+```
+
+In the Angular application, we update the `AuthService` to make actual HTTP requests to these endpoints, and configure a `credentials.interceptor.ts` to automatically attach `withCredentials: true` to all requests. We also use a Material Dialog (`LoginDialog`) to prompt the user for their username and password.
+
+When the application loads, we call `/api/auth/user` to verify if a valid session already exists and update the UI accordingly.
+
+Because we are using Django's built-in authentication system, you need to create users in the database before you can log in via the frontend. The easiest way to create your first user is by using the Django management command to create a superuser.
+
+From the `backend/` directory, with your virtual environment activated, run:
+
+```bash
+python manage.py createsuperuser
+```
+
+You will be prompted to enter a username, email address, and password. Once created, you can use these credentials to sign in through the Angular application's Sign In modal.
 
 ## Chapter 8: Encrypting the data
 
