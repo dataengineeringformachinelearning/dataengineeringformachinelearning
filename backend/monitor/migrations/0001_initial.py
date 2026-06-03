@@ -38,8 +38,7 @@ class Migration(migrations.Migration):
                     },
                 ),
             ],
-            database_operations=[
-                migrations.RunPython(create_table_if_not_exists),
-            ]
+            database_operations=[]
         ),
+        migrations.RunPython(create_table_if_not_exists),
     ]
