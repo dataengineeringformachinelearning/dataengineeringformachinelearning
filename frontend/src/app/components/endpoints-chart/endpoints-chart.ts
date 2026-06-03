@@ -1,4 +1,4 @@
-import { Component, PLATFORM_ID, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, PLATFORM_ID, inject, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions, ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
@@ -18,9 +18,12 @@ export class EndpointsChart implements OnChanges {
   public chartOptions: AgChartOptions;
   public isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
+  private static modulesRegistered = false;
+
   constructor() {
-    if (this.isBrowser) {
+    if (this.isBrowser && !EndpointsChart.modulesRegistered) {
       ModuleRegistry.registerModules([AllCommunityModule]);
+      EndpointsChart.modulesRegistered = true;
     }
     this.chartOptions = {
       background: { fill: 'transparent' },
@@ -57,9 +60,12 @@ export class EndpointsChart implements OnChanges {
     } as any;
   }
 
+  private cdr = inject(ChangeDetectorRef);
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] && this.data) {
       this.updateChartData();
+      this.cdr.detectChanges();
     }
   }
 

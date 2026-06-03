@@ -42,6 +42,7 @@ export class Dashboard implements OnInit {
       next: (data) => {
         this.allEndpoints = data;
         this.filteredEndpoints = data;
+        this.cdr.detectChanges();
       },
       error: (err) => console.error('Error fetching data:', err)
     });
