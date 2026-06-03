@@ -1,6 +1,6 @@
-## Chapter 1: Introduction
+## Chapter 1: Setting up your environment
 
-Picking a language for data engineering is a personal preference. I chose Python because it is easy to learn and has a large community. Angular provides a TypeScript interface for data engineering. Windsurf AI provides an AI based editor for data engineering. Through this book, I will be using Angular and Windsurf AI to build a data engineering application. Python will be used for data engineering tasks. I will cover everything from the basics to advanced topics, starting from square one to an enterprise level data engineering application.
+Picking a language for data engineering is a personal preference. I chose Python because it is easy to learn and has a large community. Angular provides a TypeScript interface for data engineering. Antigravity provides an AI based editor for data engineering. Through this book, I will be using Angular and Windsurf AI to build a data engineering application. Python will be used for data engineering tasks. I will cover everything from the basics to advanced topics, starting from square one to an enterprise level data engineering application.
 
 ### Chapter 1.1: Introduction
 
@@ -1760,9 +1760,3 @@ python manage.py createsuperuser
 ```
 
 You will be prompted to enter a username, email address, and password. Once created, you can use these credentials to sign in through the Angular application's Sign In modal.
-
-## Chapter 8: Encrypting the data
-
-### Chapter 8.1: Introduction
-
-#### Chapter 8.1.1: Enabling end to end encryption
