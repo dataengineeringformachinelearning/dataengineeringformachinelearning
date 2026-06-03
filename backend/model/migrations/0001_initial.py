@@ -1,0 +1,25 @@
+from django.db import migrations, models
+import uuid
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='TrainingRun',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('average_sla', models.FloatField()),
+                ('loss', models.FloatField()),
+            ],
+            options={
+                'db_table': 'training_runs',
+                'ordering': ['-created_at'],
+            },
+        ),
+    ]
