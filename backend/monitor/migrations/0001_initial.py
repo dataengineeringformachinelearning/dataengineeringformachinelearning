@@ -3,6 +3,14 @@
 import uuid
 from django.db import migrations, models
 
+def create_table_if_not_exists(apps, schema_editor):
+    Endpoints = apps.get_model('monitor', 'Endpoints')
+    from django.db import transaction, DatabaseError
+    try:
+        with transaction.atomic():
+            schema_editor.create_model(Endpoints)
+    except DatabaseError:
+        pass
 
 class Migration(migrations.Migration):
 
@@ -12,19 +20,26 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='Endpoints',
-            fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('url', models.URLField()),
-                ('last_tested', models.DateTimeField(auto_now=True)),
-                ('status_code', models.IntegerField()),
-                ('response_time', models.DurationField()),
-                ('ip_address', models.GenericIPAddressField()),
-                ('is_active', models.BooleanField(default=True)),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.CreateModel(
+                    name='Endpoints',
+                    fields=[
+                        ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                        ('url', models.URLField()),
+                        ('last_tested', models.DateTimeField(auto_now=True)),
+                        ('status_code', models.IntegerField()),
+                        ('response_time', models.DurationField()),
+                        ('ip_address', models.GenericIPAddressField()),
+                        ('is_active', models.BooleanField(default=True)),
+                    ],
+                    options={
+                        'db_table': 'endpoints',
+                    },
+                ),
             ],
-            options={
-                'db_table': 'endpoints',
-            },
+            database_operations=[
+                migrations.RunPython(create_table_if_not_exists),
+            ]
         ),
     ]
