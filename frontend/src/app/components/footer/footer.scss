@@ -59,18 +59,18 @@ footer {
     border-radius: 50%;
     
     &.checking {
-      background-color: #eab308;
-      box-shadow: 0 0 8px rgba(234, 179, 8, 0.4);
+      background-color: #ffffff;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
     }
     
     &.ok {
-      background-color: #22c55e;
-      box-shadow: 0 0 8px rgba(34, 197, 94, 0.4);
+      background-color: #9fb8ad;
+      box-shadow: 0 0 8px rgba(159, 184, 173, 0.4);
     }
     
     &.error {
-      background-color: #ef4444;
-      box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+      background-color: #132a24;
+      box-shadow: 0 0 8px rgba(19, 42, 36, 0.4);
     }
   }
 
