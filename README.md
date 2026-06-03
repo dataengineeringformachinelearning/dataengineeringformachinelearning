@@ -1502,3 +1502,35 @@ Through the AG Chart and AG Grid the data can be filtered on the different colum
 
 #### Chapter 5.1.1: Setting up modeling and prediction
 
+Now that we have a basis of data that can be recorded in the database, queried from the UI and visualized, we can use the historical data to build a simple understanding of the patterns that develop, reflecting a future expectation.
+
+We now want to introduct Pytorch to this problem and use the deep learning capabilities to improve our understanding of the system. Installing pytorch can be done through pip.
+
+```bash
+source venv/bin/activate
+pip install torch polars skops scikit-learn
+```
+
+This will install the latest version of pytorch and the necessary libraries for machine learning. You can find more information about pytorch at https://pytorch.org/ and the other libraries at https://pola.rs/, https://skops.readthedocs.io/, and https://scikit-learn.org/.
+
+Polars will help us more quickly process the data that is stored in the database. Scikit learn will help us with an initial understanding of the data through more traditional machine learning methods. Skops will help us to save and load models more easily. Pytorch will help us with deep learning capabilities.
+
+We will create a new django application to handle the modeling and prediction.
+
+```bash
+source venv/bin/activate
+python manage.py startapp model
+```
+
+This will create a new django application called model. You can find more information about django applications at https://docs.djangoproject.com/en/5.1/topics/apps/.
+
+Now we can add the new application to the INSTALLED_APPS in the settings.py file.
+
+```python
+INSTALLED_APPS = [
+    # ...
+    'model',
+]
+```
+
+We will start with a very simple model that can predict the response time of an endpoint based on the current time, ip address, and other features. This model will be used to demonstrate the basic concepts of deep learning and how it can be applied to real-world problems.
