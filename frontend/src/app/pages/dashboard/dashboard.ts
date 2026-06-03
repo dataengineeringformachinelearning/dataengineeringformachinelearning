@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EndpointsChart } from '../../components/endpoints-chart/endpoints-chart';
 import { EndpointsTable } from '../../components/endpoints-table/endpoints-table';
@@ -27,6 +27,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class Dashboard implements OnInit {
   private monitorService = inject(MonitorService);
   private modelService = inject(ModelService);
+  private cdr = inject(ChangeDetectorRef);
+  private ngZone = inject(NgZone);
   
   allEndpoints: EndpointData[] = [];
   filteredEndpoints: EndpointData[] = [];
@@ -64,15 +66,26 @@ export class Dashboard implements OnInit {
 
     this.modelService.trainModel().subscribe({
       next: (res) => {
-        this.isTraining = false;
-        if (res.average_sla !== null) {
-          this.latestStat = res.average_sla;
-        }
+        this.ngZone.run(() => {
+          setTimeout(() => {
+            console.log('Train model response:', res);
+            this.isTraining = false;
+            if (res && res.average_sla !== null && res.average_sla !== undefined) {
+              this.latestStat = res.average_sla;
+            }
+            this.cdr.detectChanges();
+          }, 500);
+        });
       },
       error: (err) => {
-        this.isTraining = false;
-        this.trainError = 'Failed to train model.';
-        console.error(err);
+        this.ngZone.run(() => {
+          setTimeout(() => {
+            console.error('Train model error:', err);
+            this.isTraining = false;
+            this.trainError = 'Failed to train model.';
+            this.cdr.detectChanges();
+          }, 500);
+        });
       }
     });
   }
