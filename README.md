@@ -1496,11 +1496,11 @@ export class EndpointsTableComponent {
 
 Through the AG Chart and AG Grid the data can be filtered on the different columns to understand performance across different endpoints.
 
-## Chapter 5: Modeling and training
+## Chapter 6: Modeling and training
 
-### Chapter 5.1: Introduction
+### Chapter 6.1: Introduction
 
-#### Chapter 5.1.1: Setting up modeling and prediction
+#### Chapter 6.1.1: Setting up modeling and prediction
 
 Now that we have a basis of data that can be recorded in the database, queried from the UI and visualized, we can use the historical data to build a simple understanding of the patterns that develop, reflecting a future expectation.
 
@@ -1649,3 +1649,64 @@ def train_model(request):
 ```
 
 By connecting these views to URL routing, the Angular frontend can now trigger model training via API requests and fetch the latest prediction to visualize our expected system SLA.
+
+## Chapter 7: Securing the compute
+
+### Chapter 7.1: Introduction
+
+#### Chapter 7.1.1: Implementing authentication
+
+To ensure that expensive operations like model training are only performed by authorized users, we can implement a basic authentication flow on the frontend. This involves maintaining an authentication state and securing the UI controls.
+
+First, we create an `AuthService` in the Angular application. This service utilizes Angular Signals to manage a simple boolean `isAuthenticated` state:
+
+```typescript
+// frontend/src/app/services/auth.service.ts
+import { Injectable, signal } from '@angular/core';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+  public isAuthenticated = signal<boolean>(false);
+
+  login() {
+    this.isAuthenticated.set(true);
+  }
+
+  logout() {
+    this.isAuthenticated.set(false);
+  }
+}
+```
+
+Next, we integrate this state into the application's global layout, specifically within the `Navbar` component. By injecting the `AuthService`, we can expose `login()` and `logout()` methods to the template and conditionally render "Sign In" or "Sign Out" buttons based on the user's current status:
+
+```html
+<!-- frontend/src/app/components/navbar/navbar.html -->
+<div class="nav-links">
+  <!-- ... other links ... -->
+  <button mat-button *ngIf="!authService.isAuthenticated()" (click)="login()">Sign In</button>
+  <button mat-button *ngIf="authService.isAuthenticated()" (click)="logout()">Sign Out</button>
+</div>
+```
+
+Finally, we secure the compute-heavy actions, such as the "Train SLA Model" button on the dashboard. By injecting the `AuthService` into the `Dashboard` component, we can disable the button whenever the user is not authenticated:
+
+```html
+<!-- frontend/src/app/pages/dashboard/dashboard.html -->
+<button mat-raised-button color="primary" 
+        (click)="trainModel()" 
+        [disabled]="isTraining || !authService.isAuthenticated()" 
+        class="train-btn">
+  <!-- button content -->
+</button>
+```
+
+This pattern prevents unauthorized users from easily triggering backend processes from the UI. While this is a frontend-only implementation, a complete solution would involve passing an authentication token (like a JWT) with the HTTP requests and validating it on the Django backend.
+
+## Chapter 8: Encrypting the data
+
+### Chapter 8.1: Introduction
+
+#### Chapter 8.1.1: Enabling end to end encryption
