@@ -1,38 +1,46 @@
 // CUSTOM PALETTE
 
-$key-light: #9fb8ad;
-$surface-color: #132a24;
-$bg-color: #132A24;
-$accent-dark: #183a37;
-
-$palette-vault: (
-  bg: $bg-color,
-  surface: $surface-color,
-  text: #ffffff,
-  text-muted: $key-light,
-  key-light: $key-light,
-  key-soft: $key-light,
-  brass: $accent-dark,
-);
-
 :root {
-  @each $name, $color in $palette-vault {
-    --vault-#{$name}: #{$color};
-  }
+  --primary-color: #9fb8ad;
+  --accent-color: #183a37;
+  --hover-color: #132a24;
+
+  --light-bg: #ffffff;
+  --light-text: #202124;
+  --secondary-color: #5f6368;
+  --border-color: #dadce0;
+  --tertiary-color: #f8f9fa;
+
+  --dark-bg: #1f1f1f;
+  --dark-text: #e8eaed;
+  --dark-border: #3c4043;
+  --dark-card-bg: #2d2e30;
+
+  // We map the active theme vars to light by default
+  --bg-color: var(--light-bg);
+  --text-color: var(--light-text);
+  --text-muted: var(--secondary-color);
+  --border: var(--border-color);
+  --card-bg: var(--tertiary-color);
 }
 
 // System + manual dark mode
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    @each $name, $color in $palette-vault {
-      --vault-#{$name}: #{$color};
-    }
+    --bg-color: var(--dark-bg);
+    --text-color: var(--dark-text);
+    --text-muted: #9aa0a6;
+    --border: var(--dark-border);
+    --card-bg: var(--dark-card-bg);
   }
 }
 
 [data-theme='dark'],
-.dark {
-  @each $name, $color in $palette-vault {
-    --vault-#{$name}: #{$color};
-  }
+.dark,
+body.dark-mode {
+  --bg-color: var(--dark-bg);
+  --text-color: var(--dark-text);
+  --text-muted: #9aa0a6;
+  --border: var(--dark-border);
+  --card-bg: var(--dark-card-bg);
 }

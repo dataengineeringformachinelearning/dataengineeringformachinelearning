@@ -1,12 +1,7 @@
-<div class="dashboard-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Dashboard</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      @if (isBrowser) {
-        <ag-charts [options]="chartOptions"></ag-charts>
-      }
-    </mat-card-content>
-  </mat-card>
+<div class="dashboard-header">
+  <h1>Dashboard</h1>
+</div>
+
+<div class="dashboard-grid">
+  <app-stability-chart></app-stability-chart>
 </div>
