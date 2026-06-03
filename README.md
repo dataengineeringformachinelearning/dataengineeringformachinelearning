@@ -1365,6 +1365,8 @@ Now, let's use `ag-charts` to visualize the application stability over time. Fir
 npm install ag-charts-angular ag-charts-community
 ```
 
+You can read more about AG Charts at https://www.ag-grid.com/angular-charts-community/getting-started/. Note that this is different from AG Grid.
+
 Update your dashboard component to fetch this data and map it for the chart:
 
 ```typescript
