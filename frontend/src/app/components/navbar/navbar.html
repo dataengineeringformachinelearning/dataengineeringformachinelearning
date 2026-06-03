@@ -1,13 +1,15 @@
-<nav class="navbar">
-  <a routerLink="/" class="navbar-brand">
+<mat-toolbar color="primary" class="navbar">
+  <a routerLink="/" class="navbar-brand" mat-button>
     <img
       class="logo"
       src="/data-engineering-for-machine-learning.svg"
       alt="Data Engineering for Machine Learning"
+      style="height: 40px; margin-right: 10px; margin-top: 5px;"
     />
   </a>
+  <span class="spacer" style="flex: 1 1 auto;"></span>
   <div class="nav-links">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-    <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+    <a mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
   </div>
-</nav>
+</mat-toolbar>
