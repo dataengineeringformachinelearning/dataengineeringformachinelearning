@@ -26,5 +26,12 @@
         border-radius: 100px;
       }
     }
+
+    .sign-in-btn {
+      background-color: var(--primary-color) !important;
+      color: #132a24 !important; /* Dark green text on light green background */
+      font-weight: 600 !important;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
   }
 }

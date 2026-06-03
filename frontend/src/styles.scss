@@ -222,6 +222,13 @@ app-page {
   color: #132a24 !important; /* Dark text for contrast */
 }
 
+/* Ensure contrast for accent button */
+.mat-mdc-raised-button.mat-accent, 
+.mdc-button--raised.mat-accent {
+  background-color: var(--accent-color) !important;
+  color: #ffffff !important; /* White text for contrast */
+}
+
 /* Navbar buttons / standard text buttons */
 .mat-mdc-button {
   color: var(--text-color) !important;
