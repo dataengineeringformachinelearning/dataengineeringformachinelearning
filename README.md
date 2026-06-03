@@ -1770,3 +1770,9 @@ You will be prompted to enter a username, email address, and password. Once crea
 ### Chapter 8.1: Introduction
 
 #### Chapter 8.1.1: Enabling end to end encryption
+
+## Chapter 9: Tuning the model
+
+### Chapter 9.1: Introduction
+
+#### Chapter 9.1.1: Hyperparameter Tuning
