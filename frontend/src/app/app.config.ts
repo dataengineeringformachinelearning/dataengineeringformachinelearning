@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 
@@ -8,6 +8,7 @@ import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 import { provideMarkdown } from 'ngx-markdown';
 
 import { routes } from './app.routes';
+import { GlobalErrorHandler } from './core/handlers/global-error.handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,5 +17,6 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay()),
     provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor])),
     provideMarkdown(),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
   ],
 };

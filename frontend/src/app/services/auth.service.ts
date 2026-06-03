@@ -12,7 +12,7 @@ export class AuthService {
 
   async checkAuth() {
     try {
-      const res: any = await firstValueFrom(this.http.get(`${environment.backendUrl}/api/auth/user`));
+      const res: any = await firstValueFrom(this.http.get(`${environment.backendUrl}/api/v1/auth/user`));
       if (res.status === 'success') {
         this.isAuthenticated.set(true);
       } else {
@@ -25,7 +25,7 @@ export class AuthService {
 
   async login(credentials: any) {
     try {
-      const res: any = await firstValueFrom(this.http.post(`${environment.backendUrl}/api/auth/login`, credentials));
+      const res: any = await firstValueFrom(this.http.post(`${environment.backendUrl}/api/v1/auth/login`, credentials));
       if (res.status === 'success') {
         this.isAuthenticated.set(true);
         return true;
@@ -38,7 +38,7 @@ export class AuthService {
 
   async logout() {
     try {
-      await firstValueFrom(this.http.post(`${environment.backendUrl}/api/auth/logout`, {}));
+      await firstValueFrom(this.http.post(`${environment.backendUrl}/api/v1/auth/logout`, {}));
       this.isAuthenticated.set(false);
     } catch (e) {
       this.isAuthenticated.set(false);

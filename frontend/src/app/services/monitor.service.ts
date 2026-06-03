@@ -19,6 +19,6 @@ export class MonitorService {
   private http = inject(HttpClient);
 
   getAllEndpoints() {
-    return this.http.get<EndpointData[]>(`${environment.backendUrl}/api/system-status/endpoints`);
+    return this.http.get<EndpointData[]>(`${environment.backendUrl}/api/v1/system-status/endpoints`);
   }
 }
