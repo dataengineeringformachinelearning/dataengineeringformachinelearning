@@ -1,4 +1,4 @@
-import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions, ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
@@ -38,28 +38,31 @@ export class StabilityChart implements OnInit {
           strokeWidth: 2
         }
       }],
-      axes: [
-        {
+      axes: {
+        x: {
           type: 'category',
-          position: 'bottom',
-          gridLine: { style: [{ stroke: 'rgba(150, 150, 150, 0.2)' }] },
-          label: { color: '#9aa0a6', fontFamily: 'Work Sans, sans-serif' },
-          line: { stroke: 'rgba(150, 150, 150, 0.2)' }
+          gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.2)' }] },
+          label: { color: '#ffffff', fontFamily: 'Work Sans, sans-serif' },
+          line: { stroke: 'rgba(255, 255, 255, 0.4)' }
         },
-        {
+        y: {
           type: 'number',
-          position: 'left',
-          gridLine: { style: [{ stroke: 'rgba(150, 150, 150, 0.2)' }] },
-          label: { color: '#9aa0a6', fontFamily: 'Work Sans, sans-serif' },
-          line: { stroke: 'rgba(150, 150, 150, 0.2)' }
+          title: { text: 'Status Code', color: '#ffffff', fontFamily: 'Work Sans, sans-serif' },
+          gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.2)' }] },
+          label: { color: '#ffffff', fontFamily: 'Work Sans, sans-serif' },
+          line: { stroke: 'rgba(255, 255, 255, 0.4)' }
         }
-      ]
+      }
     } as any;
   }
 
   ngOnInit() {
-    if (this.isBrowser) {
-      this.monitorService.getAllEndpoints().subscribe(data => {
+    this.fetchData();
+  }
+
+  private fetchData() {
+    this.monitorService.getAllEndpoints().subscribe({
+      next: (data) => {
         const sortedData = data.sort((a, b) => new Date(a.last_tested).getTime() - new Date(b.last_tested).getTime());
         
         const formattedData = sortedData.map(endpoint => ({
@@ -72,7 +75,10 @@ export class StabilityChart implements OnInit {
           ...this.chartOptions,
           data: formattedData
         } as any;
-      });
-    }
+      },
+      error: (error) => console.error('Error fetching endpoint data:', error)
+    });
   }
+
+
 }
