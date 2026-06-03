@@ -38,7 +38,9 @@ def health(request):
 
 import json
 from django.contrib.auth import authenticate, login, logout
+from django.views.decorators.csrf import csrf_exempt
 
+@csrf_exempt
 def api_login(request):
     if request.method == 'POST':
         try:
@@ -55,6 +57,7 @@ def api_login(request):
             return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
 
+@csrf_exempt
 def api_logout(request):
     if request.method == 'POST':
         logout(request)
