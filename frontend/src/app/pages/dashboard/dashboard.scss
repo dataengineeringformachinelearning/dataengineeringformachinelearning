@@ -58,7 +58,7 @@
 
 .train-btn {
   width: 100%;
-  box-shadow: none !important;
+  box-shadow: var(--shadow-md) !important;
   background-color: var(--primary-color, #9fb8ad) !important;
   color: var(--accent-color, #183a37) !important;
   border-radius: 8px;
@@ -91,6 +91,13 @@
   border-radius: 8px;
   box-sizing: border-box;
   width: 100%;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
 }
 
 .dashboard-grid {

@@ -22,6 +22,11 @@
   --text-muted: var(--secondary-color);
   --border: var(--border-color);
   --card-bg: var(--tertiary-color);
+
+  --shadow-sm: 0 2px 8px rgba(24, 58, 55, 0.08);
+  --shadow-md: 0 4px 16px rgba(24, 58, 55, 0.12);
+  --shadow-hover: 0 8px 24px rgba(24, 58, 55, 0.16);
+  --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.5);
 }
 
 // System + manual dark mode
@@ -32,6 +37,11 @@
     --text-muted: #9aa0a6;
     --border: var(--dark-border);
     --card-bg: var(--dark-card-bg);
+
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
   }
 }
 
@@ -43,4 +53,9 @@ body.dark-mode {
   --text-muted: #9aa0a6;
   --border: var(--dark-border);
   --card-bg: var(--dark-card-bg);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
 }

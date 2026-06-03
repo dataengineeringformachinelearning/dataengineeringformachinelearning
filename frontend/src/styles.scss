@@ -135,8 +135,14 @@ main.main {
 
 // ====================== MATERIAL CARDS ======================
 .mat-mdc-card {
-  box-shadow: none !important;
-  border: 1px solid var(--border); // optional depending on if they want an outline
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.mat-mdc-card:hover {
+  box-shadow: var(--shadow-hover) !important;
+  transform: translateY(-2px);
 }
 
 // ====================== INLINE CODE ======================
@@ -171,3 +177,22 @@ app-page {
     padding: 3rem 1.25rem;
   }
 }
+
+// ====================== MATERIAL DIALOG ======================
+.mdc-dialog__surface {
+  background-color: var(--bg-color) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.blur-backdrop {
+  background-color: rgba(19, 42, 36, 0.4) !important; /* using --hover-color #132a24 */
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.mat-mdc-dialog-title, .mat-mdc-dialog-content {
+  color: var(--text-color) !important;
+}
+

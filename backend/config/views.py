@@ -35,3 +35,33 @@ def health(request):
     )
     
     return response
+
+import json
+from django.contrib.auth import authenticate, login, logout
+
+def api_login(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return JsonResponse({'status': 'success', 'user': user.username})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Invalid credentials'}, status=401)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+def api_logout(request):
+    if request.method == 'POST':
+        logout(request)
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'status': 'error', 'message': 'Method not allowed'}, status=405)
+
+def api_user(request):
+    if request.user.is_authenticated:
+        return JsonResponse({'status': 'success', 'user': request.user.username})
+    return JsonResponse({'status': 'error', 'message': 'Not authenticated'}, status=401)
