@@ -13,7 +13,7 @@ cd frontend
 2. Install the required dependencies:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 3. Start the development server:
@@ -46,7 +46,7 @@ npm cache clean --force
 Then try installing the dependencies again:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 ### Upgrading Packages

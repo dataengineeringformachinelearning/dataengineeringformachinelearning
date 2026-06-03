@@ -1,7 +1,25 @@
-import { Component, Input, Output, EventEmitter, PLATFORM_ID, inject, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  EventEmitter,
+  PLATFORM_ID,
+  inject,
+  OnChanges,
+  SimpleChanges,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AgGridModule } from 'ag-grid-angular';
-import { ColDef, ModuleRegistry, AllCommunityModule, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community';
+import {
+  ColDef,
+  ModuleRegistry,
+  AllCommunityModule,
+  GridReadyEvent,
+  SelectionChangedEvent,
+} from 'ag-grid-community';
 import { EndpointData } from '../../services/monitor.service';
 
 @Component({
@@ -10,33 +28,39 @@ import { EndpointData } from '../../services/monitor.service';
   imports: [CommonModule, AgGridModule],
   templateUrl: './endpoints-table.html',
   styleUrl: './endpoints-table.scss',
-  encapsulation: ViewEncapsulation.None
+  changeDetection: ChangeDetectionStrategy.Eager,
+  encapsulation: ViewEncapsulation.None,
 })
 export class EndpointsTable implements OnChanges {
   @Input() rowData: EndpointData[] = [];
   @Output() selectionChanged = new EventEmitter<EndpointData[]>();
-  
+
   isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   public columnDefs: ColDef[] = [
-    { 
-      field: 'url', 
-      headerName: 'Endpoint', 
-      checkboxSelection: true, 
-      headerCheckboxSelection: true, 
+    {
+      field: 'url',
+      headerName: 'Endpoint',
+      checkboxSelection: true,
+      headerCheckboxSelection: true,
       flex: 2,
-      valueFormatter: (params) => {
+      valueFormatter: params => {
         try {
           const urlObj = new URL(params.value);
           return urlObj.pathname + urlObj.search;
         } catch (e) {
           return params.value;
         }
-      }
+      },
     },
     { field: 'status_code', headerName: 'Status', flex: 1 },
     { field: 'response_time', headerName: 'Response Time (s)', flex: 1 },
-    { field: 'last_tested', headerName: 'Last Tested', valueFormatter: (params) => new Date(params.value).toLocaleString(), flex: 2 }
+    {
+      field: 'last_tested',
+      headerName: 'Last Tested',
+      valueFormatter: params => new Date(params.value).toLocaleString(),
+      flex: 2,
+    },
   ];
 
   public defaultColDef: ColDef = {
