@@ -11,5 +11,7 @@
   <div class="nav-links">
     <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
     <a mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+    <button mat-button *ngIf="!authService.isAuthenticated()" (click)="login()">Sign In</button>
+    <button mat-button *ngIf="authService.isAuthenticated()" (click)="logout()">Sign Out</button>
   </div>
 </mat-toolbar>

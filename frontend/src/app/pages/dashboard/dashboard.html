@@ -11,7 +11,7 @@
     </div>
     
     <div class="train-btn-container">
-      <button mat-raised-button color="primary" (click)="trainModel()" [disabled]="isTraining" class="train-btn">
+      <button mat-raised-button color="primary" (click)="trainModel()" [disabled]="isTraining || !authService.isAuthenticated()" class="train-btn">
         <div class="train-btn-content">
           <mat-icon *ngIf="!isTraining">model_training</mat-icon>
           <mat-spinner diameter="20" *ngIf="isTraining"></mat-spinner>

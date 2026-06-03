@@ -4,6 +4,7 @@ import { EndpointsChart } from '../../components/endpoints-chart/endpoints-chart
 import { EndpointsTable } from '../../components/endpoints-table/endpoints-table';
 import { MonitorService, EndpointData } from '../../services/monitor.service';
 import { ModelService, TrainingResponse } from '../../services/model.service';
+import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -27,6 +28,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class Dashboard implements OnInit {
   private monitorService = inject(MonitorService);
   private modelService = inject(ModelService);
+  public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private ngZone = inject(NgZone);
   
