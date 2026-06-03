@@ -1,95 +1,157 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
-/* CYBER-NOIR VAULT PALETTE */
 :root {
-  --vault-bg: #132A24;
-  --vault-surface: #132a24;
-  --vault-text: #ffffff;
-  --vault-text-muted: #9fb8ad;
-  --vault-key-light: #9fb8ad;
-  --vault-key-soft: #9fb8ad;
-  --vault-brass: #183a37;
+  --primary-color: #9fb8ad;
+  --accent-color: #183a37;
+  --hover-color: #132a24;
+
+  --bg-color: #ffffff;
+  --text-color: #202124;
+  --text-muted: #5f6368;
+  --border: #dadce0;
 }
 
-html {
-  color-scheme: dark;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: #1f1f1f;
+    --text-color: #e8eaed;
+    --text-muted: #9aa0a6;
+    --border: #3c4043;
+  }
+}
+
+html, body {
   height: 100%;
-}
-
-/* CYBER-NOIR VAULT LAYOUT */
-body {
-  background-color: var(--vault-bg);
-  color: var(--vault-text);
   margin: 0;
-  height: 100%;
-  font-family: 'Raleway', sans-serif;
-  font-size: 1.2rem;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Work Sans', sans-serif;
+  font-size: 1.1rem;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 main.main {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 2vh 1rem;
+  padding: 4rem 1.5rem;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
 }
 
 .content {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .logo {
+  max-width: 150px;
+  width: 100%;
+  margin-bottom: 2rem;
+}
+
+h1 {
+  font-weight: 600;
+  font-size: 2rem;
   margin-bottom: 1rem;
+  color: var(--text-color);
 }
 
-/* Headings — the key light */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Raleway', sans-serif;
-  text-transform: uppercase;
-  color: var(--vault-key-light);
-  letter-spacing: 0.5px;
-}
-
-h1 { font-weight: 700; font-size: 2rem; }
-h2 { font-weight: 600; font-size: 1.5rem; }
-
-/* Paragraphs & links */
 p {
-  font-size: 1.3rem;
-  font-weight: 400;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-a {
-  color: var(--vault-key-soft);
-  text-decoration: none;
-}
-a:hover { color: var(--vault-key-light); }
-
-/* Footer with subtle brass key touch */
+/* Footer to match frontend */
 footer {
-  margin-top: auto;
+  margin-top: 5rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid #183a37;
 }
 
-.copyright,
+.copyright {
+  text-align: center;
+  color: #9fb8ad;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  letter-spacing: 0.4px;
+}
+
+.footer-line {
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
 .copyright a {
-  font-size: 0.8rem;
-  font-weight: 400;
-  text-transform: uppercase;
-  color: var(--vault-text-muted);
+  color: #9fb8ad;
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .copyright a:hover {
-  color: var(--vault-brass);
+  color: var(--text-color);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-/* Desktop */
+.sub-footer {
+  margin-top: 2.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.backend-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.85rem;
+  background-color: rgba(24, 58, 55, 0.3);
+  border: 1px solid rgba(159, 184, 173, 0.15);
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  color: #9fb8ad;
+  backdrop-filter: blur(4px);
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #9fb8ad;
+  box-shadow: 0 0 8px rgba(159, 184, 173, 0.4);
+}
+
+.status-text {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+@media (min-width: 640px) {
+  .footer-line {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-right: 1.2rem;
+  }
+  .footer-line:last-child {
+    margin-right: 0;
+  }
+}
+
 @media (min-width: 768px) {
-  body { font-size: 1.5rem; }
-  main.main { padding: 3vh 3rem; max-width: 1200px; }
+  main.main { padding: 5.5rem 2rem; }
   h1 { font-size: 2.5rem; }
-  p { font-size: 1.5rem; }
 }
