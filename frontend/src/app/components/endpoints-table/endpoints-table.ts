@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, PLATFORM_ID, inject, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, Output, EventEmitter, PLATFORM_ID, inject, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AgGridModule } from 'ag-grid-angular';
 import { ColDef, ModuleRegistry, AllCommunityModule, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community';
@@ -46,9 +46,12 @@ export class EndpointsTable implements OnChanges {
 
   private gridApi: any;
 
+  private static modulesRegistered = false;
+
   constructor() {
-    if (this.isBrowser) {
+    if (this.isBrowser && !EndpointsTable.modulesRegistered) {
       ModuleRegistry.registerModules([AllCommunityModule]);
+      EndpointsTable.modulesRegistered = true;
     }
   }
 
@@ -61,7 +64,12 @@ export class EndpointsTable implements OnChanges {
     this.selectionChanged.emit(selectedData);
   }
 
+  private cdr = inject(ChangeDetectorRef);
+
   ngOnChanges(changes: SimpleChanges) {
-    // If we get new data and have a gridApi, it will update automatically because rowData is bound in the template.
+    if (changes['rowData'] && this.gridApi) {
+      this.gridApi.setGridOption('rowData', this.rowData);
+    }
+    this.cdr.detectChanges();
   }
 }
