@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'whitenoise.runserver_nostatic',
     'monitor',
+    'model',
 ]
 
 MIDDLEWARE = [
