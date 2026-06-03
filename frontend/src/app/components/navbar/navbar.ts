@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,8 +9,16 @@ import { LoginDialog } from '../login-dialog/login-dialog';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, CommonModule, MatDialogModule],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    MatToolbarModule,
+    MatButtonModule,
+    CommonModule,
+    MatDialogModule,
+  ],
   templateUrl: './navbar.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './navbar.scss',
 })
 export class Navbar {
@@ -21,10 +29,10 @@ export class Navbar {
     const dialogRef = this.dialog.open(LoginDialog, {
       width: '400px',
       hasBackdrop: true,
-      backdropClass: 'blur-backdrop'
+      backdropClass: 'blur-backdrop',
     });
 
-    dialogRef.afterClosed().subscribe(async (result) => {
+    dialogRef.afterClosed().subscribe(async result => {
       if (result) {
         const success = await this.authService.login(result);
         if (!success) {
@@ -39,4 +47,3 @@ export class Navbar {
     this.authService.logout();
   }
 }
-

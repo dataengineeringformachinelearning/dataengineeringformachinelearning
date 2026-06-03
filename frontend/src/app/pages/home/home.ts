@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { PageComponent } from '../../components/page/page';
 import { MatCardModule } from '@angular/material/card';
 
@@ -6,6 +6,7 @@ import { MatCardModule } from '@angular/material/card';
   selector: 'app-home',
   imports: [PageComponent, MatCardModule],
   templateUrl: './home.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './home.scss',
 })
 export class Home {}

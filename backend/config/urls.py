@@ -1,8 +1,14 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, converters
 from . import views
 from django.contrib.sitemaps.views import sitemap
 from .sitemaps import StaticViewSitemap
+
+# Django 6 / Django-Ninja Workaround: Unregister 'uuid' path converter before importing Ninja
+registered_converters = converters.get_converters()
+if 'uuid' in registered_converters:
+    del registered_converters['uuid']
+
 from .api import api
 
 sitemaps = {

@@ -1,6 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 export interface TrainingResponse {
@@ -19,11 +18,41 @@ export class ModelService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.backendUrl}/api/v1/model`;
 
-  trainModel(): Observable<TrainingResponse> {
-    return this.http.post<TrainingResponse>(`${this.apiUrl}/train`, {});
+  public latestStat = signal<number | null>(null);
+  public isTraining = signal<boolean>(false);
+  public trainError = signal<string | null>(null);
+
+  fetchLatestStat(): void {
+    this.http.get<TrainingResponse>(`${this.apiUrl}/latest`).subscribe({
+      next: data => {
+        if (data.average_sla !== null && data.average_sla !== undefined) {
+          this.latestStat.set(data.average_sla);
+        }
+      },
+      error: err => console.error('Error fetching latest stat:', err)
+    });
   }
 
-  getLatestTraining(): Observable<TrainingResponse> {
-    return this.http.get<TrainingResponse>(`${this.apiUrl}/latest`);
+  trainModel(): void {
+    this.isTraining.set(true);
+    this.trainError.set(null);
+    
+    this.http.post<TrainingResponse>(`${this.apiUrl}/train`, {}).subscribe({
+      next: res => {
+        setTimeout(() => {
+          this.isTraining.set(false);
+          if (res && res.average_sla !== null && res.average_sla !== undefined) {
+            this.latestStat.set(res.average_sla);
+          }
+        }, 500);
+      },
+      error: err => {
+        setTimeout(() => {
+          console.error('Train model error:', err);
+          this.isTraining.set(false);
+          this.trainError.set('Failed to train model.');
+        }, 500);
+      }
+    });
   }
 }

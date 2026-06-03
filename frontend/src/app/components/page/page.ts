@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MarkdownComponent } from 'ngx-markdown';
 
 import pageMarkdown from '../../../assets/content/page.md';
@@ -7,6 +7,7 @@ import pageMarkdown from '../../../assets/content/page.md';
   selector: 'app-page',
   standalone: true,
   imports: [MarkdownComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: ` <markdown [data]="markdownContent"></markdown> `,
 })
 export class PageComponent {

@@ -1,8 +1,22 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
 import os
 import sys
 
+# Django 6 + Django-Ninja Workaround
+import django.urls.converters
+import django.urls
+_orig_register = django.urls.converters.register_converter
+def safe_register_converter(converter, type_name):
+    try:
+        _orig_register(converter, type_name)
+    except ValueError as e:
+        if type_name == 'uuid':
+            pass
+        else:
+            raise e
+django.urls.converters.register_converter = safe_register_converter
+if hasattr(django.urls, 'register_converter'):
+    django.urls.register_converter = safe_register_converter
 
 def main():
     """Run administrative tasks."""

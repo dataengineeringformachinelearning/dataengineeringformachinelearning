@@ -1,6 +1,10 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, ErrorHandler } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withNoIncrementalHydration,
+} from '@angular/platform-browser';
 
 // Markdown parsing libraries
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
@@ -14,7 +18,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideClientHydration(withEventReplay()),
+    provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
     provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor])),
     provideMarkdown(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },

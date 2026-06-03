@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
@@ -8,6 +8,7 @@ import { AuthService } from './services/auth.service';
   selector: 'app-root',
   imports: [RouterOutlet, Navbar, Footer],
   templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',
 })
 export class App implements OnInit {
@@ -18,4 +19,3 @@ export class App implements OnInit {
     this.authService.checkAuth();
   }
 }
-
