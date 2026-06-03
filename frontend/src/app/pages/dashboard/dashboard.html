@@ -1,22 +1,25 @@
 <div class="dashboard-header">
   <h1>Dashboard</h1>
-  
-  <div class="header-actions">
-    <div class="stat-badge" *ngIf="latestStat !== null">
-      <span class="stat-label">Predicted SLA:</span>
-      <span class="stat-value">{{ latestStat | number:'1.1-2' }}%</span>
-    </div>
-    
-    <button mat-flat-button color="primary" (click)="trainModel()" [disabled]="isTraining" class="train-btn">
-      <mat-icon *ngIf="!isTraining">model_training</mat-icon>
-      <mat-spinner diameter="20" *ngIf="isTraining"></mat-spinner>
-      <span class="btn-text">{{ isTraining ? 'Training...' : 'Train SLA Model' }}</span>
-    </button>
-  </div>
 </div>
 <div class="error-msg" *ngIf="trainError">{{ trainError }}</div>
 
 <mat-card class="dashboard-card">
+  <div class="card-header-actions">
+    <div class="stat-badge">
+      <span class="stat-label">Predicted SLA:</span>
+      <span class="stat-value">{{ (latestStat !== null ? latestStat : 0) | number:'1.1-2' }}%</span>
+    </div>
+    
+    <div class="train-btn-container">
+      <button mat-raised-button color="primary" (click)="trainModel()" [disabled]="isTraining" class="train-btn">
+        <div class="train-btn-content">
+          <mat-icon *ngIf="!isTraining">model_training</mat-icon>
+          <mat-spinner diameter="20" *ngIf="isTraining"></mat-spinner>
+          <span>{{ isTraining ? 'Training...' : 'Train SLA Model' }}</span>
+        </div>
+      </button>
+    </div>
+  </div>
   <mat-card-content class="dashboard-grid">
     <app-endpoints-chart [data]="filteredEndpoints"></app-endpoints-chart>
     <app-endpoints-table 

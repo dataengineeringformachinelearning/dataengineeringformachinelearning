@@ -24,8 +24,8 @@ code[class*='language-'] {
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 
 $custom-primary: (
-  50: #ffffff,
-  100: #9fb8ad,
+  50: #f8f9fa,
+  100: #dadce0,
   200: #9fb8ad,
   300: #9fb8ad,
   400: #9fb8ad,
@@ -33,7 +33,7 @@ $custom-primary: (
   600: #183a37,
   700: #183a37,
   800: #132a24,
-  900: #000000,
+  900: #132a24,
   A100: #9fb8ad,
   A200: #9fb8ad,
   A400: #9fb8ad,
@@ -41,19 +41,19 @@ $custom-primary: (
 );
 
 $custom-tertiary: (
-  50: #ffffff,
-  100: #183a37,
-  200: #183a37,
-  300: #183a37,
-  400: #183a37,
+  50: #f8f9fa,
+  100: #dadce0,
+  200: #5f6368,
+  300: #5f6368,
+  400: #3c4043,
   500: #183a37,
   600: #132a24,
   700: #132a24,
-  800: #132a24,
-  900: #000000,
-  A100: #183a37,
-  A200: #183a37,
-  A400: #183a37,
+  800: #1f1f1f,
+  900: #1f1f1f,
+  A100: #5f6368,
+  A200: #5f6368,
+  A400: #3c4043,
   A700: #132a24,
 );
 
