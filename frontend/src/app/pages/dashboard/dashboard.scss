@@ -6,12 +6,60 @@
 
 .dashboard-header {
   margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   h1 {
     margin: 0;
     font-size: 2.25rem;
     font-weight: 600;
   }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.stat-badge {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-bg, #1a1a1a);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border, #333);
+  text-align: right;
+  
+  .stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary, #999);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .stat-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary, #00f0ff);
+  }
+}
+
+.train-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  mat-spinner {
+    margin-right: 8px;
+  }
+}
+
+.error-msg {
+  color: #ff5252;
+  margin-bottom: 1rem;
+  font-weight: 500;
 }
 
 .dashboard-card {
