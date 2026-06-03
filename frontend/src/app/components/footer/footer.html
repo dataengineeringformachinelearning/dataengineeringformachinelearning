@@ -1,0 +1,32 @@
+<footer>
+  <div class="copyright">
+    <span class="footer-line">
+      © {{ getCurrentYear() }} Data Engineering for Machine Learning
+      <span class="by">by</span>
+      <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>
+    </span>
+    <span class="footer-line"> | </span>
+    <span class="footer-line">
+      Previously hand-crafted in Windsurf using
+      <a href="https://grok.com/" target="_blank" rel="noopener noreferrer">Grok</a>
+    </span>
+    <span class="footer-line"> | </span>
+    <span class="footer-line">
+      Currently hand-crafted in Antigravity using
+      <a href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">Gemini</a>
+    </span>
+    <span class="footer-line"> | </span>
+    <span class="footer-line">
+      Powered by
+      <a href="https://railway.com?referralCode=BpTk0g" target="_blank" rel="noopener noreferrer"
+        >Railway</a
+      >
+    </span>
+    <span class="footer-line"> | </span>
+    <span class="footer-line backend-status">
+      Backend: 
+      <span class="status-dot" [class]="backendStatus()"></span>
+      <span class="status-text">{{ backendStatus() === 'ok' ? 'OK' : backendStatus() === 'error' ? 'Error' : 'Checking' }}</span>
+    </span>
+  </div>
+</footer>
