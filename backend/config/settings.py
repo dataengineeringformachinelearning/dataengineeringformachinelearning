@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     'corsheaders',
     'whitenoise.runserver_nostatic',
-    'monitoring',
+    'monitor',
 ]
 
 MIDDLEWARE = [

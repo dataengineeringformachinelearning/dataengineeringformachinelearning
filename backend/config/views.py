@@ -2,7 +2,7 @@ import time
 from datetime import timedelta
 from django.shortcuts import render
 from django.http import JsonResponse
-from monitoring.models import Endpoints
+from monitor.models import Endpoints
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -15,7 +15,7 @@ def get_client_ip(request):
 def home(request):
     return render(request, 'home.html')
 
-def health_check(request):
+def health(request):
     start_time = time.time()
     
     response_data = {'status': 'ok'}

@@ -945,7 +945,7 @@ Starting with the Django backend we can add another endpoint in the `config/view
 # backend/config/views.py
 from django.http import JsonResponse
 
-def health_check(request):
+def health(request):
     return JsonResponse({"status": "ok"})
 ```
 
@@ -965,7 +965,7 @@ sitemaps = {
 
 urlpatterns = [
     path('', views.home, name='home'),
-    path('api/health', views.health_check, name='health_check'),
+    path('api/health', views.health, name='health'),
     path('admin/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]
@@ -1081,17 +1081,17 @@ export const appConfig: ApplicationConfig = {
 Now that Angular can make HTTP calls, we can create a service to handle the HTTP requests to the backend API. We use the modern `inject()` syntax:
 
 ```typescript
-// frontend/src/app/services/healthcheck.service.ts
+// frontend/src/app/services/health.service.ts
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
-export class HealthcheckService {
+export class HealthService {
   private http = inject(HttpClient);
 
-  getHealthcheck() {
+  getHealth() {
     return this.http.get<{status: string}>('/api/health');
   }
 }
@@ -1103,7 +1103,7 @@ In the `app.component.ts` file, we can invoke the healthcheck and display the st
 // frontend/src/app/app.component.ts
 import { Component, OnInit, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { HealthcheckService } from '../services/healthcheck.service';
+import { HealthService } from '../services/health.service';
 
 @Component({
   selector: 'app-root',
@@ -1115,13 +1115,13 @@ export class AppComponent implements OnInit {
   title = signal('data-engineering-for-machine-learning');
   backendStatus = signal<'checking' | 'ok' | 'error'>('checking');
 
-  private healthcheckService = inject(HealthcheckService);
+  private healthService = inject(HealthService);
   private platformId = inject(PLATFORM_ID);
 
   ngOnInit(): void {
     // Only run health check on client side
     if (isPlatformBrowser(this.platformId)) {
-      this.healthcheckService.getHealthcheck().subscribe({
+      this.healthService.getHealth().subscribe({
         next: (response) => {
           if (response.status === 'ok') {
             this.backendStatus.set('ok');
@@ -1201,8 +1201,8 @@ Create a new app for your database models in the backend directory:
 
 ```bash
 source venv/bin/activate
-python manage.py startapp monitoring
-python manage.py makemigrations monitoring
+python manage.py startapp monitor
+python manage.py makemigrations monitor
 python manage.py migrate
 ```
 
@@ -1211,7 +1211,7 @@ Add your new app to the `INSTALLED_APPS` list in `settings.py`:
 ```python
 INSTALLED_APPS = [
     # ...
-    'monitoring',
+    'monitor',
     # ...
 ]
 ```
@@ -1254,7 +1254,7 @@ import time
 from datetime import timedelta
 from django.shortcuts import render
 from django.http import JsonResponse
-from monitoring.models import Endpoints
+from monitor.models import Endpoints
 
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -1267,7 +1267,7 @@ def get_client_ip(request):
 def home(request):
     return render(request, 'home.html')
 
-def health_check(request):
+def health(request):
     start_time = time.time()
     
     response_data = {'status': 'ok'}
@@ -1294,3 +1294,146 @@ def health_check(request):
 ### Chapter 5.1: Introduction
 
 #### Chapter 5.1.1: Developing interface visualizations
+
+Now that there is active data being stored in the database, the next step is to visualize it. Creating a visualization of application uptime or response times can provide valuable insights into the health and performance of the application. It can also help to identify trends or patterns that may not be apparent from looking at the raw data alone. This is a good lens for understanding the process from beggining to end that will be scaled later in the book.
+
+First create a new endpoint in the views.py file in the monitor app to retrieve the endpoints data from the database and return it as a JSON response. 
+
+```python
+def get_all_endpoints(request):
+    endpoints = Endpoints.objects.all()
+    data = []
+    for endpoint in endpoints:
+        data.append({
+            'id': endpoint.id,
+            'url': endpoint.url,
+            'last_tested': endpoint.last_tested,
+            'status_code': endpoint.status_code,
+            'response_time': endpoint.response_time,
+            'ip_address': endpoint.ip_address,
+            'is_active': endpoint.is_active
+        })
+    return JsonResponse(data, safe=False)
+```
+
+Then, add the endpoint to the urls.py file in the monitor app. Make sure to include the app name in the url. For example `/monitor/endpoints/`.
+
+```python
+from django.urls import path, include
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('api/health', views.health, name='health'),
+    path('api/monitor/', include('monitor.urls')),
+]
+```
+
+Next, update the frontend application to retrieve the data from the new endpoint. You can start by adding a new service to the frontend application that retrieves the data from the new endpoint. This service can be used to retrieve the data from the new endpoint and return it as a JSON response.
+
+```typescript
+// frontend/src/app/services/monitor.service.ts
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+
+export interface EndpointData {
+  id: string;
+  url: string;
+  last_tested: string;
+  status_code: number;
+  response_time: string;
+  ip_address: string;
+  is_active: boolean;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MonitorService {
+  private http = inject(HttpClient);
+
+  getAllEndpoints() {
+    return this.http.get<EndpointData[]>(`${environment.backendUrl}/api/monitor/endpoints`);
+  }
+}
+```
+
+Now, let's use `ag-charts` to visualize the application stability over time. First, install the necessary dependencies for Angular:
+
+```bash
+npm install ag-charts-angular ag-charts-community
+```
+
+Update your dashboard component to fetch this data and map it for the chart:
+
+```typescript
+// frontend/src/app/pages/dashboard/dashboard.ts
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { AgCharts } from 'ag-charts-angular';
+import { AgChartOptions, ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
+import { MonitorService } from '../../services/monitor.service';
+
+@Component({
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [AgCharts],
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
+})
+export class Dashboard implements OnInit {
+  public chartOptions: AgChartOptions;
+  private monitorService = inject(MonitorService);
+  public isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
+  constructor() {
+    if (this.isBrowser) {
+      ModuleRegistry.registerModules([AllCommunityModule]);
+    }
+    this.chartOptions = {
+      title: { text: "Application Stability" },
+      data: [],
+      series: [{
+        type: 'line',
+        xKey: 'time',
+        yKey: 'statusCode',
+        yName: 'Status Code',
+      }],
+    };
+  }
+
+  ngOnInit() {
+    if (this.isBrowser) {
+      this.monitorService.getAllEndpoints().subscribe(data => {
+        const sortedData = data.sort((a, b) => new Date(a.last_tested).getTime() - new Date(b.last_tested).getTime());
+        
+        const formattedData = sortedData.map(endpoint => ({
+          time: new Date(endpoint.last_tested).toLocaleTimeString(),
+          statusCode: endpoint.status_code,
+          url: endpoint.url
+        }));
+
+        this.chartOptions = {
+          ...this.chartOptions,
+          data: formattedData
+        };
+      });
+    }
+  }
+}
+```
+
+Finally, render the chart in the template:
+
+```html
+<!-- frontend/src/app/pages/dashboard/dashboard.html -->
+<div class="dashboard-container">
+  <h1>Dashboard</h1>
+  @if (isBrowser) {
+    <ag-charts [options]="chartOptions"></ag-charts>
+  }
+</div>
+```
+
+With these steps, your dashboard will now display a line chart of the application's health status over time, effectively summarizing the data returned from the backend.

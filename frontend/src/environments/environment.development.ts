@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
   backendUrl: 'http://localhost:8000',
-  healthCheckEndpoint: '/api/health'
+  healthEndpoint: '/api/health'
 };

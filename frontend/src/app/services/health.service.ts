@@ -5,10 +5,10 @@ import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class HealthcheckService {
+export class HealthService {
   private http = inject(HttpClient);
 
-  getHealthcheck() {
-    return this.http.get<{status: string}>(`${environment.backendUrl}${environment.healthCheckEndpoint}`);
+  getHealth() {
+    return this.http.get<{status: string}>(`${environment.backendUrl}${environment.healthEndpoint}`);
   }
 }
