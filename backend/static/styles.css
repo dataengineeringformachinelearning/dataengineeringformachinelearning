@@ -43,7 +43,6 @@ main.main {
 }
 
 .logo {
-  width: 80px;
   margin-bottom: 1rem;
 }
 
@@ -91,7 +90,6 @@ footer {
 @media (min-width: 768px) {
   body { font-size: 1.5rem; }
   main.main { padding: 3vh 3rem; max-width: 1200px; }
-  .logo { width: 100px; }
   h1 { font-size: 2.5rem; }
   p { font-size: 1.5rem; }
 }

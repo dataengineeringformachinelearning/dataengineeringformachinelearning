@@ -1,7 +1,3 @@
-# Data Engineering for Machine Learning
-
-Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
-
 ## Chapter 1: Introduction
 
 Picking a language for data engineering is a personal preference. I chose Python because it is easy to learn and has a large community. Angular provides a TypeScript interface for data engineering. Windsurf AI provides an AI based editor for data engineering. Through this book, I will be using Angular and Windsurf AI to build a data engineering application. Python will be used for data engineering tasks. I will cover everything from the basics to advanced topics, starting from square one to an enterprise level data engineering application.
