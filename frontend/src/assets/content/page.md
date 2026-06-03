@@ -1,3 +1,7 @@
+# Data Engineering for Machine Learning
+
+Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
+
 ## Chapter 1: Introduction
 
 Picking a language for data engineering is a personal preference. I chose Python because it is easy to learn and has a large community. Angular provides a TypeScript interface for data engineering. Windsurf AI provides an AI based editor for data engineering. Through this book, I will be using Angular and Windsurf AI to build a data engineering application. Python will be used for data engineering tasks. I will cover everything from the basics to advanced topics, starting from square one to an enterprise level data engineering application.
@@ -1361,6 +1365,8 @@ Now, let's use `ag-charts` to visualize the application stability over time. Fir
 npm install ag-charts-angular ag-charts-community
 ```
 
+You can read more about AG Charts at https://www.ag-grid.com/angular-charts-community/getting-started/. Note that this is different from AG Grid.
+
 Update your dashboard component to fetch this data and map it for the chart:
 
 ```typescript
@@ -1433,3 +1439,59 @@ Finally, render the chart in the template:
 ```
 
 With these steps, your dashboard will now display a line chart of the application's health status over time, effectively summarizing the data returned from the backend.
+
+To take this to a more scientific analysis direction, you can use a grid from AG Grid to display the data in a more interactive way, filtering based on endpoints.
+
+You can learn more about AG Grid at https://www.ag-grid.com/angular-data-grid/getting-started/.
+
+An example of how to do this is shown below:
+
+```typescript
+// frontend/src/app/components/endpoints-table/endpoints-table.component.ts
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { AgGridAngular } from 'ag-grid-angular';
+import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { EndpointData } from '../../services/monitor.service';
+
+@Component({
+  selector: 'app-endpoints-table',
+  standalone: true,
+  imports: [AgGridAngular],
+  templateUrl: './endpoints-table.component.html',
+  styleUrl: './endpoints-table.component.scss',
+})
+export class EndpointsTableComponent {
+  private gridApi!: GridApi;
+
+  @Input() rowData!: EndpointData[];
+  @Output() selectionChanged = new EventEmitter<EndpointData[]>();
+
+  public columnDefs: ColDef[] = [
+    { field: 'url', headerName: 'URL' },
+    { field: 'last_tested', headerName: 'Last Tested' },
+    { field: 'status_code', headerName: 'Status Code' },
+    { field: 'response_time', headerName: 'Response Time' },
+    { field: 'ip_address', headerName: 'IP Address' },
+    { field: 'is_active', headerName: 'Is Active' },
+  ];
+
+  public defaultColDef: ColDef = {
+    sortable: true,
+    filter: true,
+    resizable: true,
+  };
+
+  public onGridReady(params: GridReadyEvent) {
+    this.gridApi = params.api;
+    this.gridApi.setRowData(this.rowData);
+  }
+
+  public onSelectionChanged() {
+    const selectedNodes = this.gridApi.getSelectedNodes();
+    const selectedData = selectedNodes.map(node => node.data);
+    this.selectionChanged.emit(selectedData);
+  }
+}
+```
+
+Through the AG Chart and AG Grid the data can be filtered on the different columns to understand performance across different endpoints.
