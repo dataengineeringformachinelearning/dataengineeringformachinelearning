@@ -39,7 +39,7 @@
   
   .stat-label {
     font-size: 0.75rem;
-    color: var(--text-secondary, #9fb8ad);
+    color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
@@ -47,7 +47,7 @@
   .stat-value {
     font-size: 1.25rem;
     font-weight: 600;
-    color: var(--primary, #9fb8ad);
+    color: var(--text-color);
   }
 }
 
@@ -79,7 +79,7 @@
 }
 
 .error-msg {
-  color: #183a37;
+  color: var(--text-color);
   margin-bottom: 1rem;
   font-weight: 500;
 }
