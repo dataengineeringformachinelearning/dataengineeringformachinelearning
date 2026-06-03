@@ -69,3 +69,14 @@ source .venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+### Upgrading Packages
+
+To safely update your backend packages to their latest minor/patch versions without breaking compatibility:
+
+1. Make sure your virtual environment is activated.
+2. Upgrade `pip` and `wheel`:
+
+```bash
+python -m pip install --upgrade pip wheel
+```

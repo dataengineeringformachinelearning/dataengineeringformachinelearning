@@ -48,3 +48,17 @@ Then try installing the dependencies again:
 ```bash
 npm install
 ```
+
+### Upgrading Packages
+
+To safely update your frontend packages to their latest minor and patch versions:
+
+```bash
+npm update
+```
+
+If you need to perform a major version upgrade for Angular (e.g., from Angular 21 to 22), use the Angular CLI update tool to ensure a safe migration:
+
+```bash
+npx @angular/cli@22 update @angular/core@22 @angular/cli@22
+```
