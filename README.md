@@ -42,9 +42,17 @@ docker run -p 8080:8080 frontend-app
 
 ### Chapter 1.2: Backend Setup
 
-For the backend, we will use Python and Django. Ensure Python is installed, then set up your environment:
+For the backend, we will use Python and Django. On a Mac, the cleanest way to install Python and global Python tools like `pipx` is through Homebrew:
 
 ```bash
+brew install python pipx
+pipx ensurepath
+```
+
+Once installed, use `pipx` to securely install Django globally without conflicting with your system Python, then set up your environment:
+
+```bash
+pipx install django
 mkdir backend && cd backend
 python -m venv venv
 source venv/bin/activate
