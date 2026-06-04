@@ -3,10 +3,10 @@ import { PageComponent } from '../../components/page/page';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
-  selector: 'app-home',
+  selector: 'app-book',
   imports: [PageComponent, MatCardModule],
-  templateUrl: './home.html',
+  templateUrl: './book.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './home.scss',
+  styleUrl: './book.scss',
 })
-export class Home {}
+export class Book {}
