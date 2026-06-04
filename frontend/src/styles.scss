@@ -5,7 +5,7 @@
 @import 'prismjs/themes/prism-okaidia.css';
 
 pre[class*='language-'] {
-  background-color: var(--card-bg) !important;
+  background-color: #1e1e1e !important;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 1.5rem 1.6rem;
@@ -185,7 +185,7 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):focus-visible {
 
 // ====================== INLINE CODE ======================
 :not(pre) > code {
-  background-color: var(--card-bg);
+  background-color: rgba(128, 128, 128, 0.15);
   padding: 3px 7px;
   border-radius: 5px;
   font-size: 0.92rem;
