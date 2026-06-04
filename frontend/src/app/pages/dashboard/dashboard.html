@@ -6,7 +6,7 @@
     </div>
     <div class="error-msg" *ngIf="modelService.trainError()">{{ modelService.trainError() }}</div>
 
-    <mat-card class="dashboard-card" style="background-color: var(--card-bg); border: 1px solid var(--border);">
+    <div class="dashboard-card">
       <div class="card-header-actions">
         <div class="stat-badge">
           <span class="stat-label">Predicted SLA:</span>
@@ -23,13 +23,13 @@
           </button>
         </div>
       </div>
-      <mat-card-content class="dashboard-grid">
+      <div class="dashboard-grid">
         <app-endpoints-chart [data]="filteredEndpoints()"></app-endpoints-chart>
         <app-endpoints-table 
           [rowData]="allEndpoints()" 
           (selectionChanged)="onSelectionChanged($event)">
         </app-endpoints-table>
-      </mat-card-content>
-    </mat-card>
+      </div>
+    </div>
   </div>
 </div>
