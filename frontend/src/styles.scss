@@ -173,13 +173,13 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):focus-visible {
 
 // ====================== MATERIAL CARDS ======================
 .mat-mdc-card {
-  box-shadow: var(--shadow-sm) !important;
-  border: 1px solid var(--border);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(192, 197, 193, 0.3); /* Metallic silver border */
   transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 
 .mat-mdc-card:hover {
-  box-shadow: var(--shadow-hover) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
   transform: translateY(-2px);
 }
 
@@ -326,9 +326,9 @@ app-page {
   margin: 0 auto;
   box-sizing: border-box;
   background-color: var(--card-bg);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(192, 197, 193, 0.3); /* Metallic silver border */
   border-radius: 12px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 @media (max-width: 768px) {
