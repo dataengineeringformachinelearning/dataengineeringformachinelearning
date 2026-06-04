@@ -1,22 +1,55 @@
-// CUSTOM PALETTE
+// CUSTOM PALETTE (Material Theme)
 
 :root {
-  --primary-color: #9fb8ad;
-  --accent-color: #183a37;
-  --hover-color: #132a24;
+  /* Core Semantic Tokens from THEME.md */
+  --color-primary: #183A37;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #9FB8AD;
+  --color-on-primary-container: #132A24;
+  --color-surface: #172421;
+  --color-on-surface: #E8ECEA;
+  --color-background: #0D1513;
+  --color-on-background: #E8ECEA;
+  
+  /* Semantic Statuses */
+  --color-success: #4CAF50;
+  --color-warning: #FFC107;
+  --color-error: #F44336;
+  --color-info: #2196F3;
 
+  /* Aliases for UI Components */
+  --primary-color: var(--color-primary);
+  --accent-color: var(--color-primary-container);
+  --hover-color: var(--color-surface);
+
+  /* Fallback Light Theme Tokens */
   --light-bg: #ffffff;
   --light-text: #202124;
   --secondary-color: #5f6368;
   --border-color: #dadce0;
   --tertiary-color: #f8f9fa;
 
-  --dark-bg: #1f1f1f;
-  --dark-text: #e8eaed;
-  --dark-border: #3c4043;
-  --dark-card-bg: #2d2e30;
+  /* Dark Theme Tokens Mapped to THEME.md Standard */
+  --dark-bg: var(--color-background);
+  --dark-text: var(--color-on-background);
+  --dark-border: var(--color-surface);
+  --dark-card-bg: var(--color-surface);
 
-  // We map the active theme vars to light by default
+  // Active theme vars (Framework dark-first)
+  --bg-color: var(--dark-bg);
+  --text-color: var(--dark-text);
+  --text-muted: var(--color-primary-container); /* Soft Sage for muted text to maintain contrast */
+  --border: var(--dark-border);
+  --card-bg: var(--dark-card-bg);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
+}
+
+// Ensure light mode is still somewhat supported if needed, but the framework is dark-first.
+html[data-theme='light'] {
   --bg-color: var(--light-bg);
   --text-color: var(--light-text);
   --text-muted: var(--secondary-color);
@@ -27,35 +60,4 @@
   --shadow-md: 0 4px 16px rgba(24, 58, 55, 0.12);
   --shadow-hover: 0 8px 24px rgba(24, 58, 55, 0.16);
   --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.5);
-}
-
-// System + manual dark mode
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --bg-color: var(--dark-bg);
-    --text-color: var(--dark-text);
-    --text-muted: #9aa0a6;
-    --border: var(--dark-border);
-    --card-bg: var(--dark-card-bg);
-
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
-    --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
-  }
-}
-
-[data-theme='dark'],
-.dark,
-body.dark-mode {
-  --bg-color: var(--dark-bg);
-  --text-color: var(--dark-text);
-  --text-muted: #9aa0a6;
-  --border: var(--dark-border);
-  --card-bg: var(--dark-card-bg);
-
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
-  --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
 }

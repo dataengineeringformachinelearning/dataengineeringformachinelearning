@@ -21,7 +21,7 @@ code[class*='language-'] {
 }
 
 // ====================== GOOGLE FONT ======================
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 $custom-primary: (
   50: #f8f9fa,
@@ -66,8 +66,8 @@ html {
         theme-type: light,
       ),
       typography: (
-        brand-family: '"Work Sans", sans-serif',
-        plain-family: '"Work Sans", sans-serif',
+        brand-family: '"Inter", sans-serif',
+        plain-family: '"Inter", sans-serif',
       ),
       density: 0,
     )
@@ -107,31 +107,69 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* Guarantee no horizontal overflow */
+  max-width: 100vw;
+}
+
+app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Work Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.3s, color 0.3s;
 }
 
-main.main {
-  min-height: 100vh;
-  margin: 0 auto;
-  padding: 4rem 1.5rem;
-  max-width: 1200px;
-  display: flex;
-  flex-direction: column;
+// ====================== TYPOGRAPHY & READABILITY ======================
+p {
+  margin-bottom: 1.5rem;
 }
 
-.content {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.25;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+
+ul, ol {
+  margin-bottom: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+li {
+  margin-bottom: 0.5rem;
+}
+
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button) {
+  color: var(--color-primary-container);
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid transparent; /* Prevents layout shift */
+  transition: border-bottom-color 0.2s ease, color 0.2s ease;
+}
+
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):hover,
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):focus-visible {
+  color: #B0C9BD; /* Lighter shade for contrast shift */
+  text-decoration: none;
+  border-bottom-color: #B0C9BD; /* WCAG requirement: non-color hover indicator */
+}
+
+
 
 // ====================== MATERIAL CARDS ======================
 .mat-mdc-card {
@@ -155,10 +193,7 @@ main.main {
 }
 
 // ====================== LOGO ======================
-.logo {
-  width: 100%;
-  margin-bottom: 1.6rem;
-}
+// Global logo style removed to allow component-level styling
 
 // ====================== MARKDOWN COMPONENT ======================
 app-page {
@@ -197,44 +232,61 @@ app-page {
 }
 
 
-// ====================== MATERIAL BUTTONS (GOOGLE STYLE) ======================
+// ====================== MATERIAL BUTTONS (ACCESSIBLE) ======================
 .mdc-button, .mat-mdc-button, .mat-mdc-raised-button {
-  border-radius: 100px !important;
+  border-radius: 8px !important; /* Modern accessible radius */
   text-transform: none !important;
-  font-weight: 500 !important;
-  letter-spacing: 0.1px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.25px !important;
   padding: 0 24px !important;
-  height: 40px !important;
+  height: 44px !important; /* 44px minimum touch target for WCAG */
 }
 
 .mdc-button--raised, .mat-mdc-raised-button {
-  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.3), 0 1px 3px 1px rgba(0,0,0,0.15) !important;
-  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: box-shadow 0.2s ease, transform 0.1s ease, background-color 0.2s ease !important;
 }
 
 .mdc-button--raised:hover, .mat-mdc-raised-button:hover {
-  box-shadow: 0 1px 3px 0 rgba(0,0,0,0.3), 0 4px 8px 3px rgba(0,0,0,0.15) !important;
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-1px);
 }
 
-/* Ensure contrast for primary button (primary is light green) */
+/* Primary Raised Buttons */
 .mat-mdc-raised-button.mat-primary, 
 .mdc-button--raised.mat-primary {
-  color: #132a24 !important; /* Dark text for contrast */
+  background-color: var(--color-primary-container) !important;
+  color: var(--color-on-primary-container) !important; 
 }
 
-/* Ensure contrast for accent button */
-.mat-mdc-raised-button.mat-accent, 
-.mdc-button--raised.mat-accent {
-  background-color: var(--accent-color) !important;
-  color: #ffffff !important; /* White text for contrast */
+.mat-mdc-raised-button.mat-primary:hover, 
+.mdc-button--raised.mat-primary:hover {
+  background-color: #8AA599 !important; /* Accessible hover shift */
 }
 
-/* Navbar buttons / standard text buttons */
+/* Warn/Error Raised Buttons */
+.mat-mdc-raised-button.mat-warn, 
+.mdc-button--raised.mat-warn {
+  background-color: #8c2a2a !important; /* Accessible dark red for contrast */
+  color: #ffffff !important;
+}
+
+.mat-mdc-raised-button.mat-warn:hover, 
+.mdc-button--raised.mat-warn:hover {
+  background-color: #702121 !important;
+}
+
+/* Standard/Navbar Text Buttons */
 .mat-mdc-button {
   color: var(--text-color) !important;
+  background-color: transparent !important;
 }
 
-/* Exception for primary text buttons (e.g., links if any) */
+.mat-mdc-button:hover, .mat-mdc-button:focus-visible {
+  background-color: rgba(255, 255, 255, 0.08) !important; /* WCAG visual indicator */
+}
+
+/* Exception for primary text buttons */
 .mat-mdc-button.mat-primary {
-  color: var(--accent-color) !important;
+  color: var(--color-primary-container) !important;
 }
