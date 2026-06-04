@@ -1,31 +1,35 @@
-<div class="dashboard-header">
-  <h1>Dashboard</h1>
-</div>
-<div class="error-msg" *ngIf="modelService.trainError()">{{ modelService.trainError() }}</div>
-
-<mat-card class="dashboard-card">
-  <div class="card-header-actions">
-    <div class="stat-badge">
-      <span class="stat-label">Predicted SLA:</span>
-      <span class="stat-value">{{ (modelService.latestStat() !== null ? modelService.latestStat() : 0) | number:'1.1-2' }}%</span>
+<div class="dashboard-container">
+  <div class="page-content">
+    <div class="dashboard-header">
+      <h1 class="dashboard-title">Dashboard</h1>
+      <p class="dashboard-subtitle">Live metrics and endpoint analytics</p>
     </div>
-    
-    <div class="train-btn-container">
-      <button mat-raised-button color="primary" (click)="trainModel()" [disabled]="modelService.isTraining() || !authService.isAuthenticated()" class="train-btn">
-        <div class="train-btn-content">
-          <mat-icon *ngIf="!modelService.isTraining()">model_training</mat-icon>
-          <mat-spinner diameter="20" *ngIf="modelService.isTraining()"></mat-spinner>
-          <span>{{ modelService.isTraining() ? 'Training...' : 'Train SLA Model' }}</span>
+    <div class="error-msg" *ngIf="modelService.trainError()">{{ modelService.trainError() }}</div>
+
+    <div class="dashboard-card">
+      <div class="card-header-actions">
+        <div class="stat-badge">
+          <span class="stat-label">Predicted SLA:</span>
+          <span class="stat-value">{{ (modelService.latestStat() !== null ? modelService.latestStat() : 0) | number:'1.1-2' }}%</span>
         </div>
-      </button>
+        
+        <div class="train-btn-container">
+          <button mat-raised-button color="primary" (click)="trainModel()" [disabled]="modelService.isTraining() || !authService.isAuthenticated()" class="train-btn">
+            <div class="train-btn-content">
+              <mat-icon *ngIf="!modelService.isTraining()">model_training</mat-icon>
+              <mat-spinner diameter="20" *ngIf="modelService.isTraining()"></mat-spinner>
+              <span>{{ modelService.isTraining() ? 'Training...' : 'Train SLA Model' }}</span>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div class="dashboard-grid">
+        <app-endpoints-chart [data]="filteredEndpoints()"></app-endpoints-chart>
+        <app-endpoints-table 
+          [rowData]="allEndpoints()" 
+          (selectionChanged)="onSelectionChanged($event)">
+        </app-endpoints-table>
+      </div>
     </div>
   </div>
-  <mat-card-content class="dashboard-grid">
-    <app-endpoints-chart [data]="filteredEndpoints()"></app-endpoints-chart>
-    <app-endpoints-table 
-      [rowData]="allEndpoints()" 
-      (selectionChanged)="onSelectionChanged($event)">
-    </app-endpoints-table>
-  </mat-card-content>
-</mat-card>
-
+</div>
