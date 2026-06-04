@@ -1,22 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --primary-color: #9fb8ad;
-  --accent-color: #183a37;
-  --hover-color: #132a24;
+  /* Core Semantic Tokens from THEME.md */
+  --color-primary: #183A37;
+  --color-on-primary: #FFFFFF;
+  --color-primary-container: #9FB8AD;
+  --color-on-primary-container: #132A24;
+  --color-surface: #172421;
+  --color-on-surface: #E8ECEA;
+  --color-background: #0D1513;
+  --color-on-background: #E8ECEA;
+  
+  --primary-color: var(--color-primary);
+  --accent-color: var(--color-primary-container);
+  --hover-color: var(--color-surface);
 
-  --bg-color: #ffffff;
-  --text-color: #202124;
-  --text-muted: #5f6368;
-  --border: #dadce0;
+  --bg-color: var(--color-background);
+  --text-color: var(--color-on-background);
+  --text-muted: var(--color-primary-container);
+  --border: var(--color-surface);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --bg-color: #1f1f1f;
-    --text-color: #e8eaed;
-    --text-muted: #9aa0a6;
-    --border: #3c4043;
+    --bg-color: #ffffff;
+    --text-color: #202124;
+    --text-muted: #5f6368;
+    --border: #dadce0;
   }
 }
 
@@ -29,9 +39,9 @@ html, body {
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Work Sans', sans-serif;
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-family: 'Inter', sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.3s, color 0.3s;
@@ -41,7 +51,7 @@ main.main {
   min-height: 100vh;
   margin: 0 auto;
   padding: 4rem 1.5rem;
-  max-width: 1200px;
+  max-width: 1000px;
   display: flex;
   flex-direction: column;
 }
@@ -56,36 +66,37 @@ main.main {
 }
 
 .logo {
-  max-width: 150px;
+  max-width: 120px;
   width: 100%;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 h1 {
   font-weight: 600;
-  font-size: 2rem;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
+  letter-spacing: -0.02em;
   color: var(--text-color);
 }
 
 p {
-  font-size: 1.2rem;
+  font-size: 1.125rem;
   color: var(--text-muted);
   max-width: 600px;
   margin: 0 auto;
+  margin-bottom: 1.5rem;
 }
 
-/* Footer to match frontend */
 footer {
   margin-top: 5rem;
   padding-top: 2.5rem;
-  border-top: 1px solid #183a37;
+  border-top: 1px solid var(--border);
+  text-align: center;
 }
 
 .copyright {
-  text-align: center;
-  color: #9fb8ad;
-  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
   line-height: 1.8;
   letter-spacing: 0.4px;
 }
@@ -96,18 +107,18 @@ footer {
 }
 
 .copyright a {
-  color: #9fb8ad;
+  color: var(--text-muted);
   text-decoration: none;
-  transition: color 0.2s ease;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom-color 0.2s ease, color 0.2s ease;
 }
 
-.copyright a:hover {
-  color: var(--text-color);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+.copyright a:hover,
+.copyright a:focus-visible {
+  color: #B0C9BD;
+  border-bottom-color: #B0C9BD;
 }
-
-
 
 @media (min-width: 640px) {
   .footer-line {
@@ -122,5 +133,4 @@ footer {
 
 @media (min-width: 768px) {
   main.main { padding: 5.5rem 2rem; }
-  h1 { font-size: 2.5rem; }
 }
