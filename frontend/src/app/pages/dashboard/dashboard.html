@@ -1,8 +1,8 @@
 <div class="dashboard-container">
   <div class="page-content">
     <div class="dashboard-header">
-      <h1 style="font-size: 2.15rem; font-weight: 600; margin-bottom: 0.5rem; margin-top: 0;">Dashboard</h1>
-      <p class="subtitle" style="font-size: 1.15rem; color: var(--text-muted); margin: 0; margin-bottom: 2rem;">Live metrics and endpoint analytics</p>
+      <h1 class="dashboard-title">Dashboard</h1>
+      <p class="dashboard-subtitle">Live metrics and endpoint analytics</p>
     </div>
     <div class="error-msg" *ngIf="modelService.trainError()">{{ modelService.trainError() }}</div>
 
