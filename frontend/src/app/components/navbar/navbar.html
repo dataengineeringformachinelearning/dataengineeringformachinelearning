@@ -1,17 +1,23 @@
-<mat-toolbar class="navbar">
-  <a routerLink="/" class="navbar-brand">
-    <img
-      class="logo"
-      src="/data-engineering-for-machine-learning.svg"
-      alt="Data Engineering for Machine Learning"
-      style="height: 40px; margin-right: 10px; margin-top: 5px;"
-    />
-  </a>
-  <span class="spacer" style="flex: 1 1 auto;"></span>
-  <div class="nav-links">
-    <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
-    <a mat-button routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
-    <button mat-raised-button class="sign-in-btn" *ngIf="!authService.isAuthenticated()" (click)="login()">Sign In</button>
-    <button mat-raised-button color="warn" *ngIf="authService.isAuthenticated()" (click)="logout()">Sign Out</button>
+<header class="navbar">
+  <div class="navbar-content">
+    <div class="navbar-left">
+      <a routerLink="/" class="navbar-brand">
+        <img
+          class="logo"
+          src="/data-engineering-for-machine-learning.svg"
+          alt="Data Engineering for Machine Learning"
+        />
+      </a>
+    </div>
+    
+    <span class="spacer"></span>
+    
+    <div class="navbar-right">
+      <a mat-button routerLink="/book" class="nav-btn">Book</a>
+      <a mat-button routerLink="/dashboard" class="nav-btn">Dashboard</a>
+      <div class="divider"></div>
+      <button mat-raised-button class="sign-in-btn" *ngIf="!authService.isAuthenticated()" (click)="login()">Sign In</button>
+      <button mat-raised-button color="warn" *ngIf="authService.isAuthenticated()" (click)="logout()">Sign Out</button>
+    </div>
   </div>
-</mat-toolbar>
+</header>

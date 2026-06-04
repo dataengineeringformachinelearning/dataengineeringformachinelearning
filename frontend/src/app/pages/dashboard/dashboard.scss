@@ -7,13 +7,21 @@
 .dashboard-header {
   margin-bottom: 2rem;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
 
-  h1 {
+  .dashboard-title {
     margin: 0;
-    font-size: 2.25rem;
+    margin-bottom: 0.5rem;
+    font-size: 2.15rem;
     font-weight: 600;
+  }
+
+  .dashboard-subtitle {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin: 0;
+    margin-bottom: 2rem;
   }
 }
 
@@ -85,19 +93,8 @@
 }
 
 .dashboard-card {
-  padding: 1.5rem;
-  background-color: var(--card-bg, #2d2e30);
-  border: 1px solid var(--border, #132a24);
-  border-radius: 8px;
-  box-sizing: border-box;
   width: 100%;
-  box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-
-  &:hover {
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
-  }
+  box-sizing: border-box;
 }
 
 .dashboard-grid {
