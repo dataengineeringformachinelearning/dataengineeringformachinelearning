@@ -58,7 +58,7 @@ export class IssueReporter {
       }
     };
 
-    const endpoint = `${environment.backendUrl}/api/agent/report-issue`;
+    const endpoint = `${environment.backendUrl}/api/v1/agent/report-issue`;
 
     this.http.post(endpoint, payload).subscribe({
       next: () => {

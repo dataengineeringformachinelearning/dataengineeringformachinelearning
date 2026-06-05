@@ -8,7 +8,7 @@ async def process_user_issue(user_description: str, telemetry_context: dict):
     if not os.environ.get("GOOGLE_API_KEY"):
         raise ValueError("GOOGLE_API_KEY environment variable not set")
 
-    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0)
     tools = [send_issue_to_redpanda]
     
     system_prompt = """You are an AI assistant that analyzes user-reported issues and telemetry data.
