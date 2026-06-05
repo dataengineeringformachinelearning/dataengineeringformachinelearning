@@ -6,22 +6,23 @@ from ninja.errors import HttpError
 from monitor.models import Endpoints
 from model.models import TrainingRun
 import datetime
+from typing import Optional
 
 router = Router()
 
 class TrainOut(Schema):
     status: str
-    message: str = None
-    average_sla: float = None
-    loss: float = None
-    run_id: str = None
+    message: Optional[str] = None
+    average_sla: Optional[float] = None
+    loss: Optional[float] = None
+    run_id: Optional[str] = None
 
 class LatestRunOut(Schema):
     status: str
-    message: str = None
-    average_sla: float = None
-    loss: float = None
-    created_at: datetime.datetime = None
+    message: Optional[str] = None
+    average_sla: Optional[float] = None
+    loss: Optional[float] = None
+    created_at: Optional[datetime.datetime] = None
 
 class SLAPredictor(nn.Module):
     def __init__(self):

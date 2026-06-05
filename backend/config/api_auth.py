@@ -9,9 +9,11 @@ class LoginSchema(Schema):
     username: str
     password: str
 
+from typing import Optional
+
 class SuccessSchema(Schema):
     status: str
-    user: str = None
+    user: Optional[str] = None
 
 @router.post("/login", response=SuccessSchema)
 def api_login(request, data: LoginSchema):
