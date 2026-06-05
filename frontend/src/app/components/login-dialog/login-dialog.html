@@ -1,5 +1,9 @@
-<h2 mat-dialog-title>Sign In</h2>
-<mat-dialog-content>
+<div class="modal-header">
+  <h3>Sign In</h3>
+  <button class="close-btn" (click)="onCancel()">&times;</button>
+</div>
+
+<div class="modal-body">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
     <mat-form-field appearance="fill">
       <mat-label>Username</mat-label>
@@ -13,8 +17,9 @@
     
     <div class="error-text" *ngIf="error">{{ error }}</div>
   </form>
-</mat-dialog-content>
-<mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="accent" [disabled]="loginForm.invalid" (click)="onSubmit()">Login</button>
-</mat-dialog-actions>
+</div>
+
+<div class="modal-footer">
+  <button class="btn-cancel" (click)="onCancel()">Cancel</button>
+  <button class="btn-submit" [disabled]="loginForm.invalid" (click)="onSubmit()">Login</button>
+</div>
