@@ -1,0 +1,42 @@
+<!-- Floating Action Button -->
+<button class="fab-button" (click)="toggleModal()" aria-label="Report Issue">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+  </svg>
+</button>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" *ngIf="isOpen()" (click)="toggleModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Report an Issue</h3>
+      <button class="close-btn" (click)="toggleModal()">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="helper-text">Describe what went wrong. We'll automatically attach diagnostic info (like recent errors) to help us fix it faster.</p>
+      
+      <textarea 
+        [(ngModel)]="issueDescription"
+        placeholder="E.g., The chart didn't load when I clicked the refresh button..."
+        rows="5"
+        [disabled]="isSubmitting()">
+      </textarea>
+      
+      <div *ngIf="submissionStatus() === 'success'" class="status-msg success">
+        Issue reported successfully!
+      </div>
+      <div *ngIf="submissionStatus() === 'error'" class="status-msg error">
+        Failed to report issue. Please try again.
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="toggleModal()" [disabled]="isSubmitting()">Cancel</button>
+      <button class="btn-submit" (click)="submitIssue()" [disabled]="isSubmitting() || !issueDescription().trim()">
+        <span *ngIf="!isSubmitting()">Submit</span>
+        <span *ngIf="isSubmitting()" class="spinner"></span>
+      </button>
+    </div>
+  </div>
+</div>
