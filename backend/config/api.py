@@ -17,3 +17,6 @@ api.add_router("/telemetry/", telemetry_router)
 # We can also add auth endpoints directly here or via a router
 from .api_auth import router as auth_router
 api.add_router("/auth/", auth_router)
+
+from agent.api import router as agent_router
+api.add_router("/agent/", agent_router)

@@ -48,7 +48,6 @@ deactivate
 
 ```bash
 rm -rf .venv
-rm -rf venv
 ```
 
 #### Recreate the virtual environment
