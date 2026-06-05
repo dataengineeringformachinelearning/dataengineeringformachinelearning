@@ -217,12 +217,14 @@ app-page {
 .mdc-dialog__surface {
   background-color: var(--bg-color) !important;
   border: 1px solid var(--border) !important;
-  border-radius: 8px !important;
-  box-shadow: var(--shadow-lg) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
 }
 
 .blur-backdrop {
-  background-color: rgba(19, 42, 36, 0.4) !important; /* using --hover-color #132a24 */
+  background-color: rgba(19, 42, 36, 0.5) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
 }
