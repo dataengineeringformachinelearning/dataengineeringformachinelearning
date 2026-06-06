@@ -8,7 +8,7 @@ WORKDIR /app
 
 # Install system dependencies (required for PostgreSQL/psycopg2)
 RUN apt-get update && apt-get install -y \
-    libpq-dev gcc zlib1g-dev \
+    libpq-dev gcc g++ python3-dev zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies

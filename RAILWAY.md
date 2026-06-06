@@ -1,6 +1,6 @@
 # Railway Deployment Guide
 
-This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into three main services, all deployed from the same GitHub repository.
+This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into four main services, consisting of three application components deployed from the GitHub repository and one message broker service.
 
 ## Services Overview
 
@@ -27,8 +27,8 @@ This service runs the main Django web server.
 - **Dependencies**: Connects to the Postgres database through the Railway internal network.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
-### 3. Telemetry Worker (Redpanda)
-This service runs the background worker process using the backend codebase to handle telemetry/streaming data.
+### 3. Telemetry Worker (Consumer)
+This service runs the background worker process using the backend codebase to consume telemetry/streaming data from Redpanda and write it to Postgres.
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile
@@ -38,12 +38,19 @@ This service runs the background worker process using the backend codebase to ha
 - **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
+### 4. Redpanda Broker (Message Queue)
+This is the actual Redpanda message broker database that stores the streaming data. It must be provisioned as a separate service or database within Railway.
+- **Service Type**: Docker Image (`docker.redpanda.com/redpandadata/redpanda`) or Railway Template
+- **Internal TCP DNS**: `redpanda.railway.internal:9092` (Example)
+- **Public URL**: None (Should be internal only)
+
 ## Internal Networking
 
 Services within this environment can communicate securely over Railway's private internal network without traversing the public internet.
 - **Backend API**: Accessible internally at `dataengineeringformachinelearning.railway.internal`
 - **Frontend**: Accessible internally at `dataengineeringformachinelearnin.railway.internal`
 - **Postgres Database**: Connected via the internal network. Ensure the `DATABASE_URL` environment variable uses the internal connection string.
+- **Redpanda Broker**: Connected via the internal TCP network (e.g., `redpanda.railway.internal:9092`).
 
 ## CI/CD Pipeline
 
@@ -60,6 +67,9 @@ Services within this environment can communicate securely over Railway's private
 ## Environment Variables
 
 For the environments to function properly, ensure the following are configured in the Railway dashboard:
-- **Backend**: Requires Postgres credentials (`DATABASE_URL`), Redpanda/Kafka Broker URLs, and allowed hosts/CORS settings (allowing `dataengineeringformachinelearning.com`).
+- **Backend**: Requires Postgres credentials (`DATABASE_URL`), Redpanda/Kafka Broker URLs (`REDPANDA_BROKERS`), and allowed hosts/CORS settings (allowing `dataengineeringformachinelearning.com`).
 - **Frontend**: Requires the API base URL pointing to `https://backend.dataengineeringformachinelearning.com`.
-- **Worker**: Requires the same environment variables as the backend, specifically the Redpanda broker details.
+- **Worker**: Requires the same environment variables as the backend, specifically the Redpanda broker details (`REDPANDA_BROKERS`).
+
+> [!WARNING]
+> The `REDPANDA_BROKERS` environment variable MUST point to the actual Redpanda Broker's internal TCP address (e.g., `redpanda.railway.internal:9092`). Do NOT set it to the Telemetry Worker's public URL, as the worker is not a database and cannot accept Kafka TCP connections.
