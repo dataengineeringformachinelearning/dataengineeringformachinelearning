@@ -18,7 +18,7 @@ async def report_issue(request, payload: IssueReportPayload):
             user_description=payload.user_description,
             telemetry_context=payload.telemetry_context
         )
-        logger.info(f"Successfully processed issue: {response.get('output')}")
+        logger.info(f"Successfully processed issue: {response}")
         return {"status": "success", "message": "Issue processed and sent to Redpanda"}
     except Exception as e:
         logger.error(f"Error processing issue: {e}")

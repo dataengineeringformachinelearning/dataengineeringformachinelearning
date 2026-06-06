@@ -457,3 +457,12 @@ Finally, a standalone background worker can subscribe to this `app-events` topic
 ### Chapter 10.1: Introduction
 
 #### Chapter 10.1.1: Hyperparameter Tuning
+
+## Deployment Configuration
+
+This project is configured for deployment on Railway, spanning three distinct services:
+1. **Web Frontend**: The Angular application running on a public URL (`https://dataengineeringformachinelearning.com`).
+2. **Web Backend**: The Django API connected to Postgres (`https://backend.dataengineeringformachinelearning.com`).
+3. **Telemetry Worker**: A background Redpanda consumer and worker process (`https://telemetry.dataengineeringformachinelearning.com`).
+
+For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.

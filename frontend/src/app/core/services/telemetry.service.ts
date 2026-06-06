@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { isPlatformBrowser } from '@angular/common';
+import { API_ENDPOINTS } from '../constants/api.constants';
 
 export interface TelemetryPayload {
   url: string;
@@ -15,15 +16,24 @@ export interface TelemetryPayload {
 })
 export class TelemetryService {
   private readonly STORAGE_KEY = 'offline_telemetry_queue';
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
 
   constructor(private http: HttpClient) {
     // Listen for network becoming online to sync any queued offline telemetry
-    window.addEventListener('online', () => {
-      this.syncOfflineQueue();
-    });
+    if (this.isBrowser) {
+      window.addEventListener('online', () => {
+        this.syncOfflineQueue();
+      });
+    }
   }
 
   public reportEndpointStatus(payload: TelemetryPayload): void {
+    if (!this.isBrowser) {
+      // Do not send telemetry during SSR prerendering
+      return;
+    }
+
     if (navigator.onLine) {
       this.sendPayload(payload).subscribe({
         error: (err) => {
@@ -38,12 +48,12 @@ export class TelemetryService {
   }
 
   private sendPayload(payload: TelemetryPayload) {
-    // The endpoint path configured in Django-Ninja is /api/v1/telemetry/endpoints
-    const url = `${environment.backendUrl}/api/v1/telemetry/endpoints`;
-    return this.http.post(url, payload);
+    return this.http.post(API_ENDPOINTS.TELEMETRY.ENDPOINTS, payload);
   }
 
   private queueForOffline(payload: TelemetryPayload): void {
+    if (!this.isBrowser) return;
+
     let queue: TelemetryPayload[] = [];
     const stored = localStorage.getItem(this.STORAGE_KEY);
     if (stored) {
@@ -58,6 +68,8 @@ export class TelemetryService {
   }
 
   private syncOfflineQueue(): void {
+    if (!this.isBrowser) return;
+
     const stored = localStorage.getItem(this.STORAGE_KEY);
     if (!stored) return;
 

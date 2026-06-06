@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { API_ENDPOINTS } from '../core/constants/api.constants';
 
 export interface TrainingResponse {
   status: string;
@@ -16,14 +16,13 @@ export interface TrainingResponse {
 })
 export class ModelService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.backendUrl}/api/v1/model`;
 
   public latestStat = signal<number | null>(null);
   public isTraining = signal<boolean>(false);
   public trainError = signal<string | null>(null);
 
   fetchLatestStat(): void {
-    this.http.get<TrainingResponse>(`${this.apiUrl}/latest`).subscribe({
+    this.http.get<TrainingResponse>(API_ENDPOINTS.MODEL.LATEST).subscribe({
       next: data => {
         if (data.average_sla !== null && data.average_sla !== undefined) {
           this.latestStat.set(data.average_sla);
@@ -37,7 +36,7 @@ export class ModelService {
     this.isTraining.set(true);
     this.trainError.set(null);
     
-    this.http.post<TrainingResponse>(`${this.apiUrl}/train`, {}).subscribe({
+    this.http.post<TrainingResponse>(API_ENDPOINTS.MODEL.TRAIN, {}).subscribe({
       next: res => {
         setTimeout(() => {
           this.isTraining.set(false);

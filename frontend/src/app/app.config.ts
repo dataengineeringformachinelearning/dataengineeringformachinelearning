@@ -9,6 +9,7 @@ import {
 // Markdown parsing libraries
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { credentialsInterceptor } from './interceptors/credentials.interceptor';
+import { telemetryInterceptor } from './core/interceptors/telemetry.interceptor';
 import { provideMarkdown } from 'ngx-markdown';
 
 import { routes } from './app.routes';
@@ -19,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
-    provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor, telemetryInterceptor])),
     provideMarkdown(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
   ],
