@@ -44,14 +44,31 @@ uv pip install -r requirements.txt
 python manage.py migrate
 ```
 
-6. Start the Django development server:
+6. Start the underlying infrastructure (Redpanda/Kafka):
 
+Because the telemetry pipeline relies on Redpanda, you must ensure it is running in the background. Open a terminal at the **root** of your project (not the backend folder) and start the containers:
+```bash
+docker-compose up -d redpanda postgres
+```
+
+7. Start the Django development server and background workers:
+
+You will need **two separate terminal windows** (or tabs) for this step. Ensure the virtual environment is activated (`source .venv/bin/activate`) in both.
+
+**Terminal 1 (API Server):**
 ```bash
 python manage.py runserver
 ```
 
-Once the server is running, your backend API will be accessible at `http://localhost:8000/`. You can test the healthcheck endpoint at `http://localhost:8000/api/health`.
+**Terminal 2 (Telemetry Worker):**
+Open a new terminal window, navigate to the `backend` directory, activate the virtual environment, and start the worker. This worker is required to consume telemetry events from Redpanda and save them to the database so your dashboard stats load properly.
+```bash
+cd backend
+source .venv/bin/activate
+python manage.py telemetry_worker
+```
 
+Once the server is running, your backend API will be accessible at `http://localhost:8000/`. You can test the healthcheck endpoint at `http://localhost:8000/api/health`.
 ### Troubleshooting Environment Issues
 
 If you encounter any dependency conflicts or issues, recreating the environment with `uv` takes only seconds:

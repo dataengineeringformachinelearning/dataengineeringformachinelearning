@@ -1,6 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langgraph.prebuilt import create_react_agent
 from agent.kafka_tool import send_issue_to_redpanda
 import os
 
@@ -8,7 +7,7 @@ async def process_user_issue(user_description: str, telemetry_context: dict):
     if not os.environ.get("GOOGLE_API_KEY"):
         raise ValueError("GOOGLE_API_KEY environment variable not set")
 
-    llm = ChatGoogleGenerativeAI(model="gemini-flash-latest", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0)
     tools = [send_issue_to_redpanda]
     
     system_prompt = """You are an AI assistant that analyzes user-reported issues and telemetry data.
@@ -18,18 +17,9 @@ async def process_user_issue(user_description: str, telemetry_context: dict):
     Respond with a brief summary of what you did.
     """
     
-    prompt = ChatPromptTemplate.from_messages([
-        ("system", system_prompt),
-        ("human", "User Issue Description: {user_description}\nTelemetry Defaults/Context: {telemetry_context}"),
-        MessagesPlaceholder(variable_name="agent_scratchpad"),
-    ])
+    agent = create_react_agent(llm, tools, prompt=system_prompt)
     
-    agent = create_tool_calling_agent(llm, tools, prompt)
-    agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+    user_message = f"User Issue Description: {user_description}\nTelemetry Defaults/Context: {telemetry_context}"
+    response = await agent.ainvoke({"messages": [("user", user_message)]})
     
-    response = await agent_executor.ainvoke({
-        "user_description": user_description,
-        "telemetry_context": str(telemetry_context)
-    })
-    
-    return response
+    return response["messages"][-1].content

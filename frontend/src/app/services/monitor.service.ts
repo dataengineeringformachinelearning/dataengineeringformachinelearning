@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { API_ENDPOINTS } from '../core/constants/api.constants';
 
 export interface EndpointData {
   id: string;
@@ -19,6 +19,6 @@ export class MonitorService {
   private http = inject(HttpClient);
 
   getAllEndpoints() {
-    return this.http.get<EndpointData[]>(`${environment.backendUrl}/api/v1/system-status/endpoints`);
+    return this.http.get<EndpointData[]>(API_ENDPOINTS.SYSTEM_STATUS.ENDPOINTS);
   }
 }

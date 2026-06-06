@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
+import { API_ENDPOINTS } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-issue-reporter',
@@ -58,9 +58,7 @@ export class IssueReporter {
       }
     };
 
-    const endpoint = `${environment.backendUrl}/api/v1/agent/report-issue`;
-
-    this.http.post(endpoint, payload).subscribe({
+    this.http.post(API_ENDPOINTS.AGENT.REPORT_ISSUE, payload).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.submissionStatus.set('success');
