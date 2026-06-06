@@ -8,6 +8,9 @@ FROM redpandadata/redpanda:v26.1.9
 # - kafka-addr: Listens on port 9092 on all interfaces
 # - advertise-kafka-addr: Tells clients to connect via the Railway internal network
 
+# Expose the Kafka port so Railway registers this service on the internal DNS
+EXPOSE 9092
+
 CMD ["rpk", "redpanda", "start", \
      "--overprovisioned", \
      "--smp", "1", \
