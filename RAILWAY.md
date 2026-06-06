@@ -47,17 +47,17 @@ This service runs the background worker process using the backend codebase to co
 
 ### 4. Redpanda Broker (Message Queue)
 
-This is the actual Redpanda message broker database that stores the streaming data. It must be provisioned as a separate service or database within Railway.
+This is the actual Redpanda message broker database that stores the streaming data.
 
-- **Source**: Docker Image (`redpandadata/redpanda:v26.1.9`) or Railway Template
-- **Image Command**: `docker pull redpandadata/redpanda:v26.1.9`
-- **Builder**: None (Pre-built Docker Image)
-- **Target Port**: `9092` (Kafka API) and `9644` (Admin API)
-- **Private Internal DNS**: `redpanda.railway.internal:9092` (Example)
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/redpanda`
+- **Builder**: Dockerfile
+- **Target Port**: `9092` (Kafka API)
+- **Private Internal DNS**: `redpanda.railway.internal:9092`
 - **Public URL**: None (Strictly internal for security)
 - **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data` to retain messages.
-- **Deployment Trigger**: Manual deployment or Railway template updates (not tied to the main GitHub repository).
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
 ## Internal Networking
 
