@@ -11,9 +11,9 @@ FROM redpandadata/redpanda:v26.1.9
 # Expose the Kafka port so Railway registers this service on the internal DNS
 EXPOSE 9092
 
-CMD ["rpk", "redpanda", "start", \
-     "--overprovisioned", \
+CMD ["redpanda", "start", \
+     "--mode", "dev-container", \
      "--smp", "1", \
      "--memory", "2G", \
      "--kafka-addr", "PLAINTEXT://0.0.0.0:9092", \
-     "--advertise-kafka-addr", "PLAINTEXT://redpanda.railway.internal:9092"]
+     "--advertise-kafka-addr", "PLAINTEXT://deml-queue.railway.internal:9092"]
