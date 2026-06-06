@@ -39,9 +39,9 @@ This service runs the background worker process using the backend codebase to co
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile
 - **Start Command**: `python manage.py telemetry_worker`
-- **Public URL**: `https://telemetry.dataengineeringformachinelearning.com`
-- **Target Port**: `8080`
+- **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `dataengineeringformachinelearning.railway.internal`
+- **Public URL**: None (Strictly an internal background process)
 - **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
@@ -94,8 +94,8 @@ No specific backend environment variables are usually required at runtime if the
 
 - **ALLOWED_HOSTS**: `backend.dataengineeringformachinelearning.com`
 - **CORS_ALLOW_CREDENTIALS**: `True`
-- **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com,https://telemetry.dataengineeringformachinelearning.com`
-- **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com,https://telemetry.dataengineeringformachinelearning.com`
+- **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
+- **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
 - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}` (Railway automatically provides this if you link the Postgres service)
 - **DEBUG**: `False`
 - **SECRET_KEY**: `<your-production-secret-key>`
@@ -104,9 +104,8 @@ No specific backend environment variables are usually required at runtime if the
 
 ### 3. Telemetry Worker (Consumer)
 
-The worker uses the same Django backend codebase and requires identical environment variables to connect to the database and broker:
+The worker uses the same Django backend codebase and requires identical environment variables to connect to the database and broker (no HTTP variables are needed since it runs in the background):
 
-- **ALLOWED_HOSTS**: `telemetry.dataengineeringformachinelearning.com`
 - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
 - **DEBUG**: `False`
 - **SECRET_KEY**: `<your-production-secret-key>`
