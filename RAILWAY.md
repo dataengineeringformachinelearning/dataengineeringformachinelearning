@@ -5,7 +5,9 @@ This document outlines the deployment configuration for the project on [Railway]
 ## Services Overview
 
 ### 1. Web Frontend
+
 This service serves the user interface.
+
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/frontend`
 - **Builder**: Dockerfile
@@ -16,7 +18,9 @@ This service serves the user interface.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
 ### 2. Web Backend (API)
+
 This service runs the main Django web server.
+
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile
@@ -28,25 +32,37 @@ This service runs the main Django web server.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
 ### 3. Telemetry Worker (Consumer)
+
 This service runs the background worker process using the backend codebase to consume telemetry/streaming data from Redpanda and write it to Postgres.
+
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile
 - **Start Command**: `python manage.py telemetry_worker`
 - **Public URL**: `https://telemetry.dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
+- **Private Internal DNS**: `dataengineeringformachinelearning.railway.internal`
 - **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
 ### 4. Redpanda Broker (Message Queue)
+
 This is the actual Redpanda message broker database that stores the streaming data. It must be provisioned as a separate service or database within Railway.
-- **Service Type**: Docker Image (`docker.redpanda.com/redpandadata/redpanda`) or Railway Template
-- **Internal TCP DNS**: `redpanda.railway.internal:9092` (Example)
-- **Public URL**: None (Should be internal only)
+
+- **Source**: Docker Image (`redpandadata/redpanda:v26.1.9`) or Railway Template
+- **Image Command**: `docker pull redpandadata/redpanda:v26.1.9`
+- **Builder**: None (Pre-built Docker Image)
+- **Target Port**: `9092` (Kafka API) and `9644` (Admin API)
+- **Private Internal DNS**: `redpanda.railway.internal:9092` (Example)
+- **Public URL**: None (Strictly internal for security)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data` to retain messages.
+- **Deployment Trigger**: Manual deployment or Railway template updates (not tied to the main GitHub repository).
 
 ## Internal Networking
 
 Services within this environment can communicate securely over Railway's private internal network without traversing the public internet.
+
 - **Backend API**: Accessible internally at `dataengineeringformachinelearning.railway.internal`
 - **Frontend**: Accessible internally at `dataengineeringformachinelearnin.railway.internal`
 - **Postgres Database**: Connected via the internal network. Ensure the `DATABASE_URL` environment variable uses the internal connection string.
@@ -66,10 +82,41 @@ Services within this environment can communicate securely over Railway's private
 
 ## Environment Variables
 
-For the environments to function properly, ensure the following are configured in the Railway dashboard:
-- **Backend**: Requires Postgres credentials (`DATABASE_URL`), Redpanda/Kafka Broker URLs (`REDPANDA_BROKERS`), and allowed hosts/CORS settings (allowing `dataengineeringformachinelearning.com`).
-- **Frontend**: Requires the API base URL pointing to `https://backend.dataengineeringformachinelearning.com`.
-- **Worker**: Requires the same environment variables as the backend, specifically the Redpanda broker details (`REDPANDA_BROKERS`).
+For the environments to function properly, ensure the following are configured in the Railway dashboard for each respective service:
+
+### 1. Web Frontend (UI)
+
+No specific backend environment variables are usually required at runtime if the API URL is built into the image, but if configured dynamically:
+
+- **API_URL** or similar depending on the frontend build setup: `https://backend.dataengineeringformachinelearning.com`
+
+### 2. Web Backend (API)
+
+- **ALLOWED_HOSTS**: `backend.dataengineeringformachinelearning.com`
+- **CORS_ALLOW_CREDENTIALS**: `True`
+- **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com,https://telemetry.dataengineeringformachinelearning.com`
+- **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com,https://telemetry.dataengineeringformachinelearning.com`
+- **DATABASE_URL**: `${{Postgres.DATABASE_URL}}` (Railway automatically provides this if you link the Postgres service)
+- **DEBUG**: `False`
+- **SECRET_KEY**: `<your-production-secret-key>`
+- **REDPANDA_BROKERS**: `redpanda.railway.internal:9092` (See warning below)
+- **GOOGLE_API_KEY**: `<your-google-api-key>` (If using LLM features)
+
+### 3. Telemetry Worker (Consumer)
+
+The worker uses the same Django backend codebase and requires identical environment variables to connect to the database and broker:
+
+- **ALLOWED_HOSTS**: `telemetry.dataengineeringformachinelearning.com`
+- **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+- **DEBUG**: `False`
+- **SECRET_KEY**: `<your-production-secret-key>`
+- **REDPANDA_BROKERS**: `redpanda.railway.internal:9092` (See warning below)
 
 > [!WARNING]
-> The `REDPANDA_BROKERS` environment variable MUST point to the actual Redpanda Broker's internal TCP address (e.g., `redpanda.railway.internal:9092`). Do NOT set it to the Telemetry Worker's public URL, as the worker is not a database and cannot accept Kafka TCP connections.
+> The `REDPANDA_BROKERS` environment variable MUST point to the actual Redpanda Broker's internal TCP address (e.g., `redpanda.railway.internal:9092`). Do NOT set it to the Telemetry Worker's public URL or internal DNS, as the worker is not a database and cannot accept Kafka TCP connections.
+
+### 4. Redpanda Broker (Message Queue)
+
+Depending on the Railway template used, Redpanda might not need manual environment variables, but if running the raw Docker image, it usually requires:
+
+- **REDPANDA_BROKERS**: Not strictly needed on the broker itself, but it advertises its internal address. Ensure the port `9092` is exposed internally.
