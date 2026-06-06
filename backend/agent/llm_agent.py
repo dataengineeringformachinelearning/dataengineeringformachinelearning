@@ -17,7 +17,7 @@ async def process_user_issue(user_description: str, telemetry_context: dict):
     Respond with a brief summary of what you did.
     """
     
-    agent = create_react_agent(llm, tools, prompt=system_prompt)
+    agent = create_react_agent(llm, tools, state_modifier=system_prompt)
     
     user_message = f"User Issue Description: {user_description}\nTelemetry Defaults/Context: {telemetry_context}"
     response = await agent.ainvoke({"messages": [("user", user_message)]})
