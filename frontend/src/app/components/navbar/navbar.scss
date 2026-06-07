@@ -92,12 +92,12 @@
 }
 
 .auth-btn {
-  background: var(--color-warning) !important;
-  color: var(--color-on-primary-container) !important;
+  background: var(--color-primary) !important;
+  color: var(--color-on-primary) !important;
   font-weight: 600 !important;
   border-radius: 20px !important;
   padding: 0 20px !important;
-  box-shadow: 0 4px 10px rgba(255, 193, 7, 0.2) !important;
+  box-shadow: var(--shadow-sm) !important;
   text-transform: uppercase !important;
   letter-spacing: 0.1em !important;
   border: none !important;
@@ -107,7 +107,8 @@
   
   &:hover {
     transform: translateY(-1px);
-    background-color: var(--color-warning) !important;
-    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4) !important;
+    background-color: var(--color-primary) !important;
+    opacity: 0.9;
+    box-shadow: var(--shadow-md) !important;
   }
 }

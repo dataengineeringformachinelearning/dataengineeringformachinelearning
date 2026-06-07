@@ -6,18 +6,18 @@
   color: var(--text-color);
 
   /* Set up theme-driven variables following THEME.md */
-  --status-accent: var(--color-warning);
-  --status-badge-bg: rgba(255, 193, 7, 0.1);
-  --status-badge-text: var(--color-warning);
-  --status-badge-border: rgba(255, 193, 7, 0.3);
+  --status-accent: var(--color-primary-container);
+  --status-badge-bg: rgba(192, 197, 193, 0.1);
+  --status-badge-text: var(--color-primary-container);
+  --status-badge-border: rgba(192, 197, 193, 0.3);
 }
 
 /* Light theme overrides matching THEME.md */
 :host-context(html[data-theme='light']) {
-  --status-accent: var(--color-warning);
-  --status-badge-bg: rgba(237, 108, 2, 0.1);
-  --status-badge-text: var(--color-warning);
-  --status-badge-border: rgba(237, 108, 2, 0.3);
+  --status-accent: var(--color-primary);
+  --status-badge-bg: rgba(45, 71, 57, 0.08);
+  --status-badge-text: var(--color-primary);
+  --status-badge-border: rgba(45, 71, 57, 0.2);
 }
 
 .status-container {
@@ -206,6 +206,15 @@
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px var(--status-badge-border) !important;
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .manage-btn {
+    color: var(--color-on-primary) !important;
+    mat-icon {
+      color: var(--color-on-primary) !important;
+    }
   }
 }
 
