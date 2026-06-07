@@ -67,7 +67,7 @@ Used for notifications, alerts, and system feedback. These have been slightly de
 | Token | Hex | Usage |
 | --- | --- | --- |
 | `--color-success` | `#2E7D32` | Positive feedback, success states. |
-| `--color-warning` | `#ED6C02` | Caution, warnings. Used only for status badges and warning indicators. |
+| `--color-warning` | `#8A5C00` | Caution, warnings. Used only for status badges and warning indicators. |
 | `--color-error` | `#D32F2F` | Errors, destructive actions. |
 | `--color-info` | `#0288D1` | Informational messages. |
 
@@ -110,7 +110,8 @@ To guarantee layout consistency and a pixel-perfect feel, follow these guideline
 ### Buttons
 - **Primary Buttons**: Always use `--color-primary` background and `--color-on-primary` text.
 - **Secondary / Accent Buttons**: Always use `--color-primary-container` background and `--color-on-primary-container` text. Do not hardcode opacity or background values.
-- **Button Shape**: Material Design pill shape (`border-radius: 100px` for standard CTA buttons, `border-radius: 20px` for smaller actions and forms).
+- **Dark Grey Action Buttons**: For utility actions (like navbar Sign In/Out, dashboard manage buttons, service additions, and modal submits), use `--color-dark-grey-btn-bg` and `--color-dark-grey-btn-text` to ensure high contrast and avoid warning colors on interactive controls.
+- **Button Shape**: Material Design pill shape (`border-radius: 100px` for standard CTA buttons, `border-radius: 20px` for smaller actions and forms, and `border-radius: 8px` for modal submits and list actions).
 
 ### Cards & Surfaces
 - Surfaces (`.page-content`, cards, dialogs) must use `var(--card-bg)` for the background and `var(--border)` for borders.

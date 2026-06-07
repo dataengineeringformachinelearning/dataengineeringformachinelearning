@@ -191,30 +191,22 @@
 }
 
 .manage-btn {
-  background: var(--status-accent) !important;
-  color: var(--color-on-primary-container) !important;
+  background: var(--color-dark-grey-btn-bg) !important;
+  color: var(--color-dark-grey-btn-text) !important;
   font-weight: 600 !important;
   border-radius: 20px !important;
   border: none !important;
-  box-shadow: 0 4px 10px var(--status-badge-border) !important;
+  box-shadow: var(--shadow-sm) !important;
   transition: all 0.2s ease !important;
 
   mat-icon {
-    color: var(--color-on-primary-container) !important;
+    color: var(--color-dark-grey-btn-text) !important;
   }
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px var(--status-badge-border) !important;
-  }
-}
-
-:host-context(html[data-theme='light']) {
-  .manage-btn {
-    color: var(--color-on-primary) !important;
-    mat-icon {
-      color: var(--color-on-primary) !important;
-    }
+    box-shadow: var(--shadow-md) !important;
+    opacity: 0.9;
   }
 }
 

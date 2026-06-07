@@ -32,6 +32,10 @@
   --text-muted: var(--color-primary-container);
   --border: var(--color-surface);
   --card-bg: var(--color-surface);
+
+  /* Button Dark Grey Styling */
+  --color-dark-grey-btn-bg: rgba(255, 255, 255, 0.08);
+  --color-dark-grey-btn-text: #ffffff;
 }
 
 @media (prefers-color-scheme: light) {
@@ -46,7 +50,7 @@
     --color-on-background: #182821;
 
     --color-success: #2E7D32;
-    --color-warning: #ED6C02;
+    --color-warning: #8A5C00;
     --color-error: #D32F2F;
     --color-info: #0288D1;
 
@@ -58,6 +62,10 @@
     --hover-color: var(--color-primary-container);
     --text-muted: var(--color-on-primary-container);
     --border: #D1D8D4;
+
+    /* Button Dark Grey Styling */
+    --color-dark-grey-btn-bg: #202124;
+    --color-dark-grey-btn-text: #ffffff;
   }
 }
 

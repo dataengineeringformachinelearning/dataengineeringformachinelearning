@@ -36,6 +36,10 @@
   --link-color: var(--color-primary-container);
   --link-hover-color: #B0C9BD;
   --hero-title-color: #c0c5c1;
+
+  /* Button Dark Grey Styling */
+  --color-dark-grey-btn-bg: rgba(255, 255, 255, 0.08);
+  --color-dark-grey-btn-text: #ffffff;
 }
 
 html[data-theme='light'] {
@@ -49,7 +53,7 @@ html[data-theme='light'] {
   --color-on-background: #182821;
 
   --color-success: #2E7D32;
-  --color-warning: #ED6C02;
+  --color-warning: #8A5C00;
   --color-error: #D32F2F;
   --color-info: #0288D1;
 
@@ -65,4 +69,8 @@ html[data-theme='light'] {
   --link-color: var(--color-primary);
   --link-hover-color: #1A2B22;
   --hero-title-color: var(--color-primary);
+
+  /* Button Dark Grey Styling */
+  --color-dark-grey-btn-bg: #202124;
+  --color-dark-grey-btn-text: #ffffff;
 }

@@ -109,17 +109,17 @@
     }
 
     &.btn-submit {
-      background: var(--color-warning) !important;
+      background: var(--color-dark-grey-btn-bg) !important;
       border: none !important;
-      color: var(--color-on-primary-container) !important;
+      color: var(--color-dark-grey-btn-text) !important;
       min-width: 100px;
       display: flex;
       justify-content: center;
-      box-shadow: 0 4px 10px rgba(255, 193, 7, 0.2) !important;
+      box-shadow: var(--shadow-sm) !important;
       
       &:hover:not(:disabled) {
-        filter: brightness(1.1);
-        box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4) !important;
+        opacity: 0.9;
+        box-shadow: var(--shadow-md) !important;
       }
       
       &:disabled {
@@ -139,7 +139,7 @@
   margin-top: 0.5rem;
   
   a {
-    color: var(--color-warning);
+    color: var(--link-color);
     font-size: 0.85rem;
     font-weight: 500;
     text-decoration: none;
