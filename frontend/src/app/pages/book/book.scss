@@ -1,17 +1,64 @@
+:host {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.book-container {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Glow Spheres for Homepage Unity */
+.glow-sphere {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sphere-1 {
+  width: 500px;
+  height: 500px;
+  background: var(--primary-color);
+  top: -150px;
+  left: -150px;
+}
+
+.sphere-2 {
+  width: 450px;
+  height: 450px;
+  background: var(--color-warning);
+  bottom: -150px;
+  right: -100px;
+}
+
 .home-header {
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.5rem;
 
   h1 {
     font-size: 2.15rem;
-    font-weight: 600;
+    font-weight: 700;
     margin-bottom: 0.5rem;
     margin-top: 0;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
   }
 
   .subtitle {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
     color: var(--text-muted);
     margin: 0;
     max-width: 800px;
+    line-height: 1.6;
   }
 }
