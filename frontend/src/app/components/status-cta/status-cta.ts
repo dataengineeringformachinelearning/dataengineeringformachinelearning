@@ -38,23 +38,8 @@ export class StatusCta {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-      if (result) {
-        let success = false;
-        if (result.mode === 'register') {
-          success = await this.authService.register({
-            username: result.username,
-            password: result.password,
-            email: result.email
-          });
-        } else {
-          success = await this.authService.login({
-            username: result.username,
-            password: result.password
-          });
-        }
-        if (success) {
-          window.location.reload();
-        }
+      if (result === true) {
+        window.location.reload();
       }
     });
   }

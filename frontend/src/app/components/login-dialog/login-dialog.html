@@ -39,7 +39,7 @@
       <input matInput type="password" formControlName="password" required>
     </mat-form-field>
     
-    <div class="error-text" *ngIf="error" role="alert" style="color: var(--color-error); margin-bottom: 12px; font-size: 0.85rem; font-weight: 500;">{{ error }}</div>
+    <div class="error-text" *ngIf="error()" role="alert" style="color: var(--color-error); margin-bottom: 12px; font-size: 0.85rem; font-weight: 500;">{{ error() }}</div>
 
     <div class="toggle-link" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
       <a href="javascript:void(0)" (click)="toggleMode()" *ngIf="!isForgotMode() && !isResetMode()">

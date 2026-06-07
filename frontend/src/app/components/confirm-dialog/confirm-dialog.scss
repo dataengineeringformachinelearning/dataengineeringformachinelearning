@@ -1,0 +1,142 @@
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.05);
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--color-primary-container);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .header-icon {
+    color: var(--color-primary-container);
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: var(--color-primary-container);
+    }
+  }
+}
+
+.modal-body {
+  padding: 1.5rem;
+  
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    transition: background-color 0.3s, border-color 0.3s;
+    
+    &.mdc-text-field--focused {
+      background-color: rgba(0, 0, 0, 0.4) !important;
+      border-color: var(--color-primary-container);
+    }
+  }
+
+  ::ng-deep .mdc-line-ripple {
+    display: none;
+  }
+
+  :host-context(html[data-theme='light']) & {
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: rgba(0, 0, 0, 0.03) !important;
+      border: 1px solid var(--border);
+      
+      &.mdc-text-field--focused {
+        background-color: rgba(0, 0, 0, 0.05) !important;
+        border-color: var(--color-primary);
+      }
+    }
+  }
+}
+
+.modal-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  background: rgba(0, 0, 0, 0.05);
+
+  button {
+    padding: 0.6rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    font-size: 0.95rem;
+
+    &.btn-cancel {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      &:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--color-primary-container);
+      }
+    }
+
+    &.btn-submit {
+      border: none !important;
+      min-width: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm) !important;
+      
+      &:hover:not(:disabled) {
+        opacity: 0.9;
+        box-shadow: var(--shadow-md) !important;
+      }
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .modal-header {
+    background: rgba(0, 0, 0, 0.02);
+    h3 {
+      color: var(--color-primary);
+    }
+    .header-icon {
+      color: var(--color-primary);
+    }
+    .close-btn:hover {
+      color: var(--color-primary);
+    }
+  }
+  .modal-footer {
+    background: rgba(0, 0, 0, 0.02);
+    button.btn-cancel {
+      &:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.04);
+        border-color: var(--color-primary);
+      }
+    }
+  }
+}

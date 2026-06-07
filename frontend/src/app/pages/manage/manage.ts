@@ -18,7 +18,9 @@ import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Sidebar } from '../../components/sidebar/sidebar';
+import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-manage',
@@ -34,6 +36,7 @@ import { Sidebar } from '../../components/sidebar/sidebar';
     MatListModule,
     RouterModule,
     MatCheckboxModule,
+    MatDialogModule,
     Sidebar
   ],
   templateUrl: './manage.html',
@@ -45,6 +48,7 @@ export class Manage implements OnInit {
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   statusPages = signal<StatusPageData[]>([]);
   selectedPage = signal<StatusPageData | null>(null);
@@ -126,15 +130,28 @@ export class Manage implements OnInit {
   }
 
   deleteStatusPage(pageId: string) {
-    if (confirm('Are you sure you want to delete this status page? All monitored services and incidents will be removed.')) {
-      this.monitorService.deleteStatusPage(pageId).subscribe({
-        next: () => {
-          this.selectedPage.set(null);
-          this.loadStatusPages();
-        },
-        error: err => console.error('Error deleting page:', err)
-      });
-    }
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '450px',
+      data: {
+        title: 'Delete Status Page',
+        message: 'Are you sure you want to delete this status page? All monitored services and incidents will be removed.',
+        type: 'confirm',
+        confirmBtnText: 'Delete',
+        confirmBtnColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.monitorService.deleteStatusPage(pageId).subscribe({
+          next: () => {
+            this.selectedPage.set(null);
+            this.loadStatusPages();
+          },
+          error: err => console.error('Error deleting page:', err)
+        });
+      }
+    });
   }
 
 
@@ -162,31 +179,78 @@ export class Manage implements OnInit {
         next: updated => {
           this.selectedPage.set(updated);
           this.loadStatusPages();
-          alert('Status page settings saved successfully.');
+          this.dialog.open(ConfirmDialog, {
+            width: '400px',
+            data: {
+              title: 'Settings Saved',
+              message: 'Status page settings saved successfully.',
+              type: 'alert',
+              confirmBtnText: 'OK'
+            }
+          });
         },
         error: err => {
           console.error('Error updating status page:', err);
-          alert('Failed to update status page. Slug may already be taken.');
+          this.dialog.open(ConfirmDialog, {
+            width: '400px',
+            data: {
+              title: 'Update Failed',
+              message: 'Failed to update status page. Slug may already be taken.',
+              type: 'alert',
+              confirmBtnText: 'OK',
+              confirmBtnColor: 'warn'
+            }
+          });
         }
       });
     }
   }
 
   deleteAccount() {
-    if (confirm('CRITICAL WARNING: Are you sure you want to permanently delete your account? All of your status pages, monitored services, incident reports, and telemetry data will be permanently and irreversibly destroyed.')) {
-      const confirmText = prompt('Please type "DELETE MY ACCOUNT" to confirm:');
-      if (confirmText === 'DELETE MY ACCOUNT') {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '450px',
+      data: {
+        title: 'Delete Account Permanently',
+        message: 'CRITICAL WARNING: Are you sure you want to permanently delete your account? All of your status pages, monitored services, incident reports, and telemetry data will be permanently and irreversibly destroyed.',
+        type: 'prompt',
+        confirmText: 'DELETE MY ACCOUNT',
+        confirmBtnText: 'Delete Account',
+        confirmBtnColor: 'warn'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
         this.authService.deleteAccount().then(async success => {
           if (success) {
-            alert('Your account and all associated data have been permanently deleted.');
-            await this.router.navigate(['/']);
-            window.location.reload();
+            const successDialog = this.dialog.open(ConfirmDialog, {
+              width: '400px',
+              data: {
+                title: 'Account Deleted',
+                message: 'Your account and all associated data have been permanently deleted.',
+                type: 'alert',
+                confirmBtnText: 'OK'
+              }
+            });
+            successDialog.afterClosed().subscribe(async () => {
+              await this.router.navigate(['/']);
+              window.location.reload();
+            });
           } else {
-            alert('Failed to delete account.');
+            this.dialog.open(ConfirmDialog, {
+              width: '400px',
+              data: {
+                title: 'Deletion Failed',
+                message: 'Failed to delete account.',
+                type: 'alert',
+                confirmBtnText: 'OK',
+                confirmBtnColor: 'warn'
+              }
+            });
           }
         });
       }
-    }
+    });
   }
 
   loadServices(pageId: string) {

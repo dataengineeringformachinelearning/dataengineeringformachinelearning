@@ -27,31 +27,31 @@ export class AuthService {
     }
   }
 
-  async login(credentials: any) {
+  async login(credentials: any): Promise<{ success: boolean; error?: string }> {
     try {
       const res: any = await firstValueFrom(this.http.post(`${environment.backendUrl}/api/v1/auth/login`, credentials));
-      if (res.status === 'success') {
+      if (res && res.status === 'success') {
         this.isAuthenticated.set(true);
         this.currentUserId.set(res.user_id);
-        return true;
+        return { success: true };
       }
-      return false;
-    } catch (e) {
-      return false;
+      return { success: false, error: 'Login failed.' };
+    } catch (e: any) {
+      return { success: false, error: e?.error?.detail || 'Invalid credentials or user does not exist.' };
     }
   }
 
-  async register(credentials: any) {
+  async register(credentials: any): Promise<{ success: boolean; error?: string }> {
     try {
       const res: any = await firstValueFrom(this.http.post(`${environment.backendUrl}/api/v1/auth/register`, credentials));
-      if (res.status === 'success') {
+      if (res && res.status === 'success') {
         this.isAuthenticated.set(true);
         this.currentUserId.set(res.user_id);
-        return true;
+        return { success: true };
       }
-      return false;
-    } catch (e) {
-      return false;
+      return { success: false, error: 'Registration failed.' };
+    } catch (e: any) {
+      return { success: false, error: e?.error?.detail || 'Registration failed.' };
     }
   }
 

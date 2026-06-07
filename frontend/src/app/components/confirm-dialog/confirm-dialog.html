@@ -1,0 +1,46 @@
+<div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <mat-icon class="header-icon" [style.color]="data.confirmBtnColor === 'warn' ? '#ef4444' : 'var(--primary-color)'" style="margin: 0; font-size: 24px; width: 24px; height: 24px;">
+      {{ data.type === 'alert' ? 'info' : data.confirmBtnColor === 'warn' ? 'warning' : 'help' }}
+    </mat-icon>
+    <h3 style="margin: 0;">
+      {{ data.title || (data.type === 'alert' ? 'Notice' : data.type === 'prompt' ? 'Verification Required' : 'Confirm Action') }}
+    </h3>
+  </div>
+  <button class="close-btn" (click)="onCancel()" style="display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text-color);">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<div class="modal-body" style="padding: 20px 0;">
+  <p style="margin: 0 0 16px 0; font-size: 0.95rem; line-height: 1.5; color: var(--text-color); white-space: pre-line;">
+    {{ data.message }}
+  </p>
+
+  <div *ngIf="data.type === 'prompt' && data.confirmText" style="margin-top: 16px;">
+    <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
+      Please type <strong>{{ data.confirmText }}</strong> to proceed:
+    </p>
+    <mat-form-field appearance="fill" class="full-width" style="width: 100%;">
+      <mat-label>Verification text</mat-label>
+      <input matInput [ngModel]="inputValue()" (ngModelChange)="inputValue.set($event)" required autocomplete="off" (keyup.enter)="onConfirm()">
+    </mat-form-field>
+  </div>
+</div>
+
+<div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 12px;">
+  <button class="btn-cancel" *ngIf="data.type !== 'alert'" (click)="onCancel()" style="display: flex; align-items: center; gap: 6px;">
+    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
+  <button class="btn-submit" [disabled]="!isValid" (click)="onConfirm()" 
+          [style.background-color]="data.confirmBtnColor === 'warn' ? '#ef4444' : 'var(--primary-color)'"
+          style="display: flex; align-items: center; gap: 6px; color: white;">
+    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">
+      {{ data.type === 'alert' ? 'check_circle' : data.confirmBtnColor === 'warn' ? 'delete_forever' : 'check' }}
+    </mat-icon>
+    <span>
+      {{ data.confirmBtnText || (data.type === 'alert' ? 'OK' : 'Confirm') }}
+    </span>
+  </button>
+</div>

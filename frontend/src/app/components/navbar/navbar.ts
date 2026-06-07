@@ -38,26 +38,8 @@ export class Navbar {
     });
 
     dialogRef.afterClosed().subscribe(async result => {
-      if (result) {
-        let success = false;
-        if (result.mode === 'register') {
-          success = await this.authService.register({
-            username: result.username,
-            password: result.password,
-            email: result.email
-          });
-          if (!success) {
-            alert('Registration failed. Username may already exist.');
-          }
-        } else {
-          success = await this.authService.login({
-            username: result.username,
-            password: result.password
-          });
-          if (!success) {
-            alert('Login failed. Please check your credentials.');
-          }
-        }
+      if (result === true) {
+        window.location.reload();
       }
     });
   }

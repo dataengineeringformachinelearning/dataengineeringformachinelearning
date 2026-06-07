@@ -42,7 +42,7 @@ export class LoginDialog implements OnInit {
     email: ['']
   });
 
-  error: string | null = null;
+  error = signal<string | null>(null);
 
   ngOnInit() {
     if (this.data && this.data.mode === 'reset') {
@@ -62,14 +62,14 @@ export class LoginDialog implements OnInit {
     } else {
       this.isRegisterMode.update(val => !val);
     }
-    this.error = null;
+    this.error.set(null);
     this.successMessage.set(null);
   }
 
   switchToForgot(): void {
     this.isForgotMode.set(true);
     this.isRegisterMode.set(false);
-    this.error = null;
+    this.error.set(null);
     this.successMessage.set(null);
     // Adjust validators for forgot mode: only email is required
     this.loginForm.get('username')?.clearValidators();
@@ -84,7 +84,7 @@ export class LoginDialog implements OnInit {
     this.isForgotMode.set(false);
     this.isRegisterMode.set(false);
     this.isResetMode.set(false);
-    this.error = null;
+    this.error.set(null);
     this.successMessage.set(null);
     // Reset to normal validators
     this.loginForm.get('username')?.setValidators([Validators.required]);
@@ -98,7 +98,7 @@ export class LoginDialog implements OnInit {
   async onSubmit() {
     if (this.loginForm.invalid) return;
 
-    this.error = null;
+    this.error.set(null);
     this.successMessage.set(null);
 
     if (this.isForgotMode()) {
@@ -107,7 +107,7 @@ export class LoginDialog implements OnInit {
       if (success) {
         this.successMessage.set('If that email exists in our records, we have sent a password reset link.');
       } else {
-        this.error = 'Failed to submit request. Please try again.';
+        this.error.set('Failed to submit request. Please try again.');
       }
     } else if (this.isResetMode()) {
       const newPassword = this.loginForm.value.password;
@@ -122,13 +122,28 @@ export class LoginDialog implements OnInit {
           this.switchToLogin();
         }, 3000);
       } else {
-        this.error = 'Failed to reset password. The link may have expired or is invalid.';
+        this.error.set('Failed to reset password. The link may have expired or is invalid.');
       }
     } else {
-      this.dialogRef.close({
-        ...this.loginForm.value,
-        mode: this.isRegisterMode() ? 'register' : 'login'
-      });
+      let result;
+      if (this.isRegisterMode()) {
+        result = await this.authService.register({
+          username: this.loginForm.value.username,
+          password: this.loginForm.value.password,
+          email: this.loginForm.value.email
+        });
+      } else {
+        result = await this.authService.login({
+          username: this.loginForm.value.username,
+          password: this.loginForm.value.password
+        });
+      }
+      
+      if (result.success) {
+        this.dialogRef.close(true);
+      } else {
+        this.error.set(result.error || 'Authentication failed.');
+      }
     }
   }
 
