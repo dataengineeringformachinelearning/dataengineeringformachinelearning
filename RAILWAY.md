@@ -1,6 +1,6 @@
 # Railway Deployment Guide
 
-This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into four main services, consisting of three application components deployed from the GitHub repository and one message broker service.
+This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into five main services, consisting of four application components deployed from the GitHub repository and one message broker service.
 
 ## How to Deploy in One Project
 
@@ -71,6 +71,20 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data` to retain messages.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
+### 5. SLA Predictor Worker (Consumer)
+
+This service runs the background SLA training process using the backend codebase to consume training triggers from Redpanda, load PyTorch, run model training, and write results to Postgres.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile
+- **Start Command**: `python manage.py sla_worker`
+- **Target Port**: None (Background worker process)
+- **Private Internal DNS**: `deml-sla.railway.internal`
+- **Public URL**: None (Strictly an internal background process)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+
 ## Internal Networking
 
 Services within this environment can communicate securely over Railway's private internal network without traversing the public internet.
@@ -137,3 +151,13 @@ The worker uses the same Django backend codebase and requires identical environm
 Depending on the Railway template used, Redpanda might not need manual environment variables, but if running the raw Docker image, it usually requires:
 
 - **REDPANDA_BROKERS**: Not strictly needed on the broker itself, but it advertises its internal address. Ensure the port `9092` is exposed internally.
+
+### 5. SLA Predictor Worker (Consumer)
+
+The SLA worker uses the same Django backend codebase and requires identical environment variables to connect to the database and broker:
+
+- **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+- **DEBUG**: `False`
+- **SECRET_KEY**: `<your-production-secret-key>`
+- **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
+

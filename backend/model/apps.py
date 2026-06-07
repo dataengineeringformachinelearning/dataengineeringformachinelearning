@@ -1,6 +1,12 @@
-from django.apps import AppConfig
 import os
 import threading
+import asyncio
+import json
+import logging
+from django.apps import AppConfig
+from aiokafka import AIOKafkaProducer
+
+logger = logging.getLogger(__name__)
 
 class ModelConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
@@ -13,33 +19,31 @@ class ModelConfig(AppConfig):
 
     def start_scheduler(self):
         import time
-        # Give Django setup and DB a brief moment to settle down
+        # Give Django setup a brief moment to settle down
         time.sleep(5)
         
-        self.run_training_for_all_tenants()
+        self.trigger_training_job()
 
         # Run every hour
         while True:
             time.sleep(3600)
-            self.run_training_for_all_tenants()
+            self.trigger_training_job()
 
-    def run_training_for_all_tenants(self):
-        from monitor.models import StatusPage
-        from model.services import train_tenant_sla
-        import logging
-
-        logger = logging.getLogger(__name__)
-        logger.info("SLA Predictor Scheduler: Running model training for all tenants...")
+    def trigger_training_job(self):
+        logger.info("SLA Predictor Scheduler: Publishing training trigger to Redpanda...")
         try:
-            pages = StatusPage.objects.all()
-            for page in pages:
-                try:
-                    run = train_tenant_sla(page)
-                    if run:
-                        logger.info(f"SLA Predictor Scheduler: Trained model for tenant '{page.title}' (SLA: {run.average_sla:.2f}%)")
-                    else:
-                        logger.info(f"SLA Predictor Scheduler: Skipped tenant '{page.title}' (no telemetry data available)")
-                except Exception as e:
-                    logger.error(f"SLA Predictor Scheduler: Failed to train tenant '{page.title}': {e}")
+            asyncio.run(self.publish_trigger())
+            logger.info("SLA Predictor Scheduler: Training trigger published successfully.")
         except Exception as e:
-            logger.error(f"SLA Predictor Scheduler: Failed to retrieve tenants: {e}")
+            logger.error(f"SLA Predictor Scheduler: Failed to publish training trigger: {e}")
+
+    async def publish_trigger(self):
+        brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
+        producer = AIOKafkaProducer(bootstrap_servers=brokers)
+        await producer.start()
+        try:
+            msg = {"action": "train_all_tenants"}
+            await producer.send_and_wait("sla-training-events", json.dumps(msg).encode('utf-8'))
+        finally:
+            await producer.stop()
+
