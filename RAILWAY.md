@@ -101,6 +101,11 @@ For the environments to function properly, ensure the following are configured i
 No specific backend environment variables are usually required at runtime if the API URL is built into the image, but if configured dynamically:
 
 - **API_URL** or similar depending on the frontend build setup: `https://backend.dataengineeringformachinelearning.com`
+- **FIREBASE_API_KEY**: Your Firebase web app API key.
+- **FIREBASE_AUTH_DOMAIN**: Your Firebase web app auth domain (e.g. `demldotcom.firebaseapp.com`).
+- **FIREBASE_STORAGE_BUCKET**: Your Firebase storage bucket (e.g. `demldotcom.appspot.com`).
+- **FIREBASE_MESSAGING_SENDER_ID**: Your Firebase messaging sender ID.
+- **FIREBASE_APP_ID**: Your Firebase web app ID.
 
 ### 2. Web Backend (API)
 
@@ -113,6 +118,7 @@ No specific backend environment variables are usually required at runtime if the
 - **SECRET_KEY**: `<your-production-secret-key>`
 - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092` (See warning below)
 - **GOOGLE_API_KEY**: `<your-google-api-key>` (If using LLM features)
+- **FIREBASE_SERVICE_ACCOUNT_JSON**: The raw JSON string of your Firebase service account credentials.
 
 ### 3. Telemetry Worker (Consumer)
 

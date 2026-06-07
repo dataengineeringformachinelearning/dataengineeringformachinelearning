@@ -25,12 +25,23 @@ load_dotenv(BASE_DIR / '.env')
 
 # Initialize Firebase Admin
 if not firebase_admin._apps:
-    cred_path = BASE_DIR / 'firebase-service-account.json'
-    if cred_path.exists():
-        cred = credentials.Certificate(str(cred_path))
-        firebase_admin.initialize_app(cred)
+    service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_JSON')
+    if service_account_json:
+        import json
+        try:
+            cred_dict = json.loads(service_account_json)
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+        except Exception as e:
+            # Fallback
+            firebase_admin.initialize_app()
     else:
-        firebase_admin.initialize_app()
+        cred_path = BASE_DIR / 'firebase-service-account.json'
+        if cred_path.exists():
+            cred = credentials.Certificate(str(cred_path))
+            firebase_admin.initialize_app(cred)
+        else:
+            firebase_admin.initialize_app()
 
 
 # Quick-start development settings - unsuitable for production

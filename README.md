@@ -466,11 +466,15 @@ With historical telemetry successfully streaming through our Redpanda message br
 
 #### Chapter 10.1.1: Enabling end to end encryption
 
+To ensure the confidentiality of sensitive monitoring endpoints and logs, we implement application-level encryption for fields stored within PostgreSQL. Using Django's custom model fields, we encrypt target URLs and request payloads at rest using AES-256 (via the `cryptography` package) before they are written to the database. Decryption occurs transparently upon model retrieval, ensuring that credentials, API keys, or private endpoints are never exposed in plaintext to database administrators or logs, while retaining standard TLS/HTTPS encryption for data in transit.
+
 ## Chapter 11: Tuning the model
 
 ### Chapter 11.1: Introduction
 
 #### Chapter 11.1.1: Hyperparameter Tuning
+
+To optimize the SLA prediction accuracy of our PyTorch neural network, we implement a hyperparameter tuning pipeline. Using scikit-learn's grid search capabilities combined with cross-validation, we evaluate various network architectures (varying the hidden layer sizes), learning rates, and optimizer choices (such as Adam vs. SGD). Once the optimal combination of hyperparameters is identified, the pipeline saves the best-performing model utilizing the `skops` library. This ensures that tenant SLA forecasts adapt dynamically to changing traffic patterns with minimal prediction error.
 
 ## Chapter 12: Collecting unstructured data
 
@@ -490,6 +494,8 @@ Systems telemetry alone cannot capture qualitative user experiences. To process 
 ### Chapter 13.1: Introduction
 
 #### Chapter 13.1.1: Connecting to threat intelligence sources
+
+To secure our data pipelines against external vulnerabilities, we connect our ingestion system to public threat intelligence feeds (e.g., ipify, AbuseIPDB, and national vulnerability databases). When telemetry packets arrive, the backend processes them through a custom lookup service that matches client IP addresses and headers against active threat list caches. Verified threats are flagged in the database and dispatched to the Redpanda broker to initiate security alerts and block requests, protecting the downstream machine learning models from adversarial telemetry injection.
 
 ## Acknowledgements & Release Notes
 

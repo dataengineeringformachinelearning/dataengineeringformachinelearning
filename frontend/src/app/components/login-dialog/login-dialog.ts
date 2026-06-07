@@ -235,7 +235,7 @@ export class LoginDialog implements OnInit {
       return;
     }
     try {
-      const assertion = PhoneAuthProvider.getAssertion(verifyId, code);
+      const assertion = PhoneAuthProvider.credential(verifyId, code);
       await this.resolver.resolveSignIn(assertion);
       this.dialogRef.close(true);
     } catch (e: any) {
@@ -300,7 +300,7 @@ export class LoginDialog implements OnInit {
         this.dialogRef.close(true);
       } else if (result.error === 'MFA_REQUIRED') {
         // Trigger multi-factor authentication setup
-        await this.sendMfaVerificationCode(result.resolver);
+        await this.sendMfaVerificationCode((result as any).resolver);
       } else {
         this.error.set(result.error || 'Authentication failed.');
       }

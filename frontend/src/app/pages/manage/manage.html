@@ -53,7 +53,10 @@
               <div class="card-body-clean">
                 <!-- New Page Form -->
                 <div *ngIf="!selectedPage()" class="form-col">
-                  <p class="embed-desc">Create a new status page to start monitoring your services.</p>
+                  <p class="embed-desc">
+                    Create a new status page to start monitoring your services.
+                    Refer to the <a routerLink="/status/platform-status" class="inline-status-link" style="color: var(--status-accent); font-weight: 500; text-decoration: underline;">Platform Status Page</a> as a live example of layout, services, and incident configurations.
+                  </p>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Title</mat-label>
                     <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status">
