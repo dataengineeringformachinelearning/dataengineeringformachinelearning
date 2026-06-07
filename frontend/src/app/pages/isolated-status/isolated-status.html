@@ -5,29 +5,6 @@
 
   <!-- Dedicated Centered Cloudflare-style Page Layout -->
   <div class="standalone-status-layout">
-    <!-- Top Nav -->
-    <header class="standalone-nav">
-      <div class="standalone-nav-content">
-        <a routerLink="/" class="standalone-brand" aria-label="Go to homepage">
-          <img class="logo" src="/data-engineering-for-machine-learning.svg" alt="Logo" />
-        </a>
-        <div class="nav-actions">
-          <a mat-button routerLink="/explore" class="nav-btn-light">
-            <mat-icon>explore</mat-icon>
-            <span>Explore Public Statuses</span>
-          </a>
-          <button mat-raised-button class="cta-auth-btn" *ngIf="!authService.isAuthenticated()" (click)="login()">
-            <mat-icon>login</mat-icon>
-            <span>Sign In</span>
-          </button>
-          <a mat-raised-button class="cta-auth-btn" *ngIf="authService.isAuthenticated()" routerLink="/manage">
-            <mat-icon>settings</mat-icon>
-            <span>Dashboard</span>
-          </a>
-        </div>
-      </div>
-    </header>
-
     <!-- Centered Body -->
     <main class="standalone-main-content" *ngFor="let page of statusPages()">
       
@@ -167,7 +144,5 @@
 
     </main>
 
-    <!-- Footer -->
-    <app-footer></app-footer>
   </div>
 </div>

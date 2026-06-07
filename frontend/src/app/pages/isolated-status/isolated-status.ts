@@ -18,7 +18,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginDialog } from '../../components/login-dialog/login-dialog';
-import { Footer } from '../../components/footer/footer';
 
 @Component({
   selector: 'app-isolated-status',
@@ -29,8 +28,7 @@ import { Footer } from '../../components/footer/footer';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    MatDialogModule,
-    Footer
+    MatDialogModule
   ],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
