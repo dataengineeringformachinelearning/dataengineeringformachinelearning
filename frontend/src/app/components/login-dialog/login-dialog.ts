@@ -7,6 +7,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import {
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator
+} from 'firebase/auth';
 
 @Component({
   selector: 'app-login-dialog',
@@ -33,21 +39,29 @@ export class LoginDialog implements OnInit {
   isRegisterMode = signal<boolean>(false);
   isForgotMode = signal<boolean>(false);
   isResetMode = signal<boolean>(false);
+  isPhoneMode = signal<boolean>(false);
+  codeSent = signal<boolean>(false);
+  mfaRequired = signal<boolean>(false);
 
   successMessage = signal<string | null>(null);
+  error = signal<string | null>(null);
 
   loginForm: FormGroup = this.fb.group({
     username: ['', Validators.required],
     password: ['', Validators.required],
-    email: ['']
+    email: [''],
+    phone: [''],
+    verificationCode: ['']
   });
 
-  error = signal<string | null>(null);
+  recaptchaVerifier: any;
+  confirmationResult: any;
+  resolver: any;
+  verificationId = signal<string | null>(null);
 
   ngOnInit() {
     if (this.data && this.data.mode === 'reset') {
       this.isResetMode.set(true);
-      // Adjust validators for Reset Mode: only new password is required
       this.loginForm.get('username')?.clearValidators();
       this.loginForm.get('username')?.updateValueAndValidity();
       this.loginForm.get('password')?.setValidators([Validators.required]);
@@ -56,43 +70,178 @@ export class LoginDialog implements OnInit {
   }
 
   toggleMode(): void {
-    if (this.isForgotMode()) {
+    if (this.isForgotMode() || this.isPhoneMode()) {
       this.isForgotMode.set(false);
+      this.isPhoneMode.set(false);
       this.isRegisterMode.set(false);
     } else {
       this.isRegisterMode.update(val => !val);
     }
     this.error.set(null);
     this.successMessage.set(null);
+    this.codeSent.set(false);
+    this.mfaRequired.set(false);
+
+    if (this.isRegisterMode()) {
+      this.loginForm.get('email')?.setValidators([Validators.required, Validators.email]);
+    } else {
+      this.loginForm.get('email')?.clearValidators();
+    }
+    this.loginForm.get('email')?.updateValueAndValidity();
+    this.switchToLogin(); // ensure validators reset to normal login
   }
 
   switchToForgot(): void {
     this.isForgotMode.set(true);
     this.isRegisterMode.set(false);
+    this.isPhoneMode.set(false);
     this.error.set(null);
     this.successMessage.set(null);
-    // Adjust validators for forgot mode: only email is required
+    this.codeSent.set(false);
+    this.mfaRequired.set(false);
+
     this.loginForm.get('username')?.clearValidators();
     this.loginForm.get('username')?.updateValueAndValidity();
     this.loginForm.get('password')?.clearValidators();
     this.loginForm.get('password')?.updateValueAndValidity();
+    this.loginForm.get('phone')?.clearValidators();
+    this.loginForm.get('phone')?.updateValueAndValidity();
+    this.loginForm.get('verificationCode')?.clearValidators();
+    this.loginForm.get('verificationCode')?.updateValueAndValidity();
+
     this.loginForm.get('email')?.setValidators([Validators.required, Validators.email]);
     this.loginForm.get('email')?.updateValueAndValidity();
+  }
+
+  switchToPhone(): void {
+    this.isPhoneMode.set(true);
+    this.isRegisterMode.set(false);
+    this.isForgotMode.set(false);
+    this.error.set(null);
+    this.successMessage.set(null);
+    this.codeSent.set(false);
+    this.mfaRequired.set(false);
+
+    this.loginForm.get('username')?.clearValidators();
+    this.loginForm.get('username')?.updateValueAndValidity();
+    this.loginForm.get('password')?.clearValidators();
+    this.loginForm.get('password')?.updateValueAndValidity();
+    this.loginForm.get('email')?.clearValidators();
+    this.loginForm.get('email')?.updateValueAndValidity();
+    this.loginForm.get('verificationCode')?.clearValidators();
+    this.loginForm.get('verificationCode')?.updateValueAndValidity();
+
+    this.loginForm.get('phone')?.setValidators([Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]);
+    this.loginForm.get('phone')?.updateValueAndValidity();
   }
 
   switchToLogin(): void {
     this.isForgotMode.set(false);
     this.isRegisterMode.set(false);
     this.isResetMode.set(false);
+    this.isPhoneMode.set(false);
     this.error.set(null);
     this.successMessage.set(null);
-    // Reset to normal validators
+    this.codeSent.set(false);
+    this.mfaRequired.set(false);
+
+    this.loginForm.get('email')?.clearValidators();
+    this.loginForm.get('email')?.updateValueAndValidity();
+    this.loginForm.get('phone')?.clearValidators();
+    this.loginForm.get('phone')?.updateValueAndValidity();
+    this.loginForm.get('verificationCode')?.clearValidators();
+    this.loginForm.get('verificationCode')?.updateValueAndValidity();
+
     this.loginForm.get('username')?.setValidators([Validators.required]);
     this.loginForm.get('username')?.updateValueAndValidity();
     this.loginForm.get('password')?.setValidators([Validators.required]);
     this.loginForm.get('password')?.updateValueAndValidity();
-    this.loginForm.get('email')?.clearValidators();
-    this.loginForm.get('email')?.updateValueAndValidity();
+  }
+
+  initRecaptcha(): void {
+    if (this.recaptchaVerifier) return;
+    try {
+      this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: () => {}
+      });
+    } catch (e) {
+      console.error('Recaptcha init error', e);
+    }
+  }
+
+  async sendVerificationCode() {
+    this.error.set(null);
+    const phoneNum = this.loginForm.value.phone;
+    if (!phoneNum) {
+      this.error.set('Phone number is required.');
+      return;
+    }
+    this.initRecaptcha();
+    try {
+      this.confirmationResult = await signInWithPhoneNumber(this.authService.auth, phoneNum, this.recaptchaVerifier);
+      this.codeSent.set(true);
+      this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
+      this.loginForm.get('verificationCode')?.updateValueAndValidity();
+    } catch (e: any) {
+      console.error(e);
+      this.error.set(e.message || 'Failed to send verification code. Make sure you input international format (e.g. +11234567890).');
+    }
+  }
+
+  async verifyCode() {
+    this.error.set(null);
+    const code = this.loginForm.value.verificationCode;
+    if (!code) {
+      this.error.set('Verification code is required.');
+      return;
+    }
+    try {
+      await this.confirmationResult.confirm(code);
+      this.dialogRef.close(true);
+    } catch (e: any) {
+      console.error(e);
+      this.error.set('Invalid verification code.');
+    }
+  }
+
+  async sendMfaVerificationCode(resolver: any) {
+    this.initRecaptcha();
+    try {
+      const phoneInfoOptions = {
+        multiFactorHint: resolver.hints[0],
+        session: resolver.session
+      };
+      const phoneAuthProvider = new PhoneAuthProvider(this.authService.auth);
+      const verifyId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, this.recaptchaVerifier);
+      this.verificationId.set(verifyId);
+      this.resolver = resolver;
+      this.mfaRequired.set(true);
+      this.codeSent.set(true);
+      this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
+      this.loginForm.get('verificationCode')?.updateValueAndValidity();
+    } catch (e: any) {
+      console.error(e);
+      this.error.set(e.message || 'Failed to send MFA code.');
+    }
+  }
+
+  async resolveMfa() {
+    this.error.set(null);
+    const code = this.loginForm.value.verificationCode;
+    const verifyId = this.verificationId();
+    if (!code || !verifyId) {
+      this.error.set('Verification code is required.');
+      return;
+    }
+    try {
+      const assertion = PhoneAuthProvider.getAssertion(verifyId, code);
+      await this.resolver.resolveSignIn(assertion);
+      this.dialogRef.close(true);
+    } catch (e: any) {
+      console.error(e);
+      this.error.set('MFA verification failed. Please try again.');
+    }
   }
 
   async onSubmit() {
@@ -124,6 +273,14 @@ export class LoginDialog implements OnInit {
       } else {
         this.error.set('Failed to reset password. The link may have expired or is invalid.');
       }
+    } else if (this.isPhoneMode()) {
+      if (this.codeSent()) {
+        await this.verifyCode();
+      } else {
+        await this.sendVerificationCode();
+      }
+    } else if (this.mfaRequired()) {
+      await this.resolveMfa();
     } else {
       let result;
       if (this.isRegisterMode()) {
@@ -141,6 +298,9 @@ export class LoginDialog implements OnInit {
       
       if (result.success) {
         this.dialogRef.close(true);
+      } else if (result.error === 'MFA_REQUIRED') {
+        // Trigger multi-factor authentication setup
+        await this.sendMfaVerificationCode(result.resolver);
       } else {
         this.error.set(result.error || 'Authentication failed.');
       }
@@ -151,5 +311,3 @@ export class LoginDialog implements OnInit {
     this.dialogRef.close();
   }
 }
-
-

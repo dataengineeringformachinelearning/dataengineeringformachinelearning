@@ -33,7 +33,7 @@ def api_logout(request):
 @router.get("/user", response=SuccessSchema)
 def api_user(request):
     if request.user.is_authenticated:
-        return {"status": "success", "user": request.user.username, "user_id": request.user.id}
+        return {"status": "success", "user": request.user.first_name or request.user.username, "user_id": request.user.id}
     raise HttpError(401, "Not authenticated")
 
 class RegisterSchema(Schema):
@@ -113,7 +113,6 @@ def api_delete_account(request):
         raise HttpError(401, "Not authenticated")
     user = request.user
     user.delete()
-    django_logout(request)
     return {"status": "success"}
 
 

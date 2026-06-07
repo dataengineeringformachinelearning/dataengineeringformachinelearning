@@ -14,12 +14,23 @@ from pathlib import Path
 import os
 import dj_database_url
 from dotenv import load_dotenv
+import firebase_admin
+from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from a .env file located at the BASE_DIR (backend/)
 load_dotenv(BASE_DIR / '.env')
+
+# Initialize Firebase Admin
+if not firebase_admin._apps:
+    cred_path = BASE_DIR / 'firebase-service-account.json'
+    if cred_path.exists():
+        cred = credentials.Certificate(str(cred_path))
+        firebase_admin.initialize_app(cred)
+    else:
+        firebase_admin.initialize_app()
 
 
 # Quick-start development settings - unsuitable for production
@@ -59,6 +70,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'config.middleware.FirebaseAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
