@@ -82,13 +82,22 @@ export class LoginDialog implements OnInit {
     this.codeSent.set(false);
     this.mfaRequired.set(false);
 
+    this.loginForm.get('phone')?.clearValidators();
+    this.loginForm.get('phone')?.updateValueAndValidity();
+    this.loginForm.get('verificationCode')?.clearValidators();
+    this.loginForm.get('verificationCode')?.updateValueAndValidity();
+
+    this.loginForm.get('username')?.setValidators([Validators.required]);
+    this.loginForm.get('username')?.updateValueAndValidity();
+    this.loginForm.get('password')?.setValidators([Validators.required]);
+    this.loginForm.get('password')?.updateValueAndValidity();
+
     if (this.isRegisterMode()) {
       this.loginForm.get('email')?.setValidators([Validators.required, Validators.email]);
     } else {
       this.loginForm.get('email')?.clearValidators();
     }
     this.loginForm.get('email')?.updateValueAndValidity();
-    this.switchToLogin(); // ensure validators reset to normal login
   }
 
   switchToForgot(): void {

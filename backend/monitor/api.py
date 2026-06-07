@@ -312,6 +312,11 @@ def add_service(request, page_id: str, payload: MonitoredServiceIn):
     page = get_object_or_404(StatusPage, id=page_id, user=request.user)
     if page.slug == "platform-status":
         raise HttpError(403, "Cannot modify system platform-status page")
+    
+    # Check if a monitored service with this URL is already added to this status page
+    if MonitoredService.objects.filter(status_page=page, url=payload.url).exists():
+        raise HttpError(400, "This service URL is already monitored on this status page.")
+
     service = MonitoredService.objects.create(
         status_page=page,
         name=payload.name,

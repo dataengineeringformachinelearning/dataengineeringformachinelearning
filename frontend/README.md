@@ -24,6 +24,27 @@ npm start
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+## Local Configuration (Firebase)
+
+To run the application with your own Firebase keys locally without committing them to source control, configure your environment variables:
+
+1. **Create your `.env` file**:
+   Copy the sample environment variables:
+   ```bash
+   cp .env.example .env
+   ```
+   Open the `.env` file and fill in your actual Firebase configurations.
+
+2. **Run with `dotenvx`**:
+   Run the dev server using the locally installed `dotenvx`:
+   ```bash
+   npx dotenvx run -- npm start
+   ```
+   *(Running this command dynamically runs the environment generator and updates the environment files at startup).*
+
+> [!NOTE]
+> If you ever need to manually install additional dependencies in this project, you must append `--legacy-peer-deps` due to the strict version constraints of the test suite and framework dependencies (e.g., `npm install @dotenvx/dotenvx --save-dev --legacy-peer-deps`).
+
 ### Troubleshooting NPM running slow
 
 #### Remove the node_modules folder

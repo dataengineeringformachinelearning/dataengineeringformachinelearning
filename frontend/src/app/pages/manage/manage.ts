@@ -4,7 +4,8 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -75,6 +76,14 @@ export class Manage implements OnInit {
 
   copied = signal(false);
 
+  constructor() {
+    effect(() => {
+      if (this.authService.isAuthenticated() && this.authService.currentUserId() !== null) {
+        this.loadStatusPages();
+      }
+    });
+  }
+
   getWidgetCode(): string {
     const page = this.selectedPage();
     if (!page) return '';
@@ -132,7 +141,19 @@ export class Manage implements OnInit {
           this.newPageSlug = '';
           this.selectPage(page);
         },
-        error: err => console.error('Error creating page:', err)
+        error: err => {
+          console.error('Error creating page:', err);
+          this.dialog.open(ConfirmDialog, {
+            width: '400px',
+            data: {
+              title: 'Creation Failed',
+              message: 'Failed to create status page. The slug may already be in use.',
+              type: 'alert',
+              confirmBtnText: 'OK',
+              confirmBtnColor: 'warn'
+            }
+          });
+        }
       });
     }
   }
@@ -284,13 +305,41 @@ export class Manage implements OnInit {
   addService() {
     const page = this.selectedPage();
     if (page && this.newServiceName && this.newServiceUrl) {
+      // Check if URL is already used in current services
+      const urlExists = this.services().some(s => s.url.toLowerCase() === this.newServiceUrl.toLowerCase());
+      if (urlExists) {
+        this.dialog.open(ConfirmDialog, {
+          width: '400px',
+          data: {
+            title: 'Duplicate Endpoint',
+            message: 'This health check URL is already being monitored on this page.',
+            type: 'alert',
+            confirmBtnText: 'OK',
+            confirmBtnColor: 'warn'
+          }
+        });
+        return;
+      }
+
       this.monitorService.addService(page.id, { name: this.newServiceName, url: this.newServiceUrl }).subscribe({
         next: () => {
           this.loadServices(page.id);
           this.newServiceName = '';
           this.newServiceUrl = '';
         },
-        error: err => console.error('Error adding service:', err)
+        error: err => {
+          console.error('Error adding service:', err);
+          this.dialog.open(ConfirmDialog, {
+            width: '400px',
+            data: {
+              title: 'Failed to Add Service',
+              message: err.error?.detail || 'An error occurred while adding the monitored service.',
+              type: 'alert',
+              confirmBtnText: 'OK',
+              confirmBtnColor: 'warn'
+            }
+          });
+        }
       });
     }
   }

@@ -35,21 +35,67 @@ const getBackendUrlCode = `const getBackendUrl = () => {
   return \`https://backend.\${host}\`;
 };`;
 
-const envConfigFile = `${getBackendUrlCode}
+const envConfigFileProd = `${getBackendUrlCode}
 
-export const environment = {
-  production: true,
-  backendUrl: getBackendUrl(),
-  firebase: {
+const getFirebaseConfig = () => {
+  const defaultFirebase = {
     apiKey: '${apiKey}',
     authDomain: '${authDomain}',
     projectId: '${projectId}',
     storageBucket: '${storageBucket}',
     messagingSenderId: '${messagingSenderId}',
     appId: '${appId}'
+  };
+
+  if (typeof window !== 'undefined' && (window as any).FIREBASE_CONFIG) {
+    return {
+      ...defaultFirebase,
+      ...(window as any).FIREBASE_CONFIG
+    };
   }
+  return defaultFirebase;
+};
+
+export const environment = {
+  production: true,
+  backendUrl: getBackendUrl(),
+  firebase: getFirebaseConfig()
 };
 `;
 
-fs.writeFileSync(targetPath, envConfigFile, 'utf8');
+const envConfigFileDev = `${getBackendUrlCode}
+
+const getFirebaseConfig = () => {
+  const defaultFirebase = {
+    apiKey: '${apiKey}',
+    authDomain: '${authDomain}',
+    projectId: '${projectId}',
+    storageBucket: '${storageBucket}',
+    messagingSenderId: '${messagingSenderId}',
+    appId: '${appId}'
+  };
+
+  if (typeof window !== 'undefined' && (window as any).FIREBASE_CONFIG) {
+    return {
+      ...defaultFirebase,
+      ...(window as any).FIREBASE_CONFIG
+    };
+  }
+  return defaultFirebase;
+};
+
+export const environment = {
+  production: false,
+  backendUrl: 'http://localhost:8000',
+  firebase: getFirebaseConfig()
+};
+`;
+
+const targetPathDev = path.join(__dirname, 'src', 'environments', 'environment.development.ts');
+
+fs.writeFileSync(targetPath, envConfigFileProd, 'utf8');
 console.log(`Angular environment.ts dynamically generated at ${targetPath}`);
+
+fs.writeFileSync(targetPathDev, envConfigFileDev, 'utf8');
+console.log(`Angular environment.development.ts dynamically generated at ${targetPathDev}`);
+
