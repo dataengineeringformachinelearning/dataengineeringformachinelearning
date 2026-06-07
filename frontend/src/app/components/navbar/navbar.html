@@ -1,11 +1,11 @@
 <header class="navbar">
   <div class="navbar-content">
     <div class="navbar-left">
-      <a routerLink="/" class="navbar-brand">
+      <a routerLink="/" class="navbar-brand" aria-label="Go to homepage">
         <img
           class="logo"
           src="/data-engineering-for-machine-learning.svg"
-          alt="Data Engineering for Machine Learning"
+          alt="Data Engineering for Machine Learning Logo"
         />
       </a>
     </div>
@@ -13,10 +13,17 @@
     <span class="spacer"></span>
     
     <div class="navbar-right">
-      <a mat-button routerLink="/book" class="nav-btn">Book</a>
-      <a mat-button routerLink="/status" class="nav-btn">Status</a>
-      <a mat-button routerLink="/manage" class="nav-btn" *ngIf="authService.isAuthenticated()">Manage</a>
+      <a mat-button routerLink="/book" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn">Book</a>
+      <a mat-button routerLink="/status" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn">Status</a>
+      <a mat-button routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn" *ngIf="authService.isAuthenticated()">Manage</a>
+      
       <div class="divider"></div>
+      
+      <!-- Theme Switch Button -->
+      <button mat-icon-button (click)="themeService.toggleTheme()" class="theme-toggle-btn" aria-label="Toggle light and dark theme">
+        <mat-icon>{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+      </button>
+
       <button mat-raised-button class="auth-btn" *ngIf="!authService.isAuthenticated()" (click)="login()">Sign In</button>
       <button mat-raised-button class="auth-btn" *ngIf="authService.isAuthenticated()" (click)="logout()">Sign Out</button>
     </div>

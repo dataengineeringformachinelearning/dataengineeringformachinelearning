@@ -17,29 +17,41 @@
     }
   }
 
+  :host-context(html[data-theme='light']) & {
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: rgba(0, 0, 0, 0.03) !important;
+      border: 1px solid var(--border);
+      
+      &.mdc-text-field--focused {
+        background-color: rgba(0, 0, 0, 0.05) !important;
+        border-color: var(--color-primary);
+      }
+    }
+  }
+
   ::ng-deep .mdc-line-ripple {
     display: none;
   }
 }
 
 .error-text {
-  color: #e57373;
+  color: var(--color-error);
   font-size: 14px;
   margin-top: 5px;
-  background: rgba(244, 67, 54, 0.1);
+  background: rgba(211, 47, 47, 0.1);
   padding: 0.5rem;
   border-radius: 6px;
-  border: 1px solid rgba(244, 67, 54, 0.2);
+  border: 1px solid rgba(211, 47, 47, 0.2);
   text-align: center;
 }
 
 .modal-header {
   padding: 1.5rem;
-  border-bottom: 1px solid rgba(192, 197, 193, 0.1);
+  border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(0, 0, 0, 0.05);
 
   h3 {
     margin: 0;
@@ -70,11 +82,11 @@
 
 .modal-footer {
   padding: 1.25rem 1.5rem;
-  border-top: 1px solid rgba(192, 197, 193, 0.1);
+  border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(0, 0, 0, 0.05);
 
   button {
     padding: 0.6rem 1.25rem;
@@ -97,17 +109,17 @@
     }
 
     &.btn-submit {
-      background: linear-gradient(135deg, var(--color-primary), #4a755d);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: white;
+      background: var(--color-warning) !important;
+      border: none !important;
+      color: var(--color-on-primary-container) !important;
       min-width: 100px;
       display: flex;
       justify-content: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 10px rgba(255, 193, 7, 0.2) !important;
       
       &:hover:not(:disabled) {
         filter: brightness(1.1);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4) !important;
       }
       
       &:disabled {
@@ -136,6 +148,27 @@
     &:hover {
       opacity: 0.8;
       text-decoration: underline;
+    }
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .modal-header {
+    background: rgba(0, 0, 0, 0.02);
+    h3 {
+      color: var(--color-primary);
+    }
+    .close-btn:hover {
+      color: var(--color-primary);
+    }
+  }
+  .modal-footer {
+    background: rgba(0, 0, 0, 0.02);
+    button.btn-cancel {
+      &:hover:not(:disabled) {
+        background: rgba(0, 0, 0, 0.04);
+        border-color: var(--color-primary);
+      }
     }
   }
 }

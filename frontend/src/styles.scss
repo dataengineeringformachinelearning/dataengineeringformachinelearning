@@ -155,7 +155,7 @@ li {
 }
 
 a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item) {
-  color: var(--color-primary-container);
+  color: var(--link-color);
   font-weight: 500;
   text-decoration: none;
   border-bottom: 1px solid transparent; /* Prevents layout shift */
@@ -164,9 +164,9 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item) {
 
 a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):hover,
 a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-visible {
-  color: #B0C9BD; /* Lighter shade for contrast shift */
+  color: var(--link-hover-color);
   text-decoration: none;
-  border-bottom-color: #B0C9BD; /* WCAG requirement: non-color hover indicator */
+  border-bottom-color: var(--link-hover-color); /* WCAG requirement: non-color hover indicator */
 }
 
 

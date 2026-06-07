@@ -47,11 +47,11 @@
   font-weight: 700;
   line-height: 1.2;
   margin-bottom: 1.5rem;
-  color: #c0c5c1; /* Metallic silver */
+  color: var(--text-color);
   text-transform: uppercase;
   letter-spacing: 0.3em;
   margin-right: -0.3em; /* Compensate for letter spacing on last char */
-  text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 .subtitle {
@@ -105,5 +105,18 @@
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .secondary-btn {
+    background-color: rgba(0, 0, 0, 0.03);
+    color: var(--text-color);
+    border: 1px solid var(--border);
+    
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.06);
+      border-color: var(--text-color);
+    }
   }
 }

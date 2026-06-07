@@ -20,7 +20,7 @@
       <input matInput type="password" formControlName="password" required>
     </mat-form-field>
     
-    <div class="error-text" *ngIf="error">{{ error }}</div>
+    <div class="error-text" *ngIf="error" role="alert">{{ error }}</div>
 
     <div class="toggle-link">
       <a href="javascript:void(0)" (click)="toggleMode()">

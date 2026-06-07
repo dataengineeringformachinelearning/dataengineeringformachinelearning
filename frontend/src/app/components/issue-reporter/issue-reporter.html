@@ -23,10 +23,10 @@
         [disabled]="isSubmitting()">
       </textarea>
       
-      <div *ngIf="submissionStatus() === 'success'" class="status-msg success">
+      <div *ngIf="submissionStatus() === 'success'" class="status-msg success" role="status">
         Issue reported successfully!
       </div>
-      <div *ngIf="submissionStatus() === 'error'" class="status-msg error">
+      <div *ngIf="submissionStatus() === 'error'" class="status-msg error" role="alert">
         Failed to report issue. Please try again.
       </div>
     </div>
