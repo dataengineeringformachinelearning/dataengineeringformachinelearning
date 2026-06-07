@@ -6,6 +6,7 @@ from ninja.errors import HttpError
 import datetime
 import os
 import re
+from utils.kafka import get_kafka_brokers
 
 router = Router()
 
@@ -106,7 +107,7 @@ def list_status_pages(request):
                         defaults={"url": f"{backend_url}/api/v1/system-status/health"}
                     )
                     
-                    brokers = os.getenv('REDPANDA_BROKERS', 'localhost:19092')
+                    brokers = get_kafka_brokers()
                     broker_host = brokers.split(',')[0]
                     broker_url = broker_host if (broker_host.startswith('http://') or broker_host.startswith('https://')) else f"http://{broker_host}"
                     

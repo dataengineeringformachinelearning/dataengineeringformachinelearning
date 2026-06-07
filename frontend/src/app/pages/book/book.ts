@@ -43,8 +43,8 @@ export class Book implements OnInit {
   activePageIndex = signal<number>(0);
 
   statusPages = signal<StatusPageData[]>([]);
-  incidentsMap = signal<Record<string, IncidentData[]>>({});
-  servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
+  incidentsMap = this.monitorService.incidentsMap;
+  servicesMap = this.monitorService.servicesMap;
 
   globalStatus = computed(() => {
     const map = this.incidentsMap();
@@ -86,35 +86,11 @@ export class Book implements OnInit {
           return a.title.localeCompare(b.title);
         });
         this.statusPages.set(sorted);
-        this.fetchAllIncidents(sorted);
-        this.fetchAllServices(sorted);
+        this.monitorService.fetchAllIncidents(sorted);
+        this.monitorService.fetchAllServices(sorted);
         this.cdr.markForCheck();
       },
       error: err => console.error('Error fetching pages:', err),
-    });
-  }
-
-  fetchAllIncidents(pages: StatusPageData[]) {
-    pages.forEach(page => {
-      this.monitorService.getIncidents(page.id).subscribe({
-        next: incidents => {
-          this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
-          this.cdr.markForCheck();
-        },
-        error: err => console.error(`Error fetching incidents for ${page.id}:`, err)
-      });
-    });
-  }
-
-  fetchAllServices(pages: StatusPageData[]) {
-    pages.forEach(page => {
-      this.monitorService.getServices(page.id).subscribe({
-        next: services => {
-          this.servicesMap.update(map => ({ ...map, [page.id]: services }));
-          this.cdr.markForCheck();
-        },
-        error: err => console.error(`Error fetching services for ${page.id}:`, err)
-      });
     });
   }
 

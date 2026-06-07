@@ -1,7 +1,6 @@
-import os
 import json
 from langchain_core.tools import tool
-from aiokafka import AIOKafkaProducer
+from utils.kafka import create_kafka_producer
 
 @tool
 async def send_issue_to_redpanda(topic: str, issue_report: str, bug_report_id: str = None):
@@ -18,8 +17,7 @@ async def send_issue_to_redpanda(topic: str, issue_report: str, bug_report_id: s
         "report": issue_report,
         "bug_report_id": bug_report_id
     }
-    brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
-    producer = AIOKafkaProducer(bootstrap_servers=brokers)
+    producer = create_kafka_producer()
     await producer.start()
     try:
         value = json.dumps(payload).encode('utf-8')

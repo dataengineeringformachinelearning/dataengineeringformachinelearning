@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { API_ENDPOINTS } from '../core/constants/api.constants';
 
@@ -45,11 +45,37 @@ export interface IncidentData {
   updated_at: string;
 }
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class MonitorService {
   private http = inject(HttpClient);
+
+  public incidentsMap = signal<Record<string, IncidentData[]>>({});
+  public servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
+
+  fetchAllIncidents(pages: StatusPageData[]) {
+    pages.forEach(page => {
+      this.getIncidents(page.id).subscribe({
+        next: incidents => {
+          this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
+        },
+        error: err => console.error(`Error fetching incidents for ${page.id}:`, err)
+      });
+    });
+  }
+
+  fetchAllServices(pages: StatusPageData[]) {
+    pages.forEach(page => {
+      this.getServices(page.id).subscribe({
+        next: services => {
+          this.servicesMap.update(map => ({ ...map, [page.id]: services }));
+        },
+        error: err => console.error(`Error fetching services for ${page.id}:`, err)
+      });
+    });
+  }
 
   getAllEndpoints() {
     return this.http.get<EndpointData[]>(API_ENDPOINTS.SYSTEM_STATUS.ENDPOINTS);

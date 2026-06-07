@@ -17,6 +17,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
+import { formatServiceName } from '../../core/utils/formatter.utils';
 
 @Component({
   selector: 'app-explore',
@@ -42,9 +43,10 @@ export class Explore implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
 
+  formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
-  incidentsMap = signal<Record<string, IncidentData[]>>({});
-  servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
+  incidentsMap = this.monitorService.incidentsMap;
+  servicesMap = this.monitorService.servicesMap;
 
   ngOnInit() {
     this.titleService.setTitle('Explore Public Status Pages - Data Engineering for Machine Learning');
@@ -57,8 +59,8 @@ export class Explore implements OnInit {
       next: data => {
         // Under /explore we show all public status pages, including the main 'platform-status' system page
         this.statusPages.set(data);
-        this.fetchAllIncidents(data);
-        this.fetchAllServices(data);
+        this.monitorService.fetchAllIncidents(data);
+        this.monitorService.fetchAllServices(data);
         data.forEach(page => {
           this.modelService.fetchLatestStat(page.id);
         });
@@ -84,29 +86,5 @@ export class Explore implements OnInit {
     const status = this.getPageStatus(pageId);
     if (status === 'Operational') return 'operational';
     return status.toLowerCase();
-  }
-
-  fetchAllIncidents(pages: StatusPageData[]) {
-    pages.forEach(page => {
-      this.monitorService.getIncidents(page.id).subscribe({
-        next: incidents => {
-          this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
-          this.cdr.markForCheck();
-        },
-        error: err => console.error(`Error fetching incidents for ${page.id}:`, err)
-      });
-    });
-  }
-
-  fetchAllServices(pages: StatusPageData[]) {
-    pages.forEach(page => {
-      this.monitorService.getServices(page.id).subscribe({
-        next: services => {
-          this.servicesMap.update(map => ({ ...map, [page.id]: services }));
-          this.cdr.markForCheck();
-        },
-        error: err => console.error(`Error fetching services for ${page.id}:`, err)
-      });
-    });
   }
 }

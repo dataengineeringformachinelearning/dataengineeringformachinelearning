@@ -27,8 +27,8 @@ export class Sidebar implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   statusPages = signal<StatusPageData[]>([]);
-  incidentsMap = signal<Record<string, IncidentData[]>>({});
-  servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
+  incidentsMap = this.monitorService.incidentsMap;
+  servicesMap = this.monitorService.servicesMap;
 
   globalStatus = computed(() => {
     const map = this.incidentsMap();
@@ -54,37 +54,13 @@ export class Sidebar implements OnInit {
     this.monitorService.getStatusPages().subscribe({
       next: data => {
         this.statusPages.set(data);
-        this.fetchAllIncidents(data);
-        this.fetchAllServices(data);
+        this.monitorService.fetchAllIncidents(data);
+        this.monitorService.fetchAllServices(data);
         this.cdr.markForCheck();
       },
       error: err => {
         console.error('Error fetching pages for sidebar:', err);
       }
-    });
-  }
-
-  private fetchAllIncidents(pages: StatusPageData[]) {
-    pages.forEach(page => {
-      this.monitorService.getIncidents(page.id).subscribe({
-        next: incidents => {
-          this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
-          this.cdr.markForCheck();
-        },
-        error: err => console.error(`Error fetching incidents for ${page.id} in sidebar:`, err)
-      });
-    });
-  }
-
-  private fetchAllServices(pages: StatusPageData[]) {
-    pages.forEach(page => {
-      this.monitorService.getServices(page.id).subscribe({
-        next: services => {
-          this.servicesMap.update(map => ({ ...map, [page.id]: services }));
-          this.cdr.markForCheck();
-        },
-        error: err => console.error(`Error fetching services for ${page.id} in sidebar:`, err)
-      });
     });
   }
 }

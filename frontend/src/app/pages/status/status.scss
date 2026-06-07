@@ -439,3 +439,17 @@
   opacity: 0.85;
 }
 
+.service-name-link {
+  transition: color 0.2s ease, opacity 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--status-accent) !important;
+    opacity: 0.85;
+    
+    mat-icon {
+      color: var(--status-accent) !important;
+    }
+  }
+}
+

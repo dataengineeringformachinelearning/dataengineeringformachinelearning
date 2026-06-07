@@ -4,7 +4,8 @@ from pydantic import Field
 import json
 import os
 import asyncio
-from aiokafka import AIOKafkaProducer
+from utils.kafka import get_kafka_producer
+from utils.request import get_client_ip, get_user_agent
 
 router = Router()
 
@@ -15,23 +16,13 @@ class TelemetryPayload(Schema):
     ip_address: str
     is_active: bool
 
-_producer = None
-
-async def get_producer():
-    global _producer
-    if _producer is None:
-        brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
-        _producer = AIOKafkaProducer(bootstrap_servers=brokers)
-        await _producer.start()
-    return _producer
-
 @router.post("/endpoints")
 async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
     # Convert response_time_ms to seconds for standard processing down the line
     data = payload.dict()
     data['response_time'] = payload.response_time_ms / 1000.0
     
-    producer = await get_producer()
+    producer = await get_kafka_producer()
     value = json.dumps(data).encode('utf-8')
     await producer.send_and_wait("app-events", value)
         
@@ -49,14 +40,9 @@ async def save_cookie_consent(request, payload: CookieConsentPayload):
     from monitor.models import CookieConsent
     from asgiref.sync import sync_to_async
 
-    # Extract IP address and User-Agent
-    x_forwarded_for = request.headers.get('x-forwarded-for')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0].strip()
-    else:
-        ip = request.META.get('REMOTE_ADDR', '')
-        
-    user_agent = request.headers.get('user-agent', request.META.get('HTTP_USER_AGENT', ''))
+    # Extract IP address and User-Agent using utilities
+    ip = get_client_ip(request)
+    user_agent = get_user_agent(request)
 
     consent = await sync_to_async(CookieConsent.objects.create)(
         necessary=payload.necessary,

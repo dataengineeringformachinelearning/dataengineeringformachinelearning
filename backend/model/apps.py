@@ -4,7 +4,7 @@ import asyncio
 import json
 import logging
 from django.apps import AppConfig
-from aiokafka import AIOKafkaProducer
+from utils.kafka import create_kafka_producer
 
 logger = logging.getLogger(__name__)
 
@@ -38,8 +38,7 @@ class ModelConfig(AppConfig):
             logger.error(f"SLA Predictor Scheduler: Failed to publish training trigger: {e}")
 
     async def publish_trigger(self):
-        brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
-        producer = AIOKafkaProducer(bootstrap_servers=brokers)
+        producer = create_kafka_producer()
         await producer.start()
         try:
             msg = {"action": "train_all_tenants"}

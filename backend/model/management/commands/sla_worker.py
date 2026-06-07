@@ -3,6 +3,7 @@ import json
 import os
 from django.core.management.base import BaseCommand
 from aiokafka import AIOKafkaConsumer
+from utils.kafka import get_kafka_brokers
 from asgiref.sync import sync_to_async
 
 from monitor.models import StatusPage
@@ -16,7 +17,7 @@ class Command(BaseCommand):
         asyncio.run(self.run_worker())
 
     async def run_worker(self):
-        brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
+        brokers = get_kafka_brokers()
         consumer = AIOKafkaConsumer(
             'sla-training-events',
             bootstrap_servers=brokers,

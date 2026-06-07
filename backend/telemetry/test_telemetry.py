@@ -15,7 +15,7 @@ async def test_ingest_endpoint_telemetry(async_client):
     mock_producer = AsyncMock()
     mock_producer.send_and_wait = AsyncMock(return_value=None)
     
-    with patch("telemetry.api.get_producer", AsyncMock(return_value=mock_producer)):
+    with patch("telemetry.api.get_kafka_producer", AsyncMock(return_value=mock_producer)):
         response = await async_client.post(
             "/api/v1/telemetry/endpoints",
             data=payload,

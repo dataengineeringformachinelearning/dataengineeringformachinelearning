@@ -60,8 +60,10 @@
             <div class="service-identity">
               <span class="service-dot-indicator" [ngClass]="s.status?.toLowerCase() || 'operational'"></span>
               <div class="service-names">
-                <span class="service-name-text">{{ s.name }}</span>
-                <span class="service-url-text">{{ s.url }}</span>
+                <a [href]="s.url" target="_blank" class="service-name-link" style="font-weight: 500; color: var(--text-color); font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                  <span>{{ formatServiceName(s.name) }}</span>
+                  <mat-icon style="font-size: 14px; width: 14px; height: 14px; color: var(--text-muted); display: inline-flex; align-items: center; justify-content: center; margin-top: 2px;">open_in_new</mat-icon>
+                </a>
               </div>
             </div>
             <div class="service-metrics">
