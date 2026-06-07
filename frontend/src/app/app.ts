@@ -1,5 +1,5 @@
 import { Component, signal, inject, OnInit, ChangeDetectionStrategy, PLATFORM_ID } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { AuthService } from './services/auth.service';
@@ -8,6 +8,7 @@ import { IssueReporter } from './components/issue-reporter/issue-reporter';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginDialog } from './components/login-dialog/login-dialog';
 import { CookieBanner } from './components/cookie-banner/cookie-banner';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -21,8 +22,19 @@ export class App implements OnInit {
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
+
+  isStandaloneStatusPage = signal(false);
 
   ngOnInit() {
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      const url = event.urlAfterRedirects || event.url || '';
+      const isStandalone = url.startsWith('/status/') && url !== '/status';
+      this.isStandaloneStatusPage.set(isStandalone);
+    });
+
     if (isPlatformBrowser(this.platformId)) {
       this.authService.checkAuth();
       this.checkResetToken();

@@ -62,7 +62,7 @@ describe('AuthService', () => {
 
     const result = await loginPromise;
 
-    expect(result).toBe(true);
+    expect(result.success).toBe(true);
     expect(service.isAuthenticated()).toBe(true);
     expect(service.currentUserId()).toBe(100);
   });

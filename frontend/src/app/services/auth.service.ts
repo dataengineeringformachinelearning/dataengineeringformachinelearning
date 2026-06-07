@@ -37,7 +37,17 @@ export class AuthService {
       }
       return { success: false, error: 'Login failed.' };
     } catch (e: any) {
-      return { success: false, error: e?.error?.detail || 'Invalid credentials or user does not exist.' };
+      let errorMsg = 'Invalid credentials or user does not exist.';
+      if (e?.error) {
+        if (typeof e.error === 'string') {
+          errorMsg = e.error;
+        } else if (e.error.detail) {
+          errorMsg = typeof e.error.detail === 'string' ? e.error.detail : JSON.stringify(e.error.detail);
+        } else if (e.error.message) {
+          errorMsg = e.error.message;
+        }
+      }
+      return { success: false, error: errorMsg };
     }
   }
 
@@ -51,7 +61,17 @@ export class AuthService {
       }
       return { success: false, error: 'Registration failed.' };
     } catch (e: any) {
-      return { success: false, error: e?.error?.detail || 'Registration failed.' };
+      let errorMsg = 'Registration failed.';
+      if (e?.error) {
+        if (typeof e.error === 'string') {
+          errorMsg = e.error;
+        } else if (e.error.detail) {
+          errorMsg = typeof e.error.detail === 'string' ? e.error.detail : JSON.stringify(e.error.detail);
+        } else if (e.error.message) {
+          errorMsg = e.error.message;
+        }
+      }
+      return { success: false, error: errorMsg };
     }
   }
 

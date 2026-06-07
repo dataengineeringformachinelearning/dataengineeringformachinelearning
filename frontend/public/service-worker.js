@@ -39,6 +39,9 @@ self.addEventListener('fetch', (event) => {
   // Only handle HTTP/HTTPS (ignore chrome-extension://, etc.)
   if (!event.request.url.startsWith('http')) return;
 
+  // Do not handle/intercept API requests or non-GET requests
+  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) return;
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -60,11 +63,12 @@ self.addEventListener('fetch', (event) => {
           cache.put(event.request, responseToCache);
         });
         return networkResponse;
-      }).catch(() => {
+      }).catch((error) => {
         // Fallback for offline reading of documentation/book page
         if (event.request.mode === 'navigate') {
           return caches.match('/index.html');
         }
+        throw error;
       });
     })
   );

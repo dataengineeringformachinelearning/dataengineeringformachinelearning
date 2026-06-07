@@ -1,0 +1,71 @@
+<div class="whitepaper-container">
+  <!-- Glow Spheres for Homepage Unity -->
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+
+  <div class="whitepaper-header">
+    <div class="meta-label">TECHNICAL WHITEPAPER</div>
+    <h1 class="title">Scalable Telemetry & ML-Predicted SLAs</h1>
+    <p class="subtitle">Architecting high-throughput event pipelines and predictive service level agreement models for modern SaaS platforms.</p>
+    <div class="author-meta">
+      <span>Published: June 2026</span>
+      <span class="bullet">•</span>
+      <span>Author: Data Engineering Team</span>
+    </div>
+  </div>
+
+  <div class="whitepaper-content">
+    <section class="paper-section">
+      <h2>1. Executive Summary</h2>
+      <p>
+        Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of a next-generation observability pipeline that ingests real-time telemetry at scale and uses Machine Learning to forecast service level agreement compliance 90 days into the future.
+      </p>
+    </section>
+
+    <section class="paper-section">
+      <h2>2. High-Throughput Ingestion Architecture</h2>
+      <p>
+        To decouple telemetry parsing from main application databases, we implement an asynchronous broker-based pipeline. User-facing client events and microservice health pings are ingested via non-blocking API endpoints and immediately dispatched to a **Redpanda** message broker.
+      </p>
+      <div class="diagram-placeholder">
+        <div class="diagram-node">Client Telemetry</div>
+        <div class="diagram-arrow">➔</div>
+        <div class="diagram-node secondary">Redpanda Topic</div>
+        <div class="diagram-arrow">➔</div>
+        <div class="diagram-node success">Polars Batch Processor</div>
+        <div class="diagram-arrow">➔</div>
+        <div class="diagram-node primary">Timescale/PostgreSQL</div>
+      </div>
+      <p>
+        By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), we achieve sub-millisecond dispatch latencies and avoid JVM resource overhead.
+      </p>
+    </section>
+
+    <section class="paper-section">
+      <h2>3. Asynchronous Batch Processing with Polars</h2>
+      <p>
+        Processing streaming events row-by-row introduces significant database write amplification. Our telemetry worker aggregates incoming events from Redpanda and processes them in micro-batches using **Polars**, an extremely fast multi-threaded DataFrame library written in Rust.
+      </p>
+      <p>
+        By batching calculations, we compute historical uptime graphs (90-day intervals) and update cumulative SLA records efficiently, reducing disk I/O by over 80%.
+      </p>
+    </section>
+
+    <section class="paper-section">
+      <h2>4. ML-Powered 90-Day SLA Forecasts</h2>
+      <p>
+        To transition from reactive monitoring to proactive SLA planning, we introduce a predictive neural network built in **PyTorch**. The network consumes sequence features derived from recent response-time variances, historical error rates, and peak usage patterns to forecast future SLA breaches.
+      </p>
+      <p>
+        These predictions are loaded into the status pages to give operators early warnings of degradation, allowing teams to intervene before outages affect end-users.
+      </p>
+    </section>
+
+    <section class="paper-section">
+      <h2>5. Conclusion</h2>
+      <p>
+        By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.
+      </p>
+    </section>
+  </div>
+</div>

@@ -16,13 +16,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Sidebar } from '../../components/sidebar/sidebar';
-import { StatusCta } from '../../components/status-cta/status-cta';
 import { LoginDialog } from '../../components/login-dialog/login-dialog';
 
-
 @Component({
-  selector: 'app-status',
+  selector: 'app-isolated-status',
   standalone: true,
   imports: [
     CommonModule,
@@ -30,25 +27,44 @@ import { LoginDialog } from '../../components/login-dialog/login-dialog';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    MatDialogModule,
-    Sidebar,
-    StatusCta
+    MatDialogModule
   ],
-  templateUrl: './status.html',
+  templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './status.scss',
+  styleUrl: './isolated-status.scss',
 })
-export class Status implements OnInit {
+export class IsolatedStatus implements OnInit {
   private monitorService = inject(MonitorService);
   public modelService = inject(ModelService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private dialog = inject(MatDialog);
 
   statusPages = signal<StatusPageData[]>([]);
   incidentsMap = signal<Record<string, IncidentData[]>>({});
   servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
+
+  globalPageStatus = computed(() => {
+    const pages = this.statusPages();
+    if (pages.length === 0) return 'Operational';
+    const pageId = pages[0].id;
+    
+    const incs = this.incidentsMap()[pageId] || [];
+    const activeIncidents = incs.filter(i => i.status !== 'Resolved');
+    
+    const services = this.servicesMap()[pageId] || [];
+    const outages = services.filter(s => s.status === 'Outage');
+    const degraded = services.filter(s => s.status === 'Degraded');
+
+    if (activeIncidents.length > 0 || outages.length > 0) {
+      return 'Outage';
+    } else if (degraded.length > 0) {
+      return 'Degraded';
+    }
+    return 'Operational';
+  });
 
   login() {
     const dialogRef = this.dialog.open(LoginDialog, {
@@ -65,35 +81,26 @@ export class Status implements OnInit {
   }
 
   ngOnInit() {
-    if (this.authService.isAuthenticated()) {
-      this.monitorService.getStatusPages().subscribe({
-        next: data => {
-          // Include user's own pages AND the platform status page
-          const myPages = data.filter(p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status');
-          // Sort so platform-status is always first
-          const sorted = [...myPages].sort((a, b) => {
-            if (a.slug === 'platform-status') return -1;
-            if (b.slug === 'platform-status') return 1;
-            return a.title.localeCompare(b.title);
-          });
-          this.statusPages.set(sorted);
-          this.fetchAllIncidents(sorted);
-          this.servicesMap.set({});
-          this.fetchAllServices(sorted);
-          sorted.forEach(page => {
+    this.route.paramMap.subscribe(params => {
+      const slug = params.get('slug');
+      if (slug) {
+        this.monitorService.getStatusPageBySlug(slug).subscribe({
+          next: page => {
+            const pages = [page];
+            this.statusPages.set(pages);
+            this.fetchAllIncidents(pages);
+            this.fetchAllServices(pages);
             this.modelService.fetchLatestStat(page.id);
-          });
-          this.cdr.markForCheck();
-        },
-        error: err => {
-          console.error('Error fetching pages:', err);
-          this.statusPages.set([]);
-          this.cdr.markForCheck();
-        },
-      });
-    } else {
-      this.router.navigate(['/status/platform-status']);
-    }
+            this.cdr.markForCheck();
+          },
+          error: err => {
+            console.error('Error fetching page by slug:', err);
+            this.statusPages.set([]);
+            this.cdr.markForCheck();
+          }
+        });
+      }
+    });
   }
 
   getPageStatus(pageId: string): string {
@@ -135,4 +142,3 @@ export class Status implements OnInit {
     });
   }
 }
-

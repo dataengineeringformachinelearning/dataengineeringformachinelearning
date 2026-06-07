@@ -1,7 +1,7 @@
 
 
 <!-- Navbar -->
-<app-navbar></app-navbar>
+<app-navbar *ngIf="!isStandaloneStatusPage()"></app-navbar>
 
 <!-- Main Content -->
 <main class="main-content">
@@ -9,7 +9,7 @@
 </main>
 
 <!-- Footer -->
-<app-footer></app-footer>
+<app-footer *ngIf="!isStandaloneStatusPage()"></app-footer>
 
 <!-- Issue Reporter FAB -->
 <app-issue-reporter></app-issue-reporter>

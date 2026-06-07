@@ -491,16 +491,16 @@ Systems telemetry alone cannot capture qualitative user experiences. To process 
 
 #### Chapter 13.1.1: Connecting to threat intelligence sources
 
-## Acknowledgements
+## Acknowledgements & Release Notes
 
-This project is configured for deployment on Railway, spanning three distinct services:
+This platform is fully optimized and ready for production release. The deployment is configured on Railway across three integrated services:
 
-1. **Web Frontend**: The Angular application running on a public URL (`https://dataengineeringformachinelearning.com`).
-2. **Web Backend**: The Django API connected to Postgres (`https://backend.dataengineeringformachinelearning.com`).
-3. **Telemetry Worker**: A background Redpanda consumer and worker process (`internal`).
+1. **Web Frontend**: A highly interactive, accessibly-compliant (a11y) Angular application featuring responsive status cards, telemetry charts, and a standalone public status dashboard.
+2. **Web Backend**: A robust Django Ninja API coordinating authentication, CORS handling, data persistence, and threat detection.
+3. **Telemetry Worker**: An asynchronous background consumer processing Redpanda message streams and executing PyTorch ML model pipelines for SLA forecasting.
+
+We express gratitude to the open-source communities behind Angular, Django, PyTorch, Redpanda, and Polars, whose tools made this project possible.
 
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)

@@ -481,22 +481,20 @@ Systems telemetry alone cannot capture qualitative user experiences. To process 
 3. **Broker Dispatch**: The agent calls a custom tool (`send_issue_to_redpanda`) that publishes the enriched, structured JSON analysis to the `user-issues` topic on Redpanda.
 4. **Async Consumption**: The background telemetry worker consumes messages from `user-issues`, updates the database record with the AI's diagnostic analysis, and logs the incident details, completing the asynchronous data collection loop.
 
-## Deployment Configuration
-
 ## Chapter 13: Enhancing data with threat intelligence
 
 ### Chapter 13.1: Introduction
 
 #### Chapter 13.1.1: Connecting to threat intelligence sources
 
+To secure our data pipelines against external vulnerabilities, we connect our ingestion system to public threat intelligence feeds (e.g., ipify, AbuseIPDB, and national vulnerability databases). When telemetry packets arrive, the backend processes them through a custom lookup service that matches client IP addresses and headers against active threat list caches. Verified threats are flagged in the database and dispatched to the Redpanda broker to initiate security alerts and block requests, protecting the downstream machine learning models from adversarial telemetry injection.
+
 ## Deployment Configuration
 
-This project is configured for deployment on Railway, spanning three distinct services:
+This platform is configured for production deployment on Railway across three integrated services:
 
-1. **Web Frontend**: The Angular application running on a public URL (`https://dataengineeringformachinelearning.com`).
-2. **Web Backend**: The Django API connected to Postgres (`https://backend.dataengineeringformachinelearning.com`).
-3. **Telemetry Worker**: A background Redpanda consumer and worker process (`internal`).
+1. **Web Frontend**: The Angular application.
+2. **Web Backend**: The Django API.
+3. **Telemetry Worker**: An asynchronous background consumer processing Redpanda events and PyTorch SLA prediction models.
 
-For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
-
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
+For detailed configuration settings, environmental variables, and scaling limits, please refer to the [RAILWAY.md](./RAILWAY.md) file.

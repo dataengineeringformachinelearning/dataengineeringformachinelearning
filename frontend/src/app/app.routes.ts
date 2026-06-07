@@ -5,15 +5,18 @@ import { Manage } from './pages/manage/manage';
 import { Landing } from './pages/landing/landing';
 import { Privacy } from './pages/privacy/privacy';
 import { Explore } from './pages/explore/explore';
+import { IsolatedStatus } from './pages/isolated-status/isolated-status';
+import { Whitepaper } from './pages/whitepaper/whitepaper';
 
 export const routes: Routes = [
   { path: '', component: Landing },
   { path: 'book', redirectTo: 'documentation', pathMatch: 'full' },
   { path: 'documentation', component: Book },
   { path: 'status', component: Status },
-  { path: 'status/:slug', component: Status },
+  { path: 'status/:slug', component: IsolatedStatus },
   { path: 'explore', component: Explore },
   { path: 'manage', component: Manage },
   { path: 'privacy', component: Privacy },
+  { path: 'whitepaper', component: Whitepaper },
 ];
 
