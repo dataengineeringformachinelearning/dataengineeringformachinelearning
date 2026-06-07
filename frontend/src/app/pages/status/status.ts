@@ -8,7 +8,7 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MonitorService, StatusPageData, IncidentData } from '../../services/monitor.service';
+import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
@@ -38,18 +38,26 @@ export class Status implements OnInit {
 
   statusPages = signal<StatusPageData[]>([]);
   incidentsMap = signal<Record<string, IncidentData[]>>({});
+  servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
 
   globalStatus = computed(() => {
     const map = this.incidentsMap();
-    let hasActive = false;
     for (const key of Object.keys(map)) {
       const active = map[key].filter(inc => inc.status !== 'Resolved');
       if (active.length > 0) {
-        hasActive = true;
-        break;
+        return 'Degraded Performance';
       }
     }
-    return hasActive ? 'Degraded Performance' : 'All Systems Normal';
+
+    const services = this.servicesMap();
+    for (const key of Object.keys(services)) {
+      const down = services[key].filter(s => s.status === 'Outage');
+      if (down.length > 0) {
+        return 'Degraded Performance';
+      }
+    }
+
+    return 'All Systems Normal';
   });
 
   ngOnInit() {
@@ -63,6 +71,7 @@ export class Status implements OnInit {
         });
         this.statusPages.set(sorted);
         this.fetchAllIncidents(sorted);
+        this.fetchAllServices(sorted);
       },
       error: err => console.error('Error fetching pages:', err),
     });
@@ -93,6 +102,18 @@ export class Status implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => console.error(`Error fetching incidents for ${page.id}:`, err)
+      });
+    });
+  }
+
+  fetchAllServices(pages: StatusPageData[]) {
+    pages.forEach(page => {
+      this.monitorService.getServices(page.id).subscribe({
+        next: services => {
+          this.servicesMap.update(map => ({ ...map, [page.id]: services }));
+          this.cdr.markForCheck();
+        },
+        error: err => console.error(`Error fetching services for ${page.id}:`, err)
       });
     });
   }

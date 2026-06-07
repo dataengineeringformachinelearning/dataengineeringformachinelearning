@@ -65,34 +65,77 @@
 
 
               <div class="card-body-clean">
-                <!-- Predictive SLA Section -->
-                <div class="ml-stat-panel">
-                  <div class="stat-info">
-                    <mat-icon class="stat-icon">online_prediction</mat-icon>
-                    <div>
-                      <span class="stat-title">Predicted SLA</span>
-                      <span class="stat-subtitle">90-day forecast via ML models</span>
+                <!-- SLA Section -->
+                <div class="ml-stat-panels-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                  <!-- Cumulative SLA Section -->
+                  <div class="ml-stat-panel" style="margin-bottom: 0;">
+                    <div class="stat-info">
+                      <mat-icon class="stat-icon">dns</mat-icon>
+                      <div>
+                        <span class="stat-title">Cumulative SLA</span>
+                        <span class="stat-subtitle">Based on real telemetry</span>
+                      </div>
+                    </div>
+                    <div class="stat-value-container">
+                      <span class="stat-value">
+                        {{ (page.cumulative_sla !== null ? page.cumulative_sla : 100.0) | number:'1.2-2' }}%
+                      </span>
                     </div>
                   </div>
-                  <div class="stat-value-container">
-                    <span class="stat-value">
-                      {{ (modelService.latestStat() !== null ? modelService.latestStat() : 99.99) | number:'1.2-2' }}%
-                    </span>
+
+                  <!-- Predictive SLA Section -->
+                  <div class="ml-stat-panel" style="margin-bottom: 0;">
+                    <div class="stat-info">
+                      <mat-icon class="stat-icon">online_prediction</mat-icon>
+                      <div>
+                        <span class="stat-title">Predicted SLA</span>
+                        <span class="stat-subtitle">90-day forecast via ML</span>
+                      </div>
+                    </div>
+                    <div class="stat-value-container">
+                      <span class="stat-value">
+                        {{ (modelService.latestStat() !== null ? modelService.latestStat() : 99.99) | number:'1.2-2' }}%
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Historical Uptime Section -->
+                <!-- Service Status List Section -->
+                <div class="services-status-panel" style="margin-bottom: 24px;">
+                  <h3 class="panel-title" style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">Service Performance</h3>
+                  <div class="services-status-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <div *ngFor="let s of servicesMap()[page.id]" class="service-status-row" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+                      <div class="service-meta" style="display: flex; flex-direction: column; gap: 2px;">
+                        <span class="service-name" style="font-weight: 500; color: var(--text-color); font-size: 14px;">{{ s.name }}</span>
+                        <span class="service-url" style="font-size: 12px; color: var(--text-muted); font-family: monospace;">{{ s.url }}</span>
+                      </div>
+                      <div class="service-stats" style="display: flex; align-items: center; gap: 16px;">
+                        <span class="service-sla" style="font-weight: 600; font-size: 14px; color: var(--status-accent);">{{ s.sla | number:'1.2-2' }}% SLA</span>
+                        <div class="status-badge-premium" [ngClass]="s.status?.toLowerCase() || 'operational'" style="padding: 4px 8px; font-size: 12px; height: auto;">
+                          <span class="status-dot-greenblue"></span>
+                          {{ s.status || 'Operational' }}
+                        </div>
+                      </div>
+                    </div>
+                    <div *ngIf="!servicesMap()[page.id] || servicesMap()[page.id].length === 0" style="color: var(--text-muted); font-size: 14px; text-align: center; padding: 12px;">
+                      No monitored services configured.
+                    </div>
+                  </div>
+                </div>
+
+                 <!-- Historical Uptime Section -->
                 <div class="timeline-panel">
                   <div class="panel-header">
                     <h3 class="panel-title">Uptime History (Last 90 Days)</h3>
-                    <span class="uptime-percentage">100% operational</span>
+                    <span class="uptime-percentage">{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}% operational</span>
                   </div>
                   <div class="timeline-bars-wrapper">
                     <div class="timeline-bars">
-                      <div *ngFor="let i of [].constructor(90); let idx = index" 
+                      <div *ngFor="let day of (page.uptime_history || []); let idx = index" 
                            class="timeline-bar-outlined"
-                           [ngClass]="{'bar-warning': idx === 45 || idx === 82}"
-                           [title]="idx === 45 || idx === 82 ? 'Partial Outage' : 'No downtime'">
+                           [ngClass]="{'bar-warning': day.status === 'partial_outage', 'bar-danger': day.status === 'major_outage', 'bar-nodata': day.status === 'no_data'}"
+                           [style.height]="day.status === 'major_outage' ? '40%' : (day.status === 'partial_outage' ? '70%' : '100%')"
+                           [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))">
                       </div>
                     </div>
                   </div>

@@ -20,6 +20,10 @@
   --status-badge-text: var(--color-primary);
   --status-badge-border: rgba(45, 71, 57, 0.2);
   --timeline-warning: #FFC107;
+
+  .timeline-bar-outlined.bar-nodata {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+  }
 }
 
 .status-container {
@@ -384,7 +388,7 @@
 
 .timeline-bar-outlined {
   flex: 1;
-  background-color: var(--status-accent);
+  background-color: var(--color-success);
   border-radius: 1px;
   transition: all 0.2s;
   cursor: pointer;
@@ -396,8 +400,15 @@
   }
   
   &.bar-warning {
-    height: 60%;
-    background-color: var(--timeline-warning);
+    background-color: #f59e0b;
+  }
+
+  &.bar-danger {
+    background-color: #d32f2f;
+  }
+
+  &.bar-nodata {
+    background-color: rgba(255, 255, 255, 0.15);
   }
 }
 
