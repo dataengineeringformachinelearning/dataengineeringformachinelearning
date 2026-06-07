@@ -61,33 +61,47 @@ def list_status_pages(request):
     # Auto-create default page if it doesn't exist
     if not StatusPage.objects.filter(slug="platform-status").exists():
         from django.contrib.auth.models import User
-        default_user = User.objects.first()
-        if not default_user:
-            default_user = User.objects.create_user(
-                username="system",
-                email="system@dataengineeringformachinelearning.com",
-                password=User.objects.make_random_password()
-            )
+        from django.db import IntegrityError, transaction
         
-        page = StatusPage.objects.create(
-            user=default_user,
-            title="Platform Status",
-            slug="platform-status",
-            description="Monitoring system health and telemetry pipelines for the Data Engineering Platform."
-        )
-        
-        # Add default services to it
-        from monitor.models import MonitoredService
-        MonitoredService.objects.create(
-            status_page=page,
-            name="Django Web Server",
-            url="http://localhost:8000/api/v1/system-status/health"
-        )
-        MonitoredService.objects.create(
-            status_page=page,
-            name="Redpanda Broker",
-            url="http://localhost:9092"
-        )
+        try:
+            with transaction.atomic():
+                default_user = User.objects.filter(username="system").first()
+                if not default_user:
+                    default_user, created = User.objects.get_or_create(
+                        username="system",
+                        defaults={
+                            "email": "system@dataengineeringformachinelearning.com",
+                        }
+                    )
+                    if created:
+                        default_user.set_password(User.objects.make_random_password())
+                        default_user.save()
+                
+                # Double check inside transaction to prevent race conditions
+                page, created = StatusPage.objects.get_or_create(
+                    slug="platform-status",
+                    defaults={
+                        "user": default_user,
+                        "title": "Platform Status",
+                        "description": "Monitoring system health and telemetry pipelines for the Data Engineering Platform."
+                    }
+                )
+                
+                if created:
+                    from monitor.models import MonitoredService
+                    MonitoredService.objects.get_or_create(
+                        status_page=page,
+                        name="Django Web Server",
+                        defaults={"url": "http://localhost:8000/api/v1/system-status/health"}
+                    )
+                    MonitoredService.objects.get_or_create(
+                        status_page=page,
+                        name="Redpanda Broker",
+                        defaults={"url": "http://localhost:9092"}
+                    )
+        except IntegrityError:
+            # If another thread/worker created it concurrently, we can safely ignore and proceed
+            pass
 
     pages = StatusPage.objects.all()
     out = []
