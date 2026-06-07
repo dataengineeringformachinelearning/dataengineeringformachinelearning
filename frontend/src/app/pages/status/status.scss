@@ -192,12 +192,16 @@
 
 .manage-btn {
   background: var(--status-accent) !important;
-  color: var(--color-on-primary) !important;
+  color: var(--color-on-primary-container) !important;
   font-weight: 600 !important;
   border-radius: 20px !important;
   border: none !important;
   box-shadow: 0 4px 10px var(--status-badge-border) !important;
   transition: all 0.2s ease !important;
+
+  mat-icon {
+    color: var(--color-on-primary-container) !important;
+  }
 
   &:hover {
     transform: translateY(-2px);
