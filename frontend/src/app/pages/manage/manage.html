@@ -1,142 +1,167 @@
-<div class="manage-container">
-
-  <!-- Hero Banner -->
-  <div class="hero-banner">
-    <div class="hero-content">
-      <h1 class="manage-title">Management Console</h1>
-      <p class="manage-subtitle">Control your status pages, services, and incidents.</p>
+<div class="dashboard-layout">
+  
+  <!-- Sidebar -->
+  <aside class="dashboard-sidebar">
+    <div class="sidebar-brand">
+      <mat-icon class="brand-icon">analytics</mat-icon>
+      <h2>Platform</h2>
     </div>
-  </div>
-
-  <div class="manage-content">
     
-    <!-- Sidebar -->
-    <div class="sidebar">
-      
-      <!-- Pages List -->
-      <mat-card class="sidebar-card">
-        <div class="sidebar-header">
-          <h2>Your Pages</h2>
+    <nav class="sidebar-nav">
+      <a class="nav-item" routerLink="/status">
+        <mat-icon>dashboard</mat-icon>
+        Status
+      </a>
+      <a class="nav-item active" routerLink="/manage">
+        <mat-icon>settings</mat-icon>
+        Manage
+      </a>
+    </nav>
+    
+    <div class="sidebar-section">
+      <h3 class="section-title">Your Pages</h3>
+      <div class="page-list">
+        <div *ngFor="let page of statusPages()" 
+             class="page-item"
+             [ngClass]="{'active': selectedPage()?.id === page.id}"
+             (click)="selectPage(page)">
+          <span class="page-title">{{ page.title }}</span>
+          <span class="page-slug">/status/{{ page.slug }}</span>
         </div>
-        <mat-list class="sidebar-list">
-          <mat-list-item *ngFor="let page of statusPages()" 
-                         (click)="selectPage(page)"
-                         class="sidebar-item"
-                         [ngClass]="{'active-page': selectedPage()?.id === page.id}">
-            <span matListItemTitle class="sidebar-item-title">{{ page.title }}</span>
-            <span matListItemLine class="sidebar-item-subtitle">/status/{{ page.slug }}</span>
-          </mat-list-item>
-          <div *ngIf="statusPages().length === 0" class="empty-sidebar">
-            No pages yet.
-          </div>
-        </mat-list>
-      </mat-card>
-
-      <!-- Create New Page -->
-      <mat-card class="sidebar-card">
-        <div class="sidebar-body">
-          <h3>Create New Page</h3>
-          <div class="form-col">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Title</mat-label>
-              <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status">
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>Slug</mat-label>
-              <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
-            </mat-form-field>
-            <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" class="primary-btn">Create Page</button>
-          </div>
+        <div *ngIf="statusPages().length === 0" class="empty-pages">
+          No pages yet.
         </div>
-      </mat-card>
-
+      </div>
     </div>
+  </aside>
 
-    <!-- Main Content Area -->
-    <div class="main-content">
-      
-      <mat-card *ngIf="selectedPage()" class="content-card">
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    
+    <header class="dashboard-topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">Management Console</h1>
+      </div>
+    </header>
+
+    <div class="dashboard-content-area">
+      <div class="content-wrapper">
         
-        <div class="content-header">
-          <div>
-            <h2>{{ selectedPage()!.title }}</h2>
-            <p>Managing settings and services.</p>
-          </div>
-        </div>
+        <!-- Main Two-Column Layout within the content -->
+        <div class="manage-grid">
+          
+          <!-- Left Column: Current Page Settings -->
+          <div class="manage-column main-col">
+            <mat-card *ngIf="selectedPage()" class="content-card">
+              <div class="card-header">
+                <h2>{{ selectedPage()!.title }}</h2>
+              </div>
+              
+              <div class="card-body">
+                <h3>Monitored Services</h3>
+                <div class="form-row panel">
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Service Name</mat-label>
+                    <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Auth API">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="flex-2">
+                    <mat-label>Health Check URL</mat-label>
+                    <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
+                  </mat-form-field>
+                  <button mat-raised-button color="accent" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl" class="action-btn">Add</button>
+                </div>
 
-        <h3>Monitored Services</h3>
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="flex-1">
-            <mat-label>Service Name</mat-label>
-            <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Authentication API">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="flex-2">
-            <mat-label>Health Check URL</mat-label>
-            <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
-          </mat-form-field>
-          <button mat-raised-button color="accent" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl" class="accent-btn">Add</button>
-        </div>
+                <div class="data-list panel">
+                  <div *ngFor="let service of services()" class="data-item">
+                    <div class="data-info">
+                      <span class="data-title">{{ service.name }}</span>
+                      <span class="data-subtitle">{{ service.url }}</span>
+                    </div>
+                    <button mat-icon-button color="warn" (click)="deleteService(service.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div *ngIf="services().length === 0" class="empty-data">
+                    No services monitored yet. Add one above!
+                  </div>
+                </div>
 
-        <mat-list class="data-list">
-          <mat-list-item *ngFor="let service of services()" class="data-item">
-            <span matListItemTitle class="data-title">{{ service.name }}</span>
-            <span matListItemLine class="data-subtitle">{{ service.url }}</span>
-            <button mat-icon-button color="warn" (click)="deleteService(service.id)" class="delete-btn">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-list-item>
-          <div *ngIf="services().length === 0" class="empty-data">
-            No services monitored yet. Add one above!
-          </div>
-        </mat-list>
+                <h3>Report Incident</h3>
+                <div class="incident-form panel">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Title</mat-label>
+                    <input matInput [(ngModel)]="newIncidentTitle" placeholder="e.g. API Degraded Performance">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Message / Update</mat-label>
+                    <textarea matInput [(ngModel)]="newIncidentMessage" rows="2"></textarea>
+                  </mat-form-field>
+                  <div class="form-row-center">
+                    <select [(ngModel)]="newIncidentStatus" class="native-select">
+                      <option value="Investigating">Investigating</option>
+                      <option value="Identified">Identified</option>
+                      <option value="Monitoring">Monitoring</option>
+                      <option value="Resolved">Resolved</option>
+                    </select>
+                    <button mat-raised-button color="warn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage" class="action-btn-warn">Post Incident</button>
+                  </div>
+                </div>
 
-        <h3>Report Incident</h3>
-        <div class="incident-form">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Title</mat-label>
-            <input matInput [(ngModel)]="newIncidentTitle" placeholder="e.g. API Degraded Performance">
-          </mat-form-field>
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Message / Update</mat-label>
-            <textarea matInput [(ngModel)]="newIncidentMessage" rows="3"></textarea>
-          </mat-form-field>
-          <div class="form-row-center">
-            <select [(ngModel)]="newIncidentStatus" class="native-select">
-              <option value="Investigating">Investigating</option>
-              <option value="Identified">Identified</option>
-              <option value="Monitoring">Monitoring</option>
-              <option value="Resolved">Resolved</option>
-            </select>
-            <button mat-raised-button color="warn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage" class="warn-btn">Post Incident</button>
-          </div>
-        </div>
+                <div class="data-list panel">
+                  <div *ngFor="let incident of incidents()" class="data-item">
+                    <div class="data-info">
+                      <span class="data-title">{{ incident.title }}</span>
+                      <span class="data-subtitle">{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span>
+                    </div>
+                    <button mat-icon-button color="warn" (click)="deleteIncident(incident.id)">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div *ngIf="incidents().length === 0" class="empty-data">
+                    No incidents reported.
+                  </div>
+                </div>
 
-        <mat-list class="data-list">
-          <mat-list-item *ngFor="let incident of incidents()" class="data-item">
-            <span matListItemTitle class="data-title">{{ incident.title }}</span>
-            <span matListItemLine class="data-subtitle">{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span>
-            <button mat-icon-button color="warn" (click)="deleteIncident(incident.id)" class="delete-btn">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-list-item>
-          <div *ngIf="incidents().length === 0" class="empty-data">
-            No incidents reported.
-          </div>
-        </mat-list>
-
-        <h3>Embeddable Widget</h3>
-        <p class="embed-desc">Copy and paste this script tag onto your website to display a live status badge.</p>
-        <div class="code-block">
+                <h3>Embeddable Widget</h3>
+                <p class="embed-desc">Copy and paste this script tag onto your website to display a live status badge.</p>
+                <div class="code-block panel">
 &lt;script src="https://dataengineeringformachinelearning.com/assets/widget.js" data-page-id="{{ selectedPage()!.id }}"&gt;&lt;/script&gt;
-        </div>
-      </mat-card>
-      
-      <mat-card *ngIf="!selectedPage()" class="empty-content-card">
-        <mat-icon class="empty-icon">settings_suggest</mat-icon>
-        <h3>Select a Status Page</h3>
-        <p>Choose a page from the sidebar or create a new one to manage settings.</p>
-      </mat-card>
+                </div>
+              </div>
+            </mat-card>
 
+            <div *ngIf="!selectedPage()" class="empty-content-card">
+              <mat-icon class="empty-icon">settings_suggest</mat-icon>
+              <h3>Select a Status Page</h3>
+              <p>Choose a page from the sidebar to manage settings.</p>
+            </div>
+          </div>
+
+          <!-- Right Column: Quick Actions like Create Page -->
+          <div class="manage-column side-col">
+            <mat-card class="action-card">
+              <div class="card-header">
+                <h2>Create New Page</h2>
+              </div>
+              <div class="card-body">
+                <div class="form-col">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Title</mat-label>
+                    <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status">
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Slug</mat-label>
+                    <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
+                  </mat-form-field>
+                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" class="primary-action-btn">Create Page</button>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+
+        </div>
+
+      </div>
     </div>
-  </div>
+  </main>
 </div>

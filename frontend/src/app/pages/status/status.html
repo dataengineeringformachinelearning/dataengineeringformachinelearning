@@ -1,94 +1,112 @@
-<div class="status-container">
+<div class="dashboard-layout">
   
-  <!-- Hero Banner -->
-  <div class="hero-banner">
-    <div class="hero-content">
-      <h1 class="status-title">System Status</h1>
-      <p class="status-subtitle">Live health and historical uptime for our core services</p>
+  <!-- Sidebar -->
+  <aside class="dashboard-sidebar">
+    <div class="sidebar-brand">
+      <mat-icon class="brand-icon">analytics</mat-icon>
+      <h2>Platform</h2>
     </div>
-  </div>
-
-  <div class="status-content">
-    
-    <div class="actions-row">
-      <button mat-raised-button color="accent" routerLink="/manage" class="manage-btn">
-        Manage Pages
-      </button>
-    </div>
-
-    <div class="status-stack">
-      
-      <mat-card *ngFor="let page of statusPages()" class="status-card">
-        
-        <!-- Card Header -->
-        <div class="card-header">
-          <div>
-            <h2 class="card-title">{{ page.title }}</h2>
-            <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
-          </div>
-          <div class="status-badge operational">
-            <span class="status-dot"></span>
-            Operational
-          </div>
-        </div>
-
-        <!-- Card Content -->
-        <div class="card-content">
-          
-          <!-- ML Stat Container -->
-          <div class="ml-stat-container">
-            <div>
-              <span class="stat-title">Predicted SLA</span>
-              <span class="stat-subtitle">90-day forecast via ML</span>
-            </div>
-            <span class="stat-value">
-              {{ (modelService.latestStat() !== null ? modelService.latestStat() : 99.99) | number:'1.2-2' }}%
-            </span>
-          </div>
-
-          <!-- 90 Day Timeline (Mock) -->
-          <div class="timeline-container">
-            <h3 class="timeline-title">Historical Uptime</h3>
-            <div class="timeline-bars">
-              <!-- Generating 90 bars -->
-              <div *ngFor="let i of [].constructor(90); let idx = index" 
-                   class="timeline-bar"
-                   [ngClass]="{'timeline-bar-warning': idx === 45 || idx === 82}"
-                   [title]="idx === 45 || idx === 82 ? 'Partial Outage' : 'No downtime'">
-              </div>
-            </div>
-            <div class="timeline-labels">
-              <span>90 days ago</span>
-              <span class="timeline-divider"></span>
-              <span>Today</span>
-            </div>
-          </div>
-
-          <!-- Incidents List -->
-          <div *ngIf="incidentsMap()[page.id]?.length" class="incidents-container">
-            <h3 class="incidents-title">Past Incidents</h3>
-            <div *ngFor="let incident of incidentsMap()[page.id]" class="incident-item" [ngClass]="{'incident-resolved': incident.status === 'Resolved'}">
-              <div class="incident-header">
-                <span class="incident-item-title">{{ incident.title }}</span>
-                <span class="incident-date">{{ incident.created_at | date:'mediumDate' }}</span>
-              </div>
-              <div class="incident-body">
-                <strong class="incident-status">
-                  {{ incident.status }}
-                </strong> &mdash; {{ incident.message }}
-              </div>
-            </div>
-          </div>
-          
-        </div>
-      </mat-card>
-
-      <div *ngIf="statusPages().length === 0" class="empty-state">
-        <mat-icon class="empty-icon">web_asset_off</mat-icon>
-        <h3 class="empty-title">No Status Pages</h3>
-        <p class="empty-subtitle">There are currently no public status pages available to monitor.</p>
+    <nav class="sidebar-nav">
+      <a class="nav-item active" routerLink="/status">
+        <mat-icon>dashboard</mat-icon>
+        Status
+      </a>
+      <a class="nav-item" routerLink="/manage">
+        <mat-icon>settings</mat-icon>
+        Manage
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="system-health">
+        <span class="health-dot"></span>
+        All Systems Normal
       </div>
-      
     </div>
-  </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    
+    <header class="dashboard-topbar">
+      <div class="topbar-left">
+        <h1 class="page-title">System Status</h1>
+      </div>
+      <div class="topbar-right">
+        <button mat-raised-button color="accent" routerLink="/manage" class="topbar-btn">
+          Manage Pages
+        </button>
+      </div>
+    </header>
+
+    <div class="dashboard-content-area">
+      <div class="content-wrapper">
+        <div class="status-stack">
+          
+          <mat-card *ngFor="let page of statusPages()" class="status-card">
+            
+            <div class="card-header">
+              <div>
+                <h2 class="card-title">{{ page.title }}</h2>
+                <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
+              </div>
+              <div class="status-badge operational">
+                <span class="status-dot"></span>
+                Operational
+              </div>
+            </div>
+
+            <div class="card-content">
+              
+              <div class="ml-stat-container">
+                <div>
+                  <span class="stat-title">Predicted SLA</span>
+                  <span class="stat-subtitle">90-day forecast via ML</span>
+                </div>
+                <span class="stat-value">
+                  {{ (modelService.latestStat() !== null ? modelService.latestStat() : 99.99) | number:'1.2-2' }}%
+                </span>
+              </div>
+
+              <div class="timeline-container">
+                <h3 class="timeline-title">Historical Uptime</h3>
+                <div class="timeline-bars">
+                  <div *ngFor="let i of [].constructor(90); let idx = index" 
+                       class="timeline-bar"
+                       [ngClass]="{'timeline-bar-warning': idx === 45 || idx === 82}"
+                       [title]="idx === 45 || idx === 82 ? 'Partial Outage' : 'No downtime'">
+                  </div>
+                </div>
+                <div class="timeline-labels">
+                  <span>90 days ago</span>
+                  <span class="timeline-divider"></span>
+                  <span>Today</span>
+                </div>
+              </div>
+
+              <div *ngIf="incidentsMap()[page.id]?.length" class="incidents-container">
+                <h3 class="incidents-title">Past Incidents</h3>
+                <div *ngFor="let incident of incidentsMap()[page.id]" class="incident-item" [ngClass]="{'incident-resolved': incident.status === 'Resolved'}">
+                  <div class="incident-header">
+                    <span class="incident-item-title">{{ incident.title }}</span>
+                    <span class="incident-date">{{ incident.created_at | date:'mediumDate' }}</span>
+                  </div>
+                  <div class="incident-body">
+                    <strong class="incident-status">{{ incident.status }}</strong> &mdash; {{ incident.message }}
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </mat-card>
+
+          <div *ngIf="statusPages().length === 0" class="empty-state">
+            <mat-icon class="empty-icon">web_asset_off</mat-icon>
+            <h3 class="empty-title">No Status Pages</h3>
+            <p class="empty-subtitle">There are currently no public status pages available to monitor.</p>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </main>
 </div>
