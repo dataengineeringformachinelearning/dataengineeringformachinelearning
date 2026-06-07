@@ -1,13 +1,14 @@
 (function() {
   // Find the script tag that loaded this widget
-  const scripts = document.getElementsByTagName('script');
-  let currentScript = null;
-  for (let i = 0; i < scripts.length; i++) {
-    if (scripts[i].src && scripts[i].src.includes('widget.js')) {
-      currentScript = scripts[i];
-      break;
+  const currentScript = document.currentScript || (function() {
+    const scripts = document.getElementsByTagName('script');
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].src && scripts[i].src.includes('widget.js')) {
+        return scripts[i];
+      }
     }
-  }
+    return null;
+  })();
 
   if (!currentScript) return;
 
@@ -17,9 +18,22 @@
     return;
   }
 
+  // Dynamically resolve frontend host and backend URL
+  const scriptUrl = new URL(currentScript.src);
+  const frontendHost = scriptUrl.origin;
+  
+  let backendUrl = currentScript.getAttribute('data-backend-url');
+  if (!backendUrl) {
+    if (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')) {
+      backendUrl = 'http://localhost:8000';
+    } else {
+      backendUrl = 'https://backend.dataengineeringformachinelearning.com';
+    }
+  }
+
   // Create the widget container
   const widgetContainer = document.createElement('a');
-  widgetContainer.href = `https://dataengineeringformachinelearning.com/status/${pageId}`; // This would typically be dynamic or configurable
+  widgetContainer.href = `${frontendHost}/status`;
   widgetContainer.target = '_blank';
   widgetContainer.style.display = 'inline-flex';
   widgetContainer.style.alignItems = 'center';
@@ -51,13 +65,13 @@
   dot.style.width = '8px';
   dot.style.height = '8px';
   dot.style.borderRadius = '50%';
-  dot.style.backgroundColor = '#10b981'; // Default to green (operational)
+  dot.style.backgroundColor = '#94a3b8'; // Slate grey for initial loading state
   dot.style.marginRight = '8px';
   dot.style.display = 'inline-block';
 
   // Create the text element
   const text = document.createElement('span');
-  text.innerText = 'All Systems Operational'; // Default text
+  text.innerText = 'Loading status...';
 
   // Append elements
   widgetContainer.appendChild(dot);
@@ -67,8 +81,7 @@
   currentScript.parentNode.insertBefore(widgetContainer, currentScript.nextSibling);
 
   // Fetch the latest status from our API
-  // Using a mock domain for the API call in this example, but it should be dynamic in production
-  const apiUrl = `https://backend.dataengineeringformachinelearning.com/api/v1/system-status/status_pages`;
+  const apiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
   
   fetch(apiUrl)
     .then(response => response.json())
@@ -76,11 +89,33 @@
       // Find the specific page
       const page = data.find(p => p.id === pageId || p.slug === pageId);
       if (page) {
-        // If we had a specific status endpoint, we'd update color here.
-        // For now, assume operational if the page exists.
-        dot.style.backgroundColor = '#10b981'; 
-        text.innerText = 'All Systems Operational';
-        widgetContainer.href = `https://dataengineeringformachinelearning.com/status`;
+        // Point link to specific page anchor
+        widgetContainer.href = `${frontendHost}/status#${page.slug}`;
+
+        // Fetch incidents for the page to determine status
+        const incidentsUrl = `${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`;
+        fetch(incidentsUrl)
+          .then(res => res.json())
+          .then(incidents => {
+            const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
+            if (activeIncidents.length > 0) {
+              const currentStatus = activeIncidents[0].status; // Investigating, Identified, Monitoring
+              dot.style.backgroundColor = '#ef4444'; // Red/Warning
+              text.innerText = `Incident: ${currentStatus}`;
+            } else {
+              dot.style.backgroundColor = '#10b981'; // Green
+              text.innerText = 'All Systems Operational';
+            }
+          })
+          .catch(err => {
+            console.error('Failed to load incidents for widget:', err);
+            // Default to operational if page exists but incident check fails
+            dot.style.backgroundColor = '#10b981'; 
+            text.innerText = 'All Systems Operational';
+          });
+      } else {
+        dot.style.backgroundColor = '#ef4444';
+        text.innerText = 'Status Page Not Found';
       }
     })
     .catch(err => {

@@ -2,11 +2,12 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { MatIconModule } from '@angular/material/icon';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-issue-reporter',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './issue-reporter.html',
   styleUrl: './issue-reporter.scss',
 })

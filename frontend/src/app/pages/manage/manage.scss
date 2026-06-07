@@ -478,27 +478,49 @@
   }
 }
 
-/* Red/Orange Post Incident Button */
+/* Red/Orange Post Incident Button (Theme-compliant Error button) */
 .post-incident-btn {
-  background: var(--post-incident-gradient) !important;
+  background-color: var(--color-error) !important;
   color: #ffffff !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 48px !important;
   padding: 0 2rem !important;
   border: none !important;
-  box-shadow: 0 4px 10px rgba(255, 87, 34, 0.15) !important;
+  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.15) !important;
   transition: all 0.2s ease !important;
 
   &:hover:not([disabled]) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(255, 87, 34, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(211, 47, 47, 0.3) !important;
+    opacity: 0.9;
   }
 
   &[disabled] {
     background: rgba(255, 255, 255, 0.05) !important;
     color: var(--text-muted) !important;
     box-shadow: none !important;
+    cursor: not-allowed;
+  }
+}
+
+/* Copy button styling using the theme dark grey buttons */
+.copy-btn {
+  background-color: var(--color-dark-grey-btn-bg) !important;
+  color: var(--color-dark-grey-btn-text) !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  height: 48px !important;
+  padding: 0 1.5rem !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+
+  &:hover:not([disabled]) {
+    opacity: 0.9;
+  }
+
+  &[disabled] {
+    opacity: 0.5;
     cursor: not-allowed;
   }
 }

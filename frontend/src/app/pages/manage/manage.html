@@ -82,7 +82,10 @@
                     <mat-label>Slug</mat-label>
                     <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
                   </mat-form-field>
-                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug">Create Page</button>
+                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" style="display: flex; align-items: center; gap: 8px;">
+                    <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">add_circle</mat-icon>
+                    <span>Create Page</span>
+                  </button>
                 </div>
                 
                 <!-- Existing Page View -->
@@ -99,7 +102,10 @@
                         <mat-label>Health Check URL</mat-label>
                         <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
                       </mat-form-field>
-                      <button mat-flat-button class="add-service-btn" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl">Add Service</button>
+                      <button mat-flat-button class="add-service-btn" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl" style="display: flex; align-items: center; gap: 8px;">
+                        <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">add</mat-icon>
+                        <span>Add Service</span>
+                      </button>
                     </div>
 
                     <div class="data-list-outlined">
@@ -138,7 +144,10 @@
                             <option value="Resolved">Resolved</option>
                           </select>
                         </div>
-                        <button mat-flat-button class="post-incident-btn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage">Post Incident</button>
+                        <button mat-flat-button class="post-incident-btn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage" style="display: flex; align-items: center; gap: 8px;">
+                          <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">notification_important</mat-icon>
+                          <span>Post Incident</span>
+                        </button>
                       </div>
                     </div>
 
@@ -161,8 +170,14 @@
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>code</mat-icon> Embeddable Widget</h3>
                     <p class="embed-desc">Copy and paste this script tag onto your website to display a live status badge.</p>
-                    <div class="code-block-outlined">
-                      <code>&lt;script src="https://dataengineeringformachinelearning.com/assets/widget.js" data-page-id="{{ selectedPage()!.id }}"&gt;&lt;/script&gt;</code>
+                    <div class="code-block-container" style="display: flex; align-items: center; gap: 12px; margin-top: 12px;">
+                      <div class="code-block-outlined" style="flex: 1; margin: 0;">
+                        <code>{{ getWidgetCode() }}</code>
+                      </div>
+                      <button mat-flat-button class="copy-btn" (click)="copyWidgetCode()" style="height: 48px; min-width: 110px; flex-shrink: 0; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+                        <span>{{ copied() ? 'Copied' : 'Copy' }}</span>
+                      </button>
                     </div>
                   </div>
                   
