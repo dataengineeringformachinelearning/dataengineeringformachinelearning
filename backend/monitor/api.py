@@ -1,6 +1,8 @@
 from ninja import Router, Schema
-from typing import List
-from monitor.models import Endpoints
+from typing import List, Optional
+from monitor.models import Endpoints, StatusPage, MonitoredService
+from django.shortcuts import get_object_or_404
+from ninja.errors import HttpError
 import datetime
 
 router = Router()
@@ -11,7 +13,7 @@ class EndpointOut(Schema):
     last_tested: datetime.datetime
     status_code: int
     response_time: str
-    ip_address: str
+    ip_address: Optional[str]
     is_active: bool
 
 @router.get("/endpoints", response=List[EndpointOut])
@@ -29,3 +31,104 @@ def get_all_endpoints(request):
             'is_active': endpoint.is_active
         })
     return data
+
+class StatusPageIn(Schema):
+    title: str
+    slug: str
+    description: Optional[str] = ""
+
+class StatusPageOut(Schema):
+    id: str
+    title: str
+    slug: str
+    description: str
+    created_at: datetime.datetime
+    user_id: Optional[int] = None
+
+@router.get("/status_pages", response=List[StatusPageOut])
+def list_status_pages(request):
+    pages = StatusPage.objects.all()
+    out = []
+    for p in pages:
+        out.append(StatusPageOut(
+            id=str(p.id),
+            title=p.title,
+            slug=p.slug,
+            description=p.description,
+            created_at=p.created_at,
+            user_id=p.user_id
+        ))
+    return out
+
+@router.post("/status_pages", response=StatusPageOut)
+def create_status_page(request, payload: StatusPageIn):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    if StatusPage.objects.filter(slug=payload.slug).exists():
+        raise HttpError(400, "Slug already exists")
+    page = StatusPage.objects.create(
+        user=request.user,
+        title=payload.title,
+        slug=payload.slug,
+        description=payload.description
+    )
+    return StatusPageOut(
+        id=str(page.id),
+        title=page.title,
+        slug=page.slug,
+        description=page.description,
+        created_at=page.created_at,
+        user_id=page.user_id
+    )
+
+class MonitoredServiceIn(Schema):
+    name: str
+    url: str
+
+class MonitoredServiceOut(Schema):
+    id: str
+    name: str
+    url: str
+    status_page_id: str
+    created_at: datetime.datetime
+
+@router.get("/status_pages/{page_id}/services", response=List[MonitoredServiceOut])
+def list_services(request, page_id: str):
+    page = get_object_or_404(StatusPage, id=page_id)
+    services = page.services.all()
+    out = []
+    for s in services:
+        out.append(MonitoredServiceOut(
+            id=str(s.id),
+            name=s.name,
+            url=s.url,
+            status_page_id=str(s.status_page_id),
+            created_at=s.created_at
+        ))
+    return out
+
+@router.post("/status_pages/{page_id}/services", response=MonitoredServiceOut)
+def add_service(request, page_id: str, payload: MonitoredServiceIn):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    page = get_object_or_404(StatusPage, id=page_id, user=request.user)
+    service = MonitoredService.objects.create(
+        status_page=page,
+        name=payload.name,
+        url=payload.url
+    )
+    return MonitoredServiceOut(
+        id=str(service.id),
+        name=service.name,
+        url=service.url,
+        status_page_id=str(service.status_page_id),
+        created_at=service.created_at
+    )
+
+@router.delete("/services/{service_id}")
+def delete_service(request, service_id: str):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    service = get_object_or_404(MonitoredService, id=service_id, status_page__user=request.user)
+    service.delete()
+    return {"success": True}

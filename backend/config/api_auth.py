@@ -14,13 +14,14 @@ from typing import Optional
 class SuccessSchema(Schema):
     status: str
     user: Optional[str] = None
+    user_id: Optional[int] = None
 
 @router.post("/login", response=SuccessSchema)
 def api_login(request, data: LoginSchema):
     user = authenticate(request, username=data.username, password=data.password)
     if user is not None:
         django_login(request, user)
-        return {"status": "success", "user": user.username}
+        return {"status": "success", "user": user.username, "user_id": user.id}
     else:
         raise HttpError(401, "Invalid credentials")
 
@@ -32,5 +33,5 @@ def api_logout(request):
 @router.get("/user", response=SuccessSchema)
 def api_user(request):
     if request.user.is_authenticated:
-        return {"status": "success", "user": request.user.username}
+        return {"status": "success", "user": request.user.username, "user_id": request.user.id}
     raise HttpError(401, "Not authenticated")

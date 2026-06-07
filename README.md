@@ -474,3 +474,5 @@ This project is configured for deployment on Railway, spanning three distinct se
 3. **Telemetry Worker**: A background Redpanda consumer and worker process (`internal`).
 
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)

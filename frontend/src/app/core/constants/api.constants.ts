@@ -7,6 +7,8 @@ export const API_ENDPOINTS = {
   },
   SYSTEM_STATUS: {
     ENDPOINTS: `${environment.backendUrl}/api/v1/system-status/endpoints`,
+    STATUS_PAGES: `${environment.backendUrl}/api/v1/system-status/status_pages`,
+    SERVICES: `${environment.backendUrl}/api/v1/system-status/services`,
   },
   AGENT: {
     REPORT_ISSUE: `${environment.backendUrl}/api/v1/agent/report-issue`,
