@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, ElementRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-landing',
@@ -19,6 +20,7 @@ export class Landing implements OnInit {
       const script = document.createElement('script');
       script.src = 'assets/widget.js';
       script.setAttribute('data-page-id', 'platform-status');
+      script.setAttribute('data-backend-url', environment.backendUrl);
       footer.appendChild(script);
     }
   }
