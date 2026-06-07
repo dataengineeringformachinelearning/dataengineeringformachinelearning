@@ -25,9 +25,9 @@
         </a>
       </nav>
       <div class="sidebar-footer">
-        <div class="system-health">
+        <div class="system-health" [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}">
           <span class="health-dot"></span>
-          All Systems Normal
+          {{ globalStatus() }}
         </div>
       </div>
     </aside>
@@ -57,11 +57,12 @@
                   <h2 class="card-title">{{ page.title }}</h2>
                   <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
                 </div>
-                <div class="status-badge-premium">
+                <div class="status-badge-premium" [ngClass]="getPageStatusClass(page.id)">
                   <span class="status-dot-greenblue"></span>
-                  Operational
+                  {{ getPageStatus(page.id) }}
                 </div>
               </div>
+
 
               <div class="card-body-clean">
                 <!-- Predictive SLA Section -->

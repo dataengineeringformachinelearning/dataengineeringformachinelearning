@@ -4,6 +4,7 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
+  computed,
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -38,16 +39,50 @@ export class Status implements OnInit {
   statusPages = signal<StatusPageData[]>([]);
   incidentsMap = signal<Record<string, IncidentData[]>>({});
 
+  globalStatus = computed(() => {
+    const map = this.incidentsMap();
+    let hasActive = false;
+    for (const key of Object.keys(map)) {
+      const active = map[key].filter(inc => inc.status !== 'Resolved');
+      if (active.length > 0) {
+        hasActive = true;
+        break;
+      }
+    }
+    return hasActive ? 'Degraded Performance' : 'All Systems Normal';
+  });
+
   ngOnInit() {
     this.monitorService.getStatusPages().subscribe({
       next: data => {
-        this.statusPages.set(data);
-        this.fetchAllIncidents(data);
+        // Sort so 'platform-status' is always first
+        const sorted = [...data].sort((a, b) => {
+          if (a.slug === 'platform-status') return -1;
+          if (b.slug === 'platform-status') return 1;
+          return a.title.localeCompare(b.title);
+        });
+        this.statusPages.set(sorted);
+        this.fetchAllIncidents(sorted);
       },
       error: err => console.error('Error fetching pages:', err),
     });
 
     this.modelService.fetchLatestStat();
+  }
+
+  getPageStatus(pageId: string): string {
+    const incs = this.incidentsMap()[pageId] || [];
+    const active = incs.filter(i => i.status !== 'Resolved');
+    if (active.length > 0) {
+      return active[0].status;
+    }
+    return 'Operational';
+  }
+
+  getPageStatusClass(pageId: string): string {
+    const status = this.getPageStatus(pageId);
+    if (status === 'Operational') return 'operational';
+    return status.toLowerCase();
   }
 
   fetchAllIncidents(pages: StatusPageData[]) {
@@ -62,3 +97,4 @@ export class Status implements OnInit {
     });
   }
 }
+
