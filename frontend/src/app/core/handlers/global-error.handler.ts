@@ -29,7 +29,7 @@ export class GlobalErrorHandler implements ErrorHandler {
 
     // Show user-friendly error UI in browser
     if (isPlatformBrowser(this.platformId)) {
-      this.showToast(error?.message || error?.toString() || 'An unexpected error occurred.');
+      this.showToast('An unexpected system error occurred. Please try again later.');
     }
   }
 
