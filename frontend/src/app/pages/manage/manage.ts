@@ -16,6 +16,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-manage',
@@ -28,7 +29,8 @@ import { MatListModule } from '@angular/material/list';
     MatProgressSpinnerModule,
     MatInputModule,
     FormsModule,
-    MatListModule
+    MatListModule,
+    RouterModule
   ],
   templateUrl: './manage.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -88,6 +90,19 @@ export class Manage implements OnInit {
       });
     }
   }
+
+  deleteStatusPage(pageId: string) {
+    if (confirm('Are you sure you want to delete this status page? All monitored services and incidents will be removed.')) {
+      this.monitorService.deleteStatusPage(pageId).subscribe({
+        next: () => {
+          this.selectedPage.set(null);
+          this.loadStatusPages();
+        },
+        error: err => console.error('Error deleting page:', err)
+      });
+    }
+  }
+
 
   selectPage(page: StatusPageData | null) {
     this.selectedPage.set(page);

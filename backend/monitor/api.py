@@ -81,6 +81,15 @@ def create_status_page(request, payload: StatusPageIn):
         user_id=page.user_id
     )
 
+@router.delete("/status_pages/{page_id}")
+def delete_status_page(request, page_id: str):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    page = get_object_or_404(StatusPage, id=page_id, user=request.user)
+    page.delete()
+    return {"success": True}
+
+
 class MonitoredServiceIn(Schema):
     name: str
     url: str

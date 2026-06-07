@@ -57,6 +57,11 @@ export class MonitorService {
     return this.http.post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, { withCredentials: true });
   }
 
+  deleteStatusPage(pageId: string) {
+    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, { withCredentials: true });
+  }
+
+
   getServices(pageId: string) {
     return this.http.get<MonitoredServiceData[]>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/services`, { withCredentials: true });
   }
