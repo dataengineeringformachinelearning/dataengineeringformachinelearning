@@ -4,67 +4,144 @@
       <div>
         <h1 class="dashboard-title">Manage Status Pages</h1>
         <p class="dashboard-subtitle">Manage your public status pages and monitored services</p>
-      </div>
+<div class="manage-container" style="background: #f8fafc; min-height: 100vh; padding-bottom: 4rem;">
+
+  <!-- Hero Banner -->
+  <div style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 4rem 2rem; text-align: center; margin-bottom: -3rem; position: relative; z-index: 1;">
+    <div style="max-width: 1000px; margin: 0 auto;">
+      <h1 class="manage-title" style="font-size: 3rem; font-weight: 800; margin: 0; letter-spacing: -0.025em;">Management Console</h1>
+      <p class="manage-subtitle" style="font-size: 1.25rem; opacity: 0.9; margin-top: 1rem; font-weight: 300;">Control your status pages, services, and incidents.</p>
+    </div>
+  </div>
+
+  <div class="manage-content" style="max-width: 1000px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2; display: flex; gap: 2rem;">
+    
+    <!-- Sidebar -->
+    <div style="flex: 0 0 300px; display: flex; flex-direction: column; gap: 2rem;">
+      
+      <!-- Pages List -->
+      <mat-card style="border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: none;">
+        <div style="padding: 1.5rem; border-bottom: 1px solid #f1f5f9; background: #ffffff; border-radius: 16px 16px 0 0;">
+          <h2 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #0f172a;">Your Pages</h2>
+        </div>
+        <mat-list style="padding: 0;">
+          <mat-list-item *ngFor="let page of statusPages()" 
+                         (click)="selectPage(page)"
+                         [ngStyle]="{'background': selectedPage()?.id === page.id ? '#f1f5f9' : 'transparent', 'cursor': 'pointer', 'border-left': selectedPage()?.id === page.id ? '4px solid #3b82f6' : '4px solid transparent'}">
+            <span matListItemTitle style="font-weight: 600; color: #1e293b;">{{ page.title }}</span>
+            <span matListItemLine style="color: #64748b;">/status/{{ page.slug }}</span>
+          </mat-list-item>
+          <div *ngIf="statusPages().length === 0" style="padding: 2rem; text-align: center; color: #94a3b8;">
+            No pages yet.
+          </div>
+        </mat-list>
+      </mat-card>
+
+      <!-- Create New Page -->
+      <mat-card style="border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: none;">
+        <div style="padding: 1.5rem; background: #ffffff; border-radius: 16px;">
+          <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 600; color: #0f172a; margin-bottom: 1rem;">Create New Page</h3>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Title</mat-label>
+              <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status">
+            </mat-form-field>
+            <mat-form-field appearance="outline" style="width: 100%;">
+              <mat-label>Slug</mat-label>
+              <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
+            </mat-form-field>
+            <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" style="height: 44px; border-radius: 8px;">Create Page</button>
+          </div>
+        </div>
+      </mat-card>
+
     </div>
 
-    <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
-      <!-- Left Column: Status Pages List -->
-      <div class="dashboard-card">
-        <h3>Your Status Pages</h3>
-        <mat-list>
-          <mat-list-item *ngFor="let page of statusPages()" (click)="selectPage(page)" [class.selected]="selectedPage()?.id === page.id" style="cursor: pointer;">
-            <span matListItemTitle>{{ page.title }}</span>
-            <span matListItemLine>/status/{{ page.slug }}</span>
-          </mat-list-item>
-        </mat-list>
+    <!-- Main Content Area -->
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 2rem;">
+      
+      <mat-card *ngIf="selectedPage()" style="border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: none; padding: 2rem;">
         
-        <div style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-          <h4>Create New Status Page</h4>
-          <mat-form-field appearance="outline" style="width: 100%;">
-            <mat-label>Title</mat-label>
-            <input matInput [(ngModel)]="newPageTitle">
-          </mat-form-field>
-          <mat-form-field appearance="outline" style="width: 100%;">
-            <mat-label>Slug (URL)</mat-label>
-            <input matInput [(ngModel)]="newPageSlug">
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" style="width: 100%;">Create Page</button>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: #0f172a;">{{ selectedPage()!.title }}</h2>
+            <p style="margin: 0; color: #64748b; margin-top: 0.25rem;">Managing settings and services.</p>
+          </div>
         </div>
-      </div>
 
-      <!-- Right Column: Services for Selected Page -->
-      <div class="dashboard-card" *ngIf="selectedPage()">
-        <h3>Services for {{ selectedPage()!.title }}</h3>
-        
-        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Monitored Services</h3>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: center;">
           <mat-form-field appearance="outline" style="flex: 1; margin-bottom: -1.25em;">
             <mat-label>Service Name</mat-label>
-            <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Production API">
+            <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Authentication API">
           </mat-form-field>
           <mat-form-field appearance="outline" style="flex: 2; margin-bottom: -1.25em;">
-            <mat-label>URL</mat-label>
-            <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com">
+            <mat-label>Health Check URL</mat-label>
+            <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
           </mat-form-field>
-          <button mat-raised-button color="primary" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl">Add Service</button>
+          <button mat-raised-button color="accent" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl" style="height: 48px; border-radius: 8px;">Add</button>
         </div>
 
-        <mat-list>
-          <mat-list-item *ngFor="let service of services()">
-            <span matListItemTitle>{{ service.name }}</span>
-            <span matListItemLine>{{ service.url }}</span>
+        <mat-list style="border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 3rem;">
+          <mat-list-item *ngFor="let service of services()" style="border-bottom: 1px solid #f1f5f9;">
+            <span matListItemTitle style="font-weight: 500;">{{ service.name }}</span>
+            <span matListItemLine style="color: #64748b;">{{ service.url }}</span>
             <button mat-icon-button color="warn" (click)="deleteService(service.id)" style="position: absolute; right: 0; top: 8px;">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-list-item>
-          <div *ngIf="services().length === 0" style="padding: 1rem; color: var(--text-muted);">
+          <div *ngIf="services().length === 0" style="padding: 2rem; text-align: center; color: #94a3b8;">
             No services monitored yet. Add one above!
           </div>
         </mat-list>
-      </div>
+
+        <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Report Incident</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>Title</mat-label>
+            <input matInput [(ngModel)]="newIncidentTitle" placeholder="e.g. API Degraded Performance">
+          </mat-form-field>
+          <mat-form-field appearance="outline" style="width: 100%;">
+            <mat-label>Message / Update</mat-label>
+            <textarea matInput [(ngModel)]="newIncidentMessage" rows="3"></textarea>
+          </mat-form-field>
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <select [(ngModel)]="newIncidentStatus" style="padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-size: 1rem; color: #1e293b;">
+              <option value="Investigating">Investigating</option>
+              <option value="Identified">Identified</option>
+              <option value="Monitoring">Monitoring</option>
+              <option value="Resolved">Resolved</option>
+            </select>
+            <button mat-raised-button color="warn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage" style="height: 46px; border-radius: 8px;">Post Incident</button>
+          </div>
+        </div>
+
+        <mat-list style="border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 3rem;">
+          <mat-list-item *ngFor="let incident of incidents()" style="border-bottom: 1px solid #f1f5f9;">
+            <span matListItemTitle style="font-weight: 500;">{{ incident.title }}</span>
+            <span matListItemLine style="color: #64748b;">{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span>
+            <button mat-icon-button color="warn" (click)="deleteIncident(incident.id)" style="position: absolute; right: 0; top: 8px;">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-list-item>
+          <div *ngIf="incidents().length === 0" style="padding: 2rem; text-align: center; color: #94a3b8;">
+            No incidents reported.
+          </div>
+        </mat-list>
+
+        <h3 style="font-size: 1.25rem; font-weight: 600; color: #1e293b; margin-bottom: 1rem;">Embeddable Widget</h3>
+        <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 1rem;">Copy and paste this script tag onto your website to display a live status badge.</p>
+        <div style="background: #0f172a; color: #f8fafc; padding: 1.5rem; border-radius: 8px; font-family: 'Fira Code', monospace; font-size: 0.9rem; overflow-x: auto; white-space: pre-wrap; border: 1px solid #1e293b;">
+&lt;script src="https://dataengineeringformachinelearning.com/assets/widget.js" data-page-id="{{ selectedPage()!.id }}"&gt;&lt;/script&gt;
+        </div>
+      </mat-card>
       
-      <div class="dashboard-card" *ngIf="!selectedPage()" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-        Select or create a status page to manage its services.
-      </div>
+      <mat-card *ngIf="!selectedPage()" style="border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: none; padding: 4rem 2rem; display: flex; align-items: center; justify-content: center; flex-direction: column; color: #94a3b8;">
+        <mat-icon style="font-size: 64px; width: 64px; height: 64px; margin-bottom: 1rem; color: #cbd5e1;">settings_suggest</mat-icon>
+        <h3 style="font-size: 1.5rem; color: #475569; margin: 0;">Select a Status Page</h3>
+        <p style="margin-top: 0.5rem;">Choose a page from the sidebar or create a new one to manage settings.</p>
+      </mat-card>
+
     </div>
   </div>
 </div>

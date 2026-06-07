@@ -1,0 +1,95 @@
+<div class="status-container" style="background: #f8fafc; min-height: 100vh; padding-bottom: 4rem;">
+  
+  <!-- Hero Banner -->
+  <div style="background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); color: white; padding: 4rem 2rem; text-align: center; margin-bottom: -3rem; position: relative; z-index: 1;">
+    <div style="max-width: 900px; margin: 0 auto;">
+      <h1 class="status-title" style="font-size: 3rem; font-weight: 800; margin: 0; letter-spacing: -0.025em;">System Status</h1>
+      <p class="status-subtitle" style="font-size: 1.25rem; opacity: 0.9; margin-top: 1rem; font-weight: 300;">Live health and historical uptime for our core services</p>
+    </div>
+  </div>
+
+  <div class="status-content" style="max-width: 900px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
+    
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 2rem;">
+      <button mat-raised-button color="accent" routerLink="/manage" style="border-radius: 8px; font-weight: 600; padding: 0 1.5rem; height: 44px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+        Manage Pages
+      </button>
+    </div>
+
+    <div class="status-stack" style="display: flex; flex-direction: column; gap: 3rem;">
+      
+      <mat-card *ngFor="let page of statusPages()" style="display: flex; flex-direction: column; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01); border: none; background: white;">
+        
+        <!-- Card Header -->
+        <div style="padding: 2rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.75rem; font-weight: 700; color: #0f172a; letter-spacing: -0.025em;">{{ page.title }}</h2>
+            <p style="margin: 0; color: #64748b; font-size: 1rem; margin-top: 0.5rem; line-height: 1.5;">{{ page.description || 'Monitoring core services' }}</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; background: #ecfdf5; color: #065f46; padding: 0.5rem 1rem; border-radius: 9999px; font-weight: 600; font-size: 0.875rem; border: 1px solid #a7f3d0;">
+            <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);"></span>
+            Operational
+          </div>
+        </div>
+
+        <!-- Card Content -->
+        <div style="padding: 2rem;">
+          
+          <!-- ML Stat Container -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-weight: 600; font-size: 1.1rem; color: #1e293b; display: block;">Predicted SLA</span>
+              <span style="font-size: 0.85rem; color: #64748b; margin-top: 0.25rem; display: block;">90-day forecast via ML</span>
+            </div>
+            <span style="font-size: 1.75rem; font-weight: 800; color: #3b82f6;">
+              {{ (modelService.latestStat() !== null ? modelService.latestStat() : 99.99) | number:'1.2-2' }}%
+            </span>
+          </div>
+
+          <!-- 90 Day Timeline (Mock) -->
+          <div>
+            <h3 style="font-size: 1rem; font-weight: 600; color: #334155; margin-bottom: 1rem;">Historical Uptime</h3>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 48px; gap: 3px;">
+              <!-- Generating 90 bars -->
+              <div *ngFor="let i of [].constructor(90); let idx = index" 
+                   style="flex: 1; background-color: #10b981; border-radius: 2px; transition: all 0.2s; cursor: pointer;"
+                   [style.height]="idx === 45 || idx === 82 ? '24px' : '100%'"
+                   [style.background-color]="idx === 45 || idx === 82 ? '#f59e0b' : '#10b981'"
+                   [title]="idx === 45 || idx === 82 ? 'Partial Outage' : 'No downtime'">
+              </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: #94a3b8; font-size: 0.85rem; margin-top: 0.75rem; font-weight: 500;">
+              <span>90 days ago</span>
+              <span style="flex: 1; border-top: 1px dashed #cbd5e1; margin: 0.6rem 1.5rem 0;"></span>
+              <span>Today</span>
+            </div>
+          </div>
+
+          <!-- Incidents List -->
+          <div *ngIf="incidentsMap()[page.id]?.length" style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid #f1f5f9;">
+            <h3 style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 1.5rem; letter-spacing: -0.01em;">Past Incidents</h3>
+            <div *ngFor="let incident of incidentsMap()[page.id]" style="margin-bottom: 1.5rem; padding-left: 1rem; border-left: 3px solid; border-color: #e2e8f0;" [ngStyle]="{'border-color': incident.status === 'Resolved' ? '#10b981' : '#f59e0b'}">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <span style="font-weight: 600; font-size: 1.1rem; color: #1e293b;">{{ incident.title }}</span>
+                <span style="font-size: 0.85rem; color: #64748b; background: #f1f5f9; padding: 0.25rem 0.5rem; border-radius: 4px;">{{ incident.created_at | date:'mediumDate' }}</span>
+              </div>
+              <div style="color: #475569; font-size: 1rem; line-height: 1.6;">
+                <strong [ngStyle]="{'color': incident.status === 'Resolved' ? '#10b981' : '#f59e0b'}">
+                  {{ incident.status }}
+                </strong> &mdash; {{ incident.message }}
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </mat-card>
+
+      <div *ngIf="statusPages().length === 0" style="text-align: center; padding: 5rem 2rem; color: #64748b; background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
+        <mat-icon style="font-size: 64px; width: 64px; height: 64px; margin-bottom: 1.5rem; color: #cbd5e1;">web_asset_off</mat-icon>
+        <h3 style="font-size: 1.5rem; font-weight: 600; color: #334155; margin-bottom: 0.5rem;">No Status Pages</h3>
+        <p style="font-size: 1.1rem;">There are currently no public status pages available to monitor.</p>
+      </div>
+      
+    </div>
+  </div>
+</div>

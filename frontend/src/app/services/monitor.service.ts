@@ -29,6 +29,16 @@ export interface MonitoredServiceData {
   created_at: string;
 }
 
+export interface IncidentData {
+  id: string;
+  title: string;
+  message: string;
+  status: string;
+  status_page_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -57,5 +67,17 @@ export class MonitorService {
 
   deleteService(serviceId: string) {
     return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.SERVICES}/${serviceId}`, { withCredentials: true });
+  }
+
+  getIncidents(pageId: string) {
+    return this.http.get<IncidentData[]>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/incidents`, { withCredentials: true });
+  }
+
+  createIncident(pageId: string, data: { title: string, message: string, status: string }) {
+    return this.http.post<IncidentData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/incidents`, data, { withCredentials: true });
+  }
+
+  deleteIncident(incidentId: string) {
+    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.INCIDENTS}/${incidentId}`, { withCredentials: true });
   }
 }

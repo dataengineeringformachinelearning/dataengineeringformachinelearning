@@ -48,6 +48,12 @@ export class Manage implements OnInit {
   newServiceName = '';
   newServiceUrl = '';
 
+  incidents = signal<any[]>([]);
+
+  newIncidentTitle = '';
+  newIncidentMessage = '';
+  newIncidentStatus = 'Investigating';
+
   ngOnInit() {
     this.loadStatusPages();
   }
@@ -86,6 +92,7 @@ export class Manage implements OnInit {
   selectPage(page: StatusPageData) {
     this.selectedPage.set(page);
     this.loadServices(page.id);
+    this.loadIncidents(page.id);
   }
 
   loadServices(pageId: string) {
@@ -95,6 +102,16 @@ export class Manage implements OnInit {
         this.cdr.markForCheck();
       },
       error: err => console.error('Error fetching services:', err)
+    });
+  }
+
+  loadIncidents(pageId: string) {
+    this.monitorService.getIncidents(pageId).subscribe({
+      next: data => {
+        this.incidents.set(data);
+        this.cdr.markForCheck();
+      },
+      error: err => console.error('Error fetching incidents:', err)
     });
   }
 
@@ -119,6 +136,35 @@ export class Manage implements OnInit {
         if (page) this.loadServices(page.id);
       },
       error: err => console.error('Error deleting service:', err)
+    });
+  }
+
+  addIncident() {
+    const page = this.selectedPage();
+    if (page && this.newIncidentTitle && this.newIncidentMessage && this.newIncidentStatus) {
+      this.monitorService.createIncident(page.id, {
+        title: this.newIncidentTitle,
+        message: this.newIncidentMessage,
+        status: this.newIncidentStatus
+      }).subscribe({
+        next: () => {
+          this.loadIncidents(page.id);
+          this.newIncidentTitle = '';
+          this.newIncidentMessage = '';
+          this.newIncidentStatus = 'Investigating';
+        },
+        error: err => console.error('Error adding incident:', err)
+      });
+    }
+  }
+
+  deleteIncident(incidentId: string) {
+    this.monitorService.deleteIncident(incidentId).subscribe({
+      next: () => {
+        const page = this.selectedPage();
+        if (page) this.loadIncidents(page.id);
+      },
+      error: err => console.error('Error deleting incident:', err)
     });
   }
 }

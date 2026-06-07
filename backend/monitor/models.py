@@ -45,3 +45,25 @@ class Endpoints(models.Model):
 
     def __str__(self):
         return self.url
+
+class Incident(models.Model):
+    STATUS_CHOICES = [
+        ('Investigating', 'Investigating'),
+        ('Identified', 'Identified'),
+        ('Monitoring', 'Monitoring'),
+        ('Resolved', 'Resolved'),
+    ]
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    status_page = models.ForeignKey(StatusPage, on_delete=models.CASCADE, related_name="incidents")
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Investigating')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        db_table = 'incidents'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.status}"
