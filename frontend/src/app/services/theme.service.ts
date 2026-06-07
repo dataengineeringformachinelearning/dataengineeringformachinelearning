@@ -19,9 +19,11 @@ export class ThemeService {
       }
 
       effect(() => {
-        const activeTheme = this.themeSignal();
-        document.documentElement.setAttribute('data-theme', activeTheme);
-        localStorage.setItem('theme', activeTheme);
+        if (isPlatformBrowser(this.platformId)) {
+          const activeTheme = this.themeSignal();
+          document.documentElement.setAttribute('data-theme', activeTheme);
+          localStorage.setItem('theme', activeTheme);
+        }
       });
     }
   }

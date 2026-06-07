@@ -1,5 +1,7 @@
 import { Injectable, signal, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { API_ENDPOINTS } from '../core/constants/api.constants';
 
 export interface CookiePreferences {
   necessary: boolean;
@@ -12,6 +14,7 @@ export interface CookiePreferences {
 })
 export class CookieConsentService {
   private platformId = inject(PLATFORM_ID);
+  private http = inject(HttpClient);
   
   private preferencesSignal = signal<CookiePreferences>({
     necessary: true,
@@ -99,6 +102,13 @@ export class CookieConsentService {
       localStorage.setItem('cookie_consent', JSON.stringify(prefs));
       // Dispatch a custom event to notify other scripts or third-party libraries of the cookie update
       window.dispatchEvent(new CustomEvent('cookieConsentChanged', { detail: prefs }));
+      
+      // Save preferences to backend database
+      this.http.post(API_ENDPOINTS.TELEMETRY.COOKIE_CONSENT, prefs).subscribe({
+        next: (res) => console.log('Cookie consent preferences saved to database successfully', res),
+        error: (err) => console.error('Failed to save cookie preferences to database', err)
+      });
     }
   }
 }
+

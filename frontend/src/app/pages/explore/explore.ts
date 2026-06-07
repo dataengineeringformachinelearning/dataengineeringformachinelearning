@@ -4,7 +4,6 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  computed,
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -14,14 +13,11 @@ import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule, ActivatedRoute } from '@angular/router';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { LoginDialog } from '../../components/login-dialog/login-dialog';
+import { RouterModule } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
-import { StatusCta } from '../../components/status-cta/status-cta';
 
 @Component({
-  selector: 'app-status',
+  selector: 'app-explore',
   standalone: true,
   imports: [
     CommonModule,
@@ -29,70 +25,38 @@ import { StatusCta } from '../../components/status-cta/status-cta';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    MatDialogModule,
-    Sidebar,
-    StatusCta
+    Sidebar
   ],
-  templateUrl: './status.html',
+  templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './status.scss',
+  styleUrl: './explore.scss',
 })
-export class Status implements OnInit {
+export class Explore implements OnInit {
   private monitorService = inject(MonitorService);
   public modelService = inject(ModelService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
-  private route = inject(ActivatedRoute);
-  private dialog = inject(MatDialog);
 
   statusPages = signal<StatusPageData[]>([]);
   incidentsMap = signal<Record<string, IncidentData[]>>({});
   servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
 
-
   ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      const slug = params.get('slug');
-      if (slug) {
-        this.monitorService.getStatusPageBySlug(slug).subscribe({
-          next: page => {
-            const pages = [page];
-            this.statusPages.set(pages);
-            this.fetchAllIncidents(pages);
-            this.fetchAllServices(pages);
-            this.modelService.fetchLatestStat(page.id);
-            this.cdr.markForCheck();
-          },
-          error: err => {
-            console.error('Error fetching page by slug:', err);
-            this.statusPages.set([]);
-            this.cdr.markForCheck();
-          }
+    this.monitorService.getStatusPages().subscribe({
+      next: data => {
+        // Under /explore we show all public status pages, including the main 'platform-status' system page
+        this.statusPages.set(data);
+        this.fetchAllIncidents(data);
+        this.fetchAllServices(data);
+        data.forEach(page => {
+          this.modelService.fetchLatestStat(page.id);
         });
-      } else {
-        if (this.authService.isAuthenticated()) {
-          this.monitorService.getStatusPages().subscribe({
-            next: data => {
-              const myPages = data.filter(p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status');
-              this.statusPages.set(myPages);
-              this.fetchAllIncidents(myPages);
-              this.fetchAllServices(myPages);
-              myPages.forEach(page => {
-                this.modelService.fetchLatestStat(page.id);
-              });
-              this.cdr.markForCheck();
-            },
-            error: err => {
-              console.error('Error fetching pages:', err);
-              this.statusPages.set([]);
-              this.cdr.markForCheck();
-            },
-          });
-        } else {
-          this.statusPages.set([]);
-          this.cdr.markForCheck();
-        }
-      }
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        console.error('Error fetching pages for explore:', err);
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -135,4 +99,3 @@ export class Status implements OnInit {
     });
   }
 }
-

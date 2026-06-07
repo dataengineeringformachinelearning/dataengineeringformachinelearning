@@ -1,7 +1,8 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnInit, inject, ElementRef, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { environment } from '../../../environments/environment';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-landing',
@@ -13,15 +14,18 @@ import { environment } from '../../../environments/environment';
 })
 export class Landing implements OnInit {
   private elementRef = inject(ElementRef);
+  private platformId = inject(PLATFORM_ID);
 
   ngOnInit() {
-    const footer = this.elementRef.nativeElement.querySelector('.landing-footer');
-    if (footer) {
-      const script = document.createElement('script');
-      script.src = 'assets/widget.js';
-      script.setAttribute('data-page-id', 'platform-status');
-      script.setAttribute('data-backend-url', environment.backendUrl);
-      footer.appendChild(script);
+    if (isPlatformBrowser(this.platformId)) {
+      const footer = this.elementRef.nativeElement.querySelector('.landing-footer');
+      if (footer) {
+        const script = document.createElement('script');
+        script.src = 'assets/widget.js';
+        script.setAttribute('data-page-id', 'platform-status');
+        script.setAttribute('data-backend-url', environment.backendUrl);
+        footer.appendChild(script);
+      }
     }
   }
 }

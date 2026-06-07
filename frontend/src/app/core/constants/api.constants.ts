@@ -16,5 +16,7 @@ export const API_ENDPOINTS = {
   },
   TELEMETRY: {
     ENDPOINTS: `${environment.backendUrl}/api/v1/telemetry/endpoints`,
+    COOKIE_CONSENT: `${environment.backendUrl}/api/v1/telemetry/cookie-consent`,
   }
 };
+

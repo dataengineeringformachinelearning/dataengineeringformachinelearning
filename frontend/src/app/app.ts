@@ -1,9 +1,9 @@
-import { Component, signal, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, signal, inject, OnInit, ChangeDetectionStrategy, PLATFORM_ID } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { AuthService } from './services/auth.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { IssueReporter } from './components/issue-reporter/issue-reporter';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginDialog } from './components/login-dialog/login-dialog';
@@ -20,11 +20,14 @@ export class App implements OnInit {
   protected readonly title = signal('frontend');
   private authService = inject(AuthService);
   private dialog = inject(MatDialog);
+  private platformId = inject(PLATFORM_ID);
 
   ngOnInit() {
-    this.authService.checkAuth();
-    this.checkResetToken();
-    this.registerServiceWorker();
+    if (isPlatformBrowser(this.platformId)) {
+      this.authService.checkAuth();
+      this.checkResetToken();
+      this.registerServiceWorker();
+    }
   }
 
   registerServiceWorker() {

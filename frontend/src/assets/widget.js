@@ -31,54 +31,67 @@
     }
   }
 
-  // Create the widget container
-  const widgetContainer = document.createElement('a');
-  widgetContainer.href = `${frontendHost}/status`;
-  widgetContainer.target = '_blank';
-  widgetContainer.style.display = 'inline-flex';
-  widgetContainer.style.alignItems = 'center';
-  widgetContainer.style.padding = '6px 12px';
-  widgetContainer.style.backgroundColor = '#ffffff';
-  widgetContainer.style.border = '1px solid #e2e8f0';
-  widgetContainer.style.borderRadius = '9999px';
-  widgetContainer.style.textDecoration = 'none';
-  widgetContainer.style.fontFamily = 'system-ui, -apple-system, sans-serif';
-  widgetContainer.style.fontSize = '14px';
-  widgetContainer.style.fontWeight = '500';
-  widgetContainer.style.color = '#1e293b';
-  widgetContainer.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
-  widgetContainer.style.transition = 'all 0.2s';
-  widgetContainer.style.cursor = 'pointer';
+  // Create a Shadow Host element
+  const host = document.createElement('div');
+  host.style.display = 'inline-flex';
+  host.style.verticalAlign = 'middle';
+  
+  // Attach shadow root to host
+  const shadowRoot = host.attachShadow({ mode: 'open' });
 
-  // Hover effect
-  widgetContainer.addEventListener('mouseenter', () => {
-    widgetContainer.style.backgroundColor = '#f8fafc';
-    widgetContainer.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
-  });
-  widgetContainer.addEventListener('mouseleave', () => {
-    widgetContainer.style.backgroundColor = '#ffffff';
-    widgetContainer.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
-  });
+  // Create styling for the shadow root
+  const style = document.createElement('style');
+  style.textContent = `
+    .widget-link {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 12px;
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 9999px;
+      text-decoration: none;
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1e293b;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .widget-link:hover {
+      background-color: #f8fafc;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #94a3b8; /* Slate grey for loading state */
+      margin-right: 8px;
+      display: inline-block;
+    }
+  `;
 
-  // Create the status indicator dot
+  // Create the widget container inside shadow DOM
+  const widgetLink = document.createElement('a');
+  widgetLink.className = 'widget-link';
+  widgetLink.href = `${frontendHost}/status`;
+  widgetLink.target = '_blank';
+
   const dot = document.createElement('span');
-  dot.style.width = '8px';
-  dot.style.height = '8px';
-  dot.style.borderRadius = '50%';
-  dot.style.backgroundColor = '#94a3b8'; // Slate grey for initial loading state
-  dot.style.marginRight = '8px';
-  dot.style.display = 'inline-block';
+  dot.className = 'status-dot';
 
-  // Create the text element
   const text = document.createElement('span');
   text.innerText = 'Loading status...';
 
-  // Append elements
-  widgetContainer.appendChild(dot);
-  widgetContainer.appendChild(text);
+  widgetLink.appendChild(dot);
+  widgetLink.appendChild(text);
 
-  // Insert the widget right after the script tag
-  currentScript.parentNode.insertBefore(widgetContainer, currentScript.nextSibling);
+  shadowRoot.appendChild(style);
+  shadowRoot.appendChild(widgetLink);
+
+  // Insert the shadow host right after the script tag
+  currentScript.parentNode.insertBefore(host, currentScript.nextSibling);
 
   // Fetch the latest status from our API
   const apiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
@@ -89,8 +102,8 @@
       // Find the specific page
       const page = data.find(p => p.id === pageId || p.slug === pageId);
       if (page) {
-        // Point link to specific page anchor
-        widgetContainer.href = `${frontendHost}/status#${page.slug}`;
+        // Point link to dedicated specific status page hosted by us
+        widgetLink.href = `${frontendHost}/status/${page.slug}`;
 
         // Fetch incidents for the page to determine status
         const incidentsUrl = `${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`;
@@ -99,7 +112,7 @@
           .then(incidents => {
             const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
             if (activeIncidents.length > 0) {
-              const currentStatus = activeIncidents[0].status; // Investigating, Identified, Monitoring
+              const currentStatus = activeIncidents[0].status;
               dot.style.backgroundColor = '#ef4444'; // Red/Warning
               text.innerText = `Incident: ${currentStatus}`;
             } else {

@@ -1,0 +1,12 @@
+@import '../status/status.scss';
+
+.view-btn {
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  
+  &:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+}

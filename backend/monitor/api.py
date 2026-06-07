@@ -5,8 +5,12 @@ from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
 import datetime
 import os
+import re
 
 router = Router()
+
+def is_valid_slug(slug: str) -> bool:
+    return bool(re.match(r'^[a-zA-Z0-9-_]+$', slug))
 
 class EndpointOut(Schema):
     id: str
@@ -37,6 +41,7 @@ class StatusPageIn(Schema):
     title: str
     slug: str
     description: Optional[str] = ""
+    is_published: Optional[bool] = False
 
 class UptimeDaySchema(Schema):
     status: str
@@ -47,6 +52,7 @@ class StatusPageOut(Schema):
     title: str
     slug: str
     description: str
+    is_published: bool
     created_at: datetime.datetime
     user_id: Optional[int] = None
     cumulative_sla: Optional[float] = None
@@ -113,106 +119,138 @@ def list_status_pages(request):
             # If another thread/worker created it concurrently, we can safely ignore and proceed
             pass
 
-    pages = StatusPage.objects.all()
-    out = []
-    for p in pages:
-        # Calculate cumulative SLA
-        services = p.services.all()
-        urls = [s.url for s in services]
+    from django.db.models import Q
+    if request.user.is_authenticated:
+        pages = StatusPage.objects.filter(Q(is_published=True) | Q(user=request.user) | Q(slug='platform-status')).distinct()
+    else:
+        pages = StatusPage.objects.filter(Q(is_published=True) | Q(slug='platform-status')).distinct()
+
+    return [_build_status_page_out(p) for p in pages]
+
+
+def _build_status_page_out(p):
+    # Calculate cumulative SLA
+    services = p.services.all()
+    urls = [s.url for s in services]
+    
+    cumulative_sla = 100.0
+    overall_uptime = 100.0
+    uptime_history = []
+
+    if urls:
+        total_count = Endpoints.objects.filter(url__in=urls).count()
+        up_count = Endpoints.objects.filter(url__in=urls, is_active=True, status_code__lt=400).count()
+        cumulative_sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
         
-        cumulative_sla = 100.0
-        overall_uptime = 100.0
-        uptime_history = []
-
-        if urls:
-            total_count = Endpoints.objects.filter(url__in=urls).count()
-            up_count = Endpoints.objects.filter(url__in=urls, is_active=True, status_code__lt=400).count()
-            cumulative_sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
+        # Compute 90-day history
+        from django.utils import timezone
+        import datetime as dt
+        from collections import defaultdict
+        
+        cutoff = timezone.now() - dt.timedelta(days=90)
+        logs = Endpoints.objects.filter(url__in=urls, last_tested__gte=cutoff).order_by('last_tested')
+        
+        today = timezone.now().date()
+        days_list = [today - dt.timedelta(days=i) for i in range(90)]
+        days_list.reverse() # past to present
+        
+        daily_logs = defaultdict(list)
+        for log in logs:
+            daily_logs[log.last_tested.date()].append(log)
             
-            # Compute 90-day history
-            from django.utils import timezone
-            import datetime as dt
-            from collections import defaultdict
-            
-            cutoff = timezone.now() - dt.timedelta(days=90)
-            logs = Endpoints.objects.filter(url__in=urls, last_tested__gte=cutoff).order_by('last_tested')
-            
-            today = timezone.now().date()
-            days_list = [today - dt.timedelta(days=i) for i in range(90)]
-            days_list.reverse() # past to present
-            
-            daily_logs = defaultdict(list)
-            for log in logs:
-                daily_logs[log.last_tested.date()].append(log)
+        history_list = []
+        total_history_up = 0
+        total_history_count = 0
+        
+        for d in days_list:
+            day_logs = daily_logs[d]
+            if not day_logs:
+                history_list.append(UptimeDaySchema(status="no_data", uptime=100.0))
+            else:
+                tot = len(day_logs)
+                up = sum(1 for log in day_logs if log.is_active and log.status_code < 400)
+                ratio = (up / tot) if tot > 0 else 1.0
+                uptime_pct = round(ratio * 100.0, 2)
                 
-            history_list = []
-            total_history_up = 0
-            total_history_count = 0
-            
-            for d in days_list:
-                day_logs = daily_logs[d]
-                if not day_logs:
-                    history_list.append(UptimeDaySchema(status="no_data", uptime=100.0))
+                total_history_up += up
+                total_history_count += tot
+                
+                if ratio == 1.0:
+                    status = "operational"
+                elif ratio >= 0.95:
+                    status = "partial_outage"
                 else:
-                    tot = len(day_logs)
-                    up = sum(1 for log in day_logs if log.is_active and log.status_code < 400)
-                    ratio = (up / tot) if tot > 0 else 1.0
-                    uptime_pct = round(ratio * 100.0, 2)
-                    
-                    total_history_up += up
-                    total_history_count += tot
-                    
-                    if ratio == 1.0:
-                        status = "operational"
-                    elif ratio >= 0.95:
-                        status = "partial_outage"
-                    else:
-                        status = "major_outage"
-                    history_list.append(UptimeDaySchema(status=status, uptime=uptime_pct))
-            
-            overall_uptime = round((total_history_up / total_history_count) * 100.0, 2) if total_history_count > 0 else 100.0
-            uptime_history = history_list
-        else:
-            for _ in range(90):
-                uptime_history.append(UptimeDaySchema(status="no_data", uptime=100.0))
+                    status = "major_outage"
+                history_list.append(UptimeDaySchema(status=status, uptime=uptime_pct))
+        
+        overall_uptime = round((total_history_up / total_history_count) * 100.0, 2) if total_history_count > 0 else 100.0
+        uptime_history = history_list
+    else:
+        for _ in range(90):
+            uptime_history.append(UptimeDaySchema(status="no_data", uptime=100.0))
 
-        out.append(StatusPageOut(
-            id=str(p.id),
-            title=p.title,
-            slug=p.slug,
-            description=p.description,
-            created_at=p.created_at,
-            user_id=p.user_id,
-            cumulative_sla=cumulative_sla,
-            overall_uptime=overall_uptime,
-            uptime_history=uptime_history
-        ))
-    return out
+    return StatusPageOut(
+        id=str(p.id),
+        title=p.title,
+        slug=p.slug,
+        description=p.description,
+        is_published=p.is_published,
+        created_at=p.created_at,
+        user_id=p.user_id,
+        cumulative_sla=cumulative_sla,
+        overall_uptime=overall_uptime,
+        uptime_history=uptime_history
+    )
+
+
+@router.get("/status_pages/slug/{slug}", response=StatusPageOut)
+def get_status_page_by_slug(request, slug: str):
+    from django.db.models import Q
+    if request.user.is_authenticated:
+        page = get_object_or_404(StatusPage, Q(slug=slug) & (Q(is_published=True) | Q(user=request.user) | Q(slug='platform-status')))
+    else:
+        page = get_object_or_404(StatusPage, Q(slug=slug) & (Q(is_published=True) | Q(slug='platform-status')))
+    return _build_status_page_out(page)
 
 
 @router.post("/status_pages", response=StatusPageOut)
 def create_status_page(request, payload: StatusPageIn):
     if not request.user.is_authenticated:
         raise HttpError(401, "Not authenticated")
+    if not is_valid_slug(payload.slug):
+        raise HttpError(400, "Invalid slug format. Only alphanumeric characters, hyphens, and underscores are allowed.")
     if StatusPage.objects.filter(slug=payload.slug).exists():
         raise HttpError(400, "Slug already exists")
     page = StatusPage.objects.create(
         user=request.user,
         title=payload.title,
         slug=payload.slug,
-        description=payload.description
+        description=payload.description or "",
+        is_published=payload.is_published or False
     )
-    return StatusPageOut(
-        id=str(page.id),
-        title=page.title,
-        slug=page.slug,
-        description=page.description,
-        created_at=page.created_at,
-        user_id=page.user_id,
-        cumulative_sla=100.0,
-        overall_uptime=100.0,
-        uptime_history=[UptimeDaySchema(status="no_data", uptime=100.0) for _ in range(90)]
-    )
+    return _build_status_page_out(page)
+
+
+@router.put("/status_pages/{page_id}", response=StatusPageOut)
+def update_status_page(request, page_id: str, payload: StatusPageIn):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    if not is_valid_slug(payload.slug):
+        raise HttpError(400, "Invalid slug format. Only alphanumeric characters, hyphens, and underscores are allowed.")
+    page = get_object_or_404(StatusPage, id=page_id, user=request.user)
+    if page.slug == "platform-status":
+        raise HttpError(403, "Cannot modify system platform-status page")
+    if StatusPage.objects.filter(slug=payload.slug).exclude(id=page.id).exists():
+        raise HttpError(400, "Slug already exists")
+    
+    page.title = payload.title
+    page.slug = payload.slug
+    page.description = payload.description or ""
+    if payload.is_published is not None:
+        page.is_published = payload.is_published
+    page.save()
+    return _build_status_page_out(page)
+
 
 @router.delete("/status_pages/{page_id}")
 def delete_status_page(request, page_id: str):

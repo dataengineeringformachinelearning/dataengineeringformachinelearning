@@ -5,28 +5,8 @@
 
   <div class="dashboard-layout">
     <!-- Sidebar -->
-    <aside class="dashboard-sidebar">
-      <div class="sidebar-brand">
-        <mat-icon class="brand-icon">analytics</mat-icon>
-        <h2>Platform</h2>
-      </div>
-      
-      <nav class="sidebar-nav">
-        <a class="nav-item" routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <mat-icon>description</mat-icon>
-          Documentation
-        </a>
-        <a class="nav-item" routerLink="/status" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <mat-icon>dashboard</mat-icon>
-          Status
-        </a>
-        <a class="nav-item" routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" *ngIf="authService.isAuthenticated()">
-          <mat-icon>settings</mat-icon>
-          Manage
-        </a>
-      </nav>
-      
-      <div class="sidebar-section">
+    <app-sidebar>
+      <div sidebar-extra class="sidebar-section">
         <h3 class="section-title">Your Pages</h3>
         <div class="page-list">
           <div *ngFor="let page of statusPages()" 
@@ -45,7 +25,7 @@
           </button>
         </div>
       </div>
-    </aside>
+    </app-sidebar>
 
     <!-- Main Content -->
     <main class="dashboard-main">
@@ -90,6 +70,36 @@
                 
                 <!-- Existing Page View -->
                 <div *ngIf="selectedPage()">
+
+                  <!-- Page Settings Section -->
+                  <div class="panel-section">
+                    <h3 class="section-heading"><mat-icon>settings</mat-icon> Page Settings</h3>
+                    <div class="incident-form panel-clean" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                      <div class="form-row" style="display: flex; gap: 16px; flex-wrap: wrap;">
+                        <mat-form-field appearance="outline" style="flex: 1; min-width: 200px;">
+                          <mat-label>Title</mat-label>
+                          <input matInput [(ngModel)]="editTitle" placeholder="e.g. My API Status">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" style="flex: 1; min-width: 200px;">
+                          <mat-label>Slug</mat-label>
+                          <input matInput [(ngModel)]="editSlug" placeholder="e.g. my-api">
+                        </mat-form-field>
+                      </div>
+                      <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Description</mat-label>
+                        <textarea matInput [(ngModel)]="editDescription" rows="2" placeholder="Description of this status page..."></textarea>
+                      </mat-form-field>
+                      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 4px;">
+                        <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
+                          Publish Status Page (makes it visible in the public Explore directory)
+                        </mat-checkbox>
+                        <button mat-flat-button color="primary" (click)="updateStatusPage()" [disabled]="!editTitle || !editSlug" style="display: flex; align-items: center; gap: 8px; background: var(--button-primary); color: var(--button-primary-text);">
+                          <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">save</mat-icon>
+                          <span>Save Settings</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
                   
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>dns</mat-icon> Monitored Services</h3>
@@ -182,6 +192,25 @@
                   </div>
                   
                 </div>
+              </div>
+            </div>
+
+            <!-- Account Settings & Danger Zone -->
+            <div class="status-card-outlined danger-zone-card" style="margin-top: 32px; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.02);">
+              <div class="card-header-clean" style="border-bottom-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.01); display: flex; align-items: center;">
+                <h2 class="card-title-main" style="color: #ef4444; display: flex; align-items: center; gap: 8px; margin: 0;">
+                  <mat-icon style="color: #ef4444; margin: 0;">warning</mat-icon>
+                  Danger Zone
+                </h2>
+              </div>
+              <div class="card-body-clean" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px 32px;">
+                <div>
+                  <h3 style="margin: 0 0 4px 0; font-size: 15px; font-weight: 600; color: var(--text-color);">Delete Account</h3>
+                  <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Permanently delete your account, tracked pages, monitored services, and all associated data. This action is irreversible.</p>
+                </div>
+                <button mat-flat-button color="warn" (click)="deleteAccount()" style="background-color: #ef4444; color: white; border-radius: 20px;">
+                  Delete Account
+                </button>
               </div>
             </div>
 

@@ -1,0 +1,34 @@
+<aside class="dashboard-sidebar">
+  <div class="sidebar-brand">
+    <mat-icon class="brand-icon">analytics</mat-icon>
+    <h2>Platform</h2>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item" routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <mat-icon>description</mat-icon>
+      Documentation
+    </a>
+    <a class="nav-item" routerLink="/status" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <mat-icon>dashboard</mat-icon>
+      Status
+    </a>
+    <a class="nav-item" routerLink="/explore" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <mat-icon>explore</mat-icon>
+      Explore
+    </a>
+    <a class="nav-item" routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" *ngIf="authService.isAuthenticated()">
+      <mat-icon>settings</mat-icon>
+      Manage
+    </a>
+  </nav>
+
+  <!-- Slot for dynamic page-specific content like Table of Contents or Page lists -->
+  <ng-content select="[sidebar-extra]"></ng-content>
+
+  <div class="sidebar-footer">
+    <div class="system-health" [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}">
+      <span class="health-dot"></span>
+      {{ globalStatus() }}
+    </div>
+  </div>
+</aside>

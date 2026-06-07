@@ -16,7 +16,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatListModule } from '@angular/material/list';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { Sidebar } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-manage',
@@ -30,7 +32,9 @@ import { RouterModule } from '@angular/router';
     MatInputModule,
     FormsModule,
     MatListModule,
-    RouterModule
+    RouterModule,
+    MatCheckboxModule,
+    Sidebar
   ],
   templateUrl: './manage.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,9 +44,15 @@ export class Manage implements OnInit {
   private monitorService = inject(MonitorService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   statusPages = signal<StatusPageData[]>([]);
   selectedPage = signal<StatusPageData | null>(null);
+
+  editTitle = '';
+  editSlug = '';
+  editDescription = '';
+  editIsPublished = false;
   services = signal<MonitoredServiceData[]>([]);
 
   newPageTitle = '';
@@ -133,6 +143,48 @@ export class Manage implements OnInit {
     if (page) {
       this.loadServices(page.id);
       this.loadIncidents(page.id);
+      this.editTitle = page.title;
+      this.editSlug = page.slug;
+      this.editDescription = page.description || '';
+      this.editIsPublished = page.is_published || false;
+    }
+  }
+
+  updateStatusPage() {
+    const page = this.selectedPage();
+    if (page && this.editTitle && this.editSlug) {
+      this.monitorService.updateStatusPage(page.id, {
+        title: this.editTitle,
+        slug: this.editSlug,
+        description: this.editDescription,
+        is_published: this.editIsPublished
+      }).subscribe({
+        next: updated => {
+          this.selectedPage.set(updated);
+          this.loadStatusPages();
+          alert('Status page settings saved successfully.');
+        },
+        error: err => {
+          console.error('Error updating status page:', err);
+          alert('Failed to update status page. Slug may already be taken.');
+        }
+      });
+    }
+  }
+
+  deleteAccount() {
+    if (confirm('CRITICAL WARNING: Are you sure you want to permanently delete your account? All of your status pages, monitored services, incident reports, and telemetry data will be permanently and irreversibly destroyed.')) {
+      const confirmText = prompt('Please type "DELETE MY ACCOUNT" to confirm:');
+      if (confirmText === 'DELETE MY ACCOUNT') {
+        this.authService.deleteAccount().then(success => {
+          if (success) {
+            alert('Your account and all associated data have been permanently deleted.');
+            this.router.navigate(['/']);
+          } else {
+            alert('Failed to delete account.');
+          }
+        });
+      }
     }
   }
 

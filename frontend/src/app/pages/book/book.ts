@@ -13,6 +13,7 @@ interface Chapter {
   title: string;
   content: string;
 }
+import { Sidebar } from '../../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-book',
@@ -23,7 +24,8 @@ interface Chapter {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    RouterModule
+    RouterModule,
+    Sidebar
   ],
   templateUrl: './book.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

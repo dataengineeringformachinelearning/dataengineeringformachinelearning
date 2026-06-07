@@ -5,28 +5,8 @@
 
   <div class="dashboard-layout">
     <!-- Sidebar / Table of Contents -->
-    <aside class="dashboard-sidebar">
-      <div class="sidebar-brand">
-        <mat-icon class="brand-icon">analytics</mat-icon>
-        <h2>Platform</h2>
-      </div>
-
-      <nav class="sidebar-nav">
-        <a class="nav-item" routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <mat-icon>description</mat-icon>
-          Documentation
-        </a>
-        <a class="nav-item" routerLink="/status" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
-          <mat-icon>dashboard</mat-icon>
-          Status
-        </a>
-        <a class="nav-item" routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" *ngIf="authService.isAuthenticated()">
-          <mat-icon>settings</mat-icon>
-          Manage
-        </a>
-      </nav>
-
-      <div class="sidebar-section">
+    <app-sidebar>
+      <div sidebar-extra class="sidebar-section">
         <h3 class="section-title">Table of Contents</h3>
         <div class="page-list">
           <div
@@ -39,14 +19,7 @@
           </div>
         </div>
       </div>
-
-      <div class="sidebar-footer">
-        <div class="system-health" [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}">
-          <span class="health-dot"></span>
-          {{ globalStatus() }}
-        </div>
-      </div>
-    </aside>
+    </app-sidebar>
 
     <!-- Main Content -->
     <main class="dashboard-main">

@@ -66,6 +66,19 @@ export class AuthService {
     }
   }
 
+  async deleteAccount() {
+    try {
+      await firstValueFrom(this.http.delete(`${environment.backendUrl}/api/v1/auth/delete-account`, {}));
+      this.isAuthenticated.set(false);
+      this.currentUserId.set(null);
+      return true;
+    } catch (e) {
+      this.isAuthenticated.set(false);
+      this.currentUserId.set(null);
+      return false;
+    }
+  }
+
   async forgotPassword(email: string) {
     try {
       const res: any = await firstValueFrom(this.http.post(`${environment.backendUrl}/api/v1/auth/forgot-password`, { email }));

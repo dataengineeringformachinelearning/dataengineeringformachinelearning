@@ -17,6 +17,7 @@ export interface StatusPageData {
   title: string;
   slug: string;
   description: string;
+  is_published?: boolean;
   created_at: string;
   user_id: number | null;
   cumulative_sla?: number;
@@ -58,8 +59,16 @@ export class MonitorService {
     return this.http.get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, { withCredentials: true });
   }
 
-  createStatusPage(data: { title: string, slug: string, description?: string }) {
+  getStatusPageBySlug(slug: string) {
+    return this.http.get<StatusPageData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/slug/${slug}`, { withCredentials: true });
+  }
+
+  createStatusPage(data: { title: string, slug: string, description?: string, is_published?: boolean }) {
     return this.http.post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, { withCredentials: true });
+  }
+
+  updateStatusPage(pageId: string, data: { title: string, slug: string, description?: string, is_published?: boolean }) {
+    return this.http.put<StatusPageData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, data, { withCredentials: true });
   }
 
   deleteStatusPage(pageId: string) {

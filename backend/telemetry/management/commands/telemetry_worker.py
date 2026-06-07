@@ -26,6 +26,7 @@ class Command(BaseCommand):
         brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
         consumer = AIOKafkaConsumer(
             'app-events',
+            'user-issues',
             bootstrap_servers=brokers,
             group_id="telemetry-group",
             auto_offset_reset="earliest",
@@ -49,44 +50,66 @@ class Command(BaseCommand):
                     if not messages:
                         continue
                     
-                    data_list = []
-                    for msg in messages:
-                        try:
-                            payload = json.loads(msg.value.decode('utf-8'))
-                            data_list.append(payload)
-                        except Exception as e:
-                            self.stderr.write(self.style.ERROR(f"Failed to parse msg: {e}"))
-                    
-                    if not data_list:
-                        continue
+                    if tp.topic == 'app-events':
+                        data_list = []
+                        for msg in messages:
+                            try:
+                                payload = json.loads(msg.value.decode('utf-8'))
+                                data_list.append(payload)
+                            except Exception as e:
+                                self.stderr.write(self.style.ERROR(f"Failed to parse msg: {e}"))
+                        
+                        if not data_list:
+                            continue
 
-                    # Process with Polars
-                    df = pl.DataFrame(data_list)
+                        # Process with Polars
+                        df = pl.DataFrame(data_list)
+                        
+                        success = False
+                        while not success:
+                            try:
+                                # DB save
+                                await self.save_to_db(df)
+                                success = True
+                                
+                                # Explicitly commit offset
+                                await consumer.commit()
+                                self.stdout.write(self.style.SUCCESS(f"Processed and committed batch of {len(data_list)} messages"))
+                            except Exception as e:
+                                self.stderr.write(self.style.ERROR(f"Database insertion failed: {e}"))
+                                self.stderr.write(self.style.WARNING("Backing off for 5 seconds before retrying..."))
+                                await asyncio.sleep(5)
                     
-                    # Convert response_time float to timedelta object required by Django DurationField
-                    # We will do this mapping during DB insertion or using polars to map.
-                    # Simple approach: iterate rows. For higher throughput, use bulk_create.
-                    
-                    # Simulate DB commit phase
-                    success = False
-                    while not success:
-                        try:
-                            # DB save
-                            await self.save_to_db(df)
-                            success = True
-                            
-                            # Explicitly commit offset
-                            await consumer.commit()
-                            self.stdout.write(self.style.SUCCESS(f"Processed and committed batch of {len(data_list)} messages"))
-                        except Exception as e:
-                            self.stderr.write(self.style.ERROR(f"Database insertion failed: {e}"))
-                            self.stderr.write(self.style.WARNING("Backing off for 5 seconds before retrying..."))
-                            await asyncio.sleep(5)
-                            # DO NOT commit so that on restart it fetches again
+                    elif tp.topic == 'user-issues':
+                        for msg in messages:
+                            try:
+                                payload = json.loads(msg.value.decode('utf-8'))
+                                if payload.get("event_type") == "user_issue":
+                                    bug_report_id = payload.get("bug_report_id")
+                                    report_text = payload.get("report")
+                                    if bug_report_id and report_text:
+                                        await self.update_bug_report(bug_report_id, report_text)
+                            except Exception as e:
+                                self.stderr.write(self.style.ERROR(f"Failed to parse user issue msg: {e}"))
+                        
+                        await consumer.commit()
+                        self.stdout.write(self.style.SUCCESS(f"Processed and committed user-issues batch"))
                             
         finally:
             await consumer.stop()
             self.stdout.write(self.style.WARNING("Worker stopped."))
+
+    @sync_to_async
+    def update_bug_report(self, bug_report_id: str, report_text: str):
+        from monitor.models import BugReport
+        try:
+            bug_report = BugReport.objects.get(id=bug_report_id)
+            bug_report.processed_report = report_text
+            bug_report.save()
+            self.stdout.write(self.style.SUCCESS(f"Successfully updated BugReport {bug_report_id} with AI report."))
+        except BugReport.DoesNotExist:
+            self.stderr.write(self.style.WARNING(f"BugReport {bug_report_id} not found in database."))
+
 
     @sync_to_async
     def save_to_db(self, df: pl.DataFrame):

@@ -107,4 +107,14 @@ def api_reset_password(request, data: ResetPasswordSchema):
     else:
         raise HttpError(400, "Invalid or expired token")
 
+@router.delete("/delete-account", response=SuccessSchema)
+def api_delete_account(request):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    user = request.user
+    user.delete()
+    django_logout(request)
+    return {"status": "success"}
+
+
 

@@ -14,12 +14,23 @@ class IssueReportPayload(Schema):
 @router.post("/report-issue")
 async def report_issue(request, payload: IssueReportPayload):
     try:
-        response = await process_user_issue(
+        from monitor.models import BugReport
+        from asgiref.sync import sync_to_async
+
+        # Create bug report in database
+        bug_report = await sync_to_async(BugReport.objects.create)(
             user_description=payload.user_description,
             telemetry_context=payload.telemetry_context
         )
+
+        response = await process_user_issue(
+            user_description=payload.user_description,
+            telemetry_context=payload.telemetry_context,
+            bug_report_id=str(bug_report.id)
+        )
         logger.info(f"Successfully processed issue: {response}")
-        return {"status": "success", "message": "Issue processed and sent to Redpanda"}
+        return {"status": "success", "message": "Issue processed and sent to Redpanda", "id": str(bug_report.id)}
     except Exception as e:
         logger.error(f"Error processing issue: {e}")
         return HttpResponse(status=500, content=f"Internal Server Error: {e}")
+

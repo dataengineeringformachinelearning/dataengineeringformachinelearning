@@ -1,0 +1,50 @@
+<div class="empty-state-premium">
+  <div class="cta-glow-sphere"></div>
+  
+  <div class="cta-badge">
+    <mat-icon class="badge-icon">verified_user</mat-icon>
+    <span>API Monitoring Console</span>
+  </div>
+
+  <h3 class="empty-title">Track your Services</h3>
+  <p class="empty-subtitle">
+    Create and publish real-time status pages to monitor your APIs. Keep your users informed and track uptime statistics.
+  </p>
+
+  <div class="features-list">
+    <div class="feature-item">
+      <mat-icon class="feature-icon">bolt</mat-icon>
+      <div class="feature-text">
+        <strong>Real-time Telemetry</strong>
+        <span>Track API latency and status code ingestion instantly.</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <mat-icon class="feature-icon">online_prediction</mat-icon>
+      <div class="feature-text">
+        <strong>90-Day SLA Forecasts</strong>
+        <span>Machine learning predicts your monthly SLA trends.</span>
+      </div>
+    </div>
+    <div class="feature-item">
+      <mat-icon class="feature-icon">public</mat-icon>
+      <div class="feature-text">
+        <strong>Public Directory</strong>
+        <span>Publish pages to the public status directory for transparency.</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="empty-footer-text">Sign in or register to get started.</p>
+
+  <div class="cta-actions">
+    <button mat-raised-button color="primary" class="cta-main-btn" (click)="login()" *ngIf="!authService.isAuthenticated()">
+      <mat-icon>login</mat-icon>
+      Get Started
+    </button>
+    <a mat-raised-button color="primary" class="cta-main-btn" *ngIf="authService.isAuthenticated()" routerLink="/manage">
+      <mat-icon>add_circle</mat-icon>
+      Create Status Page
+    </a>
+  </div>
+</div>

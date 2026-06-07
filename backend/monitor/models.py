@@ -10,6 +10,7 @@ class StatusPage(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, max_length=255)
     description = models.TextField(blank=True)
+    is_published = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -67,3 +68,36 @@ class Incident(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.status}"
+
+
+class CookieConsent(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    necessary = models.BooleanField(default=True)
+    analytical = models.BooleanField(default=False)
+    marketing = models.BooleanField(default=False)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'cookie_consents'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"CookieConsent {self.id} (analytical={self.analytical}, marketing={self.marketing})"
+
+
+class BugReport(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_description = models.TextField()
+    telemetry_context = models.JSONField(null=True, blank=True)
+    processed_report = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'bug_reports'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"BugReport {self.id} (created: {self.created_at})"
+

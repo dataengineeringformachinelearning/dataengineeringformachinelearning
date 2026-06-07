@@ -1,34 +1,29 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
-import { ThemeService } from '../../services/theme.service';
 import { LoginDialog } from '../login-dialog/login-dialog';
 
 @Component({
-  selector: 'app-navbar',
+  selector: 'app-status-cta',
+  standalone: true,
   imports: [
-    RouterLink,
-    RouterLinkActive,
-    MatToolbarModule,
+    CommonModule,
+    RouterModule,
     MatButtonModule,
     MatIconModule,
-    CommonModule,
-    MatDialogModule,
+    MatDialogModule
   ],
-  templateUrl: './navbar.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './navbar.scss',
+  templateUrl: './status-cta.html',
+  styleUrl: './status-cta.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Navbar {
+export class StatusCta {
   public authService = inject(AuthService);
-  public themeService = inject(ThemeService);
   private dialog = inject(MatDialog);
-  private router = inject(Router);
 
   login() {
     const dialogRef = this.dialog.open(LoginDialog, {
@@ -46,24 +41,16 @@ export class Navbar {
             password: result.password,
             email: result.email
           });
-          if (!success) {
-            alert('Registration failed. Username may already exist.');
-          }
         } else {
           success = await this.authService.login({
             username: result.username,
             password: result.password
           });
-          if (!success) {
-            alert('Login failed. Please check your credentials.');
-          }
+        }
+        if (success) {
+          window.location.reload();
         }
       }
     });
-  }
-
-  async logout() {
-    await this.authService.logout();
-    this.router.navigate(['/']);
   }
 }

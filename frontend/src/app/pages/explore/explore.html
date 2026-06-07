@@ -11,14 +11,8 @@
     <main class="dashboard-main">
       <header class="dashboard-topbar">
         <div class="topbar-left">
-          <h1 class="page-title">System Status</h1>
-          <p class="page-description">Real-time status updates and historical uptime statistics.</p>
-        </div>
-        <div class="topbar-right" *ngIf="authService.isAuthenticated()">
-          <a mat-flat-button class="manage-btn" routerLink="/manage">
-            <mat-icon>settings</mat-icon>
-            Manage Pages
-          </a>
+          <h1 class="page-title">Explore Public Statuses</h1>
+          <p class="page-description">Browse status cards published by users on our platform.</p>
         </div>
       </header>
 
@@ -32,17 +26,15 @@
                   <h2 class="card-title">{{ page.title }}</h2>
                   <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
                 </div>
-                <div class="status-badge-premium" [ngClass]="getPageStatusClass(page.id)">
+                <a [routerLink]="['/status', page.slug]" class="status-badge-premium" [ngClass]="getPageStatusClass(page.id)" style="text-decoration: none;">
                   <span class="status-dot-greenblue"></span>
                   {{ getPageStatus(page.id) }}
-                </div>
+                </a>
               </div>
-
 
               <div class="card-body-clean">
                 <!-- SLA Section -->
                 <div class="ml-stat-panels-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
-                  <!-- Cumulative SLA Section -->
                   <div class="ml-stat-panel" style="margin-bottom: 0;">
                     <div class="stat-info">
                       <mat-icon class="stat-icon">dns</mat-icon>
@@ -58,7 +50,6 @@
                     </div>
                   </div>
 
-                  <!-- Predictive SLA Section -->
                   <div class="ml-stat-panel" style="margin-bottom: 0;">
                     <div class="stat-info">
                       <mat-icon class="stat-icon">online_prediction</mat-icon>
@@ -99,7 +90,7 @@
                 </div>
 
                  <!-- Historical Uptime Section -->
-                <div class="timeline-panel">
+                <div class="timeline-panel" style="margin-bottom: 24px;">
                   <div class="panel-header">
                     <h3 class="panel-title">Uptime History (Last 90 Days)</h3>
                     <span class="uptime-percentage">{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}% operational</span>
@@ -121,29 +112,20 @@
                   </div>
                 </div>
 
-                <!-- Incidents Section -->
-                <div *ngIf="incidentsMap()[page.id]?.length" class="incidents-panel">
-                  <h3 class="panel-title">Active & Past Incidents</h3>
-                  <div class="incidents-list">
-                    <div *ngFor="let incident of incidentsMap()[page.id]" class="incident-item-outlined" [ngClass]="{'resolved': incident.status === 'Resolved'}">
-                      <div class="incident-header-row">
-                        <div class="incident-badge" [ngClass]="incident.status.toLowerCase()">
-                          {{ incident.status }}
-                        </div>
-                        <span class="incident-item-title">{{ incident.title }}</span>
-                        <span class="incident-date">{{ incident.created_at | date:'mediumDate' }}</span>
-                      </div>
-                      <div class="incident-body-text">
-                        {{ incident.message }}
-                      </div>
-                    </div>
-                  </div>
+                <div style="display: flex; justify-content: flex-end;">
+                  <a mat-flat-button class="view-btn" [routerLink]="['/status', page.slug]" style="display: inline-flex; align-items: center; gap: 6px; background: var(--button-primary); color: var(--button-primary-text);">
+                    <span>View Dedicated Page</span>
+                    <mat-icon style="margin: 0; font-size: 18px; width: 18px; height: 18px;">arrow_forward</mat-icon>
+                  </a>
                 </div>
-                
               </div>
             </div>
 
-            <app-status-cta *ngIf="statusPages().length === 0"></app-status-cta>
+            <div *ngIf="statusPages().length === 0" class="empty-state-outlined">
+              <mat-icon class="empty-icon">explore</mat-icon>
+              <h3 class="empty-title">No Public Status Pages</h3>
+              <p class="empty-subtitle">Users haven't published any status pages yet. Create and publish one in the management console!</p>
+            </div>
             
           </div>
         </div>
