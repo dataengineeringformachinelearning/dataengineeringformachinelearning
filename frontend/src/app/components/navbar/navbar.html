@@ -14,10 +14,11 @@
     
     <div class="navbar-right">
       <a mat-button routerLink="/book" class="nav-btn">Book</a>
-      <a mat-button routerLink="/dashboard" class="nav-btn">Dashboard</a>
+      <a mat-button routerLink="/status" class="nav-btn">Status</a>
+      <a mat-button routerLink="/manage" class="nav-btn" *ngIf="authService.isAuthenticated()">Manage</a>
       <div class="divider"></div>
       <button mat-raised-button class="sign-in-btn" *ngIf="!authService.isAuthenticated()" (click)="login()">Sign In</button>
-      <button mat-raised-button color="warn" *ngIf="authService.isAuthenticated()" (click)="logout()">Sign Out</button>
+      <button mat-raised-button color="accent" *ngIf="authService.isAuthenticated()" (click)="logout()">Sign Out</button>
     </div>
   </div>
 </header>

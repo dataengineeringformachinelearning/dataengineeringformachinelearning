@@ -132,3 +132,65 @@ def delete_service(request, service_id: str):
     service = get_object_or_404(MonitoredService, id=service_id, status_page__user=request.user)
     service.delete()
     return {"success": True}
+
+from monitor.models import Incident
+
+class IncidentIn(Schema):
+    title: str
+    message: str
+    status: str
+
+class IncidentOut(Schema):
+    id: str
+    title: str
+    message: str
+    status: str
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    status_page_id: str
+
+@router.get("/status_pages/{page_id}/incidents", response=List[IncidentOut])
+def list_incidents(request, page_id: str):
+    page = get_object_or_404(StatusPage, id=page_id)
+    incidents = page.incidents.all()
+    out = []
+    for inc in incidents:
+        out.append(IncidentOut(
+            id=str(inc.id),
+            title=inc.title,
+            message=inc.message,
+            status=inc.status,
+            created_at=inc.created_at,
+            updated_at=inc.updated_at,
+            status_page_id=str(inc.status_page_id)
+        ))
+    return out
+
+@router.post("/status_pages/{page_id}/incidents", response=IncidentOut)
+def create_incident(request, page_id: str, payload: IncidentIn):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    page = get_object_or_404(StatusPage, id=page_id, user=request.user)
+    incident = Incident.objects.create(
+        status_page=page,
+        title=payload.title,
+        message=payload.message,
+        status=payload.status
+    )
+    return IncidentOut(
+        id=str(incident.id),
+        title=incident.title,
+        message=incident.message,
+        status=incident.status,
+        created_at=incident.created_at,
+        updated_at=incident.updated_at,
+        status_page_id=str(incident.status_page_id)
+    )
+
+@router.delete("/incidents/{incident_id}")
+def delete_incident(request, incident_id: str):
+    if not request.user.is_authenticated:
+        raise HttpError(401, "Not authenticated")
+    incident = get_object_or_404(Incident, id=incident_id, status_page__user=request.user)
+    incident.delete()
+    return {"success": True}
