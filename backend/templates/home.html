@@ -33,12 +33,34 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}">
 </head>
 <body>
+    <div class="glow-sphere sphere-1"></div>
+    <div class="glow-sphere sphere-2"></div>
+
     <main class="main">
         <div class="content">
-            <img class="logo" src="{% static 'data-engineering-for-machine-learning.svg' %}" alt="Data Engineering for Machine Learning - Backend" />
-            <h1>Data Engineering for Machine Learning - Backend</h1>
-            <p>Backend API and services for the Data Engineering for Machine Learning application.</p>
+            <div class="backend-card">
+                <img class="logo" src="{% static 'data-engineering-for-machine-learning.svg' %}" alt="Data Engineering for Machine Learning - Backend" />
+                <h1>Data Engineering for Machine Learning</h1>
+                <h2 class="subtitle">Core REST API & Services</h2>
+                
+                <p>Welcome to the backend orchestrator. This system manages user accounts, handles real-time telemetry pipelines with Redpanda, coordinates model training schedules, and computes SLA predictions.</p>
+                
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Backend Systems Operational</span>
+                </div>
+
+                <div class="cta-group">
+                    <a href="/api/v1/docs" class="cta-button primary-btn">
+                        <span>Explore API Docs</span>
+                    </a>
+                    <a href="/admin/" class="cta-button secondary-btn">
+                        <span>Django Admin Panel</span>
+                    </a>
+                </div>
+            </div>
         </div>
+
         <footer>
             <div class="copyright">
                 <span class="footer-line">&copy; {% now "Y" %} Data Engineering for Machine Learning by <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a></span>

@@ -7,6 +7,7 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData, MonitoredServiceData } from '../../services/monitor.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
@@ -49,6 +50,8 @@ export class Manage implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   statusPages = signal<StatusPageData[]>([]);
   selectedPage = signal<StatusPageData | null>(null);
@@ -95,6 +98,11 @@ export class Manage implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Manage Status Pages & Incidents - Data Engineering for Machine Learning');
+    this.metaService.updateTag({
+      name: 'description',
+      content: 'Configure your custom status pages, add monitored services, post incident updates, or manage account settings.'
+    });
     this.loadStatusPages();
   }
 

@@ -8,6 +8,7 @@ import {
   computed
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
 import { AuthService } from '../../services/auth.service';
@@ -43,6 +44,8 @@ export class IsolatedStatus implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   statusPages = signal<StatusPageData[]>([]);
   incidentsMap = signal<Record<string, IncidentData[]>>({});
@@ -93,6 +96,13 @@ export class IsolatedStatus implements OnInit {
             this.fetchAllIncidents(pages);
             this.fetchAllServices(pages);
             this.modelService.fetchLatestStat(page.id);
+
+            this.titleService.setTitle(`${page.title} Status - Data Engineering for Machine Learning`);
+            this.metaService.updateTag({
+              name: 'description',
+              content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`
+            });
+
             this.cdr.markForCheck();
           },
           error: err => {

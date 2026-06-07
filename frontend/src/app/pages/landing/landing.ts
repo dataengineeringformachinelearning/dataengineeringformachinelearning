@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, OnInit, inject, ElementRef, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { Title, Meta } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 
@@ -15,8 +16,16 @@ import { isPlatformBrowser } from '@angular/common';
 export class Landing implements OnInit {
   private elementRef = inject(ElementRef);
   private platformId = inject(PLATFORM_ID);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   ngOnInit() {
+    this.titleService.setTitle('Data Engineering for Machine Learning');
+    this.metaService.updateTag({
+      name: 'description',
+      content: 'Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.'
+    });
+
     if (isPlatformBrowser(this.platformId)) {
       const footer = this.elementRef.nativeElement.querySelector('.landing-footer');
       if (footer) {

@@ -449,7 +449,7 @@ Finally, a standalone background worker can subscribe to this `app-events` topic
 
 #### Chapter 9.1.1: Enabling the data pipeline for incident management
 
-With historical telemetry successfully streaming through our Redpanda message broker, we can now apply it to a real-world use-case: a public status and incident management platform. 
+With historical telemetry successfully streaming through our Redpanda message broker, we can now apply it to a real-world use-case: a public status and incident management platform.
 
 1. **Telemetry Parsing**: The async telemetry worker pulls raw health check events in batches, converting them to Polars DataFrames for efficient performance calculation.
 2. **SLA Calculation**: Telemetry is processed to compute a cumulative Service Level Agreement (SLA) percentage for each service and status page based on real response times and status codes.
@@ -506,3 +506,5 @@ We express gratitude to the open-source communities behind Angular, Django, PyTo
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)

@@ -7,6 +7,7 @@ import {
   ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
 import { AuthService } from '../../services/auth.service';
@@ -38,12 +39,20 @@ export class Explore implements OnInit {
   public modelService = inject(ModelService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   statusPages = signal<StatusPageData[]>([]);
   incidentsMap = signal<Record<string, IncidentData[]>>({});
   servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
 
   ngOnInit() {
+    this.titleService.setTitle('Explore Public Status Pages - Data Engineering for Machine Learning');
+    this.metaService.updateTag({
+      name: 'description',
+      content: 'Browse community-published public service status pages and active system uptime monitors.'
+    });
+
     this.monitorService.getStatusPages().subscribe({
       next: data => {
         // Under /explore we show all public status pages, including the main 'platform-status' system page

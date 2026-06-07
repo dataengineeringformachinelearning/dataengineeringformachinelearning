@@ -8,6 +8,7 @@ import {
   computed
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
 import { AuthService } from '../../services/auth.service';
@@ -45,6 +46,8 @@ export class Status implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private dialog = inject(MatDialog);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   statusPages = signal<StatusPageData[]>([]);
   incidentsMap = signal<Record<string, IncidentData[]>>({});
@@ -65,6 +68,12 @@ export class Status implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Service Status Dashboard - Data Engineering for Machine Learning');
+    this.metaService.updateTag({
+      name: 'description',
+      content: 'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.'
+    });
+
     if (this.authService.isAuthenticated()) {
       this.monitorService.getStatusPages().subscribe({
         next: data => {

@@ -510,3 +510,5 @@ We express gratitude to the open-source communities behind Angular, Django, PyTo
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)

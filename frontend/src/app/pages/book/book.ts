@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Title, Meta } from '@angular/platform-browser';
 import { PageComponent } from '../../components/page/page';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -35,6 +36,8 @@ export class Book implements OnInit {
   public authService = inject(AuthService);
   private monitorService = inject(MonitorService);
   private cdr = inject(ChangeDetectorRef);
+  private titleService = inject(Title);
+  private metaService = inject(Meta);
 
   chapters = signal<Chapter[]>([]);
   activePageIndex = signal<number>(0);
@@ -68,6 +71,12 @@ export class Book implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle('Documentation & Book Chapters - Data Engineering for Machine Learning');
+    this.metaService.updateTag({
+      name: 'description',
+      content: 'Interactive guide, working notes, and reference chapters on Data Engineering for Machine Learning.'
+    });
+
     this.monitorService.getStatusPages().subscribe({
       next: data => {
         // Sort so 'platform-status' is always first
@@ -111,8 +120,8 @@ export class Book implements OnInit {
 
 
   parseMarkdown() {
-    // Split content dynamically by '## Chapter ' headers
-    const rawChunks = pageMarkdown.split(/(?=^## Chapter \d+:)/m);
+    // Split content dynamically by '## Chapter ' or '## Acknowledgements' headers
+    const rawChunks = pageMarkdown.split(/(?=^## (?:Chapter \d+:|Acknowledgements))/m);
     const parsed: Chapter[] = [];
 
     for (const chunk of rawChunks) {
