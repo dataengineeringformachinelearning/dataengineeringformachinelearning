@@ -28,7 +28,7 @@ Used for notifications, alerts, and system feedback in Dark Mode.
 | Token | Hex | Usage |
 | --- | --- | --- |
 | `--color-success` | `#4CAF50` | Positive feedback, success states. |
-| `--color-warning` | `#FFC107` | Caution, warnings. |
+| `--color-warning` | `#FFC107` | Caution, warnings. Also acts as the unified yellow accent color for the Status & Manage dashboards. |
 | `--color-error` | `#F44336` | Errors, destructive actions. |
 | `--color-info` | `#2196F3` | Informational messages. |
 
@@ -67,7 +67,7 @@ Used for notifications, alerts, and system feedback. These have been slightly de
 | Token | Hex | Usage |
 | --- | --- | --- |
 | `--color-success` | `#2E7D32` | Positive feedback, success states. |
-| `--color-warning` | `#ED6C02` | Caution, warnings. |
+| `--color-warning` | `#ED6C02` | Caution, warnings. Also acts as the unified yellow accent color for the Status & Manage dashboards. |
 | `--color-error` | `#D32F2F` | Errors, destructive actions. |
 | `--color-info` | `#0288D1` | Informational messages. |
 
