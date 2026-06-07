@@ -3,17 +3,94 @@
   <div class="glow-sphere sphere-1"></div>
   <div class="glow-sphere sphere-2"></div>
 
-  <div class="page-content">
-    <div class="home-header">
-      <h1>Data Engineering for Machine Learning</h1>
-      <p class="subtitle">
-        Interactive steps, working notes, and AI annotation on the Data Engineering for Machine
-        Learning book.
-      </p>
-    </div>
+  <div class="dashboard-layout">
+    <!-- Sidebar / Table of Contents -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-brand">
+        <mat-icon class="brand-icon">menu_book</mat-icon>
+        <h2>Book Reader</h2>
+      </div>
 
-    <div class="home-content">
-      <app-page></app-page>
-    </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item" routerLink="/status">
+          <mat-icon>dashboard</mat-icon>
+          Status
+        </a>
+        <a class="nav-item" routerLink="/manage" *ngIf="authService.isAuthenticated()">
+          <mat-icon>settings</mat-icon>
+          Manage
+        </a>
+      </nav>
+
+      <div class="sidebar-section">
+        <h3 class="section-title">Table of Contents</h3>
+        <div class="page-list">
+          <div
+            *ngFor="let chapter of chapters(); let idx = index"
+            class="page-item"
+            [ngClass]="{ 'active': activePageIndex() === idx }"
+            (click)="goToPage(idx)"
+          >
+            <span class="page-title">{{ chapter.title }}</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+      <header class="dashboard-topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Data Engineering for Machine Learning</h1>
+          <p class="page-description">
+            Interactive steps, working notes, and AI annotation.
+          </p>
+        </div>
+      </header>
+
+      <div class="dashboard-content-area">
+        <div class="content-wrapper">
+          <!-- Reading Progress Bar -->
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" [style.width.%]="progress()"></div>
+            <div class="progress-bar-text">Progress: {{ progress() }}%</div>
+          </div>
+
+          <!-- Page Card -->
+          <div class="status-card-outlined book-card">
+            <div class="card-body-clean book-body">
+              <div class="page-transition-container">
+                <app-page [data]="activeChapter()?.content || ''"></app-page>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="pagination-controls-outlined">
+            <button
+              mat-flat-button
+              class="pagination-btn"
+              [disabled]="activePageIndex() === 0"
+              (click)="prevPage()"
+            >
+              <mat-icon>chevron_left</mat-icon>
+              Previous
+            </button>
+            <span class="page-counter">
+              Chapter {{ activePageIndex() + 1 }} of {{ chapters().length }}
+            </span>
+            <button
+              mat-flat-button
+              class="pagination-btn"
+              [disabled]="activePageIndex() === chapters().length - 1"
+              (click)="nextPage()"
+            >
+              Next
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </div>
