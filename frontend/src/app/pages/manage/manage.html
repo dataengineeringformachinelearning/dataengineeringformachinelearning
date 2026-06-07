@@ -12,11 +12,15 @@
       </div>
       
       <nav class="sidebar-nav">
-        <a class="nav-item" routerLink="/status">
+        <a class="nav-item" routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <mat-icon>description</mat-icon>
+          Documentation
+        </a>
+        <a class="nav-item" routerLink="/status" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
           <mat-icon>dashboard</mat-icon>
           Status
         </a>
-        <a class="nav-item active" routerLink="/manage" *ngIf="authService.isAuthenticated()">
+        <a class="nav-item" routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" *ngIf="authService.isAuthenticated()">
           <mat-icon>settings</mat-icon>
           Manage
         </a>

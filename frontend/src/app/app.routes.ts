@@ -6,7 +6,8 @@ import { Landing } from './pages/landing/landing';
 
 export const routes: Routes = [
   { path: '', component: Landing },
-  { path: 'book', component: Book },
+  { path: 'book', redirectTo: 'documentation', pathMatch: 'full' },
+  { path: 'documentation', component: Book },
   { path: 'status', component: Status },
   { path: 'manage', component: Manage },
 ];

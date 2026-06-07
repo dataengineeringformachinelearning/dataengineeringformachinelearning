@@ -10,6 +10,7 @@
   --status-badge-bg: rgba(192, 197, 193, 0.1);
   --status-badge-text: var(--color-primary-container);
   --status-badge-border: rgba(192, 197, 193, 0.3);
+  --timeline-warning: var(--color-warning);
 }
 
 /* Light theme overrides matching THEME.md */
@@ -18,6 +19,7 @@
   --status-badge-bg: rgba(45, 71, 57, 0.08);
   --status-badge-text: var(--color-primary);
   --status-badge-border: rgba(45, 71, 57, 0.2);
+  --timeline-warning: #FFC107;
 }
 
 .status-container {
@@ -63,7 +65,7 @@
 
 /* Sidebar Styling (Google Site-like Outline) */
 .dashboard-sidebar {
-  width: 260px;
+  width: 280px;
   background-color: var(--card-bg);
   border-right: 1px solid var(--border);
   display: flex;
@@ -395,7 +397,7 @@
   
   &.bar-warning {
     height: 60%;
-    background-color: var(--color-warning);
+    background-color: var(--timeline-warning);
   }
 }
 

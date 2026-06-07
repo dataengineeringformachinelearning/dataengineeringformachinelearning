@@ -67,7 +67,7 @@ Used for notifications, alerts, and system feedback. These have been slightly de
 | Token | Hex | Usage |
 | --- | --- | --- |
 | `--color-success` | `#2E7D32` | Positive feedback, success states. |
-| `--color-warning` | `#8A5C00` | Caution, warnings. Used only for status badges and warning indicators. |
+| `--color-warning` | `#9E7300` | Caution, warnings. Used only for status badges and warning indicators. |
 | `--color-error` | `#D32F2F` | Errors, destructive actions. |
 | `--color-info` | `#0288D1` | Informational messages. |
 
