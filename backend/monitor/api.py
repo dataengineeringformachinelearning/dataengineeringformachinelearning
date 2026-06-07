@@ -45,8 +45,43 @@ class StatusPageOut(Schema):
     created_at: datetime.datetime
     user_id: Optional[int] = None
 
+@router.get("/health")
+def api_health(request):
+    return {"status": "ok"}
+
 @router.get("/status_pages", response=List[StatusPageOut])
 def list_status_pages(request):
+    # Auto-create default page if it doesn't exist
+    if not StatusPage.objects.filter(slug="platform-status").exists():
+        from django.contrib.auth.models import User
+        default_user = User.objects.first()
+        if not default_user:
+            default_user = User.objects.create_user(
+                username="system",
+                email="system@dataengineeringformachinelearning.com",
+                password=User.objects.make_random_password()
+            )
+        
+        page = StatusPage.objects.create(
+            user=default_user,
+            title="Platform Status",
+            slug="platform-status",
+            description="Monitoring system health and telemetry pipelines for the Data Engineering Platform."
+        )
+        
+        # Add default services to it
+        from monitor.models import MonitoredService
+        MonitoredService.objects.create(
+            status_page=page,
+            name="Django Web Server",
+            url="http://localhost:8000/api/v1/system-status/health"
+        )
+        MonitoredService.objects.create(
+            status_page=page,
+            name="Redpanda Broker",
+            url="http://localhost:9092"
+        )
+
     pages = StatusPage.objects.all()
     out = []
     for p in pages:
@@ -59,6 +94,7 @@ def list_status_pages(request):
             user_id=p.user_id
         ))
     return out
+
 
 @router.post("/status_pages", response=StatusPageOut)
 def create_status_page(request, payload: StatusPageIn):
@@ -186,6 +222,21 @@ def create_incident(request, page_id: str, payload: IncidentIn):
         message=payload.message,
         status=payload.status
     )
+    
+    # Send email alert to the owner via Resend
+    if page.user and page.user.email:
+        from config.email import send_resend_email
+        subject = f"[Status Alert] {page.title}: {payload.title} ({payload.status})"
+        html_content = f"""
+        <p>A new incident update has been posted on status page <strong>{page.title}</strong>.</p>
+        <p><strong>Title:</strong> {payload.title}</p>
+        <p><strong>Status:</strong> {payload.status}</p>
+        <p><strong>Details:</strong> {payload.message}</p>
+        <hr>
+        <p>Manage your status page details at <a href="http://localhost:4200/manage">Management Console</a>.</p>
+        """
+        send_resend_email(page.user.email, subject, html_content)
+
     return IncidentOut(
         id=str(incident.id),
         title=incident.title,
@@ -195,6 +246,7 @@ def create_incident(request, page_id: str, payload: IncidentIn):
         updated_at=incident.updated_at,
         status_page_id=str(incident.status_page_id)
     )
+
 
 @router.delete("/incidents/{incident_id}")
 def delete_incident(request, incident_id: str):

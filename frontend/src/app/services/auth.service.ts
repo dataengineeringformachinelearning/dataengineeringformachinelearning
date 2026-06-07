@@ -65,4 +65,23 @@ export class AuthService {
       this.currentUserId.set(null);
     }
   }
+
+  async forgotPassword(email: string) {
+    try {
+      const res: any = await firstValueFrom(this.http.post(`${environment.backendUrl}/api/v1/auth/forgot-password`, { email }));
+      return res.status === 'success';
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async resetPassword(payload: any) {
+    try {
+      const res: any = await firstValueFrom(this.http.post(`${environment.backendUrl}/api/v1/auth/reset-password`, payload));
+      return res.status === 'success';
+    } catch (e) {
+      return false;
+    }
+  }
 }
+
