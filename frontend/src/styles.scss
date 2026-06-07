@@ -173,13 +173,15 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-vi
 
 // ====================== MATERIAL CARDS ======================
 .mat-mdc-card {
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(192, 197, 193, 0.3); /* Metallic silver border */
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border) !important;
+  transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease;
 }
 
 .mat-mdc-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+  box-shadow: var(--shadow-hover) !important;
   transform: translateY(-2px);
 }
 
@@ -272,16 +274,18 @@ app-page {
 /* Accent Raised Buttons */
 .mat-mdc-raised-button.mat-accent, 
 .mdc-button--raised.mat-accent {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #ffffff !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(8px) !important;
+  background-color: var(--color-primary-container) !important;
+  color: var(--color-on-primary-container) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.2s ease !important;
 }
 
 .mat-mdc-raised-button.mat-accent:hover, 
 .mdc-button--raised.mat-accent:hover {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  background-color: var(--color-on-primary-container) !important;
+  color: var(--color-primary-container) !important;
+  border-color: var(--color-on-primary-container) !important;
 }
 
 /* Warn/Error Raised Buttons */
@@ -346,9 +350,9 @@ app-page {
   margin: 0 auto;
   box-sizing: border-box;
   background-color: var(--card-bg);
-  border: 1px solid rgba(192, 197, 193, 0.3); /* Metallic silver border */
+  border: 1px solid var(--border);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 768px) {

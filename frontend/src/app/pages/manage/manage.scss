@@ -6,19 +6,19 @@
   color: var(--text-color);
 
   /* Set up theme-driven variables following THEME.md */
-  --manage-accent: var(--color-warning);
-  --manage-highlight: var(--color-warning);
+  --manage-accent: var(--color-primary-container);
+  --manage-highlight: var(--color-primary-container);
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
-  --new-page-hover-border: var(--color-warning);
+  --new-page-hover-border: var(--color-primary-container);
   --new-page-border: rgba(255, 255, 255, 0.25);
 }
 
 /* Light theme overrides matching THEME.md */
 :host-context(html[data-theme='light']) {
-  --manage-accent: var(--color-warning);
-  --manage-highlight: var(--color-warning);
+  --manage-accent: var(--color-primary);
+  --manage-highlight: var(--color-primary);
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
-  --new-page-hover-border: var(--color-warning);
+  --new-page-hover-border: var(--color-primary);
   --new-page-border: rgba(24, 40, 33, 0.15);
 }
 
@@ -360,6 +360,12 @@
 
   &:hover {
     opacity: 0.9;
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .add-service-btn {
+    color: var(--color-on-primary) !important;
   }
 }
 
