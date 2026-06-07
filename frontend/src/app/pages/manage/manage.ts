@@ -56,6 +56,30 @@ export class Manage implements OnInit {
   newIncidentMessage = '';
   newIncidentStatus = 'Investigating';
 
+  copied = signal(false);
+
+  getWidgetCode(): string {
+    const page = this.selectedPage();
+    if (!page) return '';
+    const origin = window.location.origin;
+    return `<script src="${origin}/assets/widget.js" data-page-id="${page.id}"></script>`;
+  }
+
+  copyWidgetCode() {
+    const code = this.getWidgetCode();
+    if (code) {
+      navigator.clipboard.writeText(code).then(() => {
+        this.copied.set(true);
+        setTimeout(() => {
+          this.copied.set(true); // wait, should reset to false
+          this.copied.set(false);
+          this.cdr.markForCheck();
+        }, 2000);
+        this.cdr.markForCheck();
+      });
+    }
+  }
+
   ngOnInit() {
     this.loadStatusPages();
   }

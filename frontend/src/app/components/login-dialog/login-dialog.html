@@ -1,22 +1,30 @@
-<div class="modal-header">
-  <h3>{{ isRegisterMode() ? 'Sign Up' : 'Sign In' }}</h3>
-  <button class="close-btn" (click)="onCancel()">&times;</button>
+<div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <mat-icon style="margin: 0; font-size: 24px; width: 24px; height: 24px; color: var(--color-primary-container);">account_circle</mat-icon>
+    <h3 style="margin: 0;">{{ isRegisterMode() ? 'Sign Up' : 'Sign In' }}</h3>
+  </div>
+  <button class="close-btn" (click)="onCancel()" style="display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text-color);">
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
 
 <div class="modal-body">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Username</mat-label>
+      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">person</mat-icon>
       <input matInput formControlName="username" required>
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width" *ngIf="isRegisterMode()">
       <mat-label>Email Address</mat-label>
+      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">email</mat-icon>
       <input matInput type="email" formControlName="email" placeholder="email@example.com">
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Password</mat-label>
+      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">lock</mat-icon>
       <input matInput type="password" formControlName="password" required>
     </mat-form-field>
     
@@ -30,10 +38,13 @@
   </form>
 </div>
 
-<div class="modal-footer">
-  <button class="btn-cancel" (click)="onCancel()">Cancel</button>
-  <button class="btn-submit" [disabled]="loginForm.invalid" (click)="onSubmit()">
-    {{ isRegisterMode() ? 'Sign Up' : 'Login' }}
+<div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+  <button class="btn-cancel" (click)="onCancel()" style="display: flex; align-items: center; gap: 6px;">
+    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
+  <button class="btn-submit" [disabled]="loginForm.invalid" (click)="onSubmit()" style="display: flex; align-items: center; gap: 6px;">
+    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">{{ isRegisterMode() ? 'person_add' : 'login' }}</mat-icon>
+    <span>{{ isRegisterMode() ? 'Sign Up' : 'Login' }}</span>
   </button>
 </div>
-
