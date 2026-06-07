@@ -117,3 +117,26 @@
     }
   }
 }
+
+.full-width {
+  width: 100%;
+}
+
+.toggle-link {
+  text-align: center;
+  margin-top: 0.5rem;
+  
+  a {
+    color: var(--color-warning);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    
+    &:hover {
+      opacity: 0.8;
+      text-decoration: underline;
+    }
+  }
+}
+

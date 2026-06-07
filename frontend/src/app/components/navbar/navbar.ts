@@ -33,10 +33,24 @@ export class Navbar {
 
     dialogRef.afterClosed().subscribe(async result => {
       if (result) {
-        const success = await this.authService.login(result);
-        if (!success) {
-          // Could handle error globally or in another dialog, for now handled silently in navbar
-          alert('Login failed. Please check your credentials.');
+        let success = false;
+        if (result.mode === 'register') {
+          success = await this.authService.register({
+            username: result.username,
+            password: result.password,
+            email: result.email
+          });
+          if (!success) {
+            alert('Registration failed. Username may already exist.');
+          }
+        } else {
+          success = await this.authService.login({
+            username: result.username,
+            password: result.password
+          });
+          if (!success) {
+            alert('Login failed. Please check your credentials.');
+          }
         }
       }
     });

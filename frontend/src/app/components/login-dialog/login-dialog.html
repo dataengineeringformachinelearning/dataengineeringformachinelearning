@@ -1,25 +1,39 @@
 <div class="modal-header">
-  <h3>Sign In</h3>
+  <h3>{{ isRegisterMode() ? 'Sign Up' : 'Sign In' }}</h3>
   <button class="close-btn" (click)="onCancel()">&times;</button>
 </div>
 
 <div class="modal-body">
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" class="full-width">
       <mat-label>Username</mat-label>
       <input matInput formControlName="username" required>
     </mat-form-field>
 
-    <mat-form-field appearance="fill">
+    <mat-form-field appearance="fill" class="full-width" *ngIf="isRegisterMode()">
+      <mat-label>Email Address</mat-label>
+      <input matInput type="email" formControlName="email" placeholder="email@example.com">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
       <mat-label>Password</mat-label>
       <input matInput type="password" formControlName="password" required>
     </mat-form-field>
     
     <div class="error-text" *ngIf="error">{{ error }}</div>
+
+    <div class="toggle-link">
+      <a href="javascript:void(0)" (click)="toggleMode()">
+        {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account? Sign Up" }}
+      </a>
+    </div>
   </form>
 </div>
 
 <div class="modal-footer">
   <button class="btn-cancel" (click)="onCancel()">Cancel</button>
-  <button class="btn-submit" [disabled]="loginForm.invalid" (click)="onSubmit()">Login</button>
+  <button class="btn-submit" [disabled]="loginForm.invalid" (click)="onSubmit()">
+    {{ isRegisterMode() ? 'Sign Up' : 'Login' }}
+  </button>
 </div>
+

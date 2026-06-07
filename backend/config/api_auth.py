@@ -35,3 +35,23 @@ def api_user(request):
     if request.user.is_authenticated:
         return {"status": "success", "user": request.user.username, "user_id": request.user.id}
     raise HttpError(401, "Not authenticated")
+
+class RegisterSchema(Schema):
+    username: str
+    password: str
+    email: Optional[str] = None
+
+from django.contrib.auth.models import User
+
+@router.post("/register", response=SuccessSchema)
+def api_register(request, data: RegisterSchema):
+    if User.objects.filter(username=data.username).exists():
+        raise HttpError(400, "Username already exists")
+    user = User.objects.create_user(
+        username=data.username,
+        password=data.password,
+        email=data.email or ""
+    )
+    django_login(request, user)
+    return {"status": "success", "user": user.username, "user_id": user.id}
+
