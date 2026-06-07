@@ -453,6 +453,13 @@ Finally, a standalone background worker can subscribe to this `app-events` topic
 
 #### Chapter 9.1.1: Enabling the data pipeline for incident management
 
+With historical telemetry successfully streaming through our Redpanda message broker, we can now apply it to a real-world use-case: a public status and incident management platform.
+
+1. **Telemetry Parsing**: The async telemetry worker pulls raw health check events in batches, converting them to Polars DataFrames for efficient performance calculation.
+2. **SLA Calculation**: Telemetry is processed to compute a cumulative Service Level Agreement (SLA) percentage for each service and status page based on real response times and status codes.
+3. **Incident Operations**: When an outage occurs, authenticated users can log in, declare an active incident, and associate it with a specific status page. These incidents are dynamically rendered on the frontend using Angular Signals to notify end-users in real-time.
+4. **Historical Uptime Visualizations**: Telemetry is aggregated into daily buckets to render a 90-day interactive uptime graph showing partial and major outages.
+
 ## Chapter 10: Encrypting the data
 
 ### Chapter 10.1: Introduction
@@ -471,7 +478,12 @@ Finally, a standalone background worker can subscribe to this `app-events` topic
 
 #### Chapter 12.1.1: Implementing LLMs for data enrichment and user queries
 
-## Deployment Configuration
+Systems telemetry alone cannot capture qualitative user experiences. To process unstructured user complaints, we implement an AI-powered data enrichment pipeline utilizing LangChain, LangGraph, and Google Gemini:
+
+1. **Unstructured Ingestion**: When a user encounters an issue, they submit a natural-language description along with their current browser context.
+2. **AI Agent Processing**: The backend routes this to a LangChain ReAct agent configured in `llm_agent.py`. The agent utilizes Gemini (`ChatGoogleGenerativeAI`) to parse the complaint, compare it against recent telemetry context, and determine potential root causes.
+3. **Broker Dispatch**: The agent calls a custom tool (`send_issue_to_redpanda`) that publishes the enriched, structured JSON analysis to the `user-issues` topic on Redpanda.
+4. **Async Consumption**: The background telemetry worker consumes messages from `user-issues`, updates the database record with the AI's diagnostic analysis, and logs the incident details, completing the asynchronous data collection loop.
 
 ## Chapter 13: Enhancing data with threat intelligence
 
@@ -479,7 +491,7 @@ Finally, a standalone background worker can subscribe to this `app-events` topic
 
 #### Chapter 13.1.1: Connecting to threat intelligence sources
 
-## Deployment Configuration
+## Acknowledgements
 
 This project is configured for deployment on Railway, spanning three distinct services:
 
@@ -490,3 +502,5 @@ This project is configured for deployment on Railway, spanning three distinct se
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)

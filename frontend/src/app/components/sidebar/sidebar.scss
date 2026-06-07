@@ -21,7 +21,9 @@
   flex-shrink: 0;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  height: 100%;
+  height: calc(100vh - 64px);
+  position: sticky;
+  top: 64px;
 }
 
 .sidebar-brand {
@@ -117,11 +119,12 @@
 }
 
 /* Responsive collapse/adjustment for sidebar on smaller viewports */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .dashboard-sidebar {
     width: 100%;
     border-right: none;
     border-bottom: 1px solid var(--border);
     height: auto;
+    position: static;
   }
 }

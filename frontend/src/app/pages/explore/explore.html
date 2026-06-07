@@ -34,7 +34,7 @@
 
               <div class="card-body-clean">
                 <!-- SLA Section -->
-                <div class="ml-stat-panels-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                <div class="ml-stat-panels-row">
                   <div class="ml-stat-panel" style="margin-bottom: 0;">
                     <div class="stat-info">
                       <mat-icon class="stat-icon">dns</mat-icon>
@@ -121,11 +121,13 @@
               </div>
             </div>
 
-            <div *ngIf="statusPages().length === 0" class="empty-state-outlined">
-              <mat-icon class="empty-icon">explore</mat-icon>
-              <h3 class="empty-title">No Public Status Pages</h3>
-              <p class="empty-subtitle">Users haven't published any status pages yet. Create and publish one in the management console!</p>
-            </div>
+            <app-status-cta
+              *ngIf="statusPages().length === 0"
+              badgeIcon="explore"
+              badgeText="Explore Directory"
+              title="No Public Status Pages"
+              subtitle="Users haven't published any status pages yet. Create and publish one in the management console!">
+            </app-status-cta>
             
           </div>
         </div>

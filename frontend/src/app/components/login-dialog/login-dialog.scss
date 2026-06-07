@@ -62,6 +62,10 @@
     font-weight: 600;
   }
 
+  .header-icon {
+    color: var(--color-primary-container);
+  }
+
   .close-btn {
     background: none;
     border: none;
@@ -156,6 +160,9 @@
   .modal-header {
     background: rgba(0, 0, 0, 0.02);
     h3 {
+      color: var(--color-primary);
+    }
+    .header-icon {
       color: var(--color-primary);
     }
     .close-btn:hover {

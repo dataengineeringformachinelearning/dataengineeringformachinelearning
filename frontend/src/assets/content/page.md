@@ -1,6 +1,6 @@
 ## Chapter 1: Setting up your environment
 
-For this book, we will build a full-stack data engineering application using Angular for the frontend and Python (Django) for the backend. 
+For this book, we will build a full-stack data engineering application using Angular for the frontend and Python (Django) for the backend.
 
 ### Chapter 1.1: Frontend Setup
 
@@ -59,13 +59,13 @@ django-admin startproject config .
 python manage.py runserver
 ```
 
-Visit `http://127.0.0.1:8000` to verify your Django server is running. 
+Visit `http://127.0.0.1:8000` to verify your Django server is running.
 
 Like the frontend, you should containerize your Django application using Docker. You will need to install production dependencies like `gunicorn`, `whitenoise`, and `psycopg2-binary`. Define a `Dockerfile` that collects static files and runs the server using Gunicorn.
 
 ## Chapter 2: Integrating Tools and Pre-requisites
 
-As your project grows, maintaining code quality is crucial. 
+As your project grows, maintaining code quality is crucial.
 
 For the frontend, configure tools like Prettier and ESLint:
 
@@ -109,7 +109,7 @@ def health(request):
 # path('api/health', views.health, name='health'),
 ```
 
-To allow your Angular frontend to communicate with this Django backend, you need to configure CORS (Cross-Origin Resource Sharing). 
+To allow your Angular frontend to communicate with this Django backend, you need to configure CORS (Cross-Origin Resource Sharing).
 
 ```bash
 pip install django-cors-headers
@@ -132,7 +132,7 @@ Now that the endpoint is responding, we need to enable Angular to call it. In mo
 
 ```typescript
 // frontend/src/app/app.config.ts
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch } from "@angular/common/http";
 export const appConfig = { providers: [provideHttpClient(withFetch())] };
 ```
 
@@ -140,22 +140,23 @@ You can then inject this into a component and use Angular Signals to cleanly man
 
 ```typescript
 // frontend/src/app/app.component.ts
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, inject, signal, OnInit } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
-  template: `<footer>Backend Status: {{ backendStatus() }}</footer>`
+  template: `<footer>Backend Status: {{ backendStatus() }}</footer>`,
 })
 export class AppComponent implements OnInit {
-  backendStatus = signal<'checking' | 'ok' | 'error'>('checking');
+  backendStatus = signal<"checking" | "ok" | "error">("checking");
   private http = inject(HttpClient);
 
   ngOnInit() {
-    this.http.get<{status: string}>('/api/health').subscribe({
-      next: (res) => this.backendStatus.set(res.status === 'ok' ? 'ok' : 'error'),
-      error: () => this.backendStatus.set('error')
+    this.http.get<{ status: string }>("/api/health").subscribe({
+      next: (res) =>
+        this.backendStatus.set(res.status === "ok" ? "ok" : "error"),
+      error: () => this.backendStatus.set("error"),
     });
   }
 }
@@ -216,9 +217,9 @@ from monitor.models import Endpoints
 
 def health(request):
     start_time = time.time()
-    
+
     # ... perform healthcheck logic ...
-    
+
     duration = timedelta(seconds=time.time() - start_time)
     Endpoints.objects.create(
         url=request.build_absolute_uri(),
@@ -226,7 +227,7 @@ def health(request):
         response_time=duration,
         is_active=True
     )
-    
+
     return JsonResponse({'status': 'ok'})
 ```
 
@@ -260,32 +261,32 @@ In your dashboard component, you can fetch the data from your new API and bind i
 
 ```typescript
 // frontend/src/app/pages/dashboard/dashboard.ts
-import { Component, OnInit, inject } from '@angular/core';
-import { AgCharts } from 'ag-charts-angular';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, inject } from "@angular/core";
+import { AgCharts } from "ag-charts-angular";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
-  selector: 'app-dashboard',
+  selector: "app-dashboard",
   standalone: true,
   imports: [AgCharts],
-  template: `<ag-charts [options]="chartOptions"></ag-charts>`
+  template: `<ag-charts [options]="chartOptions"></ag-charts>`,
 })
 export class Dashboard implements OnInit {
   private http = inject(HttpClient);
   public chartOptions = {
     title: { text: "Application Stability" },
     data: [],
-    series: [{ type: 'line', xKey: 'time', yKey: 'statusCode' }]
+    series: [{ type: "line", xKey: "time", yKey: "statusCode" }],
   };
 
   ngOnInit() {
-    this.http.get<any[]>('/api/monitor/endpoints').subscribe(data => {
+    this.http.get<any[]>("/api/monitor/endpoints").subscribe((data) => {
       this.chartOptions = {
         ...this.chartOptions,
-        data: data.map(ep => ({
+        data: data.map((ep) => ({
           time: new Date(ep.last_tested).toLocaleTimeString(),
-          statusCode: ep.status_code
-        }))
+          statusCode: ep.status_code,
+        })),
       };
     });
   }
@@ -334,7 +335,7 @@ def train_model(request):
     # Fetch historical data and convert to tensors
     endpoints = Endpoints.objects.all()
     # ... prepare X and Y tensors from endpoint data ...
-    
+
     # Initialize the model and a simple MSE loss function
     model = SLAPredictor()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
@@ -344,7 +345,7 @@ def train_model(request):
     # loss = criterion(model(X), Y)
     # loss.backward()
     # optimizer.step()
-    
+
     return JsonResponse({'status': 'training_initiated'})
 ```
 
@@ -362,9 +363,9 @@ On the frontend, you can manage user sessions by tracking a simple boolean state
 
 ```typescript
 // frontend/src/app/services/auth.service.ts
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal } from "@angular/core";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class AuthService {
   public isAuthenticated = signal<boolean>(false);
 }
@@ -416,9 +417,9 @@ First, you'll need to capture errors or telemetry events from your frontend appl
 const errorPayload = {
   timestamp: new Date().toISOString(),
   message: error.message,
-  context: { url: window.location.href }
+  context: { url: window.location.href },
 };
-this.http.post('/api/v1/telemetry/endpoints', errorPayload).subscribe();
+this.http.post("/api/v1/telemetry/endpoints", errorPayload).subscribe();
 ```
 
 On the backend, instead of processing this data synchronously, we can expose a fast, asynchronous endpoint that immediately pushes the incoming payload to a Redpanda topic. Using a framework like `django-ninja` paired with `aiokafka` keeps the HTTP operation entirely non-blocking.
@@ -442,14 +443,60 @@ async def post_telemetry(request, payload: dict):
 
 Finally, a standalone background worker can subscribe to this `app-events` topic to process the messages in batches. By pulling records and parsing them directly into a Polars DataFrame, you can achieve high-performance processing before committing the data to your Postgres database. This pipeline ensures that heavy ingestion loads never impact your user-facing API performance.
 
-## Chapter 9: Encrypting the data
+## Chapter 9: Applying a use-case
 
 ### Chapter 9.1: Introduction
 
-#### Chapter 9.1.1: Enabling end to end encryption
+#### Chapter 9.1.1: Enabling the data pipeline for incident management
 
-## Chapter 10: Tuning the model
+With historical telemetry successfully streaming through our Redpanda message broker, we can now apply it to a real-world use-case: a public status and incident management platform. 
+
+1. **Telemetry Parsing**: The async telemetry worker pulls raw health check events in batches, converting them to Polars DataFrames for efficient performance calculation.
+2. **SLA Calculation**: Telemetry is processed to compute a cumulative Service Level Agreement (SLA) percentage for each service and status page based on real response times and status codes.
+3. **Incident Operations**: When an outage occurs, authenticated users can log in, declare an active incident, and associate it with a specific status page. These incidents are dynamically rendered on the frontend using Angular Signals to notify end-users in real-time.
+4. **Historical Uptime Visualizations**: Telemetry is aggregated into daily buckets to render a 90-day interactive uptime graph showing partial and major outages.
+
+## Chapter 10: Encrypting the data
 
 ### Chapter 10.1: Introduction
 
-#### Chapter 10.1.1: Hyperparameter Tuning
+#### Chapter 10.1.1: Enabling end to end encryption
+
+## Chapter 11: Tuning the model
+
+### Chapter 11.1: Introduction
+
+#### Chapter 11.1.1: Hyperparameter Tuning
+
+## Chapter 12: Collecting unstructured data
+
+### Chapter 12.1: Introduction
+
+#### Chapter 12.1.1: Implementing LLMs for data enrichment and user queries
+
+Systems telemetry alone cannot capture qualitative user experiences. To process unstructured user complaints, we implement an AI-powered data enrichment pipeline utilizing LangChain, LangGraph, and Google Gemini:
+
+1. **Unstructured Ingestion**: When a user encounters an issue, they submit a natural-language description along with their current browser context.
+2. **AI Agent Processing**: The backend routes this to a LangChain ReAct agent configured in `llm_agent.py`. The agent utilizes Gemini (`ChatGoogleGenerativeAI`) to parse the complaint, compare it against recent telemetry context, and determine potential root causes.
+3. **Broker Dispatch**: The agent calls a custom tool (`send_issue_to_redpanda`) that publishes the enriched, structured JSON analysis to the `user-issues` topic on Redpanda.
+4. **Async Consumption**: The background telemetry worker consumes messages from `user-issues`, updates the database record with the AI's diagnostic analysis, and logs the incident details, completing the asynchronous data collection loop.
+
+## Deployment Configuration
+
+## Chapter 13: Enhancing data with threat intelligence
+
+### Chapter 13.1: Introduction
+
+#### Chapter 13.1.1: Connecting to threat intelligence sources
+
+## Deployment Configuration
+
+This project is configured for deployment on Railway, spanning three distinct services:
+
+1. **Web Frontend**: The Angular application running on a public URL (`https://dataengineeringformachinelearning.com`).
+2. **Web Backend**: The Django API connected to Postgres (`https://backend.dataengineeringformachinelearning.com`).
+3. **Telemetry Worker**: A background Redpanda consumer and worker process (`internal`).
+
+For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)

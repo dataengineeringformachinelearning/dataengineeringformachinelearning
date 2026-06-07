@@ -15,6 +15,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
+import { StatusCta } from '../../components/status-cta/status-cta';
 
 @Component({
   selector: 'app-explore',
@@ -25,7 +26,8 @@ import { Sidebar } from '../../components/sidebar/sidebar';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    Sidebar
+    Sidebar,
+    StatusCta
   ],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

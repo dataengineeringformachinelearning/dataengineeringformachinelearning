@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,6 +24,11 @@ import { LoginDialog } from '../login-dialog/login-dialog';
 export class StatusCta {
   public authService = inject(AuthService);
   private dialog = inject(MatDialog);
+
+  @Input() title = 'Track your Services';
+  @Input() subtitle = 'Create and publish real-time status pages to monitor your APIs. Keep your users informed and track uptime statistics.';
+  @Input() badgeIcon = 'verified_user';
+  @Input() badgeText = 'API Monitoring Console';
 
   login() {
     const dialogRef = this.dialog.open(LoginDialog, {

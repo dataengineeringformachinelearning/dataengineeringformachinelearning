@@ -176,10 +176,11 @@ export class Manage implements OnInit {
     if (confirm('CRITICAL WARNING: Are you sure you want to permanently delete your account? All of your status pages, monitored services, incident reports, and telemetry data will be permanently and irreversibly destroyed.')) {
       const confirmText = prompt('Please type "DELETE MY ACCOUNT" to confirm:');
       if (confirmText === 'DELETE MY ACCOUNT') {
-        this.authService.deleteAccount().then(success => {
+        this.authService.deleteAccount().then(async success => {
           if (success) {
             alert('Your account and all associated data have been permanently deleted.');
-            this.router.navigate(['/']);
+            await this.router.navigate(['/']);
+            window.location.reload();
           } else {
             alert('Failed to delete account.');
           }

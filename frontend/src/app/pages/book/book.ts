@@ -174,7 +174,8 @@ export class Book implements OnInit {
     }
   }
 
-  private scrollToTop() {
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     const contentArea = document.querySelector('.dashboard-main');
     if (contentArea) {
       contentArea.scrollTo({ top: 0, behavior: 'smooth' });

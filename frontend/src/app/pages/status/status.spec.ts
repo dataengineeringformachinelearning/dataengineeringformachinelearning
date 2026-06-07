@@ -1,6 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { Status } from './status';
+import { provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('Status', () => {
   let component: Status;
@@ -9,6 +11,11 @@ describe('Status', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Status],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(Status);
@@ -20,3 +27,4 @@ describe('Status', () => {
     expect(component).toBeTruthy();
   });
 });
+

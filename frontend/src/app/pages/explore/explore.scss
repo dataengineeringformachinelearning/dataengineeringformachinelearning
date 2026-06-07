@@ -1,4 +1,4 @@
-@import '../status/status.scss';
+@use '../status/status.scss' as *;
 
 .view-btn {
   border-radius: 20px !important;
