@@ -89,10 +89,12 @@ export class Manage implements OnInit {
     }
   }
 
-  selectPage(page: StatusPageData) {
+  selectPage(page: StatusPageData | null) {
     this.selectedPage.set(page);
-    this.loadServices(page.id);
-    this.loadIncidents(page.id);
+    if (page) {
+      this.loadServices(page.id);
+      this.loadIncidents(page.id);
+    }
   }
 
   loadServices(pageId: string) {

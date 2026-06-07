@@ -126,15 +126,7 @@
   color: var(--text-color);
 }
 
-.topbar-btn {
-  height: 40px;
-  border-radius: 8px;
-  font-weight: 600;
-  background-color: var(--accent-color) !important;
-  color: var(--color-on-primary-container) !important;
-  box-shadow: none;
-  border: 1px solid var(--border);
-}
+
 
 .dashboard-content-area {
   flex: 1;
@@ -158,7 +150,6 @@
   border: 1px solid var(--border);
   background: var(--card-bg);
   padding: 0;
-  box-shadow: none; /* Removed heavy shadows for a cleaner, high-contrast bordered look */
   overflow: hidden;
 }
 

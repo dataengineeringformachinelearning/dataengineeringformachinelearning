@@ -11,7 +11,7 @@
         <mat-icon>dashboard</mat-icon>
         Status
       </a>
-      <a class="nav-item" routerLink="/manage">
+      <a class="nav-item" routerLink="/manage" *ngIf="authService.isAuthenticated()">
         <mat-icon>settings</mat-icon>
         Manage
       </a>
@@ -31,8 +31,8 @@
       <div class="topbar-left">
         <h1 class="page-title">System Status</h1>
       </div>
-      <div class="topbar-right">
-        <button mat-raised-button color="accent" routerLink="/manage" class="topbar-btn">
+      <div class="topbar-right" *ngIf="authService.isAuthenticated()">
+        <button mat-raised-button color="accent" routerLink="/manage">
           Manage Pages
         </button>
       </div>

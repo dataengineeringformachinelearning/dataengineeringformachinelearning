@@ -9,6 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { MonitorService, StatusPageData, IncidentData } from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
+import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,6 +32,7 @@ import { RouterModule } from '@angular/router';
 export class Status implements OnInit {
   private monitorService = inject(MonitorService);
   public modelService = inject(ModelService);
+  public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
   statusPages = signal<StatusPageData[]>([]);
