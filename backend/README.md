@@ -103,3 +103,12 @@ To safely update your backend packages to their latest compatible versions quick
 ```bash
 uv pip install -r requirements.txt --upgrade
 ```
+
+### Creating a User
+
+To create a user (e.g., to log into the application and manage Status Pages), you can use Django's built-in `createsuperuser` command:
+
+```bash
+python manage.py createsuperuser
+```
+Follow the prompts to enter your username, email, and password. You can then use these credentials to log in to the frontend.

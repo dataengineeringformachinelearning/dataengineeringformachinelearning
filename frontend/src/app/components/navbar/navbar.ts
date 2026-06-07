@@ -1,18 +1,22 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 import { LoginDialog } from '../login-dialog/login-dialog';
 
 @Component({
   selector: 'app-navbar',
   imports: [
     RouterLink,
+    RouterLinkActive,
     MatToolbarModule,
     MatButtonModule,
+    MatIconModule,
     CommonModule,
     MatDialogModule,
   ],
@@ -22,6 +26,7 @@ import { LoginDialog } from '../login-dialog/login-dialog';
 })
 export class Navbar {
   public authService = inject(AuthService);
+  public themeService = inject(ThemeService);
   private dialog = inject(MatDialog);
 
   login() {
@@ -33,10 +38,24 @@ export class Navbar {
 
     dialogRef.afterClosed().subscribe(async result => {
       if (result) {
-        const success = await this.authService.login(result);
-        if (!success) {
-          // Could handle error globally or in another dialog, for now handled silently in navbar
-          alert('Login failed. Please check your credentials.');
+        let success = false;
+        if (result.mode === 'register') {
+          success = await this.authService.register({
+            username: result.username,
+            password: result.password,
+            email: result.email
+          });
+          if (!success) {
+            alert('Registration failed. Username may already exist.');
+          }
+        } else {
+          success = await this.authService.login({
+            username: result.username,
+            password: result.password
+          });
+          if (!success) {
+            alert('Login failed. Please check your credentials.');
+          }
         }
       }
     });

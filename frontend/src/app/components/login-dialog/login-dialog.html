@@ -1,25 +1,72 @@
-<div class="modal-header">
-  <h3>Sign In</h3>
-  <button class="close-btn" (click)="onCancel()">&times;</button>
+<div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
+  <div style="display: flex; align-items: center; gap: 8px;">
+    <mat-icon style="margin: 0; font-size: 24px; width: 24px; height: 24px; color: var(--color-primary-container);">
+      {{ isForgotMode() ? 'email' : isResetMode() ? 'vpn_key' : 'account_circle' }}
+    </mat-icon>
+    <h3 style="margin: 0;">
+      {{ isForgotMode() ? 'Reset Password' : isResetMode() ? 'Set New Password' : isRegisterMode() ? 'Sign Up' : 'Sign In' }}
+    </h3>
+  </div>
+  <button class="close-btn" (click)="onCancel()" style="display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text-color);">
+    <mat-icon>close</mat-icon>
+  </button>
 </div>
 
 <div class="modal-body">
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-    <mat-form-field appearance="fill">
+  <div class="success-text" *ngIf="successMessage()" style="padding: 12px; margin-bottom: 16px; border-radius: 6px; background-color: rgba(76, 175, 80, 0.1); color: var(--color-success); font-weight: 500; font-size: 0.9rem;">
+    {{ successMessage() }}
+  </div>
+
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form" *ngIf="!successMessage() || isResetMode()">
+    <!-- Username (not shown in forgot/reset modes) -->
+    <mat-form-field appearance="fill" class="full-width" *ngIf="!isForgotMode() && !isResetMode()">
       <mat-label>Username</mat-label>
+      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">person</mat-icon>
       <input matInput formControlName="username" required>
     </mat-form-field>
 
-    <mat-form-field appearance="fill">
-      <mat-label>Password</mat-label>
+    <!-- Email Address (shown in register/forgot modes) -->
+    <mat-form-field appearance="fill" class="full-width" *ngIf="isRegisterMode() || isForgotMode()">
+      <mat-label>Email Address</mat-label>
+      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">email</mat-icon>
+      <input matInput type="email" formControlName="email" placeholder="email@example.com" [required]="isForgotMode()">
+    </mat-form-field>
+
+    <!-- Password / New Password (not shown in forgot mode) -->
+    <mat-form-field appearance="fill" class="full-width" *ngIf="!isForgotMode()">
+      <mat-label>{{ isResetMode() ? 'New Password' : 'Password' }}</mat-label>
+      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">lock</mat-icon>
       <input matInput type="password" formControlName="password" required>
     </mat-form-field>
     
-    <div class="error-text" *ngIf="error">{{ error }}</div>
+    <div class="error-text" *ngIf="error" role="alert" style="color: var(--color-error); margin-bottom: 12px; font-size: 0.85rem; font-weight: 500;">{{ error }}</div>
+
+    <div class="toggle-link" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+      <a href="javascript:void(0)" (click)="toggleMode()" *ngIf="!isForgotMode() && !isResetMode()">
+        {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account? Sign Up" }}
+      </a>
+      <a href="javascript:void(0)" (click)="switchToForgot()" *ngIf="!isRegisterMode() && !isForgotMode() && !isResetMode()">
+        Forgot password?
+      </a>
+      <a href="javascript:void(0)" (click)="switchToLogin()" *ngIf="isForgotMode() || isResetMode()">
+        Back to Sign In
+      </a>
+    </div>
   </form>
 </div>
 
-<div class="modal-footer">
-  <button class="btn-cancel" (click)="onCancel()">Cancel</button>
-  <button class="btn-submit" [disabled]="loginForm.invalid" (click)="onSubmit()">Login</button>
+<div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
+  <button class="btn-cancel" (click)="onCancel()" style="display: flex; align-items: center; gap: 6px;">
+    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">cancel</mat-icon>
+    <span>Cancel</span>
+  </button>
+  <button class="btn-submit" [disabled]="loginForm.invalid && !successMessage()" (click)="onSubmit()" style="display: flex; align-items: center; gap: 6px;">
+    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">
+      {{ isForgotMode() ? 'send' : isResetMode() ? 'lock_reset' : isRegisterMode() ? 'person_add' : 'login' }}
+    </mat-icon>
+    <span>
+      {{ isForgotMode() ? 'Send Link' : isResetMode() ? 'Reset' : isRegisterMode() ? 'Sign Up' : 'Login' }}
+    </span>
+  </button>
 </div>
+
