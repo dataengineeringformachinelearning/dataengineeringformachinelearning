@@ -1,9 +1,14 @@
 from ninja import NinjaAPI
 import logging
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-api = NinjaAPI(title="Data Engineering for Machine Learning API", version="1.0.0")
+api = NinjaAPI(
+    title="Data Engineering for Machine Learning API",
+    version="1.0.0",
+    docs_url="/docs" if settings.DEBUG else None
+)
 
 # Import routers from apps
 from monitor.api import router as monitor_router

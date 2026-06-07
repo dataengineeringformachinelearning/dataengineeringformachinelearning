@@ -2,13 +2,13 @@
 
 :root {
   /* Core Semantic Tokens from THEME.md */
-  --color-primary: #183a37;
+  --color-primary: #2d4739;
   --color-on-primary: #FFFFFF;
   --color-primary-container: #c0c5c1;
   --color-on-primary-container: #0f1814;
   --color-surface: rgba(24, 40, 33, 0.45);
   --color-on-surface: #E8ECEA;
-  --color-background: #0b110e;
+  --color-background: #0f1814;
   --color-on-background: #E8ECEA;
   
   /* Semantic Statuses */
@@ -19,17 +19,17 @@
 
   /* Shadows & Elevation */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.7);
-  --shadow-glow: 0 0 20px rgba(24, 58, 55, 0.35);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
 
   /* Aliases for UI Components */
-  --primary-color: #1a4d46;
-  --accent-color: #2e7a6e;
+  --primary-color: var(--color-primary);
+  --accent-color: var(--color-primary-container);
   --hover-color: var(--color-surface);
   --bg-color: var(--color-background);
   --text-color: var(--color-on-background);
-  --text-muted: #a3b8b0;
+  --text-muted: var(--color-primary-container);
   --border: rgba(255, 255, 255, 0.08);
   --card-bg: var(--color-surface);
 }
@@ -51,15 +51,15 @@
     --color-info: #0288D1;
 
     --shadow-sm: 0 2px 4px rgba(24, 40, 33, 0.08);
-    --shadow-md: 0 8px 32px rgba(24, 40, 33, 0.08);
-    --shadow-hover: 0 12px 40px rgba(24, 40, 33, 0.12);
-    --shadow-glow: 0 0 20px rgba(45, 71, 57, 0.15);
+    --shadow-md: 0 4px 12px rgba(24, 40, 33, 0.12);
+    --shadow-hover: 0 8px 24px rgba(24, 40, 33, 0.16);
+    --shadow-glow: 0 0 12px rgba(45, 71, 57, 0.15);
 
-    --primary-color: #2d4739;
-    --accent-color: #5b7e6d;
+    --primary-color: var(--color-primary);
+    --accent-color: var(--color-primary-container);
     --hover-color: var(--color-primary-container);
-    --text-muted: #576b62;
-    --border: rgba(0, 0, 0, 0.08);
+    --text-muted: #4a5450;
+    --border: #C8D3CE;
   }
 }
 
