@@ -2,73 +2,57 @@
   <div class="page-content">
     <div class="dashboard-header" style="display: flex; justify-content: space-between; align-items: center;">
       <div>
-        <h1 class="dashboard-title">Status Pages</h1>
-        <p class="dashboard-subtitle">View public status pages or manage your own</p>
+        <h1 class="dashboard-title">Status Dashboard</h1>
+        <p class="dashboard-subtitle">Live health overviews of our monitored services</p>
       </div>
-      <div *ngIf="!authService.isAuthenticated()" style="color: var(--text-muted); font-style: italic; background: var(--surface-hover); padding: 0.5rem 1rem; border-radius: 4px;">
-        <mat-icon style="vertical-align: middle; margin-right: 4px; font-size: 18px; width: 18px; height: 18px;">info</mat-icon>
-        Sign in to create and manage statuses
+      <div>
+        <button mat-raised-button color="primary" routerLink="/manage">
+          Manage Status Pages
+        </button>
       </div>
     </div>
 
-    <div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
-      <!-- Left Column: Status Pages List -->
-      <div class="dashboard-card">
-        <h3>Your Status Pages</h3>
-        <mat-list>
-          <mat-list-item *ngFor="let page of statusPages()" (click)="selectPage(page)" [class.selected]="selectedPage()?.id === page.id" style="cursor: pointer;">
-            <span matListItemTitle>{{ page.title }}</span>
-            <span matListItemLine>/status/{{ page.slug }}</span>
-          </mat-list-item>
-        </mat-list>
-        
-        <div *ngIf="authService.isAuthenticated()" style="margin-top: 1rem; border-top: 1px solid var(--border); padding-top: 1rem;">
-          <h4>Create New Status Page</h4>
-          <mat-form-field appearance="outline" style="width: 100%;">
-            <mat-label>Title</mat-label>
-            <input matInput [(ngModel)]="newPageTitle">
-          </mat-form-field>
-          <mat-form-field appearance="outline" style="width: 100%;">
-            <mat-label>Slug (URL)</mat-label>
-            <input matInput [(ngModel)]="newPageSlug">
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" style="width: 100%;">Create Page</button>
-        </div>
-      </div>
-
-      <!-- Right Column: Services for Selected Page -->
-      <div class="dashboard-card" *ngIf="selectedPage()">
-        <h3>Services for {{ selectedPage()!.title }}</h3>
-        
-        <div *ngIf="canManage(selectedPage())" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
-          <mat-form-field appearance="outline" style="flex: 1; margin-bottom: -1.25em;">
-            <mat-label>Service Name</mat-label>
-            <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Production API">
-          </mat-form-field>
-          <mat-form-field appearance="outline" style="flex: 2; margin-bottom: -1.25em;">
-            <mat-label>URL</mat-label>
-            <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com">
-          </mat-form-field>
-          <button mat-raised-button color="primary" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl">Add Service</button>
-        </div>
-
-        <mat-list>
-          <mat-list-item *ngFor="let service of services()">
-            <span matListItemTitle>{{ service.name }}</span>
-            <span matListItemLine>{{ service.url }}</span>
-            <button *ngIf="canManage(selectedPage())" mat-icon-button color="warn" (click)="deleteService(service.id)" style="position: absolute; right: 0; top: 8px;">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </mat-list-item>
-          <div *ngIf="services().length === 0" style="padding: 1rem; color: var(--text-muted);">
-            No services monitored yet. <span *ngIf="canManage(selectedPage())">Add one above!</span>
+    <!-- Flexbox container for status cards -->
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; margin-top: 2rem;">
+      
+      <mat-card *ngFor="let page of statusPages()" style="flex: 1 1 300px; max-width: 400px; display: flex; flex-direction: column;">
+        <mat-card-header>
+          <div mat-card-avatar>
+            <mat-icon style="font-size: 40px; width: 40px; height: 40px; color: var(--primary);">monitor_heart</mat-icon>
           </div>
-        </mat-list>
+          <mat-card-title>{{ page.title }}</mat-card-title>
+          <mat-card-subtitle>/status/{{ page.slug }}</mat-card-subtitle>
+        </mat-card-header>
+        
+        <mat-card-content style="margin-top: 1rem; flex-grow: 1;">
+          <p style="color: var(--text-muted); min-height: 3em;">
+            {{ page.description || 'No description provided.' }}
+          </p>
+
+          <div style="background: var(--surface-hover); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 500;">Predicted SLA</span>
+              <span style="font-size: 1.25rem; font-weight: bold; color: var(--primary);">
+                {{ (modelService.latestStat() !== null ? modelService.latestStat() : 0) | number:'1.1-2' }}%
+              </span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0; margin-top: 0.25rem;">
+              Based on global ML model tracking
+            </p>
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions style="display: flex; justify-content: flex-end;">
+          <button mat-button color="primary">View Details</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <div *ngIf="statusPages().length === 0" style="width: 100%; text-align: center; padding: 3rem; color: var(--text-muted); background: var(--surface); border-radius: 8px;">
+        <mat-icon style="font-size: 48px; width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;">web_asset_off</mat-icon>
+        <h3>No Status Pages Found</h3>
+        <p>There are currently no public status pages available to monitor.</p>
       </div>
       
-      <div class="dashboard-card" *ngIf="!selectedPage()" style="display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-        Select or create a status page to manage its services.
-      </div>
     </div>
   </div>
 </div>
