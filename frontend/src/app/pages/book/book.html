@@ -39,6 +39,13 @@
           </div>
         </div>
       </div>
+
+      <div class="sidebar-footer">
+        <div class="system-health" [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}">
+          <span class="health-dot"></span>
+          {{ globalStatus() }}
+        </div>
+      </div>
     </aside>
 
     <!-- Main Content -->

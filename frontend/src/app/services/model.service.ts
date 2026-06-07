@@ -18,14 +18,22 @@ export class ModelService {
   private http = inject(HttpClient);
 
   public latestStat = signal<number | null>(null);
+  public latestStats = signal<Record<string, number | null>>({});
   public isTraining = signal<boolean>(false);
   public trainError = signal<string | null>(null);
 
-  fetchLatestStat(): void {
-    this.http.get<TrainingResponse>(API_ENDPOINTS.MODEL.LATEST).subscribe({
+  fetchLatestStat(statusPageId?: string): void {
+    const url = statusPageId 
+      ? `${API_ENDPOINTS.MODEL.LATEST}?status_page_id=${statusPageId}` 
+      : API_ENDPOINTS.MODEL.LATEST;
+
+    this.http.get<TrainingResponse>(url).subscribe({
       next: data => {
-        if (data.average_sla !== null && data.average_sla !== undefined) {
-          this.latestStat.set(data.average_sla);
+        const sla = (data.average_sla !== null && data.average_sla !== undefined) ? data.average_sla : null;
+        if (statusPageId) {
+          this.latestStats.update(stats => ({ ...stats, [statusPageId]: sla }));
+        } else if (sla !== null) {
+          this.latestStat.set(sla);
         }
       },
       error: err => console.error('Error fetching latest stat:', err)

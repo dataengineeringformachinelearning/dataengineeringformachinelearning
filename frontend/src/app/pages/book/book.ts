@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PageComponent } from '../../components/page/page';
 import { MatCardModule } from '@angular/material/card';
@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
 import pageMarkdown from '../../../assets/content/page.md';
 
 interface Chapter {
@@ -28,15 +29,84 @@ interface Chapter {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './book.scss',
 })
-export class Book {
+export class Book implements OnInit {
   public authService = inject(AuthService);
+  private monitorService = inject(MonitorService);
+  private cdr = inject(ChangeDetectorRef);
 
   chapters = signal<Chapter[]>([]);
   activePageIndex = signal<number>(0);
 
+  statusPages = signal<StatusPageData[]>([]);
+  incidentsMap = signal<Record<string, IncidentData[]>>({});
+  servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
+
+  globalStatus = computed(() => {
+    const map = this.incidentsMap();
+    for (const key of Object.keys(map)) {
+      const active = map[key].filter(inc => inc.status !== 'Resolved');
+      if (active.length > 0) {
+        return 'Degraded Performance';
+      }
+    }
+
+    const services = this.servicesMap();
+    for (const key of Object.keys(services)) {
+      const down = services[key].filter(s => s.status === 'Outage');
+      if (down.length > 0) {
+        return 'Degraded Performance';
+      }
+    }
+
+    return 'All Systems Normal';
+  });
+
   constructor() {
     this.parseMarkdown();
   }
+
+  ngOnInit() {
+    this.monitorService.getStatusPages().subscribe({
+      next: data => {
+        // Sort so 'platform-status' is always first
+        const sorted = [...data].sort((a, b) => {
+          if (a.slug === 'platform-status') return -1;
+          if (b.slug === 'platform-status') return 1;
+          return a.title.localeCompare(b.title);
+        });
+        this.statusPages.set(sorted);
+        this.fetchAllIncidents(sorted);
+        this.fetchAllServices(sorted);
+        this.cdr.markForCheck();
+      },
+      error: err => console.error('Error fetching pages:', err),
+    });
+  }
+
+  fetchAllIncidents(pages: StatusPageData[]) {
+    pages.forEach(page => {
+      this.monitorService.getIncidents(page.id).subscribe({
+        next: incidents => {
+          this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
+          this.cdr.markForCheck();
+        },
+        error: err => console.error(`Error fetching incidents for ${page.id}:`, err)
+      });
+    });
+  }
+
+  fetchAllServices(pages: StatusPageData[]) {
+    pages.forEach(page => {
+      this.monitorService.getServices(page.id).subscribe({
+        next: services => {
+          this.servicesMap.update(map => ({ ...map, [page.id]: services }));
+          this.cdr.markForCheck();
+        },
+        error: err => console.error(`Error fetching services for ${page.id}:`, err)
+      });
+    });
+  }
+
 
   parseMarkdown() {
     // Split content dynamically by '## Chapter ' headers

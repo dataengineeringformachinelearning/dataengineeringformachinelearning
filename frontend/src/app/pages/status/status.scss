@@ -162,6 +162,13 @@
     background-color: var(--color-success);
     box-shadow: 0 0 8px var(--color-success);
   }
+
+  &.degraded {
+    .health-dot {
+      background-color: var(--color-warning);
+      box-shadow: 0 0 8px var(--color-warning);
+    }
+  }
 }
 
 /* Main Content Styles */

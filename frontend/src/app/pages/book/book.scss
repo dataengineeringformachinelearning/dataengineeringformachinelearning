@@ -150,6 +150,36 @@
   }
 }
 
+.sidebar-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.system-health {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  
+  .health-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    box-shadow: 0 0 8px var(--color-success);
+  }
+
+  &.degraded {
+    .health-dot {
+      background-color: var(--color-warning);
+      box-shadow: 0 0 8px var(--color-warning);
+    }
+  }
+}
+
+
 .page-list {
   display: flex;
   flex-direction: column;

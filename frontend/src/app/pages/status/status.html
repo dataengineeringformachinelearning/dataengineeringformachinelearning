@@ -94,7 +94,7 @@
                     </div>
                     <div class="stat-value-container">
                       <span class="stat-value">
-                        {{ (modelService.latestStat() !== null ? modelService.latestStat() : 99.99) | number:'1.2-2' }}%
+                        {{ (modelService.latestStats()[page.id] !== undefined && modelService.latestStats()[page.id] !== null ? modelService.latestStats()[page.id] : 99.99) | number:'1.2-2' }}%
                       </span>
                     </div>
                   </div>

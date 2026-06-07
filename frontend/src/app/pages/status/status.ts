@@ -72,11 +72,12 @@ export class Status implements OnInit {
         this.statusPages.set(sorted);
         this.fetchAllIncidents(sorted);
         this.fetchAllServices(sorted);
+        sorted.forEach(page => {
+          this.modelService.fetchLatestStat(page.id);
+        });
       },
       error: err => console.error('Error fetching pages:', err),
     });
-
-    this.modelService.fetchLatestStat();
   }
 
   getPageStatus(pageId: string): string {
