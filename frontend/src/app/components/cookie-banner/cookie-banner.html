@@ -1,0 +1,111 @@
+<div *ngIf="consentService.showBanner()" class="cookie-banner-overlay" id="cookie-banner-container">
+  <div class="cookie-banner-card" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
+    <div class="cookie-banner-header">
+      <div class="title-group">
+        <mat-icon class="cookie-icon">cookie</mat-icon>
+        <h2 id="cookie-title" class="cookie-heading">Cookie Preferences</h2>
+      </div>
+      <button *ngIf="consentService.hasDecided()" class="close-btn" (click)="close()" aria-label="Close settings">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="cookie-banner-body">
+      <p id="cookie-desc" class="cookie-description">
+        We use cookies to improve your browsing experience, analyze site traffic, and deliver personalized system status telemetry in compliance with global data protection laws (GDPR, CCPA). Read our <a href="/privacy" id="cookie-privacy-link">Privacy Policy</a> to learn more.
+      </p>
+
+      <!-- Advanced Customization Settings Panel -->
+      <div *ngIf="showCustomize()" class="cookie-preferences-form" id="cookie-pref-form">
+        <div class="preference-item">
+          <div class="pref-info">
+            <span class="pref-name">Strictly Necessary</span>
+            <p class="pref-desc">Required for basic site functions like authentication, page navigation, and security. Cannot be disabled.</p>
+          </div>
+          <div class="pref-action">
+            <span class="pref-badge always-active">Required</span>
+          </div>
+        </div>
+
+        <div class="preference-item">
+          <div class="pref-info">
+            <span class="pref-name">Performance & Analytics</span>
+            <p class="pref-desc">Help us analyze platform usage, response speeds, and optimize core API performance.</p>
+          </div>
+          <div class="pref-action">
+            <button 
+              type="button" 
+              class="toggle-switch" 
+              [class.active]="analyticalConsent()" 
+              (click)="toggleAnalytical()"
+              id="cookie-toggle-analytical"
+              [attr.aria-checked]="analyticalConsent()"
+              role="switch">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="preference-item">
+          <div class="pref-info">
+            <span class="pref-name">Marketing & Customization</span>
+            <p class="pref-desc">Enable personalized telemetry dashboards, feature flag rollouts, and custom platform layout settings.</p>
+          </div>
+          <div class="pref-action">
+            <button 
+              type="button" 
+              class="toggle-switch" 
+              [class.active]="marketingConsent()" 
+              (click)="toggleMarketing()"
+              id="cookie-toggle-marketing"
+              [attr.aria-checked]="marketingConsent()"
+              role="switch">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cookie-banner-footer">
+      <div class="footer-buttons">
+        <button 
+          mat-button 
+          class="settings-btn" 
+          (click)="toggleCustomize()" 
+          id="cookie-customize-btn">
+          {{ showCustomize() ? 'Hide Options' : 'Cookie Settings' }}
+        </button>
+        
+        <div class="primary-actions">
+          <button 
+            *ngIf="!showCustomize()"
+            mat-button 
+            class="reject-btn" 
+            (click)="rejectAll()"
+            id="cookie-reject-btn">
+            Reject All
+          </button>
+          
+          <button 
+            *ngIf="showCustomize()"
+            mat-button 
+            class="save-btn" 
+            (click)="savePreferences()"
+            id="cookie-save-btn">
+            Save Choices
+          </button>
+
+          <button 
+            mat-raised-button 
+            color="primary" 
+            class="accept-btn" 
+            (click)="acceptAll()"
+            id="cookie-accept-btn">
+            Accept All
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

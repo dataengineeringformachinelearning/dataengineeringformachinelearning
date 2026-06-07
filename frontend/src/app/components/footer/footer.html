@@ -13,4 +13,18 @@
     </span>
   </div>
 
+  <div class="footer-compliance">
+    <span class="footer-line">
+      <a routerLink="/privacy" id="footer-privacy-link">Privacy Policy</a>
+    </span>
+    <span class="footer-line"> | </span>
+    <span class="footer-line">
+      <a routerLink="/privacy" fragment="gdpr" id="footer-gdpr-link">GDPR Compliance</a>
+    </span>
+    <span class="footer-line"> | </span>
+    <span class="footer-line">
+      <button class="cookie-settings-trigger" (click)="openCookieSettings($event)" id="footer-cookie-settings-btn">Cookie Settings</button>
+    </span>
+  </div>
 </footer>
+

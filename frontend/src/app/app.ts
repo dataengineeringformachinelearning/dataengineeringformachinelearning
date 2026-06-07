@@ -7,10 +7,11 @@ import { CommonModule } from '@angular/common';
 import { IssueReporter } from './components/issue-reporter/issue-reporter';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginDialog } from './components/login-dialog/login-dialog';
+import { CookieBanner } from './components/cookie-banner/cookie-banner';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Footer, CommonModule, IssueReporter, MatDialogModule],
+  imports: [RouterOutlet, Navbar, Footer, CommonModule, IssueReporter, MatDialogModule, CookieBanner],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',

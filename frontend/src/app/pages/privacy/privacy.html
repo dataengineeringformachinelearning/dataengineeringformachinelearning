@@ -1,0 +1,126 @@
+<div class="dashboard-container">
+  <article class="page-content" id="privacy-policy-document">
+    <header class="privacy-header">
+      <h1 id="privacy-main-heading">Privacy Policy & Data Compliance</h1>
+      <p class="last-updated">Last Updated: June 7, 2026</p>
+    </header>
+
+    <section class="privacy-section" id="sec-introduction">
+      <h2>1. Introduction</h2>
+      <p>
+        Data Engineering for Machine Learning ("we", "our", or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your personal information when you visit our website, read our platform documentation, or interact with our system status services.
+      </p>
+      <p>
+        We build and maintain our platform with privacy-by-design principles. We ensure that data collection is kept to a minimum and only processed in accordance with global regulations, including the General Data Protection Regulation (GDPR) and the California Consumer Privacy Act (CCPA).
+      </p>
+    </section>
+
+    <section class="privacy-section" id="sec-cookies">
+      <h2>2. Cookie Policy & Preferences</h2>
+      <p>
+        We use cookies and similar tracking technologies to analyze site traffic, remember your interface theme preferences, and monitor platform performance. Cookies are small data files stored on your device.
+      </p>
+      <div class="cookie-types-grid">
+        <div class="cookie-card">
+          <h3>Strictly Necessary</h3>
+          <p>Essential for basic security, user sessions, and core navigation. These cannot be disabled.</p>
+        </div>
+        <div class="cookie-card">
+          <h3>Performance & Analytics</h3>
+          <p>Track load times, network response, and system telemetry to help us diagnose issues and optimize API queries.</p>
+        </div>
+        <div class="cookie-card">
+          <h3>Marketing & Preferences</h3>
+          <p>Customize system status indicators, layout preferences, and remember theme selections.</p>
+        </div>
+      </div>
+      
+      <div class="cookie-action-box">
+        <p>You can adjust, enable, or revoke your cookie choices at any time.</p>
+        <button 
+          (click)="openCookieSettings($event)" 
+          class="mat-mdc-raised-button mat-primary" 
+          id="privacy-open-cookie-settings">
+          Manage Cookie Preferences
+        </button>
+      </div>
+    </section>
+
+    <section class="privacy-section" id="gdpr">
+      <h2>3. GDPR Compliance (EU User Rights)</h2>
+      <p>
+        If you are located in the European Union (EU) or European Economic Area (EEA), you are granted specific rights under the General Data Protection Regulation (GDPR). These include:
+      </p>
+      <ul class="gdpr-rights-list">
+        <li><strong>Right of Access:</strong> Request a copy of all personal data we hold about you.</li>
+        <li><strong>Right to Rectification:</strong> Request correction of any inaccurate or incomplete personal data.</li>
+        <li><strong>Right to Erasure ("Right to be Forgotten"):</strong> Request deletion of your personal data when no longer needed.</li>
+        <li><strong>Right to Restriction of Processing:</strong> Request that we limit how we process your information.</li>
+        <li><strong>Right to Data Portability:</strong> Request transmission of your data to another organization in a structured format.</li>
+      </ul>
+
+      <!-- Interactive GDPR Request Form -->
+      <div class="compliance-form-card" id="gdpr-request-form-card">
+        <h3>GDPR Data Request Center</h3>
+        <p class="form-instruction">Use this form to request an export or permanent deletion of any personal data collected during your sessions.</p>
+        
+        <form class="compliance-form" (submit)="$event.preventDefault()">
+          <div class="form-group">
+            <label for="gdpr-email">Your Email Address</label>
+            <input type="email" id="gdpr-email" placeholder="name@example.com" required class="form-input">
+          </div>
+          
+          <div class="form-group">
+            <label for="gdpr-type">Request Type</label>
+            <select id="gdpr-type" class="form-input">
+              <option value="export">Export My Data (Portability)</option>
+              <option value="delete">Delete My Data (Erasure)</option>
+              <option value="rectify">Rectify/Correct Incorrect Data</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="gdpr-details">Additional Details (Optional)</label>
+            <textarea id="gdpr-details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
+          </div>
+
+          <button type="submit" class="mat-mdc-raised-button mat-accent" id="privacy-submit-gdpr-request">
+            Submit Compliance Request
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <section class="privacy-section" id="sec-ccpa">
+      <h2>4. CCPA/CPRA Compliance (California Rights)</h2>
+      <p>
+        Under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act (CPRA), California residents have specific rights regarding their personal information:
+      </p>
+      <ul>
+        <li><strong>Right to Know:</strong> Discover what personal information we collect, source, and share.</li>
+        <li><strong>Right to Opt-Out:</strong> Direct us to stop selling or sharing your personal information (Note: We do not sell or share any user personal information with third parties).</li>
+        <li><strong>Right to Limit:</strong> Restrict the use of sensitive personal information.</li>
+        <li><strong>Right to Non-Discrimination:</strong> Enjoy equal service and pricing even if you exercise your privacy rights.</li>
+      </ul>
+    </section>
+
+    <section class="privacy-section" id="sec-security">
+      <h2>5. Security & Data Retention</h2>
+      <p>
+        We utilize industry-standard security protocols, including HTTPS/TLS encryption for all api communication, secure cookie parameters, and role-based database constraints. We retain your telemetry logs and system statuses only as long as necessary to fulfill the services outlined on this platform.
+      </p>
+    </section>
+
+    <section class="privacy-section" id="sec-contact">
+      <h2>6. Contact & Data Protection Officer</h2>
+      <p>
+        If you have any questions regarding this Privacy Policy, your cookie choices, or wish to appeal a compliance request, please contact our Data Protection Officer:
+      </p>
+      <div class="contact-card">
+        <p><strong>Email:</strong>&nbsp;<a href="mailto:flow@dataengineeringformachinelearning.com">flow&#64;dataengineeringformachinelearning.com</a></p>
+        <p><strong>Address:</strong> No Address</p>
+        <p><strong>Data Compliance Officer:</strong> Joe Alongi (joealongi.dev)</p>
+      </div>
+    </section>
+  </article>
+</div>
