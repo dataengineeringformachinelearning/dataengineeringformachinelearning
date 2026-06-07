@@ -2,8 +2,6 @@ const CACHE_NAME = 'deml-cache-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/styles.css',
-  '/main.js',
   '/site.webmanifest',
   '/favicon.ico',
   '/favicon.svg',

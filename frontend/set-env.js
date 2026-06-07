@@ -99,3 +99,11 @@ console.log(`Angular environment.ts dynamically generated at ${targetPath}`);
 fs.writeFileSync(targetPathDev, envConfigFileDev, 'utf8');
 console.log(`Angular environment.development.ts dynamically generated at ${targetPathDev}`);
 
+// Ensure src/assets/firebase-config.js placeholder exists to prevent 404 errors
+const firebaseConfigPath = path.join(__dirname, 'src', 'assets', 'firebase-config.js');
+if (!fs.existsSync(firebaseConfigPath)) {
+  fs.writeFileSync(firebaseConfigPath, '// Local Firebase configuration override placeholder\n', 'utf8');
+  console.log(`Placeholder firebase-config.js created at ${firebaseConfigPath}`);
+}
+
+
