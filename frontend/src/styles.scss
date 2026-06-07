@@ -154,7 +154,7 @@ li {
   margin-bottom: 0.5rem;
 }
 
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button) {
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item) {
   color: var(--color-primary-container);
   font-weight: 500;
   text-decoration: none;
@@ -162,8 +162,8 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button) {
   transition: border-bottom-color 0.2s ease, color 0.2s ease;
 }
 
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):hover,
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):focus-visible {
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):hover,
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-visible {
   color: #B0C9BD; /* Lighter shade for contrast shift */
   text-decoration: none;
   border-bottom-color: #B0C9BD; /* WCAG requirement: non-color hover indicator */
@@ -236,46 +236,64 @@ app-page {
 
 // ====================== MATERIAL BUTTONS (ACCESSIBLE) ======================
 .mdc-button, .mat-mdc-button, .mat-mdc-raised-button {
-  border-radius: 8px !important; /* Modern accessible radius */
+  border-radius: 100px !important; /* Pill shape like homepage */
   text-transform: none !important;
   font-weight: 600 !important;
   letter-spacing: 0.25px !important;
   padding: 0 24px !important;
-  height: 44px !important; /* 44px minimum touch target for WCAG */
+  height: 48px !important; 
 }
 
 .mdc-button--raised, .mat-mdc-raised-button {
   box-shadow: var(--shadow-sm) !important;
-  transition: box-shadow 0.2s ease, transform 0.1s ease, background-color 0.2s ease !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease, color 0.2s ease !important;
 }
 
 .mdc-button--raised:hover, .mat-mdc-raised-button:hover {
   box-shadow: var(--shadow-md) !important;
-  transform: translateY(-1px);
+  transform: translateY(-2px) !important;
 }
 
 /* Primary Raised Buttons */
 .mat-mdc-raised-button.mat-primary, 
 .mdc-button--raised.mat-primary {
-  background-color: var(--color-primary-container) !important;
-  color: var(--color-on-primary-container) !important; 
+  background-color: var(--color-primary) !important;
+  color: #ffffff !important; 
+  box-shadow: 0 4px 14px 0 rgba(24, 58, 55, 0.4) !important;
 }
 
 .mat-mdc-raised-button.mat-primary:hover, 
 .mdc-button--raised.mat-primary:hover {
-  background-color: #8AA599 !important; /* Accessible hover shift */
+  box-shadow: 0 6px 20px rgba(24, 58, 55, 0.6) !important;
+  background-color: #ffffff !important;
+  color: var(--color-primary) !important;
+}
+
+/* Accent Raised Buttons */
+.mat-mdc-raised-button.mat-accent, 
+.mdc-button--raised.mat-accent {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+.mat-mdc-raised-button.mat-accent:hover, 
+.mdc-button--raised.mat-accent:hover {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Warn/Error Raised Buttons */
 .mat-mdc-raised-button.mat-warn, 
 .mdc-button--raised.mat-warn {
-  background-color: #8c2a2a !important; /* Accessible dark red for contrast */
+  background-color: var(--color-error) !important;
   color: #ffffff !important;
 }
 
 .mat-mdc-raised-button.mat-warn:hover, 
 .mdc-button--raised.mat-warn:hover {
-  background-color: #702121 !important;
+  background-color: #d32f2f !important;
 }
 
 /* Standard/Navbar Text Buttons */

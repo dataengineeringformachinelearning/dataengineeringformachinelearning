@@ -12,7 +12,7 @@
         <mat-icon>dashboard</mat-icon>
         Status
       </a>
-      <a class="nav-item active" routerLink="/manage">
+      <a class="nav-item active" routerLink="/manage" *ngIf="authService.isAuthenticated()">
         <mat-icon>settings</mat-icon>
         Manage
       </a>
@@ -31,6 +31,10 @@
         <div *ngIf="statusPages().length === 0" class="empty-pages">
           No pages yet.
         </div>
+        <button mat-button color="primary" (click)="selectPage(null)" style="margin-top: 1rem; width: 100%; border-radius: 8px !important; justify-content: flex-start; height: 40px !important;">
+          <mat-icon style="margin-right: 8px;">add</mat-icon>
+          New Page
+        </button>
       </div>
     </div>
   </aside>
@@ -47,17 +51,33 @@
     <div class="dashboard-content-area">
       <div class="content-wrapper">
         
-        <!-- Main Two-Column Layout within the content -->
-        <div class="manage-grid">
+        <!-- Main Single-Column Layout within the content -->
+        <div class="manage-stack">
           
-          <!-- Left Column: Current Page Settings -->
-          <div class="manage-column main-col">
-            <mat-card *ngIf="selectedPage()" class="content-card">
-              <div class="card-header">
-                <h2>{{ selectedPage()!.title }}</h2>
+          <mat-card class="content-card">
+            <div class="card-header">
+              <h2 *ngIf="selectedPage()">{{ selectedPage()!.title }}</h2>
+              <h2 *ngIf="!selectedPage()">Create Status Page</h2>
+            </div>
+            
+            <div class="card-body">
+
+              <!-- New Page Form -->
+              <div *ngIf="!selectedPage()" class="form-col">
+                <p class="embed-desc">Create a new status page to start monitoring your services.</p>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Title</mat-label>
+                  <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status">
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Slug</mat-label>
+                  <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
+                </mat-form-field>
+                <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug">Create Page</button>
               </div>
               
-              <div class="card-body">
+              <!-- Existing Page View -->
+              <div *ngIf="selectedPage()">
                 <h3>Monitored Services</h3>
                 <div class="form-row panel">
                   <mat-form-field appearance="outline" class="flex-1">
@@ -68,7 +88,7 @@
                     <mat-label>Health Check URL</mat-label>
                     <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
                   </mat-form-field>
-                  <button mat-raised-button color="accent" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl" class="action-btn">Add</button>
+                  <button mat-raised-button color="accent" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl">Add</button>
                 </div>
 
                 <div class="data-list panel">
@@ -103,7 +123,7 @@
                       <option value="Monitoring">Monitoring</option>
                       <option value="Resolved">Resolved</option>
                     </select>
-                    <button mat-raised-button color="warn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage" class="action-btn-warn">Post Incident</button>
+                    <button mat-raised-button color="warn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage">Post Incident</button>
                   </div>
                 </div>
 
@@ -128,36 +148,8 @@
 &lt;script src="https://dataengineeringformachinelearning.com/assets/widget.js" data-page-id="{{ selectedPage()!.id }}"&gt;&lt;/script&gt;
                 </div>
               </div>
-            </mat-card>
-
-            <div *ngIf="!selectedPage()" class="empty-content-card">
-              <mat-icon class="empty-icon">settings_suggest</mat-icon>
-              <h3>Select a Status Page</h3>
-              <p>Choose a page from the sidebar to manage settings.</p>
             </div>
-          </div>
-
-          <!-- Right Column: Quick Actions like Create Page -->
-          <div class="manage-column side-col">
-            <mat-card class="action-card">
-              <div class="card-header">
-                <h2>Create New Page</h2>
-              </div>
-              <div class="card-body">
-                <div class="form-col">
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Title</mat-label>
-                    <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status">
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Slug</mat-label>
-                    <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
-                  </mat-form-field>
-                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" class="primary-action-btn">Create Page</button>
-                </div>
-              </div>
-            </mat-card>
-          </div>
+          </mat-card>
 
         </div>
 
