@@ -92,8 +92,8 @@
 }
 
 .auth-btn {
-  background: var(--color-primary) !important;
-  color: var(--color-on-primary) !important;
+  background: var(--color-dark-grey-btn-bg) !important;
+  color: var(--color-dark-grey-btn-text) !important;
   font-weight: 600 !important;
   border-radius: 20px !important;
   padding: 0 20px !important;
@@ -107,7 +107,7 @@
   
   &:hover {
     transform: translateY(-1px);
-    background-color: var(--color-primary) !important;
+    background-color: var(--color-dark-grey-btn-bg) !important;
     opacity: 0.9;
     box-shadow: var(--shadow-md) !important;
   }

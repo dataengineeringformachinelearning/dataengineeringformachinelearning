@@ -350,8 +350,8 @@
 }
 
 .add-service-btn {
-  background: var(--manage-accent) !important;
-  color: var(--color-on-primary-container) !important;
+  background: var(--color-dark-grey-btn-bg) !important;
+  color: var(--color-dark-grey-btn-text) !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 48px !important;
@@ -360,12 +360,6 @@
 
   &:hover {
     opacity: 0.9;
-  }
-}
-
-:host-context(html[data-theme='light']) {
-  .add-service-btn {
-    color: var(--color-on-primary) !important;
   }
 }
 
