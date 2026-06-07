@@ -118,8 +118,10 @@ export class AuthService {
         } else if (e.code === 'auth/wrong-password') {
           errorMsg = 'Incorrect password.';
         } else {
-          errorMsg = e.message || errorMsg;
+          errorMsg = 'An error occurred during sign in. Please try again.';
         }
+      } else {
+        errorMsg = 'An error occurred during sign in. Please try again.';
       }
       return { success: false, error: errorMsg };
     }
@@ -152,8 +154,10 @@ export class AuthService {
         } else if (e.code === 'auth/invalid-email') {
           errorMsg = 'Invalid email address format.';
         } else {
-          errorMsg = e.message || errorMsg;
+          errorMsg = 'An error occurred during registration. Please try again.';
         }
+      } else {
+        errorMsg = 'An error occurred during registration. Please try again.';
       }
       return { success: false, error: errorMsg };
     }
