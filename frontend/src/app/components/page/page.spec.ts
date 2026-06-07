@@ -1,17 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideMarkdown } from 'ngx-markdown';
+import { PageComponent } from './page';
 
-import { Page } from './page';
-
-describe('Page', () => {
-  let component: Page;
-  let fixture: ComponentFixture<Page>;
+describe('PageComponent', () => {
+  let component: PageComponent;
+  let fixture: ComponentFixture<PageComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Page],
+      imports: [PageComponent],
+      providers: [
+        provideMarkdown()
+      ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(Page);
+    fixture = TestBed.createComponent(PageComponent);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

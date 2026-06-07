@@ -447,23 +447,37 @@ async def post_telemetry(request, payload: dict):
 
 Finally, a standalone background worker can subscribe to this `app-events` topic to process the messages in batches. By pulling records and parsing them directly into a Polars DataFrame, you can achieve high-performance processing before committing the data to your Postgres database. This pipeline ensures that heavy ingestion loads never impact your user-facing API performance.
 
-## Chapter 9: Encrypting the data
+## Chapter 9: Applying a use-case
 
 ### Chapter 9.1: Introduction
 
-#### Chapter 9.1.1: Enabling end to end encryption
+#### Chapter 9.1.1: Enabling the data pipeline for incident management
 
-## Chapter 10: Tuning the model
-
-### Chapter 10.1: Introduction
-
-#### Chapter 10.1.1: Hyperparameter Tuning
-
-## Chapter 10: Collecting unstructured data
+## Chapter 10: Encrypting the data
 
 ### Chapter 10.1: Introduction
 
-#### Chapter 10.1.1: Implementing LLMs for data enrichment and user queries
+#### Chapter 10.1.1: Enabling end to end encryption
+
+## Chapter 11: Tuning the model
+
+### Chapter 11.1: Introduction
+
+#### Chapter 11.1.1: Hyperparameter Tuning
+
+## Chapter 12: Collecting unstructured data
+
+### Chapter 12.1: Introduction
+
+#### Chapter 12.1.1: Implementing LLMs for data enrichment and user queries
+
+## Deployment Configuration
+
+## Chapter 13: Enhancing data with threat intelligence
+
+### Chapter 13.1: Introduction
+
+#### Chapter 13.1.1: Connecting to threat intelligence sources
 
 ## Deployment Configuration
 

@@ -15,11 +15,15 @@ class TelemetryPayload(Schema):
     ip_address: str
     is_active: bool
 
+_producer = None
+
 async def get_producer():
-    brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
-    producer = AIOKafkaProducer(bootstrap_servers=brokers)
-    await producer.start()
-    return producer
+    global _producer
+    if _producer is None:
+        brokers = os.environ.get('REDPANDA_BROKERS', 'localhost:19092')
+        _producer = AIOKafkaProducer(bootstrap_servers=brokers)
+        await _producer.start()
+    return _producer
 
 @router.post("/endpoints")
 async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
@@ -28,10 +32,8 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
     data['response_time'] = payload.response_time_ms / 1000.0
     
     producer = await get_producer()
-    try:
-        value = json.dumps(data).encode('utf-8')
-        await producer.send_and_wait("app-events", value)
-    finally:
-        await producer.stop()
+    value = json.dumps(data).encode('utf-8')
+    await producer.send_and_wait("app-events", value)
         
     return HttpResponse(status=202)
+

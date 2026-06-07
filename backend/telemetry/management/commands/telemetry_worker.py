@@ -99,10 +99,11 @@ class Command(BaseCommand):
         except StatusPage.DoesNotExist:
             default_user = User.objects.first()
             if not default_user:
+                from django.utils.crypto import get_random_string
                 default_user = User.objects.create_user(
                     username="system",
                     email="system@dataengineeringformachinelearning.com",
-                    password=User.objects.make_random_password()
+                    password=get_random_string(32)
                 )
             page = StatusPage.objects.create(
                 user=default_user,

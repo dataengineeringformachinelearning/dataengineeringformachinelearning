@@ -4,6 +4,7 @@ from monitor.models import Endpoints, StatusPage, MonitoredService
 from django.shortcuts import get_object_or_404
 from ninja.errors import HttpError
 import datetime
+import os
 
 router = Router()
 
@@ -74,8 +75,12 @@ def list_status_pages(request):
                         }
                     )
                     if created:
-                        default_user.set_password(User.objects.make_random_password())
+                        from django.utils.crypto import get_random_string
+                        default_user.set_password(get_random_string(32))
                         default_user.save()
+                
+                scheme = "https" if request.is_secure() else "http"
+                backend_url = f"{scheme}://{request.get_host()}"
                 
                 # Double check inside transaction to prevent race conditions
                 page, created = StatusPage.objects.get_or_create(
@@ -92,12 +97,17 @@ def list_status_pages(request):
                     MonitoredService.objects.get_or_create(
                         status_page=page,
                         name="Django Web Server",
-                        defaults={"url": "http://localhost:8000/api/v1/system-status/health"}
+                        defaults={"url": f"{backend_url}/api/v1/system-status/health"}
                     )
+                    
+                    brokers = os.getenv('REDPANDA_BROKERS', 'localhost:19092')
+                    broker_host = brokers.split(',')[0]
+                    broker_url = broker_host if (broker_host.startswith('http://') or broker_host.startswith('https://')) else f"http://{broker_host}"
+                    
                     MonitoredService.objects.get_or_create(
                         status_page=page,
                         name="Redpanda Broker",
-                        defaults={"url": "http://localhost:9092"}
+                        defaults={"url": broker_url}
                     )
         except IntegrityError:
             # If another thread/worker created it concurrently, we can safely ignore and proceed
@@ -339,6 +349,7 @@ def create_incident(request, page_id: str, payload: IncidentIn):
     # Send email alert to the owner via Resend
     if page.user and page.user.email:
         from config.email import send_resend_email
+        from django.conf import settings
         subject = f"[Status Alert] {page.title}: {payload.title} ({payload.status})"
         html_content = f"""
         <p>A new incident update has been posted on status page <strong>{page.title}</strong>.</p>
@@ -346,7 +357,7 @@ def create_incident(request, page_id: str, payload: IncidentIn):
         <p><strong>Status:</strong> {payload.status}</p>
         <p><strong>Details:</strong> {payload.message}</p>
         <hr>
-        <p>Manage your status page details at <a href="http://localhost:4200/manage">Management Console</a>.</p>
+        <p>Manage your status page details at <a href="{settings.FRONTEND_URL}/manage">Management Console</a>.</p>
         """
         send_resend_email(page.user.email, subject, html_content)
 
