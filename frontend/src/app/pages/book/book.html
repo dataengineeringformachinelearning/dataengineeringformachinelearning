@@ -7,16 +7,20 @@
     <!-- Sidebar / Table of Contents -->
     <aside class="dashboard-sidebar">
       <div class="sidebar-brand">
-        <mat-icon class="brand-icon">menu_book</mat-icon>
-        <h2>Book Reader</h2>
+        <mat-icon class="brand-icon">analytics</mat-icon>
+        <h2>Platform</h2>
       </div>
 
       <nav class="sidebar-nav">
-        <a class="nav-item" routerLink="/status">
+        <a class="nav-item" routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+          <mat-icon>description</mat-icon>
+          Documentation
+        </a>
+        <a class="nav-item" routerLink="/status" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
           <mat-icon>dashboard</mat-icon>
           Status
         </a>
-        <a class="nav-item" routerLink="/manage" *ngIf="authService.isAuthenticated()">
+        <a class="nav-item" routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" *ngIf="authService.isAuthenticated()">
           <mat-icon>settings</mat-icon>
           Manage
         </a>
@@ -41,9 +45,9 @@
     <main class="dashboard-main">
       <header class="dashboard-topbar">
         <div class="topbar-left">
-          <h1 class="page-title">Data Engineering for Machine Learning</h1>
+          <h1 class="page-title">Documentation</h1>
           <p class="page-description">
-            Interactive steps, working notes, and AI annotation.
+            Interactive guide, working notes, and reference material.
           </p>
         </div>
       </header>
@@ -51,9 +55,12 @@
       <div class="dashboard-content-area">
         <div class="content-wrapper">
           <!-- Reading Progress Bar -->
+          <div class="progress-bar-header">
+            <span class="progress-label">Reading Progress</span>
+            <span class="progress-percentage">{{ progress() }}%</span>
+          </div>
           <div class="progress-bar-container">
             <div class="progress-bar-fill" [style.width.%]="progress()"></div>
-            <div class="progress-bar-text">Progress: {{ progress() }}%</div>
           </div>
 
           <!-- Page Card -->
