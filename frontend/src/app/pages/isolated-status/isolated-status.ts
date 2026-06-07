@@ -129,4 +129,8 @@ export class IsolatedStatus implements OnInit {
     if (status === 'Operational') return 'operational';
     return status.toLowerCase();
   }
+
+  retryLoad() {
+    this.ngOnInit();
+  }
 }
