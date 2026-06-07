@@ -20,6 +20,5 @@ sitemaps = {
 urlpatterns = [
     path('', views.home, name='home'),
     path('api/v1/', api.urls), # Using /api/v1/ for the ninja router
-    path('admin/', admin.site.urls),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
 ]

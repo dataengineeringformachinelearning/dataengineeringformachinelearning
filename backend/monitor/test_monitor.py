@@ -10,9 +10,26 @@ User = get_user_model()
 def test_user(db):
     return User.objects.create_user(username="testuser", password="password123", email="test@example.com")
 
+from unittest.mock import patch
+
 @pytest.fixture
-def authenticated_client(client, test_user):
-    client.login(username="testuser", password="password123")
+def mock_verify_token():
+    with patch('firebase_admin.auth.verify_id_token') as mock:
+        mock.return_value = {
+            'uid': 'testuser',
+            'email': 'test@example.com',
+            'name': 'testuser'
+        }
+        yield mock
+
+@pytest.fixture
+def authenticated_client(client, test_user, mock_verify_token):
+    # Monkeypatch client.request to inject Bearer token
+    original_request = client.request
+    def new_request(*args, **kwargs):
+        kwargs['HTTP_AUTHORIZATION'] = 'Bearer valid-token'
+        return original_request(*args, **kwargs)
+    client.request = new_request
     return client
 
 @pytest.mark.django_db
@@ -174,3 +191,45 @@ def test_create_and_list_incidents(client, authenticated_client, test_user):
     list_response = client.get(f"/api/v1/system-status/status_pages/{page.id}/incidents")
     assert list_response.status_code == 200
     assert len(list_response.json()) == 1
+
+@pytest.mark.django_db
+def test_db_cleanup_command():
+    from django.core.management import call_command
+    from django.utils import timezone
+    from datetime import timedelta
+    from monitor.models import Endpoints, BugReport
+
+    now = timezone.now()
+    old_date = now - timedelta(days=95)
+    new_date = now - timedelta(days=10)
+
+    # Create telemetry records
+    ep_old = Endpoints.objects.create(url="http://old.com", status_code=500, response_time=timedelta(seconds=1))
+    Endpoints.objects.filter(id=ep_old.id).update(last_tested=old_date)
+
+    ep_new = Endpoints.objects.create(url="http://new.com", status_code=200, response_time=timedelta(seconds=1))
+    Endpoints.objects.filter(id=ep_new.id).update(last_tested=new_date)
+
+    # Create bug reports
+    bug_old = BugReport.objects.create(user_description="Old bug report")
+    BugReport.objects.filter(id=bug_old.id).update(created_at=old_date)
+
+    bug_new = BugReport.objects.create(user_description="New bug report")
+    BugReport.objects.filter(id=bug_new.id).update(created_at=new_date)
+
+    # Verify initial existence
+    assert Endpoints.objects.filter(id=ep_old.id).exists()
+    assert Endpoints.objects.filter(id=ep_new.id).exists()
+    assert BugReport.objects.filter(id=bug_old.id).exists()
+    assert BugReport.objects.filter(id=bug_new.id).exists()
+
+    # Call the cleanup command
+    call_command('db_cleanup')
+
+    # Verify only the recent records remain
+    assert Endpoints.objects.filter(id=ep_new.id).exists()
+    assert not Endpoints.objects.filter(id=ep_old.id).exists()
+
+    assert BugReport.objects.filter(id=bug_new.id).exists()
+    assert not BugReport.objects.filter(id=bug_old.id).exists()
+

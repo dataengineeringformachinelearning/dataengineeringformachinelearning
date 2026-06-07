@@ -1,5 +1,5 @@
 import logging
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.utils.deprecation import MiddlewareMixin
 from firebase_admin import auth
 
@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 class FirebaseAuthenticationMiddleware(MiddlewareMixin):
     def process_request(self, request):
+        request.user = AnonymousUser()
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         if not auth_header:
             return None
