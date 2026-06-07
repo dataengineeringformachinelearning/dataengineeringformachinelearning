@@ -478,21 +478,21 @@
   }
 }
 
-/* Red/Orange Post Incident Button (Theme-compliant Error button) */
+/* Yellow Accent Post Incident Button (Theme-compliant Warning button) */
 .post-incident-btn {
-  background-color: var(--color-error) !important;
-  color: #ffffff !important;
+  background-color: var(--color-warning) !important;
+  color: #0f1814 !important; /* High contrast dark forest green on yellow background */
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 48px !important;
   padding: 0 2rem !important;
   border: none !important;
-  box-shadow: 0 4px 10px rgba(211, 47, 47, 0.15) !important;
+  box-shadow: 0 4px 10px rgba(255, 193, 7, 0.15) !important;
   transition: all 0.2s ease !important;
 
   &:hover:not([disabled]) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(211, 47, 47, 0.3) !important;
+    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3) !important;
     opacity: 0.9;
   }
 
