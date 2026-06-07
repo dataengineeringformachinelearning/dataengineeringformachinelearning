@@ -90,6 +90,53 @@ class Command(BaseCommand):
 
     @sync_to_async
     def save_to_db(self, df: pl.DataFrame):
+        # Ensure platform-status page exists
+        from monitor.models import StatusPage, MonitoredService
+        from django.contrib.auth.models import User
+        
+        try:
+            page = StatusPage.objects.get(slug="platform-status")
+        except StatusPage.DoesNotExist:
+            default_user = User.objects.first()
+            if not default_user:
+                default_user = User.objects.create_user(
+                    username="system",
+                    email="system@dataengineeringformachinelearning.com",
+                    password=User.objects.make_random_password()
+                )
+            page = StatusPage.objects.create(
+                user=default_user,
+                title="Platform Status",
+                slug="platform-status",
+                description="Monitoring system health and telemetry pipelines for the Data Engineering Platform."
+            )
+
+        # Collect unique urls from df and ensure they are added
+        urls = list(df['url'].unique())
+        existing_urls = set(MonitoredService.objects.filter(status_page=page, url__in=urls).values_list('url', flat=True))
+
+        def clean_service_name(url_str):
+            if "system-status/health" in url_str:
+                return "Django Web Server"
+            if "9092" in url_str:
+                return "Redpanda Broker"
+            from urllib.parse import urlparse
+            parsed = urlparse(url_str)
+            path = parsed.path.strip('/')
+            host = parsed.netloc
+            if not path:
+                return host
+            parts = [p.capitalize() for p in path.split('/') if p]
+            return f"{host} - {' '.join(parts)}"
+
+        for u in urls:
+            if u not in existing_urls:
+                MonitoredService.objects.create(
+                    status_page=page,
+                    name=clean_service_name(u),
+                    url=u
+                )
+
         objects_to_create = []
         for row in df.iter_rows(named=True):
             duration = timedelta(seconds=row['response_time'])

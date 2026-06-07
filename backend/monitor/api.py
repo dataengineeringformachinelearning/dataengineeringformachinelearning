@@ -37,6 +37,10 @@ class StatusPageIn(Schema):
     slug: str
     description: Optional[str] = ""
 
+class UptimeDaySchema(Schema):
+    status: str
+    uptime: float
+
 class StatusPageOut(Schema):
     id: str
     title: str
@@ -44,6 +48,9 @@ class StatusPageOut(Schema):
     description: str
     created_at: datetime.datetime
     user_id: Optional[int] = None
+    cumulative_sla: Optional[float] = None
+    overall_uptime: Optional[float] = None
+    uptime_history: Optional[List[UptimeDaySchema]] = None
 
 @router.get("/health")
 def api_health(request):
@@ -85,13 +92,76 @@ def list_status_pages(request):
     pages = StatusPage.objects.all()
     out = []
     for p in pages:
+        # Calculate cumulative SLA
+        services = p.services.all()
+        urls = [s.url for s in services]
+        
+        cumulative_sla = 100.0
+        overall_uptime = 100.0
+        uptime_history = []
+
+        if urls:
+            total_count = Endpoints.objects.filter(url__in=urls).count()
+            up_count = Endpoints.objects.filter(url__in=urls, is_active=True, status_code__lt=400).count()
+            cumulative_sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
+            
+            # Compute 90-day history
+            from django.utils import timezone
+            import datetime as dt
+            from collections import defaultdict
+            
+            cutoff = timezone.now() - dt.timedelta(days=90)
+            logs = Endpoints.objects.filter(url__in=urls, last_tested__gte=cutoff).order_by('last_tested')
+            
+            today = timezone.now().date()
+            days_list = [today - dt.timedelta(days=i) for i in range(90)]
+            days_list.reverse() # past to present
+            
+            daily_logs = defaultdict(list)
+            for log in logs:
+                daily_logs[log.last_tested.date()].append(log)
+                
+            history_list = []
+            total_history_up = 0
+            total_history_count = 0
+            
+            for d in days_list:
+                day_logs = daily_logs[d]
+                if not day_logs:
+                    history_list.append(UptimeDaySchema(status="no_data", uptime=100.0))
+                else:
+                    tot = len(day_logs)
+                    up = sum(1 for log in day_logs if log.is_active and log.status_code < 400)
+                    ratio = (up / tot) if tot > 0 else 1.0
+                    uptime_pct = round(ratio * 100.0, 2)
+                    
+                    total_history_up += up
+                    total_history_count += tot
+                    
+                    if ratio == 1.0:
+                        status = "operational"
+                    elif ratio >= 0.95:
+                        status = "partial_outage"
+                    else:
+                        status = "major_outage"
+                    history_list.append(UptimeDaySchema(status=status, uptime=uptime_pct))
+            
+            overall_uptime = round((total_history_up / total_history_count) * 100.0, 2) if total_history_count > 0 else 100.0
+            uptime_history = history_list
+        else:
+            for _ in range(90):
+                uptime_history.append(UptimeDaySchema(status="no_data", uptime=100.0))
+
         out.append(StatusPageOut(
             id=str(p.id),
             title=p.title,
             slug=p.slug,
             description=p.description,
             created_at=p.created_at,
-            user_id=p.user_id
+            user_id=p.user_id,
+            cumulative_sla=cumulative_sla,
+            overall_uptime=overall_uptime,
+            uptime_history=uptime_history
         ))
     return out
 
@@ -114,7 +184,10 @@ def create_status_page(request, payload: StatusPageIn):
         slug=page.slug,
         description=page.description,
         created_at=page.created_at,
-        user_id=page.user_id
+        user_id=page.user_id,
+        cumulative_sla=100.0,
+        overall_uptime=100.0,
+        uptime_history=[UptimeDaySchema(status="no_data", uptime=100.0) for _ in range(90)]
     )
 
 @router.delete("/status_pages/{page_id}")
@@ -122,6 +195,8 @@ def delete_status_page(request, page_id: str):
     if not request.user.is_authenticated:
         raise HttpError(401, "Not authenticated")
     page = get_object_or_404(StatusPage, id=page_id, user=request.user)
+    if page.slug == "platform-status":
+        raise HttpError(403, "Cannot delete system platform-status page")
     page.delete()
     return {"success": True}
 
@@ -136,6 +211,8 @@ class MonitoredServiceOut(Schema):
     url: str
     status_page_id: str
     created_at: datetime.datetime
+    status: Optional[str] = "Operational"
+    sla: Optional[float] = 100.0
 
 @router.get("/status_pages/{page_id}/services", response=List[MonitoredServiceOut])
 def list_services(request, page_id: str):
@@ -143,12 +220,26 @@ def list_services(request, page_id: str):
     services = page.services.all()
     out = []
     for s in services:
+        # Get latest log
+        latest_log = Endpoints.objects.filter(url=s.url).order_by('-last_tested').first()
+        status = "Operational"
+        if latest_log:
+            if not latest_log.is_active or latest_log.status_code >= 400:
+                status = "Outage"
+        
+        # Calculate SLA
+        total_count = Endpoints.objects.filter(url=s.url).count()
+        up_count = Endpoints.objects.filter(url=s.url, is_active=True, status_code__lt=400).count()
+        sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
+
         out.append(MonitoredServiceOut(
             id=str(s.id),
             name=s.name,
             url=s.url,
             status_page_id=str(s.status_page_id),
-            created_at=s.created_at
+            created_at=s.created_at,
+            status=status,
+            sla=sla
         ))
     return out
 
@@ -157,6 +248,8 @@ def add_service(request, page_id: str, payload: MonitoredServiceIn):
     if not request.user.is_authenticated:
         raise HttpError(401, "Not authenticated")
     page = get_object_or_404(StatusPage, id=page_id, user=request.user)
+    if page.slug == "platform-status":
+        raise HttpError(403, "Cannot modify system platform-status page")
     service = MonitoredService.objects.create(
         status_page=page,
         name=payload.name,
@@ -167,7 +260,9 @@ def add_service(request, page_id: str, payload: MonitoredServiceIn):
         name=service.name,
         url=service.url,
         status_page_id=str(service.status_page_id),
-        created_at=service.created_at
+        created_at=service.created_at,
+        status="Operational",
+        sla=100.0
     )
 
 @router.delete("/services/{service_id}")
@@ -175,6 +270,8 @@ def delete_service(request, service_id: str):
     if not request.user.is_authenticated:
         raise HttpError(401, "Not authenticated")
     service = get_object_or_404(MonitoredService, id=service_id, status_page__user=request.user)
+    if service.status_page.slug == "platform-status":
+        raise HttpError(403, "Cannot modify system platform-status page")
     service.delete()
     return {"success": True}
 
@@ -216,6 +313,8 @@ def create_incident(request, page_id: str, payload: IncidentIn):
     if not request.user.is_authenticated:
         raise HttpError(401, "Not authenticated")
     page = get_object_or_404(StatusPage, id=page_id, user=request.user)
+    if page.slug == "platform-status":
+        raise HttpError(403, "Cannot modify system platform-status page")
     incident = Incident.objects.create(
         status_page=page,
         title=payload.title,
@@ -253,5 +352,7 @@ def delete_incident(request, incident_id: str):
     if not request.user.is_authenticated:
         raise HttpError(401, "Not authenticated")
     incident = get_object_or_404(Incident, id=incident_id, status_page__user=request.user)
+    if incident.status_page.slug == "platform-status":
+        raise HttpError(403, "Cannot modify system platform-status page")
     incident.delete()
     return {"success": True}

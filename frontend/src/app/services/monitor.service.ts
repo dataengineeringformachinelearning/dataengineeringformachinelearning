@@ -19,6 +19,9 @@ export interface StatusPageData {
   description: string;
   created_at: string;
   user_id: number | null;
+  cumulative_sla?: number;
+  overall_uptime?: number;
+  uptime_history?: { status: string; uptime: number }[];
 }
 
 export interface MonitoredServiceData {
@@ -27,6 +30,8 @@ export interface MonitoredServiceData {
   url: string;
   status_page_id: string;
   created_at: string;
+  status?: string;
+  sla?: number;
 }
 
 export interface IncidentData {
