@@ -18,6 +18,13 @@
   justify-content: center;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease, filter 0.2s;
 
+  .fab-icon {
+    margin: 0;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
   &:hover {
     transform: scale(1.08);
     box-shadow: 0 6px 16px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.2);
@@ -75,6 +82,20 @@
     font-weight: 600;
   }
 
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-icon {
+    margin: 0;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    color: var(--color-error);
+  }
+
   .close-btn {
     background: none;
     border: none;
@@ -82,6 +103,9 @@
     color: var(--text-color);
     cursor: pointer;
     transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       color: var(--color-primary-container);
@@ -145,6 +169,15 @@
     padding: 0.75rem;
     border-radius: 6px;
     font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .status-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
     
     &.success {
       background: rgba(76, 175, 80, 0.1);
@@ -165,8 +198,15 @@
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  align-items: center;
+  gap: 12px;
   background: rgba(0, 0, 0, 0.05);
+
+  .btn-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 
   button {
     padding: 0.6rem 1.25rem;
@@ -181,6 +221,9 @@
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
       
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.05);
@@ -194,6 +237,8 @@
       color: var(--color-dark-grey-btn-text) !important;
       min-width: 100px;
       display: flex;
+      align-items: center;
+      gap: 6px;
       justify-content: center;
       box-shadow: var(--shadow-sm) !important;
       

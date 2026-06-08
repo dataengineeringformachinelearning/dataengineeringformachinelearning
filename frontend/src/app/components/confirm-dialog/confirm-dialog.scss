@@ -15,8 +15,26 @@
     font-weight: 600;
   }
 
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .header-icon {
     color: var(--color-primary-container);
+    margin: 0;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+
+    &.color-warn {
+      color: #ef4444 !important;
+    }
+
+    &.color-primary {
+      color: var(--primary-color) !important;
+    }
   }
 
   .close-btn {
@@ -26,6 +44,9 @@
     color: var(--text-color);
     cursor: pointer;
     transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       color: var(--color-primary-container);
@@ -34,7 +55,30 @@
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 20px 0;
+
+  .message-text {
+    margin: 0 0 16px 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-color);
+    white-space: pre-line;
+  }
+
+  .prompt-container {
+    margin-top: 16px;
+  }
+
+  .prompt-label {
+    margin: 0 0 8px 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .full-width {
+    width: 100%;
+  }
   
   ::ng-deep .mat-mdc-text-field-wrapper {
     background-color: rgba(0, 0, 0, 0.2) !important;
@@ -70,8 +114,16 @@
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
   background: rgba(0, 0, 0, 0.05);
+
+  .btn-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 
   button {
     padding: 0.6rem 1.25rem;
@@ -89,6 +141,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
       
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.05);
@@ -102,7 +155,17 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 6px;
+      color: white;
       box-shadow: var(--shadow-sm) !important;
+
+      &.btn-warn {
+        background-color: #ef4444 !important;
+      }
+
+      &.btn-primary {
+        background-color: var(--primary-color) !important;
+      }
       
       &:hover:not(:disabled) {
         opacity: 0.9;

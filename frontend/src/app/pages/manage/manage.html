@@ -41,9 +41,9 @@
           <div class="manage-stack">
             
             <div class="status-card-outlined">
-              <div class="card-header-clean" style="display: flex; align-items: center; justify-content: space-between;">
+              <div class="card-header-clean">
                 <h2 class="card-title-main" *ngIf="selectedPage()">{{ selectedPage()!.title }}</h2>
-                <button mat-icon-button color="warn" *ngIf="selectedPage()" (click)="deleteStatusPage(selectedPage()!.id)" title="Delete status page" style="margin-left: auto;">
+                <button mat-icon-button color="warn" *ngIf="selectedPage()" (click)="deleteStatusPage(selectedPage()!.id)" title="Delete status page" class="delete-page-btn">
                   <mat-icon>delete_forever</mat-icon>
                 </button>
                 <h2 class="card-title-main" *ngIf="!selectedPage()">Create Status Page</h2>
@@ -55,7 +55,7 @@
                 <div *ngIf="!selectedPage()" class="form-col">
                   <p class="embed-desc">
                     Create a new status page to start monitoring your services.
-                    Refer to the <a routerLink="/status/platform-status" class="inline-status-link" style="color: var(--status-accent); font-weight: 500; text-decoration: underline;">Platform Status Page</a> as a live example of layout, services, and incident configurations.
+                    Refer to the <a routerLink="/status/platform-status" class="inline-status-link">Platform Status Page</a> as a live example of layout, services, and incident configurations.
                   </p>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Title</mat-label>
@@ -65,8 +65,8 @@
                     <mat-label>Slug</mat-label>
                     <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
                   </mat-form-field>
-                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" style="display: flex; align-items: center; gap: 8px;">
-                    <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">add_circle</mat-icon>
+                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" class="create-page-btn">
+                    <mat-icon>add_circle</mat-icon>
                     <span>Create Page</span>
                   </button>
                 </div>
@@ -77,13 +77,13 @@
                   <!-- Page Settings Section -->
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>settings</mat-icon> Page Settings</h3>
-                    <div class="incident-form panel-clean" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
-                      <div class="form-row" style="display: flex; gap: 16px; flex-wrap: wrap;">
-                        <mat-form-field appearance="outline" style="flex: 1; min-width: 200px;">
+                    <div class="settings-form-panel panel-clean">
+                      <div class="form-row">
+                        <mat-form-field appearance="outline">
                           <mat-label>Title</mat-label>
                           <input matInput [(ngModel)]="editTitle" placeholder="e.g. My API Status">
                         </mat-form-field>
-                        <mat-form-field appearance="outline" style="flex: 1; min-width: 200px;">
+                        <mat-form-field appearance="outline">
                           <mat-label>Slug</mat-label>
                           <input matInput [(ngModel)]="editSlug" placeholder="e.g. my-api">
                         </mat-form-field>
@@ -92,12 +92,12 @@
                         <mat-label>Description</mat-label>
                         <textarea matInput [(ngModel)]="editDescription" rows="2" placeholder="Description of this status page..."></textarea>
                       </mat-form-field>
-                      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 4px;">
+                      <div class="settings-actions">
                         <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
                           Publish Status Page (makes it visible in the public Explore directory)
                         </mat-checkbox>
-                        <button mat-flat-button color="primary" (click)="updateStatusPage()" [disabled]="!editTitle || !editSlug" style="display: flex; align-items: center; gap: 8px; background: var(--button-primary); color: var(--button-primary-text);">
-                          <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">save</mat-icon>
+                        <button mat-flat-button color="primary" (click)="updateStatusPage()" [disabled]="!editTitle || !editSlug">
+                          <mat-icon>save</mat-icon>
                           <span>Save Settings</span>
                         </button>
                       </div>
@@ -115,8 +115,8 @@
                         <mat-label>Health Check URL</mat-label>
                         <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
                       </mat-form-field>
-                      <button mat-flat-button class="add-service-btn" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl" style="display: flex; align-items: center; gap: 8px;">
-                        <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">add</mat-icon>
+                      <button mat-flat-button class="add-service-btn" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl">
+                        <mat-icon>add</mat-icon>
                         <span>Add Service</span>
                       </button>
                     </div>
@@ -157,8 +157,8 @@
                             <option value="Resolved">Resolved</option>
                           </select>
                         </div>
-                        <button mat-flat-button class="post-incident-btn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage" style="display: flex; align-items: center; gap: 8px;">
-                          <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">notification_important</mat-icon>
+                        <button mat-flat-button class="post-incident-btn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage">
+                          <mat-icon>notification_important</mat-icon>
                           <span>Post Incident</span>
                         </button>
                       </div>
@@ -183,12 +183,12 @@
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>code</mat-icon> Embeddable Widget</h3>
                     <p class="embed-desc">Copy and paste this script tag onto your website to display a live status badge.</p>
-                    <div class="code-block-container" style="display: flex; align-items: center; gap: 12px; margin-top: 12px;">
-                      <div class="code-block-outlined" style="flex: 1; margin: 0;">
+                    <div class="code-block-container">
+                      <div class="code-block-outlined">
                         <code>{{ getWidgetCode() }}</code>
                       </div>
-                      <button mat-flat-button class="copy-btn" (click)="copyWidgetCode()" style="height: 48px; min-width: 110px; flex-shrink: 0; margin: 0; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+                      <button mat-flat-button class="copy-btn" (click)="copyWidgetCode()">
+                        <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
                         <span>{{ copied() ? 'Copied' : 'Copy' }}</span>
                       </button>
                     </div>
@@ -199,19 +199,19 @@
             </div>
 
             <!-- Account Settings & Danger Zone -->
-            <div class="status-card-outlined danger-zone-card" style="margin-top: 32px; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.02);">
-              <div class="card-header-clean" style="border-bottom-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.01); display: flex; align-items: center;">
-                <h2 class="card-title-main" style="color: #ef4444; display: flex; align-items: center; gap: 8px; margin: 0;">
-                  <mat-icon style="color: #ef4444; margin: 0;">warning</mat-icon>
+            <div class="status-card-outlined danger-zone-card">
+              <div class="card-header-clean">
+                <h2 class="card-title-main">
+                  <mat-icon>warning</mat-icon>
                   Danger Zone
                 </h2>
               </div>
-              <div class="card-body-clean" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px 32px;">
+              <div class="card-body-clean">
                 <div>
-                  <h3 style="margin: 0 0 4px 0; font-size: 15px; font-weight: 600; color: var(--text-color);">Delete Account</h3>
-                  <p style="margin: 0; font-size: 13px; color: var(--text-muted);">Permanently delete your account, tracked pages, monitored services, and all associated data. This action is irreversible.</p>
+                  <h3>Delete Account</h3>
+                  <p>Permanently delete your account, tracked pages, monitored services, and all associated data. This action is irreversible.</p>
                 </div>
-                <button mat-flat-button color="warn" (click)="deleteAccount()" style="background-color: #ef4444; color: white; border-radius: 20px;">
+                <button mat-flat-button color="warn" (click)="deleteAccount()">
                   Delete Account
                 </button>
               </div>

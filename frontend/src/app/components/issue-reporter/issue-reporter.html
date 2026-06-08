@@ -1,17 +1,17 @@
 <!-- Floating Action Button -->
-<button class="fab-button" (click)="toggleModal()" aria-label="Report Issue" style="display: flex; align-items: center; justify-content: center;">
-  <mat-icon style="margin: 0; font-size: 24px; width: 24px; height: 24px;">bug_report</mat-icon>
+<button class="fab-button" (click)="toggleModal()" aria-label="Report Issue">
+  <mat-icon class="fab-icon">bug_report</mat-icon>
 </button>
 
 <!-- Modal Overlay -->
 <div class="modal-overlay" *ngIf="isOpen()" (click)="toggleModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
-    <div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <mat-icon style="margin: 0; font-size: 24px; width: 24px; height: 24px; color: var(--color-error);">report_problem</mat-icon>
-        <h3 style="margin: 0;">Report an Issue</h3>
+    <div class="modal-header">
+      <div class="title-wrapper">
+        <mat-icon class="header-icon">report_problem</mat-icon>
+        <h3>Report an Issue</h3>
       </div>
-      <button class="close-btn" (click)="toggleModal()" style="display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text-color);">
+      <button class="close-btn" (click)="toggleModal()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -26,26 +26,27 @@
         [disabled]="isSubmitting()">
       </textarea>
       
-      <div *ngIf="submissionStatus() === 'success'" class="status-msg success" role="status" style="display: flex; align-items: center; gap: 6px;">
-        <mat-icon style="font-size: 18px; width: 18px; height: 18px;">check_circle</mat-icon>
+      <div *ngIf="submissionStatus() === 'success'" class="status-msg success" role="status">
+        <mat-icon class="status-icon">check_circle</mat-icon>
         <span>Issue reported successfully!</span>
       </div>
-      <div *ngIf="submissionStatus() === 'error'" class="status-msg error" role="alert" style="display: flex; align-items: center; gap: 6px;">
-        <mat-icon style="font-size: 18px; width: 18px; height: 18px;">error</mat-icon>
+      <div *ngIf="submissionStatus() === 'error'" class="status-msg error" role="alert">
+        <mat-icon class="status-icon">error</mat-icon>
         <span>Failed to report issue. Please try again.</span>
       </div>
     </div>
     
-    <div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
-      <button class="btn-cancel" (click)="toggleModal()" [disabled]="isSubmitting()" style="display: flex; align-items: center; gap: 6px;">
-        <mat-icon style="font-size: 18px; width: 18px; height: 18px;">cancel</mat-icon>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="toggleModal()" [disabled]="isSubmitting()">
+        <mat-icon class="btn-icon">cancel</mat-icon>
         <span>Cancel</span>
       </button>
-      <button class="btn-submit" (click)="submitIssue()" [disabled]="isSubmitting() || !issueDescription().trim()" style="display: flex; align-items: center; gap: 6px;">
-        <mat-icon *ngIf="!isSubmitting()" style="font-size: 18px; width: 18px; height: 18px;">send</mat-icon>
+      <button class="btn-submit" (click)="submitIssue()" [disabled]="isSubmitting() || !issueDescription().trim()">
+        <mat-icon *ngIf="!isSubmitting()" class="btn-icon">send</mat-icon>
         <span *ngIf="!isSubmitting()">Submit</span>
         <span *ngIf="isSubmitting()" class="spinner"></span>
       </button>
     </div>
   </div>
 </div>
+

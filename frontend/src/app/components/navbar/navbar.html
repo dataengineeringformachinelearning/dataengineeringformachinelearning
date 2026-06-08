@@ -13,17 +13,17 @@
     <span class="spacer"></span>
     
     <div class="navbar-right">
-      <a mat-button routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn" style="display: inline-flex; align-items: center; gap: 6px;">
-        <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">description</mat-icon>
+      <a mat-button routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn">
+        <mat-icon>description</mat-icon>
         <span>Documentation</span>
       </a>
 
-      <a mat-button routerLink="/explore" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn" style="display: inline-flex; align-items: center; gap: 6px;">
-        <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">explore</mat-icon>
+      <a mat-button routerLink="/explore" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn">
+        <mat-icon>explore</mat-icon>
         <span>Explore</span>
       </a>
-      <a mat-button routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn" *ngIf="authService.isAuthenticated()" style="display: inline-flex; align-items: center; gap: 6px;">
-        <mat-icon style="margin: 0; font-size: 20px; width: 20px; height: 20px;">settings</mat-icon>
+      <a mat-button routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn" *ngIf="authService.isAuthenticated()">
+        <mat-icon>settings</mat-icon>
         <span>Manage</span>
       </a>
       
@@ -34,12 +34,12 @@
         <mat-icon>{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
       </button>
 
-      <button mat-raised-button class="auth-btn" *ngIf="!authService.isAuthenticated()" (click)="login()" style="display: inline-flex; align-items: center; gap: 6px;">
-        <mat-icon style="margin: 0; font-size: 18px; width: 18px; height: 18px;">login</mat-icon>
+      <button mat-raised-button class="auth-btn" *ngIf="!authService.isAuthenticated()" (click)="login()">
+        <mat-icon>login</mat-icon>
         <span>Sign In</span>
       </button>
-      <button mat-raised-button class="auth-btn" *ngIf="authService.isAuthenticated()" (click)="logout()" style="display: inline-flex; align-items: center; gap: 6px;">
-        <mat-icon style="margin: 0; font-size: 18px; width: 18px; height: 18px;">logout</mat-icon>
+      <button mat-raised-button class="auth-btn" *ngIf="authService.isAuthenticated()" (click)="logout()">
+        <mat-icon>logout</mat-icon>
         <span>Sign Out</span>
       </button>
     </div>

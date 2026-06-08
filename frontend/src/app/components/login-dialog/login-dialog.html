@@ -1,13 +1,13 @@
-<div class="modal-header" style="display: flex; align-items: center; justify-content: space-between;">
-  <div style="display: flex; align-items: center; gap: 8px;">
-    <mat-icon class="header-icon" style="margin: 0; font-size: 24px; width: 24px; height: 24px;">
+<div class="modal-header">
+  <div class="title-wrapper">
+    <mat-icon class="header-icon">
       {{ isForgotMode() ? 'email' : isResetMode() ? 'vpn_key' : isPhoneMode() ? 'phone' : 'account_circle' }}
     </mat-icon>
-    <h3 style="margin: 0;">
+    <h3>
       {{ isForgotMode() ? 'Reset Password' : isResetMode() ? 'Set New Password' : mfaRequired() ? 'Two-Factor verification' : isPhoneMode() ? 'Sign In with Phone' : isRegisterMode() ? 'Sign Up' : 'Sign In' }}
     </h3>
   </div>
-  <button class="close-btn" (click)="onCancel()" style="display: flex; align-items: center; justify-content: center; background: none; border: none; cursor: pointer; color: var(--text-color);">
+  <button class="close-btn" (click)="onCancel()">
     <mat-icon>close</mat-icon>
   </button>
 </div>
@@ -15,11 +15,11 @@
 <div class="modal-body">
   <div id="recaptcha-container"></div>
 
-  <div class="success-text" *ngIf="successMessage()" style="padding: 12px; margin-bottom: 16px; border-radius: 6px; background-color: rgba(76, 175, 80, 0.1); color: var(--color-success); font-weight: 500; font-size: 0.9rem;">
+  <div class="success-text" *ngIf="successMessage()">
     {{ successMessage() }}
   </div>
 
-  <div class="info-text" *ngIf="mfaRequired() && !successMessage()" style="padding: 12px; margin-bottom: 16px; border-radius: 6px; background-color: rgba(33, 150, 243, 0.1); color: var(--text-color); font-weight: 500; font-size: 0.9rem;">
+  <div class="info-text" *ngIf="mfaRequired() && !successMessage()">
     Two-factor authentication is required. An SMS verification code has been sent to your registered phone number.
   </div>
 
@@ -27,41 +27,41 @@
     <!-- Username / Email (not shown in forgot/reset/phone/mfa modes) -->
     <mat-form-field appearance="fill" class="full-width" *ngIf="!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()">
       <mat-label>{{ isRegisterMode() ? 'Username' : 'Email Address' }}</mat-label>
-      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">{{ isRegisterMode() ? 'person' : 'email' }}</mat-icon>
+      <mat-icon matPrefix>{{ isRegisterMode() ? 'person' : 'email' }}</mat-icon>
       <input matInput [type]="isRegisterMode() ? 'text' : 'email'" formControlName="username" [placeholder]="isRegisterMode() ? '' : 'email@example.com'" required>
     </mat-form-field>
 
     <!-- Email Address (shown in register/forgot modes) -->
     <mat-form-field appearance="fill" class="full-width" *ngIf="isRegisterMode() || isForgotMode()">
       <mat-label>Email Address</mat-label>
-      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">email</mat-icon>
+      <mat-icon matPrefix>email</mat-icon>
       <input matInput type="email" formControlName="email" placeholder="email@example.com" [required]="isForgotMode()">
     </mat-form-field>
 
     <!-- Password / New Password (not shown in forgot/phone/mfa modes) -->
     <mat-form-field appearance="fill" class="full-width" *ngIf="!isForgotMode() && !isPhoneMode() && !mfaRequired()">
       <mat-label>{{ isResetMode() ? 'New Password' : 'Password' }}</mat-label>
-      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">lock</mat-icon>
+      <mat-icon matPrefix>lock</mat-icon>
       <input matInput type="password" formControlName="password" required>
     </mat-form-field>
 
     <!-- Phone Number (only shown in Phone Sign-in Mode before code is sent) -->
     <mat-form-field appearance="fill" class="full-width" *ngIf="isPhoneMode() && !codeSent() && !mfaRequired()">
       <mat-label>Phone Number</mat-label>
-      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">phone</mat-icon>
+      <mat-icon matPrefix>phone</mat-icon>
       <input matInput type="tel" formControlName="phone" placeholder="+11234567890" required>
     </mat-form-field>
 
     <!-- Verification SMS Code (shown in Phone Sign-in or MFA Mode after code is sent) -->
     <mat-form-field appearance="fill" class="full-width" *ngIf="codeSent()">
       <mat-label>Verification Code</mat-label>
-      <mat-icon matPrefix style="margin-right: 8px; color: var(--text-muted);">sms</mat-icon>
+      <mat-icon matPrefix>sms</mat-icon>
       <input matInput type="text" formControlName="verificationCode" placeholder="123456" required>
     </mat-form-field>
     
-    <div class="error-text" *ngIf="error()" role="alert" style="color: var(--color-error); margin-bottom: 12px; font-size: 0.85rem; font-weight: 500;">{{ error() }}</div>
+    <div class="error-text" *ngIf="error()" role="alert">{{ error() }}</div>
 
-    <div class="toggle-link" style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+    <div class="toggle-link">
       <a href="javascript:void(0)" (click)="toggleMode()" *ngIf="!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()">
         {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account? Sign Up" }}
       </a>
@@ -81,13 +81,13 @@
   </form>
 </div>
 
-<div class="modal-footer" style="display: flex; align-items: center; justify-content: flex-end; gap: 12px;">
-  <button class="btn-cancel" (click)="onCancel()" style="display: flex; align-items: center; gap: 6px;">
-    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">cancel</mat-icon>
+<div class="modal-footer">
+  <button class="btn-cancel" (click)="onCancel()">
+    <mat-icon class="btn-icon">cancel</mat-icon>
     <span>Cancel</span>
   </button>
-  <button class="btn-submit" [disabled]="loginForm.invalid && !successMessage()" (click)="onSubmit()" style="display: flex; align-items: center; gap: 6px;">
-    <mat-icon style="font-size: 18px; width: 18px; height: 18px;">
+  <button class="btn-submit" [disabled]="loginForm.invalid && !successMessage()" (click)="onSubmit()">
+    <mat-icon class="btn-icon">
       {{ isForgotMode() ? 'send' : isResetMode() ? 'lock_reset' : mfaRequired() ? 'verified_user' : (isPhoneMode() && !codeSent()) ? 'send' : (isPhoneMode() && codeSent()) ? 'login' : isRegisterMode() ? 'person_add' : 'login' }}
     </mat-icon>
     <span>
@@ -95,3 +95,4 @@
     </span>
   </button>
 </div>
+

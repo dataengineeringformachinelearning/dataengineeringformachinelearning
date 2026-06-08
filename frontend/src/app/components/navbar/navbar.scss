@@ -50,6 +50,16 @@
   padding: 0 16px !important;
   height: 38px !important;
   line-height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+
+  mat-icon {
+    margin: 0;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
   
   &:hover {
     color: var(--text-color) !important;
@@ -104,6 +114,16 @@
   transition: all 0.2s ease;
   height: 38px !important;
   line-height: 38px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+
+  mat-icon {
+    margin: 0;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
   
   &:hover {
     transform: translateY(-1px);

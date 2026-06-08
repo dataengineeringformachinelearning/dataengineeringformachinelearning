@@ -14,7 +14,7 @@
           <h1 class="page-title">Explore Public Statuses</h1>
           <p class="page-description">
             Browse status cards published by users on our platform.
-            You can also view the <a routerLink="/status/platform-status" class="inline-status-link" style="color: var(--status-accent); font-weight: 500; text-decoration: underline;">Platform Status Page</a> to see an example of real-time service health tracking.
+            You can also view the <a routerLink="/status/platform-status" class="inline-status-link">Platform Status Page</a> to see an example of real-time service health tracking.
           </p>
         </div>
       </header>
@@ -29,7 +29,7 @@
                   <h2 class="card-title">{{ page.title }}</h2>
                   <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
                 </div>
-                <a [routerLink]="['/status', page.slug]" class="status-badge-premium" [ngClass]="getPageStatusClass(page.id)" style="text-decoration: none;">
+                <a [routerLink]="['/status', page.slug]" class="status-badge-premium" [ngClass]="getPageStatusClass(page.id)">
                   <span class="status-dot-greenblue"></span>
                   {{ getPageStatus(page.id) }}
                 </a>
@@ -38,7 +38,7 @@
               <div class="card-body-clean">
                 <!-- SLA Section -->
                 <div class="ml-stat-panels-row">
-                  <div class="ml-stat-panel" style="margin-bottom: 0;">
+                  <div class="ml-stat-panel">
                     <div class="stat-info">
                       <mat-icon class="stat-icon">dns</mat-icon>
                       <div>
@@ -53,7 +53,7 @@
                     </div>
                   </div>
 
-                  <div class="ml-stat-panel" style="margin-bottom: 0;">
+                  <div class="ml-stat-panel">
                     <div class="stat-info">
                       <mat-icon class="stat-icon">online_prediction</mat-icon>
                       <div>
@@ -70,32 +70,32 @@
                 </div>
 
                 <!-- Service Status List Section -->
-                <div class="services-status-panel" style="margin-bottom: 24px;">
-                  <h3 class="panel-title" style="margin-bottom: 12px; font-size: 16px; font-weight: 600;">Service Performance</h3>
-                  <div class="services-status-list" style="display: flex; flex-direction: column; gap: 8px;">
-                    <div *ngFor="let s of servicesMap()[page.id]" class="service-status-row" style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
-                      <div class="service-meta" style="display: flex; flex-direction: column; gap: 2px;">
-                        <a [href]="s.url" target="_blank" class="service-name-link" style="font-weight: 500; color: var(--text-color); font-size: 14px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                <div class="services-status-panel">
+                  <h3 class="panel-title">Service Performance</h3>
+                  <div class="services-status-list">
+                    <div *ngFor="let s of servicesMap()[page.id]" class="service-status-row">
+                      <div class="service-meta">
+                        <a [href]="s.url" target="_blank" class="service-name-link">
                           <span>{{ formatServiceName(s.name) }}</span>
-                          <mat-icon style="font-size: 14px; width: 14px; height: 14px; color: var(--text-muted); display: inline-flex; align-items: center; justify-content: center; margin-top: 2px;">open_in_new</mat-icon>
+                          <mat-icon>open_in_new</mat-icon>
                         </a>
                       </div>
-                      <div class="service-stats" style="display: flex; align-items: center; gap: 16px;">
-                        <span class="service-sla" style="font-weight: 600; font-size: 14px; color: var(--status-accent);">{{ s.sla | number:'1.2-2' }}% SLA</span>
-                        <div class="status-badge-premium" [ngClass]="s.status?.toLowerCase() || 'operational'" style="padding: 4px 8px; font-size: 12px; height: auto;">
+                      <div class="service-stats">
+                        <span class="service-sla">{{ s.sla | number:'1.2-2' }}% SLA</span>
+                        <div class="status-badge-premium" [ngClass]="s.status?.toLowerCase() || 'operational'">
                           <span class="status-dot-greenblue"></span>
                           {{ s.status || 'Operational' }}
                         </div>
                       </div>
                     </div>
-                    <div *ngIf="!servicesMap()[page.id] || servicesMap()[page.id].length === 0" style="color: var(--text-muted); font-size: 14px; text-align: center; padding: 12px;">
+                    <div *ngIf="!servicesMap()[page.id] || servicesMap()[page.id].length === 0" class="no-services-msg">
                       No monitored services configured.
                     </div>
                   </div>
                 </div>
 
                  <!-- Historical Uptime Section -->
-                <div class="timeline-panel" style="margin-bottom: 24px;">
+                <div class="timeline-panel">
                   <div class="panel-header">
                     <h3 class="panel-title">Uptime History (Last 90 Days)</h3>
                     <span class="uptime-percentage">{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}% operational</span>
@@ -117,10 +117,10 @@
                   </div>
                 </div>
 
-                <div style="display: flex; justify-content: flex-end;">
-                  <a mat-flat-button class="view-btn" [routerLink]="['/status', page.slug]" style="display: inline-flex; align-items: center; gap: 6px; background: var(--button-primary); color: var(--button-primary-text);">
+                <div class="view-btn-container">
+                  <a mat-flat-button class="view-btn" [routerLink]="['/status', page.slug]">
                     <span>View Dedicated Page</span>
-                    <mat-icon style="margin: 0; font-size: 18px; width: 18px; height: 18px;">arrow_forward</mat-icon>
+                    <mat-icon>arrow_forward</mat-icon>
                   </a>
                 </div>
               </div>
@@ -140,3 +140,4 @@
     </main>
   </div>
 </div>
+

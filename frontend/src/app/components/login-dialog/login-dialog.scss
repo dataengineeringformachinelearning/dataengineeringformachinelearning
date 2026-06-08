@@ -5,6 +5,11 @@
   min-width: 320px;
   padding: 10px 0 10px;
 
+  mat-icon[matPrefix] {
+    margin-right: 8px;
+    color: var(--text-muted);
+  }
+
   ::ng-deep .mat-mdc-text-field-wrapper {
     background-color: rgba(0, 0, 0, 0.2) !important;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -34,10 +39,31 @@
   }
 }
 
+.success-text {
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--color-success);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.info-text {
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  background-color: rgba(33, 150, 243, 0.1);
+  color: var(--text-color);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
 .error-text {
   color: var(--color-error);
-  font-size: 14px;
-  margin-top: 5px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-bottom: 12px;
   background: rgba(211, 47, 47, 0.1);
   padding: 0.5rem;
   border-radius: 6px;
@@ -62,8 +88,18 @@
     font-weight: 600;
   }
 
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .header-icon {
     color: var(--color-primary-container);
+    margin: 0;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
   }
 
   .close-btn {
@@ -73,6 +109,9 @@
     color: var(--text-color);
     cursor: pointer;
     transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       color: var(--color-primary-container);
@@ -89,8 +128,15 @@
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
-  gap: 1rem;
+  align-items: center;
+  gap: 12px;
   background: rgba(0, 0, 0, 0.05);
+
+  .btn-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
 
   button {
     padding: 0.6rem 1.25rem;
@@ -105,6 +151,9 @@
       background: transparent;
       border: 1px solid var(--border);
       color: var(--text-color);
+      display: flex;
+      align-items: center;
+      gap: 6px;
       
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.05);
@@ -118,6 +167,8 @@
       color: var(--color-dark-grey-btn-text) !important;
       min-width: 100px;
       display: flex;
+      align-items: center;
+      gap: 6px;
       justify-content: center;
       box-shadow: var(--shadow-sm) !important;
       
@@ -141,6 +192,10 @@
 .toggle-link {
   text-align: center;
   margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.9rem;
   
   a {
     color: var(--link-color);
