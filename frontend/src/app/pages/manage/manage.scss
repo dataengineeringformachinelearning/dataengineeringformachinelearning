@@ -656,3 +656,84 @@
   }
 }
 
+/* Mobile responsive styling for management console */
+@media (max-width: 600px) {
+  .dashboard-topbar {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .dashboard-content-area {
+    padding: 1rem;
+  }
+
+  .card-header-clean {
+    padding: 1.25rem 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    
+    .delete-page-btn {
+      align-self: flex-end;
+      margin-left: 0;
+    }
+  }
+
+  .card-body-clean {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .settings-form-panel {
+    .settings-actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+      
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .form-row-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+
+    .select-wrapper {
+      width: 100%;
+    }
+
+    .post-incident-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  .code-block-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    .code-block-outlined {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .copy-btn {
+      width: 100% !important;
+    }
+  }
+
+  .danger-zone-card .card-body-clean {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
