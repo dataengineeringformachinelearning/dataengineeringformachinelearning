@@ -30,6 +30,7 @@ export class AuthService {
   public isAuthenticated = signal<boolean>(false);
   public currentUserId = signal<number | null>(null);
   public isInitialized = signal<boolean>(false);
+  public isProcessing = signal<boolean>(true);
   private http = inject(HttpClient);
   public auth: any;
 
@@ -39,6 +40,7 @@ export class AuthService {
       this.auth = getAuth(app);
 
       onAuthStateChanged(this.auth, async (user: FirebaseUser | null) => {
+        this.isProcessing.set(true);
         if (user) {
           try {
             const token = await user.getIdToken();
@@ -64,16 +66,20 @@ export class AuthService {
           this.currentUserId.set(null);
         }
         this.isInitialized.set(true);
+        this.isProcessing.set(false);
       });
     } else {
       this.isInitialized.set(true);
+      this.isProcessing.set(false);
     }
   }
 
   async checkAuth() {
+    this.isProcessing.set(true);
     if (!this.auth) {
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.isProcessing.set(false);
       return;
     }
     const user = this.auth.currentUser;
@@ -100,15 +106,19 @@ export class AuthService {
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
     }
+    this.isProcessing.set(false);
   }
 
   async login(credentials: any): Promise<{ success: boolean; error?: string; resolver?: any }> {
+    this.isProcessing.set(true);
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       // Treat credentials.username as the login email
       await signInWithEmailAndPassword(this.auth, credentials.username, credentials.password);
+      this.isProcessing.set(false);
       return { success: true };
     } catch (e: any) {
+      this.isProcessing.set(false);
       console.error(e);
       if (e?.code === 'auth/multi-factor-auth-required') {
         return { success: false, error: 'MFA_REQUIRED', resolver: getMultiFactorResolver(this.auth, e) };
@@ -132,6 +142,7 @@ export class AuthService {
   }
 
   async register(credentials: any): Promise<{ success: boolean; error?: string }> {
+    this.isProcessing.set(true);
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       const userCredential = await createUserWithEmailAndPassword(this.auth, credentials.email, credentials.password);
@@ -146,8 +157,10 @@ export class AuthService {
           })
         );
       }
+      this.isProcessing.set(false);
       return { success: true };
     } catch (e: any) {
+      this.isProcessing.set(false);
       console.error(e);
       let errorMsg = 'Registration failed.';
       if (e?.code) {
@@ -168,20 +181,24 @@ export class AuthService {
   }
 
   async logout() {
+    this.isProcessing.set(true);
     try {
       if (this.auth) {
         await signOut(this.auth);
       }
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.isProcessing.set(false);
     } catch (e) {
       console.error(e);
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.isProcessing.set(false);
     }
   }
 
   async deleteAccount() {
+    this.isProcessing.set(true);
     try {
       // First delete on backend (so request is authenticated with active token)
       await firstValueFrom(this.http.delete(`${environment.backendUrl}/api/v1/auth/delete-account`, {}));
@@ -192,9 +209,11 @@ export class AuthService {
       }
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.isProcessing.set(false);
       return true;
     } catch (e) {
       console.error(e);
+      this.isProcessing.set(false);
       return false;
     }
   }

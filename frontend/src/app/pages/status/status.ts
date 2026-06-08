@@ -5,7 +5,8 @@ import {
   ChangeDetectionStrategy,
   signal,
   ChangeDetectorRef,
-  computed
+  computed,
+  effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';

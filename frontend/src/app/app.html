@@ -1,19 +1,29 @@
 
 
-<!-- Navbar -->
-<app-navbar></app-navbar>
+<div class="global-auth-loader" *ngIf="!authService.isInitialized() || authService.isProcessing()">
+  <div class="loader-content">
+    <img class="loader-logo" src="/data-engineering-for-machine-learning.svg" alt="Data Engineering for Machine Learning" />
+    <div class="premium-spinner"></div>
+    <p class="loader-text">Securing your session...</p>
+  </div>
+</div>
 
-<!-- Main Content -->
-<main class="main-content">
-  <router-outlet />
-</main>
+<ng-container *ngIf="authService.isInitialized() && !authService.isProcessing()">
+  <!-- Navbar -->
+  <app-navbar></app-navbar>
 
-<!-- Footer -->
-<app-footer></app-footer>
+  <!-- Main Content -->
+  <main class="main-content">
+    <router-outlet />
+  </main>
 
-<!-- Issue Reporter FAB -->
-<app-issue-reporter></app-issue-reporter>
+  <!-- Footer -->
+  <app-footer></app-footer>
 
-<!-- Cookie Consent Banner -->
-<app-cookie-banner></app-cookie-banner>
+  <!-- Issue Reporter FAB -->
+  <app-issue-reporter></app-issue-reporter>
+
+  <!-- Cookie Consent Banner -->
+  <app-cookie-banner></app-cookie-banner>
+</ng-container>
 

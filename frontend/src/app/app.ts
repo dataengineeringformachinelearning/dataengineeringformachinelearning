@@ -19,7 +19,7 @@ import { filter } from 'rxjs/operators';
 })
 export class App implements OnInit {
   protected readonly title = signal('frontend');
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   private dialog = inject(MatDialog);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
