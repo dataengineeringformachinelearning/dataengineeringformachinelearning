@@ -1,121 +1,100 @@
-(function() {
-  // Find the script tag that loaded this widget
-  const currentScript = document.currentScript || (function() {
-    const scripts = document.getElementsByTagName('script');
-    for (let i = 0; i < scripts.length; i++) {
-      if (scripts[i].src && scripts[i].src.includes('widget.js')) {
-        return scripts[i];
-      }
+class StatusWidget extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    const pageId = this.getAttribute('data-page-id');
+    if (!pageId) {
+      console.error('Widget missing data-page-id attribute');
+      return;
     }
-    return null;
-  })();
 
-  if (!currentScript) return;
-
-  const pageId = currentScript.getAttribute('data-page-id');
-  if (!pageId) {
-    console.error('Widget missing data-page-id attribute');
-    return;
-  }
-
-  // Dynamically resolve frontend host and backend URL
-  const scriptUrl = new URL(currentScript.src);
-  let frontendHost = scriptUrl.origin;
-  if (!frontendHost.includes('localhost') && !frontendHost.includes('127.0.0.1')) {
-    frontendHost = 'https://dataengineeringformachinelearning.com';
-  }
-  
-  let backendUrl = currentScript.getAttribute('data-backend-url');
-  if (!backendUrl) {
-    if (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')) {
-      backendUrl = 'http://localhost:8000';
-    } else {
-      backendUrl = 'https://backend.dataengineeringformachinelearning.com';
+    // Resolve URLs
+    const currentScript = document.currentScript || document.querySelector('script[src*="widget.js"]');
+    const scriptOrigin = currentScript ? new URL(currentScript.src).origin : window.location.origin;
+    
+    let frontendHost = scriptOrigin;
+    if (!frontendHost.includes('localhost') && !frontendHost.includes('127.0.0.1')) {
+      frontendHost = 'https://dataengineeringformachinelearning.com';
     }
-  }
 
-  // Create a Shadow Host element
-  const host = document.createElement('div');
-  host.style.display = 'flex';
-  host.style.justifyContent = 'center';
-  host.style.margin = '12px 0';
-  host.style.width = '100%';
-  
-  // Attach shadow root to host
-  const shadowRoot = host.attachShadow({ mode: 'open' });
+    let backendUrl = this.getAttribute('data-backend-url');
+    if (!backendUrl) {
+      backendUrl = (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1'))
+        ? 'http://localhost:8000'
+        : 'https://backend.dataengineeringformachinelearning.com';
+    }
 
-  // Create link tag for stylesheet in shadow root
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = `${frontendHost}/assets/widget.css`;
+    // Set up Shadow DOM structure
+    this.shadowRoot.innerHTML = `
+      <link rel="stylesheet" href="${frontendHost}/assets/widget.css">
+      <div class="widget-container">
+        <a class="widget-link" href="${frontendHost}/status/${pageId}" target="_blank">
+          <span class="status-dot"></span>
+          <span class="status-text">Loading status...</span>
+        </a>
+      </div>
+    `;
 
-  // Create a wrapper container element inside shadow DOM to control styling/sizing via stylesheet
-  const container = document.createElement('div');
-  container.className = 'widget-container';
+    const widgetLink = this.shadowRoot.querySelector('.widget-link');
+    const dot = this.shadowRoot.querySelector('.status-dot');
+    const text = this.shadowRoot.querySelector('.status-text');
 
-  // Create the widget link inside the container
-  const widgetLink = document.createElement('a');
-  widgetLink.className = 'widget-link';
-  widgetLink.href = `${frontendHost}/status/${pageId}`;
-  widgetLink.target = '_blank';
-
-  const dot = document.createElement('span');
-  dot.className = 'status-dot';
-
-  const text = document.createElement('span');
-  text.innerText = 'Loading status...';
-
-  widgetLink.appendChild(dot);
-  widgetLink.appendChild(text);
-  container.appendChild(widgetLink);
-
-  shadowRoot.appendChild(link);
-  shadowRoot.appendChild(container);
-
-  // Insert the shadow host right after the script tag
-  currentScript.parentNode.insertBefore(host, currentScript.nextSibling);
-
-  // Fetch the latest status from our API
-  const apiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
-  
-  fetch(apiUrl)
-    .then(response => response.json())
-    .then(data => {
-      // Find the specific page
-      const page = data.find(p => p.id === pageId || p.slug === pageId);
-      if (page) {
-        // Point link to dedicated specific status page hosted by us
-        widgetLink.href = `${frontendHost}/status/${page.slug}`;
-
-        // Fetch incidents for the page to determine status
-        const incidentsUrl = `${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`;
-        fetch(incidentsUrl)
-          .then(res => res.json())
-          .then(incidents => {
-            const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
-            if (activeIncidents.length > 0) {
-              const currentStatus = activeIncidents[0].status;
-              dot.style.backgroundColor = '#ef4444'; // Red/Warning
-              text.innerText = `Incident: ${currentStatus}`;
-            } else {
-              dot.style.backgroundColor = '#10b981'; // Green
+    // Fetch the latest status
+    const apiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+        const page = data.find(p => p.id === pageId || p.slug === pageId);
+        if (page) {
+          widgetLink.href = `${frontendHost}/status/${page.slug}`;
+          
+          fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`)
+            .then(res => res.json())
+            .then(incidents => {
+              const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
+              if (activeIncidents.length > 0) {
+                dot.style.backgroundColor = '#ef4444';
+                text.innerText = `Incident: ${activeIncidents[0].status}`;
+              } else {
+                dot.style.backgroundColor = '#10b981';
+                text.innerText = 'All Systems Operational';
+              }
+            })
+            .catch(() => {
+              dot.style.backgroundColor = '#10b981';
               text.innerText = 'All Systems Operational';
-            }
-          })
-          .catch(err => {
-            console.error('Failed to load incidents for widget:', err);
-            // Default to operational if page exists but incident check fails
-            dot.style.backgroundColor = '#10b981'; 
-            text.innerText = 'All Systems Operational';
-          });
-      } else {
-        dot.style.backgroundColor = '#ef4444';
-        text.innerText = 'Status Page Not Found';
-      }
-    })
-    .catch(err => {
-      console.error('Failed to load status for widget:', err);
-      dot.style.backgroundColor = '#94a3b8'; // Grey out on error
-      text.innerText = 'Status Unknown';
-    });
-})();
+            });
+        } else {
+          dot.style.backgroundColor = '#ef4444';
+          text.innerText = 'Status Page Not Found';
+        }
+      })
+      .catch(() => {
+        dot.style.backgroundColor = '#94a3b8';
+        text.innerText = 'Status Unknown';
+      });
+  }
+}
+
+// Register the custom element
+if (!customElements.get('status-widget')) {
+  customElements.define('status-widget', StatusWidget);
+}
+
+// Auto-initialize legacy script-only installations
+const currentScript = document.currentScript || document.querySelector('script[src*="widget.js"]');
+if (currentScript && currentScript.hasAttribute('data-page-id')) {
+  const pageId = currentScript.getAttribute('data-page-id');
+  const backendUrl = currentScript.getAttribute('data-backend-url');
+  
+  const widget = document.createElement('status-widget');
+  widget.setAttribute('data-page-id', pageId);
+  if (backendUrl) {
+    widget.setAttribute('data-backend-url', backendUrl);
+  }
+  
+  currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);
+}
