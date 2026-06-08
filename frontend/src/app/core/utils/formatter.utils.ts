@@ -13,6 +13,10 @@ export function formatServiceName(name: string): string {
     return 'Redpanda Broker';
   }
 
+  // Extract a short suffix from UUID if present to provide clear, unique context
+  const uuidMatch = name.match(/([0-9a-f]{8})-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
+  const suffix = uuidMatch ? ` (${uuidMatch[1].toLowerCase()})` : '';
+
   let cleanPart = name;
   const parts = name.split(' - ');
   if (parts.length > 1) {
@@ -36,12 +40,15 @@ export function formatServiceName(name: string): string {
     filteredWords.push(w);
   }
 
+  let baseName = '';
   if (filteredWords.length === 0) {
-    return cleanPart.replace(/[_-]/g, ' ').replace(/\s+/g, ' ')
+    baseName = cleanPart.replace(/[_-]/g, ' ').replace(/\s+/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase());
+  } else {
+    baseName = filteredWords
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(' ');
   }
 
-  return filteredWords
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-    .join(' ');
+  return baseName + suffix;
 }
