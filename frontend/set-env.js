@@ -3,6 +3,11 @@ const path = require('path');
 
 const targetPath = path.join(__dirname, 'src', 'environments', 'environment.ts');
 
+const environmentsDir = path.join(__dirname, 'src', 'environments');
+if (!fs.existsSync(environmentsDir)) {
+  fs.mkdirSync(environmentsDir, { recursive: true });
+}
+
 const apiKey = process.env.FIREBASE_API_KEY || 'PLACEHOLDER_API_KEY';
 const authDomain = process.env.FIREBASE_AUTH_DOMAIN || 'demldotcom.firebaseapp.com';
 const projectId = process.env.FIREBASE_PROJECT_ID || 'demldotcom';
