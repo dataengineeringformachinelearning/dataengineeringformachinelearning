@@ -29,6 +29,7 @@ import {
 export class AuthService {
   public isAuthenticated = signal<boolean>(false);
   public currentUserId = signal<number | null>(null);
+  public isInitialized = signal<boolean>(false);
   private http = inject(HttpClient);
   public auth: any;
 
@@ -62,7 +63,10 @@ export class AuthService {
           this.isAuthenticated.set(false);
           this.currentUserId.set(null);
         }
+        this.isInitialized.set(true);
       });
+    } else {
+      this.isInitialized.set(true);
     }
   }
 

@@ -86,34 +86,48 @@ export class IsolatedStatus implements OnInit {
     });
   }
 
+  slug = signal<string | null>(null);
+
+  constructor() {
+    effect(() => {
+      const currentSlug = this.slug();
+      const isAuthInit = this.authService.isInitialized();
+      if (currentSlug && isAuthInit) {
+        this.loadPage(currentSlug);
+      }
+    });
+  }
+
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const slug = params.get('slug');
-      if (slug) {
-        this.loadFailed.set(false);
-        this.monitorService.getStatusPageBySlug(slug).subscribe({
-          next: page => {
-            const pages = [page];
-            this.statusPages.set(pages);
-            this.monitorService.fetchAllIncidents(pages);
-            this.monitorService.fetchAllServices(pages);
-            this.modelService.fetchLatestStat(page.id);
+      this.slug.set(slug);
+    });
+  }
 
-            this.titleService.setTitle(`${page.title} Status - Data Engineering for Machine Learning`);
-            this.metaService.updateTag({
-              name: 'description',
-              content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`
-            });
+  loadPage(slug: string) {
+    this.loadFailed.set(false);
+    this.monitorService.getStatusPageBySlug(slug).subscribe({
+      next: page => {
+        const pages = [page];
+        this.statusPages.set(pages);
+        this.monitorService.fetchAllIncidents(pages);
+        this.monitorService.fetchAllServices(pages);
+        this.modelService.fetchLatestStat(page.id);
 
-            this.cdr.markForCheck();
-          },
-          error: err => {
-            console.error('Error fetching page by slug:', err);
-            this.statusPages.set([]);
-            this.loadFailed.set(true);
-            this.cdr.markForCheck();
-          }
+        this.titleService.setTitle(`${page.title} Status - Data Engineering for Machine Learning`);
+        this.metaService.updateTag({
+          name: 'description',
+          content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`
         });
+
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        console.error('Error fetching page by slug:', err);
+        this.statusPages.set([]);
+        this.loadFailed.set(true);
+        this.cdr.markForCheck();
       }
     });
   }

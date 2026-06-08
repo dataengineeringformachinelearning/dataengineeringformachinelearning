@@ -4,7 +4,8 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
-  ChangeDetectorRef
+  ChangeDetectorRef,
+  effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -49,14 +50,20 @@ export class Explore implements OnInit {
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
+  constructor() {
+    effect(() => {
+      if (this.authService.isInitialized()) {
+        this.loadData();
+      }
+    });
+  }
+
   ngOnInit() {
     this.titleService.setTitle('Explore Public Status Pages - Data Engineering for Machine Learning');
     this.metaService.updateTag({
       name: 'description',
       content: 'Browse community-published public service status pages and active system uptime monitors.'
     });
-
-    this.loadData();
   }
 
   loadData() {
