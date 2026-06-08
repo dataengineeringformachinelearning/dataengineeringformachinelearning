@@ -130,7 +130,15 @@ export class Whitepaper implements OnInit {
         ]
       },
       {
-        title: '5. Conclusion',
+        title: '5. Next-Generation SIEM/SOAR Evolution',
+        paragraphs: [
+          'Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and Generative AI, has evolved into a powerful agentic paradigm for threat analysis. Because we can only plan for what we know or what history provides precedent for, we face a distinct challenge: if past data dictates future risk, we must engineer an entirely new way forward.',
+          'To address this, we outline a data engineering software stack designed to process and forecast these phenomena. Just as the future will require multiple specialized AI agents, it will also demand domain-specific pipelines. These pipelines must ingest massive streams of threat analysis and distill them into actionable, real-time decisions.',
+          'Framed conceptually as a book and built with the collaborative power of Gemini and Grok, this open-source framework is designed to test this theory. The ultimate goal is to build upon this foundation over time, eventually engineering an open-source engine for next-generation SIEM/SOAR (Security Information and Event Management / Security Orchestration, Automation, and Response) ecosystems.'
+        ]
+      },
+      {
+        title: '6. Conclusion',
         paragraphs: [
           'By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.'
         ]
