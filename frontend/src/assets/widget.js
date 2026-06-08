@@ -33,8 +33,6 @@
 
   // Create a Shadow Host element
   const host = document.createElement('div');
-  host.style.display = 'inline-flex';
-  host.style.margin = '12px auto';
   
   // Attach shadow root to host
   const shadowRoot = host.attachShadow({ mode: 'open' });
