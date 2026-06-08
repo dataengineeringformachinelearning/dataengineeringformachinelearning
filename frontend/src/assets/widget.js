@@ -20,7 +20,10 @@
 
   // Dynamically resolve frontend host and backend URL
   const scriptUrl = new URL(currentScript.src);
-  const frontendHost = scriptUrl.origin;
+  let frontendHost = scriptUrl.origin;
+  if (!frontendHost.includes('localhost') && !frontendHost.includes('127.0.0.1')) {
+    frontendHost = 'https://dataengineeringformachinelearning.com';
+  }
   
   let backendUrl = currentScript.getAttribute('data-backend-url');
   if (!backendUrl) {
@@ -33,6 +36,10 @@
 
   // Create a Shadow Host element
   const host = document.createElement('div');
+  host.style.display = 'flex';
+  host.style.justifyContent = 'center';
+  host.style.margin = '12px 0';
+  host.style.width = '100%';
   
   // Attach shadow root to host
   const shadowRoot = host.attachShadow({ mode: 'open' });
@@ -42,7 +49,11 @@
   link.rel = 'stylesheet';
   link.href = `${frontendHost}/assets/widget.css`;
 
-  // Create the widget container inside shadow DOM
+  // Create a wrapper container element inside shadow DOM to control styling/sizing via stylesheet
+  const container = document.createElement('div');
+  container.className = 'widget-container';
+
+  // Create the widget link inside the container
   const widgetLink = document.createElement('a');
   widgetLink.className = 'widget-link';
   widgetLink.href = `${frontendHost}/status/${pageId}`;
@@ -56,9 +67,10 @@
 
   widgetLink.appendChild(dot);
   widgetLink.appendChild(text);
+  container.appendChild(widgetLink);
 
   shadowRoot.appendChild(link);
-  shadowRoot.appendChild(widgetLink);
+  shadowRoot.appendChild(container);
 
   // Insert the shadow host right after the script tag
   currentScript.parentNode.insertBefore(host, currentScript.nextSibling);
