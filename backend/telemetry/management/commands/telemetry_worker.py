@@ -145,14 +145,21 @@ class Command(BaseCommand):
                 return "Django Web Server"
             if "9092" in url_str:
                 return "Redpanda Broker"
-            from urllib.parse import urlparse
+            from urllib.parse import urlparse, parse_qs
             parsed = urlparse(url_str)
             path = parsed.path.strip('/')
             host = parsed.netloc
             if not path:
                 return host
             parts = [p.capitalize() for p in path.split('/') if p]
-            return f"{host} - {' '.join(parts)}"
+            
+            params = parse_qs(parsed.query)
+            suffix = ""
+            if "status_page_id" in params:
+                sp_id = params["status_page_id"][0]
+                suffix = f" {sp_id}"
+                
+            return f"{host} - {' '.join(parts)}{suffix}"
 
         for u in urls:
             if u not in existing_urls:
