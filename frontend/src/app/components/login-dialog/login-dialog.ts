@@ -42,6 +42,7 @@ export class LoginDialog implements OnInit {
   isPhoneMode = signal<boolean>(false);
   codeSent = signal<boolean>(false);
   mfaRequired = signal<boolean>(false);
+  isLoading = signal<boolean>(false);
 
   successMessage = signal<string | null>(null);
   error = signal<string | null>(null);
@@ -187,6 +188,7 @@ export class LoginDialog implements OnInit {
       return;
     }
     this.initRecaptcha();
+    this.isLoading.set(true);
     try {
       this.confirmationResult = await signInWithPhoneNumber(this.authService.auth, phoneNum, this.recaptchaVerifier);
       this.codeSent.set(true);
@@ -195,6 +197,8 @@ export class LoginDialog implements OnInit {
     } catch (e: any) {
       console.error(e);
       this.error.set(e.message || 'Failed to send verification code. Make sure you input international format (e.g. +11234567890).');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -205,17 +209,21 @@ export class LoginDialog implements OnInit {
       this.error.set('Verification code is required.');
       return;
     }
+    this.isLoading.set(true);
     try {
       await this.confirmationResult.confirm(code);
       this.dialogRef.close(true);
     } catch (e: any) {
       console.error(e);
       this.error.set('Invalid verification code.');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
   async sendMfaVerificationCode(resolver: any) {
     this.initRecaptcha();
+    this.isLoading.set(true);
     try {
       const phoneInfoOptions = {
         multiFactorHint: resolver.hints[0],
@@ -232,6 +240,8 @@ export class LoginDialog implements OnInit {
     } catch (e: any) {
       console.error(e);
       this.error.set(e.message || 'Failed to send MFA code.');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -243,6 +253,7 @@ export class LoginDialog implements OnInit {
       this.error.set('Verification code is required.');
       return;
     }
+    this.isLoading.set(true);
     try {
       const assertion = PhoneAuthProvider.credential(verifyId, code);
       await this.resolver.resolveSignIn(assertion);
@@ -250,6 +261,8 @@ export class LoginDialog implements OnInit {
     } catch (e: any) {
       console.error(e);
       this.error.set('MFA verification failed. Please try again.');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -258,61 +271,69 @@ export class LoginDialog implements OnInit {
 
     this.error.set(null);
     this.successMessage.set(null);
+    this.isLoading.set(true);
 
-    if (this.isForgotMode()) {
-      const email = this.loginForm.value.email;
-      const success = await this.authService.forgotPassword(email);
-      if (success) {
-        this.successMessage.set('If that email exists in our records, we have sent a password reset link.');
-      } else {
-        this.error.set('Failed to submit request. Please try again.');
-      }
-    } else if (this.isResetMode()) {
-      const newPassword = this.loginForm.value.password;
-      const success = await this.authService.resetPassword({
-        uid: this.data.uid,
-        token: this.data.token,
-        new_password: newPassword
-      });
-      if (success) {
-        this.successMessage.set('Password successfully reset! You can now log in.');
-        setTimeout(() => {
-          this.switchToLogin();
-        }, 3000);
-      } else {
-        this.error.set('Failed to reset password. The link may have expired or is invalid.');
-      }
-    } else if (this.isPhoneMode()) {
-      if (this.codeSent()) {
-        await this.verifyCode();
-      } else {
-        await this.sendVerificationCode();
-      }
-    } else if (this.mfaRequired()) {
-      await this.resolveMfa();
-    } else {
-      let result;
-      if (this.isRegisterMode()) {
-        result = await this.authService.register({
-          username: this.loginForm.value.username,
-          password: this.loginForm.value.password,
-          email: this.loginForm.value.email
+    try {
+      if (this.isForgotMode()) {
+        const email = this.loginForm.value.email;
+        const success = await this.authService.forgotPassword(email);
+        if (success) {
+          this.successMessage.set('If that email exists in our records, we have sent a password reset link.');
+        } else {
+          this.error.set('Failed to submit request. Please try again.');
+        }
+      } else if (this.isResetMode()) {
+        const newPassword = this.loginForm.value.password;
+        const success = await this.authService.resetPassword({
+          uid: this.data.uid,
+          token: this.data.token,
+          new_password: newPassword
         });
+        if (success) {
+          this.successMessage.set('Password successfully reset! You can now log in.');
+          setTimeout(() => {
+            this.switchToLogin();
+          }, 3000);
+        } else {
+          this.error.set('Failed to reset password. The link may have expired or is invalid.');
+        }
+      } else if (this.isPhoneMode()) {
+        if (this.codeSent()) {
+          await this.verifyCode();
+        } else {
+          await this.sendVerificationCode();
+        }
+      } else if (this.mfaRequired()) {
+        await this.resolveMfa();
       } else {
-        result = await this.authService.login({
-          username: this.loginForm.value.username,
-          password: this.loginForm.value.password
-        });
+        let result;
+        if (this.isRegisterMode()) {
+          result = await this.authService.register({
+            username: this.loginForm.value.username,
+            password: this.loginForm.value.password,
+            email: this.loginForm.value.email
+          });
+        } else {
+          result = await this.authService.login({
+            username: this.loginForm.value.username,
+            password: this.loginForm.value.password
+          });
+        }
+        
+        if (result.success) {
+          this.dialogRef.close(true);
+        } else if (result.error === 'MFA_REQUIRED') {
+          // Trigger multi-factor authentication setup
+          await this.sendMfaVerificationCode((result as any).resolver);
+        } else {
+          this.error.set(result.error || 'Authentication failed.');
+        }
       }
-      
-      if (result.success) {
-        this.dialogRef.close(true);
-      } else if (result.error === 'MFA_REQUIRED') {
-        // Trigger multi-factor authentication setup
-        await this.sendMfaVerificationCode((result as any).resolver);
-      } else {
-        this.error.set(result.error || 'Authentication failed.');
-      }
+    } catch (e: any) {
+      console.error(e);
+      this.error.set(e.message || 'An error occurred during submission.');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 
@@ -320,3 +341,4 @@ export class LoginDialog implements OnInit {
     this.dialogRef.close();
   }
 }
+

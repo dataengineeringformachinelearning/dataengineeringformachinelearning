@@ -76,6 +76,12 @@ export class Manage implements OnInit {
 
   copied = signal(false);
 
+  isCreatingPage = signal<boolean>(false);
+  isUpdatingPage = signal<boolean>(false);
+  isAddingService = signal<boolean>(false);
+  isAddingIncident = signal<boolean>(false);
+  isDeletingAccount = signal<boolean>(false);
+
   constructor() {
     effect(() => {
       if (this.authService.isAuthenticated() && this.authService.currentUserId() !== null) {
@@ -134,15 +140,18 @@ export class Manage implements OnInit {
 
   createStatusPage() {
     if (this.newPageTitle && this.newPageSlug) {
+      this.isCreatingPage.set(true);
       this.monitorService.createStatusPage({ title: this.newPageTitle, slug: this.newPageSlug }).subscribe({
         next: page => {
           this.loadStatusPages();
           this.newPageTitle = '';
           this.newPageSlug = '';
           this.selectPage(page);
+          this.isCreatingPage.set(false);
         },
         error: err => {
           console.error('Error creating page:', err);
+          this.isCreatingPage.set(false);
           this.dialog.open(ConfirmDialog, {
             width: '400px',
             data: {
@@ -199,6 +208,7 @@ export class Manage implements OnInit {
   updateStatusPage() {
     const page = this.selectedPage();
     if (page && this.editTitle && this.editSlug) {
+      this.isUpdatingPage.set(true);
       this.monitorService.updateStatusPage(page.id, {
         title: this.editTitle,
         slug: this.editSlug,
@@ -208,6 +218,7 @@ export class Manage implements OnInit {
         next: updated => {
           this.selectedPage.set(updated);
           this.loadStatusPages();
+          this.isUpdatingPage.set(false);
           this.dialog.open(ConfirmDialog, {
             width: '400px',
             data: {
@@ -220,6 +231,7 @@ export class Manage implements OnInit {
         },
         error: err => {
           console.error('Error updating status page:', err);
+          this.isUpdatingPage.set(false);
           this.dialog.open(ConfirmDialog, {
             width: '400px',
             data: {
@@ -250,7 +262,9 @@ export class Manage implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
+        this.isDeletingAccount.set(true);
         this.authService.deleteAccount().then(async success => {
+          this.isDeletingAccount.set(false);
           if (success) {
             const successDialog = this.dialog.open(ConfirmDialog, {
               width: '400px',
@@ -277,6 +291,9 @@ export class Manage implements OnInit {
               }
             });
           }
+        }).catch(err => {
+          this.isDeletingAccount.set(false);
+          console.error(err);
         });
       }
     });
@@ -321,14 +338,17 @@ export class Manage implements OnInit {
         return;
       }
 
+      this.isAddingService.set(true);
       this.monitorService.addService(page.id, { name: this.newServiceName, url: this.newServiceUrl }).subscribe({
         next: () => {
           this.loadServices(page.id);
           this.newServiceName = '';
           this.newServiceUrl = '';
+          this.isAddingService.set(false);
         },
         error: err => {
           console.error('Error adding service:', err);
+          this.isAddingService.set(false);
           this.dialog.open(ConfirmDialog, {
             width: '400px',
             data: {
@@ -357,6 +377,7 @@ export class Manage implements OnInit {
   addIncident() {
     const page = this.selectedPage();
     if (page && this.newIncidentTitle && this.newIncidentMessage && this.newIncidentStatus) {
+      this.isAddingIncident.set(true);
       this.monitorService.createIncident(page.id, {
         title: this.newIncidentTitle,
         message: this.newIncidentMessage,
@@ -367,8 +388,12 @@ export class Manage implements OnInit {
           this.newIncidentTitle = '';
           this.newIncidentMessage = '';
           this.newIncidentStatus = 'Investigating';
+          this.isAddingIncident.set(false);
         },
-        error: err => console.error('Error adding incident:', err)
+        error: err => {
+          console.error('Error adding incident:', err);
+          this.isAddingIncident.set(false);
+        }
       });
     }
   }

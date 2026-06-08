@@ -43,6 +43,10 @@ class Endpoints(models.Model):
 
     class Meta:
         db_table = 'endpoints'
+        indexes = [
+            models.Index(fields=['url', 'last_tested']),
+            models.Index(fields=['last_tested']),
+        ]
 
     def __str__(self):
         return self.url

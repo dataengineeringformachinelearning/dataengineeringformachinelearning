@@ -147,15 +147,16 @@
     </main>
 
     <!-- Error/Offline State Fallback -->
-    <div *ngIf="statusPages().length === 0" class="status-error-state">
+    <div *ngIf="loadFailed()" class="status-error-state">
       <div class="error-glow-sphere"></div>
       <mat-icon class="error-state-icon">cloud_off</mat-icon>
       <h3 class="error-title">Unable to Connect</h3>
       <p class="error-subtitle">
         We couldn't connect to the status service. Please check that the backend is running and try again.
       </p>
-      <button mat-raised-button color="primary" class="retry-btn" (click)="retryLoad()">
-        <mat-icon>refresh</mat-icon>
+      <button mat-raised-button color="primary" class="retry-btn" (click)="retryLoad()" [disabled]="isRetrying()">
+        <mat-icon *ngIf="!isRetrying()">refresh</mat-icon>
+        <span class="btn-spinner" *ngIf="isRetrying()"></span>
         <span>Retry Connection</span>
       </button>
     </div>

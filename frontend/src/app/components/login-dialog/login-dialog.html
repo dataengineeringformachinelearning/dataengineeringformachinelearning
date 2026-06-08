@@ -82,14 +82,15 @@
 </div>
 
 <div class="modal-footer">
-  <button class="btn-cancel" (click)="onCancel()">
+  <button class="btn-cancel" (click)="onCancel()" [disabled]="isLoading()">
     <mat-icon class="btn-icon">cancel</mat-icon>
     <span>Cancel</span>
   </button>
-  <button class="btn-submit" [disabled]="loginForm.invalid && !successMessage()" (click)="onSubmit()">
-    <mat-icon class="btn-icon">
+  <button class="btn-submit" [disabled]="(loginForm.invalid && !successMessage()) || isLoading()" (click)="onSubmit()">
+    <mat-icon class="btn-icon" *ngIf="!isLoading()">
       {{ isForgotMode() ? 'send' : isResetMode() ? 'lock_reset' : mfaRequired() ? 'verified_user' : (isPhoneMode() && !codeSent()) ? 'send' : (isPhoneMode() && codeSent()) ? 'login' : isRegisterMode() ? 'person_add' : 'login' }}
     </mat-icon>
+    <span class="btn-spinner" *ngIf="isLoading()"></span>
     <span>
       {{ isForgotMode() ? 'Send Link' : isResetMode() ? 'Reset' : mfaRequired() ? 'Verify' : (isPhoneMode() && !codeSent()) ? 'Send OTP' : (isPhoneMode() && codeSent()) ? 'Login' : isRegisterMode() ? 'Sign Up' : 'Login' }}
     </span>

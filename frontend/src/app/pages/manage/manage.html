@@ -65,8 +65,9 @@
                     <mat-label>Slug</mat-label>
                     <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
                   </mat-form-field>
-                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug" class="create-page-btn">
-                    <mat-icon>add_circle</mat-icon>
+                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug || isCreatingPage()" class="create-page-btn">
+                    <mat-icon *ngIf="!isCreatingPage()">add_circle</mat-icon>
+                    <span class="btn-spinner" *ngIf="isCreatingPage()"></span>
                     <span>Create Page</span>
                   </button>
                 </div>
@@ -96,8 +97,9 @@
                         <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
                           Publish Status Page (makes it visible in the public Explore directory)
                         </mat-checkbox>
-                        <button mat-flat-button color="primary" (click)="updateStatusPage()" [disabled]="!editTitle || !editSlug">
-                          <mat-icon>save</mat-icon>
+                        <button mat-flat-button color="primary" (click)="updateStatusPage()" [disabled]="!editTitle || !editSlug || isUpdatingPage()">
+                          <mat-icon *ngIf="!isUpdatingPage()">save</mat-icon>
+                          <span class="btn-spinner" *ngIf="isUpdatingPage()"></span>
                           <span>Save Settings</span>
                         </button>
                       </div>
@@ -115,8 +117,9 @@
                         <mat-label>Health Check URL</mat-label>
                         <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
                       </mat-form-field>
-                      <button mat-flat-button class="add-service-btn" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl">
-                        <mat-icon>add</mat-icon>
+                      <button mat-flat-button class="add-service-btn" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl || isAddingService()">
+                        <mat-icon *ngIf="!isAddingService()">add</mat-icon>
+                        <span class="btn-spinner" *ngIf="isAddingService()"></span>
                         <span>Add Service</span>
                       </button>
                     </div>
@@ -157,8 +160,9 @@
                             <option value="Resolved">Resolved</option>
                           </select>
                         </div>
-                        <button mat-flat-button class="post-incident-btn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage">
-                          <mat-icon>notification_important</mat-icon>
+                        <button mat-flat-button class="post-incident-btn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident()">
+                          <mat-icon *ngIf="!isAddingIncident()">notification_important</mat-icon>
+                          <span class="btn-spinner" *ngIf="isAddingIncident()"></span>
                           <span>Post Incident</span>
                         </button>
                       </div>
@@ -211,9 +215,10 @@
                   <h3>Delete Account</h3>
                   <p>Permanently delete your account, tracked pages, monitored services, and all associated data. This action is irreversible.</p>
                 </div>
-                <button mat-flat-button color="warn" (click)="deleteAccount()">
-                  Delete Account
-                </button>
+                 <button mat-flat-button color="warn" (click)="deleteAccount()" [disabled]="isDeletingAccount()">
+                   <span class="btn-spinner" *ngIf="isDeletingAccount()"></span>
+                   <span>Delete Account</span>
+                 </button>
               </div>
             </div>
 

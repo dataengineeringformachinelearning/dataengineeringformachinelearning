@@ -51,6 +51,7 @@ export class Status implements OnInit {
 
   formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
+  loadFailed = signal<boolean>(false);
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
@@ -75,6 +76,11 @@ export class Status implements OnInit {
       content: 'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.'
     });
 
+    this.loadData();
+  }
+
+  loadData() {
+    this.loadFailed.set(false);
     if (this.authService.isAuthenticated()) {
       this.monitorService.getStatusPages().subscribe({
         next: data => {
@@ -97,6 +103,7 @@ export class Status implements OnInit {
         error: err => {
           console.error('Error fetching pages:', err);
           this.statusPages.set([]);
+          this.loadFailed.set(true);
           this.cdr.markForCheck();
         },
       });
@@ -114,10 +121,17 @@ export class Status implements OnInit {
     return 'Operational';
   }
 
+  isRetrying = signal<boolean>(false);
+
   getPageStatusClass(pageId: string): string {
     const status = this.getPageStatus(pageId);
     if (status === 'Operational') return 'operational';
     return status.toLowerCase();
+  }
+
+  retryLoad() {
+    this.isRetrying.set(true);
+    window.location.reload();
   }
 }
 
