@@ -26,22 +26,38 @@ load_dotenv(BASE_DIR / '.env')
 # Initialize Firebase Admin
 if not firebase_admin._apps:
     service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_JSON')
+    firebase_project_id = os.getenv('FIREBASE_PROJECT_ID') or os.getenv('GOOGLE_CLOUD_PROJECT') or 'demldotcom'
     if service_account_json:
         import json
         try:
-            cred_dict = json.loads(service_account_json)
+            # Strip any potential outer quote wrapping if present
+            raw_json = service_account_json.strip()
+            if raw_json.startswith('"') and raw_json.endswith('"'):
+                try:
+                    # Parse out of the wrapper string
+                    raw_json = json.loads(raw_json)
+                except Exception:
+                    pass
+            
+            cred_dict = json.loads(raw_json)
+            if isinstance(cred_dict, str):
+                cred_dict = json.loads(cred_dict)
+                
             cred = credentials.Certificate(cred_dict)
             firebase_admin.initialize_app(cred)
         except Exception as e:
-            # Fallback
-            firebase_admin.initialize_app()
+            # Fallback with explicit project ID to avoid hanging on GCP metadata server lookups in non-GCP environments
+            firebase_admin.initialize_app(options={'projectId': firebase_project_id})
     else:
         cred_path = BASE_DIR / 'firebase-service-account.json'
         if cred_path.exists():
             cred = credentials.Certificate(str(cred_path))
             firebase_admin.initialize_app(cred)
         else:
-            firebase_admin.initialize_app()
+            # Fallback with explicit project ID to avoid hanging on GCP metadata server lookups in non-GCP environments
+            firebase_admin.initialize_app(options={'projectId': firebase_project_id})
+
+
 
 
 # Quick-start development settings - unsuitable for production
