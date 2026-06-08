@@ -33,49 +33,24 @@
 
   // Create a Shadow Host element
   const host = document.createElement('div');
-  host.style.display = 'inline-flex';
-  host.style.verticalAlign = 'middle';
+  host.style.display = 'flex';
+  host.style.justifyContent = 'center';
+  host.style.alignItems = 'center';
+  host.style.margin = '12px auto';
+  host.style.width = '100%';
   
   // Attach shadow root to host
   const shadowRoot = host.attachShadow({ mode: 'open' });
 
-  // Create styling for the shadow root
-  const style = document.createElement('style');
-  style.textContent = `
-    .widget-link {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 12px;
-      background-color: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 9999px;
-      text-decoration: none;
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: 14px;
-      font-weight: 500;
-      color: #1e293b;
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-    .widget-link:hover {
-      background-color: #f8fafc;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background-color: #94a3b8; /* Slate grey for loading state */
-      margin-right: 8px;
-      display: inline-block;
-    }
-  `;
+  // Create link tag for stylesheet in shadow root
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = `${frontendHost}/assets/widget.css`;
 
   // Create the widget container inside shadow DOM
   const widgetLink = document.createElement('a');
   widgetLink.className = 'widget-link';
-  widgetLink.href = `${frontendHost}/status`;
+  widgetLink.href = `${frontendHost}/status/${pageId}`;
   widgetLink.target = '_blank';
 
   const dot = document.createElement('span');
@@ -87,7 +62,7 @@
   widgetLink.appendChild(dot);
   widgetLink.appendChild(text);
 
-  shadowRoot.appendChild(style);
+  shadowRoot.appendChild(link);
   shadowRoot.appendChild(widgetLink);
 
   // Insert the shadow host right after the script tag
