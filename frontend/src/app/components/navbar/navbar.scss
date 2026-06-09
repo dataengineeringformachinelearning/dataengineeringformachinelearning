@@ -11,6 +11,7 @@
   display: flex;
   align-items: center;
   padding: 0 1.5rem;
+  box-sizing: border-box;
 }
 
 .navbar-brand {
@@ -42,7 +43,7 @@
 }
 
 .desktop-nav {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 0.5rem;
 }
@@ -101,7 +102,7 @@
 }
 
 .menu-toggle-btn {
-  display: none !important;
+  display: inline-flex !important;
   color: var(--text-muted) !important;
   transition: color 0.2s;
 
@@ -155,10 +156,10 @@
   position: absolute;
   top: 64px;
   left: 0;
-  width: 100%;
-  background-color: var(--navbar-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  right: 0;
+  width: auto;
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow-md);
   border-bottom: 1px solid var(--border);
   padding: 1.5rem;
   box-sizing: border-box;
@@ -231,12 +232,16 @@
   gap: 8px !important;
 }
 
-@media (max-width: 768px) {
+@media (min-width: 769px) {
   .desktop-nav {
-    display: none;
+    display: flex;
   }
 
   .menu-toggle-btn {
-    display: inline-flex !important;
+    display: none !important;
+  }
+
+  .mobile-menu {
+    display: none !important;
   }
 }

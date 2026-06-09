@@ -63,7 +63,7 @@
   }
 
   .title {
-    font-size: 2.75rem;
+    font-size: 2.2rem;
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: -0.03em;
@@ -122,6 +122,7 @@
 
 .diagram-placeholder {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
@@ -167,6 +168,7 @@
     font-size: 1.2rem;
     color: var(--text-muted);
     user-select: none;
+    transform: rotate(90deg);
   }
 }
 
@@ -310,17 +312,17 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (min-width: 601px) {
   .whitepaper-header {
     .title {
-      font-size: 2.2rem;
+      font-size: 2.75rem;
     }
   }
 
   .diagram-placeholder {
-    flex-direction: column;
+    flex-direction: row;
     .diagram-arrow {
-      transform: rotate(90deg);
+      transform: none;
     }
   }
 }

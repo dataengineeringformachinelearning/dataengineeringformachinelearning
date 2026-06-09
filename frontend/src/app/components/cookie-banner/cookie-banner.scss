@@ -3,10 +3,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 1.5rem;
+  padding: 0.75rem;
   z-index: 9999;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   pointer-events: none;
   animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -14,7 +14,7 @@
 .cookie-banner-card {
   pointer-events: auto;
   width: 100%;
-  max-width: 520px;
+  max-width: 100%;
   background-color: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -202,10 +202,9 @@
 
   .footer-buttons {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 1rem;
 
     .settings-btn {
       padding: 0;
@@ -215,6 +214,7 @@
       color: var(--text-muted);
       border-bottom: 1px dashed var(--text-muted);
       border-radius: 0 !important;
+      align-self: flex-start;
       
       &:hover {
         background-color: transparent !important;
@@ -228,12 +228,15 @@
       gap: 0.5rem;
       align-items: center;
       flex-wrap: wrap;
+      justify-content: flex-end;
+      width: 100%;
 
       button {
         height: 38px !important;
         padding: 0 16px !important;
         font-size: 0.875rem !important;
         border-radius: 8px !important;
+        flex: 1;
       }
 
       .reject-btn {
@@ -295,31 +298,31 @@
 }
 
 // Responsive layout
-@media (max-width: 576px) {
+@media (min-width: 577px) {
   .cookie-banner-overlay {
-    padding: 0.75rem;
-    justify-content: center;
+    padding: 1.5rem;
+    justify-content: flex-end;
   }
 
   .cookie-banner-card {
-    max-width: 100%;
+    max-width: 520px;
   }
 
   .footer-buttons {
-    flex-direction: column;
-    align-items: stretch !important;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: center !important;
+    gap: 0.75rem;
 
     .settings-btn {
-      align-self: flex-start;
+      align-self: auto;
     }
 
     .primary-actions {
-      justify-content: flex-end;
-      width: 100%;
+      justify-content: flex-start;
+      width: auto;
 
       button {
-        flex: 1;
+        flex: none;
       }
     }
   }

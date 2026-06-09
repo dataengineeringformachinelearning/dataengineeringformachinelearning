@@ -59,13 +59,14 @@
   position: relative;
   z-index: 1;
   display: flex;
+  flex-direction: column;
   width: 100%;
   min-height: calc(100vh - 64px);
 }
 
-@media (max-width: 900px) {
+@media (min-width: 901px) {
   .dashboard-layout {
-    flex-direction: column;
+    flex-direction: row;
   }
 }
 
@@ -170,7 +171,7 @@
 }
 
 .dashboard-topbar {
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid var(--border);
@@ -194,7 +195,7 @@
 
 .dashboard-content-area {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .content-wrapper {
@@ -218,15 +219,17 @@
 }
 
 .card-header-clean {
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
   background-color: rgba(255, 255, 255, 0.01);
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 
   .delete-page-btn {
-    margin-left: auto;
+    align-self: flex-end;
+    margin-left: 0;
   }
 }
 
@@ -268,16 +271,17 @@
 
   .settings-actions {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
     margin-top: 4px;
 
     button {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      width: 100%;
       background: var(--button-primary) !important;
       color: var(--button-primary-text) !important;
 
@@ -299,7 +303,7 @@
 }
 
 .card-body-clean {
-  padding: 2rem;
+  padding: 1.25rem 1.5rem;
 }
 
 .panel-section {
@@ -337,15 +341,16 @@
 
 .form-row {
   display: flex;
-  gap: 1.5rem;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
 }
 
-@media (max-width: 600px) {
+@media (min-width: 601px) {
   .form-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: center;
+    gap: 1.5rem;
   }
 }
 
@@ -441,10 +446,19 @@
 
 .form-row-actions {
   display: flex;
-  gap: 1.5rem;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
   margin-top: 0.5rem;
+
+  .select-wrapper {
+    width: 100%;
+  }
+
+  .post-incident-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Styled Dropdown Menu */
@@ -591,9 +605,19 @@
 
 .code-block-container {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 12px;
   margin-top: 12px;
+
+  .code-block-outlined {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .copy-btn {
+    width: 100% !important;
+  }
 }
 
 .form-col {
@@ -629,11 +653,10 @@
 
   .card-body-clean {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 16px;
-    padding: 24px 32px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.25rem;
+    padding: 1.25rem 1.5rem;
 
     h3 {
       margin: 0 0 4px 0;
@@ -652,87 +675,90 @@
       background-color: #ef4444 !important;
       color: white !important;
       border-radius: 20px !important;
+      width: 100%;
     }
   }
 }
 
-/* Mobile responsive styling for management console */
-@media (max-width: 600px) {
+@media (min-width: 601px) {
   .dashboard-topbar {
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem 2rem;
   }
 
   .dashboard-content-area {
-    padding: 1rem;
+    padding: 2rem;
   }
 
   .card-header-clean {
-    padding: 1.25rem 1.5rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    
+    padding: 2rem 2rem 1.5rem 2rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+
     .delete-page-btn {
-      align-self: flex-end;
-      margin-left: 0;
+      align-self: auto;
+      margin-left: auto;
     }
   }
 
   .card-body-clean {
-    padding: 1.25rem 1.5rem;
+    padding: 2rem;
   }
 
   .settings-form-panel {
     .settings-actions {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1rem;
-      
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+
       button {
-        width: 100%;
-        justify-content: center;
+        width: auto;
+        justify-content: flex-start;
       }
     }
   }
 
   .form-row-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
 
     .select-wrapper {
-      width: 100%;
+      width: auto;
     }
 
     .post-incident-btn {
-      width: 100%;
-      justify-content: center;
+      width: auto;
+      justify-content: flex-start;
     }
   }
 
   .code-block-container {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
     gap: 12px;
 
     .code-block-outlined {
-      width: 100%;
-      box-sizing: border-box;
+      width: auto;
     }
 
     .copy-btn {
-      width: 100% !important;
+      width: auto !important;
     }
   }
 
   .danger-zone-card .card-body-clean {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.25rem;
-    padding: 1.25rem 1.5rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 32px;
 
     button {
-      width: 100%;
+      width: auto;
     }
   }
 }

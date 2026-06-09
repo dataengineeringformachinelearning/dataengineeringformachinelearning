@@ -13,17 +13,16 @@
 
 /* Sidebar Styling (Google Site-like Outline) */
 .dashboard-sidebar {
-  width: 280px;
+  width: 100%;
   background-color: var(--card-bg);
-  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  height: calc(100vh - 64px);
-  position: sticky;
-  top: 64px;
+  height: auto;
+  position: static;
 }
 
 .sidebar-brand {
@@ -119,13 +118,13 @@
   }
 }
 
-/* Responsive collapse/adjustment for sidebar on smaller viewports */
-@media (max-width: 900px) {
+@media (min-width: 901px) {
   .dashboard-sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-    height: auto;
-    position: static;
+    width: 280px;
+    border-right: 1px solid var(--border);
+    border-bottom: none;
+    height: calc(100vh - 64px);
+    position: sticky;
+    top: 64px;
   }
 }
