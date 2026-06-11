@@ -18,8 +18,9 @@ export class TelemetryService {
   private readonly STORAGE_KEY = 'offline_telemetry_queue';
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
+  private http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {
+  constructor() {
     // Listen for network becoming online to sync any queued offline telemetry
     if (this.isBrowser) {
       window.addEventListener('online', () => {

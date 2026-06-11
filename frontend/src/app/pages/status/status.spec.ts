@@ -12,7 +12,9 @@ describe('Status', () => {
     await TestBed.configureTestingModule({
       imports: [Status],
       providers: [
-        provideRouter([]),
+        provideRouter([
+          { path: 'status/:slug', redirectTo: '' }
+        ]),
         provideHttpClient(),
         provideHttpClientTesting(),
       ]

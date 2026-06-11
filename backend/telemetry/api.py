@@ -24,7 +24,7 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
     
     producer = await get_kafka_producer()
     value = json.dumps(data).encode('utf-8')
-    producer.send("app-events", value)
+    await producer.send("app-events", value)
         
     return HttpResponse(status=202)
 
