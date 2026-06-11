@@ -140,7 +140,7 @@ def _build_status_page_out(p):
 
     if urls:
         total_count = Endpoints.objects.filter(url__in=urls).count()
-        up_count = Endpoints.objects.filter(url__in=urls, is_active=True, status_code__lt=400).count()
+        up_count = Endpoints.objects.filter(url__in=urls, is_active=True, status_code__lt=500).count()
         cumulative_sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
         
         # Compute 90-day history
@@ -169,7 +169,7 @@ def _build_status_page_out(p):
                 history_list.append(UptimeDaySchema(status="no_data", uptime=100.0))
             else:
                 tot = len(day_logs)
-                up = sum(1 for log in day_logs if log.is_active and log.status_code < 400)
+                up = sum(1 for log in day_logs if log.is_active and log.status_code < 500)
                 ratio = (up / tot) if tot > 0 else 1.0
                 uptime_pct = round(ratio * 100.0, 2)
                 
@@ -287,12 +287,12 @@ def list_services(request, page_id: str):
         latest_log = Endpoints.objects.filter(url=s.url).order_by('-last_tested').first()
         status = "Operational"
         if latest_log:
-            if not latest_log.is_active or latest_log.status_code >= 400:
+            if not latest_log.is_active or latest_log.status_code >= 500:
                 status = "Outage"
         
         # Calculate SLA
         total_count = Endpoints.objects.filter(url=s.url).count()
-        up_count = Endpoints.objects.filter(url=s.url, is_active=True, status_code__lt=400).count()
+        up_count = Endpoints.objects.filter(url=s.url, is_active=True, status_code__lt=500).count()
         sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
 
         out.append(MonitoredServiceOut(

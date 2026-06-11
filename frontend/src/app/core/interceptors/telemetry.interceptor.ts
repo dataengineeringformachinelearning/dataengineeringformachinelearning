@@ -35,7 +35,7 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
               status_code: error.status || 500,
               response_time_ms: responseTimeMs,
               ip_address: '0.0.0.0',
-              is_active: error.status >= 200 && error.status < 400
+              is_active: error.status > 0 && error.status < 500
             };
             telemetryService.reportEndpointStatus(payload);
           }

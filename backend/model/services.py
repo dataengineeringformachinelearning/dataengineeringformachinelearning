@@ -40,7 +40,7 @@ def train_tenant_sla(status_page):
         x_data.append([status, resp_time, active])
 
         target_sla = 100.0
-        if not ep.is_active or ep.status_code >= 400:
+        if not ep.is_active or ep.status_code >= 500:
             target_sla = 0.0
         else:
             target_sla = max(0.0, 100.0 - (resp_time * 5.0))
