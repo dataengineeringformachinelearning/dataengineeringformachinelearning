@@ -53,3 +53,42 @@ async def test_cookie_consent_endpoint(async_client):
     assert consent.analytical is True
     assert consent.marketing is False
 
+
+@pytest.mark.django_db
+@pytest.mark.asyncio
+async def test_telemetry_worker_normalization():
+    from telemetry.management.commands.telemetry_worker import Command
+    import polars as pl
+    from monitor.models import MonitoredService, Endpoints
+    from asgiref.sync import sync_to_async
+    
+    cmd = Command()
+    df = pl.DataFrame([
+        {
+            "url": "http://localhost:8000/api/v1/monitor/status_pages/4753b71e-1234-5678-abcd-ef0123456789/services",
+            "status_code": 200,
+            "response_time": 0.05,
+            "ip_address": "127.0.0.1",
+            "is_active": True
+        },
+        {
+            "url": "http://localhost:8000/api/v1/monitor/status_pages/82f8cc41-9876-5432-fedc-ba9876543210/services",
+            "status_code": 200,
+            "response_time": 0.08,
+            "ip_address": "127.0.0.1",
+            "is_active": True
+        }
+    ])
+    
+    await cmd.save_to_db(df)
+    
+    # Both URLs should normalize and merge to a single service mapping to http://localhost:4200/status
+    services = await sync_to_async(list)(MonitoredService.objects.filter(url="http://localhost:4200/status"))
+    assert len(services) == 1
+    assert services[0].name == "Status Pages Services"
+    
+    # Endpoints should also use the normalized URL
+    endpoints = await sync_to_async(list)(Endpoints.objects.filter(url="http://localhost:4200/status"))
+    assert len(endpoints) == 2
+
+

@@ -100,11 +100,12 @@ def list_status_pages(request):
                 )
                 
                 if created:
-                    from monitor.models import MonitoredService
+                    from django.conf import settings
+                    frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:4200').rstrip('/')
                     MonitoredService.objects.get_or_create(
                         status_page=page,
                         name="Django Web Server",
-                        defaults={"url": f"{backend_url}/api/v1/system-status/health"}
+                        defaults={"url": f"{frontend_url}/"}
                     )
                     
                     brokers = get_kafka_brokers()

@@ -117,6 +117,11 @@ class Command(BaseCommand):
         # Ensure platform-status page exists
         from monitor.models import StatusPage, MonitoredService
         from django.contrib.auth.models import User
+        from django.conf import settings
+        from urllib.parse import urlparse
+        import re
+        
+        frontend_url = getattr(settings, 'FRONTEND_URL', 'http://localhost:4200').rstrip('/')
         
         try:
             page = StatusPage.objects.get(slug="platform-status")
@@ -136,36 +141,72 @@ class Command(BaseCommand):
                 description="Monitoring system health and telemetry pipelines for the Data Engineering Platform."
             )
 
+        def get_normalized_info(url_str):
+            if not url_str:
+                return f"{frontend_url}/", "Django Web Server"
+            if "9092" in url_str:
+                return url_str, "Redpanda Broker"
+                
+            parsed = urlparse(url_str)
+            path = parsed.path.strip('/')
+            
+            # Default fallback mappings
+            norm_url = f"{frontend_url}/"
+            name = "Django Web Server"
+            
+            if "system-status/health" in path:
+                norm_url = f"{frontend_url}/"
+                name = "Django Web Server"
+            elif "auth/user" in path:
+                norm_url = f"{frontend_url}/manage"
+                name = "Auth User"
+            elif "auth/register" in path:
+                norm_url = f"{frontend_url}/"
+                name = "Auth Register"
+            elif "model/latest" in path:
+                norm_url = f"{frontend_url}/status"
+                name = "Model Latest"
+            elif "telemetry/cookie-consent" in path:
+                norm_url = f"{frontend_url}/privacy"
+                name = "Telemetry Cookie Consent"
+            elif "status_pages" in path:
+                if "services" in path:
+                    norm_url = f"{frontend_url}/status"
+                    name = "Status Pages Services"
+                elif "incidents" in path:
+                    norm_url = f"{frontend_url}/status"
+                    name = "Status Pages Incidents"
+                elif "slug" in path:
+                    norm_url = f"{frontend_url}/status"
+                    name = "Status Pages Slug Platform Status"
+                else:
+                    norm_url = f"{frontend_url}/manage"
+                    name = "Status Pages"
+                    
+            return norm_url, name
+
+        # Clean/Normalize the dataframe URLs and track names
+        url_mapping = {}
+        normalized_data = []
+        for row in df.iter_rows(named=True):
+            norm_url, name = get_normalized_info(row['url'])
+            url_mapping[norm_url] = name
+            
+            row_dict = dict(row)
+            row_dict['url'] = norm_url
+            normalized_data.append(row_dict)
+            
+        df = pl.DataFrame(normalized_data)
+
         # Collect unique urls from df and ensure they are added
         urls = list(df['url'].unique())
         existing_urls = set(MonitoredService.objects.filter(status_page=page, url__in=urls).values_list('url', flat=True))
-
-        def clean_service_name(url_str):
-            if "system-status/health" in url_str:
-                return "Django Web Server"
-            if "9092" in url_str:
-                return "Redpanda Broker"
-            from urllib.parse import urlparse, parse_qs
-            parsed = urlparse(url_str)
-            path = parsed.path.strip('/')
-            host = parsed.netloc
-            if not path:
-                return host
-            parts = [p.capitalize() for p in path.split('/') if p]
-            
-            params = parse_qs(parsed.query)
-            suffix = ""
-            if "status_page_id" in params:
-                sp_id = params["status_page_id"][0]
-                suffix = f" {sp_id}"
-                
-            return f"{host} - {' '.join(parts)}{suffix}"
 
         for u in urls:
             if u not in existing_urls:
                 MonitoredService.objects.create(
                     status_page=page,
-                    name=clean_service_name(u),
+                    name=url_mapping.get(u, "Django Web Server"),
                     url=u
                 )
 
