@@ -51,6 +51,7 @@ export class Landing implements OnInit, OnDestroy {
   successMessage = signal('');
   errorMessage = signal('');
   showErrors = false;
+  videoPlaying = signal(false);
 
   activeStepIndex = 0;
   private intervalId: any;

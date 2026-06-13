@@ -55,13 +55,26 @@
       </div>
       <div class="video-frame-flat">
         <video
+          #videoPlayer
           [src]="video.videoUrl"
           controls
           preload="metadata"
           playsinline
           class="platform-video-player-flat"
           [attr.aria-label]="video.title"
+          (play)="videoPlaying.set(true)"
+          (pause)="videoPlaying.set(false)"
+          (ended)="videoPlaying.set(false)"
         ></video>
+        @if (!videoPlaying()) {
+        <div class="video-overlay" (click)="videoPlayer.play()">
+          <div class="overlay-glow"></div>
+          <div class="play-button-premium">
+            <mat-icon class="play-icon">play_arrow</mat-icon>
+          </div>
+          <span class="play-hint">CLICK TO INITIALIZE FEED</span>
+        </div>
+        }
       </div>
       @if (video.description) {
       <div class="video-flat-info">
@@ -278,31 +291,22 @@
       </div>
 
       <form (ngSubmit)="onSubscribe()" #subForm="ngForm" class="newsletter-form" novalidate>
-        <div class="form-row">
-          <div class="input-container">
-            <input
-              type="email"
-              [(ngModel)]="emailVal"
-              name="email"
-              #emailInput="ngModel"
-              required
-              email
-              placeholder="name@company.com"
-              aria-label="Email address"
-              [class.error]="showErrors && (emailInput.invalid || !emailVal)"
-              class="newsletter-input"
-            />
-            @if (showErrors && (emailInput.invalid || !emailVal)) {
-            <span class="error-message">Please enter a valid email address.</span>
-            }
-          </div>
-          <button type="submit" [disabled]="submitting()" class="subscribe-btn">
-            @if (submitting()) {
-            <span>Submitting...</span>
-            } @else {
-            <span>Subscribe</span>
-            }
-          </button>
+        <div class="input-container">
+          <input
+            type="email"
+            [(ngModel)]="emailVal"
+            name="email"
+            #emailInput="ngModel"
+            required
+            email
+            placeholder="name@company.com"
+            aria-label="Email address"
+            [class.error]="showErrors && (emailInput.invalid || !emailVal)"
+            class="newsletter-input"
+          />
+          @if (showErrors && (emailInput.invalid || !emailVal)) {
+          <span class="error-message">Please enter a valid email address.</span>
+          }
         </div>
 
         <div class="consent-container">
@@ -325,6 +329,14 @@
           <span class="error-message block">You must accept the Terms and Conditions.</span>
           }
         </div>
+
+        <button type="submit" [disabled]="submitting()" class="subscribe-btn">
+          @if (submitting()) {
+          <span>Submitting...</span>
+          } @else {
+          <span>Subscribe</span>
+          }
+        </button>
       </form>
 
       @if (successMessage()) {
