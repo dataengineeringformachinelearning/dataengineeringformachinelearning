@@ -123,6 +123,21 @@ To guarantee layout consistency and a pixel-perfect feel, follow these guideline
 
 - Use standard green-sage colors (`var(--primary-color)` and `var(--accent-color)`) for glow spheres across all pages. Yellow/orange gradients or spheres should not be used as page accents in light mode.
 
+### SaaS Grid & Modular Spacing (deepmind.google style)
+
+To make everything look modularly slotted in with perfect visual cohesiveness, components must use standard layout tokens:
+
+- **Spacing Variables**:
+  - `--grid-gap`: `2rem` (for spacing between major page sections and card grids).
+  - `--card-padding`: `1.5rem` (for internal padding of all panels and status cards).
+  - `--container-max-width`: `1100px` (for unified page content boundary).
+- **Component Radii & Transitions**:
+  - `--border-radius-lg`: `20px` (for landing grids, simulators, and feature cards).
+  - `--border-radius-md`: `12px` (for standard status cards, tables, and dialogs).
+  - `--border-radius-sm`: `8px` (for form fields, small buttons, and items).
+  - `--transition-smooth`: `all 0.3s cubic-bezier(0.4, 0, 0.2, 1)` (for elegant micro-interactions).
+- **Equal Gaps**: Grid layouts and flex rows must strictly use `var(--grid-gap)` or `var(--card-padding)` to maintain modular slot-in visual alignment across all screens.
+
 ---
 
 ## 5. Implementation

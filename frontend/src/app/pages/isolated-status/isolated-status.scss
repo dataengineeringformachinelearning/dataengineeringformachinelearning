@@ -61,9 +61,9 @@
 }
 
 .standalone-status-layout {
-  max-width: 960px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 2rem 1.5rem 0;
+  padding: var(--grid-gap) var(--card-padding) 0;
   width: 100%;
   position: relative;
   z-index: 1;
@@ -244,12 +244,12 @@
 .standalone-sla-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: var(--border-radius-lg);
+  padding: var(--card-padding);
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  transition: all 0.2s ease;
+  transition: var(--transition-smooth);
 
   &:hover {
     border-color: var(--status-accent);
@@ -329,9 +329,9 @@
 .standalone-services-section {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2.5rem;
+  border-radius: var(--border-radius-lg);
+  padding: var(--card-padding);
+  margin-bottom: var(--grid-gap);
 
   .section-title-wrapper {
     display: flex;
@@ -538,9 +538,9 @@
 .standalone-uptime-section {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2.5rem;
+  border-radius: var(--border-radius-lg);
+  padding: var(--card-padding);
+  margin-bottom: var(--grid-gap);
 
   .uptime-header {
     display: flex;
@@ -621,9 +621,9 @@
 .standalone-incidents-section {
   background: var(--card-bg);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 2rem;
-  margin-bottom: 2.5rem;
+  border-radius: var(--border-radius-lg);
+  padding: var(--card-padding);
+  margin-bottom: var(--grid-gap);
 
   .section-title-wrapper {
     display: flex;

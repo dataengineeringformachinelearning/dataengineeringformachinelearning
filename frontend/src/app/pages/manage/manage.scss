@@ -193,31 +193,32 @@
 
 .dashboard-content-area {
   flex: 1;
-  padding: 1rem;
+  padding: var(--grid-gap);
 }
 
 .content-wrapper {
-  max-width: 900px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
 }
 
 .manage-stack {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: var(--grid-gap);
 }
 
 /* Outlined Content Card */
 .status-card-outlined {
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   border: 1px solid var(--border);
   background-color: var(--card-bg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
 }
 
 .card-header-clean {
-  padding: 1.25rem 1.5rem;
+  padding: var(--card-padding);
   border-bottom: 1px solid var(--border);
   background-color: rgba(255, 255, 255, 0.01);
   display: flex;
@@ -301,7 +302,7 @@
 }
 
 .card-body-clean {
-  padding: 1.25rem 1.5rem;
+  padding: var(--card-padding);
 }
 
 .panel-section {
@@ -332,8 +333,8 @@
 .panel-clean {
   background-color: rgba(255, 255, 255, 0.01);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1.5rem;
+  border-radius: var(--border-radius-md);
+  padding: var(--card-padding);
   margin-bottom: 1.25rem;
 }
 
@@ -687,11 +688,11 @@
   }
 
   .dashboard-content-area {
-    padding: 2rem;
+    padding: var(--grid-gap);
   }
 
   .card-header-clean {
-    padding: 2rem 2rem 1.5rem 2rem;
+    padding: var(--card-padding);
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -704,7 +705,7 @@
   }
 
   .card-body-clean {
-    padding: 2rem;
+    padding: var(--card-padding);
   }
 
   .settings-form-panel {
