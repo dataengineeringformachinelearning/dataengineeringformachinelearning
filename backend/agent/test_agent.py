@@ -49,3 +49,52 @@ async def test_report_issue_endpoint(async_client):
       telemetry_context=payload["telemetry_context"],
       bug_report_id=data["id"],
     )
+
+
+@pytest.mark.django_db
+def test_vulnerability_lifecycle(client):
+  # 1. Report a vulnerability
+  payload = {
+    "title": "SQL Injection in Search Endpoint",
+    "description": "Found a potential SQLi vulnerability at /api/explore",
+    "telemetry_context": {"browser": "Chrome"},
+    "customer_id": "Cust-123",
+    "severity": "High",
+  }
+
+  response = client.post(
+    "/api/v1/agent/vulnerabilities", data=payload, content_type="application/json"
+  )
+  assert response.status_code == 200
+  data = response.json()
+  assert data["title"] == payload["title"]
+  assert data["severity"] == "High"
+  assert data["status"] == "Triage"
+  vuln_id = data["id"]
+
+  # 2. Get list of vulnerabilities
+  list_response = client.get("/api/v1/agent/vulnerabilities")
+  assert list_response.status_code == 200
+  vulns = list_response.json()
+  assert len(vulns) >= 1
+  assert any(v["id"] == vuln_id for v in vulns)
+
+  # 3. Update/Prioritize the vulnerability
+  update_payload = {
+    "status": "In Progress",
+    "impact": 5,
+    "likelihood": 4,
+    "severity": "Critical",
+  }
+
+  update_response = client.patch(
+    f"/api/v1/agent/vulnerabilities/{vuln_id}",
+    data=update_payload,
+    content_type="application/json",
+  )
+  assert update_response.status_code == 200
+  updated_data = update_response.json()
+  assert updated_data["status"] == "In Progress"
+  assert updated_data["impact"] == 5
+  assert updated_data["likelihood"] == 4
+  assert updated_data["severity"] == "Critical"

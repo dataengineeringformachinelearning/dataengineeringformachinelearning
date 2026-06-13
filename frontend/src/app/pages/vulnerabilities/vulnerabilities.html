@@ -1,0 +1,252 @@
+<div class="status-container">
+  <!-- Glowing atmospheric spheres -->
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+
+  <div class="dashboard-layout">
+    <!-- Platform Sidebar -->
+    <app-sidebar></app-sidebar>
+
+    <!-- Main Content Area -->
+    <main class="dashboard-main">
+      <!-- High Density HUD Header -->
+      <header class="hud-header">
+        <div class="hud-brand">
+          <div class="pulse-indicator"></div>
+          <div class="title-group">
+            <h1 class="hud-title">VULNERABILITY PRIORITIZATION & TRIAGE</h1>
+            <p class="hud-subtitle">
+              Active security threat monitoring and telemetry orchestration
+            </p>
+          </div>
+        </div>
+
+        <div class="hud-metrics">
+          <div class="metric-card">
+            <span class="metric-label">TOTAL INGESTED</span>
+            <span class="metric-value">{{ totalCount() }}</span>
+          </div>
+          <div class="metric-card warning">
+            <span class="metric-label">ACTIVE THREATS</span>
+            <span class="metric-value">{{ openCount() }}</span>
+          </div>
+          <div class="metric-card critical">
+            <span class="metric-label">CRITICAL CVSS</span>
+            <span class="metric-value">{{ criticalCount() }}</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Panel Grid -->
+      <div class="dashboard-grid">
+        <!-- Left Triage Queue Panel -->
+        <section class="panel-section queue-panel">
+          <div class="panel-header">
+            <mat-icon class="panel-icon">sort</mat-icon>
+            <h2>Ingestion Queue</h2>
+            <div class="count-badge">{{ filteredVulnerabilities().length }}</div>
+          </div>
+
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label for="status-filter">Status</label>
+              <select
+                id="status-filter"
+                [ngModel]="filterStatus()"
+                (ngModelChange)="filterStatus.set($event)"
+              >
+                @for (status of statuses; track status) {
+                <option [value]="status">{{ status }}</option>
+                }
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="severity-filter">Severity</label>
+              <select
+                id="severity-filter"
+                [ngModel]="filterSeverity()"
+                (ngModelChange)="filterSeverity.set($event)"
+              >
+                @for (severity of severities; track severity) {
+                <option [value]="severity">{{ severity }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <div class="queue-list">
+            @if (vulnService.isLoading()) {
+            <div class="loader-state">
+              <span class="spinner"></span>
+              <p>Ingesting feed...</p>
+            </div>
+            } @else if (filteredVulnerabilities().length === 0) {
+            <div class="empty-state">
+              <mat-icon>security</mat-icon>
+              <p>No vulnerabilities reported matching filters.</p>
+            </div>
+            } @else { @for (v of filteredVulnerabilities(); track v.id) {
+            <div
+              class="queue-item"
+              [class.active]="selectedVuln()?.id === v.id"
+              (click)="selectVulnerability(v)"
+            >
+              <div class="item-header">
+                <span class="item-id">VULN-{{ v.id.substring(0, 8).toUpperCase() }}</span>
+                <span class="item-badge" [attr.data-severity]="v.severity.toLowerCase()">
+                  {{ v.severity }}
+                </span>
+              </div>
+              <h3 class="item-title">{{ v.title }}</h3>
+              <div class="item-footer">
+                <span class="client-id"><mat-icon>dns</mat-icon> {{ v.customer_id }}</span>
+                <span
+                  class="status-indicator"
+                  [attr.data-status]="v.status.toLowerCase().replace(' ', '-')"
+                >
+                  {{ v.status }}
+                </span>
+              </div>
+            </div>
+            } }
+          </div>
+        </section>
+
+        <!-- Center Triage Detail & Interactive Matrix Panel -->
+        <section class="panel-section detail-panel">
+          @if (selectedVuln()) {
+          <div class="panel-header border-b">
+            <mat-icon class="panel-icon">assessment</mat-icon>
+            <h2>Vulnerability Profile & Prioritization</h2>
+          </div>
+
+          <div class="detail-scrollable">
+            <!-- Threat Identification Info -->
+            <div class="vuln-profile-header">
+              <div class="profile-title-row">
+                <span class="vuln-id-tag">REF: {{ selectedVuln()?.id }}</span>
+                @if (selectedVuln()?.cve_id) {
+                <span class="cve-tag">{{ selectedVuln()?.cve_id }}</span>
+                }
+              </div>
+              <h2 class="profile-title">{{ selectedVuln()?.title }}</h2>
+              <p class="profile-desc">{{ selectedVuln()?.description }}</p>
+            </div>
+
+            <!-- Interactive Risk Matrix Grid -->
+            <div class="prioritization-section">
+              <div class="section-title">
+                <mat-icon>grid_view</mat-icon>
+                <h3>3x3 Risk Prioritization Matrix</h3>
+              </div>
+              <p class="section-subtitle">
+                Click cell intersections to map likelihood and impact. Severity will dynamically
+                recalculate.
+              </p>
+
+              <div class="matrix-container">
+                <!-- Y-Axis Label -->
+                <div class="y-axis-label">IMPACT</div>
+
+                <!-- Matrix Area -->
+                <div class="matrix-grid">
+                  @for (impact of matrixAxes; track impact) {
+                  <!-- Grid Row (Impact values reversed to display high impact at top) -->
+                  <div class="matrix-row">
+                    <!-- Impact row label -->
+                    <span class="row-label">{{ 4 - impact }}</span>
+
+                    @for (likelihood of matrixAxes; track likelihood) {
+                    <button
+                      class="matrix-cell"
+                      [attr.data-level]="getCellColor(4 - impact, likelihood)"
+                      [class.selected]="selectedVuln()?.impact === (4 - impact) && selectedVuln()?.likelihood === likelihood"
+                      (click)="setMatrixCell(4 - impact, likelihood)"
+                      aria-label="Set impact to {{ 4 - impact }} and likelihood to {{ likelihood }}"
+                    >
+                      <span class="cell-score">{{ (4 - impact) * likelihood }}</span>
+                    </button>
+                    }
+                  </div>
+                  }
+
+                  <!-- X-Axis Labels -->
+                  <div class="matrix-row labels-row">
+                    <span class="row-label-placeholder"></span>
+                    <span class="col-label">1 (Low)</span>
+                    <span class="col-label">2 (Med)</span>
+                    <span class="col-label">3 (High)</span>
+                  </div>
+
+                  <!-- X-Axis Main Label -->
+                  <div class="x-axis-label">LIKELIHOOD</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Action Triage Bar -->
+            <div class="triage-action-bar">
+              <div class="action-title">
+                <mat-icon>tune</mat-icon>
+                <h3>Update Status</h3>
+              </div>
+              <div class="btn-group">
+                <button
+                  class="btn-triage"
+                  [class.active]="selectedVuln()?.status === 'Triage'"
+                  (click)="updateStatus('Triage')"
+                >
+                  Triage
+                </button>
+                <button
+                  class="btn-triage"
+                  [class.active]="selectedVuln()?.status === 'Open'"
+                  (click)="updateStatus('Open')"
+                >
+                  Open
+                </button>
+                <button
+                  class="btn-triage"
+                  [class.active]="selectedVuln()?.status === 'In Progress'"
+                  (click)="updateStatus('In Progress')"
+                >
+                  In Progress
+                </button>
+                <button
+                  class="btn-triage"
+                  [class.active]="selectedVuln()?.status === 'Resolved'"
+                  (click)="updateStatus('Resolved')"
+                >
+                  Resolved
+                </button>
+                <button
+                  class="btn-triage"
+                  [class.active]="selectedVuln()?.status === 'False Positive'"
+                  (click)="updateStatus('False Positive')"
+                >
+                  False Positive
+                </button>
+              </div>
+            </div>
+
+            <!-- Diagnostic Telemetry Code Section -->
+            <div class="telemetry-section">
+              <div class="section-title">
+                <mat-icon>terminal</mat-icon>
+                <h3>Diagnostic Telemetry Context</h3>
+              </div>
+              <pre class="telemetry-code"><code>{{ getTelemetryJson(selectedVuln()!) }}</code></pre>
+            </div>
+          </div>
+          @} @else {
+          <div class="no-selection-state">
+            <mat-icon class="huge-icon">biotech</mat-icon>
+            <h2>No Vulnerability Selected</h2>
+            <p>Select an item from the triage queue to examine telemetry and manage risk scores.</p>
+          </div>
+          }
+        </section>
+      </div>
+    </main>
+  </div>
+</div>

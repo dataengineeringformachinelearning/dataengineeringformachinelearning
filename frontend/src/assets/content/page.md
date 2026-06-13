@@ -924,6 +924,36 @@ It also ensures that version strings in `version.txt` are synced into both the f
 
 ---
 
+## Chapter 19: Third-Party Telemetry and Cloudflare Integration
+
+### Chapter 19.1: Introduction
+
+#### Chapter 19.1.1: Expanding Supported Telemetry Providers with Cloudflare Analytics
+
+To provide tenants with comprehensive third-party telemetry, we integrated Cloudflare Web Analytics alongside our existing Google Analytics 4 and Microsoft Clarity providers.
+
+1. **Database Schema & Encryption**: Added fields to support the Cloudflare API tokens, which are automatically encrypted at-rest using our existing AES-256 Fernet implementation.
+2. **Backend API Endpoints**: Formulated views to securely save, update, and manage Cloudflare token credentials.
+3. **Dynamic Script Injection**: Built a service that parses active settings and injects the corresponding Cloudflare Web Analytics JS beacon to track platform visits dynamically.
+
+---
+
+## Chapter 20: Team Workflows and Vulnerability Management with Plane
+
+### Chapter 20.1: Introduction
+
+#### Chapter 20.1.1: Vulnerability Tracking with Plane.so
+
+To facilitate structured triaging and resolution of security concerns, the platform integrates with Plane (plane.so)—an open-source project management tool.
+
+1. **Bidirectional Sync**: We created workflows to synchronize vulnerability states and security reports directly with Plane projects, automating issue creation, prioritization, and tracking.
+2. **Pre-Commit Accessibility Scanning**: Configured `axe-core` accessibility checks within git pre-commit hooks to automatically validate changed HTML files for WCAG 2.1 AA compliance (e.g., heading hierarchy and ARIA roles).
+3. **UI Enhancements**:
+   - Developed a **Boneyard-inspired skeleton loader** providing sleek, pixel-perfect layout shimmers during asynchronous data fetching.
+   - Refactored frontend and backend styling to present a luxurious, high-contrast **Porsche Jet Green Metallic-inspired color palette**, aligning status widgets, accordions, and typography for a premium, unified aesthetic.
+
+---
+
 ## My Notes on Deployment & Release
 
 Throughout this book's draft, we build a platform fully optimized and ready for production release. I've configured the final deployment on Railway across three integrated services:
@@ -940,7 +970,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Backend & APIs**: [Django](https://www.djangoproject.com) ([Django Ninja](https://django-ninja.rest-framework.com)), [Gunicorn](https://gunicorn.org), [NGINX](https://nginx.org), [cryptography](https://cryptography.io)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org), [Redpanda](https://redpanda.com), [Polars](https://pola.rs)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Resend](https://resend.com)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Cloudflare Web Analytics](https://cloudflare.com), [Plane](https://plane.so), [Resend](https://resend.com)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
 - **Graphics & Icons**: "Data Quality" icon by vectorspoint from Noun Project (https://thenounproject.com/icon/data-quality-6448061/)
 

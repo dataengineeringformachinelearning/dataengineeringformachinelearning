@@ -181,3 +181,38 @@ class DataEncryptionKey(models.Model):
 
   def __str__(self):
     return f"DEK {self.id} (created: {self.created_at}, active: {self.is_active})"
+
+
+class Vulnerability(models.Model):
+  STATUS_CHOICES = [
+    ("Triage", "Triage"),
+    ("Open", "Open"),
+    ("In Progress", "In Progress"),
+    ("Resolved", "Resolved"),
+    ("False Positive", "False Positive"),
+  ]
+  SEVERITY_CHOICES = [
+    ("Low", "Low"),
+    ("Medium", "Medium"),
+    ("High", "High"),
+    ("Critical", "Critical"),
+  ]
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  title = models.CharField(max_length=255)
+  description = models.TextField()
+  status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="Triage")
+  severity = models.CharField(max_length=50, choices=SEVERITY_CHOICES, default="Medium")
+  impact = models.IntegerField(default=3)  # 1 to 5 scale
+  likelihood = models.IntegerField(default=3)  # 1 to 5 scale
+  cve_id = models.CharField(max_length=100, blank=True, null=True)
+  customer_id = models.CharField(max_length=100, default="Internal")
+  telemetry_context = models.JSONField(null=True, blank=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "vulnerabilities"
+    ordering = ["-created_at"]
+
+  def __str__(self):
+    return f"{self.title} - {self.severity} ({self.status})"

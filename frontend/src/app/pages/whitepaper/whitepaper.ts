@@ -142,7 +142,7 @@ export class Whitepaper implements OnInit {
       {
         title: '5. ML-Powered 90-Day Threat Detection & Telemetry Ingestion',
         paragraphs: [
-          'Our current integration within the Data Engineering for Machine Learning Platform (DEML Platform) with third-party analytics platforms (Google Analytics / GA4 and Microsoft Clarity) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 90 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.',
+          'Our integration within the Data Engineering for Machine Learning Platform (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 90 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.',
         ],
       },
       {
@@ -157,13 +157,20 @@ export class Whitepaper implements OnInit {
         title: '7. Data Tenancy, Retention, and Lifecycle Policy',
         paragraphs: [
           "Observability systems must ensure strict isolation. The DEML Platform enforces absolute multi-tenancy boundaries at the database level and ensures all data is private-by-default. Direct cross-tenant fallbacks (such as global threat reports) are strictly eliminated; instead, threat models and predictions are trained exclusively on the target user's telemetry. If a tenant does not yet have enough collected telemetry, the model is trained on-demand using safe, zero-threat baselines instead of shared data.",
-          'To protect sensitive credentials (such as Google Analytics 4 tokens and Microsoft Clarity API keys) from unauthorized exposure, the platform utilizes transparent application-level AES-256 Fernet encryption at-rest. Furthermore, public access to status page details, services, incidents, and telemetry graphs is strictly restricted. Unless the status page owner explicitly approves by publishing the page, the system blocks all public traffic, preventing the exposure of private endpoints or telemetry.',
+          'To protect sensitive credentials (such as Google Analytics 4 tokens, Microsoft Clarity API keys, and Cloudflare tokens) from unauthorized exposure, the platform utilizes transparent application-level AES-256 Fernet encryption at-rest. Furthermore, public access to status page details, services, incidents, and telemetry graphs is strictly restricted. Unless the status page owner explicitly approves by publishing the page, the system blocks all public traffic, preventing the exposure of private endpoints or telemetry.',
           'Additionally, the platform implements a strict 90-day retention and lifecycle policy. All telemetry data, log entries, incident histories, and historical ML reports are purged from the database exactly 90 days after their creation date. The ML training worker automatically triggers full model retraining and telemetry cleanup upon application deployment and runs continuously every hour.',
           'Furthermore, our engineering roadmap includes integrations with monetization systems like Stripe. This will enable paid tiers where models and forecasts are refreshed at a high-frequency interval (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.',
         ],
       },
       {
-        title: '8. Conclusion',
+        title: '8. Team Workflows and Vulnerability Management with Plane',
+        paragraphs: [
+          'To facilitate collaborative security workflows and structured issue tracking, the platform integrates with Plane (plane.so), an open-source project management platform. This integration synchronizes detected vulnerabilities and security incidents directly into Plane boards, allowing security teams to prioritize, assign, and track remediation efforts.',
+          'Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. To maintain high visual quality, we implemented a custom skeleton loader for smooth page-loading transitions, and aligned the user interface with a premium, high-contrast Porsche Jet Green Metallic-inspired design system.',
+        ],
+      },
+      {
+        title: '9. Conclusion',
         paragraphs: [
           'By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.',
         ],

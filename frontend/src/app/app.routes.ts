@@ -10,6 +10,7 @@ import { Explore } from './pages/explore/explore';
 import { IsolatedStatus } from './pages/isolated-status/isolated-status';
 import { Whitepaper } from './pages/whitepaper/whitepaper';
 import { Compliance } from './pages/compliance/compliance';
+import { Vulnerabilities } from './pages/vulnerabilities/vulnerabilities';
 
 export const routes: Routes = [
   { path: '', component: Landing },
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { path: 'status/:slug', component: IsolatedStatus },
   { path: 'explore', component: Explore },
   { path: 'manage', component: Manage },
+  { path: 'vulnerabilities', component: Vulnerabilities },
   { path: 'compliance', component: Compliance },
   { path: 'privacy', component: Privacy },
   { path: 'terms', component: Terms },

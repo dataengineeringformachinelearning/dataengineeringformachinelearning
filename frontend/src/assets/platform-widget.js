@@ -1,0 +1,448 @@
+(() => {
+  if (customElements.get('platform-widget')) {
+    // If already registered, only run the auto-initialization for this script if not already done
+    const currentScript = document.currentScript;
+    if (currentScript && currentScript.hasAttribute('data-page-id')) {
+      const pageId = currentScript.getAttribute('data-page-id');
+      const backendUrl = currentScript.getAttribute('data-backend-url');
+
+      // Check if we already inserted the widget next to this script tag
+      if (!currentScript.nextSibling || currentScript.nextSibling.nodeName !== 'PLATFORM-WIDGET') {
+        const widget = document.createElement('platform-widget');
+        widget.setAttribute('data-page-id', pageId);
+        if (backendUrl) {
+          widget.setAttribute('data-backend-url', backendUrl);
+        }
+        currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);
+      }
+    }
+    return;
+  }
+
+  // Intercept console errors on host page safely to package as telemetry analytics
+  const recentErrors = [];
+  if (typeof window !== 'undefined') {
+    try {
+      const originalError = console.error;
+      console.error = (...args) => {
+        recentErrors.push(args.join(' '));
+        if (recentErrors.length > 5) recentErrors.shift();
+        originalError.apply(console, args);
+      };
+    } catch {}
+  }
+
+  // Helper for idle callbacks to optimize performance
+  const runWhenIdle = callback => {
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(callback);
+      } else {
+        setTimeout(callback, 200);
+      }
+    }
+  };
+
+  customElements.define(
+    'platform-widget',
+    class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({ mode: 'open' });
+        this.clientIp = '127.0.0.1';
+      }
+
+      async connectedCallback() {
+        const pageId = this.getAttribute('data-page-id');
+        if (!pageId) {
+          console.error('Widget missing data-page-id attribute');
+          return;
+        }
+
+        // Resolve URLs
+        const currentScript =
+          document.currentScript || document.querySelector('script[src*="platform-widget.js"]');
+        const scriptOrigin = currentScript
+          ? new URL(currentScript.src).origin
+          : window.location.origin;
+
+        const frontendHost =
+          !scriptOrigin.includes('localhost') && !scriptOrigin.includes('127.0.0.1')
+            ? 'https://dataengineeringformachinelearning.com'
+            : scriptOrigin;
+
+        const backendUrl =
+          this.getAttribute('data-backend-url') ||
+          (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')
+            ? 'http://localhost:8000'
+            : 'https://backend.dataengineeringformachinelearning.com');
+
+        // Resolve Client IP lazily during idle cycles
+        runWhenIdle(async () => {
+          try {
+            const ipRes = await fetch('https://api.ipify.org?format=json');
+            if (ipRes.ok) {
+              const ipData = await ipRes.json();
+              this.clientIp = ipData.ip || '127.0.0.1';
+            }
+          } catch {}
+        });
+
+        // Set up Shadow DOM structure including status indicators and vulnerability modal triggers
+        this.shadowRoot.innerHTML = `
+        <link rel="stylesheet" href="${frontendHost}/assets/platform-widget.css">
+        <div class="widget-container">
+          <a class="widget-link" href="${frontendHost}/status/${pageId}" target="_blank">
+            <span class="status-dot"></span>
+            <span class="status-text">Loading status...</span>
+          </a>
+          <span class="divider">|</span>
+          <button class="report-trigger" title="Report Security Vulnerability">
+            <svg class="report-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-overlay" style="display: none;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                Report Security Threat
+              </h3>
+              <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+              <p class="helper-text">Transmit vulnerabilities directly to triage. Technical telemetry will be attached automatically.</p>
+
+              <div class="form-field">
+                <label>Vulnerability Title</label>
+                <input type="text" class="input-title" placeholder="Summary of threat..." />
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label>Severity</label>
+                  <select class="input-severity">
+                    <option value="Low">Low</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                  </select>
+                </div>
+                <div class="form-field">
+                  <label>CVE ID (Optional)</label>
+                  <input type="text" class="input-cve" placeholder="E.g. CVE-2026-12345" />
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label>Description & Repro Steps</label>
+                <textarea class="input-desc" rows="4" placeholder="Detail how to reproduce the vulnerability..."></textarea>
+              </div>
+
+              <div class="status-msg" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-cancel">Cancel</button>
+              <button class="btn btn-submit">Submit Report</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+        const widgetLink = this.shadowRoot.querySelector('.widget-link');
+        const dot = this.shadowRoot.querySelector('.status-dot');
+        const text = this.shadowRoot.querySelector('.status-text');
+
+        // Modal triggers
+        const reportTrigger = this.shadowRoot.querySelector('.report-trigger');
+        const modalOverlay = this.shadowRoot.querySelector('.modal-overlay');
+        const closeBtn = this.shadowRoot.querySelector('.close-btn');
+        const btnCancel = this.shadowRoot.querySelector('.btn-cancel');
+        const btnSubmit = this.shadowRoot.querySelector('.btn-submit');
+        const statusMsg = this.shadowRoot.querySelector('.status-msg');
+
+        // Modal inputs
+        const inputTitle = this.shadowRoot.querySelector('.input-title');
+        const inputSeverity = this.shadowRoot.querySelector('.input-severity');
+        const inputCve = this.shadowRoot.querySelector('.input-cve');
+        const inputDesc = this.shadowRoot.querySelector('.input-desc');
+
+        const toggleModal = () => {
+          const visible = modalOverlay.style.display !== 'none';
+          modalOverlay.style.display = visible ? 'none' : 'flex';
+          if (!visible) {
+            inputTitle.value = '';
+            inputDesc.value = '';
+            inputCve.value = '';
+            statusMsg.style.display = 'none';
+            btnSubmit.disabled = false;
+          }
+        };
+
+        reportTrigger.addEventListener('click', toggleModal);
+        closeBtn.addEventListener('click', toggleModal);
+        btnCancel.addEventListener('click', toggleModal);
+
+        const getBrowserThreatIndicators = () => {
+          const indicators = {
+            referrer: document.referrer || 'Direct',
+            language: navigator.language,
+            platform: navigator.platform,
+            cores: navigator.hardwareConcurrency || 'N/A',
+            memory_gb: navigator.deviceMemory || 'N/A',
+            webdriver: navigator.webdriver ? true : false,
+            plugins_count: navigator.plugins ? navigator.plugins.length : 0,
+            visibility_state: document.visibilityState || 'visible',
+            screen_color_depth: window.screen ? window.screen.colorDepth : 'N/A',
+            network_connection: {},
+          };
+
+          try {
+            if (navigator.connection) {
+              const conn = navigator.connection;
+              indicators.network_connection = {
+                effective_type: conn.effectiveType,
+                rtt_ms: conn.rtt,
+                downlink_mbps: conn.downlink,
+              };
+            }
+          } catch {}
+          return indicators;
+        };
+
+        btnSubmit.addEventListener('click', async () => {
+          const title = inputTitle.value.trim();
+          const description = inputDesc.value.trim();
+          if (!title || !description) return;
+
+          btnSubmit.disabled = true;
+          statusMsg.style.display = 'none';
+
+          let pageLoadTime = 0;
+          let domInteractive = 0;
+          let dnsLookup = 0;
+          let fcpTime = 0;
+          let protocol = 'unknown';
+          try {
+            const [navigation] = window.performance.getEntriesByType('navigation');
+            if (navigation) {
+              pageLoadTime = Math.round(navigation.loadEventEnd - navigation.startTime);
+              domInteractive = Math.round(navigation.domInteractive - navigation.startTime);
+              dnsLookup = Math.round(navigation.domainLookupEnd - navigation.domainLookupStart);
+              protocol = navigation.nextHopProtocol || 'unknown';
+            }
+            const paints = window.performance.getEntriesByType('paint');
+            const fcp = paints.find(p => p.name === 'first-contentful-paint');
+            if (fcp) {
+              fcpTime = Math.round(fcp.startTime);
+            }
+          } catch {}
+
+          const payload = {
+            title,
+            description,
+            cve_id: inputCve.value.trim() || undefined,
+            customer_id: pageId, // Map page identifier as reporter reference
+            severity: inputSeverity.value,
+            telemetry_context: {
+              origin_url: window.location.href,
+              userAgent: navigator.userAgent,
+              client_ip: this.clientIp,
+              reported_at: new Date().toISOString(),
+              screen_resolution: `${window.screen.width}x${window.screen.height}`,
+              viewport_size: `${window.innerWidth}x${window.innerHeight}`,
+              recent_console_errors: recentErrors,
+              performance_metrics: {
+                page_load_time_ms: pageLoadTime,
+                dom_interactive_time_ms: domInteractive,
+                dns_lookup_time_ms: dnsLookup,
+                first_contentful_paint_ms: fcpTime,
+                next_hop_protocol: protocol,
+              },
+              threat_indicators: getBrowserThreatIndicators(),
+            },
+          };
+
+          try {
+            const res = await fetch(`${backendUrl}/api/v1/agent/vulnerabilities`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+            if (res.ok) {
+              statusMsg.innerText = 'Threat reported successfully! Triage initiated.';
+              statusMsg.className = 'status-msg success';
+              statusMsg.style.display = 'block';
+              setTimeout(toggleModal, 2000);
+            } else {
+              throw new Error('Server returned error status');
+            }
+          } catch {
+            statusMsg.innerText = 'Failed to report threat. Please try again.';
+            statusMsg.className = 'status-msg error';
+            statusMsg.style.display = 'block';
+            btnSubmit.disabled = false;
+          }
+        });
+
+        // Automatically report client performance analytics to feed the Threat Analysis (TA) model
+        const reportAnalyticsToTa = async () => {
+          let responseTimeMs = 250; // Fallback default
+          let fcpTime = 0;
+          let protocol = 'unknown';
+          try {
+            const [navigation] = window.performance.getEntriesByType('navigation');
+            if (navigation && navigation.loadEventEnd > 0) {
+              responseTimeMs = Math.round(navigation.loadEventEnd - navigation.startTime);
+              protocol = navigation.nextHopProtocol || 'unknown';
+            } else if (window.performance.timing) {
+              const t = window.performance.timing;
+              if (t.loadEventEnd > 0 && t.navigationStart > 0) {
+                responseTimeMs = t.loadEventEnd - t.navigationStart;
+              }
+            }
+            const paints = window.performance.getEntriesByType('paint');
+            const fcp = paints.find(p => p.name === 'first-contentful-paint');
+            if (fcp) {
+              fcpTime = Math.round(fcp.startTime);
+            }
+          } catch {}
+
+          const telemetryPayload = {
+            url: window.location.href,
+            status_code: 200,
+            response_time_ms: responseTimeMs,
+            ip_address: this.clientIp,
+            is_active: true,
+            telemetry_context: {
+              performance_metrics: {
+                first_contentful_paint_ms: fcpTime,
+                next_hop_protocol: protocol,
+              },
+              threat_indicators: getBrowserThreatIndicators(),
+            },
+          };
+
+          try {
+            await fetch(`${backendUrl}/api/v1/telemetry/endpoints`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(telemetryPayload),
+            });
+          } catch (e) {
+            console.warn('Threat analysis telemetry reporting offline', e);
+          }
+        };
+
+        // Trigger analytics report once page finishes loading completely (idle-optimized)
+        if (document.readyState === 'complete') {
+          runWhenIdle(() => reportAnalyticsToTa());
+        } else {
+          window.addEventListener('load', () => {
+            runWhenIdle(() => reportAnalyticsToTa());
+          });
+        }
+
+        // Fetch and cache status parameters defensively (5 minute TTL)
+        const fetchStatus = async () => {
+          const cacheKey = `deml_status_cache_${pageId}`;
+          try {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+              const { data, timestamp } = JSON.parse(cached);
+              if (Date.now() - timestamp < 300000) {
+                // 5-minute TTL
+                widgetLink.href = data.href;
+                dot.style.backgroundColor = data.color;
+                text.innerText = data.text;
+                return;
+              }
+            }
+          } catch {}
+
+          const apiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
+          try {
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+            const page = data.find(p => p.id === pageId || p.slug === pageId);
+            if (page) {
+              const href = `${frontendHost}/status/${page.slug}`;
+              widgetLink.href = href;
+
+              let color = '#10b981';
+              let textContent = 'All Systems Operational';
+
+              try {
+                const [incidentsRes, servicesRes] = await Promise.all([
+                  fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`),
+                  fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`),
+                ]);
+                const incidents = await incidentsRes.json();
+                const services = await servicesRes.json();
+
+                const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
+                const outages = services.filter(s => s.status === 'Outage');
+                const degraded = services.filter(s => s.status === 'Degraded');
+
+                if (activeIncidents.length > 0) {
+                  color = '#ef4444';
+                  textContent = `Incident: ${activeIncidents[0].status}`;
+                } else if (outages.length > 0) {
+                  color = '#ef4444';
+                  textContent = 'Service Outage';
+                } else if (degraded.length > 0) {
+                  color = '#f59e0b';
+                  textContent = 'Degraded Performance';
+                }
+              } catch {}
+
+              dot.style.backgroundColor = color;
+              text.innerText = textContent;
+
+              try {
+                sessionStorage.setItem(
+                  cacheKey,
+                  JSON.stringify({
+                    data: { href, color, text: textContent },
+                    timestamp: Date.now(),
+                  }),
+                );
+              } catch {}
+            } else {
+              dot.style.backgroundColor = '#ef4444';
+              text.innerText = 'Status Page Not Found';
+            }
+          } catch {
+            dot.style.backgroundColor = '#94a3b8';
+            text.innerText = 'Status Unknown';
+          }
+        };
+
+        fetchStatus();
+      }
+    },
+  );
+
+  // Auto-initialize legacy script-only installations
+  const currentScript =
+    document.currentScript || document.querySelector('script[src*="platform-widget.js"]');
+  if (currentScript && currentScript.hasAttribute('data-page-id')) {
+    const pageId = currentScript.getAttribute('data-page-id');
+    const backendUrl = currentScript.getAttribute('data-backend-url');
+
+    const widget = document.createElement('platform-widget');
+    widget.setAttribute('data-page-id', pageId);
+    if (backendUrl) {
+      widget.setAttribute('data-backend-url', backendUrl);
+    }
+
+    currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);
+  }
+})();

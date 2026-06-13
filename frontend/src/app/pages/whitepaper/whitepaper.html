@@ -107,14 +107,15 @@
     <section class="paper-section">
       <h2>5. ML-Powered 90-Day Threat Detection & Telemetry Ingestion</h2>
       <p>
-        Our current integration within the **Data Engineering for Machine Learning Platform** (DEML
-        Platform) with third-party analytics platforms (Google Analytics / GA4 and Microsoft
-        Clarity) serves as a critical telemetry ingestion phase. By retrieving rich visitor logs,
-        geolocation distributions, and request patterns from these platforms, we train a custom
-        PyTorch neural network model (ThreatModel) to detect anomalies and forecast threat risks 90
-        days into the future. Looking forward, this third-party ingestion model serves as a
-        precursor to an embedded first-party client script and dynamic widget that tenants can load
-        directly on their sites, providing direct, zero-dependency telemetry streaming.
+        Our integration within the **Data Engineering for Machine Learning Platform** (DEML
+        Platform) with third-party analytics platforms (**Google Analytics / GA4**, **Microsoft
+        Clarity**, and **Cloudflare Web Analytics**) serves as a critical telemetry ingestion phase.
+        By retrieving rich visitor logs, geolocation distributions, token metrics, and request
+        patterns from these platforms, we train a custom PyTorch neural network model (ThreatModel)
+        to detect anomalies and forecast threat risks 90 days into the future. Looking forward, this
+        third-party ingestion model serves as a precursor to an embedded first-party client script
+        and dynamic widget that tenants can load directly on their sites, providing direct,
+        zero-dependency telemetry streaming.
       </p>
     </section>
 
@@ -156,12 +157,12 @@
         on-demand using safe, zero-threat baselines instead of shared data.
       </p>
       <p>
-        To protect sensitive credentials (such as Google Analytics 4 tokens and Microsoft Clarity
-        API keys) from unauthorized exposure, the platform utilizes transparent application-level
-        AES-256 Fernet encryption at-rest. Furthermore, public access to status page details,
-        services, incidents, and telemetry graphs is strictly restricted. Unless the status page
-        owner explicitly approves by publishing the page, the system blocks all public traffic,
-        preventing the exposure of private endpoints or telemetry.
+        To protect sensitive credentials (such as Google Analytics 4 tokens, Microsoft Clarity API
+        keys, and Cloudflare tokens) from unauthorized exposure, the platform utilizes transparent
+        application-level AES-256 Fernet encryption at-rest. Furthermore, public access to status
+        page details, services, incidents, and telemetry graphs is strictly restricted. Unless the
+        status page owner explicitly approves by publishing the page, the system blocks all public
+        traffic, preventing the exposure of private endpoints or telemetry.
       </p>
       <p>
         Additionally, the platform implements a strict 90-day retention and lifecycle policy. All
@@ -179,7 +180,24 @@
     </section>
 
     <section class="paper-section">
-      <h2>8. Conclusion</h2>
+      <h2>8. Team Workflows and Vulnerability Management with Plane</h2>
+      <p>
+        To facilitate collaborative security workflows and structured issue tracking, the platform
+        integrates with **Plane** (plane.so), an open-source project management platform. This
+        integration synchronizes detected vulnerabilities and security incidents directly into Plane
+        boards, allowing security teams to prioritize, assign, and track remediation efforts.
+      </p>
+      <p>
+        Furthermore, we enforce strict compliance by integrating automated accessibility scanners
+        (such as **Axe-Core**) directly into local Git hooks, ensuring no inaccessible templates are
+        staged or committed. To maintain high visual quality, we implemented a custom skeleton
+        loader for smooth page-loading transitions, and aligned the user interface with a premium,
+        high-contrast **Porsche Jet Green Metallic-inspired** design system.
+      </p>
+    </section>
+
+    <section class="paper-section">
+      <h2>9. Conclusion</h2>
       <p>
         By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep
         learning models, we establish a robust data engineering framework that elevates the

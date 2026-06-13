@@ -13,6 +13,7 @@ export const API_ENDPOINTS = {
   },
   AGENT: {
     REPORT_ISSUE: `${environment.backendUrl}/api/v1/agent/report-issue`,
+    VULNERABILITIES: `${environment.backendUrl}/api/v1/agent/vulnerabilities`,
   },
   TELEMETRY: {
     ENDPOINTS: `${environment.backendUrl}/api/v1/telemetry/endpoints`,
