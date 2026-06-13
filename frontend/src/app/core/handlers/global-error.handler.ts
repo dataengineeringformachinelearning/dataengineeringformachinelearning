@@ -1,6 +1,7 @@
 import { ErrorHandler, Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
 import { TelemetryService, TelemetryPayload } from '../services/telemetry.service';
 import { isPlatformBrowser } from '@angular/common';
+import * as Sentry from '@sentry/angular';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
@@ -23,6 +24,9 @@ export class GlobalErrorHandler implements ErrorHandler {
 
     // Call our resilient telemetry pipeline
     telemetryService.reportEndpointStatus(payload);
+
+    // Report to Sentry
+    Sentry.captureException(error);
 
     // Continue to throw to the console for developer debugging
     console.error('GlobalErrorHandler caught an error:', error);
