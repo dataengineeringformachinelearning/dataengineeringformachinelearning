@@ -1,0 +1,187 @@
+<div class="status-card-outlined" [id]="page.slug">
+  <div class="card-header-clean">
+    <div class="header-main-info">
+      <h2 class="card-title">{{ page.title }}</h2>
+      <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
+    </div>
+
+    @if (linkHeader) {
+    <a
+      [routerLink]="['/status', page.slug]"
+      class="status-badge-premium"
+      [ngClass]="getPageStatusClass()"
+    >
+      <span class="status-dot-greenblue"></span>
+      {{ getPageStatus() }}
+    </a>
+    } @else {
+    <div class="status-badge-premium" [ngClass]="getPageStatusClass()">
+      <span class="status-dot-greenblue"></span>
+      {{ getPageStatus() }}
+    </div>
+    }
+  </div>
+
+  <div class="card-body-clean">
+    <!-- SLA Section -->
+    <div class="ml-stat-panels-row">
+      <div class="ml-stat-panel">
+        <div class="stat-info">
+          <mat-icon class="stat-icon">dns</mat-icon>
+          <div>
+            <span class="stat-title">Cumulative SLA</span>
+            <span class="stat-subtitle">Based on real telemetry</span>
+          </div>
+        </div>
+        <div class="stat-value-container">
+          <span class="stat-value">
+            {{ (page.cumulative_sla !== null && page.cumulative_sla !== undefined ?
+            page.cumulative_sla : 100.0) | number:'1.2-2' }}%
+          </span>
+        </div>
+      </div>
+
+      <!-- Predictive SLA Section -->
+      <div class="ml-stat-panel">
+        <div class="stat-info">
+          <mat-icon class="stat-icon">online_prediction</mat-icon>
+          <div>
+            <span class="stat-title">Predicted SLA</span>
+            <span class="stat-subtitle">90-day forecast via ML</span>
+          </div>
+        </div>
+        <div class="stat-value-container">
+          <span class="stat-value">
+            {{ (predictedSla !== undefined && predictedSla !== null ? predictedSla : 99.99) |
+            number:'1.2-2' }}%
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Threat Intelligence Section -->
+    @if (threatReport) {
+    <div class="ml-stat-panels-row" style="margin-top: 16px">
+      <!-- Cumulative TA Section -->
+      <div class="ml-stat-panel">
+        <div class="stat-info">
+          <mat-icon class="stat-icon">security</mat-icon>
+          <div>
+            <span class="stat-title">Cumulative TA</span>
+            <span class="stat-subtitle">Based on real telemetry</span>
+          </div>
+        </div>
+        <div class="stat-value-container">
+          <span class="stat-value">
+            {{ ((threatReport.suspicious_ratio || 0) * 100) | number:'1.1-2' }}%
+          </span>
+        </div>
+      </div>
+
+      <!-- ML-Predicted 90-Day TA Section -->
+      <div class="ml-stat-panel">
+        <div class="stat-info">
+          <mat-icon class="stat-icon">online_prediction</mat-icon>
+          <div>
+            <span class="stat-title">ML-Predicted 90-Day TA</span>
+            <span class="stat-subtitle">90-day threat forecast</span>
+          </div>
+        </div>
+        <div class="stat-value-container">
+          <span class="stat-value">
+            {{ ((threatReport.anomaly_score || 0) * 100) | number:'1.1-2' }}%
+          </span>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Service Status List Section -->
+    <div class="services-status-panel">
+      <h3 class="panel-title">Service Performance</h3>
+      <div class="services-status-list">
+        @for (s of services; track s) {
+        <div class="service-status-row">
+          <div class="service-meta">
+            <a [href]="s.url" target="_blank" class="service-name-link">
+              <span>{{ formatServiceName(s.name) }}</span>
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </div>
+          <div class="service-stats">
+            <span class="service-sla">{{ s.sla | number:'1.2-2' }}% SLA</span>
+            <div class="status-badge-premium" [ngClass]="s.status?.toLowerCase() || 'operational'">
+              <span class="status-dot-greenblue"></span>
+              {{ s.status || 'Operational' }}
+            </div>
+          </div>
+        </div>
+        } @empty {
+        <div class="no-services-msg">No monitored services configured.</div>
+        }
+      </div>
+    </div>
+
+    <!-- Historical Uptime Section -->
+    <div class="timeline-panel">
+      <div class="panel-header">
+        <h3 class="panel-title">Uptime History (Last 90 Days)</h3>
+        <span class="uptime-percentage">
+          {{ (page.overall_uptime !== null && page.overall_uptime !== undefined ?
+          page.overall_uptime : 100.0) | number:'1.2-2' }}% operational
+        </span>
+      </div>
+      <div class="timeline-bars-wrapper">
+        <div class="timeline-bars">
+          @for (day of (page.uptime_history || []); track day; let idx = $index) {
+          <div
+            class="timeline-bar-outlined"
+            [ngClass]="{'bar-warning': day.status === 'partial_outage', 'bar-danger': day.status === 'major_outage', 'bar-nodata': day.status === 'no_data'}"
+            [style.height]="day.status === 'major_outage' ? '40%' : (day.status === 'partial_outage' ? '70%' : '100%')"
+            [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))"
+          ></div>
+          }
+        </div>
+      </div>
+      <div class="timeline-labels">
+        <span>90 days ago</span>
+        <span class="timeline-divider"></span>
+        <span>Today</span>
+      </div>
+    </div>
+
+    <!-- Incidents Section -->
+    @if (showIncidents && incidents.length > 0) {
+    <div class="incidents-panel">
+      <h3 class="panel-title">Active & Past Incidents</h3>
+      <div class="incidents-list">
+        @for (incident of incidents; track incident) {
+        <div
+          class="incident-item-outlined"
+          [ngClass]="{'resolved': incident.status === 'Resolved'}"
+        >
+          <div class="incident-header-row">
+            <div class="incident-badge" [ngClass]="incident.status.toLowerCase()">
+              {{ incident.status }}
+            </div>
+            <span class="incident-item-title">{{ incident.title }}</span>
+            <span class="incident-date">{{ incident.created_at | date:'mediumDate' }}</span>
+          </div>
+          <div class="incident-body-text">{{ incident.message }}</div>
+        </div>
+        }
+      </div>
+    </div>
+    }
+
+    <!-- View Dedicated Page Button (Explore page style) -->
+    @if (showViewButton) {
+    <div class="view-btn-container">
+      <a mat-flat-button class="view-btn" [routerLink]="['/status', page.slug]">
+        <span>View Dedicated Page</span>
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    </div>
+    }
+  </div>
+</div>

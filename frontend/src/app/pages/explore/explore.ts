@@ -9,33 +9,27 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import {
-  MonitorService,
-  StatusPageData,
-  IncidentData,
-  MonitoredServiceData,
-} from '../../services/monitor.service';
+import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
-import { formatServiceName } from '../../core/utils/formatter.utils';
+import { StatusCard } from '../../components/status-card/status-card';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
     MatButtonModule,
     MatIconModule,
     RouterModule,
     Sidebar,
     StatusCta,
+    StatusCard,
   ],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,7 +43,6 @@ export class Explore implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
 
-  formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
   incidentsMap = this.monitorService.incidentsMap;
@@ -97,22 +90,7 @@ export class Explore implements OnInit {
     });
   }
 
-  getPageStatus(pageId: string): string {
-    const incs = this.incidentsMap()[pageId] || [];
-    const active = incs.filter(i => i.status !== 'Resolved');
-    if (active.length > 0) {
-      return active[0].status;
-    }
-    return 'Operational';
-  }
-
   isRetrying = signal<boolean>(false);
-
-  getPageStatusClass(pageId: string): string {
-    const status = this.getPageStatus(pageId);
-    if (status === 'Operational') return 'operational';
-    return status.toLowerCase();
-  }
 
   retryLoad() {
     this.isRetrying.set(true);
