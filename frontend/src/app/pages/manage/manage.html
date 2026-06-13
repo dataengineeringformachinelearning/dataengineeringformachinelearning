@@ -128,6 +128,32 @@
                           placeholder="Description of this status page..."
                         ></textarea>
                       </mat-form-field>
+                      <div class="form-row">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Google Analytics ID</mat-label>
+                          <input
+                            matInput
+                            [(ngModel)]="editGoogleAnalyticsId"
+                            placeholder="e.g. G-XXXXXXX"
+                          />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Microsoft Clarity ID</mat-label>
+                          <input
+                            matInput
+                            [(ngModel)]="editMicrosoftClarityId"
+                            placeholder="e.g. xxxxxxxx"
+                          />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Cloudflare Analytics ID</mat-label>
+                          <input
+                            matInput
+                            [(ngModel)]="editCloudflareAnalyticsId"
+                            placeholder="e.g. xxxxxxxx"
+                          />
+                        </mat-form-field>
+                      </div>
                       <div class="settings-actions">
                         <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
                           Publish Status Page (makes it visible in the public Explore directory)
@@ -366,6 +392,59 @@
                             color="primary"
                             (click)="connectMicrosoftClarity()"
                             [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity()"
+                          >
+                            Connect API
+                          </button>
+                        </div>
+                        }
+                      </div>
+                      <div class="integration-item cloudflare-item">
+                        <div class="integration-header">
+                          <div class="integration-info">
+                            <strong class="integration-name">Cloudflare Analytics</strong>
+                            <span class="integration-status">
+                              @if (integrations().find(i => i.provider === 'cloudflare' &&
+                              i.active)) { Connected &bull; Last Synced: {{ (integrations().find(i
+                              => i.provider === 'cloudflare')?.last_sync | date:'medium') || 'Never'
+                              }} } @else { Not Connected }
+                            </span>
+                          </div>
+                          @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                          <div class="integration-action">
+                            <button
+                              mat-flat-button
+                              color="warn"
+                              (click)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
+                            >
+                              Disconnect
+                            </button>
+                          </div>
+                          }
+                        </div>
+                        @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                        <div class="cloudflare-form-row">
+                          <mat-form-field appearance="outline">
+                            <mat-label>Cloudflare Account ID</mat-label>
+                            <input
+                              matInput
+                              [(ngModel)]="cloudflareProjectId"
+                              placeholder="Account ID"
+                            />
+                          </mat-form-field>
+                          <mat-form-field appearance="outline">
+                            <mat-label>API Token / Key</mat-label>
+                            <input
+                              matInput
+                              [(ngModel)]="cloudflareApiKey"
+                              type="password"
+                              placeholder="Cloudflare API Token"
+                            />
+                          </mat-form-field>
+                          <button
+                            mat-flat-button
+                            color="primary"
+                            (click)="connectCloudflare()"
+                            [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare()"
                           >
                             Connect API
                           </button>

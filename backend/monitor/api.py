@@ -67,6 +67,7 @@ class StatusPageIn(Schema):
   is_published: bool | None = False
   google_analytics_id: str | None = None
   microsoft_clarity_id: str | None = None
+  cloudflare_analytics_id: str | None = None
 
 
 class UptimeDaySchema(Schema):
@@ -82,6 +83,7 @@ class StatusPageOut(Schema):
   is_published: bool
   google_analytics_id: str | None = None
   microsoft_clarity_id: str | None = None
+  cloudflare_analytics_id: str | None = None
   created_at: datetime.datetime
   user_id: int | None = None
   cumulative_sla: float | None = None
@@ -249,6 +251,7 @@ def _build_status_page_out(p):
     is_published=p.is_published,
     google_analytics_id=p.google_analytics_id,
     microsoft_clarity_id=p.microsoft_clarity_id,
+    cloudflare_analytics_id=p.cloudflare_analytics_id,
     created_at=p.created_at,
     user_id=p.user_id,
     cumulative_sla=cumulative_sla,
@@ -294,6 +297,7 @@ def create_status_page(request, payload: StatusPageIn):
     is_published=payload.is_published or False,
     google_analytics_id=payload.google_analytics_id,
     microsoft_clarity_id=payload.microsoft_clarity_id,
+    cloudflare_analytics_id=payload.cloudflare_analytics_id,
   )
   return _build_status_page_out(page)
 
@@ -322,6 +326,7 @@ def update_status_page(request, page_id: str, payload: StatusPageIn):
     page.is_published = payload.is_published
   page.google_analytics_id = payload.google_analytics_id
   page.microsoft_clarity_id = payload.microsoft_clarity_id
+  page.cloudflare_analytics_id = payload.cloudflare_analytics_id
   page.save()
   return _build_status_page_out(page)
 
@@ -543,6 +548,11 @@ class ClarityIn(Schema):
   api_key: str
 
 
+class CloudflareIn(Schema):
+  project_id: str
+  api_key: str
+
+
 @router.get("/integrations", response=list[IntegrationOut])
 def list_integrations(request):
   if not request.user.is_authenticated:
@@ -651,6 +661,32 @@ def save_clarity(request, payload: ClarityIn):
   integ, created = AnalyticsIntegration.objects.update_or_create(
     user=request.user,
     provider="microsoft",
+    defaults={
+      "credentials": {
+        "project_id": payload.project_id,
+        "api_key": payload.api_key,
+      },
+      "active": True,
+    },
+  )
+
+  return IntegrationOut(
+    id=str(integ.id),
+    provider=integ.provider,
+    active=integ.active,
+    last_sync=integ.last_sync,
+    created_at=integ.created_at,
+  )
+
+
+@router.post("/integrations/cloudflare", response=IntegrationOut)
+def save_cloudflare(request, payload: CloudflareIn):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+
+  integ, created = AnalyticsIntegration.objects.update_or_create(
+    user=request.user,
+    provider="cloudflare",
     defaults={
       "credentials": {
         "project_id": payload.project_id,

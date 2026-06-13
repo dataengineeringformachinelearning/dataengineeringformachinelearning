@@ -69,13 +69,19 @@ export class Manage implements OnInit {
   editSlug = '';
   editDescription = '';
   editIsPublished = false;
+  editGoogleAnalyticsId = '';
+  editMicrosoftClarityId = '';
+  editCloudflareAnalyticsId = '';
   services = signal<MonitoredServiceData[]>([]);
 
   integrations = signal<IntegrationData[]>([]);
   isConnectingGoogle = signal<boolean>(false);
   isConnectingClarity = signal<boolean>(false);
+  isConnectingCloudflare = signal<boolean>(false);
   clarityProjectId = '';
   clarityApiKey = '';
+  cloudflareProjectId = '';
+  cloudflareApiKey = '';
 
   newPageTitle = '';
   newPageSlug = '';
@@ -236,6 +242,9 @@ export class Manage implements OnInit {
       this.editSlug = page.slug;
       this.editDescription = page.description || '';
       this.editIsPublished = page.is_published || false;
+      this.editGoogleAnalyticsId = page.google_analytics_id || '';
+      this.editMicrosoftClarityId = page.microsoft_clarity_id || '';
+      this.editCloudflareAnalyticsId = page.cloudflare_analytics_id || '';
     }
   }
 
@@ -249,6 +258,9 @@ export class Manage implements OnInit {
           slug: this.editSlug,
           description: this.editDescription,
           is_published: this.editIsPublished,
+          google_analytics_id: this.editGoogleAnalyticsId || undefined,
+          microsoft_clarity_id: this.editMicrosoftClarityId || undefined,
+          cloudflare_analytics_id: this.editCloudflareAnalyticsId || undefined,
         })
         .subscribe({
           next: updated => {
@@ -500,6 +512,30 @@ export class Manage implements OnInit {
           error: err => {
             console.error('Error saving clarity integration:', err);
             this.isConnectingClarity.set(false);
+          },
+        });
+    }
+  }
+
+  connectCloudflare() {
+    if (this.cloudflareProjectId && this.cloudflareApiKey) {
+      this.isConnectingCloudflare.set(true);
+      this.monitorService
+        .saveCloudflareIntegration({
+          project_id: this.cloudflareProjectId,
+          api_key: this.cloudflareApiKey,
+        })
+        .subscribe({
+          next: () => {
+            this.loadIntegrations();
+            this.cloudflareProjectId = '';
+            this.cloudflareApiKey = '';
+            this.isConnectingCloudflare.set(false);
+            this.cdr.markForCheck();
+          },
+          error: err => {
+            console.error('Error saving cloudflare integration:', err);
+            this.isConnectingCloudflare.set(false);
           },
         });
     }

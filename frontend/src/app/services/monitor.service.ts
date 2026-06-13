@@ -20,6 +20,7 @@ export interface StatusPageData {
   is_published?: boolean;
   google_analytics_id?: string;
   microsoft_clarity_id?: string;
+  cloudflare_analytics_id?: string;
   created_at: string;
   user_id: number | null;
   cumulative_sla?: number;
@@ -102,6 +103,7 @@ export class MonitorService {
     is_published?: boolean;
     google_analytics_id?: string;
     microsoft_clarity_id?: string;
+    cloudflare_analytics_id?: string;
   }) {
     return this.http.post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, {
       withCredentials: true,
@@ -117,6 +119,7 @@ export class MonitorService {
       is_published?: boolean;
       google_analytics_id?: string;
       microsoft_clarity_id?: string;
+      cloudflare_analytics_id?: string;
     },
   ) {
     return this.http.put<StatusPageData>(
@@ -191,6 +194,14 @@ export class MonitorService {
   saveClarityIntegration(data: { project_id: string; api_key: string }) {
     return this.http.post<IntegrationData>(
       `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES.replace('status_pages', 'integrations/clarity')}`,
+      data,
+      { withCredentials: true },
+    );
+  }
+
+  saveCloudflareIntegration(data: { project_id: string; api_key: string }) {
+    return this.http.post<IntegrationData>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES.replace('status_pages', 'integrations/cloudflare')}`,
       data,
       { withCredentials: true },
     );

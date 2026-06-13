@@ -15,6 +15,7 @@ class StatusPage(models.Model):
   is_published = models.BooleanField(default=False)
   google_analytics_id = models.CharField(max_length=100, blank=True, null=True)
   microsoft_clarity_id = models.CharField(max_length=100, blank=True, null=True)
+  cloudflare_analytics_id = models.CharField(max_length=100, blank=True, null=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
