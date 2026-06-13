@@ -1,6 +1,6 @@
 # Railway Deployment Guide
 
-This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into five main services, consisting of four application components deployed from the GitHub repository and one message broker service.
+This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into six main services, consisting of five application components deployed from the GitHub repository and one message broker service.
 
 ## How to Deploy in One Project
 
@@ -81,6 +81,20 @@ This service runs the background ML training process using the backend codebase 
 - **Start Command**: `python manage.py ml_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-ml.railway.internal`
+- **Public URL**: None (Strictly an internal background process)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+
+### 6. Security and Compliance Worker (Scheduler)
+
+This service runs the periodic security worker to fetch threat intelligence data and manage 90-day compliance checks (like key rotation and database logging cleanups).
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile
+- **Start Command**: `python manage.py security_worker`
+- **Target Port**: None (Background worker process)
+- **Private Internal DNS**: `deml-security.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
 - **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
@@ -173,3 +187,15 @@ The ML worker uses the same Django backend codebase and requires identical envir
 - **DEBUG**: `False`
 - **SECRET_KEY**: `<your-production-secret-key>`
 - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
+
+### 6. Security and Compliance Worker (Scheduler)
+
+The security worker uses the same Django backend codebase and requires identical environment variables to connect to the database and external threat databases:
+
+- **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+- **DEBUG**: `False`
+- **SECRET_KEY**: `<your-production-secret-key>`
+- **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>` (For threat intel GA4 sync)
+- **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
+- **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For geo-blocking metadata check)
+- **OTX_API_KEY**: `<your-alienvault-otx-api-key>`

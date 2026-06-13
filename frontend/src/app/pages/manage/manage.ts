@@ -149,7 +149,6 @@ export class Manage implements OnInit {
     });
     this.loadStatusPages();
     this.loadIntegrations();
-    this.mlService.fetchThreatReport();
   }
 
   loadStatusPages() {

@@ -85,7 +85,6 @@ export class Status implements OnInit {
         'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.',
     });
     this.sanityService.fetchAnnouncements();
-    this.mlService.fetchThreatReport();
   }
 
   loadData() {
@@ -108,6 +107,7 @@ export class Status implements OnInit {
           this.monitorService.fetchAllServices(sorted);
           sorted.forEach(page => {
             this.mlService.fetchLatestStat(page.id);
+            this.mlService.fetchThreatReport(page.id);
           });
           this.cdr.markForCheck();
         },

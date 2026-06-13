@@ -21,11 +21,20 @@ from monitor.models import Endpoints
 class Command(BaseCommand):
   help = "Runs the async telemetry background worker"
 
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.background_tasks = set()
+
   def handle(self, *args, **options):
     self.stdout.write(self.style.SUCCESS("Starting Telemetry Worker..."))
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
+    # Start periodic scheduler task
+    task = asyncio.create_task(self.periodic_scheduler())
+    self.background_tasks.add(task)
+    task.add_done_callback(self.background_tasks.discard)
+
     brokers = get_kafka_brokers()
     consumer = AIOKafkaConsumer(
       "app-events",
@@ -241,3 +250,27 @@ class Command(BaseCommand):
 
     if objects_to_create:
       Endpoints.objects.bulk_create(objects_to_create)
+
+  async def periodic_scheduler(self):
+    self.stdout.write(self.style.SUCCESS("Starting periodic telemetry health scheduler..."))
+    # Wait 10 seconds for startup to stabilize
+    await asyncio.sleep(10)
+    while True:
+      try:
+        await self.log_telemetry_metrics()
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Telemetry Scheduler: Hourly check failed: {e}"))
+
+      # Check hourly
+      await asyncio.sleep(3600)
+
+  @sync_to_async
+  def log_telemetry_metrics(self):
+    total_endpoints = Endpoints.objects.count()
+    active_endpoints = Endpoints.objects.filter(is_active=True).count()
+    self.stdout.write(
+      self.style.SUCCESS(
+        f"Telemetry Pipeline Check: Currently monitoring {active_endpoints} active endpoints "
+        f"({total_endpoints} total telemetry records in database)."
+      )
+    )

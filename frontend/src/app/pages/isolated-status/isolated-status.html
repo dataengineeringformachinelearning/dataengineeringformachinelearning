@@ -114,7 +114,7 @@
           </div>
         </div>
         <!-- Threat Anomaly Cards -->
-        @if (mlService.latestThreatReport()) {
+        @if (mlService.latestThreatReports()[page.id]) {
         <div class="standalone-sla-card">
           <div class="sla-icon-box">
             <mat-icon>security</mat-icon>
@@ -123,7 +123,8 @@
             <span class="sla-label">Cumulative TA</span>
             <span class="sla-desc">Based on real telemetry</span>
             <span class="sla-val">
-              {{ (mlService.latestThreatReport()!.suspicious_ratio! * 100) | number:'1.1-2' }}%
+              {{ (mlService.latestThreatReports()[page.id]!.suspicious_ratio! * 100) |
+              number:'1.1-2' }}%
             </span>
           </div>
         </div>
@@ -135,7 +136,8 @@
             <span class="sla-label">Predicted TA</span>
             <span class="sla-desc">90-day threat forecast via ML</span>
             <span class="sla-valHighlight">
-              {{ (mlService.latestThreatReport()!.anomaly_score! * 100) | number:'1.1-2' }}%
+              {{ (mlService.latestThreatReports()[page.id]!.anomaly_score! * 100) | number:'1.1-2'
+              }}%
             </span>
           </div>
         </div>
@@ -143,7 +145,7 @@
       </section>
 
       <!-- Threat Details Section -->
-      @if (mlService.latestThreatReport()) {
+      @if (mlService.latestThreatReports()[page.id]) {
       <section class="standalone-services-section threat-analysis-section">
         <div class="section-title-wrapper">
           <div class="threat-title-container">
@@ -151,27 +153,29 @@
             <h3>ML Threat Analysis</h3>
           </div>
           <span class="threat-status-text">
-            Status: {{ mlService.latestThreatReport()!.anomaly_score! > 0.5 ? 'Active Investigation
-            Recommended' : 'Low Threat Indicators' }}
+            Status: {{ mlService.latestThreatReports()[page.id]!.anomaly_score! > 0.5 ? 'Active
+            Investigation Recommended' : 'Low Threat Indicators' }}
           </span>
         </div>
         <div class="threat-metrics-grid">
           <div class="threat-metric-card">
             <span class="threat-metric-label">Top Location Contribution</span>
             <strong class="threat-metric-value">
-              {{ mlService.latestThreatReport()!.top_location }}
+              {{ mlService.latestThreatReports()[page.id]!.top_location }}
             </strong>
           </div>
           <div class="threat-metric-card">
             <span class="threat-metric-label">Traffic Weight</span>
             <strong class="threat-metric-value">
-              {{ (mlService.latestThreatReport()!.location_weight! * 100) | number:'1.0-1' }}%
+              {{ (mlService.latestThreatReports()[page.id]!.location_weight! * 100) | number:'1.0-1'
+              }}%
             </strong>
           </div>
           <div class="threat-metric-card">
             <span class="threat-metric-label">Suspicious Request Ratio</span>
             <strong class="threat-metric-value">
-              {{ (mlService.latestThreatReport()!.suspicious_ratio! * 100) | number:'1.0-1' }}%
+              {{ (mlService.latestThreatReports()[page.id]!.suspicious_ratio! * 100) |
+              number:'1.0-1' }}%
             </strong>
           </div>
         </div>

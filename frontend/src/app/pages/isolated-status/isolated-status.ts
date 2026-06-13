@@ -111,7 +111,6 @@ export class IsolatedStatus implements OnInit {
       const slug = params.get('slug');
       this.slug.set(slug);
     });
-    this.mlService.fetchThreatReport();
     this.sanityService.fetchAnnouncements();
   }
 
@@ -124,6 +123,7 @@ export class IsolatedStatus implements OnInit {
         this.monitorService.fetchAllIncidents(pages);
         this.monitorService.fetchAllServices(pages);
         this.mlService.fetchLatestStat(page.id);
+        this.mlService.fetchThreatReport(page.id);
 
         this.titleService.setTitle(`${page.title} Status - Data Engineering for Machine Learning`);
         this.metaService.updateTag({

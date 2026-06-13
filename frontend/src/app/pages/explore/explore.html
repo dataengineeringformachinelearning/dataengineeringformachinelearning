@@ -30,7 +30,7 @@
               [page]="page"
               [services]="servicesMap()[page.id] || []"
               [predictedSla]="mlService.latestStats()[page.id]"
-              [threatReport]="mlService.latestThreatReport()"
+              [threatReport]="mlService.latestThreatReports()[page.id] || null"
               [incidents]="incidentsMap()[page.id] || []"
               [linkHeader]="true"
               [showViewButton]="true"

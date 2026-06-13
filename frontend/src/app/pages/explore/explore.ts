@@ -65,7 +65,6 @@ export class Explore implements OnInit {
       content:
         'Browse community-published public service status pages and active system uptime monitors.',
     });
-    this.mlService.fetchThreatReport();
   }
 
   loadData() {
@@ -79,6 +78,7 @@ export class Explore implements OnInit {
         this.monitorService.fetchAllServices(publicPages);
         publicPages.forEach(page => {
           this.mlService.fetchLatestStat(page.id);
+          this.mlService.fetchThreatReport(page.id);
         });
         this.cdr.markForCheck();
       },

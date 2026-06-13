@@ -65,14 +65,22 @@ export class MlService {
   }
 
   public latestThreatReport = signal<ThreatReportResponse | null>(null);
+  public latestThreatReports = signal<Record<string, ThreatReportResponse | null>>({});
   public isTrainingThreat = signal<boolean>(false);
 
-  fetchThreatReport(): void {
-    const url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/report');
+  fetchThreatReport(statusPageId?: string): void {
+    let url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/report');
+    if (statusPageId) {
+      url += `?status_page_id=${statusPageId}`;
+    }
     this.http.get<ThreatReportResponse>(url).subscribe({
       next: data => {
         if (data && data.status === 'success' && data.anomaly_score !== null) {
-          this.latestThreatReport.set(data);
+          if (statusPageId) {
+            this.latestThreatReports.update(reports => ({ ...reports, [statusPageId]: data }));
+          } else {
+            this.latestThreatReport.set(data);
+          }
         }
       },
       error: err => console.error('Error fetching threat report:', err),

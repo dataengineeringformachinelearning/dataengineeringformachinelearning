@@ -42,7 +42,16 @@ tell application "Terminal"
     delay 0.5
     do script "cd '$REPO_ROOT/backend' && source .venv/bin/activate && python manage.py ml_worker" in window 1
 
-    # Tab 4: Frontend Server
+    # Tab 4: Security Worker
+    tell application "System Events"
+        tell process "Terminal"
+            click menu item "New Tab" of menu 1 of menu bar item "Shell" of menu bar 1
+        end tell
+    end tell
+    delay 0.5
+    do script "cd '$REPO_ROOT/backend' && source .venv/bin/activate && python manage.py security_worker" in window 1
+
+    # Tab 5: Frontend Server
     tell application "System Events"
         tell process "Terminal"
             click menu item "New Tab" of menu 1 of menu bar item "Shell" of menu bar 1
@@ -51,7 +60,7 @@ tell application "Terminal"
     delay 0.5
     do script "cd '$REPO_ROOT/frontend' && npx dotenvx run -- npm start" in window 1
 
-    # Tab 5: Sanity Studio
+    # Tab 6: Sanity Studio
     tell application "System Events"
         tell process "Terminal"
             click menu item "New Tab" of menu 1 of menu bar item "Shell" of menu bar 1
