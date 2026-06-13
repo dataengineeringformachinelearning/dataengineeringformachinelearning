@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 api = NinjaAPI(
   title="Data Engineering for Machine Learning API",
-  version="1.0.0",
+  version=getattr(settings, "APP_VERSION", "1.0.0"),
   docs_url="/docs" if settings.DEBUG else None,
 )
 

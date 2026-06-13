@@ -199,3 +199,11 @@ GOOGLE_OAUTH_REDIRECT_URI = os.getenv(
   "GOOGLE_OAUTH_REDIRECT_URI",
   "http://localhost:8000/api/v1/system-status/integrations/google/callback",
 )
+
+# App versioning configuration
+VERSION_PATH = BASE_DIR.parent / "version.txt"
+if VERSION_PATH.exists():
+  with open(VERSION_PATH) as f:
+    APP_VERSION = f.read().strip()
+else:
+  APP_VERSION = "0.0.0-dev"

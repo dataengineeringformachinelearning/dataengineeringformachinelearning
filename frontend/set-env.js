@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
+// Read version from root version.txt
+let appVersion = '0.0.0-dev';
+const versionFilePath = path.join(__dirname, '..', 'version.txt');
+if (fs.existsSync(versionFilePath)) {
+  appVersion = fs.readFileSync(versionFilePath, 'utf8').trim();
+}
+
 const targetPath = path.join(__dirname, 'src', 'environments', 'environment.ts');
 
 const environmentsDir = path.join(__dirname, 'src', 'environments');
@@ -65,6 +72,7 @@ const getFirebaseConfig = () => {
 
 export const environment = {
   production: true,
+  version: '${appVersion}',
   backendUrl: getBackendUrl(),
   firebase: getFirebaseConfig(),
   sanity: {
@@ -97,6 +105,7 @@ const getFirebaseConfig = () => {
 
 export const environment = {
   production: false,
+  version: '${appVersion}',
   backendUrl: 'http://localhost:8000',
   firebase: getFirebaseConfig(),
   sanity: {

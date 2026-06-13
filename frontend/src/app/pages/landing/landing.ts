@@ -44,6 +44,7 @@ export class Landing implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   public sanityService = inject(SanityService);
 
+  version = environment.version || '1.0.0';
   emailVal = '';
   consentVal = false;
   submitting = signal(false);
