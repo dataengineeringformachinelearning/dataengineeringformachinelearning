@@ -14,6 +14,8 @@ const projectId = process.env.FIREBASE_PROJECT_ID || 'demldotcom';
 const storageBucket = process.env.FIREBASE_STORAGE_BUCKET || 'demldotcom.firebasestorage.app';
 const messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID || '870072971206';
 const appId = process.env.FIREBASE_APP_ID || '1:870072971206:web:5231fde2822d750abfccc7';
+const sanityProjectId = process.env.SANITY_PROJECT_ID || 'hj5wtuct';
+const sanityDataset = process.env.SANITY_DATASET || 'production';
 
 const getBackendUrlCode = `const getBackendUrl = () => {
   if (typeof window === 'undefined') {
@@ -64,7 +66,11 @@ const getFirebaseConfig = () => {
 export const environment = {
   production: true,
   backendUrl: getBackendUrl(),
-  firebase: getFirebaseConfig()
+  firebase: getFirebaseConfig(),
+  sanity: {
+    projectId: '${sanityProjectId}',
+    dataset: '${sanityDataset}'
+  }
 };
 `;
 
@@ -92,7 +98,11 @@ const getFirebaseConfig = () => {
 export const environment = {
   production: false,
   backendUrl: 'http://localhost:8000',
-  firebase: getFirebaseConfig()
+  firebase: getFirebaseConfig(),
+  sanity: {
+    projectId: '${sanityProjectId}',
+    dataset: '${sanityDataset}'
+  }
 };
 `;
 

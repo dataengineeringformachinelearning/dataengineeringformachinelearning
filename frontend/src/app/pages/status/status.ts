@@ -27,6 +27,7 @@ import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { formatServiceName } from '../../core/utils/formatter.utils';
+import { SanityService } from '../../services/sanity.service';
 
 @Component({
   selector: 'app-status',
@@ -54,6 +55,7 @@ export class Status implements OnInit {
   private dialog = inject(MatDialog);
   private titleService = inject(Title);
   private metaService = inject(Meta);
+  public sanityService = inject(SanityService);
 
   formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
@@ -90,6 +92,7 @@ export class Status implements OnInit {
       content:
         'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.',
     });
+    this.sanityService.fetchAnnouncements();
   }
 
   loadData() {
