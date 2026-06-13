@@ -191,3 +191,11 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
+
+# Google OAuth Analytics Integration Settings
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
+GOOGLE_OAUTH_REDIRECT_URI = os.getenv(
+  "GOOGLE_OAUTH_REDIRECT_URI",
+  "http://localhost:8000/api/v1/system-status/integrations/google/callback",
+)
