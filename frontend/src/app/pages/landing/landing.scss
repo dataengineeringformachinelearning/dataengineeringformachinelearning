@@ -726,24 +726,24 @@
   width: 100%;
   max-width: var(--container-max-width);
   margin: var(--grid-gap) auto;
-  background: rgba(24, 40, 33, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius-lg);
-  padding: var(--card-padding);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 2rem 0;
   position: relative;
   z-index: 10;
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-md);
+  backdrop-filter: none;
+  box-shadow: none;
 
   @media (max-width: 650px) {
-    padding: 1.5rem;
+    padding: 1.5rem 0;
   }
 }
 
 :host-context(html[data-theme='light']) {
   .newsletter-section {
-    background: rgba(255, 255, 255, 0.5);
-    border-color: var(--border);
+    background: transparent;
+    border: none;
   }
 }
 
