@@ -132,7 +132,7 @@ Now that the endpoint is responding, we need to enable Angular to call it. In mo
 
 ```typescript
 // frontend/src/app/app.config.ts
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch } from "@angular/common/http";
 export const appConfig = { providers: [provideHttpClient(withFetch())] };
 ```
 
@@ -140,22 +140,23 @@ You can then inject this into a component and use Angular Signals to cleanly man
 
 ```typescript
 // frontend/src/app/app.component.ts
-import { Component, inject, signal, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { Component, inject, signal, OnInit } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
-  selector: 'app-root',
+  selector: "app-root",
   standalone: true,
   template: `<footer>Backend Status: {{ backendStatus() }}</footer>`,
 })
 export class AppComponent implements OnInit {
-  backendStatus = signal<'checking' | 'ok' | 'error'>('checking');
+  backendStatus = signal<"checking" | "ok" | "error">("checking");
   private http = inject(HttpClient);
 
   ngOnInit() {
-    this.http.get<{ status: string }>('/api/health').subscribe({
-      next: res => this.backendStatus.set(res.status === 'ok' ? 'ok' : 'error'),
-      error: () => this.backendStatus.set('error'),
+    this.http.get<{ status: string }>("/api/health").subscribe({
+      next: (res) =>
+        this.backendStatus.set(res.status === "ok" ? "ok" : "error"),
+      error: () => this.backendStatus.set("error"),
     });
   }
 }
@@ -260,12 +261,12 @@ In your dashboard component, you can fetch the data from your new API and bind i
 
 ```typescript
 // frontend/src/app/pages/dashboard/dashboard.ts
-import { Component, OnInit, inject } from '@angular/core';
-import { AgCharts } from 'ag-charts-angular';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnInit, inject } from "@angular/core";
+import { AgCharts } from "ag-charts-angular";
+import { HttpClient } from "@angular/common/http";
 
 @Component({
-  selector: 'app-dashboard',
+  selector: "app-dashboard",
   standalone: true,
   imports: [AgCharts],
   template: `<ag-charts [options]="chartOptions"></ag-charts>`,
@@ -273,16 +274,16 @@ import { HttpClient } from '@angular/common/http';
 export class Dashboard implements OnInit {
   private http = inject(HttpClient);
   public chartOptions = {
-    title: { text: 'Application Stability' },
+    title: { text: "Application Stability" },
     data: [],
-    series: [{ type: 'line', xKey: 'time', yKey: 'statusCode' }],
+    series: [{ type: "line", xKey: "time", yKey: "statusCode" }],
   };
 
   ngOnInit() {
-    this.http.get<any[]>('/api/monitor/endpoints').subscribe(data => {
+    this.http.get<any[]>("/api/monitor/endpoints").subscribe((data) => {
       this.chartOptions = {
         ...this.chartOptions,
-        data: data.map(ep => ({
+        data: data.map((ep) => ({
           time: new Date(ep.last_tested).toLocaleTimeString(),
           statusCode: ep.status_code,
         })),
@@ -362,9 +363,9 @@ On the frontend, you can manage user sessions by tracking a simple boolean state
 
 ```typescript
 // frontend/src/app/services/auth.service.ts
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal } from "@angular/core";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class AuthService {
   public isAuthenticated = signal<boolean>(false);
 }
@@ -373,7 +374,9 @@ export class AuthService {
 You can inject this service into your components to hide or disable sensitive actions:
 
 ```html
-<button (click)="trainModel()" [disabled]="!authService.isAuthenticated()">Train SLA Model</button>
+<button (click)="trainModel()" [disabled]="!authService.isAuthenticated()">
+  Train SLA Model
+</button>
 ```
 
 On the backend, we can expose minimal endpoints that hook directly into Django's robust built-in authentication system. By authenticating a user via a JSON payload and returning session cookies, our Angular app can easily log users in and out.
@@ -416,7 +419,7 @@ const errorPayload = {
   message: error.message,
   context: { url: window.location.href },
 };
-this.http.post('/api/v1/telemetry/endpoints', errorPayload).subscribe();
+this.http.post("/api/v1/telemetry/endpoints", errorPayload).subscribe();
 ```
 
 On the backend, instead of processing this data synchronously, we can expose a fast, asynchronous endpoint that immediately pushes the incoming payload to a Redpanda topic. Using a framework like `django-ninja` paired with `aiokafka` keeps the HTTP operation entirely non-blocking.
@@ -439,6 +442,29 @@ async def post_telemetry(request, payload: dict):
 ```
 
 Finally, a standalone background worker can subscribe to this `app-events` topic to process the messages in batches. By pulling records and parsing them directly into a Polars DataFrame, you can achieve high-performance processing before committing the data to your Postgres database. This pipeline ensures that heavy ingestion loads never impact your user-facing API performance.
+
+#### Chapter 8.1.2: Integrating Sentry for Full-Stack Error Tracking
+
+To capture real-time client and server exceptions in production, we integrate Sentry across our application stack:
+
+* **Frontend Integration**: Sentry's Angular SDK (`@sentry/angular`) is initialized in `main.ts` and registered with the router in `app.config.ts` using the frontend DSN. Exceptions are captured directly inside `GlobalErrorHandler` via `Sentry.captureException(error)`.
+* **Backend Integration**: Django's Sentry SDK (`sentry-sdk`) is initialized in `settings.py` with `send_default_pii=True` enabled to capture full HTTP request payloads and client contexts during backend exceptions.
+* **Environment Configuration**: For production deployments, Sentry DSNs are loaded dynamically using the `SENTRY_DSN` environment variable on both the frontend and backend to keep credentials secure.
+
+#### Chapter 8.1.3: Continuous Security Auditing with Snyk
+
+To ensure secure development practices, the repository integrates Snyk for automated security scanning:
+
+* **Static Analysis (SAST)**: Snyk Code is used to scan the codebase for potential logic flaws and security vulnerabilities in our custom code.
+* **Dependency Vulnerability Scanning**: Snyk scans third-party packages in both the Angular frontend (`package.json`) and Django backend (`requirements.txt`) to flag and mitigate known vulnerabilities.
+* **Container Security**: Container scans are performed on all project Dockerfiles (`frontend`, `backend`, and `queue` components) to detect issues in the base images and libraries.
+
+#### Chapter 8.1.4: Open-Source License Compliance with FOSSA
+
+To prevent legal and compliance issues from open-source libraries:
+
+* **License Auditing**: FOSSA is integrated to scan all frontend and backend dependencies, verifying compliance with the project's license constraints.
+* **Automated Scans**: License validation is executed automatically to generate dependency compliance logs and license compliance status badges.
 
 ## Chapter 9: Applying a use-case
 

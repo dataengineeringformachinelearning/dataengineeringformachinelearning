@@ -443,6 +443,29 @@ async def post_telemetry(request, payload: dict):
 
 Finally, a standalone background worker can subscribe to this `app-events` topic to process the messages in batches. By pulling records and parsing them directly into a Polars DataFrame, you can achieve high-performance processing before committing the data to your Postgres database. This pipeline ensures that heavy ingestion loads never impact your user-facing API performance.
 
+#### Chapter 8.1.2: Integrating Sentry for Full-Stack Error Tracking
+
+To capture real-time client and server exceptions in production, we integrate Sentry across our application stack:
+
+* **Frontend Integration**: Sentry's Angular SDK (`@sentry/angular`) is initialized in `main.ts` and registered with the router in `app.config.ts` using the frontend DSN. Exceptions are captured directly inside `GlobalErrorHandler` via `Sentry.captureException(error)`.
+* **Backend Integration**: Django's Sentry SDK (`sentry-sdk`) is initialized in `settings.py` with `send_default_pii=True` enabled to capture full HTTP request payloads and client contexts during backend exceptions.
+* **Environment Configuration**: For production deployments, Sentry DSNs are loaded dynamically using the `SENTRY_DSN` environment variable on both the frontend and backend to keep credentials secure.
+
+#### Chapter 8.1.3: Continuous Security Auditing with Snyk
+
+To ensure secure development practices, the repository integrates Snyk for automated security scanning:
+
+* **Static Analysis (SAST)**: Snyk Code is used to scan the codebase for potential logic flaws and security vulnerabilities in our custom code.
+* **Dependency Vulnerability Scanning**: Snyk scans third-party packages in both the Angular frontend (`package.json`) and Django backend (`requirements.txt`) to flag and mitigate known vulnerabilities.
+* **Container Security**: Container scans are performed on all project Dockerfiles (`frontend`, `backend`, and `queue` components) to detect issues in the base images and libraries.
+
+#### Chapter 8.1.4: Open-Source License Compliance with FOSSA
+
+To prevent legal and compliance issues from open-source libraries:
+
+* **License Auditing**: FOSSA is integrated to scan all frontend and backend dependencies, verifying compliance with the project's license constraints.
+* **Automated Scans**: License validation is executed automatically to generate dependency compliance logs and license compliance status badges.
+
 ## Chapter 9: Applying a use-case
 
 ### Chapter 9.1: Introduction
@@ -521,4 +544,3 @@ For detailed configuration settings, environmental variables, scaling limits, an
 ![GitHub forks](https://img.shields.io/github/forks/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
 ![GitHub issues](https://img.shields.io/github/issues/dataengineeringformachinelearning/dataengineeringformachinelearning)
 ![GitHub license](https://img.shields.io/github/license/dataengineeringformachinelearning/dataengineeringformachinelearning)
-
