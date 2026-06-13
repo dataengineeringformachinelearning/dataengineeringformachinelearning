@@ -502,19 +502,49 @@ By exposing this model training via an API endpoint, the Angular client can trig
 
 ### Chapter 7.1: Introduction
 
-#### Chapter 7.1.1: Implementing authentication
+#### Chapter 7.1.1: Implementing Firebase Authentication
 
-Because training machine learning models is computationally expensive, I want to show the reader how to secure these endpoints.
+Because training machine learning models is computationally expensive, I want to show the reader how to secure these endpoints. Instead of relying purely on local session cookies, we offload user credential verification to **Firebase Authentication** on the client, and verify Firebase ID tokens on the backend via custom Django middleware.
 
-On the frontend, I manage user sessions by tracking authentication states in an Angular service. I use Angular Signals to make this highly reactive and readable:
+On the frontend, I manage user sessions and state via the Firebase SDK, tracking authentication states in an Angular service. I use Angular Signals to expose this state reactively to the application:
 
 ```typescript
 // frontend/src/app/services/auth.service.ts
 import { Injectable, signal } from "@angular/core";
+import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+} from "firebase/auth";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
   public isAuthenticated = signal<boolean>(false);
+  public currentUserId = signal<number | null>(null);
+  public auth: any;
+
+  constructor() {
+    const app = initializeApp(environment.firebase);
+    this.auth = getAuth(app);
+    onAuthStateChanged(this.auth, async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        // Sync with Django backend
+        this.http
+          .get("/api/v1/auth/user", {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .subscribe((res: any) => {
+            this.isAuthenticated.set(res.status === "success");
+            this.currentUserId.set(res.user_id);
+          });
+      } else {
+        this.isAuthenticated.set(false);
+        this.currentUserId.set(null);
+      }
+    });
+  }
 }
 ```
 
@@ -526,27 +556,64 @@ I can then inject this service into my UI components to show/hide or enable/disa
 </button>
 ```
 
-On the backend, I leverage Django's robust built-in authentication system to handle user sessions. By authenticating a JSON payload and returning session cookies, the Angular application can securely log users in and out:
+#### Chapter 7.1.2: Backend Token Verification Middleware
+
+On the backend, we intercept API calls using a custom Django middleware (`FirebaseAuthenticationMiddleware`). The middleware extracts the Bearer token from the `Authorization` header, verifies it using `firebase_admin.auth.verify_id_token()`, and binds or registers a corresponding local Django user:
 
 ```python
-# backend/config/views.py
-import json
-from django.contrib.auth import authenticate, login
-from django.http import JsonResponse
+# backend/config/middleware.py
+from django.contrib.auth.models import AnonymousUser, User
+from django.utils.deprecation import MiddlewareMixin
+from firebase_admin import auth
 
-def api_login(request):
-    data = json.loads(request.body)
-    user = authenticate(request, username=data.get('username'), password=data.get('password'))
-    if user is not None:
-        login(request, user)
-        return JsonResponse({'status': 'success'})
-    return JsonResponse({'status': 'error'}, status=401)
+class FirebaseAuthenticationMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        request.user = AnonymousUser()
+        auth_header = request.META.get("HTTP_AUTHORIZATION")
+        if not auth_header or not auth_header.startswith("Bearer "):
+            return None
+
+        token = auth_header.split(" ")[1]
+        try:
+            decoded_token = auth.verify_id_token(token)
+            uid = decoded_token.get("uid")
+            email = decoded_token.get("email")
+
+            user, created = User.objects.get_or_create(username=uid)
+            if created:
+                user.email = email or ""
+                user.set_unusable_password()
+                user.save()
+
+            request.user = user
+            request.firebase_token = decoded_token
+        except Exception:
+            pass
+        return None
 ```
 
-To set up the initial admin user, I run the Django interactive superuser creation tool:
+#### Chapter 7.1.3: Multi-Factor Authentication (MFA) with SMS
 
-```bash
-python manage.py createsuperuser
+To comply with SOC2 security standards, we provide Multi-Factor Authentication (MFA). Utilizing the Firebase Auth Phone Multi-Factor Provider, we verify a user's phone number via SMS using an invisible reCAPTCHA:
+
+```typescript
+// frontend/src/app/services/auth.service.ts
+import { PhoneAuthProvider, PhoneMultiFactorGenerator, multiFactor } from "firebase/auth";
+
+async sendMfaEnrollmentCode(phoneNumber: string, recaptchaVerifier: any): Promise<string> {
+  if (!this.auth?.currentUser) throw new Error("No user is currently logged in.");
+  const session = await multiFactor(this.auth.currentUser).getSession();
+  const phoneInfoOptions = { phoneNumber, session };
+  const phoneAuthProvider = new PhoneAuthProvider(this.auth);
+  return await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier);
+}
+
+async confirmMfaEnrollment(verificationId: string, verificationCode: string): Promise<void> {
+  if (!this.auth?.currentUser) throw new Error("No user is currently logged in.");
+  const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+  const assertion = PhoneMultiFactorGenerator.assertion(cred);
+  await multiFactor(this.auth.currentUser).enroll(assertion, "SMS Phone MFA");
+}
 ```
 
 ---
@@ -739,6 +806,76 @@ To retain absolute flexibility over our customer datasets and prevent lock-in to
    ```env
    RESEND_API_KEY=re_your_api_key
    ```
+
+---
+
+## Chapter 16: Developer Workflow and Version Management
+
+### Chapter 16.1: Introduction
+
+#### Chapter 16.1.1: Release Automation and Version Propagation
+
+To manage software lifecycles professionally, we automate branching, PR creation, and semantic release tagging using a Python CLI tool.
+
+We utilize `scripts/git_flow.py` to coordinate these activities:
+
+1. **Feature Development**: Create a clean, standardized branch prefix:
+   ```bash
+   python scripts/git_flow.py feature "user auth changes"
+   ```
+2. **Pull Requests**: Standardize commits and automatically push and generate GitHub PR URLs:
+   ```bash
+   python scripts/git_flow.py pr
+   ```
+3. **Semantic Release**: Bump local version files (across root, frontend, and backend components), regenerate environmental configurations, commit, and create signed Git tags:
+   ```bash
+   python scripts/git_flow.py release patch
+   ```
+4. **Historical Tagging**: Re-apply milestones to early codebase commits:
+   ```bash
+   python scripts/git_flow.py tag-history
+   ```
+
+---
+
+## Chapter 17: Accessibility Compliance Auditing
+
+### Chapter 17.1: Introduction
+
+#### Chapter 17.1.1: Automated Accessibility Checks with Axe-Core
+
+To satisfy Section 508 and WCAG 2.1 AA requirements, we enforce accessibility checks directly in our local development cycle.
+
+Using `scripts/run_axe.js`, we wrap `@axe-core/cli` to scan changed HTML templates:
+
+```bash
+node scripts/run_axe.js frontend/src/index.html
+```
+
+This script translates local files to absolute `file://` URLs, runs the Axe audit, and ignores non-applicable layout/meta rules (like missing main landmark or page titles when scanning partial templates). If violations are found, the script exits with code `1`, blocking commits via pre-commit hooks until fixed.
+
+---
+
+## Chapter 18: Client-Side Content Synchronization
+
+### Chapter 18.1: Introduction
+
+#### Chapter 18.1.1: Syncing README Documentation to Frontend Assets
+
+To avoid writing documentation twice and keep our LLM context files in sync, we run an automated synchronization pipeline.
+
+The script `scripts/sync_content.py` runs as a pre-commit hook or manually:
+
+```bash
+python scripts/sync_content.py
+```
+
+This pipeline extracts all book chapters (lines starting with `## Chapter`) from `README.md` and copies them to:
+
+- `frontend/public/llms-full.txt` (a full context file for downstream AI tools)
+- `frontend/src/assets/content/page.md` (rendered directly on the UI's homepage/notes tab)
+
+It also ensures that version strings in `version.txt` are synced into both the frontend and backend build environments.
 
 ---
 
