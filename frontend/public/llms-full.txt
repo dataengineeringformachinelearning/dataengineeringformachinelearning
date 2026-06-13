@@ -91,6 +91,104 @@ uvx ruff check --fix .
 uvx ruff format .
 ```
 
+### Chapter 1.3: Running the Full-Stack Application Locally
+
+To run the complete system locally, you can spin up the entire application stack using a helper script, run it via Docker Compose, or run the backing services via Docker while executing the application services natively.
+
+#### Option A: macOS One-Click Developer Startup Script (Recommended)
+
+If you are running on macOS, you can use the interactive startup script at the root of the repository. It will spin up the Docker-based backing services (`postgres` and `redpanda`) and automatically launch a new Terminal window containing tabs for all other services (`runserver`, `telemetry_worker`, `ml_worker`, frontend `npm start`, and `studio dev`).
+
+Run the script from the repository root:
+
+```bash
+./start_dev.sh
+```
+
+#### Option B: Running the Entire Stack via Docker Compose
+
+Ensure Docker is installed and running, then execute the following command in the repository root:
+
+```bash
+docker-compose up --build
+```
+
+This starts all five services in the foreground:
+
+- **PostgreSQL** database (port `5432`)
+- **Redpanda** message broker (ports `19092`, `18082`, `19644`)
+- **Django API Server** (port `8000`)
+- **Telemetry Worker** (processes incoming Redpanda events)
+- **ML Worker** (handles asynchronous model training pipelines)
+
+#### Option C: Running Services Individually (Natively)
+
+If you prefer to run the application components locally for faster debugging or development reload:
+
+1. **Start backing services (PostgreSQL & Redpanda) via Docker**:
+
+   ```bash
+   docker-compose up -d postgres redpanda
+   ```
+
+2. **Configure environment variables**:
+   Create a `.env` file in the `backend/` directory by copying the example template:
+
+   ```bash
+   cp backend/.env.example backend/.env
+   ```
+
+   _Note:_ In your local `.env`, change `DATABASE_URL` to `postgres://admin:password@localhost:5432/machinelearning` to point Django to the Docker-managed PostgreSQL database.
+
+   Likewise, configure the frontend's environment variables inside the `frontend/` directory:
+
+   ```bash
+   cp frontend/.env.example frontend/.env
+   ```
+
+3. **Initialize the Django Backend**:
+   Activate your virtual environment, install the dependencies, run database migrations, and create an admin user:
+
+   ```bash
+   cd backend
+   source .venv/bin/activate
+   uv pip install -r requirements.txt
+   python manage.py migrate
+   python manage.py createsuperuser
+   ```
+
+4. **Start the backend development servers (requires separate terminal tabs/windows)**:
+   - **Django API Server**:
+     ```bash
+     python manage.py runserver
+     ```
+   - **Telemetry Worker**:
+     ```bash
+     python manage.py telemetry_worker
+     ```
+   - **ML Worker**:
+     ```bash
+     python manage.py ml_worker
+     ```
+
+5. **Start the Angular Frontend**:
+
+   ```bash
+   cd frontend
+   npm install --legacy-peer-deps
+   npx dotenvx run -- npm start
+   ```
+
+   The frontend application will be served at `http://localhost:4200/`.
+
+6. **Start Sanity Studio (Headless CMS)**:
+   ```bash
+   cd studio
+   npm install
+   npm run dev
+   ```
+   Sanity Studio will be served at `http://localhost:3333/`.
+
 ---
 
 ## Chapter 2: Integrating Tools and Pre-requisites
