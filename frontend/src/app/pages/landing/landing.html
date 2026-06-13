@@ -35,6 +35,31 @@
     </div>
   </header>
 
+  <!-- Platform Video presentation (delivered from Sanity.io CDN) -->
+  @if (sanityService.platformVideo(); as video) {
+  <section class="video-presentation-section" aria-labelledby="video-title">
+    <div class="video-wrapper">
+      <div class="video-glow-effect"></div>
+      <div class="video-frame">
+        <video
+          [src]="video.videoUrl"
+          controls
+          preload="metadata"
+          playsinline
+          class="platform-video-player"
+          [attr.aria-label]="video.title"
+        ></video>
+      </div>
+      @if (video.description) {
+      <div class="video-info-overlay">
+        <h2 id="video-title">{{ video.title }}</h2>
+        <p>{{ video.description }}</p>
+      </div>
+      }
+    </div>
+  </section>
+  }
+
   <!-- Interactive Pipeline Flow Simulation -->
   <section class="pipeline-simulator" aria-labelledby="simulator-title">
     <div class="simulator-header">

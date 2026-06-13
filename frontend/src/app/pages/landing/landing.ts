@@ -16,6 +16,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { signal } from '@angular/core';
+import { SanityService } from '../../services/sanity.service';
 
 export interface PipelineStep {
   id: string;
@@ -41,6 +42,7 @@ export class Landing implements OnInit, OnDestroy {
   private metaService = inject(Meta);
   private cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
+  public sanityService = inject(SanityService);
 
   emailVal = '';
   consentVal = false;
@@ -102,6 +104,8 @@ export class Landing implements OnInit, OnDestroy {
       content:
         'Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.',
     });
+
+    this.sanityService.fetchPlatformVideo();
 
     if (isPlatformBrowser(this.platformId)) {
       // Load status widget script
