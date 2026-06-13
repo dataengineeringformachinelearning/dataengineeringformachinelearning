@@ -15,7 +15,7 @@ def send_resend_email(to_email, subject, html_content):
   url = "https://api.resend.com/emails"
   headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
   payload = {
-    "from": "Acme <onboarding@resend.dev>",
+    "from": "Data Engineering for Machine Learning Platform <notifications@dataengineeringformachinelearning.com>",
     "to": [to_email],
     "subject": subject,
     "html": html_content,

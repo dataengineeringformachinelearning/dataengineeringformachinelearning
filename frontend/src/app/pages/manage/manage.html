@@ -217,7 +217,11 @@
                       </mat-form-field>
                       <div class="form-row-actions">
                         <div class="select-wrapper">
-                          <select [(ngModel)]="newIncidentStatus" class="native-select-custom">
+                          <select
+                            [(ngModel)]="newIncidentStatus"
+                            class="native-select-custom"
+                            aria-label="Incident Status"
+                          >
                             <option value="Investigating">Investigating</option>
                             <option value="Identified">Identified</option>
                             <option value="Monitoring">Monitoring</option>
@@ -283,29 +287,18 @@
                       telemetry. This data feeds directly into our threat intelligence and ML
                       anomaly detection models to monitor traffic access patterns.
                     </p>
-                    <div class="integrations-list panel-clean" style="margin-bottom: 20px">
-                      <div
-                        class="integration-item"
-                        style="
-                          display: flex;
-                          justify-content: space-between;
-                          align-items: center;
-                          padding: 12px 0;
-                          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-                        "
-                      >
-                        <div>
-                          <strong style="display: block; font-size: 1.1rem; color: #fff"
-                            >Google Analytics</strong
-                          >
-                          <span style="font-size: 0.85rem; color: #94a3b8">
+                    <div class="integrations-list panel-clean">
+                      <div class="integration-item">
+                        <div class="integration-info">
+                          <strong class="integration-name">Google Analytics</strong>
+                          <span class="integration-status">
                             @if (integrations().find(i => i.provider === 'google' && i.active)) {
                             Connected &bull; Last Synced: {{ (integrations().find(i => i.provider
                             === 'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not
                             Connected }
                           </span>
                         </div>
-                        <div>
+                        <div class="integration-action">
                           @if (integrations().find(i => i.provider === 'google' && i.active)) {
                           <button
                             mat-flat-button
@@ -326,23 +319,11 @@
                           }
                         </div>
                       </div>
-                      <div
-                        class="integration-item"
-                        style="display: flex; flex-direction: column; padding: 16px 0"
-                      >
-                        <div
-                          style="
-                            display: flex;
-                            justify-content: space-between;
-                            align-items: center;
-                            margin-bottom: 12px;
-                          "
-                        >
-                          <div>
-                            <strong style="display: block; font-size: 1.1rem; color: #fff"
-                              >Microsoft Clarity</strong
-                            >
-                            <span style="font-size: 0.85rem; color: #94a3b8">
+                      <div class="integration-item clarity-item">
+                        <div class="integration-header">
+                          <div class="integration-info">
+                            <strong class="integration-name">Microsoft Clarity</strong>
+                            <span class="integration-status">
                               @if (integrations().find(i => i.provider === 'microsoft' && i.active))
                               { Connected &bull; Last Synced: {{ (integrations().find(i =>
                               i.provider === 'microsoft')?.last_sync | date:'medium') || 'Never' }}
@@ -350,18 +331,20 @@
                             </span>
                           </div>
                           @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                          <button
-                            mat-flat-button
-                            color="warn"
-                            (click)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
-                          >
-                            Disconnect
-                          </button>
+                          <div class="integration-action">
+                            <button
+                              mat-flat-button
+                              color="warn"
+                              (click)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                            >
+                              Disconnect
+                            </button>
+                          </div>
                           }
                         </div>
                         @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                        <div class="form-row" style="display: flex; gap: 12px; margin-top: 8px">
-                          <mat-form-field appearance="outline" style="flex: 1">
+                        <div class="clarity-form-row">
+                          <mat-form-field appearance="outline">
                             <mat-label>Clarity Project ID</mat-label>
                             <input
                               matInput
@@ -369,7 +352,7 @@
                               placeholder="Project ID"
                             />
                           </mat-form-field>
-                          <mat-form-field appearance="outline" style="flex: 1">
+                          <mat-form-field appearance="outline">
                             <mat-label>API Token / Key</mat-label>
                             <input
                               matInput
@@ -381,7 +364,6 @@
                           <button
                             mat-flat-button
                             color="primary"
-                            style="height: 54px"
                             (click)="connectMicrosoftClarity()"
                             [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity()"
                           >

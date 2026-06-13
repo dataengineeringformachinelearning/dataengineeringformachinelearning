@@ -1,9 +1,13 @@
 <div class="landing-container">
+  <!-- Glow Spheres for Premium Aesthetics -->
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+
   <div class="hero-content">
-    <h1 class="title">Data Engineering for Machine Learning</h1>
+    <h1 class="title">Data Engineering for Machine Learning Platform</h1>
     <p class="subtitle">
-      The definitive guide to building robust, scalable, and intelligent data pipelines. Master the
-      foundation of artificial intelligence.
+      The definitive guide and analytics engine to building robust, scalable, and intelligent data
+      pipelines. Master the foundation of artificial intelligence and system telemetry.
     </p>
 
     <div class="cta-group">
@@ -18,5 +22,101 @@
     </div>
   </div>
 
-  <footer class="landing-footer"></footer>
+  <!-- Feature Cards Grid -->
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <mat-icon>library_books</mat-icon>
+      </div>
+      <h2>Interactive Documentation</h2>
+      <p>
+        Explore step-by-step guides, working notes, and AI-driven annotations on data engineering
+        paradigms.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <mat-icon>dns</mat-icon>
+      </div>
+      <h2>Real-Time System Monitoring</h2>
+      <p>
+        Track live service health, response times, and system statuses across all our core ingestion
+        endpoints.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <mat-icon>trending_up</mat-icon>
+      </div>
+      <h2>SLA Compliance Forecasts</h2>
+      <p>
+        Leverage predictive deep learning models to estimate Service Level Agreement (SLA) status up
+        to 90 days out.
+      </p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <mat-icon>security</mat-icon>
+      </div>
+      <h2>Threat Anomaly Analytics</h2>
+      <p>
+        Detect unusual usage patterns and identify potential threats with our machine learning
+        anomaly forecasting.
+      </p>
+    </div>
+  </div>
+
+  <!-- Data Transparency & Purpose Section -->
+  <div class="transparency-section">
+    <div class="transparency-content">
+      <h2>App Purpose & Data Transparency</h2>
+      <p>
+        The <strong>Data Engineering for Machine Learning Platform</strong> is designed to
+        ingestion-test, monitor, and analyze system-wide telemetry. To facilitate authentic and
+        secure administration and ingest real-time analytics, our platform offers integrations with
+        services such as Google Analytics 4 (GA4).
+      </p>
+      <p>We request user authentication and data access strictly for the following purposes:</p>
+      <ul class="purpose-list">
+        <li>
+          <mat-icon>check_circle_outline</mat-icon>
+          <span
+            ><strong>System Telemetry Analysis:</strong> Syncing traffic parameters to train PyTorch
+            neural network anomaly models (ThreatModel).</span
+          >
+        </li>
+        <li>
+          <mat-icon>check_circle_outline</mat-icon>
+          <span
+            ><strong>Manager Authentication:</strong> Securely authenticating system administrators
+            for pipeline management actions.</span
+          >
+        </li>
+        <li>
+          <mat-icon>check_circle_outline</mat-icon>
+          <span
+            ><strong>SLA & Performance Optimization:</strong> Identifying geographic latency
+            bottlenecks and ensuring high-availability targets are met.</span
+          >
+        </li>
+      </ul>
+      <p class="transparency-disclaimer">
+        Your privacy is our priority. We host our app on our own verified domains and do not share
+        your private account data with third parties.
+      </p>
+    </div>
+  </div>
+
+  <footer class="landing-footer">
+    <div class="footer-links">
+      <a routerLink="/privacy">Privacy Policy</a>
+      <span class="divider">•</span>
+      <a routerLink="/terms">Terms of Service</a>
+      <span class="divider">•</span>
+      <a routerLink="/whitepaper">Technical Whitepaper</a>
+    </div>
+  </footer>
 </div>

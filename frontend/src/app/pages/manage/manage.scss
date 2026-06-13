@@ -676,6 +676,7 @@
       color: white !important;
       border-radius: 20px !important;
       width: 100%;
+      white-space: nowrap !important;
     }
   }
 }
@@ -736,20 +737,6 @@
     }
   }
 
-  .code-block-container {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-
-    .code-block-outlined {
-      width: auto;
-    }
-
-    .copy-btn {
-      width: auto !important;
-    }
-  }
-
   .danger-zone-card .card-body-clean {
     flex-direction: row;
     align-items: center;
@@ -759,6 +746,90 @@
 
     button {
       width: auto;
+      white-space: nowrap !important;
+      flex-shrink: 0;
+    }
+  }
+}
+
+/* Integrations list alignment styles */
+.integrations-list {
+  display: flex;
+  flex-direction: column;
+  padding: 0 1.5rem;
+
+  .integration-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.clarity-item {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.25rem;
+    }
+  }
+
+  .integration-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  .integration-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .integration-name {
+    display: block;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .integration-status {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .integration-action {
+    display: flex;
+    align-items: center;
+
+    button {
+      white-space: nowrap !important;
+      flex-shrink: 0;
+    }
+  }
+
+  .clarity-form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+
+    @media (min-width: 601px) {
+      flex-direction: row;
+      align-items: center;
+
+      mat-form-field {
+        flex: 1;
+        margin-bottom: -1.25em;
+      }
+
+      button {
+        height: 48px !important;
+        margin-top: 4px;
+      }
     }
   }
 }

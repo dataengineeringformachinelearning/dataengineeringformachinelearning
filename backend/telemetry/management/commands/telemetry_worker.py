@@ -147,7 +147,7 @@ class Command(BaseCommand):
         user=default_user,
         title="Platform Status",
         slug="platform-status",
-        description="Monitoring system health and telemetry pipelines for the Data Engineering Platform.",
+        description="Monitoring system health and telemetry pipelines for the Data Engineering for Machine Learning Platform.",
       )
 
     def get_normalized_info(url_str):

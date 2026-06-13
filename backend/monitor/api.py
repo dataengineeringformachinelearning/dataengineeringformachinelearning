@@ -110,7 +110,7 @@ def list_status_pages(request):
           defaults={
             "user": default_user,
             "title": "Platform Status",
-            "description": "Monitoring system health and telemetry pipelines for the Data Engineering Platform.",
+            "description": "Monitoring system health and telemetry pipelines for the Data Engineering for Machine Learning Platform.",
           },
         )
 
