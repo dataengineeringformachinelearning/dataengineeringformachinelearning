@@ -48,6 +48,7 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
 
       # Authenticate the request with this user
       request.user = user
+      request.firebase_token = decoded_token
 
     except Exception as e:
       logger.error(f"Firebase token verification failed: {e}")

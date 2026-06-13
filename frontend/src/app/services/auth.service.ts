@@ -21,6 +21,7 @@ import {
   getMultiFactorResolver,
   MultiFactorResolver,
   MultiFactorAssertion,
+  multiFactor,
 } from 'firebase/auth';
 
 @Injectable({
@@ -248,5 +249,25 @@ export class AuthService {
       console.error(e);
       return false;
     }
+  }
+
+  async sendMfaEnrollmentCode(phoneNumber: string, recaptchaVerifier: any): Promise<string> {
+    if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
+    const session = await multiFactor(this.auth.currentUser).getSession();
+    const phoneInfoOptions = { phoneNumber, session };
+    const phoneAuthProvider = new PhoneAuthProvider(this.auth);
+    return await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier);
+  }
+
+  async confirmMfaEnrollment(verificationId: string, verificationCode: string): Promise<void> {
+    if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
+    const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+    const assertion = PhoneMultiFactorGenerator.assertion(cred);
+    await multiFactor(this.auth.currentUser).enroll(assertion, 'SMS Phone MFA');
+  }
+
+  async unenrollMfa(factorInfo: any): Promise<void> {
+    if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
+    await multiFactor(this.auth.currentUser).unenroll(factorInfo);
   }
 }

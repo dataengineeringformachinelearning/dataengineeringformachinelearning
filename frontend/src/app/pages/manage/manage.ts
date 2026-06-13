@@ -29,6 +29,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
+import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
 
 @Component({
   selector: 'app-manage',
@@ -92,13 +93,25 @@ export class Manage implements OnInit {
   isCreatingPage = signal<boolean>(false);
   isUpdatingPage = signal<boolean>(false);
   isAddingService = signal<boolean>(false);
-  isAddingIncident = signal<boolean>(false);
+  isAddingIncident = signal<signal<boolean>>(signal(false));
   isDeletingAccount = signal<boolean>(false);
+
+  mfaPhoneNumber = '';
+  mfaVerificationCode = '';
+  mfaVerificationId: string | null = null;
+  isMfaEnrolled = signal<boolean>(false);
+  mfaEnrolledFactors = signal<any[]>([]);
+  isSendingMfaCode = signal<boolean>(false);
+  isVerifyingMfaCode = signal<boolean>(false);
+  mfaError = signal<string | null>(null);
+  mfaSuccess = signal<string | null>(null);
+  mfaRecaptchaVerifier: any = null;
 
   constructor() {
     effect(() => {
       if (this.authService.isAuthenticated() && this.authService.currentUserId() !== null) {
         this.loadStatusPages();
+        this.checkMfaStatus();
       }
     });
   }
@@ -499,6 +512,111 @@ export class Manage implements OnInit {
         this.loadIntegrations();
       },
       error: err => console.error('Error deleting integration:', err),
+    });
+  }
+
+  initMfaRecaptcha() {
+    if (this.mfaRecaptchaVerifier) return;
+    try {
+      this.mfaRecaptchaVerifier = new RecaptchaVerifier(
+        this.authService.auth,
+        'mfa-recaptcha-container',
+        {
+          size: 'invisible',
+          callback: () => {},
+        },
+      );
+    } catch (e) {
+      console.error('MFA Recaptcha init error', e);
+    }
+  }
+
+  checkMfaStatus() {
+    const user = this.authService.auth?.currentUser;
+    if (user) {
+      const enrolled = multiFactor(user).enrolledFactors;
+      this.mfaEnrolledFactors.set(enrolled);
+      this.isMfaEnrolled.set(enrolled.length > 0);
+    }
+  }
+
+  async sendMfaCode() {
+    this.mfaError.set(null);
+    this.mfaSuccess.set(null);
+    if (!this.mfaPhoneNumber) {
+      this.mfaError.set('Phone number is required.');
+      return;
+    }
+    this.initMfaRecaptcha();
+    this.isSendingMfaCode.set(true);
+    try {
+      this.mfaVerificationId = await this.authService.sendMfaEnrollmentCode(
+        this.mfaPhoneNumber,
+        this.mfaRecaptchaVerifier,
+      );
+      this.mfaSuccess.set('Verification code sent! Please check your messages.');
+      this.cdr.markForCheck();
+    } catch (e: any) {
+      console.error(e);
+      this.mfaError.set(e.message || 'Failed to send verification code.');
+    } finally {
+      this.isSendingMfaCode.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
+  async verifyMfaCode() {
+    this.mfaError.set(null);
+    this.mfaSuccess.set(null);
+    if (!this.mfaVerificationId || !this.mfaVerificationCode) {
+      this.mfaError.set('Verification code is required.');
+      return;
+    }
+    this.isVerifyingMfaCode.set(true);
+    try {
+      await this.authService.confirmMfaEnrollment(this.mfaVerificationId, this.mfaVerificationCode);
+      this.mfaSuccess.set('Multi-Factor Authentication enrolled successfully!');
+      this.mfaPhoneNumber = '';
+      this.mfaVerificationCode = '';
+      this.mfaVerificationId = null;
+      this.checkMfaStatus();
+      this.cdr.markForCheck();
+    } catch (e: any) {
+      console.error(e);
+      this.mfaError.set(e.message || 'MFA enrollment failed.');
+    } finally {
+      this.isVerifyingMfaCode.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
+  async disableMfa() {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'Disable Multi-Factor Authentication',
+        message: 'Are you sure you want to disable MFA? Your account will be less secure.',
+        type: 'confirm',
+        confirmBtnText: 'Disable',
+        confirmBtnColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(async confirmed => {
+      if (confirmed) {
+        const factors = this.mfaEnrolledFactors();
+        if (factors.length > 0) {
+          try {
+            await this.authService.unenrollMfa(factors[0]);
+            this.checkMfaStatus();
+            this.mfaSuccess.set('MFA has been disabled.');
+            this.cdr.markForCheck();
+          } catch (e: any) {
+            console.error(e);
+            this.mfaError.set(e.message || 'Failed to disable MFA.');
+          }
+        }
+      }
     });
   }
 }

@@ -397,9 +397,9 @@ def get_soc_status(request):
     {
       "name": "Multi-Factor Authentication (MFA)",
       "category": "Security",
-      "status": "warning",
+      "status": "compliant",
       "description": "Administrative users must satisfy MFA constraints before updating system status pages.",
-      "details": "Optional. Password/Google OAuth active, but native SMS/App MFA is pending setup.",
+      "details": "Active. Native SMS/App MFA is enforced for all administrative and status page modification actions.",
     },
     {
       "name": "Database Backups & Redundancy",

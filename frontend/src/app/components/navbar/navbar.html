@@ -42,16 +42,6 @@
           <span>Explore</span>
         </a>
 
-        <a
-          mat-button
-          routerLink="/compliance"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}"
-          class="nav-btn"
-        >
-          <mat-icon>verified_user</mat-icon>
-          <span>Compliance</span>
-        </a>
         @if (authService.isAuthenticated()) {
         <a
           mat-button
@@ -128,17 +118,6 @@
       <span>Explore</span>
     </a>
 
-    <a
-      mat-button
-      routerLink="/compliance"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      class="mobile-nav-btn"
-      (click)="closeMobileMenu()"
-    >
-      <mat-icon>verified_user</mat-icon>
-      <span>Compliance</span>
-    </a>
     @if (authService.isAuthenticated()) {
     <a
       mat-button

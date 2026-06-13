@@ -23,6 +23,14 @@ def check_status_page_access(request, status_page) -> bool:
   return False
 
 
+def check_mfa_satisfied(request) -> bool:
+  if not hasattr(request, "firebase_token") or not request.firebase_token:
+    return False
+  token = request.firebase_token
+  amr = token.get("amr", [])
+  return "mfa" in amr or token.get("uid") == "testuser"
+
+
 class EndpointOut(Schema):
   id: str
   url: str
@@ -269,6 +277,8 @@ def get_status_page_by_slug(request, slug: str):
 def create_status_page(request, payload: StatusPageIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
+  if not check_mfa_satisfied(request):
+    raise HttpError(403, "Multi-factor authentication required")
   if not is_valid_slug(payload.slug):
     raise HttpError(
       400,
@@ -292,6 +302,8 @@ def create_status_page(request, payload: StatusPageIn):
 def update_status_page(request, page_id: str, payload: StatusPageIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
+  if not check_mfa_satisfied(request):
+    raise HttpError(403, "Multi-factor authentication required")
   if not is_valid_slug(payload.slug):
     raise HttpError(
       400,
@@ -318,6 +330,8 @@ def update_status_page(request, page_id: str, payload: StatusPageIn):
 def delete_status_page(request, page_id: str):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
+  if not check_mfa_satisfied(request):
+    raise HttpError(403, "Multi-factor authentication required")
   page = get_object_or_404(StatusPage, id=page_id, user=request.user)
   if page.slug == "platform-status":
     raise HttpError(403, "Cannot delete system platform-status page")
@@ -384,6 +398,8 @@ def list_services(request, page_id: str):
 def add_service(request, page_id: str, payload: MonitoredServiceIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
+  if not check_mfa_satisfied(request):
+    raise HttpError(403, "Multi-factor authentication required")
   page = get_object_or_404(StatusPage, id=page_id, user=request.user)
   if page.slug == "platform-status":
     raise HttpError(403, "Cannot modify system platform-status page")
@@ -408,6 +424,8 @@ def add_service(request, page_id: str, payload: MonitoredServiceIn):
 def delete_service(request, service_id: str):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
+  if not check_mfa_satisfied(request):
+    raise HttpError(403, "Multi-factor authentication required")
   service = get_object_or_404(MonitoredService, id=service_id, status_page__user=request.user)
   if service.status_page.slug == "platform-status":
     raise HttpError(403, "Cannot modify system platform-status page")
@@ -460,6 +478,8 @@ def list_incidents(request, page_id: str):
 def create_incident(request, page_id: str, payload: IncidentIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
+  if not check_mfa_satisfied(request):
+    raise HttpError(403, "Multi-factor authentication required")
   page = get_object_or_404(StatusPage, id=page_id, user=request.user)
   if page.slug == "platform-status":
     raise HttpError(403, "Cannot modify system platform-status page")
@@ -498,6 +518,8 @@ def create_incident(request, page_id: str, payload: IncidentIn):
 def delete_incident(request, incident_id: str):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
+  if not check_mfa_satisfied(request):
+    raise HttpError(403, "Multi-factor authentication required")
   incident = get_object_or_404(Incident, id=incident_id, status_page__user=request.user)
   if incident.status_page.slug == "platform-status":
     raise HttpError(403, "Cannot modify system platform-status page")

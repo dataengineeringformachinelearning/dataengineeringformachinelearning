@@ -379,6 +379,117 @@
               </div>
             </div>
 
+            <!-- Multi-Factor Authentication (MFA) -->
+            <div class="status-card-outlined mfa-settings-card">
+              <div class="card-header-clean">
+                <h2 class="card-title-main">
+                  <mat-icon>security</mat-icon>
+                  Multi-Factor Authentication (MFA)
+                </h2>
+              </div>
+              <div class="card-body-clean">
+                <div>
+                  <p class="embed-desc">
+                    Secure your account by requiring a secondary verification method (SMS) during
+                    login. This is required under SOC2 policies to perform administrative updates to
+                    system status pages.
+                  </p>
+
+                  @if (isMfaEnrolled()) {
+                  <div class="mfa-status-enrolled panel-clean">
+                    <mat-icon
+                      class="status-icon success"
+                      style="margin-right: 12px; vertical-align: middle"
+                      >check_circle</mat-icon
+                    >
+                    <div
+                      class="mfa-info"
+                      style="display: inline-block; vertical-align: middle; margin-right: 24px"
+                    >
+                      <strong>MFA Enrolled & Enforced</strong>
+                      <div style="font-size: 12px; opacity: 0.7">
+                        SMS verification is active for your account.
+                      </div>
+                    </div>
+                    <button mat-stroked-button color="warn" (click)="disableMfa()">
+                      Disable MFA
+                    </button>
+                  </div>
+                  } @else {
+                  <div class="mfa-enrollment-form panel-clean">
+                    <p style="margin-bottom: 12px">
+                      <strong
+                        >Step 1: Enter your phone number (international format e.g.
+                        +11234567890)</strong
+                      >
+                    </p>
+                    <div
+                      class="form-row"
+                      style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px"
+                    >
+                      <mat-form-field appearance="outline" style="flex: 1; margin-bottom: 0">
+                        <mat-label>Phone Number</mat-label>
+                        <input
+                          matInput
+                          [(ngModel)]="mfaPhoneNumber"
+                          placeholder="+11234567890"
+                          [disabled]="mfaVerificationId !== null"
+                        />
+                      </mat-form-field>
+                      <button
+                        mat-flat-button
+                        color="primary"
+                        (click)="sendMfaCode()"
+                        [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
+                        style="height: 56px"
+                      >
+                        @if (isSendingMfaCode()) {
+                        <span class="btn-spinner"></span>
+                        } @else { Send SMS Code }
+                      </button>
+                    </div>
+
+                    @if (mfaVerificationId) {
+                    <div class="verification-step">
+                      <p style="margin-bottom: 12px">
+                        <strong
+                          >Step 2: Enter the 6-digit verification code sent to your phone</strong
+                        >
+                      </p>
+                      <div class="form-row" style="display: flex; gap: 12px; align-items: center">
+                        <mat-form-field appearance="outline" style="flex: 1; margin-bottom: 0">
+                          <mat-label>Verification Code</mat-label>
+                          <input matInput [(ngModel)]="mfaVerificationCode" placeholder="123456" />
+                        </mat-form-field>
+                        <button
+                          mat-flat-button
+                          color="accent"
+                          (click)="verifyMfaCode()"
+                          [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
+                          style="height: 56px"
+                        >
+                          @if (isVerifyingMfaCode()) {
+                          <span class="btn-spinner"></span>
+                          } @else { Verify & Enroll }
+                        </button>
+                      </div>
+                    </div>
+                    }
+                  </div>
+                  }
+
+                  <!-- Hidden Recaptcha Container -->
+                  <div id="mfa-recaptcha-container"></div>
+
+                  @if (mfaError()) {
+                  <div class="alert alert-error">{{ mfaError() }}</div>
+                  } @if (mfaSuccess()) {
+                  <div class="alert alert-success">{{ mfaSuccess() }}</div>
+                  }
+                </div>
+              </div>
+            </div>
+
             <!-- Account Settings & Danger Zone -->
             <div class="status-card-outlined danger-zone-card">
               <div class="card-header-clean">
