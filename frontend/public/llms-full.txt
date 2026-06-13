@@ -509,7 +509,12 @@ For detailed configuration settings, environmental variables, scaling limits, an
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
 
-[![Known Vulnerabilities](https://snyk.io/test/github/dataengineeringformachinelearning/dataengineeringformachinelearning/badge.svg)](https://snyk.io/test/github/dataengineeringformachinelearning/dataengineeringformachinelearning)
+[![Snyk Code Analysis](https://snyk.io/api/v1/status/active/1eba8b51-8dbc-43ca-8b86-538ec5dba983/badge.svg)](https://app.snyk.io/project/1eba8b51-8dbc-43ca-8b86-538ec5dba983)
+[![Snyk Frontend Dependency](https://snyk.io/api/v1/status/active/08528f62-334a-4457-bf84-39908c54bb4f/badge.svg)](https://app.snyk.io/project/08528f62-334a-4457-bf84-39908c54bb4f)
+[![Snyk Backend Dependency](https://snyk.io/api/v1/status/active/370873a1-b3ad-4936-a8f7-cc23f27218ab/badge.svg)](https://app.snyk.io/project/370873a1-b3ad-4936-a8f7-cc23f27218ab)
+[![Snyk Frontend Docker](https://snyk.io/api/v1/status/active/66612b26-a5a7-49a1-b8ff-9ae03d851d53/badge.svg)](https://app.snyk.io/project/66612b26-a5a7-49a1-b8ff-9ae03d851d53)
+[![Snyk Backend Docker](https://snyk.io/api/v1/status/active/877784eb-1281-46ac-899b-2fe163e8d00f/badge.svg)](https://app.snyk.io/project/877784eb-1281-46ac-899b-2fe163e8d00f)
+[![Snyk Queue Docker](https://snyk.io/api/v1/status/active/a477f291-bd2e-4c0d-a376-9c8cc6d0cd19/badge.svg)](https://app.snyk.io/project/a477f291-bd2e-4c0d-a376-9c8cc6d0cd19)
 
 ![GitHub contributors](https://img.shields.io/github/contributors/dataengineeringformachinelearning/dataengineeringformachinelearning)
 ![GitHub Repo stars](https://img.shields.io/github/stars/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
