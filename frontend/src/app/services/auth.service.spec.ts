@@ -95,7 +95,8 @@ describe('AuthService', () => {
     service.isAuthenticated.set(true);
     service.currentUserId.set(100);
 
-    const loginPromise = service.login({ username: 'user@example.com', password: 'pwd' });
+    const dummyPassword = `dummy-pwd-${Math.random()}`;
+    const loginPromise = service.login({ username: 'user@example.com', password: dummyPassword });
     const result = await loginPromise;
 
     expect(result.success).toBe(true);
