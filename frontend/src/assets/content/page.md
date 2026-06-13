@@ -132,7 +132,7 @@ Now that the endpoint is responding, we need to enable Angular to call it. In mo
 
 ```typescript
 // frontend/src/app/app.config.ts
-import { provideHttpClient, withFetch } from "@angular/common/http";
+import { provideHttpClient, withFetch } from '@angular/common/http';
 export const appConfig = { providers: [provideHttpClient(withFetch())] };
 ```
 
@@ -140,23 +140,22 @@ You can then inject this into a component and use Angular Signals to cleanly man
 
 ```typescript
 // frontend/src/app/app.component.ts
-import { Component, inject, signal, OnInit } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: "app-root",
+  selector: 'app-root',
   standalone: true,
   template: `<footer>Backend Status: {{ backendStatus() }}</footer>`,
 })
 export class AppComponent implements OnInit {
-  backendStatus = signal<"checking" | "ok" | "error">("checking");
+  backendStatus = signal<'checking' | 'ok' | 'error'>('checking');
   private http = inject(HttpClient);
 
   ngOnInit() {
-    this.http.get<{ status: string }>("/api/health").subscribe({
-      next: (res) =>
-        this.backendStatus.set(res.status === "ok" ? "ok" : "error"),
-      error: () => this.backendStatus.set("error"),
+    this.http.get<{ status: string }>('/api/health').subscribe({
+      next: res => this.backendStatus.set(res.status === 'ok' ? 'ok' : 'error'),
+      error: () => this.backendStatus.set('error'),
     });
   }
 }
@@ -261,12 +260,12 @@ In your dashboard component, you can fetch the data from your new API and bind i
 
 ```typescript
 // frontend/src/app/pages/dashboard/dashboard.ts
-import { Component, OnInit, inject } from "@angular/core";
-import { AgCharts } from "ag-charts-angular";
-import { HttpClient } from "@angular/common/http";
+import { Component, OnInit, inject } from '@angular/core';
+import { AgCharts } from 'ag-charts-angular';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
-  selector: "app-dashboard",
+  selector: 'app-dashboard',
   standalone: true,
   imports: [AgCharts],
   template: `<ag-charts [options]="chartOptions"></ag-charts>`,
@@ -274,16 +273,16 @@ import { HttpClient } from "@angular/common/http";
 export class Dashboard implements OnInit {
   private http = inject(HttpClient);
   public chartOptions = {
-    title: { text: "Application Stability" },
+    title: { text: 'Application Stability' },
     data: [],
-    series: [{ type: "line", xKey: "time", yKey: "statusCode" }],
+    series: [{ type: 'line', xKey: 'time', yKey: 'statusCode' }],
   };
 
   ngOnInit() {
-    this.http.get<any[]>("/api/monitor/endpoints").subscribe((data) => {
+    this.http.get<any[]>('/api/monitor/endpoints').subscribe(data => {
       this.chartOptions = {
         ...this.chartOptions,
-        data: data.map((ep) => ({
+        data: data.map(ep => ({
           time: new Date(ep.last_tested).toLocaleTimeString(),
           statusCode: ep.status_code,
         })),
@@ -363,9 +362,9 @@ On the frontend, you can manage user sessions by tracking a simple boolean state
 
 ```typescript
 // frontend/src/app/services/auth.service.ts
-import { Injectable, signal } from "@angular/core";
+import { Injectable, signal } from '@angular/core';
 
-@Injectable({ providedIn: "root" })
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   public isAuthenticated = signal<boolean>(false);
 }
@@ -374,9 +373,7 @@ export class AuthService {
 You can inject this service into your components to hide or disable sensitive actions:
 
 ```html
-<button (click)="trainModel()" [disabled]="!authService.isAuthenticated()">
-  Train SLA Model
-</button>
+<button (click)="trainModel()" [disabled]="!authService.isAuthenticated()">Train SLA Model</button>
 ```
 
 On the backend, we can expose minimal endpoints that hook directly into Django's robust built-in authentication system. By authenticating a user via a JSON payload and returning session cookies, our Angular app can easily log users in and out.
@@ -419,7 +416,7 @@ const errorPayload = {
   message: error.message,
   context: { url: window.location.href },
 };
-this.http.post("/api/v1/telemetry/endpoints", errorPayload).subscribe();
+this.http.post('/api/v1/telemetry/endpoints', errorPayload).subscribe();
 ```
 
 On the backend, instead of processing this data synchronously, we can expose a fast, asynchronous endpoint that immediately pushes the incoming payload to a Redpanda topic. Using a framework like `django-ninja` paired with `aiokafka` keeps the HTTP operation entirely non-blocking.
@@ -508,3 +505,11 @@ For detailed configuration settings, environmental variables, scaling limits, an
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
+
+[![Known Vulnerabilities](https://snyk.io/test/github/dataengineeringformachinelearning/dataengineeringformachinelearning/badge.svg)](https://snyk.io/test/github/dataengineeringformachinelearning/dataengineeringformachinelearning)
+
+![GitHub contributors](https://img.shields.io/github/contributors/dataengineeringformachinelearning/dataengineeringformachinelearning)
+![GitHub Repo stars](https://img.shields.io/github/stars/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
+![GitHub forks](https://img.shields.io/github/forks/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
+![GitHub issues](https://img.shields.io/github/issues/dataengineeringformachinelearning/dataengineeringformachinelearning)
+![GitHub license](https://img.shields.io/github/license/dataengineeringformachinelearning/dataengineeringformachinelearning)
