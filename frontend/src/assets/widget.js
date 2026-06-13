@@ -76,13 +76,28 @@
           if (page) {
             widgetLink.href = `${frontendHost}/status/${page.slug}`;
 
-            fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`)
-              .then(res => res.json())
-              .then(incidents => {
+            Promise.all([
+              fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`).then(
+                res => res.json(),
+              ),
+              fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`).then(
+                res => res.json(),
+              ),
+            ])
+              .then(([incidents, services]) => {
                 const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
+                const outages = services.filter(s => s.status === 'Outage');
+                const degraded = services.filter(s => s.status === 'Degraded');
+
                 if (activeIncidents.length > 0) {
                   dot.style.backgroundColor = '#ef4444';
                   text.innerText = `Incident: ${activeIncidents[0].status}`;
+                } else if (outages.length > 0) {
+                  dot.style.backgroundColor = '#ef4444';
+                  text.innerText = 'Service Outage';
+                } else if (degraded.length > 0) {
+                  dot.style.backgroundColor = '#f59e0b'; // Amber for degraded
+                  text.innerText = 'Degraded Performance';
                 } else {
                   dot.style.backgroundColor = '#10b981';
                   text.innerText = 'All Systems Operational';

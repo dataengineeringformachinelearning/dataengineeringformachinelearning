@@ -28,7 +28,9 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
       },
       error: error => {
         if (error instanceof HttpErrorResponse) {
-          if (!req.url.includes(API_ENDPOINTS.TELEMETRY.ENDPOINTS)) {
+          // Ignore status 0 (cancelled/aborted requests, CORS preflight failures, or adblocker blocks)
+          // to prevent reporting false outages.
+          if (error.status !== 0 && !req.url.includes(API_ENDPOINTS.TELEMETRY.ENDPOINTS)) {
             const responseTimeMs = Date.now() - startTime;
             const payload: TelemetryPayload = {
               url: req.url,

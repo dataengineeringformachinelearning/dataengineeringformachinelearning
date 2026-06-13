@@ -157,8 +157,12 @@ def _build_status_page_out(p):
   uptime_history = []
 
   if urls:
-    total_count = Endpoints.objects.filter(url__in=urls).count()
-    up_count = Endpoints.objects.filter(url__in=urls, is_active=True, status_code__lt=500).count()
+    total_count = Endpoints.objects.filter(url__in=urls).exclude(status_code=0).count()
+    up_count = (
+      Endpoints.objects.filter(url__in=urls, is_active=True, status_code__lt=500)
+      .exclude(status_code=0)
+      .count()
+    )
     cumulative_sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
 
     # Compute 90-day history
@@ -168,7 +172,11 @@ def _build_status_page_out(p):
     from django.utils import timezone
 
     cutoff = timezone.now() - dt.timedelta(days=90)
-    logs = Endpoints.objects.filter(url__in=urls, last_tested__gte=cutoff).order_by("last_tested")
+    logs = (
+      Endpoints.objects.filter(url__in=urls, last_tested__gte=cutoff)
+      .exclude(status_code=0)
+      .order_by("last_tested")
+    )
 
     today = timezone.now().date()
     days_list = [today - dt.timedelta(days=i) for i in range(90)]
@@ -320,16 +328,22 @@ def list_services(request, page_id: str):
   services = page.services.all()
   out = []
   for s in services:
-    # Get latest log
-    latest_log = Endpoints.objects.filter(url=s.url).order_by("-last_tested").first()
+    # Get latest log, ignoring client-cancelled requests
+    latest_log = (
+      Endpoints.objects.filter(url=s.url).exclude(status_code=0).order_by("-last_tested").first()
+    )
     status = "Operational"
     if latest_log:
       if not latest_log.is_active or latest_log.status_code >= 500:
         status = "Outage"
 
     # Calculate SLA
-    total_count = Endpoints.objects.filter(url=s.url).count()
-    up_count = Endpoints.objects.filter(url=s.url, is_active=True, status_code__lt=500).count()
+    total_count = Endpoints.objects.filter(url=s.url).exclude(status_code=0).count()
+    up_count = (
+      Endpoints.objects.filter(url=s.url, is_active=True, status_code__lt=500)
+      .exclude(status_code=0)
+      .count()
+    )
     sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
 
     out.append(
