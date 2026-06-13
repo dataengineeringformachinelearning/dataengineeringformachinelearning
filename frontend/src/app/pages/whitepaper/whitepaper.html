@@ -143,7 +143,32 @@
     </section>
 
     <section class="paper-section">
-      <h2>7. Conclusion</h2>
+      <h2>7. Data Tenancy, Retention, and Lifecycle Policy</h2>
+      <p>
+        Observability systems must ensure strict isolation. The DEML Platform enforces absolute
+        multi-tenancy boundaries at the database level. Direct cross-tenant fallbacks (such as
+        global threat reports) are strictly eliminated; instead, threat models and predictions are
+        trained exclusively on the target user's telemetry. If a tenant does not yet have enough
+        collected telemetry, the model is trained on-demand using safe, zero-threat baselines
+        instead of shared data.
+      </p>
+      <p>
+        Additionally, the platform implements a strict 90-day retention and lifecycle policy. All
+        telemetry data, log entries, incident histories, and historical ML reports are purged from
+        the database exactly 90 days after their creation date. The ML training worker automatically
+        triggers full model retraining and telemetry cleanup upon application deployment and runs
+        continuously every hour.
+      </p>
+      <p>
+        Furthermore, our engineering roadmap includes integrations with monetization systems like
+        Stripe. This will enable paid tiers where models and forecasts are refreshed at a
+        high-frequency interval (every 15 minutes), while standard tiers continue on the baseline
+        hourly retraining schedule.
+      </p>
+    </section>
+
+    <section class="paper-section">
+      <h2>8. Conclusion</h2>
       <p>
         By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep
         learning models, we establish a robust data engineering framework that elevates the

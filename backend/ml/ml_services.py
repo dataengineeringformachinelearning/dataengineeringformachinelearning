@@ -119,11 +119,18 @@ def train_threat_model(user):
   integrations = AnalyticsIntegration.objects.filter(user=user, active=True)
 
   # Default/Fallback metrics if user hasn't synced real integrations yet
-  location_weight = 0.35
-  top_location = "United States"
+  location_weight = 0.0
+  top_location = "No Connected Integration"
+  suspicious_ratio = 0.0
+  failure_rate = 0.0
 
   # If integrations exist, pull real details (or simulate based on them)
   if integrations.exists():
+    location_weight = 0.35
+    top_location = "United States"
+    failure_rate = 0.02
+    suspicious_ratio = 0.05
+
     for integ in integrations:
       if integ.provider == "google":
         location_weight = 0.62

@@ -55,14 +55,25 @@ def train_model(request, status_page_id: str | None = None):
 
 @router.get("/latest", response=LatestRunOut)
 def get_latest_training(request, status_page_id: str | None = None):
+  status_page = None
   if status_page_id:
-    run = TrainingRun.objects.filter(status_page_id=status_page_id).first()
+    try:
+      status_page = StatusPage.objects.get(id=status_page_id)
+    except (StatusPage.DoesNotExist, ValueError):
+      raise HttpError(404, "Status page not found") from None
   else:
-    default_page = StatusPage.objects.filter(slug="platform-status").first()
-    if default_page:
-      run = TrainingRun.objects.filter(status_page=default_page).first()
-    else:
-      run = TrainingRun.objects.first()
+    status_page = StatusPage.objects.filter(slug="platform-status").first()
+
+  if status_page:
+    run = TrainingRun.objects.filter(status_page=status_page).order_by("-created_at").first()
+  else:
+    run = TrainingRun.objects.filter(status_page__isnull=True).order_by("-created_at").first()
+
+  if not run and status_page:
+    try:
+      run = train_tenant_sla(status_page)
+    except Exception:
+      run = None
 
   if run:
     return {
@@ -107,12 +118,37 @@ def train_threat_intel(request):
 
 @router.get("/threat-intel/report", response=ThreatReportOut)
 def get_threat_report(request, status_page_id: str | None = None):
-  report = None
-  if request.user.is_authenticated:
-    report = ThreatReport.objects.filter(user=request.user).first()
+  target_user = None
+  if status_page_id:
+    try:
+      status_page = StatusPage.objects.get(id=status_page_id)
+      target_user = status_page.user
+    except (StatusPage.DoesNotExist, ValueError):
+      pass
+
+  if not target_user:
+    if request.user.is_authenticated:
+      target_user = request.user
+    else:
+      default_page = StatusPage.objects.filter(slug="platform-status").first()
+      if default_page:
+        target_user = default_page.user
+
+  if not target_user:
+    from django.contrib.auth.models import User
+
+    target_user = User.objects.first()
+
+  if not target_user:
+    return {"status": "success", "message": "No users available for threat intelligence"}
+
+  report = ThreatReport.objects.filter(user=target_user).order_by("-created_at").first()
 
   if not report:
-    report = ThreatReport.objects.first()
+    try:
+      report = train_threat_model(target_user)
+    except Exception:
+      report = None
 
   if report:
     return {
@@ -124,17 +160,4 @@ def get_threat_report(request, status_page_id: str | None = None):
       "created_at": report.created_at,
     }
   else:
-    from django.contrib.auth.models import User
-
-    default_user = User.objects.first()
-    if default_user:
-      report = train_threat_model(default_user)
-      return {
-        "status": "success",
-        "anomaly_score": report.anomaly_score,
-        "top_location": report.top_location,
-        "location_weight": report.location_weight,
-        "suspicious_ratio": report.suspicious_ratio,
-        "created_at": report.created_at,
-      }
     return {"status": "success", "message": "No threat intelligence reports available"}

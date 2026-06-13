@@ -53,7 +53,7 @@ services:
       redpanda:
         condition: service_healthy
     command: >
-      sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py migrate && python manage.py train_all_models && python manage.py runserver 0.0.0.0:8000"
 
   telemetry_worker:
     build:

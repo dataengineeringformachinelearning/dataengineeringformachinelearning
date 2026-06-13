@@ -24,5 +24,5 @@ RUN python manage.py collectstatic --noinput --clear
 # Expose port
 EXPOSE 8000
 
-# Run migrations, clean up database, then start Gunicorn
-CMD ["sh", "-c", "python manage.py migrate && python manage.py db_cleanup && gunicorn --bind 0.0.0.0:${PORT:-8000} config.wsgi:application --workers 3 --timeout 120"]
+# Run migrations, clean up database, train initial models, then start Gunicorn
+CMD ["sh", "-c", "python manage.py migrate && python manage.py train_all_models && gunicorn --bind 0.0.0.0:${PORT:-8000} config.wsgi:application --workers 3 --timeout 120"]

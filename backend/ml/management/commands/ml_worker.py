@@ -12,11 +12,20 @@ from utils.kafka import get_kafka_brokers
 class Command(BaseCommand):
   help = "Runs the async Machine Learning (ML) training worker"
 
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.background_tasks = set()
+
   def handle(self, *args, **options):
     self.stdout.write(self.style.SUCCESS("Starting ML Engine Training Worker..."))
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
+    # Start periodic hourly scheduler task
+    task = asyncio.create_task(self.periodic_scheduler())
+    self.background_tasks.add(task)
+    task.add_done_callback(self.background_tasks.discard)
+
     brokers = get_kafka_brokers()
     consumer = AIOKafkaConsumer(
       "ml-training-events",
@@ -110,3 +119,26 @@ class Command(BaseCommand):
       self.stderr.write(self.style.WARNING(f"Tenant ID {tenant_id} not found"))
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"Failed to train tenant: {e}"))
+
+  async def periodic_scheduler(self):
+    self.stdout.write(
+      self.style.SUCCESS("Starting periodic hourly training & cleanup scheduler...")
+    )
+    # Wait 10 seconds for startup to stabilize
+    await asyncio.sleep(10)
+    while True:
+      try:
+        self.stdout.write("Periodic Scheduler: Triggering database cleanup and full retraining...")
+        from django.core.management import call_command
+
+        await sync_to_async(call_command)("train_all_models")
+        self.stdout.write(
+          self.style.SUCCESS(
+            "Periodic Scheduler: Successfully completed hourly training & cleanup run."
+          )
+        )
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Periodic Scheduler: Hourly run failed: {e}"))
+
+      # Wait 1 hour (3600 seconds)
+      await asyncio.sleep(3600)
