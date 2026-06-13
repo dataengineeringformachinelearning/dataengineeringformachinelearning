@@ -32,6 +32,45 @@
           {{ page.description || 'Monitoring core services and API integrations in real-time.' }}
         </p>
       </section>
+
+      <!-- Sanity.io Announcements Feed -->
+      @if (sanityService.announcements().length > 0 || sanityService.loading() ||
+      sanityService.error()) {
+      <div class="announcements-container" style="margin-bottom: 24px">
+        <h2 class="section-title-premium">
+          <mat-icon>campaign</mat-icon>
+          Latest System Announcements
+        </h2>
+
+        @if (sanityService.loading()) {
+        <div class="announcements-loader">
+          <span class="btn-spinner"></span>
+          <span>Checking announcements...</span>
+        </div>
+        } @if (sanityService.error()) {
+        <div class="announcements-error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ sanityService.error() }}</span>
+        </div>
+        } @if (!sanityService.loading() && !sanityService.error()) {
+        <div class="announcements-list-premium">
+          @for (ann of sanityService.announcements(); track ann._id) {
+          <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
+            <div class="ann-header">
+              <span class="ann-severity-badge" [ngClass]="ann.severity || 'info'">
+                {{ ann.severity || 'info' }}
+              </span>
+              <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
+            </div>
+            <h3 class="ann-title">{{ ann.title }}</h3>
+            <p class="ann-body">{{ ann.body }}</p>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+
       <!-- SLA Predictions Widgets -->
       <section class="standalone-sla-row">
         <div class="standalone-sla-card">

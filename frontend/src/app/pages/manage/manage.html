@@ -391,6 +391,155 @@
                         }
                       </div>
                     </div>
+
+                    <!-- Threat Model Configuration & Stats -->
+                    <div
+                      class="threat-model-management"
+                      style="
+                        margin-top: 24px;
+                        border-top: 1px solid rgba(255, 255, 255, 0.1);
+                        padding-top: 20px;
+                      "
+                    >
+                      <h4
+                        style="
+                          color: #fff;
+                          margin-bottom: 8px;
+                          display: flex;
+                          align-items: center;
+                          gap: 8px;
+                          font-size: 1.1rem;
+                          font-weight: 600;
+                        "
+                      >
+                        <mat-icon style="color: #f87171">psychology</mat-icon> Machine Learning
+                        Threat Model
+                      </h4>
+                      <p class="embed-desc">
+                        Train a PyTorch Neural Network model (ThreatPredictor) on your analytics and
+                        geolocation telemetry to compute real-time access threat anomaly scores.
+                      </p>
+
+                      @if (modelService.latestThreatReport()) {
+                      <div
+                        style="
+                          background: rgba(255, 255, 255, 0.02);
+                          border: 1px solid rgba(255, 255, 255, 0.05);
+                          padding: 16px;
+                          border-radius: 8px;
+                          margin-bottom: 16px;
+                        "
+                      >
+                        <div
+                          style="
+                            display: grid;
+                            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                            gap: 16px;
+                          "
+                        >
+                          <div>
+                            <span style="font-size: 0.75rem; color: #94a3b8; display: block"
+                              >Access Threat Score</span
+                            >
+                            <strong
+                              style="font-size: 1.25rem; display: block; margin-top: 4px"
+                              [style.color]="modelService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
+                            >
+                              {{ (modelService.latestThreatReport()!.anomaly_score! * 100) |
+                              number:'1.1-2' }}%
+                            </strong>
+                          </div>
+                          <div>
+                            <span style="font-size: 0.75rem; color: #94a3b8; display: block"
+                              >Top Origin Location</span
+                            >
+                            <strong
+                              style="
+                                font-size: 1.1rem;
+                                color: #fff;
+                                display: block;
+                                margin-top: 4px;
+                              "
+                              >{{ modelService.latestThreatReport()!.top_location || 'N/A'
+                              }}</strong
+                            >
+                          </div>
+                          <div>
+                            <span style="font-size: 0.75rem; color: #94a3b8; display: block"
+                              >Location Weight</span
+                            >
+                            <strong
+                              style="
+                                font-size: 1.1rem;
+                                color: #fff;
+                                display: block;
+                                margin-top: 4px;
+                              "
+                              >{{ (modelService.latestThreatReport()!.location_weight! * 100) |
+                              number:'1.0-1' }}%</strong
+                            >
+                          </div>
+                          <div>
+                            <span style="font-size: 0.75rem; color: #94a3b8; display: block"
+                              >Suspicious Requests</span
+                            >
+                            <strong
+                              style="
+                                font-size: 1.1rem;
+                                color: #fff;
+                                display: block;
+                                margin-top: 4px;
+                              "
+                              >{{ (modelService.latestThreatReport()!.suspicious_ratio! * 100) |
+                              number:'1.0-1' }}%</strong
+                            >
+                          </div>
+                        </div>
+                        <div
+                          style="
+                            font-size: 0.8rem;
+                            color: #94a3b8;
+                            margin-top: 12px;
+                            border-top: 1px solid rgba(255, 255, 255, 0.05);
+                            padding-top: 8px;
+                          "
+                        >
+                          Last trained: {{ modelService.latestThreatReport()!.created_at |
+                          date:'medium' }}
+                        </div>
+                      </div>
+                      } @else {
+                      <div
+                        style="
+                          background: rgba(255, 255, 255, 0.02);
+                          border: 1px dashed rgba(255, 255, 255, 0.1);
+                          padding: 16px;
+                          border-radius: 8px;
+                          text-align: center;
+                          margin-bottom: 16px;
+                          color: #94a3b8;
+                        "
+                      >
+                        No threat report found. Train the model to initialize threat indicators.
+                      </div>
+                      }
+
+                      <button
+                        mat-flat-button
+                        color="primary"
+                        (click)="modelService.trainThreatModel()"
+                        [disabled]="modelService.isTrainingThreat()"
+                      >
+                        @if (modelService.isTrainingThreat()) {
+                        <span class="btn-spinner" style="margin-right: 8px"></span>
+                        Training Threat Model... } @else {
+                        <ng-container>
+                          <mat-icon>model_training</mat-icon>
+                          Train Threat Model
+                        </ng-container>
+                        }
+                      </button>
+                    </div>
                   </div>
                 </div>
                 }

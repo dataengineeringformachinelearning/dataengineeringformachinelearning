@@ -75,6 +75,27 @@
                       </span>
                     </div>
                   </div>
+                  <!-- Threat Intelligence Panel -->
+                  @if (modelService.latestThreatReport()) {
+                  <div class="ml-stat-panel">
+                    <div class="stat-info">
+                      <mat-icon class="stat-icon" style="color: #f87171">security</mat-icon>
+                      <div>
+                        <span class="stat-title">Access Threat Score</span>
+                        <span class="stat-subtitle">ML Geolocation Anomaly</span>
+                      </div>
+                    </div>
+                    <div class="stat-value-container">
+                      <span
+                        class="stat-value"
+                        [style.color]="modelService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
+                      >
+                        {{ (modelService.latestThreatReport()!.anomaly_score! * 100) |
+                        number:'1.1-2' }}%
+                      </span>
+                    </div>
+                  </div>
+                  }
                 </div>
                 <!-- Service Status List Section -->
                 <div class="services-status-panel">

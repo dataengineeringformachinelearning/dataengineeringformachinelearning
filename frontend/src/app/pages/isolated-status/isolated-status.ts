@@ -25,6 +25,7 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { formatServiceName } from '../../core/utils/formatter.utils';
+import { SanityService } from '../../services/sanity.service';
 
 @Component({
   selector: 'app-isolated-status',
@@ -51,6 +52,7 @@ export class IsolatedStatus implements OnInit {
   private dialog = inject(MatDialog);
   private titleService = inject(Title);
   private metaService = inject(Meta);
+  public sanityService = inject(SanityService);
 
   formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
@@ -110,6 +112,7 @@ export class IsolatedStatus implements OnInit {
       this.slug.set(slug);
     });
     this.modelService.fetchThreatReport();
+    this.sanityService.fetchAnnouncements();
   }
 
   loadPage(slug: string) {

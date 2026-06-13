@@ -72,6 +72,7 @@ export class Explore implements OnInit {
       content:
         'Browse community-published public service status pages and active system uptime monitors.',
     });
+    this.modelService.fetchThreatReport();
   }
 
   loadData() {
