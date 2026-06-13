@@ -241,7 +241,9 @@
 .create-page-btn {
   display: flex;
   align-items: center;
+  justify-content: center !important;
   gap: 8px;
+  width: 100% !important;
 
   mat-icon {
     margin: 0;
@@ -254,12 +256,12 @@
 .settings-form-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1.25rem;
   margin-bottom: 24px;
 
   .form-row {
     display: flex;
-    gap: 16px;
+    gap: 1.25rem;
     flex-wrap: wrap;
 
     mat-form-field {
@@ -272,7 +274,7 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 1rem;
+    gap: 1.25rem;
     margin-top: 4px;
 
     button {
@@ -440,15 +442,14 @@
 .incident-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .form-row-actions {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 1rem;
-  margin-top: 0.5rem;
+  gap: 1.25rem;
 
   .select-wrapper {
     width: 100%;
@@ -709,17 +710,6 @@
   }
 
   .settings-form-panel {
-    .settings-actions {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-
-      button {
-        width: auto;
-        justify-content: flex-start;
-      }
-    }
   }
 
   .danger-zone-card .card-body-clean {
@@ -801,13 +791,13 @@
   .cloudflare-form-row {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 1.25rem;
     width: 100%;
 
     .inputs-group {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 1.25rem;
       width: 100%;
 
       @media (min-width: 601px) {
@@ -825,11 +815,6 @@
       height: 48px !important;
       margin-top: 4px;
       width: 100% !important;
-
-      @media (min-width: 601px) {
-        width: 50% !important;
-        max-width: 300px;
-      }
     }
   }
 }
@@ -837,17 +822,17 @@
 .service-form-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1.25rem;
 }
 
 .service-inputs-row {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1.25rem;
 
   @media (min-width: 601px) {
     flex-direction: row;
-    gap: 16px;
+    gap: 1.25rem;
 
     .flex-1 {
       flex: 1;
@@ -873,11 +858,6 @@
   gap: 8px !important;
   width: 100% !important;
 
-  @media (min-width: 601px) {
-    width: 50% !important;
-    max-width: 300px;
-  }
-
   mat-icon {
     margin: 0;
     font-size: 20px;
@@ -893,7 +873,7 @@
 .mfa-inline-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 1.25rem;
   margin-bottom: 16px;
   width: 100%;
 }
@@ -901,11 +881,6 @@
 .mfa-btn {
   width: 100% !important;
   height: 56px !important;
-
-  @media (min-width: 601px) {
-    width: 50% !important;
-    max-width: 300px;
-  }
 }
 
 .status-icon {
