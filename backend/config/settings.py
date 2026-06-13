@@ -23,6 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from a .env file located at the BASE_DIR (backend/)
 load_dotenv(BASE_DIR / '.env')
 
+import sentry_sdk
+
+sentry_sdk.init(
+    dsn=os.getenv('SENTRY_DSN', "https://4b412fe87313bb20e0a4785e4404ad34@o4511437520044032.ingest.us.sentry.io/4511556294541312"),
+    send_default_pii=True,
+)
+
 # Initialize Firebase Admin
 if not firebase_admin._apps:
     service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_JSON')

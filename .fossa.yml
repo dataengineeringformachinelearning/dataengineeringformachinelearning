@@ -1,0 +1,20 @@
+version: 1
+
+analyze:
+  modules:
+    - name: '.'
+      target: '.'
+      type: autodetect
+
+policies:
+  license:
+    allow:
+      - MIT
+      - Apache-2.0
+      - BSD-3-Clause
+      - BSD-2-Clause
+      - ISC
+      - Unlicense
+    deny:
+      - GPL-3.0
+      - AGPL-3.0
