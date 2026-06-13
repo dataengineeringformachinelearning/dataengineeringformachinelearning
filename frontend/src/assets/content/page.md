@@ -836,6 +836,51 @@ We utilize `scripts/git_flow.py` to coordinate these activities:
    python scripts/git_flow.py tag-history
    ```
 
+#### Chapter 16.1.2: Troubleshooting SSH and Git Remote Mismatches
+
+If your local Git environment gets disconnected from GitHub Desktop or fails to push changes:
+
+1. **Check/Generate SSH Keys**:
+   If SSH credentials are missing or failing to authenticate, generate a new secure SSH key:
+
+   ```bash
+   # Generate an Ed25519 SSH key
+   ssh-keygen -t ed25519 -C "contact@joealongi.dev"
+
+   # Start the agent and add the key
+   eval "$(ssh-agent -s)"
+   ssh-add ~/.ssh/id_ed25519
+   ```
+
+   Add the public key (copied via `pbcopy < ~/.ssh/id_ed25519.pub`) to your [GitHub SSH Keys Settings](https://github.com/settings/keys).
+
+2. **Add or Restore Git Remote**:
+   If your remote settings are wiped out, re-link the upstream remote:
+
+   ```bash
+   git remote add origin git@github.com:dataengineeringformachinelearning/dataengineeringformachinelearning.git
+   ```
+
+3. **Synchronize Diverged Branch Histories**:
+   If pushing fails due to conflicting/diverged commit histories on the same branch name:
+
+   ```bash
+   # Create a safety backup branch of your current local commits
+   git checkout -b main-backup
+
+   # Switch back to main and align it exactly with GitHub's remote status
+   git checkout main
+   git fetch origin
+   git reset --hard origin/main
+
+   # Cherry-pick your recent local changes back on top of the clean tree
+   # (Replace -n with the number of your local commits to re-apply)
+   git cherry-pick main-backup~4..main-backup
+
+   # Push changes and reset tracking
+   git push -u origin main
+   ```
+
 ---
 
 ## Chapter 17: Accessibility Compliance Auditing
