@@ -71,6 +71,18 @@
       </div>
       }
 
+      <!-- SLA & Threat Intelligence Metrics Overview -->
+      <div class="metrics-overview-header">
+        <h3 class="section-title-premium">
+          <mat-icon>analytics</mat-icon>
+          SLA & Threat Intelligence
+        </h3>
+        <p class="section-description-premium">
+          Real-time service level agreement (SLA) status and threat analysis (TA) telemetry paired
+          with 90-day machine learning predictive forecasts.
+        </p>
+      </div>
+
       <!-- SLA Predictions Widgets -->
       <section class="standalone-sla-row">
         <div class="standalone-sla-card">
@@ -78,7 +90,8 @@
             <mat-icon>dns</mat-icon>
           </div>
           <div class="sla-details">
-            <span class="sla-label">Cumulative SLA (Real Telemetry)</span>
+            <span class="sla-label">Cumulative SLA</span>
+            <span class="sla-desc">Based on real telemetry</span>
             <span class="sla-val"
               >{{ (page.cumulative_sla !== null ? page.cumulative_sla : 100.0) | number:'1.2-2'
               }}%</span
@@ -90,7 +103,8 @@
             <mat-icon>online_prediction</mat-icon>
           </div>
           <div class="sla-details">
-            <span class="sla-label">ML-Predicted 90-Day SLA</span>
+            <span class="sla-label">Predicted SLA</span>
+            <span class="sla-desc">90-day forecast via ML</span>
             <span class="sla-valHighlight"
               >{{ (mlService.latestStats()[page.id] !== undefined &&
               mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id] : 99.99)
@@ -105,7 +119,8 @@
             <mat-icon>security</mat-icon>
           </div>
           <div class="sla-details">
-            <span class="sla-label">Cumulative TA (Real Telemetry)</span>
+            <span class="sla-label">Cumulative TA</span>
+            <span class="sla-desc">Based on real telemetry</span>
             <span class="sla-val">
               {{ (mlService.latestThreatReport()!.suspicious_ratio! * 100) | number:'1.1-2' }}%
             </span>
@@ -116,7 +131,8 @@
             <mat-icon>online_prediction</mat-icon>
           </div>
           <div class="sla-details">
-            <span class="sla-label">ML-Predicted 90-Day TA</span>
+            <span class="sla-label">Predicted TA</span>
+            <span class="sla-desc">90-day threat forecast via ML</span>
             <span class="sla-valHighlight">
               {{ (mlService.latestThreatReport()!.anomaly_score! * 100) | number:'1.1-2' }}%
             </span>

@@ -1,5 +1,11 @@
 @use '../../pages/status/status.scss' as *;
 
+:host {
+  display: block;
+  width: 100%;
+  min-height: unset !important;
+}
+
 // Explore-specific classes that are part of the status card block:
 .view-btn-container {
   display: flex;

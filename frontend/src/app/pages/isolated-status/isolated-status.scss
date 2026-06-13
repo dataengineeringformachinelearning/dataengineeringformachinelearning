@@ -285,6 +285,13 @@
     font-weight: 500;
   }
 
+  .sla-desc {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.8;
+    margin-top: 2px;
+  }
+
   .sla-val {
     font-size: 1.75rem;
     font-weight: 700;
@@ -862,6 +869,14 @@
     width: 22px;
     height: 22px;
   }
+}
+
+.section-description-premium {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+  margin-top: -0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .announcements-loader {
