@@ -2,9 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const versionFilePath = path.join(__dirname, '..', 'version.txt');
+const localVersionFilePath = path.join(__dirname, 'version.txt');
 const appVersion = fs.existsSync(versionFilePath)
   ? fs.readFileSync(versionFilePath, 'utf8').trim()
-  : '0.0.0-dev';
+  : fs.existsSync(localVersionFilePath)
+    ? fs.readFileSync(localVersionFilePath, 'utf8').trim()
+    : '0.0.0-dev';
 
 const targetPath = path.join(__dirname, 'src', 'environments', 'environment.ts');
 

@@ -38,5 +38,5 @@ repos:
         name: Sync README.md to frontend files
         entry: python scripts/sync_content.py
         language: system
-        files: ^README\.md$
+        files: ^(README\.md|version\.txt)$
         pass_filenames: false

@@ -32,6 +32,14 @@ def get_current_version() -> str:
 def write_version(ver: str) -> None:
   with open(VERSION_FILE, "w") as f:
     f.write(f"{ver}\n")
+  # Also write to local paths inside frontend and backend for deployment environments
+  root_dir = os.path.dirname(VERSION_FILE)
+  for p in [
+    os.path.join(root_dir, "frontend", "version.txt"),
+    os.path.join(root_dir, "backend", "version.txt"),
+  ]:
+    with open(p, "w") as f:
+      f.write(f"{ver}\n")
 
 
 def bump_version(ver: str, part: str) -> str:
@@ -112,7 +120,7 @@ def handle_release(args: argparse.Namespace) -> None:
     run_cmd(f"node {os.path.join(frontend_dir, 'set-env.js')}")
 
   # Commit version bump
-  run_cmd("git add version.txt")
+  run_cmd("git add version.txt frontend/version.txt backend/version.txt")
   run_cmd(f'git commit -m "chore(release): bump version to {new_ver}"')
 
   # Create tag

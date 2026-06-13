@@ -202,8 +202,12 @@ GOOGLE_OAUTH_REDIRECT_URI = os.getenv(
 
 # App versioning configuration
 VERSION_PATH = BASE_DIR.parent / "version.txt"
+LOCAL_VERSION_PATH = BASE_DIR / "version.txt"
 if VERSION_PATH.exists():
   with open(VERSION_PATH) as f:
+    APP_VERSION = f.read().strip()
+elif LOCAL_VERSION_PATH.exists():
+  with open(LOCAL_VERSION_PATH) as f:
     APP_VERSION = f.read().strip()
 else:
   APP_VERSION = "0.0.0-dev"

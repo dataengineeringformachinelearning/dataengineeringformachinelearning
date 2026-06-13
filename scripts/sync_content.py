@@ -53,5 +53,29 @@ def sync_readme():
     print(f"Error syncing README.md: {e}")
 
 
+def sync_version():
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  root_dir = os.path.dirname(script_dir)
+
+  version_path = os.path.join(root_dir, "version.txt")
+  frontend_version_path = os.path.join(root_dir, "frontend", "version.txt")
+  backend_version_path = os.path.join(root_dir, "backend", "version.txt")
+
+  if os.path.exists(version_path):
+    try:
+      with open(version_path, encoding="utf-8") as f:
+        version_data = f.read().strip()
+
+      for p in [frontend_version_path, backend_version_path]:
+        with open(p, "w", encoding="utf-8") as f:
+          f.write(f"{version_data}\n")
+      print(f"Successfully synced version {version_data} to:")
+      print(f" - {frontend_version_path}")
+      print(f" - {backend_version_path}")
+    except Exception as e:
+      print(f"Error syncing version.txt: {e}")
+
+
 if __name__ == "__main__":
   sync_readme()
+  sync_version()
