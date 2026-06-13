@@ -10,12 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import {
-  MonitorService,
-  StatusPageData,
-  IncidentData,
-  MonitoredServiceData,
-} from '../../services/monitor.service';
+import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
@@ -26,6 +21,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
+import { SkeletonComponent } from 'boneyard-js/angular';
 
 @Component({
   selector: 'app-isolated-status',
@@ -37,6 +33,7 @@ import { SanityService } from '../../services/sanity.service';
     MatIconModule,
     RouterModule,
     MatDialogModule,
+    SkeletonComponent,
   ],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,8 +54,25 @@ export class IsolatedStatus implements OnInit {
   formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
+  isLoading = signal<boolean>(true);
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
+
+  mockPage: StatusPageData = {
+    id: 'mock-id',
+    title: 'Platform Status Feed',
+    slug: 'platform-status',
+    description: 'Real-time telemetry and status monitoring for all machine learning pipelines.',
+    created_at: new Date().toISOString(),
+    user_id: null,
+  };
+
+  displayPages = computed(() => {
+    if (this.isLoading() && !this.loadFailed()) {
+      return [this.mockPage];
+    }
+    return this.statusPages();
+  });
 
   globalPageStatus = computed(() => {
     const pages = this.statusPages();
@@ -115,7 +129,18 @@ export class IsolatedStatus implements OnInit {
   }
 
   loadPage(slug: string) {
+    this.isLoading.set(true);
     this.loadFailed.set(false);
+    const isCrawler =
+      typeof navigator !== 'undefined' &&
+      (navigator.webdriver || window.location.search.includes('boneyard'));
+    if (isCrawler) {
+      this.statusPages.set([this.mockPage]);
+      this.isLoading.set(false);
+      this.loadFailed.set(false);
+      this.cdr.markForCheck();
+      return;
+    }
     this.monitorService.getStatusPageBySlug(slug).subscribe({
       next: page => {
         const pages = [page];
@@ -131,12 +156,14 @@ export class IsolatedStatus implements OnInit {
           content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`,
         });
 
+        this.isLoading.set(false);
         this.cdr.markForCheck();
       },
       error: err => {
         console.error('Error fetching page by slug:', err);
         this.statusPages.set([]);
         this.loadFailed.set(true);
+        this.isLoading.set(false);
         this.cdr.markForCheck();
       },
     });

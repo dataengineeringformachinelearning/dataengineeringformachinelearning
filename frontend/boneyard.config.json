@@ -1,0 +1,6 @@
+{
+  "breakpoints": [375, 768, 1280],
+  "out": "./src/app/bones",
+  "animate": "shimmer",
+  "routes": ["/status"]
+}

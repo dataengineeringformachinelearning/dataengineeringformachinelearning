@@ -6,6 +6,7 @@ import {
   signal,
   ChangeDetectorRef,
   effect,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -21,6 +22,7 @@ import { StatusCta } from '../../components/status-cta/status-cta';
 import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { SanityService } from '../../services/sanity.service';
 import { StatusCard } from '../../components/status-card/status-card';
+import { SkeletonComponent } from 'boneyard-js/angular';
 
 @Component({
   selector: 'app-status',
@@ -34,6 +36,7 @@ import { StatusCard } from '../../components/status-card/status-card';
     Sidebar,
     StatusCta,
     StatusCard,
+    SkeletonComponent,
   ],
   templateUrl: './status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,8 +55,25 @@ export class Status implements OnInit {
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
+  isLoading = signal<boolean>(true);
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
+
+  mockPage: StatusPageData = {
+    id: 'mock-id',
+    title: 'Platform Status Feed',
+    slug: 'platform-status',
+    description: 'Real-time telemetry and status monitoring for all machine learning pipelines.',
+    created_at: new Date().toISOString(),
+    user_id: null,
+  };
+
+  displayPages = computed(() => {
+    if (this.isLoading() && !this.loadFailed()) {
+      return [this.mockPage];
+    }
+    return this.statusPages();
+  });
 
   login() {
     const dialogRef = this.dialog.open(LoginDialog, {
@@ -88,7 +108,18 @@ export class Status implements OnInit {
   }
 
   loadData() {
+    this.isLoading.set(true);
     this.loadFailed.set(false);
+    const isCrawler =
+      typeof navigator !== 'undefined' &&
+      (navigator.webdriver || window.location.search.includes('boneyard'));
+    if (isCrawler) {
+      this.statusPages.set([this.mockPage]);
+      this.isLoading.set(false);
+      this.loadFailed.set(false);
+      this.cdr.markForCheck();
+      return;
+    }
     if (this.authService.isAuthenticated()) {
       this.monitorService.getStatusPages().subscribe({
         next: data => {
@@ -109,12 +140,14 @@ export class Status implements OnInit {
             this.mlService.fetchLatestStat(page.id);
             this.mlService.fetchThreatReport(page.id);
           });
+          this.isLoading.set(false);
           this.cdr.markForCheck();
         },
         error: err => {
           console.error('Error fetching pages:', err);
           this.statusPages.set([]);
           this.loadFailed.set(true);
+          this.isLoading.set(false);
           this.cdr.markForCheck();
         },
       });

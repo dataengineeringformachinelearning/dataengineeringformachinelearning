@@ -6,301 +6,317 @@
   <!-- Dedicated Centered Cloudflare-style Page Layout -->
   <div class="standalone-status-layout">
     <!-- Centered Body -->
-    @for (page of statusPages(); track page) {
-    <main class="standalone-main-content">
-      <!-- Dynamic Global Health Status Banner (Cloudflare-style) -->
-      <div class="global-status-banner" [ngClass]="globalPageStatus().toLowerCase()">
-        <div class="status-banner-content">
-          <mat-icon class="status-banner-icon">
-            {{ globalPageStatus() === 'Operational' ? 'check_circle' : (globalPageStatus() ===
-            'Degraded' ? 'warning' : 'error') }}
-          </mat-icon>
-          <div class="status-banner-text">
-            <h2>{{ page.title }}</h2>
-            <p>
-              {{ globalPageStatus() === 'Operational' ? 'All systems are functioning normally.' :
-              (globalPageStatus() === 'Degraded' ? 'Some services are experiencing degraded
-              performance.' : 'Major Outage: Some services are currently experiencing downtime.') }}
-            </p>
-          </div>
-          <span class="last-updated-time">Live Predictions Active</span>
-        </div>
-      </div>
-      <!-- Description and Info -->
-      <section class="status-meta-section">
-        <p class="status-description">
-          {{ page.description || 'Monitoring core services and API integrations in real-time.' }}
-        </p>
-      </section>
-
-      <!-- Sanity.io Announcements Feed -->
-      @if (sanityService.announcements().length > 0 || sanityService.loading() ||
-      sanityService.error()) {
-      <div class="announcements-container" style="margin-bottom: 24px">
-        <h2 class="section-title-premium">
-          <mat-icon>campaign</mat-icon>
-          Latest System Announcements
-        </h2>
-
-        @if (sanityService.loading()) {
-        <div class="announcements-loader">
-          <span class="btn-spinner"></span>
-          <span>Checking announcements...</span>
-        </div>
-        } @if (sanityService.error()) {
-        <div class="announcements-error">
-          <mat-icon>error_outline</mat-icon>
-          <span>{{ sanityService.error() }}</span>
-        </div>
-        } @if (!sanityService.loading() && !sanityService.error()) {
-        <div class="announcements-list-premium">
-          @for (ann of sanityService.announcements(); track ann._id) {
-          <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
-            <div class="ann-header">
-              <span class="ann-severity-badge" [ngClass]="ann.severity || 'info'">
-                {{ ann.severity || 'info' }}
-              </span>
-              <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
+    <boneyard-skeleton name="isolated-status-page" [loading]="isLoading() && !loadFailed()">
+      @for (page of displayPages(); track page.id) {
+      <main class="standalone-main-content">
+        <!-- Dynamic Global Health Status Banner (Cloudflare-style) -->
+        <div class="global-status-banner" [ngClass]="globalPageStatus().toLowerCase()">
+          <div class="status-banner-content">
+            <mat-icon class="status-banner-icon">
+              {{ globalPageStatus() === 'Operational' ? 'check_circle' : (globalPageStatus() ===
+              'Degraded' ? 'warning' : 'error') }}
+            </mat-icon>
+            <div class="status-banner-text">
+              <h2>{{ page.title }}</h2>
+              <p>
+                {{ globalPageStatus() === 'Operational' ? 'All systems are functioning normally.' :
+                (globalPageStatus() === 'Degraded' ? 'Some services are experiencing degraded
+                performance.' : 'Major Outage: Some services are currently experiencing downtime.')
+                }}
+              </p>
             </div>
-            <h3 class="ann-title">{{ ann.title }}</h3>
-            <p class="ann-body">{{ ann.body }}</p>
+            <span class="last-updated-time">Live Predictions Active</span>
           </div>
+        </div>
+        <!-- Description and Info -->
+        <section class="status-meta-section">
+          <p class="status-description">
+            {{ page.description || 'Monitoring core services and API integrations in real-time.' }}
+          </p>
+        </section>
+
+        <!-- Sanity.io Announcements Feed -->
+        @if (sanityService.announcements().length > 0 || sanityService.loading() ||
+        sanityService.error()) {
+        <div class="announcements-container" style="margin-bottom: 24px">
+          <h2 class="section-title-premium">
+            <mat-icon>campaign</mat-icon>
+            Latest System Announcements
+          </h2>
+
+          @if (sanityService.error()) {
+          <div class="announcements-error">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ sanityService.error() }}</span>
+          </div>
+          } @else {
+          <boneyard-skeleton name="announcements" [loading]="sanityService.loading()">
+            <div class="announcements-list-premium">
+              @if (sanityService.loading()) {
+              <div class="announcement-card-premium info">
+                <div class="ann-header">
+                  <span class="ann-severity-badge info">info</span>
+                  <span class="ann-date">Jun 13, 2026</span>
+                </div>
+                <h3 class="ann-title">System Status Update</h3>
+                <p class="ann-body">
+                  We are investigating reports of system latency. Our engineering team is currently
+                  working to resolve the issue as quickly as possible.
+                </p>
+              </div>
+              } @else { @for (ann of sanityService.announcements(); track ann._id) {
+              <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
+                <div class="ann-header">
+                  <span class="ann-severity-badge" [ngClass]="ann.severity || 'info'">
+                    {{ ann.severity || 'info' }}
+                  </span>
+                  <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
+                </div>
+                <h3 class="ann-title">{{ ann.title }}</h3>
+                <p class="ann-body">{{ ann.body }}</p>
+              </div>
+              } }
+            </div>
+          </boneyard-skeleton>
           }
         </div>
         }
-      </div>
-      }
 
-      <!-- SLA & Threat Intelligence Metrics Overview -->
-      <div class="metrics-overview-header">
-        <h3 class="section-title-premium">
-          <mat-icon>analytics</mat-icon>
-          SLA & Threat Intelligence
-        </h3>
-        <p class="section-description-premium">
-          Real-time service level agreement (SLA) status and threat analysis (TA) telemetry powered
-          by our extensible deep learning pipeline, featuring active prediction modules with support
-          for future expansions.
-        </p>
-      </div>
+        <!-- SLA & Threat Intelligence Metrics Overview -->
+        <div class="metrics-overview-header">
+          <h3 class="section-title-premium">
+            <mat-icon>analytics</mat-icon>
+            SLA & Threat Intelligence
+          </h3>
+          <p class="section-description-premium">
+            Real-time service level agreement (SLA) status and threat analysis (TA) telemetry
+            powered by our extensible deep learning pipeline, featuring active prediction modules
+            with support for future expansions.
+          </p>
+        </div>
 
-      <!-- SLA Predictions Widgets -->
-      <section class="standalone-sla-row">
-        <div class="standalone-sla-card">
-          <div class="sla-icon-box">
-            <mat-icon>dns</mat-icon>
+        <!-- SLA Predictions Widgets -->
+        <section class="standalone-sla-row">
+          <div class="standalone-sla-card">
+            <div class="sla-icon-box">
+              <mat-icon>dns</mat-icon>
+            </div>
+            <div class="sla-details">
+              <span class="sla-label">Cumulative SLA</span>
+              <span class="sla-desc">Based on real telemetry</span>
+              <span class="sla-val"
+                >{{ (page.cumulative_sla !== null ? page.cumulative_sla : 100.0) | number:'1.2-2'
+                }}%</span
+              >
+            </div>
           </div>
-          <div class="sla-details">
-            <span class="sla-label">Cumulative SLA</span>
-            <span class="sla-desc">Based on real telemetry</span>
-            <span class="sla-val"
-              >{{ (page.cumulative_sla !== null ? page.cumulative_sla : 100.0) | number:'1.2-2'
-              }}%</span
-            >
+          <div class="standalone-sla-card predictive">
+            <div class="sla-icon-box">
+              <mat-icon>online_prediction</mat-icon>
+            </div>
+            <div class="sla-details">
+              <span class="sla-label">Predicted SLA</span>
+              <span class="sla-desc">90-day forecast via ML</span>
+              <span class="sla-valHighlight"
+                >{{ (mlService.latestStats()[page.id] !== undefined &&
+                mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id] :
+                99.99) | number:'1.2-2' }}%</span
+              >
+            </div>
           </div>
-        </div>
-        <div class="standalone-sla-card predictive">
-          <div class="sla-icon-box">
-            <mat-icon>online_prediction</mat-icon>
+          <!-- Threat Anomaly Cards -->
+          @if (mlService.latestThreatReports()[page.id]) {
+          <div class="standalone-sla-card">
+            <div class="sla-icon-box">
+              <mat-icon>security</mat-icon>
+            </div>
+            <div class="sla-details">
+              <span class="sla-label">Cumulative TA</span>
+              <span class="sla-desc">Based on real telemetry</span>
+              <span class="sla-val">
+                {{ (mlService.latestThreatReports()[page.id]!.suspicious_ratio! * 100) |
+                number:'1.1-2' }}%
+              </span>
+            </div>
           </div>
-          <div class="sla-details">
-            <span class="sla-label">Predicted SLA</span>
-            <span class="sla-desc">90-day forecast via ML</span>
-            <span class="sla-valHighlight"
-              >{{ (mlService.latestStats()[page.id] !== undefined &&
-              mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id] : 99.99)
-              | number:'1.2-2' }}%</span
-            >
+          <div class="standalone-sla-card predictive">
+            <div class="sla-icon-box">
+              <mat-icon>online_prediction</mat-icon>
+            </div>
+            <div class="sla-details">
+              <span class="sla-label">Predicted TA</span>
+              <span class="sla-desc">90-day threat forecast via ML</span>
+              <span class="sla-valHighlight">
+                {{ (mlService.latestThreatReports()[page.id]!.anomaly_score! * 100) | number:'1.1-2'
+                }}%
+              </span>
+            </div>
           </div>
-        </div>
-        <!-- Threat Anomaly Cards -->
+          }
+        </section>
+
+        <!-- Threat Details Section -->
         @if (mlService.latestThreatReports()[page.id]) {
-        <div class="standalone-sla-card">
-          <div class="sla-icon-box">
-            <mat-icon>security</mat-icon>
-          </div>
-          <div class="sla-details">
-            <span class="sla-label">Cumulative TA</span>
-            <span class="sla-desc">Based on real telemetry</span>
-            <span class="sla-val">
-              {{ (mlService.latestThreatReports()[page.id]!.suspicious_ratio! * 100) |
-              number:'1.1-2' }}%
+        <section class="standalone-services-section threat-analysis-section">
+          <div class="section-title-wrapper">
+            <div class="threat-title-container">
+              <mat-icon>security</mat-icon>
+              <h3>ML Threat Analysis</h3>
+            </div>
+            <span class="threat-status-text">
+              Status: {{ mlService.latestThreatReports()[page.id]!.anomaly_score! > 0.5 ? 'Active
+              Investigation Recommended' : 'Low Threat Indicators' }}
             </span>
           </div>
-        </div>
-        <div class="standalone-sla-card predictive">
-          <div class="sla-icon-box">
-            <mat-icon>online_prediction</mat-icon>
+          <div class="threat-metrics-grid">
+            <div class="threat-metric-card">
+              <span class="threat-metric-label">Top Location Contribution</span>
+              <strong class="threat-metric-value">
+                {{ mlService.latestThreatReports()[page.id]!.top_location }}
+              </strong>
+            </div>
+            <div class="threat-metric-card">
+              <span class="threat-metric-label">Traffic Weight</span>
+              <strong class="threat-metric-value">
+                {{ (mlService.latestThreatReports()[page.id]!.location_weight! * 100) |
+                number:'1.0-1' }}%
+              </strong>
+            </div>
+            <div class="threat-metric-card">
+              <span class="threat-metric-label">Suspicious Request Ratio</span>
+              <strong class="threat-metric-value">
+                {{ (mlService.latestThreatReports()[page.id]!.suspicious_ratio! * 100) |
+                number:'1.0-1' }}%
+              </strong>
+            </div>
           </div>
-          <div class="sla-details">
-            <span class="sla-label">Predicted TA</span>
-            <span class="sla-desc">90-day threat forecast via ML</span>
-            <span class="sla-valHighlight">
-              {{ (mlService.latestThreatReports()[page.id]!.anomaly_score! * 100) | number:'1.1-2'
-              }}%
-            </span>
-          </div>
-        </div>
+        </section>
         }
-      </section>
 
-      <!-- Threat Details Section -->
-      @if (mlService.latestThreatReports()[page.id]) {
-      <section class="standalone-services-section threat-analysis-section">
-        <div class="section-title-wrapper">
-          <div class="threat-title-container">
-            <mat-icon>security</mat-icon>
-            <h3>ML Threat Analysis</h3>
+        <!-- Service Performance List -->
+        <section class="standalone-services-section">
+          <div class="section-title-wrapper">
+            <mat-icon>dashboard</mat-icon>
+            <h3>Active Monitored Services</h3>
           </div>
-          <span class="threat-status-text">
-            Status: {{ mlService.latestThreatReports()[page.id]!.anomaly_score! > 0.5 ? 'Active
-            Investigation Recommended' : 'Low Threat Indicators' }}
-          </span>
-        </div>
-        <div class="threat-metrics-grid">
-          <div class="threat-metric-card">
-            <span class="threat-metric-label">Top Location Contribution</span>
-            <strong class="threat-metric-value">
-              {{ mlService.latestThreatReports()[page.id]!.top_location }}
-            </strong>
-          </div>
-          <div class="threat-metric-card">
-            <span class="threat-metric-label">Traffic Weight</span>
-            <strong class="threat-metric-value">
-              {{ (mlService.latestThreatReports()[page.id]!.location_weight! * 100) | number:'1.0-1'
-              }}%
-            </strong>
-          </div>
-          <div class="threat-metric-card">
-            <span class="threat-metric-label">Suspicious Request Ratio</span>
-            <strong class="threat-metric-value">
-              {{ (mlService.latestThreatReports()[page.id]!.suspicious_ratio! * 100) |
-              number:'1.0-1' }}%
-            </strong>
-          </div>
-        </div>
-      </section>
-      }
-
-      <!-- Service Performance List -->
-      <section class="standalone-services-section">
-        <div class="section-title-wrapper">
-          <mat-icon>dashboard</mat-icon>
-          <h3>Active Monitored Services</h3>
-        </div>
-        <div class="services-list-container">
-          @for (s of servicesMap()[page.id]; track s) {
-          <div class="standalone-service-row">
-            <div class="service-identity">
-              <span
-                class="service-dot-indicator"
-                [ngClass]="s.status?.toLowerCase() || 'operational'"
-              ></span>
-              <div class="service-names">
-                <a [href]="s.url" target="_blank" class="service-name-link">
-                  <span>{{ formatServiceName(s.name) }}</span>
-                  <mat-icon>open_in_new</mat-icon>
-                </a>
+          <div class="services-list-container">
+            @for (s of servicesMap()[page.id]; track s) {
+            <div class="standalone-service-row">
+              <div class="service-identity">
+                <span
+                  class="service-dot-indicator"
+                  [ngClass]="s.status?.toLowerCase() || 'operational'"
+                ></span>
+                <div class="service-names">
+                  <a [href]="s.url" target="_blank" class="service-name-link">
+                    <span>{{ formatServiceName(s.name) }}</span>
+                    <mat-icon>open_in_new</mat-icon>
+                  </a>
+                </div>
+              </div>
+              <div class="service-metrics">
+                <span class="service-sla-percentage">{{ s.sla | number:'1.2-2' }}% SLA</span>
+                <span
+                  class="service-status-pill"
+                  [ngClass]="s.status?.toLowerCase() || 'operational'"
+                >
+                  {{ s.status || 'Operational' }}
+                </span>
               </div>
             </div>
-            <div class="service-metrics">
-              <span class="service-sla-percentage">{{ s.sla | number:'1.2-2' }}% SLA</span>
-              <span
-                class="service-status-pill"
-                [ngClass]="s.status?.toLowerCase() || 'operational'"
-              >
-                {{ s.status || 'Operational' }}
-              </span>
+            } @if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
+            <div class="no-services-placeholder">
+              No monitored services configured for this page.
+            </div>
+            }
+          </div>
+        </section>
+        <!-- Uptime Timeline (90 Days) -->
+        <section class="standalone-uptime-section">
+          <div class="uptime-header">
+            <h3>Uptime History (Last 90 Days)</h3>
+            <span class="uptime-pct"
+              >{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}%
+              operational</span
+            >
+          </div>
+          <div class="timeline-bars-wrapper-standalone">
+            <div class="timeline-bars">
+              @for (day of (page.uptime_history || []); track day; let idx = $index) {
+              <div
+                class="timeline-bar-outlined"
+                [ngClass]="{'bar-warning': day.status === 'partial_outage', 'bar-danger': day.status === 'major_outage', 'bar-nodata': day.status === 'no_data'}"
+                [style.height]="day.status === 'major_outage' ? '40%' : (day.status === 'partial_outage' ? '70%' : '100%')"
+                [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))"
+              ></div>
+              }
             </div>
           </div>
-          } @if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
-          <div class="no-services-placeholder">No monitored services configured for this page.</div>
-          }
-        </div>
-      </section>
-      <!-- Uptime Timeline (90 Days) -->
-      <section class="standalone-uptime-section">
-        <div class="uptime-header">
-          <h3>Uptime History (Last 90 Days)</h3>
-          <span class="uptime-pct"
-            >{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}%
-            operational</span
-          >
-        </div>
-        <div class="timeline-bars-wrapper-standalone">
-          <div class="timeline-bars">
-            @for (day of (page.uptime_history || []); track day; let idx = $index) {
+          <div class="timeline-labels">
+            <span>90 days ago</span>
+            <span class="timeline-divider"></span>
+            <span>Today</span>
+          </div>
+        </section>
+        <!-- Incident Logs -->
+        @if (incidentsMap()[page.id]?.length) {
+        <section class="standalone-incidents-section">
+          <div class="section-title-wrapper">
+            <mat-icon>history</mat-icon>
+            <h3>Recent Incidents & Maintenance</h3>
+          </div>
+          <div class="incidents-stack-standalone">
+            @for (incident of incidentsMap()[page.id]; track incident) {
             <div
-              class="timeline-bar-outlined"
-              [ngClass]="{'bar-warning': day.status === 'partial_outage', 'bar-danger': day.status === 'major_outage', 'bar-nodata': day.status === 'no_data'}"
-              [style.height]="day.status === 'major_outage' ? '40%' : (day.status === 'partial_outage' ? '70%' : '100%')"
-              [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))"
-            ></div>
-            }
-          </div>
-        </div>
-        <div class="timeline-labels">
-          <span>90 days ago</span>
-          <span class="timeline-divider"></span>
-          <span>Today</span>
-        </div>
-      </section>
-      <!-- Incident Logs -->
-      @if (incidentsMap()[page.id]?.length) {
-      <section class="standalone-incidents-section">
-        <div class="section-title-wrapper">
-          <mat-icon>history</mat-icon>
-          <h3>Recent Incidents & Maintenance</h3>
-        </div>
-        <div class="incidents-stack-standalone">
-          @for (incident of incidentsMap()[page.id]; track incident) {
-          <div
-            class="standalone-incident-card"
-            [ngClass]="{'resolved': incident.status === 'Resolved'}"
-          >
-            <div class="incident-top-meta">
-              <span class="incident-badge-standalone" [ngClass]="incident.status.toLowerCase()"
-                >{{ incident.status }}</span
-              >
-              <h4 class="incident-title-text">{{ incident.title }}</h4>
-              <span class="incident-date-text">{{ incident.created_at | date:'mediumDate' }}</span>
+              class="standalone-incident-card"
+              [ngClass]="{'resolved': incident.status === 'Resolved'}"
+            >
+              <div class="incident-top-meta">
+                <span class="incident-badge-standalone" [ngClass]="incident.status.toLowerCase()"
+                  >{{ incident.status }}</span
+                >
+                <h4 class="incident-title-text">{{ incident.title }}</h4>
+                <span class="incident-date-text"
+                  >{{ incident.created_at | date:'mediumDate' }}</span
+                >
+              </div>
+              <p class="incident-message-text">{{ incident.message }}</p>
             </div>
-            <p class="incident-message-text">{{ incident.message }}</p>
-          </div>
-          }
-        </div>
-      </section>
-      }
-      <!-- North Star Promo Callout -->
-      <section class="northstar-promo-banner">
-        <div class="promo-glow"></div>
-        <div class="promo-content">
-          <div class="promo-header">
-            <mat-icon class="promo-icon">insights</mat-icon>
-            <h4>Predictive Status Pages for Your Own Products</h4>
-          </div>
-          <p class="promo-desc">
-            Impress your users with stunning status dashboards, automated latency telemetry, and a
-            deep learning pipeline executing SLA and TA forecasting modules with support for future
-            expansions.
-          </p>
-          <div class="promo-actions">
-            @if (!authService.isAuthenticated()) {
-            <button mat-raised-button class="promo-btn-primary" (click)="login()">
-              <mat-icon>add_circle</mat-icon>
-              <span>Create Your Status Page</span>
-            </button>
-            } @if (authService.isAuthenticated()) {
-            <a mat-raised-button class="promo-btn-primary" routerLink="/manage">
-              <mat-icon>add_circle</mat-icon>
-              <span>Build Your Status Page</span>
-            </a>
             }
           </div>
-        </div>
-      </section>
-    </main>
-    }
+        </section>
+        }
+        <!-- North Star Promo Callout -->
+        <section class="northstar-promo-banner">
+          <div class="promo-glow"></div>
+          <div class="promo-content">
+            <div class="promo-header">
+              <mat-icon class="promo-icon">insights</mat-icon>
+              <h4>Predictive Status Pages for Your Own Products</h4>
+            </div>
+            <p class="promo-desc">
+              Impress your users with stunning status dashboards, automated latency telemetry, and a
+              deep learning pipeline executing SLA and TA forecasting modules with support for
+              future expansions.
+            </p>
+            <div class="promo-actions">
+              @if (!authService.isAuthenticated()) {
+              <button mat-raised-button class="promo-btn-primary" (click)="login()">
+                <mat-icon>add_circle</mat-icon>
+                <span>Create Your Status Page</span>
+              </button>
+              } @if (authService.isAuthenticated()) {
+              <a mat-raised-button class="promo-btn-primary" routerLink="/manage">
+                <mat-icon>add_circle</mat-icon>
+                <span>Build Your Status Page</span>
+              </a>
+              }
+            </div>
+          </div>
+        </section>
+      </main>
+      }
+    </boneyard-skeleton>
 
     <!-- Error/Offline State Fallback -->
     @if (loadFailed()) {
