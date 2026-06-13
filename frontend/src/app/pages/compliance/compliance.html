@@ -194,18 +194,6 @@
             <span>{{ submissionResult().message }}</span>
           </div>
 
-          @if (submissionResult().status === 'success') {
-          <div class="receipt-info">
-            <p>
-              <strong>Transaction ID:</strong> <code>{{ submissionResult().submission_id }}</code>
-            </p>
-            <p>
-              <strong>Delivery Routing:</strong>
-              <span class="badge-mode">{{ submissionResult().mode }} environment</span>
-            </p>
-          </div>
-          }
-
           <div class="transmission-logs">
             <span class="logs-title">Pipeline Handshake Logs:</span>
             <div class="transmission-logs-list" role="list">

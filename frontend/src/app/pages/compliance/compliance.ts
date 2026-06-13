@@ -25,6 +25,12 @@ export interface SOCStatusResponse {
   status: string;
   overall_score: number;
   criteria: SOCCriteria[];
+  e2e_encryption?: {
+    transit: string;
+    rest: string;
+    clientPayload: string;
+    rotationDaysRemaining: number;
+  };
 }
 
 @Component({
@@ -78,6 +84,9 @@ export class Compliance implements OnInit {
         if (data && data.status === 'success') {
           this.socScore.set(data.overall_score);
           this.socCriteria.set(data.criteria);
+          if (data.e2e_encryption) {
+            this.e2eEncryption.set(data.e2e_encryption);
+          }
         }
         this.cdr.markForCheck();
       },

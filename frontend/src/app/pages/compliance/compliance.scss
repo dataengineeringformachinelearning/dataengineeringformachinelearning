@@ -325,6 +325,7 @@
     font-size: 1.5rem;
     width: 1.5rem;
     height: 1.5rem;
+    flex-shrink: 0;
   }
 
   .warning-content {
@@ -349,6 +350,7 @@
     color: var(--text-muted);
     margin-top: -0.25rem;
     margin-right: -0.25rem;
+    flex-shrink: 0;
   }
 }
 
@@ -470,7 +472,7 @@
 
   .response-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.5rem;
     font-weight: 600;
     font-size: 0.95rem;
@@ -484,30 +486,8 @@
       font-size: 1.25rem;
       width: 1.25rem;
       height: 1.25rem;
-    }
-  }
-
-  .receipt-info {
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-
-    p {
-      margin: 0.25rem 0;
-      color: var(--text-color);
-    }
-
-    code {
-      background: var(--color-primary-container);
-      color: var(--color-on-primary-container);
-      padding: 0.15rem 0.35rem;
-      border-radius: 4px;
-      font-size: 0.8rem;
-    }
-
-    .badge-mode {
-      text-transform: uppercase;
-      font-weight: 700;
-      color: var(--primary-text-color);
+      flex-shrink: 0;
+      margin-top: 0.1rem;
     }
   }
 

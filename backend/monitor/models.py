@@ -166,3 +166,17 @@ class NewsletterSubscription(models.Model):
 
   def __str__(self):
     return self.email
+
+
+class DataEncryptionKey(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  encrypted_dek = models.TextField()  # The DEK encrypted with KEK
+  created_at = models.DateTimeField(auto_now_add=True)
+  is_active = models.BooleanField(default=True)
+
+  class Meta:
+    db_table = "data_encryption_keys"
+    ordering = ["-created_at"]
+
+  def __str__(self):
+    return f"DEK {self.id} (created: {self.created_at}, active: {self.is_active})"

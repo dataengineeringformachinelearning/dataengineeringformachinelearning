@@ -270,7 +270,7 @@
     background: rgba(255, 255, 255, 0.04);
     border-color: var(--color-border-precision);
     color: var(--text-color);
-    box-shadow: inset 3px 0 0 var(--color-gauge-red); /* Instrument meter active line */
+    border-left: 3px solid var(--color-gauge-red); /* Instrument meter active line - flat border instead of curved box-shadow */
 
     .step-nav-icon {
       background: var(--color-amber-dim);
@@ -416,9 +416,15 @@
       border-radius: 50%;
     }
 
-    .red { background-color: #ff5f56; }
-    .yellow { background-color: #ffbd2e; }
-    .green { background-color: #27c93f; }
+    .red {
+      background-color: #ff5f56;
+    }
+    .yellow {
+      background-color: #ffbd2e;
+    }
+    .green {
+      background-color: #27c93f;
+    }
 
     .file-name {
       color: rgba(255, 255, 255, 0.4);
@@ -691,7 +697,7 @@
 
 .transparency-footer {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   padding-top: 1.5rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -703,6 +709,8 @@
     width: 16px;
     height: 16px;
     color: var(--primary-color);
+    flex-shrink: 0;
+    margin-top: 1px;
   }
 }
 
@@ -1072,7 +1080,8 @@
 }
 
 @keyframes telemetryPulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
   }
   50% {
