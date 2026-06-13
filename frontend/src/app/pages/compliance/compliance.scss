@@ -357,7 +357,7 @@
   grid-template-columns: 1.2fr 1fr;
   gap: var(--grid-gap);
 
-  @media (max-width: 900px) {
+  @media (max-width: 900px) { /* mobile-first-exception */
     grid-template-columns: 1fr;
   }
 }

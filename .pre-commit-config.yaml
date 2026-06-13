@@ -40,3 +40,9 @@ repos:
         language: system
         files: ^(README\.md|version\.txt)$
         pass_filenames: false
+      - id: check-mobile-first
+        name: Verify styles are mobile-first
+        entry: node frontend/scripts/check_mobile_first.js
+        language: system
+        files: \.(css|scss)$
+        pass_filenames: false

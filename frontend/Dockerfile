@@ -31,6 +31,9 @@ ENV FIREBASE_STORAGE_BUCKET=$FIREBASE_STORAGE_BUCKET
 ENV FIREBASE_MESSAGING_SENDER_ID=$FIREBASE_MESSAGING_SENDER_ID
 ENV FIREBASE_APP_ID=$FIREBASE_APP_ID
 
+# Validate mobile responsiveness and mobile-first styles
+RUN npm run check:mobile-first
+
 # Build the application
 RUN npm run build --prod
 

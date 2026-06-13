@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "check:mobile-first": "node scripts/check_mobile_first.js"
   },
   "private": true,
   "packageManager": "npm@11.6.0",
