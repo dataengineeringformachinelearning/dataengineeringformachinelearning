@@ -52,7 +52,11 @@
               class="toggle-switch"
               [class.active]="analyticalConsent()"
               (click)="toggleAnalytical()"
+              (keydown.space)="$event.preventDefault(); toggleAnalytical()"
+              (keydown.enter)="$event.preventDefault(); toggleAnalytical()"
               id="cookie-toggle-analytical"
+              aria-label="Toggle Performance & Analytics Cookies"
+              aria-checked="false"
               [attr.aria-checked]="analyticalConsent()"
               role="switch"
             >
@@ -74,7 +78,11 @@
               class="toggle-switch"
               [class.active]="marketingConsent()"
               (click)="toggleMarketing()"
+              (keydown.space)="$event.preventDefault(); toggleMarketing()"
+              (keydown.enter)="$event.preventDefault(); toggleMarketing()"
               id="cookie-toggle-marketing"
+              aria-label="Toggle Marketing & Customization Cookies"
+              aria-checked="false"
               [attr.aria-checked]="marketingConsent()"
               role="switch"
             >

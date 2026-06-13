@@ -22,10 +22,12 @@
         help us fix it faster.
       </p>
       <textarea
+        id="issue-description-input"
         [(ngModel)]="issueDescription"
         placeholder="E.g., The chart didn't load when I clicked the refresh button..."
         rows="5"
         [disabled]="isSubmitting()"
+        aria-label="Describe what went wrong"
       >
       </textarea>
       @if (submissionStatus() === 'success') {

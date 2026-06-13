@@ -43,21 +43,7 @@ This service runs the main Django web server.
 - **Dependencies**: Connects to the Postgres database through the Railway internal network.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
-### 3. Telemetry Worker (Consumer)
-
-This service runs the background worker process using the backend codebase to consume telemetry/streaming data from Redpanda and write it to Postgres.
-
-- **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/backend`
-- **Builder**: Dockerfile
-- **Start Command**: `python manage.py telemetry_worker`
-- **Target Port**: None (Background worker process)
-- **Private Internal DNS**: `deml-telemetry.railway.internal`
-- **Public URL**: None (Strictly an internal background process)
-- **Compute Limits**: 8 vCPU / 8 GB Memory
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-
-### 4. Redpanda Broker (Message Queue)
+### 3. Redpanda Broker (Message Queue)
 
 This is the actual Redpanda message broker database that stores the streaming data.
 
@@ -69,6 +55,20 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Public URL**: None (Strictly internal for security)
 - **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data` to retain messages.
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+
+### 4. Telemetry Worker (Consumer)
+
+This service runs the background worker process using the backend codebase to consume telemetry/streaming data from Redpanda and write it to Postgres.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile
+- **Start Command**: `python manage.py telemetry_worker`
+- **Target Port**: None (Background worker process)
+- **Private Internal DNS**: `deml-telemetry.railway.internal`
+- **Public URL**: None (Strictly an internal background process)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
 ### 5. ML Training Worker (Consumer)
@@ -139,7 +139,13 @@ No specific backend environment variables are usually required at runtime if the
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For Threat Intelligence geo-blocking data)
 - **OTX_API_KEY**: `<your-alienvault-otx-api-key>` (For Threat Intelligence vulnerability data)
 
-### 3. Telemetry Worker (Consumer)
+### 3. Redpanda Broker (Message Queue)
+
+Depending on the Railway template used, Redpanda might not need manual environment variables, but if running the raw Docker image, it usually requires:
+
+- **REDPANDA_BROKERS**: Not strictly needed on the broker itself, but it advertises its internal address. Ensure the port `9092` is exposed internally.
+
+### 4. Telemetry Worker (Consumer)
 
 The worker uses the same Django backend codebase and requires identical environment variables to connect to the database and broker (no HTTP variables are needed since it runs in the background):
 
@@ -150,12 +156,6 @@ The worker uses the same Django backend codebase and requires identical environm
 
 > [!WARNING]
 > The `REDPANDA_BROKERS` environment variable MUST point to the actual Redpanda Broker's internal TCP address (e.g., `deml-queue.railway.internal:9092`). Do NOT set it to the Telemetry Worker's public URL or internal DNS, as the worker is not a database and cannot accept Kafka TCP connections.
-
-### 4. Redpanda Broker (Message Queue)
-
-Depending on the Railway template used, Redpanda might not need manual environment variables, but if running the raw Docker image, it usually requires:
-
-- **REDPANDA_BROKERS**: Not strictly needed on the broker itself, but it advertises its internal address. Ensure the port `9092` is exposed internally.
 
 ### 5. ML Training Worker (Consumer)
 

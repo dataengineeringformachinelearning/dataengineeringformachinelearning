@@ -27,6 +27,12 @@ repos:
 
   - repo: local
     hooks:
+      - id: axe-core
+        name: Accessibility Scan (axe-core)
+        entry: node scripts/run_axe.js
+        language: system
+        files: \.(html)$
+        pass_filenames: true
       - id: sync-content
         name: Sync README.md to frontend files
         entry: python scripts/sync_content.py

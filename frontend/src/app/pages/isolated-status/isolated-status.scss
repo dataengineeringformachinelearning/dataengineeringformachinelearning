@@ -459,6 +459,74 @@
   }
 }
 
+.threat-analysis-section {
+  margin-top: 24px;
+
+  .section-title-wrapper {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .threat-title-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      color: var(--status-accent);
+    }
+
+    h3 {
+      color: var(--text-color);
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+  }
+
+  .threat-status-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  .threat-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+
+  .threat-metric-card {
+    background: rgba(255, 255, 255, 0.01);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      border-color: var(--status-accent);
+      box-shadow: var(--shadow-sm);
+    }
+  }
+
+  .threat-metric-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .threat-metric-value {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    display: block;
+    margin-top: 4px;
+  }
+}
+
 /* Standalone Uptime Timeline */
 .standalone-uptime-section {
   background: var(--card-bg);

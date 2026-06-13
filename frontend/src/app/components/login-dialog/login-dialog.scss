@@ -196,14 +196,20 @@
   margin-top: 0.5rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
   font-size: 0.9rem;
 
-  a {
+  .text-link-btn {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
     color: var(--link-color);
     font-size: 0.85rem;
     font-weight: 500;
     text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
     transition: opacity 0.2s ease;
 
     &:hover {

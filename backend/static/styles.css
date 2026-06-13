@@ -32,6 +32,10 @@
   --text-muted: var(--color-primary-container);
   --border: rgba(255, 255, 255, 0.08);
   --card-bg: var(--color-surface);
+
+  /* Focus ring outline */
+  --focus-ring: 2px solid #9fb8ad;
+  --focus-offset: 4px;
 }
 
 @media (prefers-color-scheme: light) {
@@ -46,7 +50,7 @@
     --color-on-background: #182821;
 
     --color-success: #2e7d32;
-    --color-warning: #ffc107;
+    --color-warning: #b25e00; /* Shifted mathematically from #ffc107 for >4.5:1 contrast on white */
     --color-error: #d32f2f;
     --color-info: #0288d1;
 
@@ -60,6 +64,7 @@
     --hover-color: var(--color-primary-container);
     --text-muted: #4a5450;
     --border: #c8d3ce;
+    --focus-ring: 2px solid var(--color-primary);
   }
 }
 
@@ -83,6 +88,48 @@ body {
     background-color 0.3s,
     color 0.3s;
   position: relative;
+}
+
+/* Accessibility: Visually Hidden utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Accessibility: Skip to Content link */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 20px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 8px 16px;
+  z-index: 10000;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: top 0.2s ease;
+  outline: none;
+}
+
+.skip-link:focus-visible {
+  top: 20px;
+  outline: var(--focus-ring);
+}
+
+/* Keyboard Outline Helpers */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: var(--focus-offset);
 }
 
 /* Glow Spheres for Homepage Unity */

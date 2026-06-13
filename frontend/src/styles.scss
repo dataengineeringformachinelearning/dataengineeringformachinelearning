@@ -1,6 +1,65 @@
 @use '@angular/material' as mat;
 @use './theme' as theme;
 
+// ====================== ACCESSIBILITY & SKIP LINK UTILITIES ======================
+.sr-only,
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 20px;
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: 8px 16px;
+  z-index: 10000;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: top 0.2s ease;
+  outline: none;
+}
+
+.skip-link:focus-visible {
+  top: 20px;
+  outline: 2px solid var(--color-primary-container);
+  outline-offset: 2px;
+}
+
+/* Global Outline outline-ring helper */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid var(--color-primary-container) !important;
+  outline-offset: 3px !important;
+}
+
+html[data-theme='light'] {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="button"]:focus-visible,
+  [role="tab"]:focus-visible {
+    outline: 2px solid var(--color-primary) !important;
+  }
+}
+
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';
 
@@ -216,9 +275,6 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-vi
   font-size: 0.92rem;
   color: var(--text-muted);
 }
-
-// ====================== LOGO ======================
-// Global logo style removed to allow component-level styling
 
 // ====================== MARKDOWN COMPONENT ======================
 app-page {

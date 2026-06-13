@@ -66,16 +66,19 @@
     <link rel="stylesheet" href="{% static 'styles.css' %}" />
   </head>
   <body>
+    <!-- Skip to content link for keyboard users -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <div class="glow-sphere sphere-1"></div>
     <div class="glow-sphere sphere-2"></div>
 
-    <main class="main">
+    <main class="main" id="main-content">
       <div class="content">
-        <div class="backend-card">
+        <article class="backend-card">
           <img
             class="logo"
             src="{% static 'data-engineering-for-machine-learning.svg' %}"
-            alt="Data Engineering for Machine Learning - Backend"
+            alt="Data Engineering for Machine Learning Brand Icon"
           />
           <h1>Data Engineering for Machine Learning</h1>
           <h2 class="subtitle">Core REST API & Services</h2>
@@ -86,19 +89,26 @@
             coordinates model training schedules, and computes SLA predictions.
           </p>
 
-          <div class="status-badge">
+          <div class="status-badge" role="status" aria-live="polite">
             <span class="status-dot"></span>
             <span class="status-text">Backend Systems Operational</span>
+            <span class="sr-only"
+              >Live telemetry shows backend systems are fully operational.</span
+            >
           </div>
 
           {% if debug %}
           <div class="cta-group">
-            <a href="/api/v1/docs" class="cta-button primary-btn">
+            <a
+              href="/api/v1/docs"
+              class="cta-button primary-btn"
+              id="explore-docs-btn"
+            >
               <span>Explore API Docs</span>
             </a>
           </div>
           {% endif %}
-        </div>
+        </article>
       </div>
 
       <footer>
@@ -109,6 +119,7 @@
               href="https://joealongi.dev/"
               target="_blank"
               rel="noopener noreferrer"
+              id="joe-dev-link"
               >Joe Alongi</a
             ></span
           >
@@ -119,6 +130,7 @@
               href="https://railway.com?referralCode=BpTk0g"
               target="_blank"
               rel="noopener noreferrer"
+              id="railway-host-link"
               >Railway</a
             ></span
           >
