@@ -114,12 +114,14 @@ For the environments to function properly, ensure the following are configured i
 
 No specific backend environment variables are usually required at runtime if the API URL is built into the image, but if configured dynamically:
 
-- **API_URL** or similar depending on the frontend build setup: `https://backend.dataengineeringformachinelearning.com`
+- **BACKEND_URL**: `https://backend.dataengineeringformachinelearning.com` (Your backend service API URL)
 - **FIREBASE_API_KEY**: Your Firebase web app API key.
 - **FIREBASE_AUTH_DOMAIN**: Your Firebase web app auth domain (e.g. `demldotcom.firebaseapp.com`).
 - **FIREBASE_STORAGE_BUCKET**: Your Firebase storage bucket (e.g. `demldotcom.appspot.com`).
 - **FIREBASE_MESSAGING_SENDER_ID**: Your Firebase messaging sender ID.
 - **FIREBASE_APP_ID**: Your Firebase web app ID.
+- **SANITY_PROJECT_ID**: Your Sanity.io project ID.
+- **SANITY_DATASET**: Your Sanity.io dataset name (e.g., `production`).
 
 ### 2. Web Backend (API)
 
@@ -139,6 +141,8 @@ No specific backend environment variables are usually required at runtime if the
 - **FIREBASE_SERVICE_ACCOUNT_JSON**: The raw JSON string of your Firebase service account credentials.
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For Threat Intelligence geo-blocking data)
 - **OTX_API_KEY**: `<your-alienvault-otx-api-key>` (For Threat Intelligence vulnerability data)
+- **CISA_TAXII_ENDPOINT**: `<your-cisa-taxii-endpoint>` (Optional, for STIX formatted threat reports submission)
+- **ISAC_API_KEY**: `<your-isac-api-key>` (Optional, for threat sharing authentication)
 - **RESEND_API_KEY**: `<your-resend-api-key>` (Optional, for incident email notifications)
 - **SENTRY_DSN**: `<your-sentry-dsn>` (Optional, for error monitoring)
 
