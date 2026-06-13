@@ -6,7 +6,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
   dependencies = [
-    ("model", "0001_initial"),
+    ("ml", "0001_initial"),
     ("monitor", "0003_incident"),
   ]
 

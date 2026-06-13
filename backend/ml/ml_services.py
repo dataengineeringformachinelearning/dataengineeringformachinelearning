@@ -1,6 +1,6 @@
 from monitor.models import Endpoints, MonitoredService
 
-from model.models import TrainingRun
+from ml.models import TrainingRun
 
 
 def train_tenant_sla(status_page):
@@ -8,7 +8,7 @@ def train_tenant_sla(status_page):
   import torch.nn as nn
   import torch.optim as optim
 
-  class SLAPredictor(nn.Module):
+  class SLAModel(nn.Module):
     def __init__(self):
       super().__init__()
       self.fc1 = nn.Linear(3, 16)
@@ -52,7 +52,7 @@ def train_tenant_sla(status_page):
   X = torch.tensor(x_data, dtype=torch.float32)
   Y = torch.tensor(y_data, dtype=torch.float32)
 
-  model = SLAPredictor()
+  model = SLAModel()
   criterion = nn.MSELoss()
   optimizer = optim.Adam(model.parameters(), lr=0.01)
 
@@ -87,9 +87,9 @@ def train_threat_model(user):
   from django.utils import timezone
   from monitor.models import AnalyticsIntegration, Endpoints
 
-  from model.models import ThreatReport
+  from ml.models import ThreatReport
 
-  class ThreatPredictor(nn.Module):
+  class ThreatModel(nn.Module):
     def __init__(self):
       super().__init__()
       self.fc1 = nn.Linear(3, 8)
@@ -151,7 +151,7 @@ def train_threat_model(user):
   X = torch.tensor(x_data, dtype=torch.float32)
   Y = torch.tensor(y_data, dtype=torch.float32)
 
-  model = ThreatPredictor()
+  model = ThreatModel()
   criterion = nn.BCELoss()
   optimizer = optim.Adam(model.parameters(), lr=0.05)
 

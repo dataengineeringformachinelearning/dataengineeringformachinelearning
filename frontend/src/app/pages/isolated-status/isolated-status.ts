@@ -16,7 +16,7 @@ import {
   IncidentData,
   MonitoredServiceData,
 } from '../../services/monitor.service';
-import { ModelService } from '../../services/model.service';
+import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,7 +44,7 @@ import { SanityService } from '../../services/sanity.service';
 })
 export class IsolatedStatus implements OnInit {
   private monitorService = inject(MonitorService);
-  public modelService = inject(ModelService);
+  public mlService = inject(MlService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
@@ -111,7 +111,7 @@ export class IsolatedStatus implements OnInit {
       const slug = params.get('slug');
       this.slug.set(slug);
     });
-    this.modelService.fetchThreatReport();
+    this.mlService.fetchThreatReport();
     this.sanityService.fetchAnnouncements();
   }
 
@@ -123,7 +123,7 @@ export class IsolatedStatus implements OnInit {
         this.statusPages.set(pages);
         this.monitorService.fetchAllIncidents(pages);
         this.monitorService.fetchAllServices(pages);
-        this.modelService.fetchLatestStat(page.id);
+        this.mlService.fetchLatestStat(page.id);
 
         this.titleService.setTitle(`${page.title} Status - Data Engineering for Machine Learning`);
         this.metaService.updateTag({

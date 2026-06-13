@@ -4,24 +4,24 @@ import json
 from aiokafka import AIOKafkaConsumer
 from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
-from model.services import train_tenant_sla
+from ml.ml_services import train_tenant_sla
 from monitor.models import StatusPage
 from utils.kafka import get_kafka_brokers
 
 
 class Command(BaseCommand):
-  help = "Runs the async SLA training worker"
+  help = "Runs the async Machine Learning (ML) training worker"
 
   def handle(self, *args, **options):
-    self.stdout.write(self.style.SUCCESS("Starting SLA Training Worker..."))
+    self.stdout.write(self.style.SUCCESS("Starting ML Engine Training Worker..."))
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
     brokers = get_kafka_brokers()
     consumer = AIOKafkaConsumer(
-      "sla-training-events",
+      "ml-training-events",
       bootstrap_servers=brokers,
-      group_id="sla-training-group",
+      group_id="ml-training-group",
       auto_offset_reset="latest",
       enable_auto_commit=True,
     )
@@ -52,7 +52,7 @@ class Command(BaseCommand):
               self.stderr.write(self.style.ERROR(f"Error processing message: {e}"))
     finally:
       await consumer.stop()
-      self.stdout.write(self.style.WARNING("SLA Worker stopped."))
+      self.stdout.write(self.style.WARNING("ML Engine Worker stopped."))
 
   @sync_to_async
   def train_all(self):
@@ -62,19 +62,21 @@ class Command(BaseCommand):
         run = train_tenant_sla(page)
         if run:
           self.stdout.write(
-            self.style.SUCCESS(f"Trained tenant '{page.title}' (SLA: {run.average_sla:.2f}%)")
+            self.style.SUCCESS(
+              f"Trained SLA forecast model for tenant '{page.title}' (SLA: {run.average_sla:.2f}%)"
+            )
           )
         else:
           self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
 
         # Automate Threat Model training along with the SLA model
         if page.user:
-          from model.services import train_threat_model
+          from ml.ml_services import train_threat_model
 
           report = train_threat_model(page.user)
           self.stdout.write(
             self.style.SUCCESS(
-              f"Trained threat model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+              f"Trained threat forecast model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
             )
           )
       except Exception as e:
@@ -87,19 +89,21 @@ class Command(BaseCommand):
       run = train_tenant_sla(page)
       if run:
         self.stdout.write(
-          self.style.SUCCESS(f"Trained tenant '{page.title}' (SLA: {run.average_sla:.2f}%)")
+          self.style.SUCCESS(
+            f"Trained SLA forecast model for tenant '{page.title}' (SLA: {run.average_sla:.2f}%)"
+          )
         )
       else:
         self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
 
       # Automate Threat Model training along with the SLA model
       if page.user:
-        from model.services import train_threat_model
+        from ml.ml_services import train_threat_model
 
         report = train_threat_model(page.user)
         self.stdout.write(
           self.style.SUCCESS(
-            f"Trained threat model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+            f"Trained threat forecast model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
           )
         )
     except StatusPage.DoesNotExist:

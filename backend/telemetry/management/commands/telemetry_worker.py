@@ -172,9 +172,9 @@ class Command(BaseCommand):
       elif "auth/register" in path:
         norm_url = f"{frontend_url}/"
         name = "Auth Register"
-      elif "model/latest" in path:
+      elif "ml/latest" in path:
         norm_url = f"{frontend_url}/status"
-        name = "Model Latest"
+        name = "ML Engine Latest"
       elif "telemetry/cookie-consent" in path:
         norm_url = f"{frontend_url}/privacy"
         name = "Telemetry Cookie Consent"

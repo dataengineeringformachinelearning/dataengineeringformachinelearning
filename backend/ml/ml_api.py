@@ -4,8 +4,8 @@ from monitor.models import StatusPage
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
-from model.models import TrainingRun
-from model.services import train_tenant_sla
+from ml.ml_services import train_tenant_sla
+from ml.models import TrainingRun
 
 router = Router()
 
@@ -75,8 +75,8 @@ def get_latest_training(request, status_page_id: str | None = None):
     return {"status": "success", "average_sla": None, "message": "No training runs available"}
 
 
-from model.models import ThreatReport
-from model.services import train_threat_model
+from ml.ml_services import train_threat_model
+from ml.models import ThreatReport
 
 
 class ThreatReportOut(Schema):

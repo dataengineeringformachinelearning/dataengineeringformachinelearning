@@ -92,25 +92,39 @@
           <div class="sla-details">
             <span class="sla-label">ML-Predicted 90-Day SLA</span>
             <span class="sla-valHighlight"
-              >{{ (modelService.latestStats()[page.id] !== undefined &&
-              modelService.latestStats()[page.id] !== null ? modelService.latestStats()[page.id] :
-              99.99) | number:'1.2-2' }}%</span
+              >{{ (mlService.latestStats()[page.id] !== undefined &&
+              mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id] : 99.99)
+              | number:'1.2-2' }}%</span
             >
           </div>
         </div>
-        <!-- Threat Anomaly Card -->
-        @if (modelService.latestThreatReport()) {
+        <!-- Threat Anomaly Cards -->
+        @if (mlService.latestThreatReport()) {
         <div class="standalone-sla-card" style="border-left: 4px solid #f87171">
           <div class="sla-icon-box" style="background: rgba(248, 113, 113, 0.1); color: #f87171">
             <mat-icon>security</mat-icon>
           </div>
           <div class="sla-details">
-            <span class="sla-label">Access Threat Anomaly Score</span>
+            <span class="sla-label">Cumulative TA (Real Telemetry)</span>
             <span
               class="sla-val"
-              [style.color]="modelService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
+              [style.color]="mlService.latestThreatReport()!.suspicious_ratio! > 0.15 ? '#ef4444' : '#10b981'"
             >
-              {{ (modelService.latestThreatReport()!.anomaly_score! * 100) | number:'1.1-2' }}%
+              {{ (mlService.latestThreatReport()!.suspicious_ratio! * 100) | number:'1.1-2' }}%
+            </span>
+          </div>
+        </div>
+        <div class="standalone-sla-card predictive" style="border-left: 4px solid #f87171">
+          <div class="sla-icon-box" style="background: rgba(248, 113, 113, 0.1); color: #f87171">
+            <mat-icon>online_prediction</mat-icon>
+          </div>
+          <div class="sla-details">
+            <span class="sla-label">ML-Predicted 90-Day TA</span>
+            <span
+              class="sla-valHighlight"
+              [style.color]="mlService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
+            >
+              {{ (mlService.latestThreatReport()!.anomaly_score! * 100) | number:'1.1-2' }}%
             </span>
           </div>
         </div>
@@ -118,7 +132,7 @@
       </section>
 
       <!-- Threat Details Section -->
-      @if (modelService.latestThreatReport()) {
+      @if (mlService.latestThreatReport()) {
       <section
         class="standalone-services-section"
         style="
@@ -140,8 +154,8 @@
             </h3>
           </div>
           <span style="font-size: 0.8rem; color: #94a3b8; font-weight: 500">
-            Status: {{ modelService.latestThreatReport()!.anomaly_score! > 0.5 ? 'Active
-            Investigation Recommended' : 'Low Threat Indicators' }}
+            Status: {{ mlService.latestThreatReport()!.anomaly_score! > 0.5 ? 'Active Investigation
+            Recommended' : 'Low Threat Indicators' }}
           </span>
         </div>
         <div
@@ -172,7 +186,7 @@
               >Top Location Contribution</span
             >
             <strong style="font-size: 1.1rem; color: #fff; display: block; margin-top: 4px"
-              >{{ modelService.latestThreatReport()!.top_location }}</strong
+              >{{ mlService.latestThreatReport()!.top_location }}</strong
             >
           </div>
           <div
@@ -195,7 +209,7 @@
               >Traffic Weight</span
             >
             <strong style="font-size: 1.1rem; color: #fff; display: block; margin-top: 4px"
-              >{{ (modelService.latestThreatReport()!.location_weight! * 100) | number:'1.0-1'
+              >{{ (mlService.latestThreatReport()!.location_weight! * 100) | number:'1.0-1'
               }}%</strong
             >
           </div>
@@ -219,7 +233,7 @@
               >Suspicious Request Ratio</span
             >
             <strong style="font-size: 1.1rem; color: #fff; display: block; margin-top: 4px"
-              >{{ (modelService.latestThreatReport()!.suspicious_ratio! * 100) | number:'1.0-1'
+              >{{ (mlService.latestThreatReport()!.suspicious_ratio! * 100) | number:'1.0-1'
               }}%</strong
             >
           </div>

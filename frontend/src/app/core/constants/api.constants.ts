@@ -1,9 +1,9 @@
 import { environment } from '../../../environments/environment';
 
 export const API_ENDPOINTS = {
-  MODEL: {
-    LATEST: `${environment.backendUrl}/api/v1/model/latest`,
-    TRAIN: `${environment.backendUrl}/api/v1/model/train`,
+  ML: {
+    LATEST: `${environment.backendUrl}/api/v1/ml/latest`,
+    TRAIN: `${environment.backendUrl}/api/v1/ml/train`,
   },
   SYSTEM_STATUS: {
     ENDPOINTS: `${environment.backendUrl}/api/v1/system-status/endpoints`,

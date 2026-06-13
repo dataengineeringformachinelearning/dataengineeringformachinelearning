@@ -71,16 +71,16 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data` to retain messages.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 
-### 5. SLA Predictor Worker (Consumer)
+### 5. ML Training Worker (Consumer)
 
-This service runs the background SLA training process using the backend codebase to consume training triggers from Redpanda, load PyTorch, run model training, and write results to Postgres.
+This service runs the background ML training process using the backend codebase to consume training triggers from Redpanda, load PyTorch, run model training, and write results to Postgres.
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile
-- **Start Command**: `python manage.py sla_worker`
+- **Start Command**: `python manage.py ml_worker`
 - **Target Port**: None (Background worker process)
-- **Private Internal DNS**: `deml-sla.railway.internal`
+- **Private Internal DNS**: `deml-ml.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
 - **Compute Limits**: 8 vCPU / 8 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
@@ -157,9 +157,9 @@ Depending on the Railway template used, Redpanda might not need manual environme
 
 - **REDPANDA_BROKERS**: Not strictly needed on the broker itself, but it advertises its internal address. Ensure the port `9092` is exposed internally.
 
-### 5. SLA Predictor Worker (Consumer)
+### 5. ML Training Worker (Consumer)
 
-The SLA worker uses the same Django backend codebase and requires identical environment variables to connect to the database and broker:
+The ML worker uses the same Django backend codebase and requires identical environment variables to connect to the database and broker:
 
 - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
 - **DEBUG**: `False`

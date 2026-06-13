@@ -420,7 +420,7 @@
                         geolocation telemetry to compute real-time access threat anomaly scores.
                       </p>
 
-                      @if (modelService.latestThreatReport()) {
+                      @if (mlService.latestThreatReport()) {
                       <div
                         style="
                           background: rgba(255, 255, 255, 0.02);
@@ -439,13 +439,13 @@
                         >
                           <div>
                             <span style="font-size: 0.75rem; color: #94a3b8; display: block"
-                              >Access Threat Score</span
+                              >ML-Predicted 90-Day TA</span
                             >
                             <strong
                               style="font-size: 1.25rem; display: block; margin-top: 4px"
-                              [style.color]="modelService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
+                              [style.color]="mlService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
                             >
-                              {{ (modelService.latestThreatReport()!.anomaly_score! * 100) |
+                              {{ (mlService.latestThreatReport()!.anomaly_score! * 100) |
                               number:'1.1-2' }}%
                             </strong>
                           </div>
@@ -460,8 +460,7 @@
                                 display: block;
                                 margin-top: 4px;
                               "
-                              >{{ modelService.latestThreatReport()!.top_location || 'N/A'
-                              }}</strong
+                              >{{ mlService.latestThreatReport()!.top_location || 'N/A' }}</strong
                             >
                           </div>
                           <div>
@@ -475,13 +474,13 @@
                                 display: block;
                                 margin-top: 4px;
                               "
-                              >{{ (modelService.latestThreatReport()!.location_weight! * 100) |
+                              >{{ (mlService.latestThreatReport()!.location_weight! * 100) |
                               number:'1.0-1' }}%</strong
                             >
                           </div>
                           <div>
                             <span style="font-size: 0.75rem; color: #94a3b8; display: block"
-                              >Suspicious Requests</span
+                              >Cumulative TA</span
                             >
                             <strong
                               style="
@@ -490,7 +489,7 @@
                                 display: block;
                                 margin-top: 4px;
                               "
-                              >{{ (modelService.latestThreatReport()!.suspicious_ratio! * 100) |
+                              >{{ (mlService.latestThreatReport()!.suspicious_ratio! * 100) |
                               number:'1.0-1' }}%</strong
                             >
                           </div>
@@ -504,7 +503,7 @@
                             padding-top: 8px;
                           "
                         >
-                          Last trained: {{ modelService.latestThreatReport()!.created_at |
+                          Last trained: {{ mlService.latestThreatReport()!.created_at |
                           date:'medium' }}
                         </div>
                       </div>
@@ -527,10 +526,10 @@
                       <button
                         mat-flat-button
                         color="primary"
-                        (click)="modelService.trainThreatModel()"
-                        [disabled]="modelService.isTrainingThreat()"
+                        (click)="mlService.trainThreatModel()"
+                        [disabled]="mlService.isTrainingThreat()"
                       >
-                        @if (modelService.isTrainingThreat()) {
+                        @if (mlService.isTrainingThreat()) {
                         <span class="btn-spinner" style="margin-right: 8px"></span>
                         Training Threat Model... } @else {
                         <ng-container>

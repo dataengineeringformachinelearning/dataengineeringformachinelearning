@@ -9,7 +9,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
   dependencies = [
-    ("model", "0002_trainingrun_status_page"),
+    ("ml", "0002_trainingrun_status_page"),
     migrations.swappable_dependency(settings.AUTH_USER_MODEL),
   ]
 

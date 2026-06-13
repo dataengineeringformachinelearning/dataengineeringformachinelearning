@@ -5,10 +5,10 @@
 
   <div class="whitepaper-header">
     <div class="meta-label">TECHNICAL WHITEPAPER</div>
-    <h1 class="title">Scalable Telemetry & ML-Predicted SLAs</h1>
+    <h1 class="title">Scalable Telemetry & ML-Predicted SLAs & TAs</h1>
     <p class="subtitle">
-      Architecting high-throughput event pipelines and predictive service level agreement models for
-      modern SaaS platforms.
+      Architecting high-throughput event pipelines and predictive service level agreement and threat
+      anomaly models for modern SaaS platforms.
     </p>
     <div class="author-meta">
       <span>Published: June 2026</span>
@@ -48,7 +48,7 @@
         Traditionally, status dashboards and SLA tracking have been reactive—updating only after an
         incident is resolved. This paper details the architecture of a next-generation observability
         pipeline that ingests real-time telemetry at scale and uses Machine Learning to forecast
-        service level agreement compliance 90 days into the future.
+        service level agreement compliance and threat anomalies 90 days into the future.
       </p>
     </section>
 
@@ -84,7 +84,7 @@
       </p>
       <p>
         By batching calculations, we compute historical uptime graphs (90-day intervals) and update
-        cumulative SLA records efficiently, reducing disk I/O by over 80%.
+        cumulative SLA and threat records efficiently, reducing disk I/O by over 80%.
       </p>
     </section>
 
@@ -108,11 +108,10 @@
         Our current integration with third-party analytics platforms (Google Analytics / GA4 and
         Microsoft Clarity) serves as a critical telemetry ingestion phase. By retrieving rich
         visitor logs, geolocation distributions, and request patterns from these platforms, we train
-        a custom PyTorch neural network model (ThreatPredictor) to detect anomalies and forecast
-        threat risks 90 days into the future. Looking forward, this third-party ingestion model
-        serves as a precursor to an embedded first-party client script and dynamic widget that
-        tenants can load directly on their sites, providing direct, zero-dependency telemetry
-        streaming.
+        a custom PyTorch neural network model (ThreatModel) to detect anomalies and forecast threat
+        risks 90 days into the future. Looking forward, this third-party ingestion model serves as a
+        precursor to an embedded first-party client script and dynamic widget that tenants can load
+        directly on their sites, providing direct, zero-dependency telemetry streaming.
       </p>
     </section>
 

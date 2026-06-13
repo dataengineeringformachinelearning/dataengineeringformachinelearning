@@ -108,50 +108,64 @@
                     </div>
                     <div class="stat-value-container">
                       <span class="stat-value">
-                        {{ (modelService.latestStats()[page.id] !== undefined &&
-                        modelService.latestStats()[page.id] !== null ?
-                        modelService.latestStats()[page.id] : 99.99) | number:'1.2-2' }}%
+                        {{ (mlService.latestStats()[page.id] !== undefined &&
+                        mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id]
+                        : 99.99) | number:'1.2-2' }}%
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <!-- Threat Intelligence Section -->
-                @if (modelService.latestThreatReport()) {
+                @if (mlService.latestThreatReport()) {
                 <div class="ml-stat-panels-row" style="margin-top: 16px">
-                  <div class="ml-stat-panel">
+                  <!-- Cumulative TA Section -->
+                  <div class="ml-stat-panel" style="border-color: rgba(248, 113, 113, 0.2)">
                     <div class="stat-info">
                       <mat-icon class="stat-icon" style="color: #f87171">security</mat-icon>
                       <div>
-                        <span class="stat-title">Access Threat Score</span>
-                        <span class="stat-subtitle">ML Geolocation Anomaly</span>
+                        <span class="stat-title">Cumulative TA</span>
+                        <span class="stat-subtitle">Based on real telemetry</span>
                       </div>
                     </div>
                     <div class="stat-value-container">
                       <span
                         class="stat-value"
-                        [style.color]="modelService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
+                        [style.color]="mlService.latestThreatReport()!.suspicious_ratio! > 0.15 ? '#ef4444' : '#10b981'"
                       >
-                        {{ (modelService.latestThreatReport()!.anomaly_score! * 100) |
+                        {{ (mlService.latestThreatReport()!.suspicious_ratio! * 100) |
                         number:'1.1-2' }}%
                       </span>
                     </div>
                   </div>
-                  <div class="ml-stat-panel">
+                  <!-- ML-Predicted 90-Day TA Section -->
+                  <div
+                    class="ml-stat-panel"
+                    style="
+                      border-color: rgba(248, 113, 113, 0.2);
+                      background: linear-gradient(
+                        135deg,
+                        rgba(255, 255, 255, 0.01) 0%,
+                        rgba(248, 113, 113, 0.02) 100%
+                      );
+                    "
+                  >
                     <div class="stat-info">
-                      <mat-icon class="stat-icon" style="color: #f87171">psychology</mat-icon>
+                      <mat-icon class="stat-icon" style="color: #f87171"
+                        >online_prediction</mat-icon
+                      >
                       <div>
-                        <span class="stat-title">Suspicious Requests</span>
-                        <span class="stat-subtitle">Ratio of request flags</span>
+                        <span class="stat-title">ML-Predicted 90-Day TA</span>
+                        <span class="stat-subtitle">90-day threat forecast</span>
                       </div>
                     </div>
                     <div class="stat-value-container">
                       <span
                         class="stat-value"
-                        [style.color]="modelService.latestThreatReport()!.suspicious_ratio! > 0.15 ? '#ef4444' : '#10b981'"
+                        [style.color]="mlService.latestThreatReport()!.anomaly_score! > 0.5 ? '#ef4444' : '#10b981'"
                       >
-                        {{ (modelService.latestThreatReport()!.suspicious_ratio! * 100) |
-                        number:'1.1-2' }}%
+                        {{ (mlService.latestThreatReport()!.anomaly_score! * 100) | number:'1.1-2'
+                        }}%
                       </span>
                     </div>
                   </div>

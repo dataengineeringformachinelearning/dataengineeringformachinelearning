@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from model.models import ThreatReport, TrainingRun
+from ml.models import ThreatReport, TrainingRun
 
 from monitor.models import BugReport, Endpoints
 

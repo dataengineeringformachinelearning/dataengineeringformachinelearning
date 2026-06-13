@@ -16,7 +16,7 @@ import {
   IncidentData,
   MonitoredServiceData,
 } from '../../services/monitor.service';
-import { ModelService } from '../../services/model.service';
+import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -48,7 +48,7 @@ import { SanityService } from '../../services/sanity.service';
 })
 export class Status implements OnInit {
   private monitorService = inject(MonitorService);
-  public modelService = inject(ModelService);
+  public mlService = inject(MlService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -93,7 +93,7 @@ export class Status implements OnInit {
         'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.',
     });
     this.sanityService.fetchAnnouncements();
-    this.modelService.fetchThreatReport();
+    this.mlService.fetchThreatReport();
   }
 
   loadData() {
@@ -115,7 +115,7 @@ export class Status implements OnInit {
           this.monitorService.fetchAllIncidents(sorted);
           this.monitorService.fetchAllServices(sorted);
           sorted.forEach(page => {
-            this.modelService.fetchLatestStat(page.id);
+            this.mlService.fetchLatestStat(page.id);
           });
           this.cdr.markForCheck();
         },

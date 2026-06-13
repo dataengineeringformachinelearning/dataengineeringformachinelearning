@@ -15,7 +15,7 @@ import {
   IncidentData,
   MonitoredServiceData,
 } from '../../services/monitor.service';
-import { ModelService } from '../../services/model.service';
+import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -43,7 +43,7 @@ import { formatServiceName } from '../../core/utils/formatter.utils';
 })
 export class Explore implements OnInit {
   private monitorService = inject(MonitorService);
-  public modelService = inject(ModelService);
+  public mlService = inject(MlService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private titleService = inject(Title);
@@ -72,7 +72,7 @@ export class Explore implements OnInit {
       content:
         'Browse community-published public service status pages and active system uptime monitors.',
     });
-    this.modelService.fetchThreatReport();
+    this.mlService.fetchThreatReport();
   }
 
   loadData() {
@@ -84,7 +84,7 @@ export class Explore implements OnInit {
         this.monitorService.fetchAllIncidents(data);
         this.monitorService.fetchAllServices(data);
         data.forEach(page => {
-          this.modelService.fetchLatestStat(page.id);
+          this.mlService.fetchLatestStat(page.id);
         });
         this.cdr.markForCheck();
       },

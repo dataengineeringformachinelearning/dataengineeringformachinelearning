@@ -70,7 +70,7 @@ services:
     command: >
       sh -c "python manage.py telemetry_worker"
 
-  sla_worker:
+  ml_worker:
     build:
       context: ./backend
     volumes:
@@ -83,4 +83,4 @@ services:
       backend:
         condition: service_started
     command: >
-      sh -c "python manage.py sla_worker"
+      sh -c "python manage.py ml_worker"

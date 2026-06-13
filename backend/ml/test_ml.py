@@ -4,14 +4,14 @@ import pytest
 from django.contrib.auth.models import User
 from monitor.models import Endpoints, MonitoredService, StatusPage
 
-from model.models import TrainingRun
+from ml.models import TrainingRun
 
 
 @pytest.mark.django_db
 def test_train_model_no_data(client):
   user = User.objects.create_user(username="testuser", password="password")
   StatusPage.objects.create(user=user, title="Platform Status", slug="platform-status")
-  response = client.post("/api/v1/model/train")
+  response = client.post("/api/v1/ml/train")
   assert response.status_code == 400
   assert "No data available for training" in response.json()["detail"]
 
@@ -35,7 +35,7 @@ def test_train_model_success(client):
     is_active=False,
   )
 
-  response = client.post("/api/v1/model/train")
+  response = client.post("/api/v1/ml/train")
   assert response.status_code == 200
   data = response.json()
   assert data["status"] == "success"
@@ -47,14 +47,14 @@ def test_train_model_success(client):
 @pytest.mark.django_db
 def test_get_latest_training(client):
   # No runs initially
-  response = client.get("/api/v1/model/latest")
+  response = client.get("/api/v1/ml/latest")
   assert response.status_code == 200
   assert response.json()["average_sla"] is None
 
   # Create a run
   TrainingRun.objects.create(average_sla=98.5, loss=0.012)
 
-  response = client.get("/api/v1/model/latest")
+  response = client.get("/api/v1/ml/latest")
   assert response.status_code == 200
   data = response.json()
   assert data["status"] == "success"
@@ -76,11 +76,11 @@ def test_train_and_latest_with_status_page(client):
   )
 
   # Train
-  train_res = client.post(f"/api/v1/model/train?status_page_id={page.id}")
+  train_res = client.post(f"/api/v1/ml/train?status_page_id={page.id}")
   assert train_res.status_code == 200
   assert train_res.json()["average_sla"] is not None
 
   # Get latest
-  latest_res = client.get(f"/api/v1/model/latest?status_page_id={page.id}")
+  latest_res = client.get(f"/api/v1/ml/latest?status_page_id={page.id}")
   assert latest_res.status_code == 200
   assert latest_res.json()["average_sla"] == train_res.json()["average_sla"]

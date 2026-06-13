@@ -15,7 +15,7 @@ import {
   MonitoredServiceData,
   IntegrationData,
 } from '../../services/monitor.service';
-import { ModelService } from '../../services/model.service';
+import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -53,7 +53,7 @@ import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 })
 export class Manage implements OnInit {
   private monitorService = inject(MonitorService);
-  public modelService = inject(ModelService);
+  public mlService = inject(MlService);
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -136,7 +136,7 @@ export class Manage implements OnInit {
     });
     this.loadStatusPages();
     this.loadIntegrations();
-    this.modelService.fetchThreatReport();
+    this.mlService.fetchThreatReport();
   }
 
   loadStatusPages() {

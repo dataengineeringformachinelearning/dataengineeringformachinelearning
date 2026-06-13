@@ -10,9 +10,9 @@ from utils.kafka import create_kafka_producer
 logger = logging.getLogger(__name__)
 
 
-class ModelConfig(AppConfig):
+class MlConfig(AppConfig):
   default_auto_field = "django.db.models.BigAutoField"
-  name = "model"
+  name = "ml"
 
   def ready(self):
     # Only start the thread in the main process (skip Django's auto-reloader process)
@@ -33,18 +33,18 @@ class ModelConfig(AppConfig):
       self.trigger_training_job()
 
   def trigger_training_job(self):
-    logger.info("SLA Predictor Scheduler: Publishing training trigger to Redpanda...")
+    logger.info("ML Engine Scheduler: Publishing training trigger to Redpanda...")
     try:
       asyncio.run(self.publish_trigger())
-      logger.info("SLA Predictor Scheduler: Training trigger published successfully.")
+      logger.info("ML Engine Scheduler: Training trigger published successfully.")
     except Exception as e:
-      logger.error(f"SLA Predictor Scheduler: Failed to publish training trigger: {e}")
+      logger.error(f"ML Engine Scheduler: Failed to publish training trigger: {e}")
 
   async def publish_trigger(self):
     producer = create_kafka_producer()
     await producer.start()
     try:
       msg = {"action": "train_all_tenants"}
-      await producer.send_and_wait("sla-training-events", json.dumps(msg).encode("utf-8"))
+      await producer.send_and_wait("ml-training-events", json.dumps(msg).encode("utf-8"))
     finally:
       await producer.stop()

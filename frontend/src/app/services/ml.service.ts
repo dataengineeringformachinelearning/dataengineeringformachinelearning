@@ -14,7 +14,7 @@ export interface TrainingResponse {
 @Injectable({
   providedIn: 'root',
 })
-export class ModelService {
+export class MlService {
   private http = inject(HttpClient);
 
   public latestStat = signal<number | null>(null);
@@ -24,8 +24,8 @@ export class ModelService {
 
   fetchLatestStat(statusPageId?: string): void {
     const url = statusPageId
-      ? `${API_ENDPOINTS.MODEL.LATEST}?status_page_id=${statusPageId}`
-      : API_ENDPOINTS.MODEL.LATEST;
+      ? `${API_ENDPOINTS.ML.LATEST}?status_page_id=${statusPageId}`
+      : API_ENDPOINTS.ML.LATEST;
 
     this.http.get<TrainingResponse>(url).subscribe({
       next: data => {
@@ -45,7 +45,7 @@ export class ModelService {
     this.isTraining.set(true);
     this.trainError.set(null);
 
-    this.http.post<TrainingResponse>(API_ENDPOINTS.MODEL.TRAIN, {}).subscribe({
+    this.http.post<TrainingResponse>(API_ENDPOINTS.ML.TRAIN, {}).subscribe({
       next: res => {
         setTimeout(() => {
           this.isTraining.set(false);
@@ -68,7 +68,7 @@ export class ModelService {
   public isTrainingThreat = signal<boolean>(false);
 
   fetchThreatReport(): void {
-    const url = API_ENDPOINTS.MODEL.LATEST.replace('/latest', '/threat-intel/report');
+    const url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/report');
     this.http.get<ThreatReportResponse>(url).subscribe({
       next: data => {
         if (data && data.status === 'success' && data.anomaly_score !== null) {
@@ -81,7 +81,7 @@ export class ModelService {
 
   trainThreatModel(): void {
     this.isTrainingThreat.set(true);
-    const url = API_ENDPOINTS.MODEL.LATEST.replace('/latest', '/threat-intel/train');
+    const url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/train');
     this.http.post<ThreatReportResponse>(url, {}).subscribe({
       next: res => {
         this.isTrainingThreat.set(false);

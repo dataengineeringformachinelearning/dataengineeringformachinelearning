@@ -364,22 +364,22 @@ Now that we are tracking endpoint health data, we can start building models to p
 pip install torch polars skops scikit-learn
 ```
 
-To structure this properly, I scaffold a new Django app called `model`:
+To structure this properly, I scaffold a new Django app called `ml`:
 
 ```bash
-python manage.py startapp model
+python manage.py startapp ml
 ```
 
 Instead of running an intensive training loop synchronously on the web server (which would block the event loop), I outline a basic multi-layer perceptron using PyTorch's `nn.Module`. Here is my draft of how to structure this view, which will load historical health metrics to predict SLA adherence:
 
 ```python
-# backend/model/views.py
+# backend/ml/ml_api.py
 import torch
 import torch.nn as nn
 from django.http import JsonResponse
 from monitor.models import Endpoints
 
-class SLAPredictor(nn.Module):
+class SLAModel(nn.Module):
     def __init__(self):
         super().__init__()
         self.fc1 = nn.Linear(3, 16)
@@ -394,7 +394,7 @@ def train_model(request):
     # ... prepare X and Y tensors from endpoint data ...
 
     # Initialize the model and a simple MSE loss function
-    model = SLAPredictor()
+    model = SLAModel()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
 
     # Example single training step
@@ -587,7 +587,7 @@ Telemetry tells us _what_ is failing, but unstructured user complaints tell us _
 
 #### Chapter 13.1.1: Connecting to threat intelligence sources
 
-To detect malicious traffic patterns and understand regional threat profiles, I establish API integrations with Google Analytics (GA4) and Microsoft Clarity. By securely authenticating with their respective APIs, the backend gathers rich geolocation access details, browser telemetry, and request metadata. This information is ingested into a dedicated data pipeline and fed directly into a PyTorch threat prediction neural network model (`ThreatPredictor`). The model processes access features—such as regional traffic spikes and suspicious request weights—to forecast geographical anomaly probability and compute an access threat score. This allows the system to actively flag anomalous traffic contributions directly on the tenant status pages, protecting the platform from adversarial telemetry and service exploitation.
+To detect malicious traffic patterns and understand regional threat profiles, I establish API integrations with Google Analytics (GA4) and Microsoft Clarity. By securely authenticating with their respective APIs, the backend gathers rich geolocation access details, browser telemetry, and request metadata. This information is ingested into a dedicated data pipeline and fed directly into a PyTorch threat prediction neural network model (`ThreatModel`). The model processes access features—such as regional traffic spikes and suspicious request weights—to forecast geographical anomaly probability and compute an access threat score. This allows the system to actively flag anomalous traffic contributions directly on the tenant status pages, protecting the platform from adversarial telemetry and service exploitation.
 
 This integration with Google Analytics and Microsoft Clarity serves as a critical third-party analytics telemetry step. In the roadmap, this setup serves as a precursor to designing and deploying a custom first-party client-side script and dynamic threat widget that tenants can embed directly on their own websites to collect raw security-focused telemetry natively.
 

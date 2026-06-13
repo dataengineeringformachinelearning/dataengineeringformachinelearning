@@ -71,13 +71,13 @@ source .venv/bin/activate
 python manage.py telemetry_worker
 ```
 
-**Terminal 3 (SLA Worker):**
-Open a new terminal window, navigate to the `backend` directory, activate the virtual environment, and start the SLA worker. This worker consumes trigger messages from Redpanda and runs PyTorch training runs in a decoupled process to calculate SLA forecasts.
+**Terminal 3 (ML Worker):**
+Open a new terminal window, navigate to the `backend` directory, activate the virtual environment, and start the ML worker. This worker consumes trigger messages from Redpanda and runs PyTorch training runs in a decoupled process to calculate SLA and threat anomaly forecasts.
 
 ```bash
 cd backend
 source .venv/bin/activate
-python manage.py sla_worker
+python manage.py ml_worker
 ```
 
 Once the server is running, your backend API will be accessible at `http://localhost:8000/`. You can test the healthcheck endpoint at `http://localhost:8000/api/health`.
