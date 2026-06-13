@@ -587,7 +587,7 @@ Telemetry tells us _what_ is failing, but unstructured user complaints tell us _
 
 #### Chapter 13.1.1: Connecting to threat intelligence sources
 
-To secure the data pipeline against malicious or adversarial inputs, I connect my ingestion system to public threat intelligence feeds (e.g., ipify, AbuseIPDB, and public vulnerability databases). When telemetry packets arrive, the backend processes them through a custom lookup service that matches client IP addresses and headers against active threat list caches. Verified threats are flagged in the database and dispatched to the Redpanda broker to initiate security alerts and block requests, protecting the downstream machine learning models from adversarial telemetry injection.
+To detect malicious traffic patterns and understand regional threat profiles, I establish API integrations with Google Analytics (GA4) and Microsoft Clarity. By securely authenticating with their respective APIs, the backend gathers rich geolocation access details, browser telemetry, and request metadata. This information is ingested into a dedicated data pipeline and fed directly into a PyTorch threat prediction neural network model (`ThreatPredictor`). The model processes access features—such as regional traffic spikes and suspicious request weights—to forecast geographical anomaly probability and compute an access threat score. This allows the system to actively flag anomalous traffic contributions directly on the tenant status pages, protecting the platform from adversarial telemetry and service exploitation.
 
 ---
 

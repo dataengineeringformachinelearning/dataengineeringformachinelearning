@@ -18,6 +18,8 @@ export interface StatusPageData {
   slug: string;
   description: string;
   is_published?: boolean;
+  google_analytics_id?: string;
+  microsoft_clarity_id?: string;
   created_at: string;
   user_id: number | null;
   cumulative_sla?: number;
@@ -98,6 +100,8 @@ export class MonitorService {
     slug: string;
     description?: string;
     is_published?: boolean;
+    google_analytics_id?: string;
+    microsoft_clarity_id?: string;
   }) {
     return this.http.post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, {
       withCredentials: true,
@@ -106,7 +110,14 @@ export class MonitorService {
 
   updateStatusPage(
     pageId: string,
-    data: { title: string; slug: string; description?: string; is_published?: boolean },
+    data: {
+      title: string;
+      slug: string;
+      description?: string;
+      is_published?: boolean;
+      google_analytics_id?: string;
+      microsoft_clarity_id?: string;
+    },
   ) {
     return this.http.put<StatusPageData>(
       `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`,
@@ -162,4 +173,41 @@ export class MonitorService {
       withCredentials: true,
     });
   }
+
+  getIntegrations() {
+    return this.http.get<IntegrationData[]>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES.replace('status_pages', 'integrations')}`,
+      { withCredentials: true },
+    );
+  }
+
+  getGoogleAuthUrl() {
+    return this.http.get<{ url: string }>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES.replace('status_pages', 'integrations/google/auth-url')}`,
+      { withCredentials: true },
+    );
+  }
+
+  saveClarityIntegration(data: { project_id: string; api_key: string }) {
+    return this.http.post<IntegrationData>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES.replace('status_pages', 'integrations/clarity')}`,
+      data,
+      { withCredentials: true },
+    );
+  }
+
+  deleteIntegration(integrationId: string) {
+    return this.http.delete(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES.replace('status_pages', 'integrations')}/${integrationId}`,
+      { withCredentials: true },
+    );
+  }
+}
+
+export interface IntegrationData {
+  id: string;
+  provider: string;
+  active: boolean;
+  last_sync: string | null;
+  created_at: string;
 }

@@ -13,6 +13,7 @@ import {
   MonitorService,
   StatusPageData,
   MonitoredServiceData,
+  IntegrationData,
 } from '../../services/monitor.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
@@ -66,6 +67,12 @@ export class Manage implements OnInit {
   editDescription = '';
   editIsPublished = false;
   services = signal<MonitoredServiceData[]>([]);
+
+  integrations = signal<IntegrationData[]>([]);
+  isConnectingGoogle = signal<boolean>(false);
+  isConnectingClarity = signal<boolean>(false);
+  clarityProjectId = '';
+  clarityApiKey = '';
 
   newPageTitle = '';
   newPageSlug = '';
@@ -126,6 +133,7 @@ export class Manage implements OnInit {
         'Configure your custom status pages, add monitored services, post incident updates, or manage account settings.',
     });
     this.loadStatusPages();
+    this.loadIntegrations();
   }
 
   loadStatusPages() {
@@ -429,6 +437,65 @@ export class Manage implements OnInit {
         if (page) this.loadIncidents(page.id);
       },
       error: err => console.error('Error deleting incident:', err),
+    });
+  }
+
+  loadIntegrations() {
+    this.monitorService.getIntegrations().subscribe({
+      next: data => {
+        this.integrations.set(data);
+        this.cdr.markForCheck();
+      },
+      error: err => console.error('Error loading integrations:', err),
+    });
+  }
+
+  connectGoogleAnalytics() {
+    this.isConnectingGoogle.set(true);
+    this.monitorService.getGoogleAuthUrl().subscribe({
+      next: res => {
+        if (res.url) {
+          window.location.href = res.url;
+        }
+        this.isConnectingGoogle.set(false);
+      },
+      error: err => {
+        console.error('Error fetching auth URL:', err);
+        this.isConnectingGoogle.set(false);
+      },
+    });
+  }
+
+  connectMicrosoftClarity() {
+    if (this.clarityProjectId && this.clarityApiKey) {
+      this.isConnectingClarity.set(true);
+      this.monitorService
+        .saveClarityIntegration({
+          project_id: this.clarityProjectId,
+          api_key: this.clarityApiKey,
+        })
+        .subscribe({
+          next: () => {
+            this.loadIntegrations();
+            this.clarityProjectId = '';
+            this.clarityApiKey = '';
+            this.isConnectingClarity.set(false);
+            this.cdr.markForCheck();
+          },
+          error: err => {
+            console.error('Error saving clarity integration:', err);
+            this.isConnectingClarity.set(false);
+          },
+        });
+    }
+  }
+
+  disconnectIntegration(id: string) {
+    this.monitorService.deleteIntegration(id).subscribe({
+      next: () => {
+        this.loadIntegrations();
+      },
+      error: err => console.error('Error deleting integration:', err),
     });
   }
 }

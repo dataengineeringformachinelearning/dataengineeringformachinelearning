@@ -63,4 +63,46 @@ export class ModelService {
       },
     });
   }
+
+  public latestThreatReport = signal<ThreatReportResponse | null>(null);
+  public isTrainingThreat = signal<boolean>(false);
+
+  fetchThreatReport(): void {
+    const url = API_ENDPOINTS.MODEL.LATEST.replace('/latest', '/threat-intel/report');
+    this.http.get<ThreatReportResponse>(url).subscribe({
+      next: data => {
+        if (data && data.status === 'success' && data.anomaly_score !== null) {
+          this.latestThreatReport.set(data);
+        }
+      },
+      error: err => console.error('Error fetching threat report:', err),
+    });
+  }
+
+  trainThreatModel(): void {
+    this.isTrainingThreat.set(true);
+    const url = API_ENDPOINTS.MODEL.LATEST.replace('/latest', '/threat-intel/train');
+    this.http.post<ThreatReportResponse>(url, {}).subscribe({
+      next: res => {
+        this.isTrainingThreat.set(false);
+        if (res && res.status === 'success' && res.anomaly_score !== null) {
+          this.latestThreatReport.set(res);
+        }
+      },
+      error: err => {
+        console.error('Error training threat model:', err);
+        this.isTrainingThreat.set(false);
+      },
+    });
+  }
+}
+
+export interface ThreatReportResponse {
+  status: string;
+  anomaly_score: number | null;
+  top_location: string | null;
+  location_weight: number | null;
+  suspicious_ratio: number | null;
+  created_at: string | null;
+  message?: string;
 }

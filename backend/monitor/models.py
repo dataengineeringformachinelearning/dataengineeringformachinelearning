@@ -13,6 +13,8 @@ class StatusPage(models.Model):
   slug = models.SlugField(unique=True, max_length=255)
   description = models.TextField(blank=True)
   is_published = models.BooleanField(default=False)
+  google_analytics_id = models.CharField(max_length=100, blank=True, null=True)
+  microsoft_clarity_id = models.CharField(max_length=100, blank=True, null=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
@@ -109,3 +111,21 @@ class BugReport(models.Model):
 
   def __str__(self):
     return f"BugReport {self.id} (created: {self.created_at})"
+
+
+class AnalyticsIntegration(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="analytics_integrations")
+  provider = models.CharField(max_length=50)  # 'google' or 'microsoft'
+  credentials = models.JSONField(default=dict, blank=True)  # encrypted/safe storage of tokens/keys
+  active = models.BooleanField(default=True)
+  last_sync = models.DateTimeField(null=True, blank=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "analytics_integrations"
+    unique_together = ("user", "provider")
+
+  def __str__(self):
+    return f"{self.user.username} - {self.provider} ({'Active' if self.active else 'Inactive'})"

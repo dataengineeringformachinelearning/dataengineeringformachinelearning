@@ -109,6 +109,7 @@ export class IsolatedStatus implements OnInit {
       const slug = params.get('slug');
       this.slug.set(slug);
     });
+    this.modelService.fetchThreatReport();
   }
 
   loadPage(slug: string) {

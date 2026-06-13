@@ -73,3 +73,68 @@ def get_latest_training(request, status_page_id: str | None = None):
     }
   else:
     return {"status": "success", "average_sla": None, "message": "No training runs available"}
+
+
+from model.models import ThreatReport
+from model.services import train_threat_model
+
+
+class ThreatReportOut(Schema):
+  status: str
+  anomaly_score: float | None = None
+  top_location: str | None = None
+  location_weight: float | None = None
+  suspicious_ratio: float | None = None
+  created_at: datetime.datetime | None = None
+  message: str | None = None
+
+
+@router.post("/threat-intel/train", response=ThreatReportOut)
+def train_threat_intel(request):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+
+  report = train_threat_model(request.user)
+  return {
+    "status": "success",
+    "anomaly_score": report.anomaly_score,
+    "top_location": report.top_location,
+    "location_weight": report.location_weight,
+    "suspicious_ratio": report.suspicious_ratio,
+    "created_at": report.created_at,
+  }
+
+
+@router.get("/threat-intel/report", response=ThreatReportOut)
+def get_threat_report(request, status_page_id: str | None = None):
+  report = None
+  if request.user.is_authenticated:
+    report = ThreatReport.objects.filter(user=request.user).first()
+
+  if not report:
+    report = ThreatReport.objects.first()
+
+  if report:
+    return {
+      "status": "success",
+      "anomaly_score": report.anomaly_score,
+      "top_location": report.top_location,
+      "location_weight": report.location_weight,
+      "suspicious_ratio": report.suspicious_ratio,
+      "created_at": report.created_at,
+    }
+  else:
+    from django.contrib.auth.models import User
+
+    default_user = User.objects.first()
+    if default_user:
+      report = train_threat_model(default_user)
+      return {
+        "status": "success",
+        "anomaly_score": report.anomaly_score,
+        "top_location": report.top_location,
+        "location_weight": report.location_weight,
+        "suspicious_ratio": report.suspicious_ratio,
+        "created_at": report.created_at,
+      }
+    return {"status": "success", "message": "No threat intelligence reports available"}

@@ -274,6 +274,124 @@
                       </button>
                     </div>
                   </div>
+                  <div class="panel-section">
+                    <h3 class="section-heading">
+                      <mat-icon>analytics</mat-icon> Threat Intel & API Integrations
+                    </h3>
+                    <p class="embed-desc">
+                      Link your analytics providers to securely sync geolocation and visitor access
+                      telemetry. This data feeds directly into our threat intelligence and ML
+                      anomaly detection models to monitor traffic access patterns.
+                    </p>
+                    <div class="integrations-list panel-clean" style="margin-bottom: 20px">
+                      <div
+                        class="integration-item"
+                        style="
+                          display: flex;
+                          justify-content: space-between;
+                          align-items: center;
+                          padding: 12px 0;
+                          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                        "
+                      >
+                        <div>
+                          <strong style="display: block; font-size: 1.1rem; color: #fff"
+                            >Google Analytics</strong
+                          >
+                          <span style="font-size: 0.85rem; color: #94a3b8">
+                            @if (integrations().find(i => i.provider === 'google' && i.active)) {
+                            Connected &bull; Last Synced: {{ (integrations().find(i => i.provider
+                            === 'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not
+                            Connected }
+                          </span>
+                        </div>
+                        <div>
+                          @if (integrations().find(i => i.provider === 'google' && i.active)) {
+                          <button
+                            mat-flat-button
+                            color="warn"
+                            (click)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
+                          >
+                            Disconnect
+                          </button>
+                          } @else {
+                          <button
+                            mat-flat-button
+                            color="primary"
+                            (click)="connectGoogleAnalytics()"
+                            [disabled]="isConnectingGoogle()"
+                          >
+                            Connect GA4 API
+                          </button>
+                          }
+                        </div>
+                      </div>
+                      <div
+                        class="integration-item"
+                        style="display: flex; flex-direction: column; padding: 16px 0"
+                      >
+                        <div
+                          style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 12px;
+                          "
+                        >
+                          <div>
+                            <strong style="display: block; font-size: 1.1rem; color: #fff"
+                              >Microsoft Clarity</strong
+                            >
+                            <span style="font-size: 0.85rem; color: #94a3b8">
+                              @if (integrations().find(i => i.provider === 'microsoft' && i.active))
+                              { Connected &bull; Last Synced: {{ (integrations().find(i =>
+                              i.provider === 'microsoft')?.last_sync | date:'medium') || 'Never' }}
+                              } @else { Not Connected }
+                            </span>
+                          </div>
+                          @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                          <button
+                            mat-flat-button
+                            color="warn"
+                            (click)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                          >
+                            Disconnect
+                          </button>
+                          }
+                        </div>
+                        @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                        <div class="form-row" style="display: flex; gap: 12px; margin-top: 8px">
+                          <mat-form-field appearance="outline" style="flex: 1">
+                            <mat-label>Clarity Project ID</mat-label>
+                            <input
+                              matInput
+                              [(ngModel)]="clarityProjectId"
+                              placeholder="Project ID"
+                            />
+                          </mat-form-field>
+                          <mat-form-field appearance="outline" style="flex: 1">
+                            <mat-label>API Token / Key</mat-label>
+                            <input
+                              matInput
+                              [(ngModel)]="clarityApiKey"
+                              type="password"
+                              placeholder="Clarity API Key"
+                            />
+                          </mat-form-field>
+                          <button
+                            mat-flat-button
+                            color="primary"
+                            style="height: 54px"
+                            (click)="connectMicrosoftClarity()"
+                            [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity()"
+                          >
+                            Connect API
+                          </button>
+                        </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 }
               </div>

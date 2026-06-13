@@ -49,6 +49,8 @@ class StatusPageIn(Schema):
   slug: str
   description: str | None = ""
   is_published: bool | None = False
+  google_analytics_id: str | None = None
+  microsoft_clarity_id: str | None = None
 
 
 class UptimeDaySchema(Schema):
@@ -62,6 +64,8 @@ class StatusPageOut(Schema):
   slug: str
   description: str
   is_published: bool
+  google_analytics_id: str | None = None
+  microsoft_clarity_id: str | None = None
   created_at: datetime.datetime
   user_id: int | None = None
   cumulative_sla: float | None = None
@@ -227,6 +231,8 @@ def _build_status_page_out(p):
     slug=p.slug,
     description=p.description,
     is_published=p.is_published,
+    google_analytics_id=p.google_analytics_id,
+    microsoft_clarity_id=p.microsoft_clarity_id,
     created_at=p.created_at,
     user_id=p.user_id,
     cumulative_sla=cumulative_sla,
@@ -268,6 +274,8 @@ def create_status_page(request, payload: StatusPageIn):
     slug=payload.slug,
     description=payload.description or "",
     is_published=payload.is_published or False,
+    google_analytics_id=payload.google_analytics_id,
+    microsoft_clarity_id=payload.microsoft_clarity_id,
   )
   return _build_status_page_out(page)
 
@@ -292,6 +300,8 @@ def update_status_page(request, page_id: str, payload: StatusPageIn):
   page.description = payload.description or ""
   if payload.is_published is not None:
     page.is_published = payload.is_published
+  page.google_analytics_id = payload.google_analytics_id
+  page.microsoft_clarity_id = payload.microsoft_clarity_id
   page.save()
   return _build_status_page_out(page)
 
@@ -480,4 +490,155 @@ def delete_incident(request, incident_id: str):
   if incident.status_page.slug == "platform-status":
     raise HttpError(403, "Cannot modify system platform-status page")
   incident.delete()
+  return {"success": True}
+
+
+from monitor.models import AnalyticsIntegration
+
+
+class IntegrationOut(Schema):
+  id: str
+  provider: str
+  active: bool
+  last_sync: datetime.datetime | None = None
+  created_at: datetime.datetime
+
+
+class ClarityIn(Schema):
+  project_id: str
+  api_key: str
+
+
+@router.get("/integrations", response=list[IntegrationOut])
+def list_integrations(request):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+  integrations = AnalyticsIntegration.objects.filter(user=request.user)
+  return [
+    IntegrationOut(
+      id=str(integ.id),
+      provider=integ.provider,
+      active=integ.active,
+      last_sync=integ.last_sync,
+      created_at=integ.created_at,
+    )
+    for integ in integrations
+  ]
+
+
+@router.get("/integrations/google/auth-url")
+def google_auth_url(request):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+
+  import urllib.parse
+
+  from django.conf import settings
+
+  client_id = getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
+  redirect_uri = getattr(
+    settings,
+    "GOOGLE_OAUTH_REDIRECT_URI",
+    "http://localhost:8000/api/v1/system-status/integrations/google/callback",
+  )
+
+  scope = "https://www.googleapis.com/auth/analytics.readonly"
+  params = {
+    "client_id": client_id,
+    "redirect_uri": redirect_uri,
+    "response_type": "code",
+    "scope": scope,
+    "access_type": "offline",
+    "prompt": "consent",
+    "state": str(request.user.id),
+  }
+
+  url = "https://accounts.google.com/o/oauth2/v2/auth?" + urllib.parse.urlencode(params)
+  return {"url": url}
+
+
+@router.get("/integrations/google/callback")
+def google_callback(request, code: str, state: str):
+  import requests
+  from django.conf import settings
+  from django.contrib.auth.models import User
+  from django.shortcuts import redirect
+
+  user = get_object_or_404(User, id=int(state))
+
+  client_id = getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
+  client_secret = getattr(settings, "GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
+  redirect_uri = getattr(
+    settings,
+    "GOOGLE_OAUTH_REDIRECT_URI",
+    "http://localhost:8000/api/v1/system-status/integrations/google/callback",
+  )
+
+  token_url = "https://oauth2.googleapis.com/token"
+  data = {
+    "code": code,
+    "client_id": client_id,
+    "client_secret": client_secret,
+    "redirect_uri": redirect_uri,
+    "grant_type": "authorization_code",
+  }
+
+  frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200")
+
+  try:
+    response = requests.post(token_url, data=data, timeout=10)
+    token_data = response.json()
+
+    if "access_token" in token_data:
+      AnalyticsIntegration.objects.update_or_create(
+        user=user,
+        provider="google",
+        defaults={
+          "credentials": {
+            "access_token": token_data.get("access_token"),
+            "refresh_token": token_data.get("refresh_token"),
+            "expires_in": token_data.get("expires_in"),
+          },
+          "active": True,
+        },
+      )
+      return redirect(f"{frontend_url}/manage?integration=google&status=success")
+  except Exception as e:
+    print(f"OAuth exchange failed: {e}")
+
+  return redirect(f"{frontend_url}/manage?integration=google&status=failed")
+
+
+@router.post("/integrations/clarity", response=IntegrationOut)
+def save_clarity(request, payload: ClarityIn):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+
+  integ, created = AnalyticsIntegration.objects.update_or_create(
+    user=request.user,
+    provider="microsoft",
+    defaults={
+      "credentials": {
+        "project_id": payload.project_id,
+        "api_key": payload.api_key,
+      },
+      "active": True,
+    },
+  )
+
+  return IntegrationOut(
+    id=str(integ.id),
+    provider=integ.provider,
+    active=integ.active,
+    last_sync=integ.last_sync,
+    created_at=integ.created_at,
+  )
+
+
+@router.delete("/integrations/{integration_id}")
+def delete_integration(request, integration_id: str):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+  integration = get_object_or_404(AnalyticsIntegration, id=integration_id, user=request.user)
+  integration.delete()
   return {"success": True}
