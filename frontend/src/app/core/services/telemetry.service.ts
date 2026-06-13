@@ -1,6 +1,7 @@
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
+import { firstValueFrom } from 'rxjs';
 import { API_ENDPOINTS } from '../constants/api.constants';
 
 export interface TelemetryPayload {
@@ -55,60 +56,55 @@ export class TelemetryService {
   private queueForOffline(payload: TelemetryPayload): void {
     if (!this.isBrowser) return;
 
-    let queue: TelemetryPayload[] = [];
     const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored) {
-      try {
-        queue = JSON.parse(stored);
-      } catch (e) {
-        queue = [];
+    const queue: TelemetryPayload[] = (() => {
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch {
+          return [];
+        }
       }
-    }
+      return [];
+    })();
     queue.push(payload);
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(queue));
   }
 
-  private syncOfflineQueue(): void {
+  private async syncOfflineQueue(): Promise<void> {
     if (!this.isBrowser) return;
 
     const stored = localStorage.getItem(this.STORAGE_KEY);
     if (!stored) return;
 
-    let queue: TelemetryPayload[] = [];
-    try {
-      queue = JSON.parse(stored);
-    } catch (e) {
-      return;
-    }
+    const queue: TelemetryPayload[] = (() => {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return [];
+      }
+    })();
 
     if (queue.length === 0) return;
 
     console.log(`Syncing ${queue.length} offline telemetry events...`);
 
-    // Attempt to send all in the queue one by one, keeping track of failures
     const newQueue: TelemetryPayload[] = [];
-    let completed = 0;
-
-    queue.forEach(payload => {
-      this.sendPayload(payload).subscribe({
-        next: () => {
-          completed++;
-          if (completed === queue.length) {
-            if (newQueue.length === 0) {
-              localStorage.removeItem(this.STORAGE_KEY);
-            } else {
-              localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newQueue));
-            }
-          }
-        },
-        error: () => {
-          completed++;
-          newQueue.push(payload); // Failed, keep in queue
-          if (completed === queue.length) {
-            localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newQueue));
-          }
-        },
-      });
+    const promises = queue.map(async payload => {
+      try {
+        await firstValueFrom(this.sendPayload(payload));
+      } catch (err) {
+        console.error('Failed to sync offline telemetry payload:', err);
+        newQueue.push(payload);
+      }
     });
+
+    await Promise.all(promises);
+
+    if (newQueue.length === 0) {
+      localStorage.removeItem(this.STORAGE_KEY);
+    } else {
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newQueue));
+    }
   }
 }

@@ -114,35 +114,36 @@ For the environments to function properly, ensure the following are configured i
 
 No specific backend environment variables are usually required at runtime if the API URL is built into the image, but if configured dynamically:
 
-- **BACKEND_URL**: `https://backend.dataengineeringformachinelearning.com` (Your backend service API URL)
 - **FIREBASE_API_KEY**: Your Firebase web app API key.
-- **FIREBASE_AUTH_DOMAIN**: Your Firebase web app auth domain (e.g. `demldotcom.firebaseapp.com`).
-- **FIREBASE_STORAGE_BUCKET**: Your Firebase storage bucket (e.g. `demldotcom.appspot.com`).
-- **FIREBASE_MESSAGING_SENDER_ID**: Your Firebase messaging sender ID.
+- **FIREBASE_PROJECT_ID**: Your Firebase web app project ID (e.g. `demldotcom`).
 - **FIREBASE_APP_ID**: Your Firebase web app ID.
+- **FIREBASE_AUTH_DOMAIN**: Your Firebase web app auth domain (e.g. `demldotcom.firebaseapp.com`).
+- **FIREBASE_STORAGE_BUCKET**: Your Firebase storage bucket (e.g. `demldotcom.firebasestorage.app`).
+- **FIREBASE_MESSAGING_SENDER_ID**: Your Firebase messaging sender ID.
 - **SANITY_PROJECT_ID**: Your Sanity.io project ID.
 - **SANITY_DATASET**: Your Sanity.io dataset name (e.g., `production`).
+- **BACKEND_URL**: `https://backend.dataengineeringformachinelearning.com` (Your backend service API URL)
 
 ### 2. Web Backend (API)
 
+- **SECRET_KEY**: `<your-production-secret-key>`
+- **DEBUG**: `False`
 - **ALLOWED_HOSTS**: `backend.dataengineeringformachinelearning.com`
+- **FRONTEND_URL**: `https://dataengineeringformachinelearning.com` (Your production frontend URL)
+- **DATABASE_URL**: `${{Postgres.DATABASE_URL}}` (Railway automatically provides this if you link the Postgres service)
 - **CORS_ALLOW_CREDENTIALS**: `True`
 - **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
 - **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
-- **DATABASE_URL**: `${{Postgres.DATABASE_URL}}` (Railway automatically provides this if you link the Postgres service)
-- **DEBUG**: `False`
-- **SECRET_KEY**: `<your-production-secret-key>`
 - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092` (See warning below)
+- **FIREBASE_SERVICE_ACCOUNT_JSON**: The raw JSON string of your Firebase service account credentials.
 - **GOOGLE_API_KEY**: `<your-google-api-key>` (If using LLM features)
-- **FRONTEND_URL**: `https://dataengineeringformachinelearning.com` (Your production frontend URL)
 - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>` (For Google Analytics integration)
 - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>` (For Google Analytics integration)
 - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.dataengineeringformachinelearning.com/api/v1/system-status/integrations/google/callback` (OAuth callback URL)
-- **FIREBASE_SERVICE_ACCOUNT_JSON**: The raw JSON string of your Firebase service account credentials.
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For Threat Intelligence geo-blocking data)
-- **OTX_API_KEY**: `<your-alienvault-otx-api-key>` (For Threat Intelligence vulnerability data)
 - **CISA_TAXII_ENDPOINT**: `<your-cisa-taxii-endpoint>` (Optional, for STIX formatted threat reports submission)
 - **ISAC_API_KEY**: `<your-isac-api-key>` (Optional, for threat sharing authentication)
+- **OTX_API_KEY**: `<your-alienvault-otx-api-key>` (For Threat Intelligence vulnerability data)
 - **RESEND_API_KEY**: `<your-resend-api-key>` (Optional, for incident email notifications)
 - **SENTRY_DSN**: `<your-sentry-dsn>` (Optional, for error monitoring)
 

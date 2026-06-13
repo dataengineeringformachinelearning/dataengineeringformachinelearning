@@ -319,19 +319,16 @@ export class LoginDialog implements OnInit {
       } else if (this.mfaRequired()) {
         await this.resolveMfa();
       } else {
-        let result;
-        if (this.isRegisterMode()) {
-          result = await this.authService.register({
-            username: this.loginForm.value.username,
-            password: this.loginForm.value.password,
-            email: this.loginForm.value.email,
-          });
-        } else {
-          result = await this.authService.login({
-            username: this.loginForm.value.username,
-            password: this.loginForm.value.password,
-          });
-        }
+        const result = this.isRegisterMode()
+          ? await this.authService.register({
+              username: this.loginForm.value.username,
+              password: this.loginForm.value.password,
+              email: this.loginForm.value.email,
+            })
+          : await this.authService.login({
+              username: this.loginForm.value.username,
+              password: this.loginForm.value.password,
+            });
 
         if (result.success) {
           this.dialogRef.close(true);

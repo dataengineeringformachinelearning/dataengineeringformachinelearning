@@ -1,4 +1,4 @@
-(function () {
+(() => {
   if (customElements.get('status-widget')) {
     // If already registered, only run the auto-initialization for this script if not already done
     const currentScript = document.currentScript;
@@ -27,7 +27,7 @@
         this.attachShadow({ mode: 'open' });
       }
 
-      connectedCallback() {
+      async connectedCallback() {
         const pageId = this.getAttribute('data-page-id');
         if (!pageId) {
           console.error('Widget missing data-page-id attribute');
@@ -41,18 +41,16 @@
           ? new URL(currentScript.src).origin
           : window.location.origin;
 
-        let frontendHost = scriptOrigin;
-        if (!frontendHost.includes('localhost') && !frontendHost.includes('127.0.0.1')) {
-          frontendHost = 'https://dataengineeringformachinelearning.com';
-        }
+        const frontendHost =
+          !scriptOrigin.includes('localhost') && !scriptOrigin.includes('127.0.0.1')
+            ? 'https://dataengineeringformachinelearning.com'
+            : scriptOrigin;
 
-        let backendUrl = this.getAttribute('data-backend-url');
-        if (!backendUrl) {
-          backendUrl =
-            frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')
-              ? 'http://localhost:8000'
-              : 'https://backend.dataengineeringformachinelearning.com';
-        }
+        const backendUrl =
+          this.getAttribute('data-backend-url') ||
+          (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')
+            ? 'http://localhost:8000'
+            : 'https://backend.dataengineeringformachinelearning.com');
 
         // Set up Shadow DOM structure
         this.shadowRoot.innerHTML = `
@@ -71,53 +69,50 @@
 
         // Fetch the latest status
         const apiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
-        fetch(apiUrl)
-          .then(res => res.json())
-          .then(data => {
-            const page = data.find(p => p.id === pageId || p.slug === pageId);
-            if (page) {
-              widgetLink.href = `${frontendHost}/status/${page.slug}`;
+        try {
+          const res = await fetch(apiUrl);
+          const data = await res.json();
+          const page = data.find(p => p.id === pageId || p.slug === pageId);
+          if (page) {
+            widgetLink.href = `${frontendHost}/status/${page.slug}`;
 
-              Promise.all([
-                fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`).then(
-                  res => res.json(),
-                ),
-                fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`).then(
-                  res => res.json(),
-                ),
-              ])
-                .then(([incidents, services]) => {
-                  const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
-                  const outages = services.filter(s => s.status === 'Outage');
-                  const degraded = services.filter(s => s.status === 'Degraded');
+            try {
+              const [incidentsRes, servicesRes] = await Promise.all([
+                fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`),
+                fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`),
+              ]);
+              const incidents = await incidentsRes.json();
+              const services = await servicesRes.json();
 
-                  if (activeIncidents.length > 0) {
-                    dot.style.backgroundColor = '#ef4444';
-                    text.innerText = `Incident: ${activeIncidents[0].status}`;
-                  } else if (outages.length > 0) {
-                    dot.style.backgroundColor = '#ef4444';
-                    text.innerText = 'Service Outage';
-                  } else if (degraded.length > 0) {
-                    dot.style.backgroundColor = '#f59e0b'; // Amber for degraded
-                    text.innerText = 'Degraded Performance';
-                  } else {
-                    dot.style.backgroundColor = '#10b981';
-                    text.innerText = 'All Systems Operational';
-                  }
-                })
-                .catch(() => {
-                  dot.style.backgroundColor = '#10b981';
-                  text.innerText = 'All Systems Operational';
-                });
-            } else {
-              dot.style.backgroundColor = '#ef4444';
-              text.innerText = 'Status Page Not Found';
+              const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
+              const outages = services.filter(s => s.status === 'Outage');
+              const degraded = services.filter(s => s.status === 'Degraded');
+
+              if (activeIncidents.length > 0) {
+                dot.style.backgroundColor = '#ef4444';
+                text.innerText = `Incident: ${activeIncidents[0].status}`;
+              } else if (outages.length > 0) {
+                dot.style.backgroundColor = '#ef4444';
+                text.innerText = 'Service Outage';
+              } else if (degraded.length > 0) {
+                dot.style.backgroundColor = '#f59e0b'; // Amber for degraded
+                text.innerText = 'Degraded Performance';
+              } else {
+                dot.style.backgroundColor = '#10b981';
+                text.innerText = 'All Systems Operational';
+              }
+            } catch {
+              dot.style.backgroundColor = '#10b981';
+              text.innerText = 'All Systems Operational';
             }
-          })
-          .catch(() => {
-            dot.style.backgroundColor = '#94a3b8';
-            text.innerText = 'Status Unknown';
-          });
+          } else {
+            dot.style.backgroundColor = '#ef4444';
+            text.innerText = 'Status Page Not Found';
+          }
+        } catch {
+          dot.style.backgroundColor = '#94a3b8';
+          text.innerText = 'Status Unknown';
+        }
       }
     },
   );

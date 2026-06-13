@@ -2,7 +2,7 @@
  * Formats a service name to show only its proper, cleaned up name.
  * e.g., "localhost:8000 - api v1 system status status pages" -> "Status Pages"
  */
-export function formatServiceName(name: string): string {
+export const formatServiceName = (name: string): string => {
   if (!name) return '';
 
   const lowercase = name.toLowerCase().trim();
@@ -17,11 +17,8 @@ export function formatServiceName(name: string): string {
   const uuidMatch = name.match(/([0-9a-f]{8})-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
   const suffix = uuidMatch ? ` (${uuidMatch[1].toLowerCase()})` : '';
 
-  let cleanPart = name;
   const parts = name.split(' - ');
-  if (parts.length > 1) {
-    cleanPart = parts.slice(1).join(' - ').trim();
-  }
+  const cleanPart = parts.length > 1 ? parts.slice(1).join(' - ').trim() : name;
 
   const words = cleanPart.split(/[\s/_-]+/);
   const skipWords = new Set(['api', 'v1', 'v2', 'system']);
@@ -40,17 +37,13 @@ export function formatServiceName(name: string): string {
     filteredWords.push(w);
   }
 
-  let baseName = '';
-  if (filteredWords.length === 0) {
-    baseName = cleanPart
-      .replace(/[_-]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase());
-  } else {
-    baseName = filteredWords
-      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(' ');
-  }
+  const baseName =
+    filteredWords.length === 0
+      ? cleanPart
+          .replace(/[_-]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .replace(/\b\w/g, c => c.toUpperCase())
+      : filteredWords.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
 
   return baseName + suffix;
-}
+};

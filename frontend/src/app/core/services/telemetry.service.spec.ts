@@ -111,7 +111,7 @@ describe('TelemetryService', () => {
     expect(parsed[0]).toEqual(payload);
   });
 
-  it('should sync offline queue when coming online', () => {
+  it('should sync offline queue when coming online', async () => {
     const payload1: TelemetryPayload = {
       url: 'http://test-endpoint-1.com',
       status_code: 200,
@@ -140,6 +140,9 @@ describe('TelemetryService', () => {
     // Flush both successfully
     reqs[0].flush({});
     reqs[1].flush({});
+
+    // Wait for the async queue processing to finish
+    await new Promise(resolve => setTimeout(resolve, 10));
 
     // Verify queue is cleared
     expect(localStorage.getItem('offline_telemetry_queue')).toBeNull();

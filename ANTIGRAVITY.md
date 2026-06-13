@@ -22,3 +22,11 @@ This document defines the core roles and collaboration rules for our development
   - **Keyboard Navigation**: All interactive elements must be accessible via keyboard and have visible, high-contrast focus indicators (`:focus-visible`).
   - **Screen Reader Support**: Use semantic HTML5 elements and provide descriptive `aria-label` or `aria-labelledby` attributes for controls, especially icon-only buttons.
   - **Visual Distinction**: Ensure interactive controls look clearly actionable (e.g., distinct hover and active states) and never rely solely on color to convey information or status.
+
+## Code Style & Modernization Guidelines
+
+- **Variables (JS/TS)**: Always prefer `const` over `let` and `var`. Use `let` only if the variable must be reassigned. Never use `var`.
+- **Functions (JS/TS)**: Always use arrow functions (`const fn = () => {}`) instead of classic `function` statements.
+- **Asynchronous Operations**: Always use `async`/`await` with proper `try`/`catch` (JS/TS) or `try`/`except` (Python) blocks for error handling. Avoid raw `.then()`/.`catch()` or old callback-style code.
+- **Constants (Python)**: Use `typing.Final` to specify constants (e.g. `MY_CONSTANT: Final = "value"`).
+- **Functions (Python)**: Add type annotations to all arguments and return values. Ensure function signatures are modern and clean.
