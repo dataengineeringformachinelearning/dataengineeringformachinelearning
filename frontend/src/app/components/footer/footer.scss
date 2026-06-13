@@ -170,3 +170,29 @@ footer {
     }
   }
 }
+
+.usa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.5rem;
+  background-color: rgba(45, 71, 57, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--text-color);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+  vertical-align: middle;
+
+  &:hover {
+    background-color: rgba(45, 71, 57, 0.1);
+    border-color: var(--primary-text-color);
+  }
+
+  .usa-badge-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+}
