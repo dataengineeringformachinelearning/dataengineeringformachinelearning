@@ -855,7 +855,7 @@ If your local Git environment gets disconnected from GitHub Desktop or fails to 
 
    ```bash
    # Generate an Ed25519 SSH key
-   ssh-keygen -t ed25519 -C "contact@joealongi.dev"
+   ssh-keygen -t ed25519 -C "[EMAIL_ADDRESS]"
 
    # Start the agent and add the key
    eval "$(ssh-agent -s)"
