@@ -531,7 +531,7 @@ Here is the flow I've implemented:
 
 1. **Telemetry Processing**: The async worker pulls healthcheck metrics from Redpanda and uses Polars to batch process them efficiently.
 2. **SLA Calculation**: The worker computes service uptime and calculates real-time SLA compliance percentages.
-3. **Incident Operations**: Authenticated operators can log in to declare active incidents and associate them with status pages. These are pushed to the frontend, updating the UI in real-time via Angular Signals.
+3. **Incident Operations & CMS**: Authenticated operators can log in to declare active incidents and associate them with status pages. These are pushed to the frontend, updating the UI in real-time via Angular Signals. Additionally, we integrate [Sanity.io](https://www.sanity.io) as a headless CMS (`studio/` directory) to manage real-time system-wide announcements and alerts, allowing administrators to publish banner messages dynamically.
 4. **Historical Visualizations**: Telemetry is aggregated into daily buckets to render a 90-day interactive graph showing service health history.
 
 ---
@@ -581,6 +581,24 @@ To secure the data pipeline against malicious or adversarial inputs, I connect m
 
 ---
 
+## Chapter 14: Scaling reporting and announcements with Sanity
+
+### Chapter 14.1: Introduction
+
+#### Chapter 14.1.1: Structuring content delivery and CDN integration
+
+To scale status communications without putting stress on our production databases or application servers, I leverage Sanity.io as a headless CMS with an edge-cached Content Delivery Network (API CDN).
+
+In this chapter, I outline the process of decoupling administrative content management from the telemetry data pipeline:
+
+1. **Structured Content Schema**: Inside `studio/`, we define structured document types like `announcement` with key attributes: `title`, `body`, `publishedAt`, and `severity` (info, warning, critical).
+2. **Edge-Cached Delivery**: When querying announcements on the frontend, we instantiate the Sanity client with `useCdn: true`. This directs requests to Sanity's globally distributed API CDN, resulting in sub-millisecond response times for end-users.
+3. **Reactive Binding**: The Angular service (`sanity.service.ts`) fetches content using GROQ queries and pipes the results directly into Angular Signals. The frontend layout listens to these signal changes to instantly render alert banners without blocking telemetry charts or triggering database operations on Django.
+
+This architecture teaches the reader how to keep public status communications highly available, even during severe infrastructure outages that might otherwise take down the core telemetry system.
+
+---
+
 ## My Notes on Deployment & Release
 
 Throughout this book's draft, we build a platform fully optimized and ready for production release. I've configured the final deployment on Railway across three integrated services:
@@ -597,7 +615,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Backend & APIs**: [Django](https://www.djangoproject.com) ([Django Ninja](https://django-ninja.rest-framework.com)), [Gunicorn](https://gunicorn.org), [NGINX](https://nginx.org)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org), [Redpanda](https://redpanda.com), [Polars](https://pola.rs)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
-- **Observability & Security**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
 
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to my [RAILWAY.md](./RAILWAY.md) file.
