@@ -137,16 +137,21 @@ export class Whitepaper implements OnInit {
         ],
       },
       {
-        title: '5. Next-Generation SIEM/SOAR Evolution',
+        title: '5. ML-Powered 90-Day Threat Detection & Telemetry Ingestion',
         paragraphs: [
-          'Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and Generative AI, has evolved into a powerful agentic paradigm for threat analysis. Because we can only plan for what we know or what history provides precedent for, we face a distinct challenge: if past data dictates future risk, we must engineer an entirely new way forward.',
-          'To address this, we outline a data engineering software stack designed to process and forecast these phenomena. Just as the future will require multiple specialized AI agents, it will also demand domain-specific pipelines. These pipelines must ingest massive streams of threat analysis and distill them into actionable, real-time decisions.',
-          'Our current integration with third-party analytics platforms (Google Analytics / GA4 and Microsoft Clarity) serves as a critical telemetry ingestion phase. By retrieving rich visitor logs, geolocation distributions, and request patterns from these platforms, we train a custom PyTorch neural network model (ThreatPredictor) to detect anomalies. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing direct, zero-dependency telemetry streaming.',
-          'Framed conceptually as a book and built with the collaborative power of Gemini and Grok, this open-source framework is designed to test this theory. The ultimate goal is to build upon this foundation over time, eventually engineering an open-source engine for next-generation SIEM/SOAR (Security Information and Event Management / Security Orchestration, Automation, and Response) ecosystems.',
+          'Our current integration with third-party analytics platforms (Google Analytics / GA4 and Microsoft Clarity) serves as a critical telemetry ingestion phase. By retrieving rich visitor logs, geolocation distributions, and request patterns from these platforms, we train a custom PyTorch neural network model (ThreatPredictor) to detect anomalies and forecast threat risks 90 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing direct, zero-dependency telemetry streaming.',
         ],
       },
       {
-        title: '6. Conclusion',
+        title: '6. Next-Generation SIEM/SOAR Digest',
+        paragraphs: [
+          'Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and Generative AI, has evolved into a powerful agentic paradigm for threat analysis. Because we can only plan for what we know or what history provides precedent for, we face a distinct challenge: if past data dictates future risk, we must engineer an entirely new way forward.',
+          'To address this, we outline an agentic digest pipeline designed to aggregate, summarize, and publish security intelligence periodically. Just as the future will require multiple specialized AI agents, it will also demand domain-specific digests. These pipelines ingest massive streams of threat analysis and distill them into actionable, real-time security digests and executive briefings.',
+          'Framed conceptually as a book and built with the collaborative power of Gemini and Grok, this open-source framework is designed to test this theory. The ultimate goal is to build upon this foundation over time, eventually engineering an open-source engine for next-generation SIEM/SOAR (Security Information and Event Management / Security Orchestration, Automation, and Response) digests.',
+        ],
+      },
+      {
+        title: '7. Conclusion',
         paragraphs: [
           'By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.',
         ],

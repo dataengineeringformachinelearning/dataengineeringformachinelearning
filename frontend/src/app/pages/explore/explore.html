@@ -59,6 +59,7 @@
                       </span>
                     </div>
                   </div>
+                  <!-- Predictive SLA Section -->
                   <div class="ml-stat-panel">
                     <div class="stat-info">
                       <mat-icon class="stat-icon">online_prediction</mat-icon>
@@ -75,8 +76,11 @@
                       </span>
                     </div>
                   </div>
-                  <!-- Threat Intelligence Panel -->
-                  @if (modelService.latestThreatReport()) {
+                </div>
+
+                <!-- Threat Intelligence Section -->
+                @if (modelService.latestThreatReport()) {
+                <div class="ml-stat-panels-row" style="margin-top: 16px">
                   <div class="ml-stat-panel">
                     <div class="stat-info">
                       <mat-icon class="stat-icon" style="color: #f87171">security</mat-icon>
@@ -95,8 +99,26 @@
                       </span>
                     </div>
                   </div>
-                  }
+                  <div class="ml-stat-panel">
+                    <div class="stat-info">
+                      <mat-icon class="stat-icon" style="color: #f87171">psychology</mat-icon>
+                      <div>
+                        <span class="stat-title">Suspicious Requests</span>
+                        <span class="stat-subtitle">Ratio of request flags</span>
+                      </div>
+                    </div>
+                    <div class="stat-value-container">
+                      <span
+                        class="stat-value"
+                        [style.color]="modelService.latestThreatReport()!.suspicious_ratio! > 0.15 ? '#ef4444' : '#10b981'"
+                      >
+                        {{ (modelService.latestThreatReport()!.suspicious_ratio! * 100) |
+                        number:'1.1-2' }}%
+                      </span>
+                    </div>
+                  </div>
                 </div>
+                }
                 <!-- Service Status List Section -->
                 <div class="services-status-panel">
                   <h3 class="panel-title">Service Performance</h3>

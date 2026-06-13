@@ -66,6 +66,17 @@ class Command(BaseCommand):
           )
         else:
           self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
+
+        # Automate Threat Model training along with the SLA model
+        if page.user:
+          from model.services import train_threat_model
+
+          report = train_threat_model(page.user)
+          self.stdout.write(
+            self.style.SUCCESS(
+              f"Trained threat model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+            )
+          )
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Failed to train tenant '{page.title}': {e}"))
 
@@ -80,6 +91,17 @@ class Command(BaseCommand):
         )
       else:
         self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
+
+      # Automate Threat Model training along with the SLA model
+      if page.user:
+        from model.services import train_threat_model
+
+        report = train_threat_model(page.user)
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"Trained threat model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+          )
+        )
     except StatusPage.DoesNotExist:
       self.stderr.write(self.style.WARNING(f"Tenant ID {tenant_id} not found"))
     except Exception as e:

@@ -114,8 +114,11 @@
                       </span>
                     </div>
                   </div>
-                  <!-- Threat Intelligence Panel -->
-                  @if (modelService.latestThreatReport()) {
+                </div>
+
+                <!-- Threat Intelligence Section -->
+                @if (modelService.latestThreatReport()) {
+                <div class="ml-stat-panels-row" style="margin-top: 16px">
                   <div class="ml-stat-panel">
                     <div class="stat-info">
                       <mat-icon class="stat-icon" style="color: #f87171">security</mat-icon>
@@ -134,108 +137,27 @@
                       </span>
                     </div>
                   </div>
-                  }
-                </div>
-
-                @if (modelService.latestThreatReport()) {
-                <div
-                  class="services-status-panel threat-intel-panel"
-                  style="
-                    margin-top: 20px;
-                    border-top: 1px solid rgba(255, 255, 255, 0.05);
-                    padding-top: 16px;
-                  "
-                >
-                  <div
-                    style="
-                      display: flex;
-                      justify-content: space-between;
-                      align-items: center;
-                      margin-bottom: 8px;
-                    "
-                  >
-                    <h3
-                      class="panel-title"
-                      style="
-                        margin: 0;
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        font-size: 1.1rem;
-                        color: #f1f5f9;
-                      "
-                    >
-                      <mat-icon style="color: #f87171; font-size: 18px; width: 18px; height: 18px"
-                        >security</mat-icon
-                      >
-                      Threat Intelligence & Location Telemetry
-                    </h3>
-                    <span style="font-size: 0.8rem; color: #94a3b8">
-                      Model output: {{ modelService.latestThreatReport()!.anomaly_score! > 0.5 ?
-                      'Suspicious Traffic Anomaly' : 'Normal Access Patterns' }}
-                    </span>
-                  </div>
-                  <div
-                    style="
-                      display: grid;
-                      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                      gap: 12px;
-                      margin-top: 10px;
-                    "
-                  >
-                    <div
-                      style="
-                        background: rgba(255, 255, 255, 0.02);
-                        padding: 10px;
-                        border-radius: 6px;
-                        border: 1px solid rgba(255, 255, 255, 0.05);
-                      "
-                    >
-                      <span style="font-size: 0.75rem; color: #94a3b8; display: block"
-                        >Top Origin Location</span
-                      >
-                      <strong
-                        style="font-size: 0.95rem; color: #fff; margin-top: 2px; display: block"
-                        >{{ modelService.latestThreatReport()!.top_location }}</strong
-                      >
+                  <div class="ml-stat-panel">
+                    <div class="stat-info">
+                      <mat-icon class="stat-icon" style="color: #f87171">psychology</mat-icon>
+                      <div>
+                        <span class="stat-title">Suspicious Requests</span>
+                        <span class="stat-subtitle">Ratio of request flags</span>
+                      </div>
                     </div>
-                    <div
-                      style="
-                        background: rgba(255, 255, 255, 0.02);
-                        padding: 10px;
-                        border-radius: 6px;
-                        border: 1px solid rgba(255, 255, 255, 0.05);
-                      "
-                    >
-                      <span style="font-size: 0.75rem; color: #94a3b8; display: block"
-                        >Location Traffic Weight</span
+                    <div class="stat-value-container">
+                      <span
+                        class="stat-value"
+                        [style.color]="modelService.latestThreatReport()!.suspicious_ratio! > 0.15 ? '#ef4444' : '#10b981'"
                       >
-                      <strong
-                        style="font-size: 0.95rem; color: #fff; margin-top: 2px; display: block"
-                        >{{ (modelService.latestThreatReport()!.location_weight! * 100) |
-                        number:'1.0-1' }}%</strong
-                      >
-                    </div>
-                    <div
-                      style="
-                        background: rgba(255, 255, 255, 0.02);
-                        padding: 10px;
-                        border-radius: 6px;
-                        border: 1px solid rgba(255, 255, 255, 0.05);
-                      "
-                    >
-                      <span style="font-size: 0.75rem; color: #94a3b8; display: block"
-                        >Suspicious Requests</span
-                      >
-                      <strong
-                        style="font-size: 0.95rem; color: #fff; margin-top: 2px; display: block"
-                        >{{ (modelService.latestThreatReport()!.suspicious_ratio! * 100) |
-                        number:'1.0-1' }}%</strong
-                      >
+                        {{ (modelService.latestThreatReport()!.suspicious_ratio! * 100) |
+                        number:'1.1-2' }}%
+                      </span>
                     </div>
                   </div>
                 </div>
                 }
+
                 <!-- Service Status List Section -->
                 <div class="services-status-panel">
                   <h3 class="panel-title">Service Performance</h3>

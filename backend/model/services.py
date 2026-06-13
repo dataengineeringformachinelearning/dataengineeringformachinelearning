@@ -77,12 +77,15 @@ def train_tenant_sla(status_page):
 
 
 def train_threat_model(user):
+  import datetime as dt
   import random
 
   import torch
   import torch.nn as nn
   import torch.optim as optim
-  from monitor.models import AnalyticsIntegration
+  from django.db.models import Q
+  from django.utils import timezone
+  from monitor.models import AnalyticsIntegration, Endpoints
 
   from model.models import ThreatReport
 
@@ -98,13 +101,25 @@ def train_threat_model(user):
       x = self.sigmoid(self.fc2(x))
       return x
 
+  # Query actual Endpoints telemetry from the last 90 days to derive baseline features
+  cutoff = timezone.now() - dt.timedelta(days=90)
+  endpoints = Endpoints.objects.filter(last_tested__gte=cutoff)
+  total_requests = endpoints.count()
+
+  if total_requests > 0:
+    failure_requests = endpoints.filter(Q(status_code__gte=500) | Q(is_active=False)).count()
+    failure_rate = failure_requests / total_requests
+    suspicious_requests = endpoints.filter(status_code__in=[400, 401, 403, 429]).count()
+    suspicious_ratio = suspicious_requests / total_requests
+  else:
+    failure_rate = 0.02
+    suspicious_ratio = 0.05
+
   # Find connected integrations for feature extraction
   integrations = AnalyticsIntegration.objects.filter(user=user, active=True)
 
   # Default/Fallback metrics if user hasn't synced real integrations yet
   location_weight = 0.35
-  suspicious_ratio = 0.05
-  failure_rate = 0.02
   top_location = "United States"
 
   # If integrations exist, pull real details (or simulate based on them)
@@ -112,10 +127,9 @@ def train_threat_model(user):
     for integ in integrations:
       if integ.provider == "google":
         location_weight = 0.62
-        suspicious_ratio = 0.18
         top_location = "China"
       elif integ.provider == "microsoft":
-        failure_rate = 0.08
+        failure_rate = max(failure_rate, 0.08)
         suspicious_ratio = max(suspicious_ratio, 0.22)
         top_location = "Russia"
 

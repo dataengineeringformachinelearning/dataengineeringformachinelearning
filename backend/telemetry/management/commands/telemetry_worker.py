@@ -198,12 +198,18 @@ class Command(BaseCommand):
     url_mapping = {}
     normalized_data = []
     for row in df.iter_rows(named=True):
-      norm_url, name = get_normalized_info(row["url"])
+      url_val = row.get("url")
+      if not url_val:
+        continue
+      norm_url, name = get_normalized_info(url_val)
       url_mapping[norm_url] = name
 
       row_dict = dict(row)
       row_dict["url"] = norm_url
       normalized_data.append(row_dict)
+
+    if not normalized_data:
+      return
 
     df = pl.DataFrame(normalized_data)
 
@@ -228,7 +234,7 @@ class Command(BaseCommand):
         url=row["url"],
         status_code=row["status_code"],
         response_time=duration,
-        ip_address=row["ip_address"],
+        ip_address=row.get("ip_address"),
         is_active=row["is_active"],
       )
       objects_to_create.append(ep)

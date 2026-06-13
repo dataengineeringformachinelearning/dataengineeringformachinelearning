@@ -4,7 +4,7 @@ import {
   provideBrowserGlobalErrorListeners,
   ErrorHandler,
 } from '@angular/core';
-import { Router, provideRouter } from '@angular/router';
+import { Router, provideRouter, withInMemoryScrolling } from '@angular/router';
 import * as Sentry from '@sentry/angular';
 import {
   provideClientHydration,
@@ -24,7 +24,7 @@ import { GlobalErrorHandler } from './core/handlers/global-error.handler';
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
+    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
     provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
     provideHttpClient(
       withFetch(),
