@@ -10,15 +10,20 @@ export default defineConfig({
           // Replace templateUrl: './foo.html' with template: ''
           newCode = newCode.replace(/templateUrl\s*:\s*['"`](.*?)['"`]/g, "template: ''");
           // Replace styleUrl: './foo.scss' with styles: []
-          newCode = newCode.replace(/styleUrl\s*:\s*['"`](.*?)['"`]/g, "styles: []");
-          newCode = newCode.replace(/styleUrls\s*:\s*\[([\s\S]*?)\]/g, "styles: []");
+          newCode = newCode.replace(/styleUrl\s*:\s*['"`](.*?)['"`]/g, 'styles: []');
+          newCode = newCode.replace(/styleUrls\s*:\s*\[([\s\S]*?)\]/g, 'styles: []');
           return { code: newCode };
         }
-        if (id.endsWith('.html') || id.endsWith('.scss') || id.endsWith('.css') || id.endsWith('.md')) {
+        if (
+          id.endsWith('.html') ||
+          id.endsWith('.scss') ||
+          id.endsWith('.css') ||
+          id.endsWith('.md')
+        ) {
           return { code: 'export default ""' };
         }
-      }
-    }
+      },
+    },
   ],
   test: {
     globals: true,

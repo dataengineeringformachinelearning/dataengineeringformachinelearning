@@ -1,107 +1,111 @@
 import uuid
-from django.db import models
+
 from django.contrib.auth import get_user_model
+from django.db import models
 
 User = get_user_model()
 
+
 class StatusPage(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="status_pages")
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, max_length=255)
-    description = models.TextField(blank=True)
-    is_published = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="status_pages")
+  title = models.CharField(max_length=255)
+  slug = models.SlugField(unique=True, max_length=255)
+  description = models.TextField(blank=True)
+  is_published = models.BooleanField(default=False)
+  created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = 'status_pages'
+  class Meta:
+    db_table = "status_pages"
 
-    def __str__(self):
-        return self.title
+  def __str__(self):
+    return self.title
+
 
 class MonitoredService(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    status_page = models.ForeignKey(StatusPage, on_delete=models.CASCADE, related_name="services")
-    name = models.CharField(max_length=255)
-    url = models.URLField()
-    created_at = models.DateTimeField(auto_now_add=True)
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  status_page = models.ForeignKey(StatusPage, on_delete=models.CASCADE, related_name="services")
+  name = models.CharField(max_length=255)
+  url = models.URLField()
+  created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = 'monitored_services'
+  class Meta:
+    db_table = "monitored_services"
 
-    def __str__(self):
-        return self.name
+  def __str__(self):
+    return self.name
+
 
 class Endpoints(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    url = models.URLField()
-    last_tested = models.DateTimeField(auto_now=True)
-    status_code = models.IntegerField()
-    response_time = models.DurationField()
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-    is_active = models.BooleanField(default=True)
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  url = models.URLField()
+  last_tested = models.DateTimeField(auto_now=True)
+  status_code = models.IntegerField()
+  response_time = models.DurationField()
+  ip_address = models.GenericIPAddressField(null=True, blank=True)
+  is_active = models.BooleanField(default=True)
 
-    class Meta:
-        db_table = 'endpoints'
-        indexes = [
-            models.Index(fields=['url', 'last_tested']),
-            models.Index(fields=['last_tested']),
-        ]
+  class Meta:
+    db_table = "endpoints"
+    indexes = [
+      models.Index(fields=["url", "last_tested"]),
+      models.Index(fields=["last_tested"]),
+    ]
 
-    def __str__(self):
-        return self.url
+  def __str__(self):
+    return self.url
+
 
 class Incident(models.Model):
-    STATUS_CHOICES = [
-        ('Investigating', 'Investigating'),
-        ('Identified', 'Identified'),
-        ('Monitoring', 'Monitoring'),
-        ('Resolved', 'Resolved'),
-    ]
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    status_page = models.ForeignKey(StatusPage, on_delete=models.CASCADE, related_name="incidents")
-    title = models.CharField(max_length=255)
-    message = models.TextField()
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Investigating')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+  STATUS_CHOICES = [
+    ("Investigating", "Investigating"),
+    ("Identified", "Identified"),
+    ("Monitoring", "Monitoring"),
+    ("Resolved", "Resolved"),
+  ]
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  status_page = models.ForeignKey(StatusPage, on_delete=models.CASCADE, related_name="incidents")
+  title = models.CharField(max_length=255)
+  message = models.TextField()
+  status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="Investigating")
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
 
-    class Meta:
-        db_table = 'incidents'
-        ordering = ['-created_at']
+  class Meta:
+    db_table = "incidents"
+    ordering = ["-created_at"]
 
-    def __str__(self):
-        return f"{self.title} - {self.status}"
+  def __str__(self):
+    return f"{self.title} - {self.status}"
 
 
 class CookieConsent(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    necessary = models.BooleanField(default=True)
-    analytical = models.BooleanField(default=False)
-    marketing = models.BooleanField(default=False)
-    ip_address = models.GenericIPAddressField(null=True, blank=True)
-    user_agent = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  necessary = models.BooleanField(default=True)
+  analytical = models.BooleanField(default=False)
+  marketing = models.BooleanField(default=False)
+  ip_address = models.GenericIPAddressField(null=True, blank=True)
+  user_agent = models.TextField(null=True, blank=True)
+  created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = 'cookie_consents'
-        ordering = ['-created_at']
+  class Meta:
+    db_table = "cookie_consents"
+    ordering = ["-created_at"]
 
-    def __str__(self):
-        return f"CookieConsent {self.id} (analytical={self.analytical}, marketing={self.marketing})"
+  def __str__(self):
+    return f"CookieConsent {self.id} (analytical={self.analytical}, marketing={self.marketing})"
 
 
 class BugReport(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user_description = models.TextField()
-    telemetry_context = models.JSONField(null=True, blank=True)
-    processed_report = models.TextField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user_description = models.TextField()
+  telemetry_context = models.JSONField(null=True, blank=True)
+  processed_report = models.TextField(null=True, blank=True)
+  created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        db_table = 'bug_reports'
-        ordering = ['-created_at']
+  class Meta:
+    db_table = "bug_reports"
+    ordering = ["-created_at"]
 
-    def __str__(self):
-        return f"BugReport {self.id} (created: {self.created_at})"
-
+  def __str__(self):
+    return f"BugReport {self.id} (created: {self.created_at})"

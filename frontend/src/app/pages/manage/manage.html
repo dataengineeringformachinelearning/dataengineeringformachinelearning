@@ -9,16 +9,18 @@
       <div sidebar-extra class="sidebar-section">
         <h3 class="section-title">Your Pages</h3>
         <div class="page-list">
-          <div *ngFor="let page of statusPages()" 
-               class="page-item"
-               [ngClass]="{'active': selectedPage()?.id === page.id}"
-               (click)="selectPage(page)">
+          @for (page of statusPages(); track page) {
+          <div
+            class="page-item"
+            [ngClass]="{'active': selectedPage()?.id === page.id}"
+            (click)="selectPage(page)"
+          >
             <span class="page-title">{{ page.title }}</span>
             <span class="page-slug">/status/{{ page.slug }}</span>
           </div>
-          <div *ngIf="statusPages().length === 0" class="empty-pages">
-            No pages yet.
-          </div>
+          } @if (statusPages().length === 0) {
+          <div class="empty-pages">No pages yet.</div>
+          }
           <button mat-button class="new-page-btn" (click)="selectPage(null)">
             <mat-icon>add</mat-icon>
             New Page
@@ -32,49 +34,73 @@
       <header class="dashboard-topbar">
         <div class="topbar-left">
           <h1 class="page-title">Management Console</h1>
-          <p class="page-description">Configure your telemetry pages, endpoints, and status reporting.</p>
+          <p class="page-description">
+            Configure your telemetry pages, endpoints, and status reporting.
+          </p>
         </div>
       </header>
 
       <div class="dashboard-content-area">
         <div class="content-wrapper">
           <div class="manage-stack">
-            
             <div class="status-card-outlined">
               <div class="card-header-clean">
-                <h2 class="card-title-main" *ngIf="selectedPage()">{{ selectedPage()!.title }}</h2>
-                <button mat-icon-button color="warn" *ngIf="selectedPage()" (click)="deleteStatusPage(selectedPage()!.id)" title="Delete status page" class="delete-page-btn">
+                @if (selectedPage()) {
+                <h2 class="card-title-main">{{ selectedPage()!.title }}</h2>
+                } @if (selectedPage()) {
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteStatusPage(selectedPage()!.id)"
+                  title="Delete status page"
+                  class="delete-page-btn"
+                >
                   <mat-icon>delete_forever</mat-icon>
                 </button>
-                <h2 class="card-title-main" *ngIf="!selectedPage()">Create Status Page</h2>
+                } @if (!selectedPage()) {
+                <h2 class="card-title-main">Create Status Page</h2>
+                }
               </div>
 
-              
               <div class="card-body-clean">
                 <!-- New Page Form -->
-                <div *ngIf="!selectedPage()" class="form-col">
+                @if (!selectedPage()) {
+                <div class="form-col">
                   <p class="embed-desc">
-                    Create a new status page to start monitoring your services.
-                    Refer to the <a routerLink="/status/platform-status" class="inline-status-link">Platform Status Page</a> as a live example of layout, services, and incident configurations.
+                    Create a new status page to start monitoring your services. Refer to the
+                    <a routerLink="/status/platform-status" class="inline-status-link"
+                      >Platform Status Page</a
+                    >
+                    as a live example of layout, services, and incident configurations.
                   </p>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Title</mat-label>
-                    <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status">
+                    <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status" />
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Slug</mat-label>
-                    <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api">
+                    <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api" />
                   </mat-form-field>
-                  <button mat-raised-button color="primary" (click)="createStatusPage()" [disabled]="!newPageTitle || !newPageSlug || isCreatingPage()" class="create-page-btn">
-                    <mat-icon *ngIf="!isCreatingPage()">add_circle</mat-icon>
-                    <span class="btn-spinner" *ngIf="isCreatingPage()"></span>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    (click)="createStatusPage()"
+                    [disabled]="!newPageTitle || !newPageSlug || isCreatingPage()"
+                    class="create-page-btn"
+                  >
+                    @if (!isCreatingPage()) {
+                    <mat-icon>add_circle</mat-icon>
+                    } @if (isCreatingPage()) {
+                    <span class="btn-spinner"></span>
+                    }
                     <span>Create Page</span>
                   </button>
                 </div>
-                
-                <!-- Existing Page View -->
-                <div *ngIf="selectedPage()">
+                }
 
+                <!-- Existing Page View -->
+                @if (selectedPage()) {
+                <div>
                   <!-- Page Settings Section -->
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>settings</mat-icon> Page Settings</h3>
@@ -82,50 +108,78 @@
                       <div class="form-row">
                         <mat-form-field appearance="outline">
                           <mat-label>Title</mat-label>
-                          <input matInput [(ngModel)]="editTitle" placeholder="e.g. My API Status">
+                          <input
+                            matInput
+                            [(ngModel)]="editTitle"
+                            placeholder="e.g. My API Status"
+                          />
                         </mat-form-field>
                         <mat-form-field appearance="outline">
                           <mat-label>Slug</mat-label>
-                          <input matInput [(ngModel)]="editSlug" placeholder="e.g. my-api">
+                          <input matInput [(ngModel)]="editSlug" placeholder="e.g. my-api" />
                         </mat-form-field>
                       </div>
                       <mat-form-field appearance="outline" class="full-width">
                         <mat-label>Description</mat-label>
-                        <textarea matInput [(ngModel)]="editDescription" rows="2" placeholder="Description of this status page..."></textarea>
+                        <textarea
+                          matInput
+                          [(ngModel)]="editDescription"
+                          rows="2"
+                          placeholder="Description of this status page..."
+                        ></textarea>
                       </mat-form-field>
                       <div class="settings-actions">
                         <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
                           Publish Status Page (makes it visible in the public Explore directory)
                         </mat-checkbox>
-                        <button mat-flat-button color="primary" (click)="updateStatusPage()" [disabled]="!editTitle || !editSlug || isUpdatingPage()">
-                          <mat-icon *ngIf="!isUpdatingPage()">save</mat-icon>
-                          <span class="btn-spinner" *ngIf="isUpdatingPage()"></span>
+                        <button
+                          mat-flat-button
+                          color="primary"
+                          (click)="updateStatusPage()"
+                          [disabled]="!editTitle || !editSlug || isUpdatingPage()"
+                        >
+                          @if (!isUpdatingPage()) {
+                          <mat-icon>save</mat-icon>
+                          } @if (isUpdatingPage()) {
+                          <span class="btn-spinner"></span>
+                          }
                           <span>Save Settings</span>
                         </button>
                       </div>
                     </div>
                   </div>
-                  
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>dns</mat-icon> Monitored Services</h3>
                     <div class="form-row panel-clean">
                       <mat-form-field appearance="outline" class="flex-1">
                         <mat-label>Service Name</mat-label>
-                        <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Auth API">
+                        <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Auth API" />
                       </mat-form-field>
                       <mat-form-field appearance="outline" class="flex-2">
                         <mat-label>Health Check URL</mat-label>
-                        <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health">
+                        <input
+                          matInput
+                          [(ngModel)]="newServiceUrl"
+                          placeholder="https://api.example.com/health"
+                        />
                       </mat-form-field>
-                      <button mat-flat-button class="add-service-btn" (click)="addService()" [disabled]="!newServiceName || !newServiceUrl || isAddingService()">
-                        <mat-icon *ngIf="!isAddingService()">add</mat-icon>
-                        <span class="btn-spinner" *ngIf="isAddingService()"></span>
+                      <button
+                        mat-flat-button
+                        class="add-service-btn"
+                        (click)="addService()"
+                        [disabled]="!newServiceName || !newServiceUrl || isAddingService()"
+                      >
+                        @if (!isAddingService()) {
+                        <mat-icon>add</mat-icon>
+                        } @if (isAddingService()) {
+                        <span class="btn-spinner"></span>
+                        }
                         <span>Add Service</span>
                       </button>
                     </div>
-
                     <div class="data-list-outlined">
-                      <div *ngFor="let service of services()" class="data-item-row">
+                      @for (service of services(); track service) {
+                      <div class="data-item-row">
                         <div class="data-info">
                           <span class="data-title">{{ service.name }}</span>
                           <span class="data-subtitle">{{ service.url }}</span>
@@ -134,22 +188,32 @@
                           <mat-icon>delete</mat-icon>
                         </button>
                       </div>
-                      <div *ngIf="services().length === 0" class="empty-data-text">
-                        No services monitored yet. Add one above!
-                      </div>
+                      } @if (services().length === 0) {
+                      <div class="empty-data-text">No services monitored yet. Add one above!</div>
+                      }
                     </div>
                   </div>
-
                   <div class="panel-section">
-                    <h3 class="section-heading"><mat-icon>error_outline</mat-icon> Report Incident</h3>
+                    <h3 class="section-heading">
+                      <mat-icon>error_outline</mat-icon> Report Incident
+                    </h3>
                     <div class="incident-form panel-clean">
                       <mat-form-field appearance="outline" class="full-width">
                         <mat-label>Incident Title</mat-label>
-                        <input matInput [(ngModel)]="newIncidentTitle" placeholder="e.g. API Degraded Performance">
+                        <input
+                          matInput
+                          [(ngModel)]="newIncidentTitle"
+                          placeholder="e.g. API Degraded Performance"
+                        />
                       </mat-form-field>
                       <mat-form-field appearance="outline" class="full-width">
                         <mat-label>Message / Update</mat-label>
-                        <textarea matInput [(ngModel)]="newIncidentMessage" rows="2" placeholder="Describe what is happening and what actions are being taken..."></textarea>
+                        <textarea
+                          matInput
+                          [(ngModel)]="newIncidentMessage"
+                          rows="2"
+                          placeholder="Describe what is happening and what actions are being taken..."
+                        ></textarea>
                       </mat-form-field>
                       <div class="form-row-actions">
                         <div class="select-wrapper">
@@ -160,33 +224,46 @@
                             <option value="Resolved">Resolved</option>
                           </select>
                         </div>
-                        <button mat-flat-button class="post-incident-btn" (click)="addIncident()" [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident()">
-                          <mat-icon *ngIf="!isAddingIncident()">notification_important</mat-icon>
-                          <span class="btn-spinner" *ngIf="isAddingIncident()"></span>
+                        <button
+                          mat-flat-button
+                          class="post-incident-btn"
+                          (click)="addIncident()"
+                          [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident()"
+                        >
+                          @if (!isAddingIncident()) {
+                          <mat-icon>notification_important</mat-icon>
+                          } @if (isAddingIncident()) {
+                          <span class="btn-spinner"></span>
+                          }
                           <span>Post Incident</span>
                         </button>
                       </div>
                     </div>
-
                     <div class="data-list-outlined">
-                      <div *ngFor="let incident of incidents()" class="data-item-row">
+                      @for (incident of incidents(); track incident) {
+                      <div class="data-item-row">
                         <div class="data-info">
                           <span class="data-title">{{ incident.title }}</span>
-                          <span class="data-subtitle">{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span>
+                          <span class="data-subtitle"
+                            >{{ incident.status }} &bull; {{ incident.created_at | date:'short'
+                            }}</span
+                          >
                         </div>
                         <button mat-icon-button color="warn" (click)="deleteIncident(incident.id)">
                           <mat-icon>delete</mat-icon>
                         </button>
                       </div>
-                      <div *ngIf="incidents().length === 0" class="empty-data-text">
-                        No incidents reported yet.
-                      </div>
+                      } @if (incidents().length === 0) {
+                      <div class="empty-data-text">No incidents reported yet.</div>
+                      }
                     </div>
                   </div>
-
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>code</mat-icon> Embeddable Widget</h3>
-                    <p class="embed-desc">Copy and paste this script tag onto your website to display a live status badge.</p>
+                    <p class="embed-desc">
+                      Copy and paste this script tag onto your website to display a live status
+                      badge.
+                    </p>
                     <div class="code-block-container">
                       <div class="code-block-outlined">
                         <code>{{ getWidgetCode() }}</code>
@@ -197,8 +274,8 @@
                       </button>
                     </div>
                   </div>
-                  
                 </div>
+                }
               </div>
             </div>
 
@@ -213,15 +290,24 @@
               <div class="card-body-clean">
                 <div>
                   <h3>Delete Account</h3>
-                  <p>Permanently delete your account, tracked pages, monitored services, and all associated data. This action is irreversible.</p>
+                  <p>
+                    Permanently delete your account, tracked pages, monitored services, and all
+                    associated data. This action is irreversible.
+                  </p>
                 </div>
-                 <button mat-flat-button color="warn" (click)="deleteAccount()" [disabled]="isDeletingAccount()">
-                   <span class="btn-spinner" *ngIf="isDeletingAccount()"></span>
-                   <span>Delete Account</span>
-                 </button>
+                <button
+                  mat-flat-button
+                  color="warn"
+                  (click)="deleteAccount()"
+                  [disabled]="isDeletingAccount()"
+                >
+                  @if (isDeletingAccount()) {
+                  <span class="btn-spinner"></span>
+                  }
+                  <span>Delete Account</span>
+                </button>
               </div>
             </div>
-
           </div>
         </div>
       </div>

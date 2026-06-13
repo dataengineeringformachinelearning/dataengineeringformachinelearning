@@ -70,8 +70,6 @@
   }
 }
 
-
-
 .sidebar-section {
   flex: 1;
   padding: 1.5rem 1rem;
@@ -107,16 +105,16 @@
   border: 1px solid transparent;
   background-color: rgba(255, 255, 255, 0.01);
   transition: all 0.2s ease;
-  
+
   &:hover {
     background-color: var(--hover-color);
     border-color: var(--border);
   }
-  
+
   &.active {
     background-color: var(--hover-color);
     border: 1px solid var(--manage-accent);
-    
+
     .page-title {
       color: var(--manage-accent);
     }
@@ -308,7 +306,7 @@
 
 .panel-section {
   margin-bottom: 2.5rem;
-  
+
   &:last-of-type {
     margin-bottom: 0;
   }
@@ -407,7 +405,7 @@
   &:hover {
     background-color: var(--hover-color);
   }
-  
+
   &:last-child {
     border-bottom: none;
   }
@@ -468,8 +466,8 @@
   min-width: 180px;
 
   &::after {
-    content: "expand_more";
-    font-family: "Material Icons";
+    content: 'expand_more';
+    font-family: 'Material Icons';
     position: absolute;
     right: 12px;
     top: 50%;
@@ -493,7 +491,9 @@
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     border-color: var(--primary-color);
@@ -762,4 +762,3 @@
     }
   }
 }
-

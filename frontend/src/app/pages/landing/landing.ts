@@ -1,4 +1,11 @@
-import { Component, ChangeDetectionStrategy, OnInit, inject, ElementRef, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  OnInit,
+  inject,
+  ElementRef,
+  PLATFORM_ID,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { Title, Meta } from '@angular/platform-browser';
@@ -23,7 +30,8 @@ export class Landing implements OnInit {
     this.titleService.setTitle('Data Engineering for Machine Learning');
     this.metaService.updateTag({
       name: 'description',
-      content: 'Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.'
+      content:
+        'Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.',
     });
 
     if (isPlatformBrowser(this.platformId)) {

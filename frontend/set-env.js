@@ -26,7 +26,7 @@ const getBackendUrlCode = `const getBackendUrl = () => {
   if (host.includes('localhost') || host.includes('127.0.0.1')) {
     return 'http://localhost:8000';
   }
-  
+
   if (host.includes('up.railway.app')) {
     if (host.includes('-frontend')) {
       return \`https://\${host.replace('-frontend', '-backend')}\`;
@@ -36,7 +36,7 @@ const getBackendUrlCode = `const getBackendUrl = () => {
     }
     return \`https://backend-\${host}\`;
   }
-  
+
   return \`https://backend.\${host}\`;
 };`;
 
@@ -107,8 +107,10 @@ console.log(`Angular environment.development.ts dynamically generated at ${targe
 // Ensure src/assets/firebase-config.js placeholder exists to prevent 404 errors
 const firebaseConfigPath = path.join(__dirname, 'src', 'assets', 'firebase-config.js');
 if (!fs.existsSync(firebaseConfigPath)) {
-  fs.writeFileSync(firebaseConfigPath, '// Local Firebase configuration override placeholder\n', 'utf8');
+  fs.writeFileSync(
+    firebaseConfigPath,
+    '// Local Firebase configuration override placeholder\n',
+    'utf8',
+  );
   console.log(`Placeholder firebase-config.js created at ${firebaseConfigPath}`);
 }
-
-

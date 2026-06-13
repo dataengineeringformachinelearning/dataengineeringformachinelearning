@@ -4,7 +4,7 @@
  */
 export function formatServiceName(name: string): string {
   if (!name) return '';
-  
+
   const lowercase = name.toLowerCase().trim();
   if (lowercase === 'django web server') {
     return 'Django Web Server';
@@ -23,7 +23,7 @@ export function formatServiceName(name: string): string {
     cleanPart = parts.slice(1).join(' - ').trim();
   }
 
-  const words = cleanPart.split(/[\s/_\-]+/);
+  const words = cleanPart.split(/[\s/_-]+/);
   const skipWords = new Set(['api', 'v1', 'v2', 'system']);
   const uuidRegex = /^[0-9a-f]{4,12}$/i;
 
@@ -42,7 +42,9 @@ export function formatServiceName(name: string): string {
 
   let baseName = '';
   if (filteredWords.length === 0) {
-    baseName = cleanPart.replace(/[_-]/g, ' ').replace(/\s+/g, ' ')
+    baseName = cleanPart
+      .replace(/[_-]/g, ' ')
+      .replace(/\s+/g, ' ')
       .replace(/\b\w/g, c => c.toUpperCase());
   } else {
     baseName = filteredWords

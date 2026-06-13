@@ -160,4 +160,3 @@ The SLA worker uses the same Django backend codebase and requires identical envi
 - **DEBUG**: `False`
 - **SECRET_KEY**: `<your-production-secret-key>`
 - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
-

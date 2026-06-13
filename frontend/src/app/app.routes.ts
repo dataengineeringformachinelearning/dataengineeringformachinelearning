@@ -19,4 +19,3 @@ export const routes: Routes = [
   { path: 'privacy', component: Privacy },
   { path: 'whitepaper', component: Whitepaper },
 ];
-

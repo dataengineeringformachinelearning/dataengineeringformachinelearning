@@ -11,6 +11,6 @@ import pageMarkdown from '../../../assets/content/page.md';
   template: ` <markdown [data]="data || fallbackMarkdown"></markdown> `,
 })
 export class PageComponent {
-  @Input() data: string = '';
+  @Input() data = '';
   fallbackMarkdown: string = pageMarkdown;
 }

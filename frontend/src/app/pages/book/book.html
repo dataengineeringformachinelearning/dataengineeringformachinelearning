@@ -9,14 +9,15 @@
       <div sidebar-extra class="sidebar-section">
         <h3 class="section-title">Table of Contents</h3>
         <div class="page-list">
+          @for (chapter of chapters(); track chapter; let idx = $index) {
           <div
-            *ngFor="let chapter of chapters(); let idx = index"
             class="page-item"
             [ngClass]="{ 'active': activePageIndex() === idx }"
             (click)="goToPage(idx)"
           >
             <span class="page-title">{{ chapter.title }}</span>
           </div>
+          }
         </div>
       </div>
     </app-sidebar>
@@ -26,9 +27,7 @@
       <header class="dashboard-topbar">
         <div class="topbar-left">
           <h1 class="page-title">Documentation</h1>
-          <p class="page-description">
-            Interactive guide, working notes, and reference material.
-          </p>
+          <p class="page-description">Interactive guide, working notes, and reference material.</p>
         </div>
       </header>
 

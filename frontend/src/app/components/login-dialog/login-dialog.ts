@@ -5,20 +5,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../../services/auth.service';
 import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   PhoneAuthProvider,
-  PhoneMultiFactorGenerator
+  PhoneMultiFactorGenerator,
 } from 'firebase/auth';
 
 @Component({
   selector: 'app-login-dialog',
   standalone: true,
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -52,7 +51,7 @@ export class LoginDialog implements OnInit {
     password: ['', Validators.required],
     email: [''],
     phone: [''],
-    verificationCode: ['']
+    verificationCode: [''],
   });
 
   recaptchaVerifier: any;
@@ -141,7 +140,9 @@ export class LoginDialog implements OnInit {
     this.loginForm.get('verificationCode')?.clearValidators();
     this.loginForm.get('verificationCode')?.updateValueAndValidity();
 
-    this.loginForm.get('phone')?.setValidators([Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]);
+    this.loginForm
+      .get('phone')
+      ?.setValidators([Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]);
     this.loginForm.get('phone')?.updateValueAndValidity();
   }
 
@@ -173,7 +174,7 @@ export class LoginDialog implements OnInit {
     try {
       this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, 'recaptcha-container', {
         size: 'invisible',
-        callback: () => {}
+        callback: () => {},
       });
     } catch (e) {
       console.error('Recaptcha init error', e);
@@ -190,13 +191,20 @@ export class LoginDialog implements OnInit {
     this.initRecaptcha();
     this.isLoading.set(true);
     try {
-      this.confirmationResult = await signInWithPhoneNumber(this.authService.auth, phoneNum, this.recaptchaVerifier);
+      this.confirmationResult = await signInWithPhoneNumber(
+        this.authService.auth,
+        phoneNum,
+        this.recaptchaVerifier,
+      );
       this.codeSent.set(true);
       this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
       this.loginForm.get('verificationCode')?.updateValueAndValidity();
     } catch (e: any) {
       console.error(e);
-      this.error.set(e.message || 'Failed to send verification code. Make sure you input international format (e.g. +11234567890).');
+      this.error.set(
+        e.message ||
+          'Failed to send verification code. Make sure you input international format (e.g. +11234567890).',
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -227,10 +235,13 @@ export class LoginDialog implements OnInit {
     try {
       const phoneInfoOptions = {
         multiFactorHint: resolver.hints[0],
-        session: resolver.session
+        session: resolver.session,
       };
       const phoneAuthProvider = new PhoneAuthProvider(this.authService.auth);
-      const verifyId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, this.recaptchaVerifier);
+      const verifyId = await phoneAuthProvider.verifyPhoneNumber(
+        phoneInfoOptions,
+        this.recaptchaVerifier,
+      );
       this.verificationId.set(verifyId);
       this.resolver = resolver;
       this.mfaRequired.set(true);
@@ -278,7 +289,9 @@ export class LoginDialog implements OnInit {
         const email = this.loginForm.value.email;
         const success = await this.authService.forgotPassword(email);
         if (success) {
-          this.successMessage.set('If that email exists in our records, we have sent a password reset link.');
+          this.successMessage.set(
+            'If that email exists in our records, we have sent a password reset link.',
+          );
         } else {
           this.error.set('Failed to submit request. Please try again.');
         }
@@ -287,7 +300,7 @@ export class LoginDialog implements OnInit {
         const success = await this.authService.resetPassword({
           uid: this.data.uid,
           token: this.data.token,
-          new_password: newPassword
+          new_password: newPassword,
         });
         if (success) {
           this.successMessage.set('Password successfully reset! You can now log in.');
@@ -311,15 +324,15 @@ export class LoginDialog implements OnInit {
           result = await this.authService.register({
             username: this.loginForm.value.username,
             password: this.loginForm.value.password,
-            email: this.loginForm.value.email
+            email: this.loginForm.value.email,
           });
         } else {
           result = await this.authService.login({
             username: this.loginForm.value.username,
-            password: this.loginForm.value.password
+            password: this.loginForm.value.password,
           });
         }
-        
+
         if (result.success) {
           this.dialogRef.close(true);
         } else if (result.error === 'MFA_REQUIRED') {
@@ -341,4 +354,3 @@ export class LoginDialog implements OnInit {
     this.dialogRef.close();
   }
 }
-

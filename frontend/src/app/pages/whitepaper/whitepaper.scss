@@ -190,7 +190,9 @@
     font-weight: 600;
     cursor: pointer;
     box-shadow: var(--shadow-sm);
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
 
     &:hover {
       background: var(--color-surface);
@@ -207,7 +209,8 @@
 
 /* Print CSS Media Queries to beautifully format the PDF output */
 @media print {
-  body, :host {
+  body,
+  :host {
     background: #ffffff !important;
     color: #1a1a1a !important;
   }
@@ -326,4 +329,3 @@
     }
   }
 }
-

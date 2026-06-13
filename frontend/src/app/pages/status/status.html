@@ -15,19 +15,21 @@
           <h1 class="page-title">System Status</h1>
           <p class="page-description">Real-time status updates and historical uptime statistics.</p>
         </div>
-        <div class="topbar-right" *ngIf="authService.isAuthenticated()">
+        @if (authService.isAuthenticated()) {
+        <div class="topbar-right">
           <a mat-flat-button class="manage-btn" routerLink="/manage">
             <mat-icon>settings</mat-icon>
             Manage Pages
           </a>
         </div>
+        }
       </header>
 
       <div class="dashboard-content-area">
         <div class="content-wrapper">
           <div class="status-stack">
-            
-            <div *ngFor="let page of statusPages()" class="status-card-outlined" [id]="page.slug">
+            @for (page of statusPages(); track page) {
+            <div class="status-card-outlined" [id]="page.slug">
               <div class="card-header-clean">
                 <div class="header-main-info">
                   <h2 class="card-title">{{ page.title }}</h2>
@@ -38,8 +40,6 @@
                   {{ getPageStatus(page.id) }}
                 </div>
               </div>
-
-
               <div class="card-body-clean">
                 <!-- SLA Section -->
                 <div class="ml-stat-panels-row">
@@ -54,11 +54,11 @@
                     </div>
                     <div class="stat-value-container">
                       <span class="stat-value">
-                        {{ (page.cumulative_sla !== null ? page.cumulative_sla : 100.0) | number:'1.2-2' }}%
+                        {{ (page.cumulative_sla !== null ? page.cumulative_sla : 100.0) |
+                        number:'1.2-2' }}%
                       </span>
                     </div>
                   </div>
-
                   <!-- Predictive SLA Section -->
                   <div class="ml-stat-panel">
                     <div class="stat-info">
@@ -70,17 +70,19 @@
                     </div>
                     <div class="stat-value-container">
                       <span class="stat-value">
-                        {{ (modelService.latestStats()[page.id] !== undefined && modelService.latestStats()[page.id] !== null ? modelService.latestStats()[page.id] : 99.99) | number:'1.2-2' }}%
+                        {{ (modelService.latestStats()[page.id] !== undefined &&
+                        modelService.latestStats()[page.id] !== null ?
+                        modelService.latestStats()[page.id] : 99.99) | number:'1.2-2' }}%
                       </span>
                     </div>
                   </div>
                 </div>
-
                 <!-- Service Status List Section -->
                 <div class="services-status-panel">
                   <h3 class="panel-title">Service Performance</h3>
                   <div class="services-status-list">
-                    <div *ngFor="let s of servicesMap()[page.id]" class="service-status-row">
+                    @for (s of servicesMap()[page.id]; track s) {
+                    <div class="service-status-row">
                       <div class="service-meta">
                         <a [href]="s.url" target="_blank" class="service-name-link">
                           <span>{{ formatServiceName(s.name) }}</span>
@@ -89,32 +91,39 @@
                       </div>
                       <div class="service-stats">
                         <span class="service-sla">{{ s.sla | number:'1.2-2' }}% SLA</span>
-                        <div class="status-badge-premium" [ngClass]="s.status?.toLowerCase() || 'operational'">
+                        <div
+                          class="status-badge-premium"
+                          [ngClass]="s.status?.toLowerCase() || 'operational'"
+                        >
                           <span class="status-dot-greenblue"></span>
                           {{ s.status || 'Operational' }}
                         </div>
                       </div>
                     </div>
-                    <div *ngIf="!servicesMap()[page.id] || servicesMap()[page.id].length === 0" class="no-services-msg">
-                      No monitored services configured.
-                    </div>
+                    } @if (!servicesMap()[page.id] || servicesMap()[page.id].length === 0) {
+                    <div class="no-services-msg">No monitored services configured.</div>
+                    }
                   </div>
                 </div>
-
-                 <!-- Historical Uptime Section -->
+                <!-- Historical Uptime Section -->
                 <div class="timeline-panel">
                   <div class="panel-header">
                     <h3 class="panel-title">Uptime History (Last 90 Days)</h3>
-                    <span class="uptime-percentage">{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}% operational</span>
+                    <span class="uptime-percentage"
+                      >{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) |
+                      number:'1.2-2' }}% operational</span
+                    >
                   </div>
                   <div class="timeline-bars-wrapper">
                     <div class="timeline-bars">
-                      <div *ngFor="let day of (page.uptime_history || []); let idx = index" 
-                           class="timeline-bar-outlined"
-                           [ngClass]="{'bar-warning': day.status === 'partial_outage', 'bar-danger': day.status === 'major_outage', 'bar-nodata': day.status === 'no_data'}"
-                           [style.height]="day.status === 'major_outage' ? '40%' : (day.status === 'partial_outage' ? '70%' : '100%')"
-                           [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))">
-                      </div>
+                      @for (day of (page.uptime_history || []); track day; let idx = $index) {
+                      <div
+                        class="timeline-bar-outlined"
+                        [ngClass]="{'bar-warning': day.status === 'partial_outage', 'bar-danger': day.status === 'major_outage', 'bar-nodata': day.status === 'no_data'}"
+                        [style.height]="day.status === 'major_outage' ? '40%' : (day.status === 'partial_outage' ? '70%' : '100%')"
+                        [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))"
+                      ></div>
+                      }
                     </div>
                   </div>
                   <div class="timeline-labels">
@@ -123,45 +132,60 @@
                     <span>Today</span>
                   </div>
                 </div>
-
                 <!-- Incidents Section -->
-                <div *ngIf="incidentsMap()[page.id]?.length" class="incidents-panel">
+                @if (incidentsMap()[page.id]?.length) {
+                <div class="incidents-panel">
                   <h3 class="panel-title">Active & Past Incidents</h3>
                   <div class="incidents-list">
-                    <div *ngFor="let incident of incidentsMap()[page.id]" class="incident-item-outlined" [ngClass]="{'resolved': incident.status === 'Resolved'}">
+                    @for (incident of incidentsMap()[page.id]; track incident) {
+                    <div
+                      class="incident-item-outlined"
+                      [ngClass]="{'resolved': incident.status === 'Resolved'}"
+                    >
                       <div class="incident-header-row">
                         <div class="incident-badge" [ngClass]="incident.status.toLowerCase()">
                           {{ incident.status }}
                         </div>
                         <span class="incident-item-title">{{ incident.title }}</span>
-                        <span class="incident-date">{{ incident.created_at | date:'mediumDate' }}</span>
+                        <span class="incident-date"
+                          >{{ incident.created_at | date:'mediumDate' }}</span
+                        >
                       </div>
-                      <div class="incident-body-text">
-                        {{ incident.message }}
-                      </div>
+                      <div class="incident-body-text">{{ incident.message }}</div>
                     </div>
+                    }
                   </div>
                 </div>
-                
+                }
               </div>
             </div>
-
-            <div *ngIf="loadFailed()" class="status-error-state">
+            } @if (loadFailed()) {
+            <div class="status-error-state">
               <div class="error-glow-sphere"></div>
               <mat-icon class="error-state-icon">cloud_off</mat-icon>
               <h3 class="error-title">Unable to Connect</h3>
               <p class="error-subtitle">
-                We couldn't connect to the status service. Please check that the backend is running and try again.
+                We couldn't connect to the status service. Please check that the backend is running
+                and try again.
               </p>
-              <button mat-raised-button color="primary" class="retry-btn" (click)="retryLoad()" [disabled]="isRetrying()">
-                <mat-icon *ngIf="!isRetrying()">refresh</mat-icon>
-                <span class="btn-spinner" *ngIf="isRetrying()"></span>
+              <button
+                mat-raised-button
+                color="primary"
+                class="retry-btn"
+                (click)="retryLoad()"
+                [disabled]="isRetrying()"
+              >
+                @if (!isRetrying()) {
+                <mat-icon>refresh</mat-icon>
+                } @if (isRetrying()) {
+                <span class="btn-spinner"></span>
+                }
                 <span>Retry Connection</span>
               </button>
             </div>
-
-            <app-status-cta *ngIf="!loadFailed() && statusPages().length === 0"></app-status-cta>
-            
+            } @if (!loadFailed() && statusPages().length === 0) {
+            <app-status-cta></app-status-cta>
+            }
           </div>
         </div>
       </div>

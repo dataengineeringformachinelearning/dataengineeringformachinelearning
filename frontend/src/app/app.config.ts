@@ -1,4 +1,9 @@
-import { APP_INITIALIZER, ApplicationConfig, provideBrowserGlobalErrorListeners, ErrorHandler } from '@angular/core';
+import {
+  APP_INITIALIZER,
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  ErrorHandler,
+} from '@angular/core';
 import { Router, provideRouter } from '@angular/router';
 import * as Sentry from '@sentry/angular';
 import {
@@ -21,7 +26,10 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
     provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
-    provideHttpClient(withFetch(), withInterceptors([credentialsInterceptor, telemetryInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([credentialsInterceptor, telemetryInterceptor]),
+    ),
     provideMarkdown(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     {

@@ -10,155 +10,162 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+
 import dj_database_url
-from dotenv import load_dotenv
 import firebase_admin
+from dotenv import load_dotenv
 from firebase_admin import credentials
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from a .env file located at the BASE_DIR (backend/)
-load_dotenv(BASE_DIR / '.env')
+load_dotenv(BASE_DIR / ".env")
 
 import sentry_sdk
 
 sentry_sdk.init(
-    dsn=os.getenv('SENTRY_DSN', "https://4b412fe87313bb20e0a4785e4404ad34@o4511437520044032.ingest.us.sentry.io/4511556294541312"),
-    send_default_pii=True,
+  dsn=os.getenv(
+    "SENTRY_DSN",
+    "https://4b412fe87313bb20e0a4785e4404ad34@o4511437520044032.ingest.us.sentry.io/4511556294541312",
+  ),
+  send_default_pii=True,
 )
 
 # Initialize Firebase Admin
 if not firebase_admin._apps:
-    service_account_json = os.getenv('FIREBASE_SERVICE_ACCOUNT_JSON')
-    firebase_project_id = os.getenv('FIREBASE_PROJECT_ID') or os.getenv('GOOGLE_CLOUD_PROJECT') or 'demldotcom'
-    if service_account_json:
-        import json
+  service_account_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
+  firebase_project_id = (
+    os.getenv("FIREBASE_PROJECT_ID") or os.getenv("GOOGLE_CLOUD_PROJECT") or "demldotcom"
+  )
+  if service_account_json:
+    import json
+
+    try:
+      # Strip any potential outer quote wrapping if present
+      raw_json = service_account_json.strip()
+      if raw_json.startswith('"') and raw_json.endswith('"'):
         try:
-            # Strip any potential outer quote wrapping if present
-            raw_json = service_account_json.strip()
-            if raw_json.startswith('"') and raw_json.endswith('"'):
-                try:
-                    # Parse out of the wrapper string
-                    raw_json = json.loads(raw_json)
-                except Exception:
-                    pass
-            
-            cred_dict = json.loads(raw_json)
-            if isinstance(cred_dict, str):
-                cred_dict = json.loads(cred_dict)
-                
-            cred = credentials.Certificate(cred_dict)
-            firebase_admin.initialize_app(cred)
-        except Exception as e:
-            # Fallback with explicit project ID to avoid hanging on GCP metadata server lookups in non-GCP environments
-            firebase_admin.initialize_app(options={'projectId': firebase_project_id})
+          # Parse out of the wrapper string
+          raw_json = json.loads(raw_json)
+        except Exception:
+          pass
+
+      cred_dict = json.loads(raw_json)
+      if isinstance(cred_dict, str):
+        cred_dict = json.loads(cred_dict)
+
+      cred = credentials.Certificate(cred_dict)
+      firebase_admin.initialize_app(cred)
+    except Exception:
+      # Fallback with explicit project ID to avoid hanging on GCP metadata server lookups in non-GCP environments
+      firebase_admin.initialize_app(options={"projectId": firebase_project_id})
+  else:
+    cred_path = BASE_DIR / "firebase-service-account.json"
+    if cred_path.exists():
+      cred = credentials.Certificate(str(cred_path))
+      firebase_admin.initialize_app(cred)
     else:
-        cred_path = BASE_DIR / 'firebase-service-account.json'
-        if cred_path.exists():
-            cred = credentials.Certificate(str(cred_path))
-            firebase_admin.initialize_app(cred)
-        else:
-            # Fallback with explicit project ID to avoid hanging on GCP metadata server lookups in non-GCP environments
-            firebase_admin.initialize_app(options={'projectId': firebase_project_id})
-
-
+      # Fallback with explicit project ID to avoid hanging on GCP metadata server lookups in non-GCP environments
+      firebase_admin.initialize_app(options={"projectId": firebase_project_id})
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-izn^)q(e0k=rklyawiv0*4(unp)%4%@v54**mnt!@tw!thaub9')
+SECRET_KEY = os.getenv(
+  "SECRET_KEY", "django-insecure-izn^)q(e0k=rklyawiv0*4(unp)%4%@v54**mnt!@tw!thaub9"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
+DEBUG = os.getenv("DEBUG", "True").lower() == "true"
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django.contrib.sitemaps',
-    'corsheaders',
-    'whitenoise.runserver_nostatic',
-    'monitor',
-    'model',
-    'telemetry',
+  "django.contrib.auth",
+  "django.contrib.contenttypes",
+  "django.contrib.sessions",
+  "django.contrib.messages",
+  "django.contrib.staticfiles",
+  "django.contrib.sitemaps",
+  "corsheaders",
+  "whitenoise.runserver_nostatic",
+  "monitor",
+  "model",
+  "telemetry",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'config.middleware.FirebaseAuthenticationMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+  "django.middleware.security.SecurityMiddleware",
+  "whitenoise.middleware.WhiteNoiseMiddleware",
+  "corsheaders.middleware.CorsMiddleware",
+  "django.middleware.common.CommonMiddleware",
+  "django.middleware.csrf.CsrfViewMiddleware",
+  "config.middleware.FirebaseAuthenticationMiddleware",
+  "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-            ],
-        },
+  {
+    "BACKEND": "django.template.backends.django.DjangoTemplates",
+    "DIRS": [BASE_DIR / "templates"],
+    "APP_DIRS": True,
+    "OPTIONS": {
+      "context_processors": [
+        "django.template.context_processors.request",
+      ],
     },
+  },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+  "default": dj_database_url.config(
+    default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+    conn_max_age=600,
+    conn_health_checks=True,
+  )
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+  {
+    "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+  },
+  {
+    "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+  },
+  {
+    "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+  },
+  {
+    "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+  },
 ]
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = False
 
@@ -168,17 +175,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-cors_allowed_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
-CORS_ALLOWED_ORIGINS = [origin.strip() for origin in cors_allowed_origins.split(',')] if cors_allowed_origins else []
+cors_allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
+CORS_ALLOWED_ORIGINS = (
+  [origin.strip() for origin in cors_allowed_origins.split(",")] if cors_allowed_origins else []
+)
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
-RESEND_API_KEY = os.getenv('RESEND_API_KEY', '')
-FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:4200')
+RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")

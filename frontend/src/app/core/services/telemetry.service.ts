@@ -12,7 +12,7 @@ export interface TelemetryPayload {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TelemetryService {
   private readonly STORAGE_KEY = 'offline_telemetry_queue';
@@ -37,10 +37,10 @@ export class TelemetryService {
 
     if (navigator.onLine) {
       this.sendPayload(payload).subscribe({
-        error: (err) => {
+        error: err => {
           console.error('Failed to send telemetry online, queueing offline.', err);
           this.queueForOffline(payload);
-        }
+        },
       });
     } else {
       console.warn('Network offline. Queueing telemetry for later sync.');
@@ -84,7 +84,7 @@ export class TelemetryService {
     if (queue.length === 0) return;
 
     console.log(`Syncing ${queue.length} offline telemetry events...`);
-    
+
     // Attempt to send all in the queue one by one, keeping track of failures
     const newQueue: TelemetryPayload[] = [];
     let completed = 0;
@@ -107,7 +107,7 @@ export class TelemetryService {
           if (completed === queue.length) {
             localStorage.setItem(this.STORAGE_KEY, JSON.stringify(newQueue));
           }
-        }
+        },
       });
     });
   }

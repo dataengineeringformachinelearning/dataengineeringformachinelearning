@@ -1,10 +1,14 @@
 <div class="modal-header">
   <div class="title-wrapper">
-    <mat-icon class="header-icon" [ngClass]="data.confirmBtnColor === 'warn' ? 'color-warn' : 'color-primary'">
+    <mat-icon
+      class="header-icon"
+      [ngClass]="data.confirmBtnColor === 'warn' ? 'color-warn' : 'color-primary'"
+    >
       {{ data.type === 'alert' ? 'info' : data.confirmBtnColor === 'warn' ? 'warning' : 'help' }}
     </mat-icon>
     <h3>
-      {{ data.title || (data.type === 'alert' ? 'Notice' : data.type === 'prompt' ? 'Verification Required' : 'Confirm Action') }}
+      {{ data.title || (data.type === 'alert' ? 'Notice' : data.type === 'prompt' ? 'Verification
+      Required' : 'Confirm Action') }}
     </h3>
   </div>
   <button class="close-btn" (click)="onCancel()">
@@ -13,34 +17,43 @@
 </div>
 
 <div class="modal-body">
-  <p class="message-text">
-    {{ data.message }}
-  </p>
+  <p class="message-text">{{ data.message }}</p>
 
-  <div *ngIf="data.type === 'prompt' && data.confirmText" class="prompt-container">
-    <p class="prompt-label">
-      Please type <strong>{{ data.confirmText }}</strong> to proceed:
-    </p>
+  @if (data.type === 'prompt' && data.confirmText) {
+  <div class="prompt-container">
+    <p class="prompt-label">Please type <strong>{{ data.confirmText }}</strong> to proceed:</p>
     <mat-form-field appearance="fill" class="full-width">
       <mat-label>Verification text</mat-label>
-      <input matInput [ngModel]="inputValue()" (ngModelChange)="inputValue.set($event)" required autocomplete="off" (keyup.enter)="onConfirm()">
+      <input
+        matInput
+        [ngModel]="inputValue()"
+        (ngModelChange)="inputValue.set($event)"
+        required
+        autocomplete="off"
+        (keyup.enter)="onConfirm()"
+      />
     </mat-form-field>
   </div>
+  }
 </div>
 
 <div class="modal-footer">
-  <button class="btn-cancel" *ngIf="data.type !== 'alert'" (click)="onCancel()">
+  @if (data.type !== 'alert') {
+  <button class="btn-cancel" (click)="onCancel()">
     <mat-icon class="btn-icon">cancel</mat-icon>
     <span>Cancel</span>
   </button>
-  <button class="btn-submit" [disabled]="!isValid" (click)="onConfirm()" 
-          [ngClass]="data.confirmBtnColor === 'warn' ? 'btn-warn' : 'btn-primary'">
+  }
+  <button
+    class="btn-submit"
+    [disabled]="!isValid"
+    (click)="onConfirm()"
+    [ngClass]="data.confirmBtnColor === 'warn' ? 'btn-warn' : 'btn-primary'"
+  >
     <mat-icon class="btn-icon">
-      {{ data.type === 'alert' ? 'check_circle' : data.confirmBtnColor === 'warn' ? 'delete_forever' : 'check' }}
+      {{ data.type === 'alert' ? 'check_circle' : data.confirmBtnColor === 'warn' ? 'delete_forever'
+      : 'check' }}
     </mat-icon>
-    <span>
-      {{ data.confirmBtnText || (data.type === 'alert' ? 'OK' : 'Confirm') }}
-    </span>
+    <span> {{ data.confirmBtnText || (data.type === 'alert' ? 'OK' : 'Confirm') }} </span>
   </button>
 </div>
-

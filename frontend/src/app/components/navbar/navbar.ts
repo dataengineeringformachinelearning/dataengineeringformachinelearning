@@ -4,7 +4,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { LoginDialog } from '../login-dialog/login-dialog';
@@ -17,7 +17,6 @@ import { LoginDialog } from '../login-dialog/login-dialog';
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    CommonModule,
     MatDialogModule,
   ],
   templateUrl: './navbar.html',

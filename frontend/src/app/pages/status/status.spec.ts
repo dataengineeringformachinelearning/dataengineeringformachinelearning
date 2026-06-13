@@ -12,12 +12,10 @@ describe('Status', () => {
     await TestBed.configureTestingModule({
       imports: [Status],
       providers: [
-        provideRouter([
-          { path: 'status/:slug', redirectTo: '' }
-        ]),
+        provideRouter([{ path: 'status/:slug', redirectTo: '' }]),
         provideHttpClient(),
         provideHttpClientTesting(),
-      ]
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Status);
@@ -29,4 +27,3 @@ describe('Status', () => {
     expect(component).toBeTruthy();
   });
 });
-

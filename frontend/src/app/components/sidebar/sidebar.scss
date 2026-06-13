@@ -8,7 +8,7 @@
 
 :host-context(html[data-theme='light']) {
   --status-accent: var(--color-primary);
-  --timeline-warning: #FFC107;
+  --timeline-warning: #ffc107;
 }
 
 /* Sidebar Styling (Google Site-like Outline) */
@@ -101,7 +101,7 @@
   color: var(--text-muted);
   font-weight: 500;
   text-decoration: none;
-  
+
   .health-dot {
     width: 8px;
     height: 8px;

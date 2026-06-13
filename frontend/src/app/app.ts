@@ -1,9 +1,16 @@
-import { Component, signal, inject, OnInit, ChangeDetectionStrategy, PLATFORM_ID } from '@angular/core';
+import {
+  Component,
+  signal,
+  inject,
+  OnInit,
+  ChangeDetectionStrategy,
+  PLATFORM_ID,
+} from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { Navbar } from './components/navbar/navbar';
 import { Footer } from './components/footer/footer';
 import { AuthService } from './services/auth.service';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { IssueReporter } from './components/issue-reporter/issue-reporter';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LoginDialog } from './components/login-dialog/login-dialog';
@@ -12,7 +19,7 @@ import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Footer, CommonModule, IssueReporter, MatDialogModule, CookieBanner],
+  imports: [RouterOutlet, Navbar, Footer, IssueReporter, MatDialogModule, CookieBanner],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',
@@ -27,13 +34,13 @@ export class App implements OnInit {
   isStandaloneStatusPage = signal(false);
 
   ngOnInit() {
-    this.router.events.pipe(
-      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
-    ).subscribe((event: NavigationEnd) => {
-      const url = event.urlAfterRedirects || event.url || '';
-      const isStandalone = url.startsWith('/status/') && url !== '/status';
-      this.isStandaloneStatusPage.set(isStandalone);
-    });
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        const url = event.urlAfterRedirects || event.url || '';
+        const isStandalone = url.startsWith('/status/') && url !== '/status';
+        this.isStandaloneStatusPage.set(isStandalone);
+      });
 
     if (isPlatformBrowser(this.platformId)) {
       this.authService.checkAuth();
@@ -45,8 +52,8 @@ export class App implements OnInit {
   registerServiceWorker() {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker.register('/service-worker.js').then(
-        (registration) => console.log('ServiceWorker registered with scope: ', registration.scope),
-        (err) => console.log('ServiceWorker registration failed: ', err)
+        registration => console.log('ServiceWorker registered with scope: ', registration.scope),
+        err => console.log('ServiceWorker registration failed: ', err),
       );
     }
   }
@@ -71,11 +78,10 @@ export class App implements OnInit {
           data: {
             mode: 'reset',
             uid: resetUid,
-            token: resetToken
-          }
+            token: resetToken,
+          },
         });
       }
     }
   }
 }
-

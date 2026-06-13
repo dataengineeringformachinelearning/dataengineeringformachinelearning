@@ -1,11 +1,11 @@
-(function() {
+(function () {
   if (customElements.get('status-widget')) {
     // If already registered, only run the auto-initialization for this script if not already done
     const currentScript = document.currentScript;
     if (currentScript && currentScript.hasAttribute('data-page-id')) {
       const pageId = currentScript.getAttribute('data-page-id');
       const backendUrl = currentScript.getAttribute('data-backend-url');
-      
+
       // Check if we already inserted the widget next to this script tag
       if (!currentScript.nextSibling || currentScript.nextSibling.nodeName !== 'STATUS-WIDGET') {
         const widget = document.createElement('status-widget');
@@ -33,9 +33,12 @@
       }
 
       // Resolve URLs
-      const currentScript = document.currentScript || document.querySelector('script[src*="widget.js"]');
-      const scriptOrigin = currentScript ? new URL(currentScript.src).origin : window.location.origin;
-      
+      const currentScript =
+        document.currentScript || document.querySelector('script[src*="widget.js"]');
+      const scriptOrigin = currentScript
+        ? new URL(currentScript.src).origin
+        : window.location.origin;
+
       let frontendHost = scriptOrigin;
       if (!frontendHost.includes('localhost') && !frontendHost.includes('127.0.0.1')) {
         frontendHost = 'https://dataengineeringformachinelearning.com';
@@ -43,9 +46,10 @@
 
       let backendUrl = this.getAttribute('data-backend-url');
       if (!backendUrl) {
-        backendUrl = (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1'))
-          ? 'http://localhost:8000'
-          : 'https://backend.dataengineeringformachinelearning.com';
+        backendUrl =
+          frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')
+            ? 'http://localhost:8000'
+            : 'https://backend.dataengineeringformachinelearning.com';
       }
 
       // Set up Shadow DOM structure
@@ -71,7 +75,7 @@
           const page = data.find(p => p.id === pageId || p.slug === pageId);
           if (page) {
             widgetLink.href = `${frontendHost}/status/${page.slug}`;
-            
+
             fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`)
               .then(res => res.json())
               .then(incidents => {
@@ -104,17 +108,18 @@
   customElements.define('status-widget', StatusWidget);
 
   // Auto-initialize legacy script-only installations
-  const currentScript = document.currentScript || document.querySelector('script[src*="widget.js"]');
+  const currentScript =
+    document.currentScript || document.querySelector('script[src*="widget.js"]');
   if (currentScript && currentScript.hasAttribute('data-page-id')) {
     const pageId = currentScript.getAttribute('data-page-id');
     const backendUrl = currentScript.getAttribute('data-backend-url');
-    
+
     const widget = document.createElement('status-widget');
     widget.setAttribute('data-page-id', pageId);
     if (backendUrl) {
       widget.setAttribute('data-backend-url', backendUrl);
     }
-    
+
     currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);
   }
 })();

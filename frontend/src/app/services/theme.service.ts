@@ -33,6 +33,6 @@ export class ThemeService {
   }
 
   toggleTheme() {
-    this.themeSignal.update((current) => (current === 'light' ? 'dark' : 'light'));
+    this.themeSignal.update(current => (current === 'light' ? 'dark' : 'light'));
   }
 }

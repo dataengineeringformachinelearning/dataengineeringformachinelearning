@@ -30,9 +30,11 @@ To run the application with your own Firebase keys locally without committing th
 
 1. **Create your `.env` file**:
    Copy the sample environment variables:
+
    ```bash
    cp .env.example .env
    ```
+
    Open the `.env` file and fill in your actual Firebase configurations.
 
 2. **Run with `dotenvx`**:
@@ -40,7 +42,7 @@ To run the application with your own Firebase keys locally without committing th
    ```bash
    npx dotenvx run -- npm start
    ```
-   *(Running this command dynamically runs the environment generator and updates the environment files at startup).*
+   _(Running this command dynamically runs the environment generator and updates the environment files at startup)._
 
 > [!NOTE]
 > If you ever need to manually install additional dependencies in this project, you must append `--legacy-peer-deps` due to the strict version constraints of the test suite and framework dependencies (e.g., `npm install @dotenvx/dotenvx --save-dev --legacy-peer-deps`).
@@ -54,6 +56,7 @@ rm -rf node_modules
 ```
 
 #### Remove the package-lock.json file
+
 ```bash
 rm -f package-lock.json
 ```

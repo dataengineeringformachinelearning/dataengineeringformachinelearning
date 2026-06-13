@@ -4,7 +4,8 @@
 </button>
 
 <!-- Modal Overlay -->
-<div class="modal-overlay" *ngIf="isOpen()" (click)="toggleModal()">
+@if (isOpen()) {
+<div class="modal-overlay" (click)="toggleModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <div class="title-wrapper">
@@ -15,38 +16,49 @@
         <mat-icon>close</mat-icon>
       </button>
     </div>
-    
     <div class="modal-body">
-      <p class="helper-text">Describe what went wrong. We'll automatically attach diagnostic info (like recent errors) to help us fix it faster.</p>
-      
-      <textarea 
+      <p class="helper-text">
+        Describe what went wrong. We'll automatically attach diagnostic info (like recent errors) to
+        help us fix it faster.
+      </p>
+      <textarea
         [(ngModel)]="issueDescription"
         placeholder="E.g., The chart didn't load when I clicked the refresh button..."
         rows="5"
-        [disabled]="isSubmitting()">
+        [disabled]="isSubmitting()"
+      >
       </textarea>
-      
-      <div *ngIf="submissionStatus() === 'success'" class="status-msg success" role="status">
+      @if (submissionStatus() === 'success') {
+      <div class="status-msg success" role="status">
         <mat-icon class="status-icon">check_circle</mat-icon>
         <span>Issue reported successfully!</span>
       </div>
-      <div *ngIf="submissionStatus() === 'error'" class="status-msg error" role="alert">
+      } @if (submissionStatus() === 'error') {
+      <div class="status-msg error" role="alert">
         <mat-icon class="status-icon">error</mat-icon>
         <span>Failed to report issue. Please try again.</span>
       </div>
+      }
     </div>
-    
     <div class="modal-footer">
       <button class="btn-cancel" (click)="toggleModal()" [disabled]="isSubmitting()">
         <mat-icon class="btn-icon">cancel</mat-icon>
         <span>Cancel</span>
       </button>
-      <button class="btn-submit" (click)="submitIssue()" [disabled]="isSubmitting() || !issueDescription().trim()">
-        <mat-icon *ngIf="!isSubmitting()" class="btn-icon">send</mat-icon>
-        <span *ngIf="!isSubmitting()">Submit</span>
-        <span *ngIf="isSubmitting()" class="spinner"></span>
+      <button
+        class="btn-submit"
+        (click)="submitIssue()"
+        [disabled]="isSubmitting() || !issueDescription().trim()"
+      >
+        @if (!isSubmitting()) {
+        <mat-icon class="btn-icon">send</mat-icon>
+        } @if (!isSubmitting()) {
+        <span>Submit</span>
+        } @if (isSubmitting()) {
+        <span class="spinner"></span>
+        }
       </button>
     </div>
   </div>
 </div>
-
+}

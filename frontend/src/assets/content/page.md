@@ -31,6 +31,16 @@ npm start
 
 Visit `http://localhost:4200` to verify your frontend is running.
 
+To format and lint the frontend codebase according to the project's quality standards:
+
+```bash
+# Run ESLint to check for code issues
+npm run lint
+
+# Format the codebase with Prettier
+npx prettier --write .
+```
+
 To prepare for production, you can containerize the Angular application using a multi-stage Dockerfile that builds the app and serves it via NGINX. Create a `Dockerfile` and an `nginx.conf` in your frontend directory, then build and run it:
 
 ```bash
@@ -40,21 +50,27 @@ docker run -p 8080:8080 frontend-app
 
 ### Chapter 1.2: Backend Setup
 
-For the backend, we will use Python and Django. On a Mac, the cleanest way to install Python and global Python tools like `pipx` is through Homebrew:
+For the backend, we will use Python and Django. On a Mac, the fastest way to manage Python, virtual environments, and dependencies is using [Astral uv](https://github.com/astral-sh/uv). Install it via Homebrew:
 
 ```bash
-brew install python pipx
-pipx ensurepath
+brew install uv
 ```
 
-Once installed, use `pipx` to securely install Django globally without conflicting with your system Python, then set up your environment:
+Once installed, you can use `uv` and `uvx` to initialize your environment, install Django, and scaffold the project:
 
 ```bash
-pipx install django
 mkdir backend && cd backend
-python -m venv venv
-source venv/bin/activate
-pip install django
+
+# Create a virtual environment using uv
+uv venv
+
+# Activate the virtual environment
+source .venv/bin/activate
+
+# Install Django using uv's lightning-fast pip interface
+uv pip install django
+
+# Scaffold the Django project
 django-admin startproject config .
 python manage.py runserver
 ```
@@ -62,6 +78,16 @@ python manage.py runserver
 Visit `http://127.0.0.1:8000` to verify your Django server is running.
 
 Like the frontend, you should containerize your Django application using Docker. You will need to install production dependencies like `gunicorn`, `whitenoise`, and `psycopg2-binary`. Define a `Dockerfile` that collects static files and runs the server using Gunicorn.
+
+To enforce professional formatting and style standards (Google Python Style Guide 2-space indentation), we use [Ruff](https://docs.astral.sh/ruff/) executed via `uvx` (the tool runner of [Astral uv](https://github.com/astral-sh/uv)):
+
+```bash
+# Run Ruff lint checks and auto-fix issues
+uvx ruff check --fix .
+
+# Auto-format Python files
+uvx ruff format .
+```
 
 ## Chapter 2: Integrating Tools and Pre-requisites
 
@@ -82,6 +108,17 @@ npx tsx --watch your-script.ts
 ```
 
 This acts as a lightweight way to spin up secondary services alongside your main Django application.
+
+### Chapter 2.1: Automated Code Quality (Pre-commit)
+
+To automatically enforce formatting, style guidelines, and code quality before every git commit, we use [pre-commit](https://pre-commit.com/) hooks executed via `uvx` (the fast tool runner of [Astral uv](https://github.com/astral-sh/uv)):
+
+```bash
+# Run all pre-commit hooks manually on the whole codebase
+uvx pre-commit run --all-files
+```
+
+These hooks automatically check and format python files (via [Ruff](https://docs.astral.sh/ruff/)), frontend files (via [Prettier](https://prettier.io/)), YAML configs, trailing whitespace, and end-of-file formatting.
 
 ## Chapter 3: Interfaces and data integration
 
@@ -447,24 +484,24 @@ Finally, a standalone background worker can subscribe to this `app-events` topic
 
 To capture real-time client and server exceptions in production, we integrate Sentry across our application stack:
 
-* **Frontend Integration**: Sentry's Angular SDK (`@sentry/angular`) is initialized in `main.ts` and registered with the router in `app.config.ts` using the frontend DSN. Exceptions are captured directly inside `GlobalErrorHandler` via `Sentry.captureException(error)`.
-* **Backend Integration**: Django's Sentry SDK (`sentry-sdk`) is initialized in `settings.py` with `send_default_pii=True` enabled to capture full HTTP request payloads and client contexts during backend exceptions.
-* **Environment Configuration**: For production deployments, Sentry DSNs are loaded dynamically using the `SENTRY_DSN` environment variable on both the frontend and backend to keep credentials secure.
+- **Frontend Integration**: Sentry's Angular SDK (`@sentry/angular`) is initialized in `main.ts` and registered with the router in `app.config.ts` using the frontend DSN. Exceptions are captured directly inside `GlobalErrorHandler` via `Sentry.captureException(error)`.
+- **Backend Integration**: Django's Sentry SDK (`sentry-sdk`) is initialized in `settings.py` with `send_default_pii=True` enabled to capture full HTTP request payloads and client contexts during backend exceptions.
+- **Environment Configuration**: For production deployments, Sentry DSNs are loaded dynamically using the `SENTRY_DSN` environment variable on both the frontend and backend to keep credentials secure.
 
 #### Chapter 8.1.3: Continuous Security Auditing with Snyk
 
 To ensure secure development practices, the repository integrates Snyk for automated security scanning:
 
-* **Static Analysis (SAST)**: Snyk Code is used to scan the codebase for potential logic flaws and security vulnerabilities in our custom code.
-* **Dependency Vulnerability Scanning**: Snyk scans third-party packages in both the Angular frontend (`package.json`) and Django backend (`requirements.txt`) to flag and mitigate known vulnerabilities.
-* **Container Security**: Container scans are performed on all project Dockerfiles (`frontend`, `backend`, and `queue` components) to detect issues in the base images and libraries.
+- **Static Analysis (SAST)**: Snyk Code is used to scan the codebase for potential logic flaws and security vulnerabilities in our custom code.
+- **Dependency Vulnerability Scanning**: Snyk scans third-party packages in both the Angular frontend (`package.json`) and Django backend (`requirements.txt`) to flag and mitigate known vulnerabilities.
+- **Container Security**: Container scans are performed on all project Dockerfiles (`frontend`, `backend`, and `queue` components) to detect issues in the base images and libraries.
 
 #### Chapter 8.1.4: Open-Source License Compliance with FOSSA
 
 To prevent legal and compliance issues from open-source libraries:
 
-* **License Auditing**: FOSSA is integrated to scan all frontend and backend dependencies, verifying compliance with the project's license constraints.
-* **Automated Scans**: License validation is executed automatically to generate dependency compliance logs and license compliance status badges.
+- **License Auditing**: FOSSA is integrated to scan all frontend and backend dependencies, verifying compliance with the project's license constraints.
+- **Automated Scans**: License validation is executed automatically to generate dependency compliance logs and license compliance status badges.
 
 ## Chapter 9: Applying a use-case
 

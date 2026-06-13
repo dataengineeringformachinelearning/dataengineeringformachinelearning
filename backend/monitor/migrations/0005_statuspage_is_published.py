@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+  dependencies = [
+    ("monitor", "0004_bugreport_cookieconsent"),
+  ]
 
-    dependencies = [
-        ('monitor', '0004_bugreport_cookieconsent'),
-    ]
-
-    operations = [
-        migrations.AddField(
-            model_name='statuspage',
-            name='is_published',
-            field=models.BooleanField(default=False),
-        ),
-    ]
+  operations = [
+    migrations.AddField(
+      model_name="statuspage",
+      name="is_published",
+      field=models.BooleanField(default=False),
+    ),
+  ]

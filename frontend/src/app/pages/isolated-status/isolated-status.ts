@@ -6,11 +6,16 @@ import {
   signal,
   ChangeDetectorRef,
   computed,
-  effect
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
+import {
+  MonitorService,
+  StatusPageData,
+  IncidentData,
+  MonitoredServiceData,
+} from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
@@ -30,7 +35,7 @@ import { formatServiceName } from '../../core/utils/formatter.utils';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    MatDialogModule
+    MatDialogModule,
   ],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,10 +62,10 @@ export class IsolatedStatus implements OnInit {
     const pages = this.statusPages();
     if (pages.length === 0) return 'Operational';
     const pageId = pages[0].id;
-    
+
     const incs = this.incidentsMap()[pageId] || [];
     const activeIncidents = incs.filter(i => i.status !== 'Resolved');
-    
+
     const services = this.servicesMap()[pageId] || [];
     const outages = services.filter(s => s.status === 'Outage');
     const degraded = services.filter(s => s.status === 'Degraded');
@@ -119,7 +124,7 @@ export class IsolatedStatus implements OnInit {
         this.titleService.setTitle(`${page.title} Status - Data Engineering for Machine Learning`);
         this.metaService.updateTag({
           name: 'description',
-          content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`
+          content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`,
         });
 
         this.cdr.markForCheck();
@@ -129,7 +134,7 @@ export class IsolatedStatus implements OnInit {
         this.statusPages.set([]);
         this.loadFailed.set(true);
         this.cdr.markForCheck();
-      }
+      },
     });
   }
 

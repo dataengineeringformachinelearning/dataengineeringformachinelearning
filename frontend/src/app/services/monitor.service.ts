@@ -45,9 +45,8 @@ export interface IncidentData {
   updated_at: string;
 }
 
-
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MonitorService {
   private http = inject(HttpClient);
@@ -61,7 +60,7 @@ export class MonitorService {
         next: incidents => {
           this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
         },
-        error: err => console.error(`Error fetching incidents for ${page.id}:`, err)
+        error: err => console.error(`Error fetching incidents for ${page.id}:`, err),
       });
     });
   }
@@ -72,7 +71,7 @@ export class MonitorService {
         next: services => {
           this.servicesMap.update(map => ({ ...map, [page.id]: services }));
         },
-        error: err => console.error(`Error fetching services for ${page.id}:`, err)
+        error: err => console.error(`Error fetching services for ${page.id}:`, err),
       });
     });
   }
@@ -82,47 +81,85 @@ export class MonitorService {
   }
 
   getStatusPages() {
-    return this.http.get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, { withCredentials: true });
+    return this.http.get<StatusPageData[]>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, {
+      withCredentials: true,
+    });
   }
 
   getStatusPageBySlug(slug: string) {
-    return this.http.get<StatusPageData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/slug/${slug}`, { withCredentials: true });
+    return this.http.get<StatusPageData>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/slug/${slug}`,
+      { withCredentials: true },
+    );
   }
 
-  createStatusPage(data: { title: string, slug: string, description?: string, is_published?: boolean }) {
-    return this.http.post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, { withCredentials: true });
+  createStatusPage(data: {
+    title: string;
+    slug: string;
+    description?: string;
+    is_published?: boolean;
+  }) {
+    return this.http.post<StatusPageData>(API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES, data, {
+      withCredentials: true,
+    });
   }
 
-  updateStatusPage(pageId: string, data: { title: string, slug: string, description?: string, is_published?: boolean }) {
-    return this.http.put<StatusPageData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, data, { withCredentials: true });
+  updateStatusPage(
+    pageId: string,
+    data: { title: string; slug: string; description?: string; is_published?: boolean },
+  ) {
+    return this.http.put<StatusPageData>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`,
+      data,
+      { withCredentials: true },
+    );
   }
 
   deleteStatusPage(pageId: string) {
-    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, { withCredentials: true });
+    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}`, {
+      withCredentials: true,
+    });
   }
-
 
   getServices(pageId: string) {
-    return this.http.get<MonitoredServiceData[]>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/services`, { withCredentials: true });
+    return this.http.get<MonitoredServiceData[]>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/services`,
+      { withCredentials: true },
+    );
   }
 
-  addService(pageId: string, data: { name: string, url: string }) {
-    return this.http.post<MonitoredServiceData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/services`, data, { withCredentials: true });
+  addService(pageId: string, data: { name: string; url: string }) {
+    return this.http.post<MonitoredServiceData>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/services`,
+      data,
+      { withCredentials: true },
+    );
   }
 
   deleteService(serviceId: string) {
-    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.SERVICES}/${serviceId}`, { withCredentials: true });
+    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.SERVICES}/${serviceId}`, {
+      withCredentials: true,
+    });
   }
 
   getIncidents(pageId: string) {
-    return this.http.get<IncidentData[]>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/incidents`, { withCredentials: true });
+    return this.http.get<IncidentData[]>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/incidents`,
+      { withCredentials: true },
+    );
   }
 
-  createIncident(pageId: string, data: { title: string, message: string, status: string }) {
-    return this.http.post<IncidentData>(`${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/incidents`, data, { withCredentials: true });
+  createIncident(pageId: string, data: { title: string; message: string; status: string }) {
+    return this.http.post<IncidentData>(
+      `${API_ENDPOINTS.SYSTEM_STATUS.STATUS_PAGES}/${pageId}/incidents`,
+      data,
+      { withCredentials: true },
+    );
   }
 
   deleteIncident(incidentId: string) {
-    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.INCIDENTS}/${incidentId}`, { withCredentials: true });
+    return this.http.delete(`${API_ENDPOINTS.SYSTEM_STATUS.INCIDENTS}/${incidentId}`, {
+      withCredentials: true,
+    });
   }
 }

@@ -79,13 +79,15 @@
   .full-width {
     width: 100%;
   }
-  
+
   ::ng-deep .mat-mdc-text-field-wrapper {
     background-color: rgba(0, 0, 0, 0.2) !important;
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 8px;
-    transition: background-color 0.3s, border-color 0.3s;
-    
+    transition:
+      background-color 0.3s,
+      border-color 0.3s;
+
     &.mdc-text-field--focused {
       background-color: rgba(0, 0, 0, 0.4) !important;
       border-color: var(--color-primary-container);
@@ -100,7 +102,7 @@
     ::ng-deep .mat-mdc-text-field-wrapper {
       background-color: rgba(0, 0, 0, 0.03) !important;
       border: 1px solid var(--border);
-      
+
       &.mdc-text-field--focused {
         background-color: rgba(0, 0, 0, 0.05) !important;
         border-color: var(--color-primary);
@@ -142,7 +144,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      
+
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.05);
         border-color: var(--color-primary-container);
@@ -166,12 +168,12 @@
       &.btn-primary {
         background-color: var(--primary-color) !important;
       }
-      
+
       &:hover:not(:disabled) {
         opacity: 0.9;
         box-shadow: var(--shadow-md) !important;
       }
-      
+
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;

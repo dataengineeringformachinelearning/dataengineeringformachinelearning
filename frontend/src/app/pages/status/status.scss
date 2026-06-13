@@ -19,7 +19,7 @@
   --status-badge-bg: rgba(45, 71, 57, 0.08);
   --status-badge-text: var(--color-primary);
   --status-badge-border: rgba(45, 71, 57, 0.2);
-  --timeline-warning: #FFC107;
+  --timeline-warning: #ffc107;
 
   .timeline-bar-outlined.bar-nodata {
     background-color: rgba(0, 0, 0, 0.08) !important;
@@ -79,8 +79,6 @@
   }
 }
 
-
-
 /* Main Content Styles */
 .dashboard-main {
   flex: 1;
@@ -102,7 +100,7 @@
   .topbar-right {
     width: 100%;
     display: flex;
-    
+
     .manage-btn {
       width: 100%;
       justify-content: center;
@@ -167,7 +165,9 @@
   background-color: var(--card-bg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 
   &:hover {
     border-color: var(--status-accent);
@@ -323,12 +323,12 @@
   transition: all 0.2s;
   cursor: pointer;
   height: 100%;
-  
+
   &:hover {
     opacity: 0.8;
     transform: scaleY(1.1);
   }
-  
+
   &.bar-warning {
     background-color: #f59e0b;
   }
@@ -392,7 +392,7 @@
   &:hover {
     background-color: var(--hover-color);
   }
-  
+
   &.resolved {
     &::before {
       background-color: var(--color-success);
@@ -448,13 +448,15 @@
 }
 
 .service-name-link {
-  transition: color 0.2s ease, opacity 0.2s ease;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
   cursor: pointer;
 
   &:hover {
     color: var(--status-accent) !important;
     opacity: 0.85;
-    
+
     mat-icon {
       color: var(--status-accent) !important;
     }
@@ -587,7 +589,7 @@
 
   .timeline-panel {
     padding: 1.5rem;
-    
+
     .panel-header {
       flex-direction: row;
       align-items: center;
@@ -648,5 +650,3 @@
     flex-direction: row;
   }
 }
-
-

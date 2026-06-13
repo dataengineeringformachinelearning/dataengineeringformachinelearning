@@ -48,7 +48,7 @@
     li {
       margin-bottom: 0.75rem;
       font-size: 1.025rem;
-      
+
       strong {
         color: var(--text-color);
       }
@@ -69,7 +69,9 @@
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 1.25rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 
   &:hover {
     transform: translateY(-2px);
@@ -161,7 +163,9 @@
     color: var(--text-color);
     font-family: inherit;
     font-size: 0.95rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    transition:
+      border-color 0.2s,
+      box-shadow 0.2s;
     outline: none;
 
     &:focus {

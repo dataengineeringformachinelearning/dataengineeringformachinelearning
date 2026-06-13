@@ -4,19 +4,36 @@
     <h2>Platform</h2>
   </div>
   <nav class="sidebar-nav">
-    <a class="nav-item" routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+    <a
+      class="nav-item"
+      routerLink="/documentation"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+    >
       <mat-icon>description</mat-icon>
       Documentation
     </a>
 
-    <a class="nav-item" routerLink="/explore" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+    <a
+      class="nav-item"
+      routerLink="/explore"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+    >
       <mat-icon>explore</mat-icon>
       Explore
     </a>
-    <a class="nav-item" routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" *ngIf="authService.isAuthenticated()">
+    @if (authService.isAuthenticated()) {
+    <a
+      class="nav-item"
+      routerLink="/manage"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+    >
       <mat-icon>settings</mat-icon>
       Manage
     </a>
+    }
   </nav>
 
   <!-- Slot for dynamic page-specific content like Table of Contents or Page lists -->

@@ -10,11 +10,7 @@ describe('MonitorService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        MonitorService,
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ]
+      providers: [MonitorService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(MonitorService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -30,7 +26,15 @@ describe('MonitorService', () => {
 
   it('should fetch all endpoints', () => {
     const mockData = [
-      { id: '1', url: 'http://test.com', last_tested: '', status_code: 200, response_time: '50ms', ip_address: '', is_active: true }
+      {
+        id: '1',
+        url: 'http://test.com',
+        last_tested: '',
+        status_code: 200,
+        response_time: '50ms',
+        ip_address: '',
+        is_active: true,
+      },
     ];
 
     service.getAllEndpoints().subscribe(data => {
@@ -45,7 +49,14 @@ describe('MonitorService', () => {
 
   it('should fetch status pages', () => {
     const mockPages = [
-      { id: 'p1', title: 'Platform Status', slug: 'platform-status', description: '', created_at: '', user_id: 1 }
+      {
+        id: 'p1',
+        title: 'Platform Status',
+        slug: 'platform-status',
+        description: '',
+        created_at: '',
+        user_id: 1,
+      },
     ];
 
     service.getStatusPages().subscribe(pages => {
@@ -60,7 +71,14 @@ describe('MonitorService', () => {
 
   it('should create a status page', () => {
     const payload = { title: 'New Page', slug: 'new-slug' };
-    const mockCreated = { id: 'p2', title: 'New Page', slug: 'new-slug', description: '', created_at: '', user_id: 1 };
+    const mockCreated = {
+      id: 'p2',
+      title: 'New Page',
+      slug: 'new-slug',
+      description: '',
+      created_at: '',
+      user_id: 1,
+    };
 
     service.createStatusPage(payload).subscribe(page => {
       expect(page.id).toBe('p2');
@@ -84,7 +102,15 @@ describe('MonitorService', () => {
 
   it('should fetch incidents for a status page', () => {
     const mockIncidents = [
-      { id: 'i1', title: 'DB Offline', message: 'Down', status: 'Investigating', status_page_id: 'p1', created_at: '', updated_at: '' }
+      {
+        id: 'i1',
+        title: 'DB Offline',
+        message: 'Down',
+        status: 'Investigating',
+        status_page_id: 'p1',
+        created_at: '',
+        updated_at: '',
+      },
     ];
 
     service.getIncidents('p1').subscribe(incs => {

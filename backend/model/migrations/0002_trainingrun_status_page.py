@@ -5,16 +5,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+  dependencies = [
+    ("model", "0001_initial"),
+    ("monitor", "0003_incident"),
+  ]
 
-    dependencies = [
-        ('model', '0001_initial'),
-        ('monitor', '0003_incident'),
-    ]
-
-    operations = [
-        migrations.AddField(
-            model_name='trainingrun',
-            name='status_page',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='training_runs', to='monitor.statuspage'),
-        ),
-    ]
+  operations = [
+    migrations.AddField(
+      model_name="trainingrun",
+      name="status_page",
+      field=models.ForeignKey(
+        blank=True,
+        null=True,
+        on_delete=django.db.models.deletion.CASCADE,
+        related_name="training_runs",
+        to="monitor.statuspage",
+      ),
+    ),
+  ]

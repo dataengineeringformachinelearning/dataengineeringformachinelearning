@@ -20,11 +20,11 @@ import {
   PhoneMultiFactorGenerator,
   getMultiFactorResolver,
   MultiFactorResolver,
-  MultiFactorAssertion
+  MultiFactorAssertion,
 } from 'firebase/auth';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   public isAuthenticated = signal<boolean>(false);
@@ -46,8 +46,8 @@ export class AuthService {
             const token = await user.getIdToken();
             const res: any = await firstValueFrom(
               this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
-                headers: { Authorization: `Bearer ${token}` }
-              })
+                headers: { Authorization: `Bearer ${token}` },
+              }),
             );
             if (res.status === 'success') {
               this.isAuthenticated.set(true);
@@ -88,8 +88,8 @@ export class AuthService {
         const token = await user.getIdToken();
         const res: any = await firstValueFrom(
           this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         );
         if (res.status === 'success') {
           this.isAuthenticated.set(true);
@@ -121,7 +121,11 @@ export class AuthService {
       this.isProcessing.set(false);
       console.error(e);
       if (e?.code === 'auth/multi-factor-auth-required') {
-        return { success: false, error: 'MFA_REQUIRED', resolver: getMultiFactorResolver(this.auth, e) };
+        return {
+          success: false,
+          error: 'MFA_REQUIRED',
+          resolver: getMultiFactorResolver(this.auth, e),
+        };
       }
       let errorMsg = 'Invalid credentials or user does not exist.';
       if (e?.code) {
@@ -145,16 +149,20 @@ export class AuthService {
     this.isProcessing.set(true);
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
-      const userCredential = await createUserWithEmailAndPassword(this.auth, credentials.email, credentials.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        this.auth,
+        credentials.email,
+        credentials.password,
+      );
       if (userCredential.user) {
         await updateProfile(userCredential.user, { displayName: credentials.username });
-        
+
         // Make sync call to backend so the User profile is immediately created in Django DB
         const token = await userCredential.user.getIdToken();
         await firstValueFrom(
           this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
-            headers: { Authorization: `Bearer ${token}` }
-          })
+            headers: { Authorization: `Bearer ${token}` },
+          }),
         );
       }
       this.isProcessing.set(false);
@@ -201,8 +209,10 @@ export class AuthService {
     this.isProcessing.set(true);
     try {
       // First delete on backend (so request is authenticated with active token)
-      await firstValueFrom(this.http.delete(`${environment.backendUrl}/api/v1/auth/delete-account`, {}));
-      
+      await firstValueFrom(
+        this.http.delete(`${environment.backendUrl}/api/v1/auth/delete-account`, {}),
+      );
+
       // Then delete from Firebase
       if (this.auth?.currentUser) {
         await deleteUser(this.auth.currentUser);

@@ -4,18 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+  dependencies = [
+    ("monitor", "0005_statuspage_is_published"),
+  ]
 
-    dependencies = [
-        ('monitor', '0005_statuspage_is_published'),
-    ]
-
-    operations = [
-        migrations.AddIndex(
-            model_name='endpoints',
-            index=models.Index(fields=['url', 'last_tested'], name='endpoints_url_1d9dde_idx'),
-        ),
-        migrations.AddIndex(
-            model_name='endpoints',
-            index=models.Index(fields=['last_tested'], name='endpoints_last_te_0735d9_idx'),
-        ),
-    ]
+  operations = [
+    migrations.AddIndex(
+      model_name="endpoints",
+      index=models.Index(fields=["url", "last_tested"], name="endpoints_url_1d9dde_idx"),
+    ),
+    migrations.AddIndex(
+      model_name="endpoints",
+      index=models.Index(fields=["last_tested"], name="endpoints_last_te_0735d9_idx"),
+    ),
+  ]

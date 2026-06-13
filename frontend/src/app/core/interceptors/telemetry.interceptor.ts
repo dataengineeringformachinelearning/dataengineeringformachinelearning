@@ -10,7 +10,7 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     tap({
-      next: (event) => {
+      next: event => {
         if (event instanceof HttpResponse) {
           // Exclude the telemetry endpoint to prevent infinite loops
           if (!req.url.includes(API_ENDPOINTS.TELEMETRY.ENDPOINTS)) {
@@ -20,13 +20,13 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
               status_code: event.status,
               response_time_ms: responseTimeMs,
               ip_address: '0.0.0.0', // Handled by backend if needed
-              is_active: true
+              is_active: true,
             };
             telemetryService.reportEndpointStatus(payload);
           }
         }
       },
-      error: (error) => {
+      error: error => {
         if (error instanceof HttpErrorResponse) {
           if (!req.url.includes(API_ENDPOINTS.TELEMETRY.ENDPOINTS)) {
             const responseTimeMs = Date.now() - startTime;
@@ -35,12 +35,12 @@ export const telemetryInterceptor: HttpInterceptorFn = (req, next) => {
               status_code: error.status || 500,
               response_time_ms: responseTimeMs,
               ip_address: '0.0.0.0',
-              is_active: error.status > 0 && error.status < 500
+              is_active: error.status > 0 && error.status < 500,
             };
             telemetryService.reportEndpointStatus(payload);
           }
         }
-      }
-    })
+      },
+    }),
   );
 };

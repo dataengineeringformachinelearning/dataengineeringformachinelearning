@@ -10,7 +10,7 @@ describe('EndpointsChart', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EndpointsChart],
-      providers: [provideHttpClient()]
+      providers: [provideHttpClient()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(EndpointsChart);

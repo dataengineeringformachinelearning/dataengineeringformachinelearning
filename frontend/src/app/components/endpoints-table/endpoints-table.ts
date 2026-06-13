@@ -11,7 +11,7 @@ import {
   ChangeDetectorRef,
   ChangeDetectionStrategy,
 } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { AgGridModule } from 'ag-grid-angular';
 import {
   ColDef,
@@ -25,7 +25,7 @@ import { EndpointData } from '../../services/monitor.service';
 @Component({
   selector: 'app-endpoints-table',
   standalone: true,
-  imports: [CommonModule, AgGridModule],
+  imports: [AgGridModule],
   templateUrl: './endpoints-table.html',
   styleUrl: './endpoints-table.scss',
   changeDetection: ChangeDetectionStrategy.Eager,

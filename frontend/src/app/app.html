@@ -1,29 +1,26 @@
-
-
-<div class="global-auth-loader" *ngIf="!authService.isInitialized() || authService.isProcessing()">
+@if (!authService.isInitialized() || authService.isProcessing()) {
+<div class="global-auth-loader">
   <div class="loader-content">
-    <img class="loader-logo" src="/data-engineering-for-machine-learning.svg" alt="Data Engineering for Machine Learning" />
+    <img
+      class="loader-logo"
+      src="/data-engineering-for-machine-learning.svg"
+      alt="Data Engineering for Machine Learning"
+    />
     <div class="premium-spinner"></div>
     <p class="loader-text">Securing your session...</p>
   </div>
 </div>
-
-<ng-container *ngIf="authService.isInitialized() && !authService.isProcessing()">
-  <!-- Navbar -->
-  <app-navbar></app-navbar>
-
-  <!-- Main Content -->
-  <main class="main-content">
-    <router-outlet />
-  </main>
-
-  <!-- Footer -->
-  <app-footer></app-footer>
-
-  <!-- Issue Reporter FAB -->
-  <app-issue-reporter></app-issue-reporter>
-
-  <!-- Cookie Consent Banner -->
-  <app-cookie-banner></app-cookie-banner>
-</ng-container>
-
+} @if (authService.isInitialized() && !authService.isProcessing()) {
+<!-- Navbar -->
+<app-navbar></app-navbar>
+<!-- Main Content -->
+<main class="main-content">
+  <router-outlet />
+</main>
+<!-- Footer -->
+<app-footer></app-footer>
+<!-- Issue Reporter FAB -->
+<app-issue-reporter></app-issue-reporter>
+<!-- Cookie Consent Banner -->
+<app-cookie-banner></app-cookie-banner>
+}

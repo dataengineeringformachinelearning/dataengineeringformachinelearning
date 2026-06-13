@@ -1,21 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 :root {
   /* Core Semantic Tokens from THEME.md */
   --color-primary: #2d4739;
-  --color-on-primary: #FFFFFF;
+  --color-on-primary: #ffffff;
   --color-primary-container: #c0c5c1;
   --color-on-primary-container: #0f1814;
   --color-surface: rgba(24, 40, 33, 0.45);
-  --color-on-surface: #E8ECEA;
+  --color-on-surface: #e8ecea;
   --color-background: #0f1814;
-  --color-on-background: #E8ECEA;
-  
+  --color-on-background: #e8ecea;
+
   /* Semantic Statuses */
-  --color-success: #4CAF50;
-  --color-warning: #FFC107;
-  --color-error: #F44336;
-  --color-info: #2196F3;
+  --color-success: #4caf50;
+  --color-warning: #ffc107;
+  --color-error: #f44336;
+  --color-info: #2196f3;
 
   /* Shadows & Elevation */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -37,18 +37,18 @@
 @media (prefers-color-scheme: light) {
   :root {
     --color-primary: #2d4739;
-    --color-on-primary: #FFFFFF;
-    --color-primary-container: #E1E6E2;
-    --color-on-primary-container: #1A2B22;
+    --color-on-primary: #ffffff;
+    --color-primary-container: #e1e6e2;
+    --color-on-primary-container: #1a2b22;
     --color-surface: rgba(255, 255, 255, 0.75);
     --color-on-surface: #182821;
-    --color-background: #F4F7F5;
+    --color-background: #f4f7f5;
     --color-on-background: #182821;
 
-    --color-success: #2E7D32;
-    --color-warning: #FFC107;
-    --color-error: #D32F2F;
-    --color-info: #0288D1;
+    --color-success: #2e7d32;
+    --color-warning: #ffc107;
+    --color-error: #d32f2f;
+    --color-info: #0288d1;
 
     --shadow-sm: 0 2px 4px rgba(24, 40, 33, 0.08);
     --shadow-md: 0 4px 12px rgba(24, 40, 33, 0.12);
@@ -59,11 +59,12 @@
     --accent-color: var(--color-primary-container);
     --hover-color: var(--color-primary-container);
     --text-muted: #4a5450;
-    --border: #C8D3CE;
+    --border: #c8d3ce;
   }
 }
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -73,12 +74,14 @@ html, body {
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-size: 1.125rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
   position: relative;
 }
 
@@ -142,7 +145,10 @@ main.main {
   max-width: 720px;
   width: 100%;
   box-sizing: border-box;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .backend-card:hover {
@@ -240,7 +246,12 @@ p {
   font-size: 1rem;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s,
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -298,7 +309,9 @@ footer {
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid transparent;
-  transition: border-bottom-color 0.2s ease, color 0.2s ease;
+  transition:
+    border-bottom-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .copyright a:hover,
@@ -319,6 +332,10 @@ footer {
 }
 
 @media (min-width: 768px) {
-  main.main { padding: 5.5rem 2rem; }
-  .backend-card { padding: 4rem 3rem; }
+  main.main {
+    padding: 5.5rem 2rem;
+  }
+  .backend-card {
+    padding: 4rem 3rem;
+  }
 }

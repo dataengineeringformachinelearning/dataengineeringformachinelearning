@@ -17,7 +17,7 @@
   --status-badge-bg: rgba(45, 71, 57, 0.08);
   --status-badge-text: var(--color-primary);
   --status-badge-border: rgba(45, 71, 57, 0.2);
-  --timeline-warning: #FFC107;
+  --timeline-warning: #ffc107;
 
   .timeline-bar-outlined.bar-nodata {
     background-color: rgba(0, 0, 0, 0.08) !important;
@@ -83,7 +83,7 @@
   .standalone-brand {
     display: flex;
     align-items: center;
-    
+
     .logo {
       height: 36px;
       width: auto;
@@ -303,7 +303,11 @@
 
   &.predictive {
     border-color: rgba(var(--color-primary-container), 0.2);
-    background: linear-gradient(135deg, rgba(255,255,255,0.01) 0%, rgba(var(--color-primary-container), 0.02) 100%);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.01) 0%,
+      rgba(var(--color-primary-container), 0.02) 100%
+    );
 
     .sla-icon-box {
       border-color: rgba(var(--color-primary-container), 0.3);
@@ -371,7 +375,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    
+
     &.operational {
       background-color: #10b981;
       box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
@@ -504,12 +508,12 @@
     transition: all 0.2s;
     cursor: pointer;
     height: 100%;
-    
+
     &:hover {
       opacity: 0.8;
       transform: scaleY(1.1);
     }
-    
+
     &.bar-warning {
       background-color: #f59e0b;
     }
@@ -647,7 +651,11 @@
   margin-top: 3.5rem;
   border-radius: 12px;
   border: 1px solid rgba(var(--color-primary-container), 0.25);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(var(--color-primary-container), 0.04) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(var(--color-primary-container), 0.04) 100%
+  );
   padding: 2.25rem;
   position: relative;
   overflow: hidden;
@@ -722,7 +730,9 @@
 }
 
 .service-name-link {
-  transition: color 0.2s ease, opacity 0.2s ease;
+  transition:
+    color 0.2s ease,
+    opacity 0.2s ease;
   cursor: pointer;
   font-weight: 500;
   color: var(--text-color);
@@ -746,11 +756,9 @@
   &:hover {
     color: var(--status-accent) !important;
     opacity: 0.85;
-    
+
     mat-icon {
       color: var(--status-accent) !important;
     }
   }
 }
-
-

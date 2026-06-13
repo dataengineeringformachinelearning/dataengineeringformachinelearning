@@ -12,7 +12,7 @@ export interface TrainingResponse {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModelService {
   private http = inject(HttpClient);
@@ -23,27 +23,28 @@ export class ModelService {
   public trainError = signal<string | null>(null);
 
   fetchLatestStat(statusPageId?: string): void {
-    const url = statusPageId 
-      ? `${API_ENDPOINTS.MODEL.LATEST}?status_page_id=${statusPageId}` 
+    const url = statusPageId
+      ? `${API_ENDPOINTS.MODEL.LATEST}?status_page_id=${statusPageId}`
       : API_ENDPOINTS.MODEL.LATEST;
 
     this.http.get<TrainingResponse>(url).subscribe({
       next: data => {
-        const sla = (data.average_sla !== null && data.average_sla !== undefined) ? data.average_sla : null;
+        const sla =
+          data.average_sla !== null && data.average_sla !== undefined ? data.average_sla : null;
         if (statusPageId) {
           this.latestStats.update(stats => ({ ...stats, [statusPageId]: sla }));
         } else if (sla !== null) {
           this.latestStat.set(sla);
         }
       },
-      error: err => console.error('Error fetching latest stat:', err)
+      error: err => console.error('Error fetching latest stat:', err),
     });
   }
 
   trainModel(): void {
     this.isTraining.set(true);
     this.trainError.set(null);
-    
+
     this.http.post<TrainingResponse>(API_ENDPOINTS.MODEL.TRAIN, {}).subscribe({
       next: res => {
         setTimeout(() => {
@@ -59,7 +60,7 @@ export class ModelService {
           this.isTraining.set(false);
           this.trainError.set('Failed to train model.');
         }, 500);
-      }
+      },
     });
   }
 }

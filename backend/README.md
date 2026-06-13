@@ -47,6 +47,7 @@ python manage.py migrate
 6. Start the underlying infrastructure (Redpanda/Kafka):
 
 Because the telemetry pipeline relies on Redpanda, you must ensure it is running in the background. Open a terminal at the **root** of your project (not the backend folder) and start the containers:
+
 ```bash
 docker-compose up -d redpanda postgres
 ```
@@ -56,12 +57,14 @@ docker-compose up -d redpanda postgres
 You will need **two separate terminal windows** (or tabs) for this step. Ensure the virtual environment is activated (`source .venv/bin/activate`) in both.
 
 **Terminal 1 (API Server):**
+
 ```bash
 python manage.py runserver
 ```
 
 **Terminal 2 (Telemetry Worker):**
 Open a new terminal window, navigate to the `backend` directory, activate the virtual environment, and start the worker. This worker is required to consume telemetry events from Redpanda and save them to the database so your dashboard stats load properly.
+
 ```bash
 cd backend
 source .venv/bin/activate
@@ -70,6 +73,7 @@ python manage.py telemetry_worker
 
 **Terminal 3 (SLA Worker):**
 Open a new terminal window, navigate to the `backend` directory, activate the virtual environment, and start the SLA worker. This worker consumes trigger messages from Redpanda and runs PyTorch training runs in a decoupled process to calculate SLA forecasts.
+
 ```bash
 cd backend
 source .venv/bin/activate
@@ -77,6 +81,7 @@ python manage.py sla_worker
 ```
 
 Once the server is running, your backend API will be accessible at `http://localhost:8000/`. You can test the healthcheck endpoint at `http://localhost:8000/api/health`.
+
 ### Troubleshooting Environment Issues
 
 If you encounter any dependency conflicts or issues, recreating the environment with `uv` takes only seconds:
@@ -119,4 +124,5 @@ To create a user (e.g., to log into the application and manage Status Pages), yo
 ```bash
 python manage.py createsuperuser
 ```
+
 Follow the prompts to enter your username, email, and password. You can then use these credentials to log in to the frontend.

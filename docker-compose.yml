@@ -84,4 +84,3 @@ services:
         condition: service_started
     command: >
       sh -c "python manage.py sla_worker"
-

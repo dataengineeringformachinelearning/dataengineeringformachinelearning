@@ -1,7 +1,12 @@
 <header class="navbar">
   <div class="navbar-content">
     <div class="navbar-left">
-      <a routerLink="/" class="navbar-brand" aria-label="Go to homepage" (click)="closeMobileMenu()">
+      <a
+        routerLink="/"
+        class="navbar-brand"
+        aria-label="Go to homepage"
+        (click)="closeMobileMenu()"
+      >
         <img
           class="logo"
           src="/data-engineering-for-machine-learning.svg"
@@ -9,45 +14,79 @@
         />
       </a>
     </div>
-    
+
     <span class="spacer"></span>
-    
+
     <div class="navbar-right">
       <!-- Desktop Navigation Container -->
       <div class="desktop-nav">
-        <a mat-button routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn">
+        <a
+          mat-button
+          routerLink="/documentation"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="nav-btn"
+        >
           <mat-icon>description</mat-icon>
           <span>Documentation</span>
         </a>
 
-        <a mat-button routerLink="/explore" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn">
+        <a
+          mat-button
+          routerLink="/explore"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="nav-btn"
+        >
           <mat-icon>explore</mat-icon>
           <span>Explore</span>
         </a>
-        <a mat-button routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="nav-btn" *ngIf="authService.isAuthenticated()">
+        @if (authService.isAuthenticated()) {
+        <a
+          mat-button
+          routerLink="/manage"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="nav-btn"
+        >
           <mat-icon>settings</mat-icon>
           <span>Manage</span>
         </a>
-        
+        }
+
         <div class="divider"></div>
 
-        <button mat-raised-button class="auth-btn" *ngIf="!authService.isAuthenticated()" (click)="login()">
+        @if (!authService.isAuthenticated()) {
+        <button mat-raised-button class="auth-btn" (click)="login()">
           <mat-icon>login</mat-icon>
           <span>Sign In</span>
         </button>
-        <button mat-raised-button class="auth-btn" *ngIf="authService.isAuthenticated()" (click)="logout()">
+        } @if (authService.isAuthenticated()) {
+        <button mat-raised-button class="auth-btn" (click)="logout()">
           <mat-icon>logout</mat-icon>
           <span>Sign Out</span>
         </button>
+        }
       </div>
-      
+
       <!-- Theme Switch Button -->
-      <button mat-icon-button (click)="themeService.toggleTheme()" class="theme-toggle-btn" aria-label="Toggle light and dark theme">
+      <button
+        mat-icon-button
+        (click)="themeService.toggleTheme()"
+        class="theme-toggle-btn"
+        aria-label="Toggle light and dark theme"
+      >
         <mat-icon>{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
       </button>
 
       <!-- Hamburger Menu Toggle Button (Mobile) -->
-      <button mat-icon-button (click)="toggleMobileMenu()" class="menu-toggle-btn" aria-label="Toggle navigation menu" [attr.aria-expanded]="isMobileMenuOpen()">
+      <button
+        mat-icon-button
+        (click)="toggleMobileMenu()"
+        class="menu-toggle-btn"
+        aria-label="Toggle navigation menu"
+        [attr.aria-expanded]="isMobileMenuOpen()"
+      >
         <mat-icon>{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
       </button>
     </div>
@@ -55,28 +94,54 @@
 
   <!-- Mobile Collapsible Menu Dropdown -->
   <div class="mobile-menu" [class.open]="isMobileMenuOpen()">
-    <a mat-button routerLink="/documentation" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="mobile-nav-btn" (click)="closeMobileMenu()">
+    <a
+      mat-button
+      routerLink="/documentation"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
       <mat-icon>description</mat-icon>
       <span>Documentation</span>
     </a>
-    <a mat-button routerLink="/explore" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="mobile-nav-btn" (click)="closeMobileMenu()">
+    <a
+      mat-button
+      routerLink="/explore"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
       <mat-icon>explore</mat-icon>
       <span>Explore</span>
     </a>
-    <a mat-button routerLink="/manage" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="mobile-nav-btn" *ngIf="authService.isAuthenticated()" (click)="closeMobileMenu()">
+    @if (authService.isAuthenticated()) {
+    <a
+      mat-button
+      routerLink="/manage"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
       <mat-icon>settings</mat-icon>
       <span>Manage</span>
     </a>
-    
+    }
+
     <div class="mobile-divider"></div>
-    
-    <button mat-raised-button class="mobile-auth-btn" *ngIf="!authService.isAuthenticated()" (click)="login(); closeMobileMenu()">
+
+    @if (!authService.isAuthenticated()) {
+    <button mat-raised-button class="mobile-auth-btn" (click)="login(); closeMobileMenu()">
       <mat-icon>login</mat-icon>
       <span>Sign In</span>
     </button>
-    <button mat-raised-button class="mobile-auth-btn" *ngIf="authService.isAuthenticated()" (click)="logout(); closeMobileMenu()">
+    } @if (authService.isAuthenticated()) {
+    <button mat-raised-button class="mobile-auth-btn" (click)="logout(); closeMobileMenu()">
       <mat-icon>logout</mat-icon>
       <span>Sign Out</span>
     </button>
+    }
   </div>
 </header>

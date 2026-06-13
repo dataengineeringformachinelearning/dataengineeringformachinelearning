@@ -12,25 +12,27 @@ describe('TelemetryService', () => {
 
   beforeEach(() => {
     store = {};
-    
+
     // Stub localStorage
     const mockLocalStorage = {
       getItem: (key: string) => store[key] || null,
-      setItem: (key: string, value: string) => { store[key] = value; },
-      removeItem: (key: string) => { delete store[key]; },
-      clear: () => { store = {}; }
+      setItem: (key: string, value: string) => {
+        store[key] = value;
+      },
+      removeItem: (key: string) => {
+        delete store[key];
+      },
+      clear: () => {
+        store = {};
+      },
     };
     vi.stubGlobal('localStorage', mockLocalStorage);
-    
+
     // Stub navigator.onLine
     vi.stubGlobal('navigator', { onLine: true });
 
     TestBed.configureTestingModule({
-      providers: [
-        TelemetryService,
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ]
+      providers: [TelemetryService, provideHttpClient(), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(TelemetryService);
@@ -52,7 +54,7 @@ describe('TelemetryService', () => {
       status_code: 200,
       response_time_ms: 100,
       ip_address: '0.0.0.0',
-      is_active: true
+      is_active: true,
     };
 
     service.reportEndpointStatus(payload);
@@ -71,7 +73,7 @@ describe('TelemetryService', () => {
       status_code: 200,
       response_time_ms: 100,
       ip_address: '0.0.0.0',
-      is_active: true
+      is_active: true,
     };
 
     service.reportEndpointStatus(payload);
@@ -93,7 +95,7 @@ describe('TelemetryService', () => {
       status_code: 200,
       response_time_ms: 100,
       ip_address: '0.0.0.0',
-      is_active: true
+      is_active: true,
     };
 
     service.reportEndpointStatus(payload);
@@ -115,14 +117,14 @@ describe('TelemetryService', () => {
       status_code: 200,
       response_time_ms: 100,
       ip_address: '0.0.0.0',
-      is_active: true
+      is_active: true,
     };
     const payload2: TelemetryPayload = {
       url: 'http://test-endpoint-2.com',
       status_code: 500,
       response_time_ms: 200,
       ip_address: '0.0.0.0',
-      is_active: false
+      is_active: false,
     };
 
     // Pre-populate queue
@@ -134,7 +136,7 @@ describe('TelemetryService', () => {
 
     const reqs = httpMock.match(API_ENDPOINTS.TELEMETRY.ENDPOINTS);
     expect(reqs.length).toBe(2);
-    
+
     // Flush both successfully
     reqs[0].flush({});
     reqs[1].flush({});

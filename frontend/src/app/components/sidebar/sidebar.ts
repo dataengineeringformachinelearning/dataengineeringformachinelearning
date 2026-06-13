@@ -5,13 +5,18 @@ import {
   ChangeDetectionStrategy,
   signal,
   computed,
-  ChangeDetectorRef
+  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../services/auth.service';
-import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
+import {
+  MonitorService,
+  StatusPageData,
+  IncidentData,
+  MonitoredServiceData,
+} from '../../services/monitor.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -19,7 +24,7 @@ import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } fr
   imports: [CommonModule, RouterModule, MatIconModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar implements OnInit {
   public authService = inject(AuthService);
@@ -60,7 +65,7 @@ export class Sidebar implements OnInit {
       },
       error: err => {
         console.error('Error fetching pages for sidebar:', err);
-      }
+      },
     });
   }
 }

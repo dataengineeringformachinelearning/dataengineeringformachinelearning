@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { MatIconModule } from '@angular/material/icon';
@@ -7,7 +7,7 @@ import { API_ENDPOINTS } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-issue-reporter',
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [FormsModule, MatIconModule],
   templateUrl: './issue-reporter.html',
   styleUrl: './issue-reporter.scss',
 })
@@ -37,7 +37,7 @@ export class IssueReporter {
   }
 
   toggleModal() {
-    this.isOpen.update((v) => !v);
+    this.isOpen.update(v => !v);
     if (this.isOpen()) {
       // Reset form on open
       this.issueDescription.set('');
@@ -49,14 +49,14 @@ export class IssueReporter {
     if (!this.issueDescription().trim()) return;
 
     this.isSubmitting.set(true);
-    
+
     const payload = {
       user_description: this.issueDescription(),
       telemetry_context: {
         url: window.location.href,
         userAgent: navigator.userAgent,
-        recentErrors: this.recentErrors
-      }
+        recentErrors: this.recentErrors,
+      },
     };
 
     this.http.post(API_ENDPOINTS.AGENT.REPORT_ISSUE, payload).subscribe({
@@ -65,11 +65,11 @@ export class IssueReporter {
         this.submissionStatus.set('success');
         setTimeout(() => this.toggleModal(), 2000); // Close after 2s
       },
-      error: (err) => {
+      error: err => {
         console.error('Failed to submit issue', err);
         this.isSubmitting.set(false);
         this.submissionStatus.set('error');
-      }
+      },
     });
   }
 }

@@ -1,6 +1,6 @@
 FROM redpandadata/redpanda:v26.1.9
 
-# We bake the configuration directly into the image's CMD to completely 
+# We bake the configuration directly into the image's CMD to completely
 # bypass Railway's custom start command shell parsing quirks.
 
 # Breakdown of arguments:

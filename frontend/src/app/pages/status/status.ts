@@ -6,11 +6,16 @@ import {
   signal,
   ChangeDetectorRef,
   computed,
-  effect
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
+import {
+  MonitorService,
+  StatusPageData,
+  IncidentData,
+  MonitoredServiceData,
+} from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
@@ -34,7 +39,7 @@ import { formatServiceName } from '../../core/utils/formatter.utils';
     RouterModule,
     MatDialogModule,
     Sidebar,
-    StatusCta
+    StatusCta,
   ],
   templateUrl: './status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -82,7 +87,8 @@ export class Status implements OnInit {
     this.titleService.setTitle('Service Status Dashboard - Data Engineering for Machine Learning');
     this.metaService.updateTag({
       name: 'description',
-      content: 'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.'
+      content:
+        'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.',
     });
   }
 
@@ -92,7 +98,9 @@ export class Status implements OnInit {
       this.monitorService.getStatusPages().subscribe({
         next: data => {
           // Include user's own pages AND the platform status page
-          const myPages = data.filter(p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status');
+          const myPages = data.filter(
+            p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status',
+          );
           // Sort so platform-status is always first
           const sorted = [...myPages].sort((a, b) => {
             if (a.slug === 'platform-status') return -1;
@@ -141,4 +149,3 @@ export class Status implements OnInit {
     window.location.reload();
   }
 }
-

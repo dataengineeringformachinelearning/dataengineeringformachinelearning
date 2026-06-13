@@ -1,4 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, signal, computed, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { PageComponent } from '../../components/page/page';
@@ -7,7 +15,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
+import {
+  MonitorService,
+  StatusPageData,
+  IncidentData,
+  MonitoredServiceData,
+} from '../../services/monitor.service';
 import pageMarkdown from '../../../assets/content/page.md';
 
 interface Chapter {
@@ -26,7 +39,7 @@ import { Sidebar } from '../../components/sidebar/sidebar';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    Sidebar
+    Sidebar,
   ],
   templateUrl: './book.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,10 +84,13 @@ export class Book implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Documentation & Book Chapters - Data Engineering for Machine Learning');
+    this.titleService.setTitle(
+      'Documentation & Book Chapters - Data Engineering for Machine Learning',
+    );
     this.metaService.updateTag({
       name: 'description',
-      content: 'Interactive guide, working notes, and reference chapters on Data Engineering for Machine Learning.'
+      content:
+        'Interactive guide, working notes, and reference chapters on Data Engineering for Machine Learning.',
     });
 
     this.monitorService.getStatusPages().subscribe({
@@ -94,7 +110,6 @@ export class Book implements OnInit {
     });
   }
 
-
   parseMarkdown() {
     // Split content dynamically by '## Chapter ' or '## Acknowledgements' headers
     const rawChunks = pageMarkdown.split(/(?=^## (?:Chapter \d+:|Acknowledgements))/m);
@@ -107,11 +122,13 @@ export class Book implements OnInit {
       // Extract title from the first line (starts with '## ')
       const lines = trimmed.split('\n');
       const firstLine = lines[0];
-      const title = firstLine.startsWith('## ') ? firstLine.replace('## ', '').trim() : 'Introduction';
+      const title = firstLine.startsWith('## ')
+        ? firstLine.replace('## ', '').trim()
+        : 'Introduction';
 
       parsed.push({
         title,
-        content: trimmed
+        content: trimmed,
       });
     }
 
@@ -119,7 +136,7 @@ export class Book implements OnInit {
     if (parsed.length === 0) {
       parsed.push({
         title: 'Book Content',
-        content: pageMarkdown
+        content: pageMarkdown,
       });
     }
 

@@ -5,11 +5,16 @@ import {
   ChangeDetectionStrategy,
   signal,
   ChangeDetectorRef,
-  effect
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { MonitorService, StatusPageData, IncidentData, MonitoredServiceData } from '../../services/monitor.service';
+import {
+  MonitorService,
+  StatusPageData,
+  IncidentData,
+  MonitoredServiceData,
+} from '../../services/monitor.service';
 import { ModelService } from '../../services/model.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
@@ -30,7 +35,7 @@ import { formatServiceName } from '../../core/utils/formatter.utils';
     MatIconModule,
     RouterModule,
     Sidebar,
-    StatusCta
+    StatusCta,
   ],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -59,10 +64,13 @@ export class Explore implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Explore Public Status Pages - Data Engineering for Machine Learning');
+    this.titleService.setTitle(
+      'Explore Public Status Pages - Data Engineering for Machine Learning',
+    );
     this.metaService.updateTag({
       name: 'description',
-      content: 'Browse community-published public service status pages and active system uptime monitors.'
+      content:
+        'Browse community-published public service status pages and active system uptime monitors.',
     });
   }
 

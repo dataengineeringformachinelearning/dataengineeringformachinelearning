@@ -1,0 +1,36 @@
+[tool.ruff]
+# Target Python version.
+target-version = "py310"
+
+# Set the line length limit.
+line-length = 100
+indent-width = 2
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`), Checkstyle (`E`, `W`), isort (`I`), Pep8-naming (`N`),
+# Pyupgrade (`UP`), flake8-bugbear (`B`), flake8-quotes (`Q`), etc.
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "RUF", # Ruff-specific rules
+]
+
+ignore = [
+    "E501",  # Line too long (Ruff formatter handles this, lint doesn't need to complain)
+    "RUF012", # Mutable default value for class attribute (Django migrations and model metadata are standard)
+    "E402",  # Module level import not at top of file (Required for django setup in scripts)
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+
+[tool.ruff.format]
+# Prefer double quotes, 4 spaces indent.
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"

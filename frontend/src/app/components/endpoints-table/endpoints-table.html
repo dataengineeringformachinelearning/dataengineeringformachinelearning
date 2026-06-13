@@ -1,4 +1,5 @@
-<div class="endpoints-table-container" *ngIf="isBrowser">
+@if (isBrowser) {
+<div class="endpoints-table-container">
   <ag-grid-angular
     class="ag-theme-alpine"
     [rowData]="rowData"
@@ -6,6 +7,8 @@
     [defaultColDef]="defaultColDef"
     rowSelection="multiple"
     (gridReady)="onGridReady($event)"
-    (selectionChanged)="onSelectionChangedEvent($event)">
+    (selectionChanged)="onSelectionChangedEvent($event)"
+  >
   </ag-grid-angular>
 </div>
+}

@@ -45,7 +45,7 @@ describe('AuthService', () => {
         AuthService,
         provideHttpClient(withInterceptors([credentialsInterceptor])),
         provideHttpClientTesting(),
-      ]
+      ],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -61,7 +61,7 @@ describe('AuthService', () => {
 
   it('should check auth and set signals on success', async () => {
     const checkPromise = service.checkAuth();
-    
+
     // Wait for the async credentials interceptor token promise to resolve
     await new Promise(resolve => setTimeout(resolve, 10));
 

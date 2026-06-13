@@ -1,15 +1,13 @@
 <div class="empty-state-premium">
   <div class="cta-glow-sphere"></div>
-  
+
   <div class="cta-badge">
     <mat-icon class="badge-icon">{{ badgeIcon }}</mat-icon>
     <span>{{ badgeText }}</span>
   </div>
 
   <h3 class="empty-title">{{ title }}</h3>
-  <p class="empty-subtitle">
-    {{ subtitle }}
-  </p>
+  <p class="empty-subtitle">{{ subtitle }}</p>
 
   <div class="features-list">
     <div class="feature-item">
@@ -38,13 +36,16 @@
   <p class="empty-footer-text">Sign in or register to get started.</p>
 
   <div class="cta-actions">
-    <button mat-raised-button color="primary" class="cta-main-btn" (click)="login()" *ngIf="!authService.isAuthenticated()">
+    @if (!authService.isAuthenticated()) {
+    <button mat-raised-button color="primary" class="cta-main-btn" (click)="login()">
       <mat-icon>login</mat-icon>
       Get Started
     </button>
-    <a mat-raised-button color="primary" class="cta-main-btn" *ngIf="authService.isAuthenticated()" routerLink="/manage">
+    } @if (authService.isAuthenticated()) {
+    <a mat-raised-button color="primary" class="cta-main-btn" routerLink="/manage">
       <mat-icon>add_circle</mat-icon>
       Create Status Page
     </a>
+    }
   </div>
 </div>

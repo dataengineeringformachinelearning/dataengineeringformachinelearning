@@ -1,19 +1,19 @@
 import { Component, inject, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 
 @Component({
   selector: 'app-cookie-banner',
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [MatButtonModule, MatIconModule],
   templateUrl: './cookie-banner.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './cookie-banner.scss',
 })
 export class CookieBanner implements OnInit {
   protected consentService = inject(CookieConsentService);
-  
+
   protected showCustomize = signal<boolean>(false);
   protected analyticalConsent = signal<boolean>(false);
   protected marketingConsent = signal<boolean>(false);

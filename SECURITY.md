@@ -18,8 +18,9 @@ If you discover a security vulnerability within this project, please report it i
 Instead, please send an email directly to the project maintainers or use the private vulnerability reporting feature on GitHub if enabled for this repository.
 
 Please include the following information in your report:
-*   A description of the vulnerability.
-*   Steps to reproduce the issue.
-*   Any potential impact or risk associated with the vulnerability.
+
+- A description of the vulnerability.
+- Steps to reproduce the issue.
+- Any potential impact or risk associated with the vulnerability.
 
 We will acknowledge receipt of your vulnerability report as soon as possible and strive to provide regular updates on the progress of our investigation and mitigation efforts.

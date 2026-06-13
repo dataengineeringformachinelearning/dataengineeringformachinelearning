@@ -11,15 +11,15 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error: any): void {
     const telemetryService = this.injector.get(TelemetryService);
-    
+
     // A client-side or network error occurred
     // Use 0 or 500 to denote client side crash
-    let payload: TelemetryPayload = {
+    const payload: TelemetryPayload = {
       url: typeof window !== 'undefined' ? window.location.href : 'ssr-server',
       status_code: 0,
       response_time_ms: 0,
       ip_address: '0.0.0.0', // We might not know client IP here, backend can overwrite it
-      is_active: false
+      is_active: false,
     };
 
     // Call our resilient telemetry pipeline
@@ -61,7 +61,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     `;
 
     document.body.appendChild(toast);
-    
+
     const closeBtn = toast.querySelector('#close-toast-btn');
     if (closeBtn) {
       closeBtn.addEventListener('click', () => toast.remove());

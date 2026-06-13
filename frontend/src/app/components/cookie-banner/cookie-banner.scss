@@ -65,7 +65,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    transition: background-color 0.2s, color 0.2s;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
 
     &:hover {
       background-color: rgba(255, 255, 255, 0.08);
@@ -92,7 +94,7 @@
       text-decoration: none;
       border-bottom: 1px solid var(--link-color);
       font-weight: 500;
-      
+
       &:hover {
         color: var(--link-hover-color);
         border-bottom-color: var(--link-hover-color);
@@ -178,7 +180,7 @@
 
   &.active {
     background-color: var(--color-success);
-    
+
     .toggle-slider {
       transform: translateX(20px);
     }
@@ -215,7 +217,7 @@
       border-bottom: 1px dashed var(--text-muted);
       border-radius: 0 !important;
       align-self: flex-start;
-      
+
       &:hover {
         background-color: transparent !important;
         color: var(--text-color);

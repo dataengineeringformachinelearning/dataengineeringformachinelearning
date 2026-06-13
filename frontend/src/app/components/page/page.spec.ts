@@ -9,9 +9,7 @@ describe('PageComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [PageComponent],
-      providers: [
-        provideMarkdown()
-      ]
+      providers: [provideMarkdown()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(PageComponent);
