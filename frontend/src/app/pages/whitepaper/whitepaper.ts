@@ -17,12 +17,12 @@ export class Whitepaper implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(
-      'Whitepaper: Scalable Telemetry & SLA Predictions - Data Engineering for Machine Learning',
+      'Whitepaper: Scalable Telemetry & Deep Learning Predictions - Data Engineering for Machine Learning',
     );
     this.metaService.updateTag({
       name: 'description',
       content:
-        'Read our technical whitepaper detailing the architecture of real-time telemetry pipelines and ML-based SLA predictions.',
+        'Read our technical whitepaper detailing the architecture of real-time telemetry pipelines and deep learning SLA/TA predictions.',
     });
   }
 
@@ -58,7 +58,7 @@ export class Whitepaper implements OnInit {
         doc.setFontSize(8);
         doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
         doc.text(
-          'Technical Whitepaper: Scalable Telemetry & ML-Predicted SLAs',
+          'Technical Whitepaper: Extensible Deep Learning Telemetry Pipeline (SLA & TA)',
           margin,
           margin - 10,
         );
@@ -74,7 +74,10 @@ export class Whitepaper implements OnInit {
 
     doc.setFontSize(22);
     doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-    const titleLines = doc.splitTextToSize('Scalable Telemetry & ML-Predicted SLAs', contentWidth);
+    const titleLines = doc.splitTextToSize(
+      'Scalable Telemetry & Deep Learning Pipeline (SLA/TA)',
+      contentWidth,
+    );
     titleLines.forEach((line: string) => {
       checkSpace(10);
       doc.text(line, margin, y);
@@ -86,7 +89,7 @@ export class Whitepaper implements OnInit {
     doc.setFontSize(11);
     doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
     const subtitleLines = doc.splitTextToSize(
-      'Architecting high-throughput event pipelines and predictive service level agreement models for modern SaaS platforms.',
+      'Architecting an extensible deep learning pipeline for real-time telemetry, featuring active SLA and TA modules with support for future expansions.',
       contentWidth,
     );
     subtitleLines.forEach((line: string) => {
@@ -111,7 +114,7 @@ export class Whitepaper implements OnInit {
       {
         title: '1. Executive Summary',
         paragraphs: [
-          'Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of a next-generation observability pipeline that ingests real-time telemetry at scale and uses Machine Learning to forecast service level agreement compliance 90 days into the future.',
+          'Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the Data Engineering for Machine Learning Platform (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics—with support for future expansion.',
         ],
       },
       {
@@ -126,20 +129,20 @@ export class Whitepaper implements OnInit {
         title: '3. Asynchronous Batch Processing with Polars',
         paragraphs: [
           'Processing streaming events row-by-row introduces significant database write amplification. Our telemetry worker aggregates incoming events from Redpanda and processes them in micro-batches using Polars, an extremely fast multi-threaded DataFrame library written in Rust.',
-          'By batching calculations, we compute historical uptime graphs (90-day intervals) and update cumulative SLA records efficiently, reducing disk I/O by over 80%.',
+          'By batching calculations, we compute historical uptime graphs (90-day intervals) and update cumulative SLA and threat records efficiently, reducing disk I/O by over 80%.',
         ],
       },
       {
-        title: '4. ML-Powered 90-Day SLA Forecasts',
+        title: '4. Extensible Deep Learning Pipeline',
         paragraphs: [
-          'To transition from reactive monitoring to proactive SLA planning, we introduce a predictive neural network built in PyTorch. The network consumes sequence features derived from recent response-time variances, historical error rates, and peak usage patterns to forecast future SLA breaches.',
-          'These predictions are loaded into the status pages to give operators early warnings of degradation, allowing teams to intervene before outages affect end-users.',
+          'To transition from reactive monitoring to proactive planning, we introduce a predictive deep learning pipeline built in PyTorch. The pipeline consumes sequence features derived from recent response-time variances, historical error rates, and peak usage patterns.',
+          'Rather than isolated models, the architecture exposes an extensible registry allowing the system to run multiple prediction modules concurrently. Currently, the pipeline hosts two primary modules: SLA forecasting and TA (Threat Anomaly) forecasting, with hooks prepared for future specialized analytics modules.',
         ],
       },
       {
         title: '5. ML-Powered 90-Day Threat Detection & Telemetry Ingestion',
         paragraphs: [
-          'Our current integration with third-party analytics platforms (Google Analytics / GA4 and Microsoft Clarity) serves as a critical telemetry ingestion phase. By retrieving rich visitor logs, geolocation distributions, and request patterns from these platforms, we train a custom PyTorch neural network model (ThreatPredictor) to detect anomalies and forecast threat risks 90 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing direct, zero-dependency telemetry streaming.',
+          'Our current integration within the Data Engineering for Machine Learning Platform (DEML Platform) with third-party analytics platforms (Google Analytics / GA4 and Microsoft Clarity) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 90 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.',
         ],
       },
       {
@@ -151,7 +154,15 @@ export class Whitepaper implements OnInit {
         ],
       },
       {
-        title: '7. Conclusion',
+        title: '7. Data Tenancy, Retention, and Lifecycle Policy',
+        paragraphs: [
+          "Observability systems must ensure strict isolation. The DEML Platform enforces absolute multi-tenancy boundaries at the database level. Direct cross-tenant fallbacks (such as global threat reports) are strictly eliminated; instead, threat models and predictions are trained exclusively on the target user's telemetry. If a tenant does not yet have enough collected telemetry, the model is trained on-demand using safe, zero-threat baselines instead of shared data.",
+          'Additionally, the platform implements a strict 90-day retention and lifecycle policy. All telemetry data, log entries, incident histories, and historical ML reports are purged from the database exactly 90 days after their creation date. The ML training worker automatically triggers full model retraining and telemetry cleanup upon application deployment and runs continuously every hour.',
+          'Furthermore, our engineering roadmap includes integrations with monetization systems like Stripe. This will enable paid tiers where models and forecasts are refreshed at a high-frequency interval (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.',
+        ],
+      },
+      {
+        title: '8. Conclusion',
         paragraphs: [
           'By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.',
         ],

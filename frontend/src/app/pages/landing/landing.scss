@@ -5,10 +5,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 2rem;
+  padding: 120px 2rem 0 2rem;
   overflow: hidden;
   margin-top: -64px; /* Pull up under navbar */
-  padding-top: 120px;
 }
 
 .glow-sphere {
@@ -473,12 +472,28 @@
     margin: 0;
     color: var(--text-color);
   }
+
+  p {
+    font-size: 1rem;
+    color: var(--text-muted);
+    max-width: 700px;
+    margin: 0.5rem auto 0 auto;
+    line-height: 1.6;
+  }
 }
 
 .features-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--grid-gap);
+
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 650px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .feature-card {
@@ -692,7 +707,7 @@
   }
 }
 
-/* Footer & Status Widget Area */
+/* Status Widget Host Area */
 .landing-footer {
   position: relative;
   z-index: 10;
@@ -701,43 +716,7 @@
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-  padding-top: 3rem;
-  padding-bottom: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
+  padding-top: 2rem;
+  padding-bottom: 1.5rem;
   margin-top: auto;
-}
-
-:host-context(html[data-theme='light']) {
-  .landing-footer {
-    border-top-color: var(--border);
-  }
-}
-
-.footer-links {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-  font-size: 0.9rem;
-  color: var(--text-muted);
-
-  a {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.2s;
-
-    &:hover {
-      color: var(--primary-color);
-    }
-
-    &:focus-visible {
-      outline: 2px solid var(--accent-color);
-      outline-offset: 4px;
-    }
-  }
-
-  .divider {
-    opacity: 0.3;
-  }
 }

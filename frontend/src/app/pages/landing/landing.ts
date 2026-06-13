@@ -74,13 +74,13 @@ export class Landing implements OnInit, OnDestroy {
     },
     {
       id: 'predict',
-      name: 'Threat Forecasting',
+      name: 'Deep Learning Pipeline',
       icon: 'psychology',
-      tag: 'PYTORCH ANOMALY',
+      tag: 'PYTORCH PIPELINE',
       description:
-        'Run deep learning models on server metrics. Predict threat anomaly scores and forecast 90-day SLA compliance statuses.',
+        'Orchestrate a PyTorch-based deep learning pipeline currently running two core modules (SLA and TA), designed to support additional forecasting modules in the future.',
       codeSnippet:
-        'class ThreatModel(nn.Module):\n  def forward(self, x):\n    lstm_out, _ = self.lstm(x)\n    anomaly_score = self.fc(lstm_out[:, -1, :])\n    return torch.sigmoid(anomaly_score)',
+        'class DeepLearningPipeline(nn.Module):\n  def __init__(self):\n    super().__init__()\n    self.sla_module = SLAModule()\n    self.ta_module = TAModule()\n    self.future_extensions = nn.ModuleList()\n\n  def forward(self, x):\n    return self.sla_module(x), self.ta_module(x)',
     },
   ];
 
