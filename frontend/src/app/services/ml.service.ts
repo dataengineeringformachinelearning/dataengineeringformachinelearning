@@ -95,6 +95,23 @@ export class MlService {
       },
     });
   }
+
+  fetchStixReport(statusPageId?: string) {
+    const baseUrl = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/stix');
+    const url = statusPageId ? `${baseUrl}?status_page_id=${statusPageId}` : baseUrl;
+    return this.http.get<any>(url);
+  }
+
+  submitToIsac(destination: string, statusPageId?: string) {
+    const url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/submit-isac');
+    const body = { destination, status_page_id: statusPageId || null };
+    return this.http.post<any>(url, body);
+  }
+
+  fetchSocStatus() {
+    const url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/compliance/soc-status');
+    return this.http.get<any>(url);
+  }
 }
 
 export interface ThreatReportResponse {

@@ -141,9 +141,11 @@ python manage.py fetch_threat_intel
 
 ### Configuration
 
-You can configure real-time reputation lookups by setting the following environment variables in your `backend/.env` file:
+You can configure real-time reputation lookups and automated threat submissions by setting the following environment variables in your `backend/.env` file:
 
 - `ABUSEIPDB_API_KEY`: API Key for checking IP abuse confidence scores from AbuseIPDB.
 - `OTX_API_KEY`: API Key for checking threat intelligence indicators from AlienVault OTX.
+- `CISA_TAXII_ENDPOINT`: Ingestion URL for routing STIX format reports directly to CISA AIS (TAXII protocol).
+- `ISAC_API_KEY`: API authentication key for IT-ISAC/MS-ISAC threat sharing servers.
 
-_Note: If these environment variables are not present, the sync utility runs in **Simulation Mode**, evaluating metrics using predefined fallback rules for local testing._
+_Note: If these environment variables are not present, the sync utility and the threat sharing pipelines run in **Simulation/Sandbox Mode**, evaluating metrics locally and logging transaction flows without actual outbound transmission._

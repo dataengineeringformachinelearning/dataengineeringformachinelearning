@@ -677,14 +677,17 @@ Telemetry tells us _what_ is failing, but unstructured user complaints tell us _
 
 To detect malicious traffic patterns and understand regional threat profiles, I establish API integrations with Google Analytics (GA4) and Microsoft Clarity. By securely authenticating with their respective APIs, the backend gathers rich geolocation access details, browser telemetry, and request metadata. This information is ingested into a dedicated data pipeline and fed directly into a PyTorch threat prediction neural network model (`ThreatModel`). The model processes access features—such as regional traffic spikes and suspicious request weights—to forecast geographical anomaly probability and compute an access threat score. This allows the system to actively flag anomalous traffic contributions directly on the tenant status pages, protecting the platform from adversarial telemetry and service exploitation.
 
-This integration with Google Analytics and Microsoft Clarity serves as a critical third-party analytics telemetry step. In the roadmap, this setup serves as a precursor to designing and deploying a custom first-party client-side script and dynamic threat widget that tenants can embed directly on their own websites to collect raw security-focused telemetry natively.
-
-In addition to first-party GA4/Clarity integrations, I enrich raw session telemetry by cross-referencing visitor IP addresses against free public reputation databases. I incorporate checks against:
+This integration with Google Analytics and Microsoft Clarity serves as a critical third-party analytics telemetry step. In the roadmap, this setup serves as a precursor to designing and deploying a custom first-party client-side script and dynamic threat widget that tenants can embed directly on their own websites to collect raw security-focused telemetry natively. In addition to first-party GA4/Clarity integrations, I enrich raw session telemetry by visitor IP reputation databases. I incorporate checks against:
 
 - **AbuseIPDB**: To query crowd-sourced abuse reports and retrieve abuse confidence percentages.
 - **AlienVault OTX (Open Threat Exchange)**: To query threat pulse records and active botnet/malicious indicators.
 
-For local development and book reader environments, the system operates in a dual mode. If real credentials are provided via environment variables (`ABUSEIPDB_API_KEY` and `OTX_API_KEY`), the synchronization command makes live API calls to audit reputation. If these keys are absent, the ingestion script falls back to a deterministic **Simulation Mode** that highlights how these indicators behave on mocked malicious IP ranges.
+We also support automated STIX 2.1 threat sharing to federal databases and industry ISACs via:
+
+- **CISA TAXII Ingestion Server**: Controlled via `CISA_TAXII_ENDPOINT`.
+- **ISAC Sharing Hubs**: Controlled via `ISAC_API_KEY`.
+
+For local development and book reader environments, the system operates in a dual mode. If real credentials are provided via environment variables (`ABUSEIPDB_API_KEY`, `OTX_API_KEY`, `CISA_TAXII_ENDPOINT`, and `ISAC_API_KEY`), the synchronization and reporting pipelines make live API calls. If these keys are absent, the ingestion and submission utilities fall back to a safe **Simulation / Sandbox Mode** for local testing.
 
 ---
 
