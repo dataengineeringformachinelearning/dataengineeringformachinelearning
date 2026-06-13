@@ -350,4 +350,25 @@ export class LoginDialog implements OnInit {
   onCancel(): void {
     this.dialogRef.close();
   }
+
+  async signInWithApple() {
+    this.error.set(null);
+    this.successMessage.set(null);
+    this.isLoading.set(true);
+    try {
+      const result = await this.authService.loginWithApple();
+      if (result.success) {
+        this.dialogRef.close(true);
+      } else if (result.error === 'MFA_REQUIRED') {
+        await this.sendMfaVerificationCode((result as any).resolver);
+      } else {
+        this.error.set(result.error || 'Apple Sign-In failed.');
+      }
+    } catch (e: any) {
+      console.error(e);
+      this.error.set(e.message || 'An error occurred during Apple Sign-In.');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
 }

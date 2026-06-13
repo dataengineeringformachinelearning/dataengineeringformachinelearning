@@ -176,19 +176,25 @@
                   </div>
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>dns</mat-icon> Monitored Services</h3>
-                    <div class="form-row panel-clean">
-                      <mat-form-field appearance="outline" class="flex-1">
-                        <mat-label>Service Name</mat-label>
-                        <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Auth API" />
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" class="flex-2">
-                        <mat-label>Health Check URL</mat-label>
-                        <input
-                          matInput
-                          [(ngModel)]="newServiceUrl"
-                          placeholder="https://api.example.com/health"
-                        />
-                      </mat-form-field>
+                    <div class="service-form-panel panel-clean">
+                      <div class="service-inputs-row">
+                        <mat-form-field appearance="outline" class="flex-1">
+                          <mat-label>Service Name</mat-label>
+                          <input
+                            matInput
+                            [(ngModel)]="newServiceName"
+                            placeholder="e.g. Auth API"
+                          />
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="flex-2">
+                          <mat-label>Health Check URL</mat-label>
+                          <input
+                            matInput
+                            [(ngModel)]="newServiceUrl"
+                            placeholder="https://api.example.com/health"
+                          />
+                        </mat-form-field>
+                      </div>
                       <button
                         mat-flat-button
                         class="add-service-btn"
@@ -370,23 +376,25 @@
                         </div>
                         @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
                         <div class="clarity-form-row">
-                          <mat-form-field appearance="outline">
-                            <mat-label>Clarity Project ID</mat-label>
-                            <input
-                              matInput
-                              [(ngModel)]="clarityProjectId"
-                              placeholder="Project ID"
-                            />
-                          </mat-form-field>
-                          <mat-form-field appearance="outline">
-                            <mat-label>API Token / Key</mat-label>
-                            <input
-                              matInput
-                              [(ngModel)]="clarityApiKey"
-                              type="password"
-                              placeholder="Clarity API Key"
-                            />
-                          </mat-form-field>
+                          <div class="inputs-group">
+                            <mat-form-field appearance="outline">
+                              <mat-label>Clarity Project ID</mat-label>
+                              <input
+                                matInput
+                                [(ngModel)]="clarityProjectId"
+                                placeholder="Project ID"
+                              />
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                              <mat-label>API Token / Key</mat-label>
+                              <input
+                                matInput
+                                [(ngModel)]="clarityApiKey"
+                                type="password"
+                                placeholder="Clarity API Key"
+                              />
+                            </mat-form-field>
+                          </div>
                           <button
                             mat-flat-button
                             color="primary"
@@ -423,23 +431,25 @@
                         </div>
                         @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
                         <div class="cloudflare-form-row">
-                          <mat-form-field appearance="outline">
-                            <mat-label>Cloudflare Account ID</mat-label>
-                            <input
-                              matInput
-                              [(ngModel)]="cloudflareProjectId"
-                              placeholder="Account ID"
-                            />
-                          </mat-form-field>
-                          <mat-form-field appearance="outline">
-                            <mat-label>API Token / Key</mat-label>
-                            <input
-                              matInput
-                              [(ngModel)]="cloudflareApiKey"
-                              type="password"
-                              placeholder="Cloudflare API Token"
-                            />
-                          </mat-form-field>
+                          <div class="inputs-group">
+                            <mat-form-field appearance="outline">
+                              <mat-label>Cloudflare Account ID</mat-label>
+                              <input
+                                matInput
+                                [(ngModel)]="cloudflareProjectId"
+                                placeholder="Account ID"
+                              />
+                            </mat-form-field>
+                            <mat-form-field appearance="outline">
+                              <mat-label>API Token / Key</mat-label>
+                              <input
+                                matInput
+                                [(ngModel)]="cloudflareApiKey"
+                                type="password"
+                                placeholder="Cloudflare API Token"
+                              />
+                            </mat-form-field>
+                          </div>
                           <button
                             mat-flat-button
                             color="primary"
@@ -502,11 +512,8 @@
                         +11234567890)</strong
                       >
                     </p>
-                    <div
-                      class="form-row"
-                      style="display: flex; gap: 12px; align-items: center; margin-bottom: 16px"
-                    >
-                      <mat-form-field appearance="outline" style="flex: 1; margin-bottom: 0">
+                    <div class="mfa-inline-form">
+                      <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 0">
                         <mat-label>Phone Number</mat-label>
                         <input
                           matInput
@@ -520,7 +527,7 @@
                         color="primary"
                         (click)="sendMfaCode()"
                         [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
-                        style="height: 56px"
+                        class="mfa-btn"
                       >
                         @if (isSendingMfaCode()) {
                         <span class="btn-spinner"></span>
@@ -535,8 +542,8 @@
                           >Step 2: Enter the 6-digit verification code sent to your phone</strong
                         >
                       </p>
-                      <div class="form-row" style="display: flex; gap: 12px; align-items: center">
-                        <mat-form-field appearance="outline" style="flex: 1; margin-bottom: 0">
+                      <div class="mfa-inline-form">
+                        <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 0">
                           <mat-label>Verification Code</mat-label>
                           <input matInput [(ngModel)]="mfaVerificationCode" placeholder="123456" />
                         </mat-form-field>
@@ -545,7 +552,7 @@
                           color="accent"
                           (click)="verifyMfaCode()"
                           [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
-                          style="height: 56px"
+                          class="mfa-btn"
                         >
                           @if (isVerifyingMfaCode()) {
                           <span class="btn-spinner"></span>
