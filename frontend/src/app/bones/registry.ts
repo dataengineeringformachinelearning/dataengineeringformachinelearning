@@ -6,7 +6,13 @@ import _isolated_status_page from './isolated-status-page.bones.json';
 import _announcements from './announcements.bones.json';
 import _status_pages from './status-pages.bones.json';
 
-configureBoneyard({ animate: 'shimmer' });
+configureBoneyard({
+  animate: 'shimmer',
+  color: '#e1e6e2',
+  darkColor: '#182821',
+  stagger: true,
+  transition: true,
+});
 
 registerBones({
   'isolated-status-page': _isolated_status_page,

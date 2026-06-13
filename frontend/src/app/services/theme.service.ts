@@ -22,6 +22,11 @@ export class ThemeService {
         if (isPlatformBrowser(this.platformId)) {
           const activeTheme = this.themeSignal();
           document.documentElement.setAttribute('data-theme', activeTheme);
+          if (activeTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
           localStorage.setItem('theme', activeTheme);
         }
       });
