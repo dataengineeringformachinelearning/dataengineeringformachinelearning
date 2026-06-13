@@ -16,6 +16,12 @@
   --color-warning: #ffc107;
   --color-error: #f44336;
   --color-info: #2196f3;
+  --color-amber: #ffb74d;
+  --color-amber-dim: rgba(255, 183, 77, 0.15);
+  --color-border-precision: rgba(255, 255, 255, 0.08);
+  --color-gauge-red: #d5001c;
+  --color-cyber-cyan: #00f2fe;
+  --color-cyber-indigo: #4a00e0;
 
   /* Shadows & Elevation */
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
@@ -41,7 +47,7 @@
   --color-dark-grey-btn-bg: rgba(255, 255, 255, 0.08);
   --color-dark-grey-btn-text: #ffffff;
 
-  /* SaaS Grid & Modular Spacing (deepmind.google inspiration) */
+  /* SaaS Grid & Modular Spacing layout tokens */
   --grid-gap: 2rem;
   --card-padding: 1.5rem;
   --border-radius-lg: 20px;
@@ -65,6 +71,12 @@ html[data-theme='light'] {
   --color-warning: #ffc107;
   --color-error: #d32f2f;
   --color-info: #0288d1;
+  --color-amber: #b07219;
+  --color-amber-dim: rgba(176, 114, 25, 0.1);
+  --color-border-precision: rgba(24, 40, 33, 0.12);
+  --color-gauge-red: #b80017;
+  --color-cyber-cyan: #008fa6;
+  --color-cyber-indigo: #31009c;
 
   --shadow-sm: 0 2px 4px rgba(24, 40, 33, 0.08);
   --shadow-md: 0 4px 12px rgba(24, 40, 33, 0.12);
@@ -83,7 +95,7 @@ html[data-theme='light'] {
   --color-dark-grey-btn-bg: #202124;
   --color-dark-grey-btn-text: #ffffff;
 
-  /* SaaS Grid & Modular Spacing (deepmind.google inspiration) */
+  /* SaaS Grid & Modular Spacing layout tokens */
   --grid-gap: 2rem;
   --card-padding: 1.5rem;
   --border-radius-lg: 20px;

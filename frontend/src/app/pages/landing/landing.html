@@ -38,20 +38,34 @@
   <!-- Platform Video presentation (delivered from Sanity.io CDN) -->
   @if (sanityService.platformVideo(); as video) {
   <section class="video-presentation-section" aria-labelledby="video-title">
-    <div class="video-wrapper">
-      <div class="video-glow-effect"></div>
-      <div class="video-frame">
+    <div class="video-flat-container">
+      <!-- Telemetry Header (Precision Console Style) -->
+      <div class="telemetry-bar">
+        <div class="telemetry-left">
+          <span class="telemetry-dot"></span>
+          <span class="telemetry-tag">VIDEO FEED // DEEP_LEARNING_ORCHESTRATOR</span>
+        </div>
+        <div class="telemetry-right">
+          <span class="telemetry-metric">29.97 FPS</span>
+          <span class="telemetry-divider">|</span>
+          <span class="telemetry-metric">RES: 2160P</span>
+          <span class="telemetry-divider">|</span>
+          <span class="telemetry-metric">STATUS: OPERATIONAL</span>
+        </div>
+      </div>
+      <div class="video-frame-flat">
         <video
           [src]="video.videoUrl"
           controls
           preload="metadata"
           playsinline
-          class="platform-video-player"
+          class="platform-video-player-flat"
           [attr.aria-label]="video.title"
         ></video>
       </div>
       @if (video.description) {
-      <div class="video-info-overlay">
+      <div class="video-flat-info">
+        <span class="info-pre-tag">DOCUMENTARY ARCHIVE</span>
         <h2 id="video-title">{{ video.title }}</h2>
         <p>{{ video.description }}</p>
       </div>

@@ -23,17 +23,19 @@
 .sphere-1 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-cyber-indigo) 0%, transparent 70%);
   top: -100px;
   left: -200px;
+  opacity: 0.15; /* Subtly toned down for premium look */
 }
 
 .sphere-2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, var(--accent-color) 0%, transparent 70%);
+  background: radial-gradient(circle, var(--color-cyber-cyan) 0%, transparent 70%);
   bottom: 15%;
   right: -100px;
+  opacity: 0.12;
 }
 
 /* Hero Section */
@@ -53,10 +55,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border-precision);
   padding: 6px 16px;
-  border-radius: 100px;
+  border-radius: 4px; /* Crisp, low-radius flat style */
   margin-bottom: 0.5rem;
   backdrop-filter: blur(8px);
 
@@ -64,15 +66,16 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background-color: var(--color-success);
-    box-shadow: 0 0 8px var(--color-success);
+    background-color: var(--color-amber);
+    box-shadow: 0 0 8px var(--color-amber);
     display: inline-block;
   }
 
   .badge-text {
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
+    font-size: 0.75rem;
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     color: var(--text-color);
     text-transform: uppercase;
   }
@@ -87,20 +90,21 @@
 
 .title {
   font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 850;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
   margin: 0;
   color: var(--text-color);
-  background: linear-gradient(135deg, var(--text-color) 30%, var(--accent-color) 100%);
+  background: linear-gradient(135deg, var(--text-color) 50%, var(--color-amber) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: none;
+  text-transform: uppercase;
 }
 
 .subtitle {
-  font-size: clamp(1.1rem, 2vw, 1.35rem);
+  font-size: clamp(1rem, 2vw, 1.25rem);
   color: var(--text-muted);
   line-height: 1.6;
   max-width: 700px;
@@ -249,7 +253,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-radius: 16px;
+  border-radius: 4px; /* Precision sharp corner */
   background: transparent;
   border: 1px solid transparent;
   color: var(--text-muted);
@@ -259,24 +263,25 @@
   width: 100%;
 
   &:focus-visible {
-    outline: 2px solid var(--accent-color);
+    outline: 2px solid var(--color-amber);
   }
 
   &.active {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--color-border-precision);
     color: var(--text-color);
+    box-shadow: inset 3px 0 0 var(--color-gauge-red); /* Instrument meter active line */
 
     .step-nav-icon {
-      background: var(--primary-color);
-      color: var(--color-on-primary);
+      background: var(--color-amber-dim);
+      color: var(--color-amber);
     }
   }
 
   .step-nav-icon {
     width: 40px;
     height: 40px;
-    border-radius: 10px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -935,7 +940,7 @@
   }
 }
 
-/* Video Presentation styling */
+/* Video Presentation styling - Flat, Telemetry Grid */
 .video-presentation-section {
   width: 100%;
   max-width: var(--container-max-width);
@@ -945,78 +950,133 @@
   padding: 0 1rem;
 }
 
-.video-wrapper {
-  position: relative;
+.video-flat-container {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  background: rgba(24, 40, 33, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius-lg);
-  padding: 1.5rem;
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-md);
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+  background: transparent;
+  border: 1px solid var(--color-border-precision);
+  border-radius: 4px; /* Precision border radius - sharp but refined */
+  overflow: hidden;
+  position: relative;
+}
 
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.12);
-  }
+.telemetry-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 24, 20, 0.6);
+  border-bottom: 1px solid var(--color-border-precision);
+  font-family: 'Fira Code', 'Courier New', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--color-amber);
 }
 
 :host-context(html[data-theme='light']) {
-  .video-wrapper {
-    background: rgba(255, 255, 255, 0.6);
-    border-color: var(--border);
+  .telemetry-bar {
+    background: rgba(255, 255, 255, 0.8);
+    color: var(--color-amber);
   }
 }
 
-.video-glow-effect {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: var(--border-radius-lg);
-  background: radial-gradient(800px circle at 50% 50%, rgba(45, 71, 57, 0.1), transparent 40%);
-  pointer-events: none;
-  z-index: -1;
+.telemetry-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.video-frame {
+.telemetry-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-amber);
+  box-shadow: 0 0 8px var(--color-amber);
+  animation: telemetryPulse 2s infinite ease-in-out;
+}
+
+.telemetry-tag {
+  font-weight: 600;
+}
+
+.telemetry-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.8;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+}
+
+.telemetry-metric {
+  text-transform: uppercase;
+}
+
+.telemetry-divider {
+  color: var(--color-border-precision);
+}
+
+.video-frame-flat {
   position: relative;
   width: 100%;
-  border-radius: 12px;
-  overflow: hidden;
   background: #000;
   aspect-ratio: 16 / 9;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-.platform-video-player {
+.platform-video-player-flat {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.video-info-overlay {
+.video-flat-info {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 0.5rem 0.25rem 0 0.25rem;
+  padding: 1.25rem;
+  background: rgba(15, 24, 20, 0.4);
+  border-top: 1px solid var(--color-border-precision);
+
+  .info-pre-tag {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--color-amber);
+  }
 
   h2 {
     margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
     color: var(--text-color);
+    text-transform: uppercase;
   }
 
   p {
     margin: 0;
     font-size: 0.95rem;
     color: var(--text-muted);
-    line-height: 1.55;
+    line-height: 1.6;
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .video-flat-info {
+    background: rgba(255, 255, 255, 0.4);
+  }
+}
+
+@keyframes telemetryPulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 12px var(--color-amber);
   }
 }

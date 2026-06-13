@@ -121,9 +121,9 @@ To guarantee layout consistency and a pixel-perfect feel, follow these guideline
 
 ### Page Decoratives (Glow Spheres)
 
-- Use standard green-sage colors (`var(--primary-color)` and `var(--accent-color)`) for glow spheres across all pages. Yellow/orange gradients or spheres should not be used as page accents in light mode.
+- In Dark Mode, use high-fidelity atmospheric glows (Indigo and Cyan: `var(--color-cyber-indigo)` and `var(--color-cyber-cyan)`) to suggest advanced AI computation. In Light Mode, keep accents soft and forest-toned to ensure reading comfort.
 
-### SaaS Grid & Modular Spacing (deepmind.google style)
+### SaaS Grid & Modular Spacing (Precision style)
 
 To make everything look modularly slotted in with perfect visual cohesiveness, components must use standard layout tokens:
 
@@ -140,7 +140,22 @@ To make everything look modularly slotted in with perfect visual cohesiveness, c
 
 ---
 
-## 5. Implementation
+## 5. Technical Instrumentation & Glow Styling Tokens
+
+To elevate the dark-first visual look of the application to a premium, high-performance console state, we define the following specialized tokens:
+
+- **Industrial Amber**:
+  - `--color-amber`: `#ffb74d` (Dark), `#b07219` (Light) — represents glowing console panels and active telemetry.
+- **Instrument Gauge Red**:
+  - `--color-gauge-red`: `#d5001c` — used for critical status lines, needles, and high-importance alerts.
+- **Compute Cyber Tones**:
+  - `--color-cyber-cyan`: `#00f2fe` — used for data flow connections and active state nodes.
+  - `--color-cyber-indigo`: `#4a00e0` — used for glowing atmospheric background spheres.
+  - `--color-border-precision`: `rgba(255, 255, 255, 0.08)` (Dark), `rgba(24, 40, 33, 0.12)` (Light) — razor-sharp borders for precision instrument panel spacing.
+
+---
+
+## 6. Implementation
 
 The central source of truth for the frontend styling is located in `frontend/src/theme.scss`.
 Backend Django templates share a similar methodology within `backend/static/styles.css`.
