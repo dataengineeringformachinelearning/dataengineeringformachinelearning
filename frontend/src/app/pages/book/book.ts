@@ -111,8 +111,10 @@ export class Book implements OnInit {
   }
 
   parseMarkdown() {
-    // Split content dynamically by '## Chapter ' or '## Acknowledgements' headers
-    const rawChunks = pageMarkdown.split(/(?=^## (?:Chapter \d+:|Acknowledgements))/m);
+    // Split content dynamically by '## Chapter ', '## My Notes...', or '## Acknowledgements' headers
+    const rawChunks = pageMarkdown.split(
+      /(?=^## (?:Chapter \d+:|My Notes on Deployment & Release|Acknowledgements))/m,
+    );
     const parsed: Chapter[] = [];
 
     for (const chunk of rawChunks) {
