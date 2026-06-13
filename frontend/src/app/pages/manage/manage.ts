@@ -113,11 +113,17 @@ export class Manage implements OnInit {
   mfaSuccess = signal<string | null>(null);
   mfaRecaptchaVerifier: any = null;
 
+  isGoogleLinked = signal<boolean>(false);
+  isAppleLinked = signal<boolean>(false);
+  providerError = signal<string | null>(null);
+  providerSuccess = signal<string | null>(null);
+
   constructor() {
     effect(() => {
       if (this.authService.isAuthenticated() && this.authService.currentUserId() !== null) {
         this.loadStatusPages();
         this.checkMfaStatus();
+        this.checkLinkedProviders();
       }
     });
   }
@@ -651,6 +657,100 @@ export class Manage implements OnInit {
             this.mfaError.set(e.message || 'Failed to disable MFA.');
           }
         }
+      }
+    });
+  }
+
+  checkLinkedProviders() {
+    const user = this.authService.auth?.currentUser;
+    if (user) {
+      const providers = user.providerData.map((p: any) => p.providerId);
+      this.isGoogleLinked.set(providers.includes('google.com'));
+      this.isAppleLinked.set(providers.includes('apple.com'));
+      this.cdr.markForCheck();
+    }
+  }
+
+  async linkGoogle() {
+    this.providerError.set(null);
+    this.providerSuccess.set(null);
+    const result = await this.authService.linkGoogleAccount();
+    if (result.success) {
+      this.providerSuccess.set('Google account linked successfully!');
+      this.checkLinkedProviders();
+    } else {
+      this.providerError.set(result.error || 'Failed to link Google account.');
+    }
+    this.cdr.markForCheck();
+  }
+
+  async unlinkGoogle() {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'Unlink Google Account',
+        message:
+          'Are you sure you want to disconnect your Google account? You will no longer be able to log in using Google.',
+        type: 'confirm',
+        confirmBtnText: 'Unlink',
+        confirmBtnColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(async confirmed => {
+      if (confirmed) {
+        this.providerError.set(null);
+        this.providerSuccess.set(null);
+        const result = await this.authService.unlinkProvider('google.com');
+        if (result.success) {
+          this.providerSuccess.set('Google account disconnected successfully.');
+          this.checkLinkedProviders();
+        } else {
+          this.providerError.set(result.error || 'Failed to unlink Google account.');
+        }
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  async linkApple() {
+    this.providerError.set(null);
+    this.providerSuccess.set(null);
+    const result = await this.authService.linkAppleAccount();
+    if (result.success) {
+      this.providerSuccess.set('Apple ID linked successfully!');
+      this.checkLinkedProviders();
+    } else {
+      this.providerError.set(result.error || 'Failed to link Apple ID.');
+    }
+    this.cdr.markForCheck();
+  }
+
+  async unlinkApple() {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'Unlink Apple ID',
+        message:
+          'Are you sure you want to disconnect your Apple ID? You will no longer be able to log in using Apple.',
+        type: 'confirm',
+        confirmBtnText: 'Unlink',
+        confirmBtnColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(async confirmed => {
+      if (confirmed) {
+        this.providerError.set(null);
+        this.providerSuccess.set(null);
+        const result = await this.authService.unlinkProvider('apple.com');
+        if (result.success) {
+          this.providerSuccess.set('Apple ID disconnected successfully.');
+          this.checkLinkedProviders();
+        } else {
+          this.providerError.set(result.error || 'Failed to unlink Apple ID.');
+        }
+        this.cdr.markForCheck();
       }
     });
   }

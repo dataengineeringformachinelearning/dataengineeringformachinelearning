@@ -25,6 +25,8 @@ import {
   OAuthProvider,
   signInWithPopup,
   GoogleAuthProvider,
+  linkWithPopup,
+  unlink,
 } from 'firebase/auth';
 
 @Injectable({
@@ -335,6 +337,41 @@ export class AuthService {
         };
       }
       return { success: false, error: e.message || 'Google Sign-In failed.' };
+    }
+  }
+
+  async linkGoogleAccount(): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
+      const provider = new GoogleAuthProvider();
+      await linkWithPopup(this.auth.currentUser, provider);
+      return { success: true };
+    } catch (e: any) {
+      console.error(e);
+      return { success: false, error: e.message || 'Google account linking failed.' };
+    }
+  }
+
+  async linkAppleAccount(): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
+      const provider = new OAuthProvider('apple.com');
+      await linkWithPopup(this.auth.currentUser, provider);
+      return { success: true };
+    } catch (e: any) {
+      console.error(e);
+      return { success: false, error: e.message || 'Apple account linking failed.' };
+    }
+  }
+
+  async unlinkProvider(providerId: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
+      await unlink(this.auth.currentUser, providerId);
+      return { success: true };
+    } catch (e: any) {
+      console.error(e);
+      return { success: false, error: e.message || `Failed to unlink ${providerId}.` };
     }
   }
 }
