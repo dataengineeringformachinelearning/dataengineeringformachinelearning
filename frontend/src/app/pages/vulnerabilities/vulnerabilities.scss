@@ -42,8 +42,8 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: var(--color-gauge-red);
-  box-shadow: 0 0 10px var(--color-gauge-red);
+  background-color: var(--color-amber);
+  box-shadow: 0 0 10px var(--color-amber);
   animation: pulse-ring 2s infinite ease-in-out;
 }
 
@@ -102,8 +102,8 @@
   }
 
   &.critical {
-    border-left: 3px solid var(--color-gauge-red);
-    .metric-value { color: var(--color-gauge-red); }
+    border-left: 3px solid var(--color-amber);
+    .metric-value { color: var(--color-amber); }
   }
 }
 
@@ -252,7 +252,7 @@
     &[data-severity="low"] { background-color: rgba(76, 175, 80, 0.15); color: #81c784; }
     &[data-severity="medium"] { background-color: rgba(255, 193, 7, 0.15); color: #ffd54f; }
     &[data-severity="high"] { background-color: rgba(244, 67, 54, 0.15); color: #e57373; }
-    &[data-severity="critical"] { background-color: rgba(213, 0, 28, 0.2); color: #ff5252; border: 1px solid var(--color-gauge-red); }
+    &[data-severity="critical"] { background-color: var(--color-amber-dim); color: var(--color-amber); border: 1px solid var(--color-amber); }
   }
 }
 

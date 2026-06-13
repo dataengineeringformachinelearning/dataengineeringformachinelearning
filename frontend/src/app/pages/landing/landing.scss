@@ -270,7 +270,7 @@
     background: rgba(255, 255, 255, 0.04);
     border-color: var(--color-border-precision);
     color: var(--text-color);
-    border-left: 3px solid var(--color-gauge-red); /* Instrument meter active line - flat border instead of curved box-shadow */
+    border-left: 3px solid var(--color-amber); /* Instrument meter active line - flat border instead of curved box-shadow */
 
     .step-nav-icon {
       background: var(--color-amber-dim);

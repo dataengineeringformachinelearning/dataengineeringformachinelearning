@@ -671,3 +671,8 @@ html[data-theme='light'] #global-error-toast {
     transform: rotate(360deg);
   }
 }
+
+// Global border-radius override to eliminate all rounded borders
+*, *::before, *::after {
+  border-radius: 0 !important;
+}

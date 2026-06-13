@@ -44,21 +44,23 @@
 .success-text {
   padding: 12px;
   margin-bottom: 16px;
-  border-radius: 6px;
+  border-radius: 0;
   background-color: rgba(76, 175, 80, 0.1);
   color: var(--color-success);
   font-weight: 500;
   font-size: 0.9rem;
+  border-left: 3px solid var(--color-success);
 }
 
 .info-text {
   padding: 12px;
   margin-bottom: 16px;
-  border-radius: 6px;
-  background-color: rgba(33, 150, 243, 0.1);
-  color: var(--text-color);
+  border-radius: 0;
+  background-color: rgba(255, 183, 77, 0.05);
+  color: var(--color-amber);
   font-weight: 500;
   font-size: 0.9rem;
+  border-left: 3px solid var(--color-amber);
 }
 
 .error-text {
@@ -68,36 +70,38 @@
   margin-bottom: 12px;
   background: rgba(211, 47, 47, 0.1);
   padding: 0.5rem;
-  border-radius: 6px;
+  border-radius: 0;
   border: 1px solid rgba(211, 47, 47, 0.2);
+  border-left: 3px solid var(--color-error);
   text-align: center;
 }
 
 .modal-header {
   padding: 1.5rem;
   border-bottom: 1px solid var(--border);
+  border-top: 3px solid var(--color-amber); /* Industrial amber accent */
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(0, 0, 0, 0.2);
 
   h3 {
     margin: 0;
-    font-size: 1.25rem;
-    color: var(--color-primary-container);
+    font-size: 1.15rem;
+    color: var(--text-color);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 600;
+    letter-spacing: 0.15em;
+    font-weight: 700;
   }
 
   .title-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .header-icon {
-    color: var(--color-primary-container);
+    color: var(--color-amber);
     margin: 0;
     font-size: 24px;
     width: 24px;
@@ -108,7 +112,7 @@
     background: none;
     border: none;
     font-size: 1.5rem;
-    color: var(--text-color);
+    color: var(--text-muted);
     cursor: pointer;
     transition: color 0.2s;
     display: flex;
@@ -116,13 +120,13 @@
     justify-content: center;
 
     &:hover {
-      color: var(--color-primary-container);
+      color: var(--color-amber);
     }
   }
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 1.75rem 1.5rem;
 }
 
 .modal-footer {
@@ -159,20 +163,23 @@
 
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.05);
-        border-color: var(--color-primary-container);
+        border-color: var(--color-amber);
       }
     }
 
     &.btn-submit {
-      background: var(--color-dark-grey-btn-bg) !important;
+      background: var(--color-amber) !important;
       border: none !important;
-      color: var(--color-dark-grey-btn-text) !important;
+      color: #0f1814 !important; /* Deep forest green/black text on amber */
       min-width: 100px;
       display: flex;
       align-items: center;
       gap: 6px;
       justify-content: center;
       box-shadow: var(--shadow-sm) !important;
+      font-weight: 700 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
 
       &:hover:not(:disabled) {
         opacity: 0.9;
@@ -204,9 +211,9 @@
     background: none !important;
     border: none !important;
     padding: 0 !important;
-    color: var(--link-color);
+    color: var(--color-amber);
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 600;
     text-decoration: none;
     cursor: pointer;
     font-family: inherit;
@@ -226,10 +233,10 @@
       color: var(--color-primary);
     }
     .header-icon {
-      color: var(--color-primary);
+      color: var(--color-amber);
     }
     .close-btn:hover {
-      color: var(--color-primary);
+      color: var(--color-amber);
     }
   }
   .modal-footer {
@@ -237,7 +244,7 @@
     button.btn-cancel {
       &:hover:not(:disabled) {
         background: rgba(0, 0, 0, 0.04);
-        border-color: var(--color-primary);
+        border-color: var(--color-amber);
       }
     }
   }

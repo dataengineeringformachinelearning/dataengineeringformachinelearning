@@ -53,6 +53,16 @@
           <mat-icon>settings</mat-icon>
           <span>Manage</span>
         </a>
+        <a
+          mat-button
+          routerLink="/vulnerabilities"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="nav-btn"
+        >
+          <mat-icon>security</mat-icon>
+          <span>Vulnerabilities</span>
+        </a>
         }
 
         <div class="divider"></div>
@@ -129,6 +139,17 @@
     >
       <mat-icon>settings</mat-icon>
       <span>Manage</span>
+    </a>
+    <a
+      mat-button
+      routerLink="/vulnerabilities"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
+      <mat-icon>security</mat-icon>
+      <span>Vulnerabilities</span>
     </a>
     }
 
