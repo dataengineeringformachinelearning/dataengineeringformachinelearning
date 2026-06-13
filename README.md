@@ -589,6 +589,15 @@ Telemetry tells us _what_ is failing, but unstructured user complaints tell us _
 
 To detect malicious traffic patterns and understand regional threat profiles, I establish API integrations with Google Analytics (GA4) and Microsoft Clarity. By securely authenticating with their respective APIs, the backend gathers rich geolocation access details, browser telemetry, and request metadata. This information is ingested into a dedicated data pipeline and fed directly into a PyTorch threat prediction neural network model (`ThreatPredictor`). The model processes access features—such as regional traffic spikes and suspicious request weights—to forecast geographical anomaly probability and compute an access threat score. This allows the system to actively flag anomalous traffic contributions directly on the tenant status pages, protecting the platform from adversarial telemetry and service exploitation.
 
+This integration with Google Analytics and Microsoft Clarity serves as a critical third-party analytics telemetry step. In the roadmap, this setup serves as a precursor to designing and deploying a custom first-party client-side script and dynamic threat widget that tenants can embed directly on their own websites to collect raw security-focused telemetry natively.
+
+In addition to first-party GA4/Clarity integrations, I enrich raw session telemetry by cross-referencing visitor IP addresses against free public reputation databases. I incorporate checks against:
+
+- **AbuseIPDB**: To query crowd-sourced abuse reports and retrieve abuse confidence percentages.
+- **AlienVault OTX (Open Threat Exchange)**: To query threat pulse records and active botnet/malicious indicators.
+
+For local development and book reader environments, the system operates in a dual mode. If real credentials are provided via environment variables (`ABUSEIPDB_API_KEY` and `OTX_API_KEY`), the synchronization command makes live API calls to audit reputation. If these keys are absent, the ingestion script falls back to a deterministic **Simulation Mode** that highlights how these indicators behave on mocked malicious IP ranges.
+
 ---
 
 ## Chapter 14: Scaling reporting and announcements with Sanity
@@ -625,7 +634,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Backend & APIs**: [Django](https://www.djangoproject.com) ([Django Ninja](https://django-ninja.rest-framework.com)), [Gunicorn](https://gunicorn.org), [NGINX](https://nginx.org)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org), [Redpanda](https://redpanda.com), [Polars](https://pola.rs)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
 
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to my [RAILWAY.md](./RAILWAY.md) file.

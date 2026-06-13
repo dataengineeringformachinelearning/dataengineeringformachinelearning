@@ -117,6 +117,15 @@
         threat analysis and distill them into actionable, real-time decisions.
       </p>
       <p>
+        Our current integration with third-party analytics platforms (Google Analytics / GA4 and
+        Microsoft Clarity) serves as a critical telemetry ingestion phase. By retrieving rich
+        visitor logs, geolocation distributions, and request patterns from these platforms, we train
+        a custom PyTorch neural network model (ThreatPredictor) to detect anomalies. Looking
+        forward, this third-party ingestion model serves as a precursor to an embedded first-party
+        client script and dynamic widget that tenants can load directly on their sites, providing
+        direct, zero-dependency telemetry streaming.
+      </p>
+      <p>
         Framed conceptually as a book and built with the collaborative power of Gemini and Grok,
         this open-source framework is designed to test this theory. The ultimate goal is to build
         upon this foundation over time, eventually engineering an open-source engine for

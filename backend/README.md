@@ -126,3 +126,24 @@ python manage.py createsuperuser
 ```
 
 Follow the prompts to enter your username, email, and password. You can then use these credentials to log in to the frontend.
+
+## Threat Intelligence & IP Reputation
+
+The backend features a threat intelligence synchronization tool that collects analytics session metrics and analyzes IP reputation against third-party databases.
+
+### Execution
+
+To run the threat intelligence sync command:
+
+```bash
+python manage.py fetch_threat_intel
+```
+
+### Configuration
+
+You can configure real-time reputation lookups by setting the following environment variables in your `backend/.env` file:
+
+- `ABUSEIPDB_API_KEY`: API Key for checking IP abuse confidence scores from AbuseIPDB.
+- `OTX_API_KEY`: API Key for checking threat intelligence indicators from AlienVault OTX.
+
+_Note: If these environment variables are not present, the sync utility runs in **Simulation Mode**, evaluating metrics using predefined fallback rules for local testing._
