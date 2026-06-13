@@ -1,6 +1,6 @@
 # Data Engineering for Machine Learning
 
-Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
+Working notes and book prototypes on Data Engineering for Machine Learning by Joe Alongi.
 
 ## Homepage
 /

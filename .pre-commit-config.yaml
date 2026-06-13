@@ -24,3 +24,12 @@ repos:
         exclude: ^frontend/(public/llms-full.txt|src/assets/content/page.md)$
         additional_dependencies:
           - prettier@3.8.2
+
+  - repo: local
+    hooks:
+      - id: sync-content
+        name: Sync README.md to frontend files
+        entry: python scripts/sync_content.py
+        language: system
+        files: ^README\.md$
+        pass_filenames: false

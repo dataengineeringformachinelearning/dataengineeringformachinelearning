@@ -1,31 +1,39 @@
 # Data Engineering for Machine Learning
 
-Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.
+_Working Notes & Book Prototypes by Joe Alongi_
+
+Welcome to my working notebook and companion repository. These are my active notes, system design drafts, and code prototypes for my upcoming book, _Data Engineering for Machine Learning_.
+
+Through this repository, I am mapping out the progression of building a production-grade, full-stack telemetry and machine learning platform. My goal with these notes is to document the journey of integrating modern data engineering practices directly with machine learning workflows, showing how to build, observe, and secure an ML-driven application.
+
+---
 
 ## Chapter 1: Setting up your environment
 
-For this book, we will build a full-stack data engineering application using Angular for the frontend and Python (Django) for the backend.
+In this opening chapter, I want to guide the reader through setting up a clean, modern development environment. For the book's companion application, I've decided to build a full-stack system using Angular for the frontend and Python (Django) for the backend.
 
 ### Chapter 1.1: Frontend Setup
 
-If you are using a Mac, we highly recommend utilizing the Apple ecosystem's fantastic package management tools. Open your terminal and install Homebrew:
+If you're on a Mac like me, I highly recommend utilizing the Apple ecosystem's package management tools. Here's how I set up the initial environment. First, open the terminal and install Homebrew:
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-For Apple Silicon Macs, ensure you install Rosetta 2 to allow compatibility with x86_64 binaries:
+For Apple Silicon Macs, I make sure to install Rosetta 2 to ensure compatibility with any legacy x86_64 binaries:
 
 ```bash
 softwareupdate --install-rosetta
 ```
 
-With Homebrew installed, you can easily install Node.js and the Angular CLI to get your frontend started:
+With Homebrew in place, I install Node.js and the Angular CLI to get the frontend bootstrap process started:
 
 ```bash
 brew install node
 npm install -g @angular/cli
 ```
+
+Once the tools are ready, I scaffold a new Angular project and start the development server:
 
 ```bash
 ng new frontend
@@ -33,9 +41,9 @@ cd frontend
 npm start
 ```
 
-Visit `http://localhost:4200` to verify your frontend is running.
+I visit `http://localhost:4200` to verify that the local dev server is running properly.
 
-To format and lint the frontend codebase according to the project's quality standards:
+To enforce the styling and quality standards I want for this codebase, I configure ESLint and Prettier. Here is how I run the checks and formatting:
 
 ```bash
 # Run ESLint to check for code issues
@@ -45,7 +53,7 @@ npm run lint
 npx prettier --write .
 ```
 
-To prepare for production, you can containerize the Angular application using a multi-stage Dockerfile that builds the app and serves it via NGINX. Create a `Dockerfile` and an `nginx.conf` in your frontend directory, then build and run it:
+To prepare this frontend for production, I plan to teach the reader how to containerize the Angular application using a multi-stage Dockerfile that builds the app and serves it via NGINX. I created a `Dockerfile` and an `nginx.conf` in the frontend directory, which can be built and run like this:
 
 ```bash
 docker build -t frontend-app .
@@ -54,13 +62,13 @@ docker run -p 8080:8080 frontend-app
 
 ### Chapter 1.2: Backend Setup
 
-For the backend, we will use Python and Django. On a Mac, the fastest way to manage Python, virtual environments, and dependencies is using [Astral uv](https://github.com/astral-sh/uv). Install it via Homebrew:
+For the backend stack, I've chosen Python and Django. On macOS, the fastest and cleanest way I've found to manage Python versions, virtual environments, and project dependencies is [Astral uv](https://github.com/astral-sh/uv). I install it via Homebrew:
 
 ```bash
 brew install uv
 ```
 
-Once installed, you can use `uv` and `uvx` to initialize your environment, install Django, and scaffold the project:
+Once `uv` is installed, I use it along with `uvx` to initialize my environment, install Django, and scaffold the backend:
 
 ```bash
 mkdir backend && cd backend
@@ -79,11 +87,11 @@ django-admin startproject config .
 python manage.py runserver
 ```
 
-Visit `http://127.0.0.1:8000` to verify your Django server is running.
+I verify everything is working by visiting `http://127.0.0.1:8000`.
 
-Like the frontend, you should containerize your Django application using Docker. You will need to install production dependencies like `gunicorn`, `whitenoise`, and `psycopg2-binary`. Define a `Dockerfile` that collects static files and runs the server using Gunicorn.
+Just like the frontend, I want to containerize the Django application using Docker. In the book, I will show how to install production dependencies like `gunicorn`, `whitenoise`, and `psycopg2-binary`, and define a `Dockerfile` that collects static files and runs the server using Gunicorn.
 
-To enforce professional formatting and style standards (Google Python Style Guide 2-space indentation), we use [Ruff](https://docs.astral.sh/ruff/) executed via `uvx` (the tool runner of [Astral uv](https://github.com/astral-sh/uv)):
+To enforce professional formatting and style standards (specifically conforming to the Google Python Style Guide with 2-space indentation), I run [Ruff](https://docs.astral.sh/ruff/) via `uvx`:
 
 ```bash
 # Run Ruff lint checks and auto-fix issues
@@ -93,48 +101,50 @@ uvx ruff check --fix .
 uvx ruff format .
 ```
 
+---
+
 ## Chapter 2: Integrating Tools and Pre-requisites
 
-As your project grows, maintaining code quality is crucial.
-
-For the frontend, configure tools like Prettier and ESLint:
+As the codebase grows, keeping quality standards high is a priority. I want to highlight how to configure tools like Prettier and ESLint for the frontend to prevent style drift:
 
 ```bash
 npm install --save-dev prettier
 ng add @angular-eslint/schematics
 ```
 
-For rapid prototyping of independent TypeScript services or middleware outside of Angular, you can use `tsx`:
+For rapid prototyping of independent TypeScript services or middleware outside of Angular, I like to use `tsx`. It's a great lightweight tool when I need to quickly test logic:
 
 ```bash
 npm install --save-dev tsx
 npx tsx --watch your-script.ts
 ```
 
-This acts as a lightweight way to spin up secondary services alongside your main Django application.
+This acts as a lightweight way to spin up secondary services alongside the main Django application.
 
 ### Chapter 2.1: Automated Code Quality (Pre-commit)
 
-To automatically enforce formatting, style guidelines, and code quality before every git commit, we use [pre-commit](https://pre-commit.com/) hooks executed via `uvx` (the fast tool runner of [Astral uv](https://github.com/astral-sh/uv)):
+To save time and automatically enforce formatting, style guidelines, and code quality before every git commit, I configured [pre-commit](https://pre-commit.com/) hooks. I execute them via `uvx`:
 
 ```bash
 # Run all pre-commit hooks manually on the whole codebase
 uvx pre-commit run --all-files
 ```
 
-These hooks automatically check and format python files (via [Ruff](https://docs.astral.sh/ruff/)), frontend files (via [Prettier](https://prettier.io/)), YAML configs, trailing whitespace, and end-of-file formatting.
+These hooks automatically check and format Python files (via [Ruff](https://docs.astral.sh/ruff/)), frontend files (via [Prettier](https://prettier.io/)), YAML configurations, trailing whitespace, and end-of-file formatting.
+
+---
 
 ## Chapter 3: Interfaces and data integration
 
-A common architecture for applications is to serve a frontend application and a separate backend API to serve data. In this chapter, we will review how to set up a backend API and how to integrate it with the frontend application.
+A cornerstone of modern systems design is decoupling the client and server. In this chapter, I want to show how to build a clean backend API and integrate it with our frontend application.
 
 ### Chapter 3.1: Introduction
 
 #### Chapter 3.1.1: Integrating fullstack endpoints
 
-Integrations through RESTful APIs are a common way to build out fullstack applications. Let's create a simple healthcheck endpoint in our Django backend.
+Integrations through RESTful APIs are the industry standard for fullstack applications. Here is my prototype for a simple healthcheck endpoint in Django.
 
-First, define the view and hook it into your URL routing:
+First, I define the view and hook it into the URL routing:
 
 ```python
 # backend/config/views.py
@@ -150,14 +160,14 @@ def health(request):
 # path('api/health', views.health, name='health'),
 ```
 
-To allow your Angular frontend to communicate with this Django backend, you need to configure CORS (Cross-Origin Resource Sharing).
+To allow the Angular frontend to communicate with the Django backend, I need to configure CORS (Cross-Origin Resource Sharing):
 
 ```bash
 pip install django-cors-headers
 # Add 'corsheaders' to INSTALLED_APPS and its middleware to MIDDLEWARE
 ```
 
-In your `settings.py`, you can use environment variables to define allowed origins so it works smoothly locally and in production:
+In `settings.py`, I use environment variables to define allowed origins so the system works smoothly both in my local environment and in production:
 
 ```python
 # backend/config/settings.py
@@ -169,7 +179,7 @@ cors_origins = os.getenv('CORS_ALLOWED_ORIGINS', '')
 CORS_ALLOWED_ORIGINS = [o.strip() for o in cors_origins.split(',')] if cors_origins else []
 ```
 
-Now that the endpoint is responding, we need to enable Angular to call it. In modern Angular using standalone components, enable HTTP client functionality in your `app.config.ts`:
+Now that the endpoint is responding, I need to enable Angular to call it. In modern Angular using standalone components, I configure the HTTP client in `app.config.ts`:
 
 ```typescript
 // frontend/src/app/app.config.ts
@@ -177,7 +187,7 @@ import { provideHttpClient, withFetch } from "@angular/common/http";
 export const appConfig = { providers: [provideHttpClient(withFetch())] };
 ```
 
-You can then inject this into a component and use Angular Signals to cleanly manage the reactive state:
+I then inject this into a component and use Angular Signals to cleanly manage the reactive state:
 
 ```typescript
 // frontend/src/app/app.component.ts
@@ -203,7 +213,9 @@ export class AppComponent implements OnInit {
 }
 ```
 
-This pattern of exposing a backend JSON endpoint, configuring CORS via environment variables, and consuming it reactively on the frontend will be repeated throughout the rest of this book.
+This pattern of exposing a backend JSON endpoint, configuring CORS via environment variables, and consuming it reactively on the frontend is a fundamental pattern I will repeat throughout the book.
+
+---
 
 ## Chapter 4: Database design
 
@@ -211,20 +223,20 @@ This pattern of exposing a backend JSON endpoint, configuring CORS via environme
 
 #### Chapter 4.1.1: Setting up data schemas
 
-A database is essential for storing the historical data needed to train machine learning models. We'll use PostgreSQL. To visualize and manage your databases easily, you can use a tool like DBeaver:
+A robust database is essential for storing the historical telemetry needed to train our machine learning models. I've chosen PostgreSQL. To visualize and manage the database schemas easily, I recommend using DBeaver:
 
 ```bash
 brew install --cask dbeaver-community
 ```
 
-Let's turn the simple healthcheck from the previous chapter into a persisted data point for tracking application uptime. Creating this in Django is straightforward. First, create a new app:
+Let's evolve the simple healthcheck from Chapter 3 into a persisted data point for tracking application uptime. I'll create a Django app for this:
 
 ```bash
 python manage.py startapp monitor
 # Add 'monitor' to INSTALLED_APPS in settings.py
 ```
 
-Then, define a model to represent the healthcheck records:
+Next, I define a model to represent the healthcheck records:
 
 ```python
 # monitor/models.py
@@ -240,14 +252,14 @@ class Endpoints(models.Model):
     is_active = models.BooleanField(default=True)
 ```
 
-Run your migrations to create the table:
+Then I run migrations to update the database schema:
 
 ```bash
 python manage.py makemigrations monitor
 python manage.py migrate
 ```
 
-Finally, update your healthcheck view to save a record each time the endpoint is hit:
+Finally, I update the healthcheck view to log a record to the database each time the endpoint is hit:
 
 ```python
 # config/views.py
@@ -272,15 +284,17 @@ def health(request):
     return JsonResponse({'status': 'ok'})
 ```
 
+---
+
 ## Chapter 5: Visualizing data
 
 ### Chapter 5.1: Introduction
 
 #### Chapter 5.1.1: Developing interface visualizations
 
-Now that you have active data being stored in your database, the next step is to visualize it. Creating a visualization of application uptime or response times can provide valuable insights into the health of the application.
+Once we have active telemetry streaming into PostgreSQL, the next logical step is visualization. Rendering a dashboard of application uptime and response times provides immediate visual insight into system health.
 
-First, create a new Django endpoint to serve this data:
+First, I create a Django endpoint to expose this data:
 
 ```python
 # monitor/views.py
@@ -292,13 +306,13 @@ def get_all_endpoints(request):
     return JsonResponse(endpoints, safe=False)
 ```
 
-Then, you can use powerful charting libraries like `ag-charts` to render this in Angular:
+On the frontend, I choose to use `ag-charts` to build responsive, interactive charts in Angular:
 
 ```bash
 npm install ag-charts-angular ag-charts-community
 ```
 
-In your dashboard component, you can fetch the data from your new API and bind it to a chart configuration. Here is a skeletal example of how you might set this up:
+In the dashboard component, I fetch the telemetry data and bind it to the chart configuration. Here is my prototype:
 
 ```typescript
 // frontend/src/app/pages/dashboard/dashboard.ts
@@ -334,7 +348,9 @@ export class Dashboard implements OnInit {
 }
 ```
 
-If you want to take this in a more analytical direction, you can explore `ag-grid` to display interactive data tables that support sorting and filtering out of the box.
+To take this further, I also plan to show how to use `ag-grid` to display tabular data, allowing users to sort, filter, and export the logs easily.
+
+---
 
 ## Chapter 6: Modeling and training
 
@@ -342,19 +358,19 @@ If you want to take this in a more analytical direction, you can explore `ag-gri
 
 #### Chapter 6.1.1: Setting up modeling and prediction
 
-Now that we are tracking endpoint health data, we can use it to build a model that anticipates system degradation. We'll introduce PyTorch to build a simple neural network and Polars for fast data processing.
+Now that we are tracking endpoint health data, we can start building models to predict system degradation. I've brought in PyTorch to design a neural network and Polars for fast data manipulation:
 
 ```bash
 pip install torch polars skops scikit-learn
 ```
 
-To integrate this properly, create a new Django app called `model` and add it to your `INSTALLED_APPS`:
+To structure this properly, I scaffold a new Django app called `model`:
 
 ```bash
 python manage.py startapp model
 ```
 
-Instead of running an intensive training loop synchronously on your main server, you can define a basic multi-layer perceptron using PyTorch's `nn.Module`. Here's a structural example of how you might hook this into a Django view, fetching historical health data to predict your SLA (Service Level Agreement):
+Instead of running an intensive training loop synchronously on the web server (which would block the event loop), I outline a basic multi-layer perceptron using PyTorch's `nn.Module`. Here is my draft of how to structure this view, which will load historical health metrics to predict SLA adherence:
 
 ```python
 # backend/model/views.py
@@ -390,7 +406,9 @@ def train_model(request):
     return JsonResponse({'status': 'training_initiated'})
 ```
 
-By connecting these views to URL routing, the Angular frontend can trigger model training via API requests and fetch the latest prediction to visualize our expected system SLA.
+By exposing this model training via an API endpoint, the Angular client can trigger training and query predictions to display real-time SLA metrics.
+
+---
 
 ## Chapter 7: Securing the compute
 
@@ -398,9 +416,9 @@ By connecting these views to URL routing, the Angular frontend can trigger model
 
 #### Chapter 7.1.1: Implementing authentication
 
-To prevent unauthorized users from triggering expensive backend operations (like model training), we should secure our UI and APIs.
+Because training machine learning models is computationally expensive, I want to show the reader how to secure these endpoints.
 
-On the frontend, you can manage user sessions by tracking a simple boolean state in an Angular service. Using Angular Signals makes this incredibly clean:
+On the frontend, I manage user sessions by tracking authentication states in an Angular service. I use Angular Signals to make this highly reactive and readable:
 
 ```typescript
 // frontend/src/app/services/auth.service.ts
@@ -412,7 +430,7 @@ export class AuthService {
 }
 ```
 
-You can inject this service into your components to hide or disable sensitive actions:
+I can then inject this service into my UI components to show/hide or enable/disable sensitive actions:
 
 ```html
 <button (click)="trainModel()" [disabled]="!authService.isAuthenticated()">
@@ -420,7 +438,7 @@ You can inject this service into your components to hide or disable sensitive ac
 </button>
 ```
 
-On the backend, we can expose minimal endpoints that hook directly into Django's robust built-in authentication system. By authenticating a user via a JSON payload and returning session cookies, our Angular app can easily log users in and out.
+On the backend, I leverage Django's robust built-in authentication system to handle user sessions. By authenticating a JSON payload and returning session cookies, the Angular application can securely log users in and out:
 
 ```python
 # backend/config/views.py
@@ -437,11 +455,13 @@ def api_login(request):
     return JsonResponse({'status': 'error'}, status=401)
 ```
 
-To create your first user account so you can log in, simply generate a superuser from your backend directory:
+To set up the initial admin user, I run the Django interactive superuser creation tool:
 
 ```bash
 python manage.py createsuperuser
 ```
+
+---
 
 ## Chapter 8: Enhancing observability
 
@@ -449,9 +469,9 @@ python manage.py createsuperuser
 
 #### Chapter 8.1.1: Enabling data ingestion through pipelines
 
-To scale our data ingestion, we can introduce a message broker like Redpanda, a lightweight, Java-free alternative to Kafka. This allows us to decouple our telemetry ingestion from our main application processes.
+To scale telemetry ingestion, I decided to introduce Redpanda—a fast, lightweight, JVM-free Kafka alternative. This allows us to decouple real-time telemetry ingestion from our main web server workflows.
 
-First, you'll need to capture errors or telemetry events from your frontend application. A good practice is to create a global error handler that catches exceptions and posts them to a dedicated endpoint, while saving them to `localStorage` if the user is offline.
+First, I need to capture exceptions and performance metrics from the client side. I designed a global error handler in Angular to catch exceptions and post them to our ingest endpoint, falling back to `localStorage` if the user is offline:
 
 ```typescript
 // Example frontend error payload submission
@@ -463,7 +483,7 @@ const errorPayload = {
 this.http.post("/api/v1/telemetry/endpoints", errorPayload).subscribe();
 ```
 
-On the backend, instead of processing this data synchronously, we can expose a fast, asynchronous endpoint that immediately pushes the incoming payload to a Redpanda topic. Using a framework like `django-ninja` paired with `aiokafka` keeps the HTTP operation entirely non-blocking.
+On the backend, I want an asynchronous, non-blocking ingestion endpoint. Using `django-ninja` alongside `aiokafka` lets us write an async view that immediately dispatches the event payload to a Redpanda topic:
 
 ```python
 # backend/telemetry/views.py
@@ -482,30 +502,32 @@ async def post_telemetry(request, payload: dict):
     return {"status": "accepted"}
 ```
 
-Finally, a standalone background worker can subscribe to this `app-events` topic to process the messages in batches. By pulling records and parsing them directly into a Polars DataFrame, you can achieve high-performance processing before committing the data to your Postgres database. This pipeline ensures that heavy ingestion loads never impact your user-facing API performance.
+A standalone background telemetry worker subscribes to the `app-events` topic, pulls messages in batches, and processes them using Polars before writing to PostgreSQL. This ensures high throughput without slowing down the user experience.
 
 #### Chapter 8.1.2: Integrating Sentry for Full-Stack Error Tracking
 
-To capture real-time client and server exceptions in production, we integrate Sentry across our application stack:
+To capture real-time errors in production, I integrated Sentry across both the frontend and backend:
 
-- **Frontend Integration**: Sentry's Angular SDK (`@sentry/angular`) is initialized in `main.ts` and registered with the router in `app.config.ts` using the frontend DSN. Exceptions are captured directly inside `GlobalErrorHandler` via `Sentry.captureException(error)`.
-- **Backend Integration**: Django's Sentry SDK (`sentry-sdk`) is initialized in `settings.py` with `send_default_pii=True` enabled to capture full HTTP request payloads and client contexts during backend exceptions.
-- **Environment Configuration**: For production deployments, Sentry DSNs are loaded dynamically using the `SENTRY_DSN` environment variable on both the frontend and backend to keep credentials secure.
+- **Frontend**: I initialize the Sentry Angular SDK (`@sentry/angular`) in `main.ts` and hook it into the router configuration in `app.config.ts`. Exceptions are explicitly forwarded to Sentry in my `GlobalErrorHandler` via `Sentry.captureException(error)`.
+- **Backend**: I configure the Sentry Python SDK (`sentry-sdk`) in `settings.py`, enabling `send_default_pii=True` so we capture full request contexts during exceptions.
+- **Environments**: In production, DSN keys are loaded from the environment (`SENTRY_DSN`) to keep credentials secure.
 
 #### Chapter 8.1.3: Continuous Security Auditing with Snyk
 
-To ensure secure development practices, the repository integrates Snyk for automated security scanning:
+I want to emphasize security by design. To do this, I integrated Snyk to automate vulnerability checks throughout the development lifecycle:
 
-- **Static Analysis (SAST)**: Snyk Code is used to scan the codebase for potential logic flaws and security vulnerabilities in our custom code.
-- **Dependency Vulnerability Scanning**: Snyk scans third-party packages in both the Angular frontend (`package.json`) and Django backend (`requirements.txt`) to flag and mitigate known vulnerabilities.
-- **Container Security**: Container scans are performed on all project Dockerfiles (`frontend`, `backend`, and `queue` components) to detect issues in the base images and libraries.
+- **Static Analysis (SAST)**: I run Snyk Code scans to find logic and security issues in my custom source code.
+- **Dependency Scanning**: Snyk monitors third-party packages in both Angular (`package.json`) and Django (`requirements.txt`) to keep dependencies patched.
+- **Container Audits**: Snyk scans the Dockerfiles across my services (`frontend`, `backend`, and `queue`) to detect vulnerabilities in base images.
 
 #### Chapter 8.1.4: Open-Source License Compliance with FOSSA
 
-To prevent legal and compliance issues from open-source libraries:
+To protect against licensing issues, I integrated FOSSA to run automated scans:
 
-- **License Auditing**: FOSSA is integrated to scan all frontend and backend dependencies, verifying compliance with the project's license constraints.
-- **Automated Scans**: License validation is executed automatically to generate dependency compliance logs and license compliance status badges.
+- **License Scans**: It analyzes the frontend and backend dependency trees to verify compliance with my project's open-source constraints.
+- **Reporting**: Automated workflows generate compliance logs and status badges for the project.
+
+---
 
 ## Chapter 9: Applying a use-case
 
@@ -513,20 +535,26 @@ To prevent legal and compliance issues from open-source libraries:
 
 #### Chapter 9.1.1: Enabling the data pipeline for incident management
 
-With historical telemetry successfully streaming through our Redpanda message broker, we can now apply it to a real-world use-case: a public status and incident management platform.
+With historical telemetry streaming through Redpanda, I want to show a practical use-case: a public status and incident management dashboard.
 
-1. **Telemetry Parsing**: The async telemetry worker pulls raw health check events in batches, converting them to Polars DataFrames for efficient performance calculation.
-2. **SLA Calculation**: Telemetry is processed to compute a cumulative Service Level Agreement (SLA) percentage for each service and status page based on real response times and status codes.
-3. **Incident Operations**: When an outage occurs, authenticated users can log in, declare an active incident, and associate it with a specific status page. These incidents are dynamically rendered on the frontend using Angular Signals to notify end-users in real-time.
-4. **Historical Uptime Visualizations**: Telemetry is aggregated into daily buckets to render a 90-day interactive uptime graph showing partial and major outages.
+Here is the flow I've implemented:
+
+1. **Telemetry Processing**: The async worker pulls healthcheck metrics from Redpanda and uses Polars to batch process them efficiently.
+2. **SLA Calculation**: The worker computes service uptime and calculates real-time SLA compliance percentages.
+3. **Incident Operations**: Authenticated operators can log in to declare active incidents and associate them with status pages. These are pushed to the frontend, updating the UI in real-time via Angular Signals.
+4. **Historical Visualizations**: Telemetry is aggregated into daily buckets to render a 90-day interactive graph showing service health history.
+
+---
 
 ## Chapter 10: Encrypting the data
 
 ### Chapter 10.1: Introduction
 
-#### Chapter 10.1.1: Enabling end to end encryption
+#### Chapter 10.1.1: Enabling end-to-end encryption
 
-To ensure the confidentiality of sensitive monitoring endpoints and logs, we implement application-level encryption for fields stored within PostgreSQL. Using Django's custom model fields, we encrypt target URLs and request payloads at rest using AES-256 (via the `cryptography` package) before they are written to the database. Decryption occurs transparently upon model retrieval, ensuring that credentials, API keys, or private endpoints are never exposed in plaintext to database administrators or logs, while retaining standard TLS/HTTPS encryption for data in transit.
+To secure sensitive target URLs and telemetry payloads, I implement application-level encryption for fields stored within PostgreSQL. Using Django's custom model fields, I encrypt data fields at rest using AES-256 (via the `cryptography` library) before they are written to the database. Decryption happens transparently upon model retrieval, meaning private endpoints or sensitive data are never exposed in plaintext to database administrators or logs, while preserving standard TLS/HTTPS for data in transit.
+
+---
 
 ## Chapter 11: Tuning the model
 
@@ -534,7 +562,9 @@ To ensure the confidentiality of sensitive monitoring endpoints and logs, we imp
 
 #### Chapter 11.1.1: Hyperparameter Tuning
 
-To optimize the SLA prediction accuracy of our PyTorch neural network, we implement a hyperparameter tuning pipeline. Using scikit-learn's grid search capabilities combined with cross-validation, we evaluate various network architectures (varying the hidden layer sizes), learning rates, and optimizer choices (such as Adam vs. SGD). Once the optimal combination of hyperparameters is identified, the pipeline saves the best-performing model utilizing the `skops` library. This ensures that tenant SLA forecasts adapt dynamically to changing traffic patterns with minimal prediction error.
+To optimize the SLA prediction accuracy of my PyTorch neural network, I implement a hyperparameter tuning pipeline. Using scikit-learn's grid search combined with cross-validation, the training script evaluates various hidden layer configurations, learning rates, and optimizer choices (like Adam vs. SGD). Once the optimal combination is found, the pipeline saves the best-performing model utilizing the `skops` library. This ensures that tenant SLA forecasts adapt dynamically to changing traffic patterns with minimal prediction error.
+
+---
 
 ## Chapter 12: Collecting unstructured data
 
@@ -542,12 +572,14 @@ To optimize the SLA prediction accuracy of our PyTorch neural network, we implem
 
 #### Chapter 12.1.1: Implementing LLMs for data enrichment and user queries
 
-Systems telemetry alone cannot capture qualitative user experiences. To process unstructured user complaints, we implement an AI-powered data enrichment pipeline utilizing LangChain, LangGraph, and Google Gemini:
+Telemetry tells us _what_ is failing, but unstructured user complaints tell us _how_ users are affected. To process this qualitative feedback, I built an AI enrichment pipeline utilizing LangChain, LangGraph, and Google Gemini:
 
-1. **Unstructured Ingestion**: When a user encounters an issue, they submit a natural-language description along with their current browser context.
-2. **AI Agent Processing**: The backend routes this to a LangChain ReAct agent configured in `llm_agent.py`. The agent utilizes Gemini (`ChatGoogleGenerativeAI`) to parse the complaint, compare it against recent telemetry context, and determine potential root causes.
-3. **Broker Dispatch**: The agent calls a custom tool (`send_issue_to_redpanda`) that publishes the enriched, structured JSON analysis to the `user-issues` topic on Redpanda.
-4. **Async Consumption**: The background telemetry worker consumes messages from `user-issues`, updates the database record with the AI's diagnostic analysis, and logs the incident details, completing the asynchronous data collection loop.
+1. **Complaint Ingestion**: Users submit natural-language complaints alongside browser context details.
+2. **AI Agent Processing**: The backend routes these to a LangChain ReAct agent configured in `llm_agent.py`. The agent utilizes Gemini (`ChatGoogleGenerativeAI`) to parse the complaint, compare it against recent telemetry context, and determine potential root causes.
+3. **Broker Dispatch**: The agent calls a custom tool (`send_issue_to_redpanda`) that publishes the enriched, structured JSON analysis to a `user-issues` topic on Redpanda.
+4. **Async Consumption**: The background worker consumes messages from `user-issues`, updates the database record with the AI's diagnostic analysis, and logs the incident details, completing the asynchronous data collection loop.
+
+---
 
 ## Chapter 13: Enhancing data with threat intelligence
 
@@ -555,19 +587,32 @@ Systems telemetry alone cannot capture qualitative user experiences. To process 
 
 #### Chapter 13.1.1: Connecting to threat intelligence sources
 
-To secure our data pipelines against external vulnerabilities, we connect our ingestion system to public threat intelligence feeds (e.g., ipify, AbuseIPDB, and national vulnerability databases). When telemetry packets arrive, the backend processes them through a custom lookup service that matches client IP addresses and headers against active threat list caches. Verified threats are flagged in the database and dispatched to the Redpanda broker to initiate security alerts and block requests, protecting the downstream machine learning models from adversarial telemetry injection.
+To secure the data pipeline against malicious or adversarial inputs, I connect my ingestion system to public threat intelligence feeds (e.g., ipify, AbuseIPDB, and public vulnerability databases). When telemetry packets arrive, the backend processes them through a custom lookup service that matches client IP addresses and headers against active threat list caches. Verified threats are flagged in the database and dispatched to the Redpanda broker to initiate security alerts and block requests, protecting the downstream machine learning models from adversarial telemetry injection.
 
-## Acknowledgements & Release Notes
+---
 
-This platform is fully optimized and ready for production release. The deployment is configured on Railway across three integrated services:
+## My Notes on Deployment & Release
+
+Throughout this book's draft, we build a platform fully optimized and ready for production release. I've configured the final deployment on Railway across three integrated services:
 
 1. **Web Frontend**: A highly interactive, accessibly-compliant (a11y) Angular application featuring responsive status cards, telemetry charts, and a standalone public status dashboard.
 2. **Web Backend**: A robust Django Ninja API coordinating authentication, CORS handling, data persistence, and threat detection.
 3. **Telemetry Worker**: An asynchronous background consumer processing Redpanda message streams and executing PyTorch ML model pipelines for SLA forecasting.
 
-We express gratitude to the open-source communities behind Angular, Django, PyTorch, Redpanda, and Polars, whose tools made this project possible.
+### Acknowledgements & Technologies
 
-For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to the [RAILWAY.md](./RAILWAY.md) file.
+I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
+
+- **Frontend**: [Angular](https://angular.dev), [Prettier](https://prettier.io), [ESLint](https://eslint.org)
+- **Backend & APIs**: [Django](https://www.djangoproject.com) ([Django Ninja](https://django-ninja.rest-framework.com)), [Gunicorn](https://gunicorn.org), [NGINX](https://nginx.org)
+- **Data & Broker**: [PostgreSQL](https://www.postgresql.org), [Redpanda](https://redpanda.com), [Polars](https://pola.rs)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
+- **Observability & Security**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
+
+For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to my [RAILWAY.md](./RAILWAY.md) file.
+
+---
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
