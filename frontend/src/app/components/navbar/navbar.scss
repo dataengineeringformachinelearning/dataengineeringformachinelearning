@@ -55,7 +55,7 @@
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
   transition: all 0.2s ease;
-  border-radius: 4px !important; /* Sharp technical alignment */
+  border-radius: 4px 4px 0 0 !important; /* Sharp technical alignment, bottom flat for active indicator */
   padding: 0 16px !important;
   height: 38px !important;
   line-height: 38px !important;

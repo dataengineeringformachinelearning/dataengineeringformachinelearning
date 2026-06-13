@@ -27,6 +27,9 @@ export class CookieConsentService {
 
   constructor() {
     if (isPlatformBrowser(this.platformId)) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceCookieSettings = urlParams.get('cookie-settings') === 'true';
+
       const saved = localStorage.getItem('cookie_consent');
       if (saved) {
         try {
@@ -37,7 +40,7 @@ export class CookieConsentService {
             marketing: !!parsed.marketing,
           });
           this.hasDecidedSignal.set(true);
-          this.showBannerSignal.set(false);
+          this.showBannerSignal.set(forceCookieSettings ? true : false);
         } catch (e) {
           this.showBannerSignal.set(true);
         }

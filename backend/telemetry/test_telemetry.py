@@ -78,19 +78,20 @@ async def test_telemetry_worker_normalization():
     ]
   )
 
+  from django.conf import settings
+
+  frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200").rstrip("/")
+  expected_url = f"{frontend_url}/status"
+
   await cmd.save_to_db(df)
 
-  # Both URLs should normalize and merge to a single service mapping to http://localhost:4200/status
-  services = await sync_to_async(list)(
-    MonitoredService.objects.filter(url="http://localhost:4200/status")
-  )
+  # Both URLs should normalize and merge to a single service mapping to the expected status URL
+  services = await sync_to_async(list)(MonitoredService.objects.filter(url=expected_url))
   assert len(services) == 1
   assert services[0].name == "Status Pages Services"
 
   # Endpoints should also use the normalized URL
-  endpoints = await sync_to_async(list)(
-    Endpoints.objects.filter(url="http://localhost:4200/status")
-  )
+  endpoints = await sync_to_async(list)(Endpoints.objects.filter(url=expected_url))
   assert len(endpoints) == 2
 
 

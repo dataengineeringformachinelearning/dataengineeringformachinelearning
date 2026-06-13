@@ -133,9 +133,23 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# Gracefully fall back to local SQLite if DATABASE_URL is empty or does not start with a valid scheme
+db_url = os.getenv("DATABASE_URL", "")
+valid_schemes = (
+  "sqlite://",
+  "postgres://",
+  "postgresql://",
+  "mysql://",
+  "cockroach://",
+  "oracle://",
+  "redshift://",
+  "mssql://",
+)
+if not db_url or not any(db_url.startswith(scheme) for scheme in valid_schemes):
+  os.environ["DATABASE_URL"] = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+
 DATABASES = {
   "default": dj_database_url.config(
-    default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
     conn_max_age=600,
     conn_health_checks=True,
   )

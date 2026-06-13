@@ -37,6 +37,6 @@ async def report_issue(request, payload: IssueReportPayload):
       "message": "Issue processed and sent to Redpanda",
       "id": str(bug_report.id),
     }
-  except Exception as e:
-    logger.error(f"Error processing issue: {e}")
-    return HttpResponse(status=500, content=f"Internal Server Error: {e}")
+  except Exception:
+    logger.exception("Error processing issue")
+    return HttpResponse(status=500, content="Internal Server Error")

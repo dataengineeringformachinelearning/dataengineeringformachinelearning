@@ -93,7 +93,7 @@ export class Manage implements OnInit {
   isCreatingPage = signal<boolean>(false);
   isUpdatingPage = signal<boolean>(false);
   isAddingService = signal<boolean>(false);
-  isAddingIncident = signal<signal<boolean>>(signal(false));
+  isAddingIncident = signal<boolean>(false);
   isDeletingAccount = signal<boolean>(false);
 
   mfaPhoneNumber = '';

@@ -64,10 +64,55 @@
     />
 
     <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        const activeTheme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", activeTheme);
+      })();
+    </script>
   </head>
   <body>
     <!-- Skip to content link for keyboard users -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Floating Theme Toggle -->
+    <button
+      id="theme-toggle"
+      class="theme-toggle-btn"
+      aria-label="Toggle light and dark theme"
+    >
+      <svg
+        class="sun-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        style="width: 20px; height: 20px; display: none"
+      >
+        <circle cx="12" cy="12" r="4"></circle>
+        <path
+          d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"
+        ></path>
+      </svg>
+      <svg
+        class="moon-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        style="width: 20px; height: 20px; display: none"
+      >
+        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+      </svg>
+    </button>
 
     <div class="glow-sphere sphere-1"></div>
     <div class="glow-sphere sphere-2"></div>
@@ -135,7 +180,110 @@
             ></span
           >
         </div>
+        <div class="footer-compliance">
+          <span class="footer-line">
+            <a
+              href="{{ frontend_url }}/status/platform-status"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-status-link"
+              >Platform Status</a
+            >
+          </span>
+          <span class="footer-line">
+            <a
+              href="{{ frontend_url }}/whitepaper"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-whitepaper-link"
+              >Whitepaper</a
+            >
+          </span>
+          <span class="footer-line">
+            <a
+              href="{{ frontend_url }}/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-privacy-link"
+              >Privacy Policy</a
+            >
+          </span>
+          <span class="footer-line">
+            <a
+              href="{{ frontend_url }}/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-terms-link"
+              >Terms of Service</a
+            >
+          </span>
+          <span class="footer-line">
+            <a
+              href="{{ frontend_url }}/compliance"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-compliance-link"
+              >SOC2 Compliance</a
+            >
+          </span>
+          <span class="footer-line">
+            <a
+              href="{{ frontend_url }}/privacy#gdpr"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-gdpr-link"
+              >GDPR Compliance</a
+            >
+          </span>
+          <span class="footer-line">
+            <a
+              href="{{ frontend_url }}/?cookie-settings=true"
+              target="_blank"
+              rel="noopener noreferrer"
+              id="footer-cookie-settings-link"
+              >Cookie Settings</a
+            >
+          </span>
+        </div>
       </footer>
     </main>
+
+    <script>
+      (function () {
+        let currentTheme =
+          document.documentElement.getAttribute("data-theme") || "dark";
+
+        function updateIcons() {
+          const sunIcon = document.querySelector(".sun-icon");
+          const moonIcon = document.querySelector(".moon-icon");
+          if (sunIcon && moonIcon) {
+            if (currentTheme === "light") {
+              sunIcon.style.display = "none";
+              moonIcon.style.display = "block";
+            } else {
+              sunIcon.style.display = "block";
+              moonIcon.style.display = "none";
+            }
+          }
+        }
+
+        function setTheme(theme) {
+          document.documentElement.setAttribute("data-theme", theme);
+          localStorage.setItem("theme", theme);
+          currentTheme = theme;
+          updateIcons();
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+          updateIcons();
+          const toggleBtn = document.getElementById("theme-toggle");
+          if (toggleBtn) {
+            toggleBtn.addEventListener("click", () => {
+              setTheme(currentTheme === "light" ? "dark" : "light");
+            });
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
