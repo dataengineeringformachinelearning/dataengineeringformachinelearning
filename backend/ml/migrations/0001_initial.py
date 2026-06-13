@@ -6,7 +6,9 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
   initial = True
 
-  dependencies = []
+  dependencies = [
+    ("monitor", "0009_rename_model_to_ml"),
+  ]
 
   operations = [
     migrations.CreateModel(
