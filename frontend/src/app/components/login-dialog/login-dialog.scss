@@ -269,7 +269,15 @@
   }
 }
 
-.apple-signin-btn {
+.social-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.apple-signin-btn,
+.google-signin-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -295,13 +303,15 @@
     cursor: not-allowed;
   }
 
-  .apple-icon {
+  .apple-icon,
+  .google-icon {
     flex-shrink: 0;
   }
 }
 
 :host-context(html[data-theme='light']) {
-  .apple-signin-btn:hover:not(:disabled) {
+  .apple-signin-btn:hover:not(:disabled),
+  .google-signin-btn:hover:not(:disabled) {
     border-color: var(--color-primary);
   }
 }

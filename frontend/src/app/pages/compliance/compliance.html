@@ -51,10 +51,13 @@
           </div>
         </li>
         <li>
-          <mat-icon class="icon-warning">schedule</mat-icon>
+          <mat-icon class="icon-success">verified</mat-icon>
           <div class="item-details">
             <strong>Client Encryption Key Rotation</strong>
-            <p>Key rotation scheduled in {{ e2eEncryption().rotationDaysRemaining }} days.</p>
+            <p>
+              Automated 90-day cryptographic key rotation active (next rotation in {{
+              e2eEncryption().rotationDaysRemaining }} days).
+            </p>
           </div>
         </li>
       </ul>

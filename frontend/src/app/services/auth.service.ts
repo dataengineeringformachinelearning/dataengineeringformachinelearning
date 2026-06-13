@@ -24,6 +24,7 @@ import {
   multiFactor,
   OAuthProvider,
   signInWithPopup,
+  GoogleAuthProvider,
 } from 'firebase/auth';
 
 @Injectable({
@@ -302,6 +303,38 @@ export class AuthService {
         };
       }
       return { success: false, error: e.message || 'Apple Sign-In failed.' };
+    }
+  }
+
+  async loginWithGoogle(): Promise<{ success: boolean; error?: string; resolver?: any }> {
+    this.isProcessing.set(true);
+    try {
+      if (!this.auth) throw new Error('Firebase Auth not initialized');
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(this.auth, provider);
+
+      if (userCredential.user) {
+        const token = await userCredential.user.getIdToken();
+        await firstValueFrom(
+          this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        );
+      }
+
+      this.isProcessing.set(false);
+      return { success: true };
+    } catch (e: any) {
+      this.isProcessing.set(false);
+      console.error(e);
+      if (e?.code === 'auth/multi-factor-auth-required') {
+        return {
+          success: false,
+          error: 'MFA_REQUIRED',
+          resolver: getMultiFactorResolver(this.auth, e),
+        };
+      }
+      return { success: false, error: e.message || 'Google Sign-In failed.' };
     }
   }
 }
