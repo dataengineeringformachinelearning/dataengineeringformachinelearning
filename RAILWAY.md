@@ -132,12 +132,15 @@ No specific backend environment variables are usually required at runtime if the
 - **SECRET_KEY**: `<your-production-secret-key>`
 - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092` (See warning below)
 - **GOOGLE_API_KEY**: `<your-google-api-key>` (If using LLM features)
+- **FRONTEND_URL**: `https://dataengineeringformachinelearning.com` (Your production frontend URL)
 - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>` (For Google Analytics integration)
 - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>` (For Google Analytics integration)
 - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.dataengineeringformachinelearning.com/api/v1/system-status/integrations/google/callback` (OAuth callback URL)
 - **FIREBASE_SERVICE_ACCOUNT_JSON**: The raw JSON string of your Firebase service account credentials.
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For Threat Intelligence geo-blocking data)
 - **OTX_API_KEY**: `<your-alienvault-otx-api-key>` (For Threat Intelligence vulnerability data)
+- **RESEND_API_KEY**: `<your-resend-api-key>` (Optional, for incident email notifications)
+- **SENTRY_DSN**: `<your-sentry-dsn>` (Optional, for error monitoring)
 
 ### 3. Redpanda Broker (Message Queue)
 

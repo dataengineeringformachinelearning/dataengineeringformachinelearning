@@ -4,6 +4,25 @@ import django.db.models.deletion
 from django.db import migrations, models
 
 
+class AddFieldIfNotExists(migrations.AddField):
+  def database_forwards(self, app_label, schema_editor, from_state, to_state):
+    model = to_state.apps.get_model(app_label, self.model_name)
+    table_name = model._meta.db_table
+    field = model._meta.get_field(self.name)
+    column_name = field.column
+    if table_name not in schema_editor.connection.introspection.table_names():
+      super().database_forwards(app_label, schema_editor, from_state, to_state)
+      return
+    with schema_editor.connection.cursor() as cursor:
+      columns = [
+        col.name
+        for col in schema_editor.connection.introspection.get_table_description(cursor, table_name)
+      ]
+    if column_name in columns:
+      return
+    super().database_forwards(app_label, schema_editor, from_state, to_state)
+
+
 class Migration(migrations.Migration):
   dependencies = [
     ("ml", "0001_initial"),
@@ -11,7 +30,7 @@ class Migration(migrations.Migration):
   ]
 
   operations = [
-    migrations.AddField(
+    AddFieldIfNotExists(
       model_name="trainingrun",
       name="status_page",
       field=models.ForeignKey(

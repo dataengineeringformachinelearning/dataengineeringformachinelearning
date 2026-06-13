@@ -1,10 +1,12 @@
 import json
+import logging
 
 from django.http import HttpResponse
 from ninja import Router, Schema
 from utils.kafka import get_kafka_producer
 from utils.request import get_client_ip, get_user_agent
 
+logger = logging.getLogger(__name__)
 router = Router()
 
 
@@ -22,9 +24,13 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
   data = payload.dict()
   data["response_time"] = payload.response_time_ms / 1000.0
 
-  producer = await get_kafka_producer()
-  value = json.dumps(data).encode("utf-8")
-  await producer.send("app-events", value)
+  try:
+    producer = await get_kafka_producer()
+    value = json.dumps(data).encode("utf-8")
+    await producer.send("app-events", value)
+  except Exception as e:
+    logger.error(f"Failed to send telemetry to Kafka: {e}")
+    return HttpResponse("Telemetry ingestion queue unavailable", status=503)
 
   return HttpResponse(status=202)
 
