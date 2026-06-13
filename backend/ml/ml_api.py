@@ -40,6 +40,11 @@ def train_model(request, status_page_id: str | None = None):
   if not status_page:
     raise HttpError(400, "No status page available for training")
 
+  from monitor.api import check_status_page_access
+
+  if not check_status_page_access(request, status_page):
+    raise HttpError(403, "Permission denied")
+
   run = train_tenant_sla(status_page)
   if not run:
     raise HttpError(400, f"No data available for training status page '{status_page.title}'")
@@ -65,6 +70,10 @@ def get_latest_training(request, status_page_id: str | None = None):
     status_page = StatusPage.objects.filter(slug="platform-status").first()
 
   if status_page:
+    from monitor.api import check_status_page_access
+
+    if not check_status_page_access(request, status_page):
+      raise HttpError(403, "Permission denied")
     run = TrainingRun.objects.filter(status_page=status_page).order_by("-created_at").first()
   else:
     run = TrainingRun.objects.filter(status_page__isnull=True).order_by("-created_at").first()
@@ -122,6 +131,10 @@ def get_threat_report(request, status_page_id: str | None = None):
   if status_page_id:
     try:
       status_page = StatusPage.objects.get(id=status_page_id)
+      from monitor.api import check_status_page_access
+
+      if not check_status_page_access(request, status_page):
+        raise HttpError(403, "Permission denied")
       target_user = status_page.user
     except (StatusPage.DoesNotExist, ValueError):
       pass
@@ -190,6 +203,10 @@ def get_threat_report_stix(request, status_page_id: str | None = None):
   if status_page_id:
     try:
       status_page = StatusPage.objects.get(id=status_page_id)
+      from monitor.api import check_status_page_access
+
+      if not check_status_page_access(request, status_page):
+        raise HttpError(403, "Permission denied")
       target_user = status_page.user
     except (StatusPage.DoesNotExist, ValueError):
       pass

@@ -127,6 +127,29 @@ class AnalyticsIntegration(models.Model):
     db_table = "analytics_integrations"
     unique_together = ("user", "provider")
 
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self._decrypt_credentials()
+
+  def _decrypt_credentials(self):
+    if isinstance(self.credentials, dict) and "ciphertext" in self.credentials:
+      try:
+        from utils.encryption import decrypt_data
+
+        self.credentials = decrypt_data(self.credentials["ciphertext"])
+      except Exception:
+        pass
+
+  def save(self, *args, **kwargs):
+    # Encrypt credentials dictionary before saving
+    if isinstance(self.credentials, dict) and "ciphertext" not in self.credentials:
+      from utils.encryption import encrypt_data
+
+      ciphertext = encrypt_data(self.credentials)
+      self.credentials = {"ciphertext": ciphertext}
+    super().save(*args, **kwargs)
+    self._decrypt_credentials()
+
   def __str__(self):
     return f"{self.user.username} - {self.provider} ({'Active' if self.active else 'Inactive'})"
 

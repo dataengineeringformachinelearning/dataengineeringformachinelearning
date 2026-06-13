@@ -15,6 +15,14 @@ def is_valid_slug(slug: str) -> bool:
   return bool(re.match(r"^[a-zA-Z0-9-_]+$", slug))
 
 
+def check_status_page_access(request, status_page) -> bool:
+  if status_page.slug == "platform-status" or status_page.is_published:
+    return True
+  if request.user.is_authenticated and status_page.user == request.user:
+    return True
+  return False
+
+
 class EndpointOut(Schema):
   id: str
   url: str
@@ -335,6 +343,8 @@ class MonitoredServiceOut(Schema):
 @router.get("/status_pages/{page_id}/services", response=list[MonitoredServiceOut])
 def list_services(request, page_id: str):
   page = get_object_or_404(StatusPage, id=page_id)
+  if not check_status_page_access(request, page):
+    raise HttpError(403, "Permission denied")
   services = page.services.all()
   out = []
   for s in services:
@@ -427,6 +437,8 @@ class IncidentOut(Schema):
 @router.get("/status_pages/{page_id}/incidents", response=list[IncidentOut])
 def list_incidents(request, page_id: str):
   page = get_object_or_404(StatusPage, id=page_id)
+  if not check_status_page_access(request, page):
+    raise HttpError(403, "Permission denied")
   incidents = page.incidents.all()
   out = []
   for inc in incidents:

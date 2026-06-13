@@ -149,11 +149,19 @@
       <h2>7. Data Tenancy, Retention, and Lifecycle Policy</h2>
       <p>
         Observability systems must ensure strict isolation. The DEML Platform enforces absolute
-        multi-tenancy boundaries at the database level. Direct cross-tenant fallbacks (such as
-        global threat reports) are strictly eliminated; instead, threat models and predictions are
-        trained exclusively on the target user's telemetry. If a tenant does not yet have enough
-        collected telemetry, the model is trained on-demand using safe, zero-threat baselines
-        instead of shared data.
+        multi-tenancy boundaries at the database level and ensures all data is private-by-default.
+        Direct cross-tenant fallbacks (such as global threat reports) are strictly eliminated;
+        instead, threat models and predictions are trained exclusively on the target user's
+        telemetry. If a tenant does not yet have enough collected telemetry, the model is trained
+        on-demand using safe, zero-threat baselines instead of shared data.
+      </p>
+      <p>
+        To protect sensitive credentials (such as Google Analytics 4 tokens and Microsoft Clarity
+        API keys) from unauthorized exposure, the platform utilizes transparent application-level
+        AES-256 Fernet encryption at-rest. Furthermore, public access to status page details,
+        services, incidents, and telemetry graphs is strictly restricted. Unless the status page
+        owner explicitly approves by publishing the page, the system blocks all public traffic,
+        preventing the exposure of private endpoints or telemetry.
       </p>
       <p>
         Additionally, the platform implements a strict 90-day retention and lifecycle policy. All

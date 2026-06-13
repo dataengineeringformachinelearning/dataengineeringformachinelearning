@@ -65,7 +65,9 @@ def test_get_latest_training(client):
 @pytest.mark.django_db
 def test_train_and_latest_with_status_page(client):
   user = User.objects.create_user(username="testuser", password="password")
-  page = StatusPage.objects.create(user=user, title="Tenant Status", slug="tenant-status")
+  page = StatusPage.objects.create(
+    user=user, title="Tenant Status", slug="tenant-status", is_published=True
+  )
   MonitoredService.objects.create(status_page=page, name="Test Service", url="http://tenant.com")
 
   Endpoints.objects.create(

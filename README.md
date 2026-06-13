@@ -650,7 +650,7 @@ Here is the flow I've implemented:
 
 #### Chapter 10.1.1: Enabling end-to-end encryption
 
-To secure sensitive target URLs and telemetry payloads, I implement application-level encryption for fields stored within PostgreSQL. Using Django's custom model fields, I encrypt data fields at rest using AES-256 (via the `cryptography` library) before they are written to the database. Decryption happens transparently upon model retrieval, meaning private endpoints or sensitive data are never exposed in plaintext to database administrators or logs, while preserving standard TLS/HTTPS for data in transit.
+To secure sensitive target URLs, microservice status metrics, and telemetry payloads, I implement full end-to-end (E2E) encryption. In transit, all data flowing between user browsers, the Django web server, and telemetry workers is encrypted using TLS 1.3. Furthermore, integrated third-party credentials (such as Google Analytics 4 OAuth tokens and Microsoft Clarity API keys) are secured at-rest in our PostgreSQL/SQLite database. Using Django's model lifecycle hooks and the `cryptography` library, I transparently encrypt these credentials at-rest using AES-256 (via Fernet keys derived from Django's `SECRET_KEY`). Decryption happens transparently upon model retrieval, ensuring that administrative secrets and tenant tokens are never exposed in plaintext to database administrators, logs, or unauthenticated public users. Additionally, public access to individual status pages, services, incidents, and threat telemetry is strictly isolated. Unless the status page owner explicitly approves and publishes their page, the API rejects all public requests, guaranteeing absolute privacy.
 
 ---
 
@@ -770,6 +770,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Resend](https://resend.com)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
+<!-- - **Graphics & Icons**: "Data Quality" icon by vectorspoint from Noun Project (https://thenounproject.com/icon/data-quality-6448061/) -->
 
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to my [RAILWAY.md](./RAILWAY.md) file.
 

@@ -35,7 +35,8 @@ def authenticated_client(client, test_user, mock_verify_token):
     return original_request(*args, **kwargs)
 
   client.request = new_request
-  return client
+  yield client
+  client.request = original_request
 
 
 @pytest.mark.django_db
@@ -136,7 +137,9 @@ def test_add_service(authenticated_client, test_user):
 
 @pytest.mark.django_db
 def test_list_services(client, test_user):
-  page = StatusPage.objects.create(user=test_user, title="My Status", slug="my-status")
+  page = StatusPage.objects.create(
+    user=test_user, title="My Status", slug="my-status", is_published=True
+  )
   MonitoredService.objects.create(
     status_page=page, name="Backend Web Server", url="http://backend.local"
   )
@@ -156,7 +159,9 @@ def test_list_services(client, test_user):
 
 @pytest.mark.django_db
 def test_create_and_list_incidents(client, authenticated_client, test_user):
-  page = StatusPage.objects.create(user=test_user, title="Incident Test Page", slug="incident-test")
+  page = StatusPage.objects.create(
+    user=test_user, title="Incident Test Page", slug="incident-test", is_published=True
+  )
   payload = {
     "title": "Database Connection Interrupted",
     "message": "We are currently investigating DB outages.",
@@ -176,6 +181,63 @@ def test_create_and_list_incidents(client, authenticated_client, test_user):
   list_response = client.get(f"/api/v1/system-status/status_pages/{page.id}/incidents")
   assert list_response.status_code == 200
   assert len(list_response.json()) == 1
+
+
+@pytest.mark.django_db
+def test_private_status_page_anonymous_denied(client, test_user):
+  # Create a private status page for test_user
+  page = StatusPage.objects.create(
+    user=test_user, title="Private Page", slug="private-page", is_published=False
+  )
+
+  # Anonymous client should get 403 when listing services
+  response = client.get(f"/api/v1/system-status/status_pages/{page.id}/services")
+  assert response.status_code == 403
+
+  # Anonymous client should get 403 when listing incidents
+  response2 = client.get(f"/api/v1/system-status/status_pages/{page.id}/incidents")
+  assert response2.status_code == 403
+
+
+@pytest.mark.django_db
+def test_private_status_page_owner_allowed(authenticated_client, test_user):
+  # Create a private status page for test_user
+  page = StatusPage.objects.create(
+    user=test_user, title="Private Page", slug="private-page", is_published=False
+  )
+
+  # Authenticated owner should get 200
+  response3 = authenticated_client.get(f"/api/v1/system-status/status_pages/{page.id}/services")
+  assert response3.status_code == 200
+
+
+@pytest.mark.django_db
+def test_analytics_integration_encryption(test_user):
+  from monitor.models import AnalyticsIntegration
+
+  integration = AnalyticsIntegration.objects.create(
+    user=test_user,
+    provider="google",
+    credentials={"access_token": "secret_token", "refresh_token": "refresh_secret"},
+  )
+  # Verify in-memory is decrypted
+  assert integration.credentials["access_token"] == "secret_token"
+
+  # Verify stored in database is encrypted
+  from django.db import connection
+
+  with connection.cursor() as cursor:
+    cursor.execute("SELECT credentials FROM analytics_integrations")
+    row = cursor.fetchone()
+    import json
+
+    db_val = json.loads(row[0])
+    assert "ciphertext" in db_val
+    assert "access_token" not in db_val
+
+  # Fetch from db again and verify transparent decryption
+  fetched = AnalyticsIntegration.objects.get(id=integration.id)
+  assert fetched.credentials["access_token"] == "secret_token"
 
 
 @pytest.mark.django_db
