@@ -1,121 +1,233 @@
 <div class="landing-container">
   <!-- Glow Spheres for Premium Aesthetics -->
-  <div class="glow-sphere sphere-1"></div>
-  <div class="glow-sphere sphere-2"></div>
+  <div class="glow-sphere sphere-1" aria-hidden="true"></div>
+  <div class="glow-sphere sphere-2" aria-hidden="true"></div>
 
-  <div class="hero-content">
-    <h1 class="title">Data Engineering for Machine Learning Platform</h1>
+  <!-- Hero Section -->
+  <header class="hero-section">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      <span class="badge-text">Version 1.0 Production Platform</span>
+    </div>
+    <h1 class="title" id="main-title">Data Engineering for Machine Learning</h1>
     <p class="subtitle">
-      The definitive guide and analytics engine to building robust, scalable, and intelligent data
-      pipelines. Master the foundation of artificial intelligence and system telemetry.
+      A cloud-native telemetry engine and reference implementation for processing, transforming, and
+      forecasting system performance at scale.
     </p>
 
     <div class="cta-group">
-      <a routerLink="/documentation" class="cta-button primary-btn">
+      <a
+        routerLink="/documentation"
+        class="cta-button primary-btn"
+        aria-label="Read system documentation and guides"
+      >
         <mat-icon>menu_book</mat-icon>
         <span>Read Documentation</span>
       </a>
-      <a routerLink="/status/platform-status" class="cta-button secondary-btn">
+      <a
+        routerLink="/status/platform-status"
+        class="cta-button secondary-btn"
+        aria-label="View real-time platform statuses"
+      >
         <mat-icon>analytics</mat-icon>
         <span>View Statuses</span>
       </a>
     </div>
-  </div>
+  </header>
+
+  <!-- Interactive Pipeline Flow Simulation -->
+  <section class="pipeline-simulator" aria-labelledby="simulator-title">
+    <div class="simulator-header">
+      <h2 id="simulator-title">Live Telemetry & ML Prediction Pipeline</h2>
+      <p>
+        Click through the stages below to explore how data streams from ingestion to deep learning
+        forecasts in real-time.
+      </p>
+    </div>
+
+    <div class="simulator-grid">
+      <!-- Steps Navigation -->
+      <div class="steps-nav" role="tablist" aria-label="Pipeline Stages">
+        @for (step of pipelineSteps; track step.id; let idx = $index) {
+        <button
+          role="tab"
+          [attr.aria-selected]="activeStepIndex === idx"
+          [attr.aria-controls]="'step-panel-' + step.id"
+          [id]="'step-tab-' + step.id"
+          [class.active]="activeStepIndex === idx"
+          (click)="setStep(idx)"
+          class="step-nav-item"
+        >
+          <div class="step-nav-icon">
+            <mat-icon>{{ step.icon }}</mat-icon>
+          </div>
+          <div class="step-nav-info">
+            <span class="step-nav-tag">{{ step.tag }}</span>
+            <span class="step-nav-name">{{ step.name }}</span>
+          </div>
+        </button>
+        }
+      </div>
+
+      <!-- Step Content Display -->
+      <div class="step-display-panel">
+        @for (step of pipelineSteps; track step.id; let idx = $index) { @if (activeStepIndex ===
+        idx) {
+        <div
+          [id]="'step-panel-' + step.id"
+          role="tabpanel"
+          [attr.aria-labelledby]="'step-tab-' + step.id"
+          class="step-content-box"
+        >
+          <div class="step-text-content">
+            <span class="step-pill">{{ step.tag }}</span>
+            <h3>{{ step.name }}</h3>
+            <p>{{ step.description }}</p>
+          </div>
+          <div class="step-code-visual">
+            <div class="code-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span class="file-name"
+                >{{ step.id === 'predict' ? 'threat_model.py' : step.id === 'clean' ? 'events.sqlx'
+                : step.id === 'analyze' ? 'query.sql' : 'payload.json' }}</span
+              >
+            </div>
+            <pre><code>{{ step.codeSnippet }}</code></pre>
+          </div>
+        </div>
+        } }
+      </div>
+    </div>
+  </section>
 
   <!-- Feature Cards Grid -->
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">
-        <mat-icon>library_books</mat-icon>
+  <section class="features-section" aria-labelledby="features-title">
+    <div class="section-intro">
+      <span class="section-tag">CAPABILITIES</span>
+      <h2 id="features-title">Engineered for Reliability & Scale</h2>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <span class="card-tag">DOCS</span>
+        <div class="feature-icon">
+          <mat-icon>library_books</mat-icon>
+        </div>
+        <h2>Interactive Documentation</h2>
+        <p>
+          Explore step-by-step guides, working notes, and AI-driven annotations on data engineering
+          paradigms.
+        </p>
       </div>
-      <h2>Interactive Documentation</h2>
-      <p>
-        Explore step-by-step guides, working notes, and AI-driven annotations on data engineering
-        paradigms.
-      </p>
-    </div>
 
-    <div class="feature-card">
-      <div class="feature-icon">
-        <mat-icon>dns</mat-icon>
+      <div class="feature-card">
+        <span class="card-tag">TELEMETRY</span>
+        <div class="feature-icon">
+          <mat-icon>dns</mat-icon>
+        </div>
+        <h2>Real-Time System Monitoring</h2>
+        <p>
+          Track live service health, response times, and system statuses across all our core
+          ingestion endpoints.
+        </p>
       </div>
-      <h2>Real-Time System Monitoring</h2>
-      <p>
-        Track live service health, response times, and system statuses across all our core ingestion
-        endpoints.
-      </p>
-    </div>
 
-    <div class="feature-card">
-      <div class="feature-icon">
-        <mat-icon>trending_up</mat-icon>
+      <div class="feature-card">
+        <span class="card-tag">DEEP LEARNING</span>
+        <div class="feature-icon">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <h2>SLA Compliance Forecasts</h2>
+        <p>
+          Leverage predictive deep learning models to estimate Service Level Agreement (SLA) status
+          up to 90 days out.
+        </p>
       </div>
-      <h2>SLA Compliance Forecasts</h2>
-      <p>
-        Leverage predictive deep learning models to estimate Service Level Agreement (SLA) status up
-        to 90 days out.
-      </p>
-    </div>
 
-    <div class="feature-card">
-      <div class="feature-icon">
-        <mat-icon>security</mat-icon>
+      <div class="feature-card">
+        <span class="card-tag">SECURITY</span>
+        <div class="feature-icon">
+          <mat-icon>security</mat-icon>
+        </div>
+        <h2>Threat Anomaly Analytics</h2>
+        <p>
+          Detect unusual usage patterns and identify potential threats with our machine learning
+          anomaly forecasting.
+        </p>
       </div>
-      <h2>Threat Anomaly Analytics</h2>
-      <p>
-        Detect unusual usage patterns and identify potential threats with our machine learning
-        anomaly forecasting.
-      </p>
     </div>
-  </div>
+  </section>
 
-  <!-- Data Transparency & Purpose Section -->
-  <div class="transparency-section">
-    <div class="transparency-content">
-      <h2>App Purpose & Data Transparency</h2>
-      <p>
-        The <strong>Data Engineering for Machine Learning Platform</strong> is designed to
-        ingestion-test, monitor, and analyze system-wide telemetry. To facilitate authentic and
-        secure administration and ingest real-time analytics, our platform offers integrations with
-        services such as Google Analytics 4 (GA4).
-      </p>
-      <p>We request user authentication and data access strictly for the following purposes:</p>
-      <ul class="purpose-list">
-        <li>
-          <mat-icon>check_circle_outline</mat-icon>
-          <span
-            ><strong>System Telemetry Analysis:</strong> Syncing traffic parameters to train PyTorch
-            neural network anomaly models (ThreatModel).</span
-          >
-        </li>
-        <li>
-          <mat-icon>check_circle_outline</mat-icon>
-          <span
-            ><strong>Manager Authentication:</strong> Securely authenticating system administrators
-            for pipeline management actions.</span
-          >
-        </li>
-        <li>
-          <mat-icon>check_circle_outline</mat-icon>
-          <span
-            ><strong>SLA & Performance Optimization:</strong> Identifying geographic latency
-            bottlenecks and ensuring high-availability targets are met.</span
-          >
-        </li>
-      </ul>
-      <p class="transparency-disclaimer">
-        Your privacy is our priority. We host our app on our own verified domains and do not share
-        your private account data with third parties.
-      </p>
+  <!-- Data Transparency & Trust Section -->
+  <section class="transparency-section" aria-labelledby="transparency-title">
+    <div class="transparency-grid">
+      <div class="transparency-left">
+        <span class="section-tag">COMPLIANCE & TRANSPARENCY</span>
+        <h2 id="transparency-title">Platform Transparency & OAuth Integrity</h2>
+        <p>
+          The <strong>Data Engineering for Machine Learning Platform</strong> runs ingestion tests,
+          live service health tracking, and deep learning analytics.
+        </p>
+        <p>
+          To enable authenticated data syncing, the platform utilizes Google Analytics 4 (GA4) API
+          integration. We explicitly request OAuth scopes for the following workflows:
+        </p>
+      </div>
+
+      <div class="transparency-right">
+        <ul class="purpose-list">
+          <li>
+            <mat-icon>shield</mat-icon>
+            <div class="purpose-text">
+              <strong>System Telemetry Syncing:</strong>
+              <p>
+                Aggregates anonymized traffic parameters to feed into our PyTorch-based neural
+                network anomaly detection model.
+              </p>
+            </div>
+          </li>
+          <li>
+            <mat-icon>vpn_key</mat-icon>
+            <div class="purpose-text">
+              <strong>Admin Authentication:</strong>
+              <p>
+                Authenticates system administrators for pipeline orchestrations and config
+                modifications.
+              </p>
+            </div>
+          </li>
+          <li>
+            <mat-icon>speed</mat-icon>
+            <div class="purpose-text">
+              <strong>Latency Tuning:</strong>
+              <p>
+                Identifies geographical bottlenecks and SLA latency deviations across distributed
+                instances.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-  </div>
 
-  <footer class="landing-footer">
+    <div class="transparency-footer">
+      <mat-icon>lock</mat-icon>
+      <span
+        >Privacy Safeguard: We utilize secure authentication scopes and do not store or distribute
+        customer-owned private data.</span
+      >
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer" role="contentinfo">
     <div class="footer-links">
       <a routerLink="/privacy">Privacy Policy</a>
-      <span class="divider">•</span>
+      <span class="divider" aria-hidden="true">•</span>
       <a routerLink="/terms">Terms of Service</a>
-      <span class="divider">•</span>
+      <span class="divider" aria-hidden="true">•</span>
       <a routerLink="/whitepaper">Technical Whitepaper</a>
     </div>
   </footer>
