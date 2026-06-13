@@ -58,3 +58,48 @@ async def save_cookie_consent(request, payload: CookieConsentPayload):
     user_agent=user_agent,
   )
   return {"status": "success", "id": str(consent.id)}
+
+
+class SubscribePayload(Schema):
+  email: str
+  consent: bool
+
+
+@router.post("/subscribe")
+async def subscribe_newsletter(request, payload: SubscribePayload):
+  from asgiref.sync import sync_to_async
+  from config.email import send_resend_email
+  from monitor.models import NewsletterSubscription
+
+  if not payload.consent:
+    return {
+      "status": "error",
+      "message": "You must accept the terms and privacy policy to subscribe.",
+    }
+
+  # Check if already subscribed
+  exists = await sync_to_async(NewsletterSubscription.objects.filter(email=payload.email).exists)()
+  if exists:
+    return {"status": "error", "message": "This email is already subscribed."}
+
+  # Create subscription
+  await sync_to_async(NewsletterSubscription.objects.create)(
+    email=payload.email,
+    consent_accepted=payload.consent,
+  )
+
+  # Send welcome email asynchronously via sync_to_async
+  subject = "Welcome to the DEML Platform Newsletter!"
+  html_content = """
+  <h1>Thank you for subscribing!</h1>
+  <p>You have successfully signed up for updates and insights from the Data Engineering for Machine Learning (DEML) Platform.</p>
+  <p>If you did not request this, please ignore this email.</p>
+  """
+
+  email_sent = await sync_to_async(send_resend_email)(
+    to_email=payload.email,
+    subject=subject,
+    html_content=html_content,
+  )
+
+  return {"status": "success", "email": payload.email, "email_sent": email_sent}

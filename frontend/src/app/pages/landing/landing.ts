@@ -13,6 +13,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { Title, Meta } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { signal } from '@angular/core';
 
 export interface PipelineStep {
   id: string;
@@ -26,7 +29,7 @@ export interface PipelineStep {
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [RouterLink, MatIconModule],
+  imports: [RouterLink, MatIconModule, FormsModule],
   templateUrl: './landing.html',
   styleUrls: ['./landing.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +40,14 @@ export class Landing implements OnInit, OnDestroy {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   private cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+
+  emailVal = '';
+  consentVal = false;
+  submitting = signal(false);
+  successMessage = signal('');
+  errorMessage = signal('');
+  showErrors = false;
 
   activeStepIndex = 0;
   private intervalId: any;
@@ -129,5 +140,47 @@ export class Landing implements OnInit, OnDestroy {
       this.activeStepIndex = (this.activeStepIndex + 1) % this.pipelineSteps.length;
       this.cdr.markForCheck();
     }, 4500);
+  }
+
+  onSubscribe() {
+    this.showErrors = true;
+    this.successMessage.set('');
+    this.errorMessage.set('');
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!this.emailVal || !emailRegex.test(this.emailVal)) {
+      return;
+    }
+    if (!this.consentVal) {
+      return;
+    }
+
+    this.submitting.set(true);
+    this.http
+      .post<any>(`${environment.backendUrl}/api/v1/telemetry/subscribe`, {
+        email: this.emailVal,
+        consent: this.consentVal,
+      })
+      .subscribe({
+        next: res => {
+          this.submitting.set(false);
+          if (res.status === 'success') {
+            this.successMessage.set('Thank you for subscribing! A welcome email has been sent.');
+            this.emailVal = '';
+            this.consentVal = false;
+            this.showErrors = false;
+          } else {
+            this.errorMessage.set(res.message || 'An error occurred. Please try again.');
+          }
+          this.cdr.markForCheck();
+        },
+        error: err => {
+          this.submitting.set(false);
+          this.errorMessage.set(
+            err?.error?.message || 'Failed to submit. Please check your connection.',
+          );
+          this.cdr.markForCheck();
+        },
+      });
   }
 }

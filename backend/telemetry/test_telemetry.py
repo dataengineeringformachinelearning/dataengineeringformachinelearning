@@ -92,3 +92,43 @@ async def test_telemetry_worker_normalization():
     Endpoints.objects.filter(url="http://localhost:4200/status")
   )
   assert len(endpoints) == 2
+
+
+@pytest.mark.django_db
+@pytest.mark.asyncio
+async def test_subscribe_newsletter_endpoint(async_client):
+  from asgiref.sync import sync_to_async
+  from monitor.models import NewsletterSubscription
+
+  payload = {"email": "subscriber@test.com", "consent": True}
+
+  with patch("config.email.send_resend_email", return_value=True) as mock_send:
+    response = await async_client.post(
+      "/api/v1/telemetry/subscribe", data=payload, content_type="application/json"
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+    assert data["email"] == "subscriber@test.com"
+    assert data["email_sent"] is True
+    mock_send.assert_called_once()
+
+    # Check database persistence
+    sub = await sync_to_async(NewsletterSubscription.objects.get)(email="subscriber@test.com")
+    assert sub.consent_accepted is True
+
+    # Try duplicate subscription
+    response_dup = await async_client.post(
+      "/api/v1/telemetry/subscribe", data=payload, content_type="application/json"
+    )
+    assert response_dup.status_code == 200
+    assert response_dup.json()["status"] == "error"
+    assert "already subscribed" in response_dup.json()["message"]
+
+  # Try subscribing without consent
+  payload_no_consent = {"email": "no-consent@test.com", "consent": False}
+  response_no_consent = await async_client.post(
+    "/api/v1/telemetry/subscribe", data=payload_no_consent, content_type="application/json"
+  )
+  assert response_no_consent.status_code == 200
+  assert response_no_consent.json()["status"] == "error"

@@ -129,3 +129,17 @@ class AnalyticsIntegration(models.Model):
 
   def __str__(self):
     return f"{self.user.username} - {self.provider} ({'Active' if self.active else 'Inactive'})"
+
+
+class NewsletterSubscription(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  email = models.EmailField(unique=True)
+  subscribed_at = models.DateTimeField(auto_now_add=True)
+  consent_accepted = models.BooleanField(default=False)
+
+  class Meta:
+    db_table = "newsletter_subscriptions"
+    ordering = ["-subscribed_at"]
+
+  def __str__(self):
+    return self.email

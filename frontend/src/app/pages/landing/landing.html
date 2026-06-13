@@ -226,6 +226,81 @@
     </div>
   </section>
 
+  <!-- Newsletter Subscription Section -->
+  <section class="newsletter-section" aria-labelledby="newsletter-title">
+    <div class="newsletter-container">
+      <div class="newsletter-info">
+        <h2 id="newsletter-title">Subscribe to DEML Platform updates</h2>
+        <p class="newsletter-desc">
+          Stay informed with the latest insights from our data engineering and machine learning
+          platform.
+        </p>
+      </div>
+
+      <form (ngSubmit)="onSubscribe()" #subForm="ngForm" class="newsletter-form" novalidate>
+        <div class="form-row">
+          <div class="input-container">
+            <input
+              type="email"
+              [(ngModel)]="emailVal"
+              name="email"
+              #emailInput="ngModel"
+              required
+              email
+              placeholder="name@company.com"
+              aria-label="Email address"
+              [class.error]="showErrors && (emailInput.invalid || !emailVal)"
+              class="newsletter-input"
+            />
+            @if (showErrors && (emailInput.invalid || !emailVal)) {
+            <span class="error-message">Please enter a valid email address.</span>
+            }
+          </div>
+          <button type="submit" [disabled]="submitting()" class="subscribe-btn">
+            @if (submitting()) {
+            <span>Submitting...</span>
+            } @else {
+            <span>Subscribe</span>
+            }
+          </button>
+        </div>
+
+        <div class="consent-container">
+          <label class="consent-checkbox-label">
+            <input
+              type="checkbox"
+              [(ngModel)]="consentVal"
+              name="consent"
+              required
+              class="consent-checkbox"
+            />
+            <span class="consent-text">
+              I accept the DEML Platform's
+              <a routerLink="/terms" target="_blank">Terms and Conditions</a>
+              and acknowledge that my information will be used in accordance with the
+              <a routerLink="/privacy" target="_blank">Privacy Policy</a>.
+            </span>
+          </label>
+          @if (showErrors && !consentVal) {
+          <span class="error-message block">You must accept the Terms and Conditions.</span>
+          }
+        </div>
+      </form>
+
+      @if (successMessage()) {
+      <div class="status-alert success" role="alert">
+        <mat-icon>check_circle</mat-icon>
+        <span>{{ successMessage() }}</span>
+      </div>
+      } @if (errorMessage()) {
+      <div class="status-alert error" role="alert">
+        <mat-icon>error</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+      }
+    </div>
+  </section>
+
   <!-- Status Widget Host -->
   <div class="landing-footer"></div>
 </div>

@@ -716,6 +716,39 @@ This architecture teaches the reader how to keep public status communications hi
 
 ---
 
+## Chapter 15: Integrating Newsletter Subscriptions with PostgreSQL & Resend
+
+### Chapter 15.1: Introduction
+
+#### Chapter 15.1.1: Storing Subscriptions in PostgreSQL and Sending via Resend
+
+To retain absolute flexibility over our customer datasets and prevent lock-in to authentication/auth providers (keeping Firebase strictly for credentials verification), we store subscription data in PostgreSQL on Railway and utilize Resend for dispatching emails.
+
+1. **Database Schema**: We define a `NewsletterSubscription` model in `monitor/models.py` to store subscribers:
+   ```python
+   class NewsletterSubscription(models.Model):
+       id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+       email = models.EmailField(unique=True)
+       subscribed_at = models.DateTimeField(auto_now_add=True)
+       consent_accepted = models.BooleanField(default=False)
+   ```
+2. **Subscription API**: The endpoint `POST /api/v1/telemetry/subscribe` validates client input (email format and mandatory terms and privacy consent) and saves the subscription to PostgreSQL.
+3. **Resend Welcome Email**: Once saved, the endpoint triggers a welcome email via Resend:
+   ```python
+   # Send email via Resend
+   send_resend_email(
+       to_email=payload.email,
+       subject="Welcome to Our Innovations Newsletter!",
+       html_content="<h1>Thank you for subscribing!</h1><p>You have successfully signed up.</p>"
+   )
+   ```
+4. **Environment Configuration**: Set your Resend API key in your `.env` file:
+   ```env
+   RESEND_API_KEY=re_your_api_key
+   ```
+
+---
+
 ## My Notes on Deployment & Release
 
 Throughout this book's draft, we build a platform fully optimized and ready for production release. I've configured the final deployment on Railway across three integrated services:
