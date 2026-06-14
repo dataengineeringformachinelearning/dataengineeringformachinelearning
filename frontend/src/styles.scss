@@ -42,8 +42,8 @@ button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible,
-[role="button"]:focus-visible,
-[role="tab"]:focus-visible {
+[role='button']:focus-visible,
+[role='tab']:focus-visible {
   outline: 2px solid var(--color-primary-container) !important;
   outline-offset: 3px !important;
 }
@@ -54,8 +54,8 @@ html[data-theme='light'] {
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible,
-  [role="button"]:focus-visible,
-  [role="tab"]:focus-visible {
+  [role='button']:focus-visible,
+  [role='tab']:focus-visible {
     outline: 2px solid var(--color-primary) !important;
   }
 }
@@ -70,7 +70,6 @@ html[data-theme='light'] {
 .mat-form-field select:focus-visible {
   outline: none !important;
 }
-
 
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';
@@ -695,7 +694,7 @@ html[data-theme='light'] #global-error-toast {
 .sidebar-footer,
 .dashboard-sidebar,
 .vuln-profile-header,
-.page-content:not([style*="border"]) {
+.page-content:not([style*='border']) {
   border-radius: 0 !important;
 }
 
@@ -704,6 +703,7 @@ html[data-theme='light'] #global-error-toast {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 0.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid var(--color-border-precision);
   margin-bottom: 1.5rem;
@@ -734,9 +734,18 @@ html[data-theme='light'] {
 }
 
 @keyframes pulse-ring-indicator {
-  0% { transform: scale(0.95); opacity: 0.5; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.5; }
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
 }
 
 .hud-title {

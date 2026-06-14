@@ -31,25 +31,28 @@
 
     <!-- Main Content -->
     <main class="dashboard-main">
-      <header class="hud-header">
-        <div class="hud-brand">
-          <div class="pulse-indicator"></div>
-          <div class="title-group">
-            <h1 class="hud-title">Management Console</h1>
-            <p class="hud-subtitle">
-              Configure your telemetry pages, endpoints, and status reporting
-            </p>
-          </div>
-        </div>
-      </header>
-
       <div class="dashboard-content-area">
         <div class="content-wrapper">
+          <header class="hud-header">
+            <div class="hud-brand">
+              <div class="pulse-indicator"></div>
+              <div class="title-group">
+                <h1 class="hud-title">Management Console</h1>
+                <p class="hud-subtitle">
+                  Configure your telemetry pages, endpoints, and status reporting
+                </p>
+              </div>
+            </div>
+          </header>
+
           <div class="manage-stack">
             <div class="status-card-outlined">
               <div class="card-header-clean">
                 @if (selectedPage()) {
-                <h2 class="card-title-main">{{ selectedPage()!.title }}</h2>
+                <h2 class="card-title-main">
+                  <mat-icon>wysiwyg</mat-icon>
+                  {{ selectedPage()!.title }}
+                </h2>
                 } @if (selectedPage()) {
                 <button
                   mat-icon-button
@@ -61,7 +64,10 @@
                   <mat-icon>delete_forever</mat-icon>
                 </button>
                 } @if (!selectedPage()) {
-                <h2 class="card-title-main">Create Status Page</h2>
+                <h2 class="card-title-main">
+                  <mat-icon>add_box</mat-icon>
+                  Create Status Page
+                </h2>
                 }
               </div>
 

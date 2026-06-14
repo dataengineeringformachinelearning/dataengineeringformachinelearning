@@ -155,7 +155,7 @@
 }
 
 .content-wrapper {
-  max-width: 900px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
   display: flex;
   flex-direction: column;
