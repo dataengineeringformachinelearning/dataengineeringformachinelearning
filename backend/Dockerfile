@@ -25,7 +25,7 @@ RUN ln -sf /usr/bin/python /opt/venv/bin/python && \
     ln -sf /usr/bin/python /opt/venv/bin/python3
 
 # Runtime stage
-FROM cgr.dev/chainguard/python:latest
+FROM cgr.dev/chainguard/python:latest-3.12
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
