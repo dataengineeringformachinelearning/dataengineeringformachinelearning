@@ -6,12 +6,6 @@
   color: var(--color-on-background);
 }
 
-.pulse-indicator {
-  background-color: var(--color-amber) !important;
-  box-shadow: 0 0 10px var(--color-amber) !important;
-}
-
-
 .status-container {
   min-height: calc(100vh - 64px);
   background-color: var(--color-background);
@@ -74,11 +68,15 @@
 
   &.warning {
     border-left: 3px solid var(--color-warning);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
     .metric-value { color: var(--color-warning); }
   }
 
   &.critical {
     border-left: 3px solid var(--color-amber);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
     .metric-value { color: var(--color-amber); }
   }
 }

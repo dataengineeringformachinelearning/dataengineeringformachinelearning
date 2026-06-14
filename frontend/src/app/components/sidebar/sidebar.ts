@@ -6,6 +6,7 @@ import {
   signal,
   computed,
   ChangeDetectorRef,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
@@ -13,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { BookService } from '../../services/book.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
+import { OramaSearchService, SearchItem } from '../../services/orama-search.service';
 import { filter } from 'rxjs/operators';
 import {
   MonitorService,
@@ -36,6 +38,7 @@ export class Sidebar implements OnInit {
   public bookService = inject(BookService);
   public settingsService = inject(SettingsService);
   private router = inject(Router);
+  private searchService = inject(OramaSearchService);
 
   isCollapsed = signal<boolean>(false);
   isDocumentationActive = signal(false);
@@ -44,6 +47,77 @@ export class Sidebar implements OnInit {
   // Tree view expansion states
   isChaptersExpanded = signal<boolean>(true);
   isYourPagesExpanded = signal<boolean>(true);
+
+  // Search state
+  searchQuery = signal<string>('');
+  searchResults = signal<SearchItem[]>([]);
+
+  constructor() {
+    effect(() => {
+      const chapters = this.bookService.chapters();
+      const pages = this.statusPages();
+      this.indexSidebarItems(chapters, pages);
+    });
+  }
+
+  private async indexSidebarItems(chapters: any[], pages: any[]) {
+    const items: SearchItem[] = [];
+
+    chapters.forEach((chapter, index) => {
+      items.push({
+        id: String(index),
+        title: chapter.title,
+        content: chapter.content || '',
+        type: 'chapter',
+        url: String(index),
+      });
+    });
+
+    pages.forEach(page => {
+      items.push({
+        id: page.id,
+        title: page.title,
+        content: page.description || '',
+        type: 'status-page',
+        url: page.id,
+      });
+    });
+
+    await this.searchService.clearAndIndex(items);
+  }
+
+  async onSearch(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const query = input.value;
+    this.searchQuery.set(query);
+    if (!query.trim()) {
+      this.searchResults.set([]);
+      return;
+    }
+    const results = await this.searchService.search(query);
+    this.searchResults.set(results);
+    this.cdr.markForCheck();
+  }
+
+  handleResultClick(result: SearchItem) {
+    if (result.type === 'chapter') {
+      const pageIndex = parseInt(result.id, 10);
+      this.bookService.goToPage(pageIndex);
+      this.router.navigate(['/documentation']);
+    } else if (result.type === 'status-page') {
+      const page = this.statusPages().find(p => p.id === result.id);
+      if (page) {
+        this.settingsService.selectPage(page);
+        this.router.navigate(['/settings']);
+      }
+    }
+    this.searchQuery.set('');
+    this.searchResults.set([]);
+    const searchInput = document.querySelector('.sidebar-search-input') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.value = '';
+    }
+  }
 
   toggleCollapse() {
     this.isCollapsed.update(c => !c);

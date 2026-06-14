@@ -50,9 +50,9 @@
   /* SaaS Grid & Modular Spacing layout tokens */
   --grid-gap: 2rem;
   --card-padding: 1.5rem;
-  --border-radius-lg: 0px;
-  --border-radius-md: 0px;
-  --border-radius-sm: 0px;
+  --border-radius-lg: 16px;
+  --border-radius-md: 12px;
+  --border-radius-sm: 8px;
   --container-max-width: 1100px;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -98,9 +98,9 @@ html[data-theme='light'] {
   /* SaaS Grid & Modular Spacing layout tokens */
   --grid-gap: 2rem;
   --card-padding: 1.5rem;
-  --border-radius-lg: 0px;
-  --border-radius-md: 0px;
-  --border-radius-sm: 0px;
+  --border-radius-lg: 16px;
+  --border-radius-md: 12px;
+  --border-radius-sm: 8px;
   --container-max-width: 1100px;
   --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

@@ -99,3 +99,107 @@
   min-width: 0;
   width: 100%;
 }
+
+/* Unified Page Template System */
+.dashboard-page-container {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  overflow: visible;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+
+  .glow-sphere {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+
+    &.sphere-1 {
+      width: 500px;
+      height: 500px;
+      background: var(--primary-color);
+      top: -150px;
+      left: -150px;
+    }
+
+    &.sphere-2 {
+      width: 450px;
+      height: 450px;
+      background: var(--accent-color);
+      bottom: -150px;
+      right: -100px;
+    }
+  }
+
+  .dashboard-content-area {
+    flex: 1;
+    padding: var(--grid-gap);
+    position: relative;
+    z-index: 1;
+    box-sizing: border-box;
+  }
+
+  .content-wrapper {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--grid-gap);
+  }
+
+  .hud-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--grid-gap);
+
+    @media (min-width: 769px) {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .title-group {
+      .section-tag-row {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-tag {
+        font-family: monospace;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--accent-color);
+        font-weight: 700;
+      }
+
+      .hud-title {
+        margin: 0;
+        font-size: 1.75rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        color: var(--text-color);
+        text-transform: uppercase;
+      }
+
+      .hud-subtitle {
+        margin: 0.35rem 0 0;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+    }
+  }
+}

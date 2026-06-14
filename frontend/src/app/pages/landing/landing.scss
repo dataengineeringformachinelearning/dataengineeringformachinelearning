@@ -279,6 +279,8 @@
     border-color: var(--color-border-precision);
     color: var(--text-color);
     border-left: 3px solid var(--color-amber); /* Instrument meter active line - flat border instead of curved box-shadow */
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 
     .step-nav-icon {
       background: var(--color-amber-dim);

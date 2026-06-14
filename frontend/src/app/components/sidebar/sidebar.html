@@ -8,12 +8,40 @@
   </div>
 
   <div class="sidebar-search" *ngIf="!isCollapsed()">
-    <mat-icon>search</mat-icon>
-    <input type="text" placeholder="Search..." aria-label="Search" class="sidebar-search-input" />
+    <div class="search-wrapper">
+      <mat-icon>search</mat-icon>
+      <input
+        type="text"
+        placeholder="Search..."
+        aria-label="Search"
+        class="sidebar-search-input"
+        (input)="onSearch($event)"
+      />
+    </div>
   </div>
 
   <div class="sidebar-scroll-container">
-    <nav class="sidebar-nav">
+    <!-- Search Results View -->
+    <div class="search-results-list" *ngIf="searchQuery().trim()">
+      <div class="search-results-header">Search Results ({{ searchResults().length }})</div>
+      @for (result of searchResults(); track result) {
+      <div class="search-result-item" (click)="handleResultClick(result)">
+        <mat-icon class="result-icon">
+          {{ result.type === 'chapter' ? 'menu_book' : 'wysiwyg' }}
+        </mat-icon>
+        <div class="result-details">
+          <span class="result-title">{{ result.title }}</span>
+          <span class="result-type"
+            >{{ result.type === 'chapter' ? 'Documentation' : 'Status Page' }}</span
+          >
+        </div>
+      </div>
+      } @if (searchResults().length === 0) {
+      <div class="search-no-results">No results found for "{{ searchQuery() }}"</div>
+      }
+    </div>
+
+    <nav class="sidebar-nav" *ngIf="!searchQuery().trim()">
       <a
         class="nav-item"
         routerLink="/explore"
