@@ -739,6 +739,14 @@ html[data-theme='light'] #global-error-toast {
   visibility: hidden !important;
 }
 
+/* Ensure Google reCAPTCHA challenge iframe and its parent containers are always on top of Angular Material dialogs */
+.grecaptcha-bubble-holder,
+div.grecaptcha-bubble-holder,
+body > div[style*="z-index"]:has(iframe[src*="recaptcha"]),
+body > div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
+  z-index: 2000000000 !important;
+}
+
 // ====================== SECTION TAGS & SKELETON SHIMMER ======================
 .section-tag-row {
   display: flex;
