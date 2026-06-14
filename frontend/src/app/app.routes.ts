@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { Book } from './pages/book/book';
 import { Status } from './pages/status/status';
-import { Manage } from './pages/manage/manage';
+import { Settings } from './pages/settings/settings';
 import { Landing } from './pages/landing/landing';
 import { Privacy } from './pages/privacy/privacy';
 import { Terms } from './pages/terms/terms';
@@ -19,7 +19,7 @@ export const routes: Routes = [
   { path: 'status', component: Status },
   { path: 'status/:slug', component: IsolatedStatus },
   { path: 'explore', component: Explore },
-  { path: 'manage', component: Manage },
+  { path: 'settings', component: Settings },
   { path: 'vulnerabilities', component: Vulnerabilities },
   { path: 'compliance', component: Compliance },
   { path: 'privacy', component: Privacy },

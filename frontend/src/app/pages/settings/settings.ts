@@ -27,12 +27,12 @@ import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { Sidebar } from '../../components/sidebar/sidebar';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
+import { SettingsService } from '../../services/settings.service';
 
 @Component({
-  selector: 'app-manage',
+  selector: 'app-settings',
   standalone: true,
   imports: [
     CommonModule,
@@ -46,13 +46,12 @@ import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
     RouterModule,
     MatCheckboxModule,
     MatDialogModule,
-    Sidebar,
   ],
-  templateUrl: './manage.html',
+  templateUrl: './settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './manage.scss',
+  styleUrl: './settings.scss',
 })
-export class Manage implements OnInit {
+export class Settings implements OnInit {
   private monitorService = inject(MonitorService);
   public mlService = inject(MlService);
   public authService = inject(AuthService);
@@ -61,9 +60,10 @@ export class Manage implements OnInit {
   private dialog = inject(MatDialog);
   private titleService = inject(Title);
   private metaService = inject(Meta);
+  public settingsService = inject(SettingsService);
 
-  statusPages = signal<StatusPageData[]>([]);
-  selectedPage = signal<StatusPageData | null>(null);
+  statusPages = this.settingsService.statusPages;
+  selectedPage = this.settingsService.selectedPage;
 
   editTitle = '';
   editSlug = '';
@@ -126,6 +126,34 @@ export class Manage implements OnInit {
         this.checkLinkedProviders();
       }
     });
+
+    effect(
+      () => {
+        const page = this.selectedPage();
+        if (page) {
+          this.loadServices(page.id);
+          this.loadIncidents(page.id);
+          this.editTitle = page.title;
+          this.editSlug = page.slug;
+          this.editDescription = page.description || '';
+          this.editIsPublished = page.is_published || false;
+          this.editGoogleAnalyticsId = page.google_analytics_id || '';
+          this.editMicrosoftClarityId = page.microsoft_clarity_id || '';
+          this.editCloudflareAnalyticsId = page.cloudflare_analytics_id || '';
+        } else {
+          this.editTitle = '';
+          this.editSlug = '';
+          this.editDescription = '';
+          this.editIsPublished = false;
+          this.editGoogleAnalyticsId = '';
+          this.editMicrosoftClarityId = '';
+          this.editCloudflareAnalyticsId = '';
+          this.services.set([]);
+        }
+        this.cdr.markForCheck();
+      },
+      { allowSignalWrites: true },
+    );
   }
 
   getWidgetCode(): string {
@@ -241,17 +269,6 @@ export class Manage implements OnInit {
 
   selectPage(page: StatusPageData | null) {
     this.selectedPage.set(page);
-    if (page) {
-      this.loadServices(page.id);
-      this.loadIncidents(page.id);
-      this.editTitle = page.title;
-      this.editSlug = page.slug;
-      this.editDescription = page.description || '';
-      this.editIsPublished = page.is_published || false;
-      this.editGoogleAnalyticsId = page.google_analytics_id || '';
-      this.editMicrosoftClarityId = page.microsoft_clarity_id || '';
-      this.editCloudflareAnalyticsId = page.cloudflare_analytics_id || '';
-    }
   }
 
   updateStatusPage() {

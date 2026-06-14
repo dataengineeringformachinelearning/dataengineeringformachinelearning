@@ -1,0 +1,95 @@
+import { Injectable, signal, computed } from '@angular/core';
+import pageMarkdown from '../../assets/content/page.md';
+
+export interface Chapter {
+  title: string;
+  content: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class BookService {
+  chapters = signal<Chapter[]>([]);
+  activePageIndex = signal<number>(0);
+
+  activeChapter = computed(() => {
+    const list = this.chapters();
+    const idx = this.activePageIndex();
+    return list[idx] || null;
+  });
+
+  progress = computed(() => {
+    const total = this.chapters().length;
+    if (total === 0) return 0;
+    return Math.round(((this.activePageIndex() + 1) / total) * 100);
+  });
+
+  constructor() {
+    this.parseMarkdown();
+  }
+
+  parseMarkdown() {
+    // Split content dynamically by '## Chapter ', '## My Notes...', or '## Acknowledgements' headers
+    const rawChunks = pageMarkdown.split(
+      /(?=^## (?:Chapter \d+:|My Notes on Deployment & Release|Acknowledgements))/m,
+    );
+    const parsed: Chapter[] = [];
+
+    for (const chunk of rawChunks) {
+      const trimmed = chunk.trim();
+      if (!trimmed) continue;
+
+      // Extract title from the first line (starts with '## ')
+      const lines = trimmed.split('\n');
+      const firstLine = lines[0];
+      const title = firstLine.startsWith('## ')
+        ? firstLine.replace('## ', '').trim()
+        : 'Introduction';
+
+      parsed.push({
+        title,
+        content: trimmed,
+      });
+    }
+
+    // If no chapters parsed, push the entire content as fallback
+    if (parsed.length === 0) {
+      parsed.push({
+        title: 'Book Content',
+        content: pageMarkdown,
+      });
+    }
+
+    this.chapters.set(parsed);
+  }
+
+  nextPage() {
+    if (this.activePageIndex() < this.chapters().length - 1) {
+      this.activePageIndex.update(idx => idx + 1);
+      this.scrollToTop();
+    }
+  }
+
+  prevPage() {
+    if (this.activePageIndex() > 0) {
+      this.activePageIndex.update(idx => idx - 1);
+      this.scrollToTop();
+    }
+  }
+
+  goToPage(index: number) {
+    if (index >= 0 && index < this.chapters().length) {
+      this.activePageIndex.set(index);
+      this.scrollToTop();
+    }
+  }
+
+  scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const contentArea = document.querySelector('.dashboard-main');
+    if (contentArea) {
+      contentArea.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+}

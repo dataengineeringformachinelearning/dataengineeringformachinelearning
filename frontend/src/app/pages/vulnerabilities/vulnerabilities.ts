@@ -14,13 +14,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { Title, Meta } from '@angular/platform-browser';
 
-import { Sidebar } from '../../components/sidebar/sidebar';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 
 @Component({
   selector: 'app-vulnerabilities',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, FormsModule, Sidebar],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, FormsModule],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
