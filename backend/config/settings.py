@@ -39,6 +39,19 @@ if gcp_sa_json:
     except Exception:
       pass
 
+  # Clean double-escaped backslashes in private_key if present
+  try:
+    import json
+
+    parsed = json.loads(gcp_sa_json_clean)
+    if isinstance(parsed, str):
+      parsed = json.loads(parsed)
+    if "private_key" in parsed:
+      parsed["private_key"] = parsed["private_key"].replace("\\n", "\n")
+    gcp_sa_json_clean = json.dumps(parsed)
+  except Exception:
+    pass
+
   # Write to /tmp/gcp-service-account.json and set the standard env var path
   temp_credentials_path = "/tmp/gcp-service-account.json"
   try:
@@ -84,9 +97,18 @@ if not firebase_admin._apps:
       if isinstance(cred_dict, str):
         cred_dict = json.loads(cred_dict)
 
+      # Clean double-escaped backslashes in private_key if present
+      if "private_key" in cred_dict:
+        cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
+
       cred = credentials.Certificate(cred_dict)
       firebase_admin.initialize_app(cred)
-    except Exception:
+    except Exception as e:
+      import logging
+
+      logging.getLogger("django").error(
+        "Failed to initialize Firebase with service account JSON: %s", e
+      )
       # Fallback with explicit project ID to avoid hanging on GCP metadata server lookups in non-GCP environments
       firebase_admin.initialize_app(options={"projectId": firebase_project_id})
   else:

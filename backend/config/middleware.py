@@ -77,7 +77,7 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
       request.firebase_token = decoded_token
 
     except Exception as e:
-      logger.error(f"Firebase token verification failed: {e}")
+      logger.exception(f"Firebase token verification failed: {e}")
       # If token verification fails, request.user remains AnonymousUser
       pass
 
