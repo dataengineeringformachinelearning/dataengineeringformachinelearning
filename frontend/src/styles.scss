@@ -61,14 +61,34 @@ html[data-theme='light'] {
 }
 
 /* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
-   as the form field container handles focus state visually at the border level. */
+   as the form field container handles focus state visually at the border level.
+   We instead apply the focus outline to the entire form field using :has() */
 .mat-mdc-form-field input:focus-visible,
 .mat-mdc-form-field textarea:focus-visible,
 .mat-mdc-form-field select:focus-visible,
 .mat-form-field input:focus-visible,
 .mat-form-field textarea:focus-visible,
-.mat-form-field select:focus-visible {
+.mat-form-field select:focus-visible,
+html[data-theme='light'] .mat-mdc-form-field input:focus-visible,
+html[data-theme='light'] .mat-mdc-form-field textarea:focus-visible,
+html[data-theme='light'] .mat-mdc-form-field select:focus-visible,
+html[data-theme='light'] .mat-form-field input:focus-visible,
+html[data-theme='light'] .mat-form-field textarea:focus-visible,
+html[data-theme='light'] .mat-form-field select:focus-visible {
   outline: none !important;
+}
+
+/* Wrap the accessibility focus ring around the full form field */
+.mat-mdc-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
+.mat-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+  outline: 2px solid var(--color-primary-container) !important;
+  outline-offset: 3px !important;
+  border-radius: var(--border-radius-sm);
+}
+
+html[data-theme='light'] .mat-mdc-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
+html[data-theme='light'] .mat-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+  outline: 2px solid var(--color-primary) !important;
 }
 
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
