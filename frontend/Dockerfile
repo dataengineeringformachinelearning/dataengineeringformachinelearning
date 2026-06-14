@@ -46,5 +46,6 @@ COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
 # Copy our custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port
+# Expose port and run as non-root user
+USER nginx
 EXPOSE 8080

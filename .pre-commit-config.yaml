@@ -61,3 +61,25 @@ repos:
         entry: uvx checkov -d terraform/ --framework terraform
         language: system
         pass_filenames: false
+      - id: trivy
+        name: Trivy Config Security Scan
+        entry: trivy fs . --scanners config --severity HIGH,CRITICAL --exit-code 1 --quiet
+        language: system
+        pass_filenames: false
+      - id: django-migration-linter
+        name: Django Migration Linter
+        entry: uv run python backend/manage.py lintmigrations
+        language: system
+        always_run: true
+        pass_filenames: false
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        exclude: package-lock.json

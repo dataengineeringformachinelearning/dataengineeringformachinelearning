@@ -124,6 +124,7 @@ INSTALLED_APPS = [
   "django.contrib.sitemaps",
   "corsheaders",
   "whitenoise.runserver_nostatic",
+  "django_migration_linter",
   "monitor",
   "ml",
   "telemetry",
@@ -233,6 +234,20 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
 
+# Security Headers & Cookie Settings
+if not DEBUG:
+  SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True").lower() == "true"
+  SESSION_COOKIE_SECURE = True
+  CSRF_COOKIE_SECURE = True
+  SECURE_HSTS_SECONDS = 31536000  # 1 year
+  SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+  SECURE_HSTS_PRELOAD = True
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+
 # Google OAuth Analytics Integration Settings
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
@@ -302,3 +317,14 @@ if GCP_LOGGING_ENABLED:
     import logging
 
     logging.getLogger("django").warning("Failed to initialize Google Cloud Logging: %s", e)
+
+
+# Migration Linter Configuration
+MIGRATION_LINTER_OPTIONS = {
+  "ignore_initial_migrations": True,
+  "ignore_name": [
+    "0002_alter_endpoints_ip_address_statuspage_and_more",
+    "0005_statuspage_is_published",
+    "0009_rename_model_to_ml",
+  ],
+}
