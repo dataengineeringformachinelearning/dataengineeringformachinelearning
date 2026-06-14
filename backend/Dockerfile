@@ -35,6 +35,6 @@ COPY --from=builder /app /app
 
 EXPOSE 8000
 
-USER python
+USER nonroot
 
 ENTRYPOINT ["python", "start.py"]
