@@ -46,6 +46,18 @@ COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
 # Copy our custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port and run as non-root user
+# Copy entrypoint script
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+
+# Temporarily switch to root to set correct permissions
+USER root
+RUN chown -R nginx:nginx /usr/share/nginx/html && chmod +x /docker-entrypoint.sh
+
+# Switch back to non-root nginx user
 USER nginx
+
+# Expose port
 EXPOSE 8080
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]

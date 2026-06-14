@@ -240,6 +240,7 @@ FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
 
 # Security Headers & Cookie Settings
 if not DEBUG:
+  SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
   SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True").lower() == "true"
   SESSION_COOKIE_SECURE = True
   CSRF_COOKIE_SECURE = True

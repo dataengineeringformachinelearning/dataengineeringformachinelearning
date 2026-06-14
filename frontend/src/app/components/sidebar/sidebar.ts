@@ -7,14 +7,17 @@ import {
   computed,
   ChangeDetectorRef,
   effect,
+  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BookService } from '../../services/book.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OramaSearchService, SearchItem } from '../../services/orama-search.service';
+import { SearchDialog } from '../search-dialog/search-dialog';
 import { filter } from 'rxjs/operators';
 import {
   MonitorService,
@@ -26,7 +29,7 @@ import {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatDialogModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +42,7 @@ export class Sidebar implements OnInit {
   public settingsService = inject(SettingsService);
   private router = inject(Router);
   private searchService = inject(OramaSearchService);
+  private dialog = inject(MatDialog);
 
   isCollapsed = signal<boolean>(false);
   isDocumentationActive = signal(false);
@@ -47,10 +51,6 @@ export class Sidebar implements OnInit {
   // Tree view expansion states
   isChaptersExpanded = signal<boolean>(true);
   isYourPagesExpanded = signal<boolean>(true);
-
-  // Search state
-  searchQuery = signal<string>('');
-  searchResults = signal<SearchItem[]>([]);
 
   constructor() {
     effect(() => {
@@ -86,37 +86,36 @@ export class Sidebar implements OnInit {
     await this.searchService.clearAndIndex(items);
   }
 
-  async onSearch(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const query = input.value;
-    this.searchQuery.set(query);
-    if (!query.trim()) {
-      this.searchResults.set([]);
-      return;
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    const isModifier = event.metaKey || event.ctrlKey;
+    const isK = event.key.toLowerCase() === 'k';
+    const isSlash = event.key === '/';
+
+    const activeEl = document.activeElement;
+    const isTyping =
+      activeEl &&
+      (activeEl.tagName === 'INPUT' ||
+        activeEl.tagName === 'TEXTAREA' ||
+        activeEl.hasAttribute('contenteditable'));
+
+    if ((isModifier && isK) || (isSlash && !isTyping)) {
+      event.preventDefault();
+      this.openSearchDialog();
     }
-    const results = await this.searchService.search(query);
-    this.searchResults.set(results);
-    this.cdr.markForCheck();
   }
 
-  handleResultClick(result: SearchItem) {
-    if (result.type === 'chapter') {
-      const pageIndex = parseInt(result.id, 10);
-      this.bookService.goToPage(pageIndex);
-      this.router.navigate(['/documentation']);
-    } else if (result.type === 'status-page') {
-      const page = this.statusPages().find(p => p.id === result.id);
-      if (page) {
-        this.settingsService.selectPage(page);
-        this.router.navigate(['/settings']);
-      }
+  openSearchDialog() {
+    // Check if dialog is already open
+    if (this.dialog.openDialogs.some(d => d.componentInstance instanceof SearchDialog)) {
+      return;
     }
-    this.searchQuery.set('');
-    this.searchResults.set([]);
-    const searchInput = document.querySelector('.sidebar-search-input') as HTMLInputElement;
-    if (searchInput) {
-      searchInput.value = '';
-    }
+
+    this.dialog.open(SearchDialog, {
+      width: '600px',
+      maxWidth: '95vw',
+      panelClass: 'command-palette-dialog',
+    });
   }
 
   toggleCollapse() {

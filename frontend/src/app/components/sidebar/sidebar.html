@@ -7,41 +7,18 @@
     </button>
   </div>
 
-  <div class="sidebar-search" *ngIf="!isCollapsed()">
+  @if (!isCollapsed()) {
+  <div class="sidebar-search" (click)="openSearchDialog()" style="cursor: pointer">
     <div class="search-wrapper">
       <mat-icon>search</mat-icon>
-      <input
-        type="text"
-        placeholder="Search..."
-        aria-label="Search"
-        class="sidebar-search-input"
-        (input)="onSearch($event)"
-      />
+      <span class="sidebar-search-placeholder">Search...</span>
+      <kbd class="search-shortcut">⌘K</kbd>
     </div>
   </div>
+  }
 
   <div class="sidebar-scroll-container">
-    <!-- Search Results View -->
-    <div class="search-results-list" *ngIf="searchQuery().trim()">
-      <div class="search-results-header">Search Results ({{ searchResults().length }})</div>
-      @for (result of searchResults(); track result) {
-      <div class="search-result-item" (click)="handleResultClick(result)">
-        <mat-icon class="result-icon">
-          {{ result.type === 'chapter' ? 'menu_book' : 'wysiwyg' }}
-        </mat-icon>
-        <div class="result-details">
-          <span class="result-title">{{ result.title }}</span>
-          <span class="result-type"
-            >{{ result.type === 'chapter' ? 'Documentation' : 'Status Page' }}</span
-          >
-        </div>
-      </div>
-      } @if (searchResults().length === 0) {
-      <div class="search-no-results">No results found for "{{ searchQuery() }}"</div>
-      }
-    </div>
-
-    <nav class="sidebar-nav" *ngIf="!searchQuery().trim()">
+    <nav class="sidebar-nav">
       <a
         class="nav-item"
         routerLink="/explore"
@@ -64,7 +41,8 @@
         <span class="nav-text">Documentation</span>
       </a>
 
-      <div class="nav-tree-section" *ngIf="!isCollapsed() && isDocumentationActive()">
+      @if (!isCollapsed() && isDocumentationActive()) {
+      <div class="nav-tree-section">
         <div
           class="nav-tree-header"
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
@@ -76,7 +54,8 @@
           <mat-icon class="tree-icon">menu_book</mat-icon>
           <span class="tree-label">Chapters</span>
         </div>
-        <div class="nav-tree-children" *ngIf="isChaptersExpanded()">
+        @if (isChaptersExpanded()) {
+        <div class="nav-tree-children">
           @for (chapter of bookService.chapters(); track chapter; let idx = $index) {
           <span
             class="tree-child-item"
@@ -87,9 +66,9 @@
           </span>
           }
         </div>
+        }
       </div>
-
-      @if (authService.isAuthenticated()) {
+      } @if (authService.isAuthenticated()) {
       <a
         class="nav-item"
         routerLink="/vulnerabilities"
@@ -111,7 +90,8 @@
         <span class="nav-text">Settings</span>
       </a>
 
-      <div class="nav-tree-section" *ngIf="!isCollapsed() && isSettingsActive()">
+      @if (!isCollapsed() && isSettingsActive()) {
+      <div class="nav-tree-section">
         <div
           class="nav-tree-header"
           (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
@@ -123,7 +103,8 @@
           <mat-icon class="tree-icon">wysiwyg</mat-icon>
           <span class="tree-label">Your Pages</span>
         </div>
-        <div class="nav-tree-children" *ngIf="isYourPagesExpanded()">
+        @if (isYourPagesExpanded()) {
+        <div class="nav-tree-children">
           @for (page of settingsService.statusPages(); track page) {
           <span
             class="tree-child-item"
@@ -157,23 +138,13 @@
             New Page
           </button>
         </div>
+        }
       </div>
-      }
+      } }
     </nav>
 
     <!-- Dynamic sidebar contents (extra lists) -->
     <ng-content select="[sidebar-extra]"></ng-content>
-
-    <!-- Nested Corporate Sales Bar Chart -->
-    <div class="sidebar-mini-chart" *ngIf="!isCollapsed()">
-      <div class="chart-header">
-        <span class="chart-title">Corporate Sales</span>
-        <span class="chart-value">78%</span>
-      </div>
-      <div class="chart-bar-visual">
-        <span class="chart-bar" style="width: 78%"></span>
-      </div>
-    </div>
   </div>
 
   <div class="sidebar-footer">
@@ -183,7 +154,9 @@
       [title]="globalStatus()"
     >
       <span class="health-dot"></span>
-      <span class="health-text" *ngIf="!isCollapsed()">{{ globalStatus() }}</span>
+      @if (!isCollapsed()) {
+      <span class="health-text">{{ globalStatus() }}</span>
+      }
     </div>
   </div>
 </aside>
