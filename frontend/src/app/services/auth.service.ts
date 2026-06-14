@@ -1,7 +1,7 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { initializeApp } from 'firebase/app';
 import {
   getAuth,
@@ -52,9 +52,11 @@ export class AuthService {
           try {
             const token = await user.getIdToken();
             const res: any = await firstValueFrom(
-              this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
-                headers: { Authorization: `Bearer ${token}` },
-              }),
+              this.http
+                .get(`${environment.backendUrl}/api/v1/auth/user`, {
+                  headers: { Authorization: `Bearer ${token}` },
+                })
+                .pipe(timeout(5000)),
             );
             if (res.status === 'success') {
               this.isAuthenticated.set(true);

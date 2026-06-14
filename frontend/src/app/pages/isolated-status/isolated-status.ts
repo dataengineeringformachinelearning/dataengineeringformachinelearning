@@ -22,6 +22,7 @@ import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
 import { SkeletonComponent } from 'boneyard-js/angular';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-isolated-status',
@@ -141,32 +142,37 @@ export class IsolatedStatus implements OnInit {
       this.cdr.markForCheck();
       return;
     }
-    this.monitorService.getStatusPageBySlug(slug).subscribe({
-      next: page => {
-        const pages = [page];
-        this.statusPages.set(pages);
-        this.monitorService.fetchAllIncidents(pages);
-        this.monitorService.fetchAllServices(pages);
-        this.mlService.fetchLatestStat(page.id);
-        this.mlService.fetchThreatReport(page.id);
+    this.monitorService
+      .getStatusPageBySlug(slug)
+      .pipe(timeout(6000))
+      .subscribe({
+        next: page => {
+          const pages = [page];
+          this.statusPages.set(pages);
+          this.monitorService.fetchAllIncidents(pages);
+          this.monitorService.fetchAllServices(pages);
+          this.mlService.fetchLatestStat(page.id);
+          this.mlService.fetchThreatReport(page.id);
 
-        this.titleService.setTitle(`${page.title} Status - Data Engineering for Machine Learning`);
-        this.metaService.updateTag({
-          name: 'description',
-          content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`,
-        });
+          this.titleService.setTitle(
+            `${page.title} Status - Data Engineering for Machine Learning`,
+          );
+          this.metaService.updateTag({
+            name: 'description',
+            content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`,
+          });
 
-        this.isLoading.set(false);
-        this.cdr.markForCheck();
-      },
-      error: err => {
-        console.error('Error fetching page by slug:', err);
-        this.statusPages.set([]);
-        this.loadFailed.set(true);
-        this.isLoading.set(false);
-        this.cdr.markForCheck();
-      },
-    });
+          this.isLoading.set(false);
+          this.cdr.markForCheck();
+        },
+        error: err => {
+          console.error('Error fetching page by slug:', err);
+          this.statusPages.set([]);
+          this.loadFailed.set(true);
+          this.isLoading.set(false);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   getPageStatus(pageId: string): string {

@@ -9,6 +9,7 @@
     <boneyard-skeleton name="isolated-status-page" [loading]="isLoading() && !loadFailed()">
       @for (page of displayPages(); track page.id) {
       <main class="standalone-main-content">
+        <span class="section-tag">System Status Feed</span>
         <!-- Dynamic Global Health Status Banner (Cloudflare-style) -->
         <div class="global-status-banner" [ngClass]="globalPageStatus().toLowerCase()">
           <div class="status-banner-content">

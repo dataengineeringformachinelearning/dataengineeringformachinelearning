@@ -7,6 +7,7 @@
     <!-- Top header bar -->
     <header class="dashboard-topbar-custom">
       <div class="topbar-left-custom">
+        <span class="section-tag">Data Lineage & Analytics</span>
         <h2 class="topbar-brand-title">DEML Platform</h2>
         <div class="topbar-search-box">
           <mat-icon>search</mat-icon>
@@ -27,7 +28,9 @@
         </button>
         <div class="user-profile-badge">
           <mat-icon>account_circle</mat-icon>
-          <span class="user-profile-name" *ngIf="authService.isAuthenticated()">Active User</span>
+          @if (authService.isAuthenticated()) {
+          <span class="user-profile-name">Active User</span>
+          }
         </div>
       </div>
     </header>

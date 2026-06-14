@@ -23,6 +23,7 @@ import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { SanityService } from '../../services/sanity.service';
 import { StatusCard } from '../../components/status-card/status-card';
 import { SkeletonComponent } from 'boneyard-js/angular';
+import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-status',
@@ -121,36 +122,39 @@ export class Status implements OnInit {
       return;
     }
     if (this.authService.isAuthenticated()) {
-      this.monitorService.getStatusPages().subscribe({
-        next: data => {
-          // Include user's own pages AND the platform status page
-          const myPages = data.filter(
-            p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status',
-          );
-          // Sort so platform-status is always first
-          const sorted = [...myPages].sort((a, b) => {
-            if (a.slug === 'platform-status') return -1;
-            if (b.slug === 'platform-status') return 1;
-            return a.title.localeCompare(b.title);
-          });
-          this.statusPages.set(sorted);
-          this.monitorService.fetchAllIncidents(sorted);
-          this.monitorService.fetchAllServices(sorted);
-          sorted.forEach(page => {
-            this.mlService.fetchLatestStat(page.id);
-            this.mlService.fetchThreatReport(page.id);
-          });
-          this.isLoading.set(false);
-          this.cdr.markForCheck();
-        },
-        error: err => {
-          console.error('Error fetching pages:', err);
-          this.statusPages.set([]);
-          this.loadFailed.set(true);
-          this.isLoading.set(false);
-          this.cdr.markForCheck();
-        },
-      });
+      this.monitorService
+        .getStatusPages()
+        .pipe(timeout(6000))
+        .subscribe({
+          next: data => {
+            // Include user's own pages AND the platform status page
+            const myPages = data.filter(
+              p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status',
+            );
+            // Sort so platform-status is always first
+            const sorted = [...myPages].sort((a, b) => {
+              if (a.slug === 'platform-status') return -1;
+              if (b.slug === 'platform-status') return 1;
+              return a.title.localeCompare(b.title);
+            });
+            this.statusPages.set(sorted);
+            this.monitorService.fetchAllIncidents(sorted);
+            this.monitorService.fetchAllServices(sorted);
+            sorted.forEach(page => {
+              this.mlService.fetchLatestStat(page.id);
+              this.mlService.fetchThreatReport(page.id);
+            });
+            this.isLoading.set(false);
+            this.cdr.markForCheck();
+          },
+          error: err => {
+            console.error('Error fetching pages:', err);
+            this.statusPages.set([]);
+            this.loadFailed.set(true);
+            this.isLoading.set(false);
+            this.cdr.markForCheck();
+          },
+        });
     } else {
       this.router.navigate(['/status/platform-status']);
     }
