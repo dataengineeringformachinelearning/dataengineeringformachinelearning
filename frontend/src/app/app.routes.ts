@@ -11,6 +11,7 @@ import { IsolatedStatus } from './pages/isolated-status/isolated-status';
 import { Whitepaper } from './pages/whitepaper/whitepaper';
 import { Compliance } from './pages/compliance/compliance';
 import { Vulnerabilities } from './pages/vulnerabilities/vulnerabilities';
+import { Login } from './pages/login/login';
 
 export const routes: Routes = [
   { path: '', component: Landing },
@@ -25,5 +26,6 @@ export const routes: Routes = [
   { path: 'privacy', component: Privacy },
   { path: 'terms', component: Terms },
   { path: 'whitepaper', component: Whitepaper },
+  { path: 'login', component: Login },
   { path: '**', component: NotFound },
 ];

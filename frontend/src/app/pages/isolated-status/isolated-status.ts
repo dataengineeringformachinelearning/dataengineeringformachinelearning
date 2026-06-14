@@ -17,8 +17,6 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
 import { SkeletonComponent } from 'boneyard-js/angular';
@@ -33,7 +31,6 @@ import { timeout } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    MatDialogModule,
     SkeletonComponent,
   ],
   templateUrl: './isolated-status.html',
@@ -47,7 +44,6 @@ export class IsolatedStatus implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private dialog = inject(MatDialog);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public sanityService = inject(SanityService);
@@ -96,17 +92,7 @@ export class IsolatedStatus implements OnInit {
   });
 
   login() {
-    const dialogRef = this.dialog.open(LoginDialog, {
-      width: '400px',
-      hasBackdrop: true,
-      backdropClass: 'blur-backdrop',
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      if (result === true) {
-        window.location.reload();
-      }
-    });
+    this.router.navigate(['/login']);
   }
 
   slug = signal<string | null>(null);

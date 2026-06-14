@@ -1,0 +1,31 @@
+@import '../login-dialog/login-dialog.scss';
+
+.login-page-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 160px);
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--border-radius-lg) !important;
+  overflow: hidden;
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+  transition: transform 0.3s ease;
+}
+
+:host-context(html[data-theme='light']) {
+  .login-card {
+    box-shadow:
+      0 12px 48px rgba(24, 40, 33, 0.08),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.02) !important;
+  }
+}

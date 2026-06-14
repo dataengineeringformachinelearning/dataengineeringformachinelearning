@@ -16,10 +16,8 @@ import { AuthService } from '../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, Router } from '@angular/router';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
-import { LoginDialog } from '../../components/login-dialog/login-dialog';
 import { SanityService } from '../../services/sanity.service';
 import { StatusCard } from '../../components/status-card/status-card';
 import { SkeletonComponent } from 'boneyard-js/angular';
@@ -33,7 +31,6 @@ import { timeout } from 'rxjs';
     MatButtonModule,
     MatIconModule,
     RouterModule,
-    MatDialogModule,
     Sidebar,
     StatusCta,
     StatusCard,
@@ -49,7 +46,6 @@ export class Status implements OnInit {
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  private dialog = inject(MatDialog);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public sanityService = inject(SanityService);
@@ -77,17 +73,7 @@ export class Status implements OnInit {
   });
 
   login() {
-    const dialogRef = this.dialog.open(LoginDialog, {
-      width: '400px',
-      hasBackdrop: true,
-      backdropClass: 'blur-backdrop',
-    });
-
-    dialogRef.afterClosed().subscribe(async result => {
-      if (result === true) {
-        window.location.reload();
-      }
-    });
+    this.router.navigate(['/login']);
   }
 
   constructor() {

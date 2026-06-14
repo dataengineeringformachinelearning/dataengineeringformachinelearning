@@ -12,15 +12,13 @@ import { Footer } from './components/footer/footer';
 import { AuthService } from './services/auth.service';
 import { isPlatformBrowser } from '@angular/common';
 import { IssueReporter } from './components/issue-reporter/issue-reporter';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { LoginDialog } from './components/login-dialog/login-dialog';
 import { CookieBanner } from './components/cookie-banner/cookie-banner';
 import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Sidebar, Footer, IssueReporter, MatDialogModule, CookieBanner],
+  imports: [RouterOutlet, Navbar, Sidebar, Footer, IssueReporter, CookieBanner],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',
@@ -28,7 +26,6 @@ import { filter } from 'rxjs/operators';
 export class App implements OnInit {
   protected readonly title = signal('frontend');
   public authService = inject(AuthService);
-  private dialog = inject(MatDialog);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
 
@@ -77,12 +74,9 @@ export class App implements OnInit {
         url.searchParams.delete('reset_token');
         window.history.replaceState({}, document.title, url.pathname);
 
-        // Open Dialog
-        this.dialog.open(LoginDialog, {
-          width: '400px',
-          hasBackdrop: true,
-          backdropClass: 'blur-backdrop',
-          data: {
+        // Navigate to /login page with parameters
+        this.router.navigate(['/login'], {
+          queryParams: {
             mode: 'reset',
             uid: resetUid,
             token: resetToken,
