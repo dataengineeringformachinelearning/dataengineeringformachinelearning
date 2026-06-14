@@ -144,7 +144,7 @@ export class IsolatedStatus implements OnInit {
     }
     this.monitorService
       .getStatusPageBySlug(slug)
-      .pipe(timeout(6000))
+      .pipe(timeout(15000))
       .subscribe({
         next: page => {
           const pages = [page];

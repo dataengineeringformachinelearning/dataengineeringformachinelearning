@@ -56,7 +56,7 @@ export class AuthService {
                 .get(`${environment.backendUrl}/api/v1/auth/user`, {
                   headers: { Authorization: `Bearer ${token}` },
                 })
-                .pipe(timeout(5000)),
+                .pipe(timeout(20000)),
             );
             if (res.status === 'success') {
               this.isAuthenticated.set(true);

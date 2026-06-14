@@ -124,7 +124,7 @@ export class Status implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.monitorService
         .getStatusPages()
-        .pipe(timeout(6000))
+        .pipe(timeout(15000))
         .subscribe({
           next: data => {
             // Include user's own pages AND the platform status page

@@ -266,7 +266,8 @@ export class LoginDialog implements OnInit {
     }
     this.isLoading.set(true);
     try {
-      const assertion = PhoneAuthProvider.credential(verifyId, code);
+      const cred = PhoneAuthProvider.credential(verifyId, code);
+      const assertion = PhoneMultiFactorGenerator.assertion(cred);
       await this.resolver.resolveSignIn(assertion);
       this.dialogRef.close(true);
     } catch (e: any) {
