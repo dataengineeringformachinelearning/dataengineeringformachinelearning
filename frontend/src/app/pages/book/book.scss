@@ -9,6 +9,7 @@
   --book-badge-bg: rgba(192, 197, 193, 0.1);
   --book-badge-text: var(--color-primary-container);
   --book-badge-border: rgba(192, 197, 193, 0.3);
+  --book-active-gradient: linear-gradient(135deg, rgba(45, 71, 57, 0.25) 0%, rgba(192, 197, 193, 0.08) 100%);
 }
 
 :host-context(html[data-theme='light']) {
@@ -16,6 +17,7 @@
   --book-badge-bg: rgba(45, 71, 57, 0.08);
   --book-badge-text: var(--color-primary);
   --book-badge-border: rgba(45, 71, 57, 0.2);
+  --book-active-gradient: linear-gradient(135deg, rgba(225, 230, 226, 0.8) 0%, rgba(45, 71, 57, 0.08) 100%);
 }
 
 .book-container {
@@ -90,6 +92,7 @@
   border: 1px solid transparent;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   &:hover {
     background-color: var(--hover-color);
@@ -97,13 +100,26 @@
   }
 
   &.active {
-    background-color: var(--hover-color);
+    background: var(--book-active-gradient);
     border-color: var(--book-accent);
     color: var(--book-accent);
+    box-shadow: var(--shadow-sm);
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 20%;
+      height: 60%;
+      width: 3px;
+      background: var(--book-accent);
+      border-radius: 0 4px 4px 0;
+    }
 
     .page-title {
       color: var(--book-accent);
       font-weight: 600;
+      padding-left: 6px;
     }
   }
 
@@ -111,7 +127,7 @@
     font-size: 0.9rem;
     color: var(--text-color);
     line-height: 1.4;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, padding 0.2s ease;
   }
 }
 
