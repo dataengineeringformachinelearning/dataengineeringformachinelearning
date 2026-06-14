@@ -34,6 +34,18 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
         user.set_unusable_password()
         user.save()
         logger.info(f"Created Django user for Firebase UID: {uid}")
+
+      # Ensure user profile and role exists
+      from monitor.models import UserProfile
+
+      profile, p_created = UserProfile.objects.get_or_create(user=user)
+      if p_created:
+        if uid == "system" or (email and email == "admin@dataengineeringformachinelearning.com"):
+          profile.role = "Security Admin"
+        else:
+          profile.role = "Operator"
+        profile.save()
+        logger.info(f"Created user profile with role: {profile.role} for user: {uid}")
       else:
         # Keep email and display name in sync if they changed
         updated = False

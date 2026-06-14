@@ -4,7 +4,9 @@ import re
 from django.shortcuts import get_object_or_404
 from ninja import Router, Schema
 from ninja.errors import HttpError
+from utils.audit import log_audit_event
 from utils.kafka import get_kafka_brokers
+from utils.permissions import role_required
 
 from monitor.models import Endpoints, MonitoredService, StatusPage
 
@@ -278,9 +280,8 @@ def get_status_page_by_slug(request, slug: str):
 
 
 @router.post("/status_pages", response=StatusPageOut)
+@role_required(["Operator", "Security Admin"])
 def create_status_page(request, payload: StatusPageIn):
-  if not request.user.is_authenticated:
-    raise HttpError(401, "Not authenticated")
   if not check_mfa_satisfied(request):
     raise HttpError(403, "Multi-factor authentication required")
   if not is_valid_slug(payload.slug):
@@ -300,13 +301,18 @@ def create_status_page(request, payload: StatusPageIn):
     microsoft_clarity_id=payload.microsoft_clarity_id,
     cloudflare_analytics_id=payload.cloudflare_analytics_id,
   )
+  log_audit_event(
+    request,
+    "STATUS_PAGE_CREATE",
+    resource_id=str(page.id),
+    details={"title": page.title, "slug": page.slug},
+  )
   return _build_status_page_out(page)
 
 
 @router.put("/status_pages/{page_id}", response=StatusPageOut)
+@role_required(["Operator", "Security Admin"])
 def update_status_page(request, page_id: str, payload: StatusPageIn):
-  if not request.user.is_authenticated:
-    raise HttpError(401, "Not authenticated")
   if not check_mfa_satisfied(request):
     raise HttpError(403, "Multi-factor authentication required")
   if not is_valid_slug(payload.slug):
@@ -329,18 +335,29 @@ def update_status_page(request, page_id: str, payload: StatusPageIn):
   page.microsoft_clarity_id = payload.microsoft_clarity_id
   page.cloudflare_analytics_id = payload.cloudflare_analytics_id
   page.save()
+  log_audit_event(
+    request,
+    "STATUS_PAGE_UPDATE",
+    resource_id=str(page.id),
+    details={"title": page.title, "slug": page.slug, "is_published": page.is_published},
+  )
   return _build_status_page_out(page)
 
 
 @router.delete("/status_pages/{page_id}")
+@role_required(["Operator", "Security Admin"])
 def delete_status_page(request, page_id: str):
-  if not request.user.is_authenticated:
-    raise HttpError(401, "Not authenticated")
   if not check_mfa_satisfied(request):
     raise HttpError(403, "Multi-factor authentication required")
   page = get_object_or_404(StatusPage, id=page_id, user=request.user)
   if page.slug == "platform-status":
     raise HttpError(403, "Cannot delete system platform-status page")
+  log_audit_event(
+    request,
+    "STATUS_PAGE_DELETE",
+    resource_id=page_id,
+    details={"title": page.title, "slug": page.slug},
+  )
   page.delete()
   return {"success": True}
 

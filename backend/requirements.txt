@@ -1,6 +1,7 @@
 asgiref==3.11.1
 dj-database-url==3.1.2
 Django==6.0.3
+django-migration-linter==6.0.0
 django-cors-headers==4.6.0
 filelock==3.29.0
 fsspec==2026.4.0
@@ -39,3 +40,5 @@ pytest==8.1.1
 pytest-django==4.8.0
 firebase-admin==6.6.0
 sentry-sdk
+google-cloud-kms
+google-cloud-logging

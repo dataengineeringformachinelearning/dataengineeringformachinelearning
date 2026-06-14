@@ -767,13 +767,13 @@ Here is the flow I've implemented:
 
 ---
 
-## Chapter 10: Encrypting the data
+## Chapter 10: Encrypting the data & Key Management
 
 ### Chapter 10.1: Introduction
 
-#### Chapter 10.1.1: Enabling end-to-end encryption
+#### Chapter 10.1.1: Enabling end-to-end encryption & GCP KMS Integration
 
-To secure sensitive target URLs, microservice status metrics, and telemetry payloads, I implement full end-to-end (E2E) encryption. In transit, all data flowing between user browsers, the Django web server, and telemetry workers is encrypted using TLS 1.3. Furthermore, integrated third-party credentials (such as Google Analytics 4 OAuth tokens and Microsoft Clarity API keys) are secured at-rest in our PostgreSQL/SQLite database. Using Django's model lifecycle hooks and the `cryptography` library, I transparently encrypt these credentials at-rest using AES-256 (via Fernet keys derived from Django's `SECRET_KEY`). Decryption happens transparently upon model retrieval, ensuring that administrative secrets and tenant tokens are never exposed in plaintext to database administrators, logs, or unauthenticated public users. Additionally, public access to individual status pages, services, incidents, and threat telemetry is strictly isolated. Unless the status page owner explicitly approves and publishes their page, the API rejects all public requests, guaranteeing absolute privacy.
+To secure sensitive target URLs, microservice status metrics, and telemetry payloads, I implement full end-to-end (E2E) encryption. In transit, all data flowing between user browsers, the Django web server, and telemetry workers is encrypted using TLS 1.3. Furthermore, integrated third-party credentials (such as Google Analytics 4 OAuth tokens and Microsoft Clarity API keys) are secured at-rest in our PostgreSQL/SQLite database. Using Django's model lifecycle hooks and the `cryptography` library, I transparently encrypt these credentials at-rest using AES-256 via dynamic Data Encryption Keys (DEKs). Instead of local key storage, these DEKs are envelope-encrypted using a remote Key Encrypting Key (KEK) on Google Cloud Key Management Service (KMS) with automated 90-day rotation, falling back safely to local KEK derivation for local offline development. Decryption happens transparently upon model retrieval, ensuring that administrative secrets and tenant tokens are never exposed in plaintext to database administrators, logs, or unauthenticated public users. Additionally, public access to individual status pages, services, incidents, and threat telemetry is strictly isolated. Unless the status page owner explicitly approves and publishes their page, the API rejects all public requests, guaranteeing absolute privacy.
 
 ---
 
@@ -1031,6 +1031,22 @@ Throughout this book's draft, we build a platform fully optimized and ready for 
 3. **Telemetry Worker**: An asynchronous background consumer processing Redpanda message streams and executing PyTorch ML model pipelines for SLA forecasting.
 
 For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to my [RAILWAY.md](./RAILWAY.md) file.
+
+---
+
+## Chapter 22: Enterprise Security, Compliance (CMMC 2.0 with SOC 2) & Secrets Management
+
+### Chapter 22.1: Introduction
+
+#### Chapter 22.1.1: Standardizing Enterprise Security for SOC 2 Type II and CMMC 2.0 Compliance
+
+To transition our telemetry platform toward enterprise maturity, we implement standard SOC 2 Type II and CMMC 2.0 (Level 2) controls across our codebases, containers, and pipelines:
+
+1. **Identity & Role-Based Access Control (RBAC)**: We replace insecure MFA mechanisms with Google SSO (Firebase Auth) supporting WebAuthn cryptographic keys. We enforce strict role configurations (`Viewer`, `Operator`, `Security Admin`) on both the backend decorators and the Angular user interface.
+2. **Immutable SIEM Logging**: We integrate Python's `google-cloud-logging` client, streaming all administrative and security actions logged locally in PostgreSQL directly to centralized Google Cloud Logging buckets.
+3. **Container Hardening & Least Privilege**: We migrate both frontend Nginx and backend Python runtime Docker images to distroless, shell-less `cgr.dev/chainguard` base images to minimize host attack surfaces, run the frontend container under a non-root `USER nginx` specification, and configure strict Content-Security-Policy (CSP) and HSTS security headers.
+4. **Vulnerability Firewalls, Linters & IaC checks**: We configure automated pre-commit hooks executing **Socket.dev** (scanning dependencies for supply-chain compromises), **Checkov** and **Trivy** (scanning configurations and infrastructure files for security flaws), **Django Migration Linter** (detecting backward-incompatible SQL actions), and **Gitleaks** & **detect-secrets** (using a baseline to prevent credential commits).
+5. **Secrets Management (Infisical)**: We delegate credentials orchestration to **Infisical**, utilizing the Infisical CLI for local development and native Railway automated secrets syncing in production.
 
 ### Chapter 21.2: Acknowledgements & Technologies
 

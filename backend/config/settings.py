@@ -24,6 +24,33 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from a .env file located at the BASE_DIR (backend/)
 load_dotenv(BASE_DIR / ".env")
 
+# Write GCP service account JSON from environment variable to a file if provided
+gcp_sa_json = os.getenv("GCP_SERVICE_ACCOUNT_JSON")
+if gcp_sa_json:
+  gcp_sa_json_clean = gcp_sa_json.strip()
+  if gcp_sa_json_clean.startswith('"') and gcp_sa_json_clean.endswith('"'):
+    import json
+
+    try:
+      # Strip potential double JSON encoding wrapper
+      decoded = json.loads(gcp_sa_json_clean)
+      if isinstance(decoded, str):
+        gcp_sa_json_clean = decoded
+    except Exception:
+      pass
+
+  # Write to /tmp/gcp-service-account.json and set the standard env var path
+  temp_credentials_path = "/tmp/gcp-service-account.json"
+  try:
+    with open(temp_credentials_path, "w") as f:
+      f.write(gcp_sa_json_clean)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
+  except Exception as e:
+    import logging
+
+    logging.getLogger("django").warning("Failed to write GCP JSON file: %s", e)
+
+
 import sentry_sdk
 
 sentry_sdk.init(
@@ -97,6 +124,7 @@ INSTALLED_APPS = [
   "django.contrib.sitemaps",
   "corsheaders",
   "whitenoise.runserver_nostatic",
+  "django_migration_linter",
   "monitor",
   "ml",
   "telemetry",
@@ -206,6 +234,20 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
 
+# Security Headers & Cookie Settings
+if not DEBUG:
+  SECURE_SSL_REDIRECT = os.getenv("SECURE_SSL_REDIRECT", "True").lower() == "true"
+  SESSION_COOKIE_SECURE = True
+  CSRF_COOKIE_SECURE = True
+  SECURE_HSTS_SECONDS = 31536000  # 1 year
+  SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+  SECURE_HSTS_PRELOAD = True
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
+
 # Google OAuth Analytics Integration Settings
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
@@ -225,3 +267,64 @@ elif LOCAL_VERSION_PATH.exists():
     APP_VERSION = f.read().strip()
 else:
   APP_VERSION = "0.0.0-dev"
+
+# Centralized Logging Configuration
+LOGGING = {
+  "version": 1,
+  "disable_existing_loggers": False,
+  "formatters": {
+    "verbose": {
+      "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+      "style": "{",
+    },
+    "simple": {
+      "format": "{levelname} {message}",
+      "style": "{",
+    },
+  },
+  "handlers": {
+    "console": {
+      "class": "logging.StreamHandler",
+      "formatter": "simple",
+    },
+  },
+  "loggers": {
+    "django": {
+      "handlers": ["console"],
+      "level": "INFO",
+    },
+    "monitor.audit": {
+      "handlers": ["console"],
+      "level": "INFO",
+      "propagate": True,
+    },
+  },
+}
+
+GCP_LOGGING_ENABLED = os.getenv("GCP_LOGGING_ENABLED", "False").lower() == "true"
+if GCP_LOGGING_ENABLED:
+  try:
+    import google.cloud.logging
+
+    gcp_client = google.cloud.logging.Client()
+    LOGGING["handlers"]["gcp"] = {
+      "class": "google.cloud.logging.handlers.CloudLoggingHandler",
+      "client": gcp_client,
+      "name": "audit_logs",
+    }
+    LOGGING["loggers"]["monitor.audit"]["handlers"].append("gcp")
+  except Exception as e:
+    import logging
+
+    logging.getLogger("django").warning("Failed to initialize Google Cloud Logging: %s", e)
+
+
+# Migration Linter Configuration
+MIGRATION_LINTER_OPTIONS = {
+  "ignore_initial_migrations": True,
+  "ignore_name": [
+    "0002_alter_endpoints_ip_address_statuspage_and_more",
+    "0005_statuspage_is_published",
+    "0009_rename_model_to_ml",
+  ],
+}

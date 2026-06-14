@@ -14,6 +14,17 @@ To deploy all these components under a single Railway project:
    - For the Telemetry Worker, ensure the **Start Command** is overridden as specified.
 4. **Environment Variables**: Add a Postgres database (via **New Service** -> **Database** -> **Add PostgreSQL**) and configure all necessary environment variables in the **Variables** tab for each service according to the configurations listed below.
 
+## Infisical Integration
+
+To satisfy strict secret management guidelines (SOC 2, CMMC 2.0 CC6.1/CC6.2), all secret keys, passwords, and API credentials are kept out of raw service settings and stored inside [Infisical](https://infisical.com/).
+
+1. Set up an Infisical organization and create a project for `dataengineeringformachinelearning`.
+2. Connect your Railway services to Infisical via the official Railway Infisical Integration or using the Infisical Agent.
+3. For local development, run backend and frontend tasks using the Infisical CLI to dynamically inject credentials:
+   ```bash
+   infisical run -- python manage.py runserver
+   ```
+
 ## Services Overview
 
 ### 1. Web Frontend
@@ -22,7 +33,7 @@ This service serves the user interface.
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/frontend`
-- **Builder**: Dockerfile
+- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/nginx:latest` base image)
 - **Public URL**: `https://dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `dataengineeringformachinelearnin.railway.internal`
@@ -35,7 +46,7 @@ This service runs the main Django web server.
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile
+- **Builder**: Dockerfile (utilizes secure, minimal `cgr.dev/chainguard/python:latest` distroless runtime; migrations and server startup are orchestrated using `backend/start.py` as distroless does not include a shell)
 - **Public URL**: `https://backend.dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `deml-frontend.railway.internal`
@@ -63,7 +74,7 @@ This service runs the background worker process using the backend codebase to co
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile
+- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
 - **Start Command**: `python manage.py telemetry_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-telemetry.railway.internal`
@@ -77,7 +88,7 @@ This service runs the background ML training process using the backend codebase 
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile
+- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
 - **Start Command**: `python manage.py ml_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-ml.railway.internal`
@@ -91,7 +102,7 @@ This service runs the periodic security worker to fetch threat intelligence data
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile
+- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
 - **Start Command**: `python manage.py security_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-security.railway.internal`
@@ -112,6 +123,7 @@ Services within this environment can communicate securely over Railway's private
 
 - All services are linked to the `main` branch of the `dataengineeringformachinelearning` repository.
 - Pushes to the `main` branch will automatically trigger new builds and deployments for the affected services.
+- Automated security testing via **Socket.dev** and **Checkov** pre-commit hooks runs on every push.
 - **Watch Paths**: You can set gitignore-style rules (e.g., `/frontend/**` or `/backend/**`) in the Railway settings to ensure that a service only rebuilds when its specific directory changes.
 
 ## Reliability and Scaling
@@ -122,7 +134,7 @@ Services within this environment can communicate securely over Railway's private
 
 ## Environment Variables
 
-For the environments to function properly, ensure the following are configured in the Railway dashboard for each respective service:
+For the environments to function properly, ensure the following are configured in the Railway dashboard or injected via Infisical for each respective service:
 
 ### 1. Web Frontend (UI)
 
@@ -151,8 +163,8 @@ No specific backend environment variables are usually required at runtime if the
 - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092` (See warning below)
 - **FIREBASE_SERVICE_ACCOUNT_JSON**: The raw JSON string of your Firebase service account credentials.
 - **GOOGLE_API_KEY**: `<your-google-api-key>` (If using LLM features)
-- **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>` (For Google Analytics integration)
-- **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>` (For Google Analytics integration)
+- **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>` (For Google OAuth & Single Sign-On / MFA integration)
+- **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
 - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.dataengineeringformachinelearning.com/api/v1/system-status/integrations/google/callback` (OAuth callback URL)
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For Threat Intelligence geo-blocking data)
 - **CISA_TAXII_ENDPOINT**: `<your-cisa-taxii-endpoint>` (Optional, for STIX formatted threat reports submission)
@@ -160,6 +172,18 @@ No specific backend environment variables are usually required at runtime if the
 - **OTX_API_KEY**: `<your-alienvault-otx-api-key>` (For Threat Intelligence vulnerability data)
 - **RESEND_API_KEY**: `<your-resend-api-key>` (Optional, for incident email notifications)
 - **SENTRY_DSN**: `<your-sentry-dsn>` (Optional, for error monitoring)
+
+#### Google Cloud KMS (Envelope Encryption)
+
+- **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
+- **GCP_KMS_LOCATION**: Location of the Key Ring (e.g. `global` or `us-east1`)
+- **GCP_KMS_KEY_RING**: Name of the KMS Key Ring
+- **GCP_KMS_KEY_NAME**: Name of the Key Encrypting Key (KEK)
+
+#### Centralized Logging (SIEM)
+
+- **GCP_LOGGING_ENABLED**: Set to `True` to stream audit/auth logs to GCP Cloud Logging.
+- **GOOGLE_APPLICATION_CREDENTIALS**: Path to GCP service account JSON credentials to permit KMS & Logging access.
 
 ### 3. Redpanda Broker (Message Queue)
 
@@ -199,3 +223,7 @@ The security worker uses the same Django backend codebase and requires identical
 - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For geo-blocking metadata check)
 - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
+- **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
+- **GCP_KMS_LOCATION**: Location of the Key Ring
+- **GCP_KMS_KEY_RING**: Name of the KMS Key Ring
+- **GCP_KMS_KEY_NAME**: Name of the Key Encrypting Key (KEK)

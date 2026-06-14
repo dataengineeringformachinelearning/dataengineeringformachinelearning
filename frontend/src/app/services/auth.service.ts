@@ -35,6 +35,7 @@ import {
 export class AuthService {
   public isAuthenticated = signal<boolean>(false);
   public currentUserId = signal<number | null>(null);
+  public currentUserRole = signal<string | null>(null);
   public isInitialized = signal<boolean>(false);
   public isProcessing = signal<boolean>(true);
   private http = inject(HttpClient);
@@ -58,18 +59,22 @@ export class AuthService {
             if (res.status === 'success') {
               this.isAuthenticated.set(true);
               this.currentUserId.set(res.user_id);
+              this.currentUserRole.set(res.role);
             } else {
               this.isAuthenticated.set(false);
               this.currentUserId.set(null);
+              this.currentUserRole.set(null);
             }
           } catch (e) {
             console.error('Failed to sync auth with backend', e);
             this.isAuthenticated.set(false);
             this.currentUserId.set(null);
+            this.currentUserRole.set(null);
           }
         } else {
           this.isAuthenticated.set(false);
           this.currentUserId.set(null);
+          this.currentUserRole.set(null);
         }
         this.isInitialized.set(true);
         this.isProcessing.set(false);
@@ -85,6 +90,7 @@ export class AuthService {
     if (!this.auth) {
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.currentUserRole.set(null);
       this.isProcessing.set(false);
       return;
     }
@@ -100,17 +106,21 @@ export class AuthService {
         if (res.status === 'success') {
           this.isAuthenticated.set(true);
           this.currentUserId.set(res.user_id);
+          this.currentUserRole.set(res.role);
         } else {
           this.isAuthenticated.set(false);
           this.currentUserId.set(null);
+          this.currentUserRole.set(null);
         }
       } catch (e) {
         this.isAuthenticated.set(false);
         this.currentUserId.set(null);
+        this.currentUserRole.set(null);
       }
     } else {
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.currentUserRole.set(null);
     }
     this.isProcessing.set(false);
   }
@@ -202,11 +212,13 @@ export class AuthService {
       }
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.currentUserRole.set(null);
       this.isProcessing.set(false);
     } catch (e) {
       console.error(e);
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.currentUserRole.set(null);
       this.isProcessing.set(false);
     }
   }
@@ -225,6 +237,7 @@ export class AuthService {
       }
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
+      this.currentUserRole.set(null);
       this.isProcessing.set(false);
       return true;
     } catch (e) {
@@ -285,11 +298,14 @@ export class AuthService {
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
-        await firstValueFrom(
+        const res: any = await firstValueFrom(
           this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         );
+        if (res.status === 'success') {
+          this.currentUserRole.set(res.role);
+        }
       }
 
       this.isProcessing.set(false);
@@ -317,11 +333,14 @@ export class AuthService {
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
-        await firstValueFrom(
+        const res: any = await firstValueFrom(
           this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
         );
+        if (res.status === 'success') {
+          this.currentUserRole.set(res.role);
+        }
       }
 
       this.isProcessing.set(false);

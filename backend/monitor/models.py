@@ -216,3 +216,40 @@ class Vulnerability(models.Model):
 
   def __str__(self):
     return f"{self.title} - {self.severity} ({self.status})"
+
+
+class AuditLog(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(
+    User, on_delete=models.SET_NULL, null=True, blank=True, related_name="audit_logs"
+  )
+  action = models.CharField(max_length=255)  # e.g., "STATUS_PAGE_CREATE", "INCIDENT_UPDATE"
+  resource_id = models.CharField(max_length=255, blank=True, null=True)
+  details = models.JSONField(default=dict, blank=True)
+  ip_address = models.GenericIPAddressField(null=True, blank=True)
+  user_agent = models.TextField(null=True, blank=True)
+  timestamp = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "audit_logs"
+    ordering = ["-timestamp"]
+
+  def __str__(self):
+    user_str = self.user.username if self.user else "Anonymous"
+    return f"{self.timestamp} - {user_str} - {self.action}"
+
+
+class UserProfile(models.Model):
+  ROLE_CHOICES = [
+    ("Viewer", "Viewer"),
+    ("Operator", "Operator"),
+    ("Security Admin", "Security Admin"),
+  ]
+  user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+  role = models.CharField(max_length=50, choices=ROLE_CHOICES, default="Viewer")
+
+  class Meta:
+    db_table = "user_profiles"
+
+  def __str__(self):
+    return f"{self.user.username} - {self.role}"
