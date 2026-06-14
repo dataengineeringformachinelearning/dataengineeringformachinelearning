@@ -225,3 +225,53 @@ elif LOCAL_VERSION_PATH.exists():
     APP_VERSION = f.read().strip()
 else:
   APP_VERSION = "0.0.0-dev"
+
+# Centralized Logging Configuration
+LOGGING = {
+  "version": 1,
+  "disable_existing_loggers": False,
+  "formatters": {
+    "verbose": {
+      "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+      "style": "{",
+    },
+    "simple": {
+      "format": "{levelname} {message}",
+      "style": "{",
+    },
+  },
+  "handlers": {
+    "console": {
+      "class": "logging.StreamHandler",
+      "formatter": "simple",
+    },
+  },
+  "loggers": {
+    "django": {
+      "handlers": ["console"],
+      "level": "INFO",
+    },
+    "monitor.audit": {
+      "handlers": ["console"],
+      "level": "INFO",
+      "propagate": True,
+    },
+  },
+}
+
+GCP_LOGGING_ENABLED = os.getenv("GCP_LOGGING_ENABLED", "False").lower() == "true"
+if GCP_LOGGING_ENABLED:
+  try:
+    import google.cloud.logging
+
+    gcp_client = google.cloud.logging.Client()
+    LOGGING["handlers"]["gcp"] = {
+      "class": "google.cloud.logging.handlers.CloudLoggingHandler",
+      "client": gcp_client,
+      "name": "audit_logs",
+    }
+    LOGGING["loggers"]["monitor.audit"]["handlers"].append("gcp")
+  except Exception as e:
+    import logging
+
+    logging.getLogger("django").warning("Failed to initialize Google Cloud Logging: %s", e)

@@ -39,3 +39,5 @@ pytest==8.1.1
 pytest-django==4.8.0
 firebase-admin==6.6.0
 sentry-sdk
+google-cloud-kms
+google-cloud-logging
