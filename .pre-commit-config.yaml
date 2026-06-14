@@ -68,7 +68,7 @@ repos:
         pass_filenames: false
       - id: django-migration-linter
         name: Django Migration Linter
-        entry: uv run python backend/manage.py lintmigrations
+        entry: env DATABASE_URL=sqlite:// uv run python backend/manage.py lintmigrations
         language: system
         always_run: true
         pass_filenames: false

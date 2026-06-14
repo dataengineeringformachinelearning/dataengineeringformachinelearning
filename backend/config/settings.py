@@ -22,7 +22,7 @@ from firebase_admin import credentials
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Load environment variables from a .env file located at the BASE_DIR (backend/)
-load_dotenv(BASE_DIR / ".env", override=True)
+load_dotenv(BASE_DIR / ".env", override=False)
 
 # Write GCP service account JSON from environment variable to a file if provided
 gcp_sa_json = os.getenv("GCP_SERVICE_ACCOUNT_JSON")

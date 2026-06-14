@@ -1,5 +1,5 @@
 # Builder stage
-FROM python:3.14-slim AS builder
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
@@ -28,7 +28,7 @@ RUN ln -sf /usr/bin/python /opt/venv/bin/python && \
 FROM cgr.dev/chainguard/python:latest
 
 ENV PATH="/opt/venv/bin:$PATH" \
-    PYTHONPATH="/opt/venv/lib/python3.14/site-packages" \
+    PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
