@@ -15,11 +15,13 @@ import { AuthService } from '../../services/auth.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { StatusCta } from '../../components/status-cta/status-cta';
+import { StatusCard } from '../../components/status-card/status-card';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, RouterModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, RouterModule, StatusCta, StatusCard],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './explore.scss',

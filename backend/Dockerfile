@@ -37,4 +37,4 @@ EXPOSE 8000
 
 USER nonroot
 
-ENTRYPOINT ["python", "start.py"]
+ENTRYPOINT ["/opt/venv/bin/python", "start.py"]

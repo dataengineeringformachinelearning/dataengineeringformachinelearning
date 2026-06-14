@@ -75,7 +75,7 @@ This service runs the background worker process using the backend codebase to co
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
-- **Start Command**: `python manage.py telemetry_worker`
+- **Start Command**: `/opt/venv/bin/python manage.py telemetry_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-telemetry.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
@@ -89,7 +89,7 @@ This service runs the background ML training process using the backend codebase 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
-- **Start Command**: `python manage.py ml_worker`
+- **Start Command**: `/opt/venv/bin/python manage.py ml_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-ml.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
@@ -103,7 +103,7 @@ This service runs the periodic security worker to fetch threat intelligence data
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
-- **Start Command**: `python manage.py security_worker`
+- **Start Command**: `/opt/venv/bin/python manage.py security_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-security.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
