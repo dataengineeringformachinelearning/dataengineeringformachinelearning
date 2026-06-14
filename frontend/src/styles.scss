@@ -78,16 +78,16 @@ html[data-theme='light'] .mat-form-field select:focus-visible {
   outline: none !important;
 }
 
-/* Wrap the accessibility focus ring around the full form field */
-.mat-mdc-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
-.mat-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+/* Wrap the accessibility focus ring around the visual field container (excluding the subscript area) */
+.mdc-text-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
+.mat-form-field-flex:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
   outline: 2px solid var(--color-primary-container) !important;
   outline-offset: 3px !important;
   border-radius: var(--border-radius-sm);
 }
 
-html[data-theme='light'] .mat-mdc-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
-html[data-theme='light'] .mat-form-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
+html[data-theme='light'] .mdc-text-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
+html[data-theme='light'] .mat-form-field-flex:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
   outline: 2px solid var(--color-primary) !important;
 }
 
