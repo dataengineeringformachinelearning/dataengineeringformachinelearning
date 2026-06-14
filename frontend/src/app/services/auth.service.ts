@@ -348,6 +348,13 @@ export class AuthService {
       return { success: true };
     } catch (e: any) {
       console.error(e);
+      if (e?.code === 'auth/credential-already-in-use') {
+        return {
+          success: false,
+          error:
+            'This Google account is already associated with another user profile. To connect it, log in to that account first, unlink it, or delete it, and try again.',
+        };
+      }
       return { success: false, error: e.message || 'Google account linking failed.' };
     }
   }
@@ -360,6 +367,13 @@ export class AuthService {
       return { success: true };
     } catch (e: any) {
       console.error(e);
+      if (e?.code === 'auth/credential-already-in-use') {
+        return {
+          success: false,
+          error:
+            'This Apple ID is already associated with another user profile. To connect it, log in to that account first, unlink it, or delete it, and try again.',
+        };
+      }
       return { success: false, error: e.message || 'Apple account linking failed.' };
     }
   }

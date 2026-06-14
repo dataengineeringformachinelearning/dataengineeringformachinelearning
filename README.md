@@ -626,6 +626,18 @@ async confirmMfaEnrollment(verificationId: string, verificationCode: string): Pr
 }
 ```
 
+#### Chapter 7.1.4: Troubleshooting Link Account Exceptions
+
+When attempting to connect or link a third-party identity provider (like Google or Apple) to an existing email/password account, you may encounter the `auth/credential-already-in-use` Firebase exception. This happens because the target OAuth credential is already bound to a separate, existing user profile in the Firebase project (e.g. if the user previously clicked "Sign In with Google" directly, creating an implicit user account).
+
+To resolve this issue, you must disassociate the third-party credential from the secondary profile:
+
+1. Log out of the primary account.
+2. Sign in using the target third-party provider (e.g., Google Sign-In) to access the secondary account.
+3. Access the **Danger Zone** settings and delete this secondary account permanently to release the credential.
+4. Log out and sign back in to the primary email/password account.
+5. Perform the linking action again to successfully connect the provider.
+
 ---
 
 ## Chapter 8: Enhancing observability

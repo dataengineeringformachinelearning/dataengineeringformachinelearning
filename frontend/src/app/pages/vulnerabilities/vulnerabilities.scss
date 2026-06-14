@@ -1,7 +1,19 @@
-@import '../../../theme.scss';
+:host {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+}
+
+.pulse-indicator {
+  background-color: var(--color-amber) !important;
+  box-shadow: 0 0 10px var(--color-amber) !important;
+}
+
 
 .status-container {
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
   background-color: var(--color-background);
   color: var(--color-on-background);
   position: relative;
@@ -10,7 +22,7 @@
 
 .dashboard-layout {
   display: flex;
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
 }
 
 .dashboard-main {
@@ -18,55 +30,9 @@
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 64px);
   overflow: hidden;
-}
-
-/* HUD Header Style */
-.hud-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border-precision);
-  margin-bottom: 1.5rem;
-}
-
-.hud-brand {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.pulse-indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--color-amber);
-  box-shadow: 0 0 10px var(--color-amber);
-  animation: pulse-ring 2s infinite ease-in-out;
-}
-
-@keyframes pulse-ring {
-  0% { transform: scale(0.95); opacity: 0.5; }
-  50% { transform: scale(1.1); opacity: 1; }
-  100% { transform: scale(0.95); opacity: 0.5; }
-}
-
-.hud-title {
-  font-family: 'Inter', monospace;
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  margin: 0;
-  color: var(--color-on-background);
-}
-
-.hud-subtitle {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin: 0.25rem 0 0 0;
-  font-family: monospace;
+  box-sizing: border-box;
 }
 
 .hud-metrics {
@@ -113,7 +79,7 @@
   gap: 1.5rem;
   flex: 1;
   overflow: hidden;
-  height: calc(100vh - 120px);
+  min-height: 0;
 }
 
 .panel-section {

@@ -60,6 +60,18 @@ html[data-theme='light'] {
   }
 }
 
+/* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
+   as the form field container handles focus state visually at the border level. */
+.mat-mdc-form-field input:focus-visible,
+.mat-mdc-form-field textarea:focus-visible,
+.mat-mdc-form-field select:focus-visible,
+.mat-form-field input:focus-visible,
+.mat-form-field textarea:focus-visible,
+.mat-form-field select:focus-visible {
+  outline: none !important;
+}
+
+
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';
 
@@ -672,7 +684,74 @@ html[data-theme='light'] #global-error-toast {
   }
 }
 
-// Global border-radius override to eliminate all rounded borders
-*, *::before, *::after {
+// Eliminate border-radius on elements that only have single-sided borders (top, bottom, left, or right)
+// to avoid curved corners on straight dividing lines.
+.hud-header,
+.panel-header,
+.filter-bar,
+.telemetry-bar,
+.video-flat-info,
+.sidebar-brand,
+.sidebar-footer,
+.dashboard-sidebar,
+.vuln-profile-header,
+.page-content:not([style*="border"]) {
   border-radius: 0 !important;
+}
+
+// ====================== HUD HEADER STYLING ======================
+.hud-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border-precision);
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.hud-brand {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pulse-indicator {
+  width: 12px;
+  height: 12px;
+  border-radius: 50% !important; /* Override global 0 border-radius */
+  background-color: var(--color-primary-container);
+  box-shadow: 0 0 10px var(--color-primary-container);
+  animation: pulse-ring-indicator 2s infinite ease-in-out;
+}
+
+html[data-theme='light'] {
+  .pulse-indicator {
+    background-color: var(--color-primary);
+    box-shadow: 0 0 10px var(--color-primary);
+  }
+}
+
+@keyframes pulse-ring-indicator {
+  0% { transform: scale(0.95); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.5; }
+}
+
+.hud-title {
+  font-family: 'Inter', monospace;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0;
+  color: var(--text-color);
+  text-transform: uppercase;
+}
+
+.hud-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0.25rem 0 0 0;
+  font-family: monospace;
 }
