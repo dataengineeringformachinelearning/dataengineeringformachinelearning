@@ -21,8 +21,15 @@ COPY . .
 # Collect static files
 RUN python manage.py collectstatic --noinput --clear
 
+# Create a non-root user and group
+RUN groupadd -r appgroup && useradd -r -g appgroup -u 1001 appuser
+RUN chown -R appuser:appgroup /app
+
 # Expose port
 EXPOSE 8000
+
+# Use non-root user
+USER appuser
 
 # Run migrations, clean up database, train initial models, then start Gunicorn
 CMD ["sh", "-c", "python manage.py migrate && python manage.py train_all_models && gunicorn --bind 0.0.0.0:${PORT:-8000} config.wsgi:application --workers 3 --timeout 120"]

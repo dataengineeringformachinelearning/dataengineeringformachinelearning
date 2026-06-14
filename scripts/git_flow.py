@@ -10,9 +10,13 @@ VERSION_FILE: Final[str] = os.path.join(
 )
 
 
+import shlex
+
+
 def run_cmd(cmd: str, check: bool = True) -> str | None:
   try:
-    res = subprocess.run(cmd, shell=True, check=check, text=True, capture_output=True)
+    args = shlex.split(cmd)
+    res = subprocess.run(args, shell=False, check=check, text=True, capture_output=True)
     return res.stdout.strip()
   except subprocess.CalledProcessError as e:
     print(f"Error executing command: {cmd}", file=sys.stderr)

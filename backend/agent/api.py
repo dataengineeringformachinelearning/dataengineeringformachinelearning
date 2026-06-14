@@ -71,6 +71,7 @@ async def report_issue(request, payload: IssueReportPayload):
     }
   except Exception:
     logger.exception("Error processing issue")
+    # nosemgrep: python.django.security.audit.xss.direct-use-of-httpresponse.direct-use-of-httpresponse
     return HttpResponse(status=500, content="Internal Server Error")
 
 

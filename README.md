@@ -744,13 +744,12 @@ To capture real-time errors in production, I integrated Sentry across both the f
 - **Backend**: I configure the Sentry Python SDK (`sentry-sdk`) in `settings.py`, enabling `send_default_pii=True` so we capture full request contexts during exceptions.
 - **Environments**: In production, DSN keys are loaded from the environment (`SENTRY_DSN`) to keep credentials secure.
 
-#### Chapter 8.1.3: Continuous Security Auditing with Snyk
+#### Chapter 8.1.3: Continuous Security Auditing with Semgrep
 
-I want to emphasize security by design. To do this, I integrated Snyk to automate vulnerability checks throughout the development lifecycle:
+I want to emphasize security by design. To do this, I integrated Semgrep to automate vulnerability checks throughout the development lifecycle:
 
-- **Static Analysis (SAST)**: I run Snyk Code scans to find logic and security issues in my custom source code.
-- **Dependency Scanning**: Snyk monitors third-party packages in both Angular (`package.json`) and Django (`requirements.txt`) to keep dependencies patched.
-- **Container Audits**: Snyk scans the Dockerfiles across my services (`frontend`, `backend`, and `queue`) to detect vulnerabilities in base images.
+- **Static Analysis (SAST)**: I run Semgrep scans to find logic and security issues in my custom source code.
+- **Dependency & Container Auditing**: Semgrep inspects manifest files and Dockerfiles across my services (`frontend`, `backend`, and `queue`) to detect configuration and vulnerability issues.
 
 #### Chapter 8.1.4: Open-Source License Compliance with FOSSA
 
@@ -1051,7 +1050,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Backend & APIs**: [Django](https://www.djangoproject.com) ([Django Ninja](https://django-ninja.rest-framework.com)), [Gunicorn](https://gunicorn.org), [NGINX](https://nginx.org), [cryptography](https://cryptography.io)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org), [Redpanda](https://redpanda.com), [Polars](https://pola.rs)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Cloudflare Web Analytics](https://cloudflare.com), [Resend](https://resend.com)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Semgrep](https://semgrep.dev), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Cloudflare Web Analytics](https://cloudflare.com), [Resend](https://resend.com)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
 - **Graphics & Icons**: "Data Quality" icon by vectorspoint from Noun Project (https://thenounproject.com/icon/data-quality-6448061/)
 
@@ -1061,12 +1060,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
 
-[![Snyk Code Analysis](https://img.shields.io/badge/Snyk_Code_Analysis-4C4A73?logo=snyk&logoColor=fff)](https://app.snyk.io/project/1eba8b51-8dbc-43ca-8b86-538ec5dba983)
-[![Snyk Frontend Dependency](https://img.shields.io/badge/Snyk_Frontend_Dependency-4C4A73?logo=snyk&logoColor=fff)](https://app.snyk.io/project/08528f62-334a-4457-bf84-39908c54bb4f)
-[![Snyk Backend Dependency](https://img.shields.io/badge/Snyk_Backend_Dependency-4C4A73?logo=snyk&logoColor=fff)](https://app.snyk.io/project/370873a1-b3ad-4936-a8f7-cc23f27218ab)
-[![Snyk Frontend Docker](https://img.shields.io/badge/Snyk_Frontend_Docker-4C4A73?logo=snyk&logoColor=fff)](https://app.snyk.io/project/66612b26-a5a7-49a1-b8ff-9ae03d851d53)
-[![Snyk Backend Docker](https://img.shields.io/badge/Snyk_Backend_Docker-4C4A73?logo=snyk&logoColor=fff)](https://app.snyk.io/project/877784eb-1281-46ac-899b-2fe163e8d00f)
-[![Snyk Queue Docker](https://img.shields.io/badge/Snyk_Queue_Docker-4C4A73?logo=snyk&logoColor=fff)](https://app.snyk.io/project/a477f291-bd2e-4c0d-a376-9c8cc6d0cd19)
+[![Semgrep SAST Scan](https://img.shields.io/badge/Semgrep_SAST_Scan-4C4A73?logo=semgrep&logoColor=fff)](https://semgrep.dev)
 
 ![GitHub contributors](https://img.shields.io/github/contributors/dataengineeringformachinelearning/dataengineeringformachinelearning)
 ![GitHub Repo stars](https://img.shields.io/github/stars/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)

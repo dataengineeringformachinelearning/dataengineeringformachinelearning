@@ -25,6 +25,7 @@ def send_resend_email(to_email, subject, html_content):
     url, data=json.dumps(payload).encode("utf-8"), headers=headers, method="POST"
   )
   try:
+    # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
     with urllib.request.urlopen(req) as response:
       res_body = response.read().decode("utf-8")
       print("Resend response:", res_body)

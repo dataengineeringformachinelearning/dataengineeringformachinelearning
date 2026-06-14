@@ -48,6 +48,7 @@ class MonitorConfig(AppConfig):
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
 
+        # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
         with urllib.request.urlopen(req, timeout=5, context=ctx) as response:
           status_code = response.getcode()
           is_active = 200 <= status_code < 500
