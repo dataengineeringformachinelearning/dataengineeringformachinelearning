@@ -583,15 +583,21 @@ export class Settings implements OnInit {
 
   initMfaRecaptcha() {
     if (this.mfaRecaptchaVerifier) return;
+    if (!this.authService.auth) {
+      console.error('Firebase Auth is not initialized');
+      return;
+    }
     try {
-      this.mfaRecaptchaVerifier = new RecaptchaVerifier(
-        this.authService.auth,
-        'mfa-recaptcha-container',
-        {
-          size: 'invisible',
-          callback: () => {},
-        },
-      );
+      let element = document.getElementById('mfa-recaptcha-container');
+      if (!element) {
+        element = document.createElement('div');
+        element.id = 'mfa-recaptcha-container';
+        document.body.appendChild(element);
+      }
+      this.mfaRecaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
+        size: 'invisible',
+        callback: () => {},
+      });
     } catch (e) {
       console.error('MFA Recaptcha init error', e);
     }

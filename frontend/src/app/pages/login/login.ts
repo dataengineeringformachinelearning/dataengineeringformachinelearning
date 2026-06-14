@@ -181,8 +181,18 @@ export class Login implements OnInit {
 
   initRecaptcha(): void {
     if (this.recaptchaVerifier) return;
+    if (!this.authService.auth) {
+      console.error('Firebase Auth is not initialized');
+      return;
+    }
     try {
-      this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, 'recaptcha-container', {
+      let element = document.getElementById('recaptcha-container');
+      if (!element) {
+        element = document.createElement('div');
+        element.id = 'recaptcha-container';
+        document.body.appendChild(element);
+      }
+      this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
         size: 'invisible',
         callback: () => {},
       });

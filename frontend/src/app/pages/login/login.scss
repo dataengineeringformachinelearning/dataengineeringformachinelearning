@@ -1,31 +1,54 @@
 @import '../../components/login-dialog/login-dialog.scss';
 
-.login-page-container {
+/* Flat page layout specific adjustments to center the login container */
+.dashboard-page-container {
+  min-height: calc(100vh - 64px);
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
-  min-height: calc(100vh - 160px);
-  padding: 2rem 1rem;
+  align-items: center;
   box-sizing: border-box;
 }
 
-.login-card {
+.dashboard-content-area {
   width: 100%;
-  max-width: 480px;
-  background: var(--card-bg) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--border-radius-lg) !important;
-  overflow: hidden;
-  box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.4),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-  transition: transform 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-:host-context(html[data-theme='light']) {
-  .login-card {
-    box-shadow:
-      0 12px 48px rgba(24, 40, 33, 0.08),
-      inset 0 0 0 1px rgba(0, 0, 0, 0.02) !important;
+.modal-footer {
+  padding: 1.5rem 0 !important;
+  border: none !important;
+  background: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: 100% !important;
+
+  .btn-submit {
+    width: 100% !important;
+    height: 48px !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .btn-cancel {
+    width: 100% !important;
+    height: 48px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    box-sizing: border-box !important;
+  }
+
+  .footer-divider {
+    width: 100% !important;
+    height: 1px !important;
+    background-color: var(--border) !important;
+    opacity: 0.35 !important;
+    margin: 1.5rem 0 !important;
   }
 }
