@@ -65,6 +65,10 @@ export class Settings implements OnInit {
   statusPages = this.settingsService.statusPages;
   selectedPage = this.settingsService.selectedPage;
 
+  get isViewer(): boolean {
+    return this.authService.currentUserRole() === 'Viewer';
+  }
+
   editTitle = '';
   editSlug = '';
   editDescription = '';
@@ -120,10 +124,14 @@ export class Settings implements OnInit {
 
   constructor() {
     effect(() => {
-      if (this.authService.isAuthenticated() && this.authService.currentUserId() !== null) {
-        this.loadStatusPages();
-        this.checkMfaStatus();
-        this.checkLinkedProviders();
+      if (this.authService.isInitialized()) {
+        if (!this.authService.isAuthenticated()) {
+          this.router.navigate(['/']);
+        } else if (this.authService.currentUserId() !== null) {
+          this.loadStatusPages();
+          this.checkMfaStatus();
+          this.checkLinkedProviders();
+        }
       }
     });
 

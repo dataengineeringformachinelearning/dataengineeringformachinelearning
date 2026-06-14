@@ -18,6 +18,20 @@
       </header>
 
       <div class="settings-stack">
+        @if (isViewer) {
+        <div
+          class="alert alert-warning"
+          style="margin-bottom: 24px; display: flex; align-items: center; gap: 8px"
+        >
+          <mat-icon>lock</mat-icon>
+          <span
+            ><strong>Read-Only Access:</strong> Your user profile is assigned the
+            <strong>Viewer</strong> role. You cannot perform administrative modifications to status
+            pages, monitored endpoints, incident reports, or integrations.</span
+          >
+        </div>
+        }
+
         <div class="status-card-outlined">
           <div class="card-header-clean">
             @if (selectedPage()) {
@@ -32,6 +46,7 @@
               (click)="deleteStatusPage(selectedPage()!.id)"
               title="Delete status page"
               class="delete-page-btn"
+              [disabled]="isViewer"
             >
               <mat-icon>delete_forever</mat-icon>
             </button>
@@ -56,17 +71,27 @@
               </p>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Title</mat-label>
-                <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. My API Status" />
+                <input
+                  matInput
+                  [(ngModel)]="newPageTitle"
+                  placeholder="e.g. My API Status"
+                  [disabled]="isViewer"
+                />
               </mat-form-field>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Slug</mat-label>
-                <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. my-api" />
+                <input
+                  matInput
+                  [(ngModel)]="newPageSlug"
+                  placeholder="e.g. my-api"
+                  [disabled]="isViewer"
+                />
               </mat-form-field>
               <button
                 mat-raised-button
                 color="primary"
                 (click)="createStatusPage()"
-                [disabled]="!newPageTitle || !newPageSlug || isCreatingPage()"
+                [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || isViewer"
                 class="create-page-btn"
               >
                 @if (!isCreatingPage()) {
@@ -89,11 +114,21 @@
                   <div class="form-row">
                     <mat-form-field appearance="outline">
                       <mat-label>Title</mat-label>
-                      <input matInput [(ngModel)]="editTitle" placeholder="e.g. My API Status" />
+                      <input
+                        matInput
+                        [(ngModel)]="editTitle"
+                        placeholder="e.g. My API Status"
+                        [disabled]="isViewer"
+                      />
                     </mat-form-field>
                     <mat-form-field appearance="outline">
                       <mat-label>Slug</mat-label>
-                      <input matInput [(ngModel)]="editSlug" placeholder="e.g. my-api" />
+                      <input
+                        matInput
+                        [(ngModel)]="editSlug"
+                        placeholder="e.g. my-api"
+                        [disabled]="isViewer"
+                      />
                     </mat-form-field>
                   </div>
                   <mat-form-field appearance="outline" class="full-width">
@@ -103,17 +138,22 @@
                       [(ngModel)]="editDescription"
                       rows="2"
                       placeholder="Description of this status page..."
+                      [disabled]="isViewer"
                     ></textarea>
                   </mat-form-field>
                   <div class="settings-actions">
-                    <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
+                    <mat-checkbox
+                      [(ngModel)]="editIsPublished"
+                      color="primary"
+                      [disabled]="isViewer"
+                    >
                       Publish Status Page (makes it visible in the public Explore directory)
                     </mat-checkbox>
                     <button
                       mat-flat-button
                       class="save-settings-btn"
                       (click)="updateStatusPage()"
-                      [disabled]="!editTitle || !editSlug || isUpdatingPage()"
+                      [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
                     >
                       @if (!isUpdatingPage()) {
                       <mat-icon>save</mat-icon>
@@ -144,6 +184,7 @@
                         matInput
                         [(ngModel)]="editGoogleAnalyticsId"
                         placeholder="e.g. G-XXXXXXX"
+                        [disabled]="isViewer"
                       />
                     </mat-form-field>
                     <mat-form-field appearance="outline">
@@ -152,6 +193,7 @@
                         matInput
                         [(ngModel)]="editMicrosoftClarityId"
                         placeholder="e.g. xxxxxxxx"
+                        [disabled]="isViewer"
                       />
                     </mat-form-field>
                     <mat-form-field appearance="outline">
@@ -160,6 +202,7 @@
                         matInput
                         [(ngModel)]="editCloudflareAnalyticsId"
                         placeholder="e.g. xxxxxxxx"
+                        [disabled]="isViewer"
                       />
                     </mat-form-field>
                   </div>
@@ -168,7 +211,7 @@
                       mat-flat-button
                       class="save-settings-btn"
                       (click)="updateStatusPage()"
-                      [disabled]="!editTitle || !editSlug || isUpdatingPage()"
+                      [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
                     >
                       @if (!isUpdatingPage()) {
                       <mat-icon>save</mat-icon>
@@ -187,7 +230,12 @@
                   <div class="service-inputs-row">
                     <mat-form-field appearance="outline" class="flex-1">
                       <mat-label>Service Name</mat-label>
-                      <input matInput [(ngModel)]="newServiceName" placeholder="e.g. Auth API" />
+                      <input
+                        matInput
+                        [(ngModel)]="newServiceName"
+                        placeholder="e.g. Auth API"
+                        [disabled]="isViewer"
+                      />
                     </mat-form-field>
                     <mat-form-field appearance="outline" class="flex-2">
                       <mat-label>Health Check URL</mat-label>
@@ -195,6 +243,7 @@
                         matInput
                         [(ngModel)]="newServiceUrl"
                         placeholder="https://api.example.com/health"
+                        [disabled]="isViewer"
                       />
                     </mat-form-field>
                   </div>
@@ -202,7 +251,7 @@
                     mat-flat-button
                     class="add-service-btn"
                     (click)="addService()"
-                    [disabled]="!newServiceName || !newServiceUrl || isAddingService()"
+                    [disabled]="!newServiceName || !newServiceUrl || isAddingService() || isViewer"
                   >
                     @if (!isAddingService()) {
                     <mat-icon>add</mat-icon>
@@ -219,7 +268,12 @@
                       <span class="data-title">{{ service.name }}</span>
                       <span class="data-subtitle">{{ service.url }}</span>
                     </div>
-                    <button mat-icon-button color="warn" (click)="deleteService(service.id)">
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      (click)="deleteService(service.id)"
+                      [disabled]="isViewer"
+                    >
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
@@ -237,6 +291,7 @@
                       matInput
                       [(ngModel)]="newIncidentTitle"
                       placeholder="e.g. API Degraded Performance"
+                      [disabled]="isViewer"
                     />
                   </mat-form-field>
                   <mat-form-field appearance="outline" class="full-width">
@@ -246,6 +301,7 @@
                       [(ngModel)]="newIncidentMessage"
                       rows="2"
                       placeholder="Describe what is happening and what actions are being taken..."
+                      [disabled]="isViewer"
                     ></textarea>
                   </mat-form-field>
                   <div class="form-row-actions">
@@ -254,6 +310,7 @@
                         [(ngModel)]="newIncidentStatus"
                         class="native-select-custom"
                         aria-label="Incident Status"
+                        [disabled]="isViewer"
                       >
                         <option value="Investigating">Investigating</option>
                         <option value="Identified">Identified</option>
@@ -265,7 +322,7 @@
                       mat-flat-button
                       class="post-incident-btn"
                       (click)="addIncident()"
-                      [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident()"
+                      [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident() || isViewer"
                     >
                       @if (!isAddingIncident()) {
                       <mat-icon>notification_important</mat-icon>
@@ -285,7 +342,12 @@
                         >{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span
                       >
                     </div>
-                    <button mat-icon-button color="warn" (click)="deleteIncident(incident.id)">
+                    <button
+                      mat-icon-button
+                      color="warn"
+                      (click)="deleteIncident(incident.id)"
+                      [disabled]="isViewer"
+                    >
                       <mat-icon>delete</mat-icon>
                     </button>
                   </div>
@@ -335,6 +397,7 @@
                         mat-flat-button
                         color="warn"
                         (click)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
+                        [disabled]="isViewer"
                       >
                         Disconnect
                       </button>
@@ -343,7 +406,7 @@
                         mat-flat-button
                         color="primary"
                         (click)="connectGoogleAnalytics()"
-                        [disabled]="isConnectingGoogle()"
+                        [disabled]="isConnectingGoogle() || isViewer"
                       >
                         Connect GA4 API
                       </button>
@@ -367,6 +430,7 @@
                           mat-flat-button
                           color="warn"
                           (click)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                          [disabled]="isViewer"
                         >
                           Disconnect
                         </button>
@@ -378,7 +442,12 @@
                       <div class="inputs-group">
                         <mat-form-field appearance="outline">
                           <mat-label>Clarity Project ID</mat-label>
-                          <input matInput [(ngModel)]="clarityProjectId" placeholder="Project ID" />
+                          <input
+                            matInput
+                            [(ngModel)]="clarityProjectId"
+                            placeholder="Project ID"
+                            [disabled]="isViewer"
+                          />
                         </mat-form-field>
                         <mat-form-field appearance="outline">
                           <mat-label>API Token / Key</mat-label>
@@ -387,6 +456,7 @@
                             [(ngModel)]="clarityApiKey"
                             type="password"
                             placeholder="Clarity API Key"
+                            [disabled]="isViewer"
                           />
                         </mat-form-field>
                       </div>
@@ -394,7 +464,7 @@
                         mat-flat-button
                         color="primary"
                         (click)="connectMicrosoftClarity()"
-                        [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity()"
+                        [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity() || isViewer"
                       >
                         Connect API
                       </button>
@@ -418,6 +488,7 @@
                           mat-flat-button
                           color="warn"
                           (click)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
+                          [disabled]="isViewer"
                         >
                           Disconnect
                         </button>
@@ -433,6 +504,7 @@
                             matInput
                             [(ngModel)]="cloudflareProjectId"
                             placeholder="Account ID"
+                            [disabled]="isViewer"
                           />
                         </mat-form-field>
                         <mat-form-field appearance="outline">
@@ -442,6 +514,7 @@
                             [(ngModel)]="cloudflareApiKey"
                             type="password"
                             placeholder="Cloudflare API Token"
+                            [disabled]="isViewer"
                           />
                         </mat-form-field>
                       </div>
@@ -449,7 +522,7 @@
                         mat-flat-button
                         color="primary"
                         (click)="connectCloudflare()"
-                        [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare()"
+                        [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare() || isViewer"
                       >
                         Connect API
                       </button>
