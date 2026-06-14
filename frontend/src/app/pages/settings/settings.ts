@@ -441,7 +441,7 @@ export class Settings implements OnInit {
               data: {
                 title: 'Failed to Add Service',
                 message:
-                  err.error?.detail || 'An error occurred while adding the monitored service.',
+                  'An error occurred while adding the monitored service. Please verify the URL and try again.',
                 type: 'alert',
                 confirmBtnText: 'OK',
                 confirmBtnColor: 'warn',
@@ -630,7 +630,9 @@ export class Settings implements OnInit {
       this.cdr.markForCheck();
     } catch (e: any) {
       console.error(e);
-      this.mfaError.set(e.message || 'Failed to send verification code.');
+      this.mfaError.set(
+        'Failed to send verification code. Please check the phone number and try again.',
+      );
     } finally {
       this.isSendingMfaCode.set(false);
       this.cdr.markForCheck();
@@ -655,7 +657,9 @@ export class Settings implements OnInit {
       this.cdr.markForCheck();
     } catch (e: any) {
       console.error(e);
-      this.mfaError.set(e.message || 'MFA enrollment failed.');
+      this.mfaError.set(
+        'MFA enrollment failed. The verification code may be incorrect or expired.',
+      );
     } finally {
       this.isVerifyingMfaCode.set(false);
       this.cdr.markForCheck();
@@ -685,7 +689,7 @@ export class Settings implements OnInit {
             this.cdr.markForCheck();
           } catch (e: any) {
             console.error(e);
-            this.mfaError.set(e.message || 'Failed to disable MFA.');
+            this.mfaError.set('Failed to disable MFA. Please try again later.');
           }
         }
       }

@@ -427,7 +427,7 @@ export class AuthService {
           resolver: getMultiFactorResolver(this.auth, e),
         };
       }
-      return { success: false, error: e.message || 'Apple Sign-In failed.' };
+      return { success: false, error: 'Apple Sign-In failed. Please try again.' };
     }
   }
 
@@ -465,7 +465,7 @@ export class AuthService {
           resolver: getMultiFactorResolver(this.auth, e),
         };
       }
-      return { success: false, error: e.message || 'Google Sign-In failed.' };
+      return { success: false, error: 'Google Sign-In failed. Please try again.' };
     }
   }
 
@@ -484,7 +484,7 @@ export class AuthService {
             'This Google account is already associated with another user profile. To connect it, log in to that account first, unlink it, or delete it, and try again.',
         };
       }
-      return { success: false, error: e.message || 'Google account linking failed.' };
+      return { success: false, error: 'Google account linking failed. Please try again.' };
     }
   }
 
@@ -503,7 +503,7 @@ export class AuthService {
             'This Apple ID is already associated with another user profile. To connect it, log in to that account first, unlink it, or delete it, and try again.',
         };
       }
-      return { success: false, error: e.message || 'Apple account linking failed.' };
+      return { success: false, error: 'Apple account linking failed. Please try again.' };
     }
   }
 
@@ -514,7 +514,7 @@ export class AuthService {
       return { success: true };
     } catch (e: any) {
       console.error(e);
-      return { success: false, error: e.message || `Failed to unlink ${providerId}.` };
+      return { success: false, error: `Failed to unlink ${providerId}. Please try again.` };
     }
   }
 }

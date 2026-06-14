@@ -249,8 +249,7 @@ export class Login implements OnInit, OnDestroy {
     } catch (e: any) {
       console.error(e);
       this.error.set(
-        e.message ||
-          'Failed to send verification code. Make sure you input international format (e.g. +11234567890).',
+        'Failed to send verification code. Make sure you input international format (e.g. +11234567890).',
       );
     } finally {
       this.isLoading.set(false);
@@ -296,7 +295,7 @@ export class Login implements OnInit, OnDestroy {
       this.loginForm.get('verificationCode')?.updateValueAndValidity();
     } catch (e: any) {
       console.error(e);
-      this.error.set(e.message || 'Failed to send MFA code.');
+      this.error.set('Failed to send MFA code. Please try again.');
     }
   }
 
@@ -391,7 +390,9 @@ export class Login implements OnInit, OnDestroy {
       }
     } catch (e: any) {
       console.error(e);
-      this.error.set(e.message || 'An error occurred during submission.');
+      this.error.set(
+        'An error occurred during submission. Please check your credentials and try again.',
+      );
     } finally {
       this.isLoading.set(false);
     }
@@ -417,7 +418,7 @@ export class Login implements OnInit, OnDestroy {
       }
     } catch (e: any) {
       console.error(e);
-      this.error.set(e.message || 'An error occurred during Apple Sign-In.');
+      this.error.set('An error occurred during Apple Sign-In. Please try again later.');
     } finally {
       this.isLoading.set(false);
     }
@@ -438,7 +439,7 @@ export class Login implements OnInit, OnDestroy {
       }
     } catch (e: any) {
       console.error(e);
-      this.error.set(e.message || 'An error occurred during Google Sign-In.');
+      this.error.set('An error occurred during Google Sign-In. Please try again later.');
     } finally {
       this.isLoading.set(false);
     }
