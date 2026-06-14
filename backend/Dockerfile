@@ -1,5 +1,5 @@
 # Builder stage
-FROM python:3.12-slim AS builder
+FROM python:3.11-slim AS builder
 
 WORKDIR /app
 
@@ -20,15 +20,15 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN python manage.py collectstatic --noinput --clear
 
-# Re-link python symlinks to /usr/bin/python (runtime image's python path)
-RUN ln -sf /usr/bin/python /opt/venv/bin/python && \
-    ln -sf /usr/bin/python /opt/venv/bin/python3
+# Re-link python symlinks to /usr/bin/python3 (distroless python path)
+RUN ln -sf /usr/bin/python3 /opt/venv/bin/python && \
+    ln -sf /usr/bin/python3 /opt/venv/bin/python3
 
 # Runtime stage
-FROM cgr.dev/chainguard/python:latest-3.12
+FROM gcr.io/distroless/python3-debian12
 
 ENV PATH="/opt/venv/bin:$PATH" \
-    PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
+    PYTHONPATH="/opt/venv/lib/python3.11/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 

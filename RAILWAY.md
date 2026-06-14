@@ -33,7 +33,7 @@ This service serves the user interface.
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/frontend`
-- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/nginx:latest` base image)
+- **Builder**: Dockerfile (utilizes secure `nginxinc/nginx-unprivileged:alpine-slim` base image)
 - **Public URL**: `https://dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `dataengineeringformachinelearnin.railway.internal`
@@ -46,7 +46,7 @@ This service runs the main Django web server.
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure, minimal `cgr.dev/chainguard/python:latest` distroless runtime; migrations and server startup are orchestrated using `backend/start.py` as distroless does not include a shell)
+- **Builder**: Dockerfile (utilizes secure, minimal `gcr.io/distroless/python3-debian12` distroless runtime; migrations and server startup are orchestrated using `backend/start.py` as distroless does not include a shell)
 - **Public URL**: `https://backend.dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `deml-frontend.railway.internal`
@@ -74,7 +74,7 @@ This service runs the background worker process using the backend codebase to co
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
+- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
 - **Start Command**: `/opt/venv/bin/python manage.py telemetry_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-telemetry.railway.internal`
@@ -88,7 +88,7 @@ This service runs the background ML training process using the backend codebase 
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
+- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
 - **Start Command**: `/opt/venv/bin/python manage.py ml_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-ml.railway.internal`
@@ -102,7 +102,7 @@ This service runs the periodic security worker to fetch threat intelligence data
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure `cgr.dev/chainguard/python:latest` base image)
+- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
 - **Start Command**: `/opt/venv/bin/python manage.py security_worker`
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-security.railway.internal`

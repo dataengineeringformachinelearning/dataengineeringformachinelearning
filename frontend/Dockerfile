@@ -38,7 +38,7 @@ RUN npm run check:mobile-first
 RUN npm run build --prod
 
 # Production stage
-FROM cgr.dev/chainguard/nginx:latest-dev
+FROM nginxinc/nginx-unprivileged:alpine-slim
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
