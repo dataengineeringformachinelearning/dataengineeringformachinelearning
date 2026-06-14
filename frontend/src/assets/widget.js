@@ -61,7 +61,7 @@
 
         // Resolve URLs
         const currentScript =
-          document.currentScript || document.querySelector('script[src*="platform-widget.js"]');
+          document.currentScript || document.querySelector('script[src*="widget.js"]');
         const scriptOrigin = currentScript
           ? new URL(currentScript.src).origin
           : window.location.origin;
@@ -90,15 +90,15 @@
 
         // Set up Shadow DOM structure including status indicators and vulnerability modal triggers
         this.shadowRoot.innerHTML = `
-        <link rel="stylesheet" href="${frontendHost}/assets/platform-widget.css">
+        <link rel="stylesheet" href="${frontendHost}/assets/widget.css">
         <div class="widget-container">
           <a class="widget-link" href="${frontendHost}/status/${pageId}" target="_blank">
             <span class="status-dot"></span>
             <span class="status-text">Loading status...</span>
           </a>
           <span class="divider">|</span>
-          <button class="report-trigger" title="Report Security Vulnerability">
-            <svg class="report-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="report-trigger" title="Report Security Vulnerability" aria-label="Report Security Vulnerability">
+            <svg class="report-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               <line x1="12" y1="8" x2="12" y2="12"/>
               <line x1="12" y1="16" x2="12.01" y2="16"/>
@@ -106,29 +106,29 @@
           </button>
         </div>
 
-        <div class="modal-overlay" style="display: none;">
+        <div class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
           <div class="modal-content">
             <div class="modal-header">
-              <h3>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;">
+              <h3 id="modal-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;" aria-hidden="true">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
                 Report Security Threat
               </h3>
-              <button class="close-btn">&times;</button>
+              <button class="close-btn" aria-label="Close dialog">&times;</button>
             </div>
             <div class="modal-body">
-              <p class="helper-text">Transmit vulnerabilities directly to triage. Technical telemetry will be attached automatically.</p>
+              <p id="modal-desc" class="helper-text">Transmit vulnerabilities directly to triage. Technical telemetry will be attached automatically.</p>
 
               <div class="form-field">
-                <label>Vulnerability Title</label>
-                <input type="text" class="input-title" placeholder="Summary of threat..." />
+                <label for="vuln-title">Vulnerability Title</label>
+                <input type="text" id="vuln-title" class="input-title" placeholder="Summary of threat..." />
               </div>
 
               <div class="form-row">
                 <div class="form-field">
-                  <label>Severity</label>
-                  <select class="input-severity">
+                  <label for="vuln-severity">Severity</label>
+                  <select id="vuln-severity" class="input-severity">
                     <option value="Low">Low</option>
                     <option value="Medium" selected>Medium</option>
                     <option value="High">High</option>
@@ -136,14 +136,14 @@
                   </select>
                 </div>
                 <div class="form-field">
-                  <label>CVE ID (Optional)</label>
-                  <input type="text" class="input-cve" placeholder="E.g. CVE-2026-12345" />
+                  <label for="vuln-cve">CVE ID (Optional)</label>
+                  <input type="text" id="vuln-cve" class="input-cve" placeholder="E.g. CVE-2026-12345" />
                 </div>
               </div>
 
               <div class="form-field">
-                <label>Description & Repro Steps</label>
-                <textarea class="input-desc" rows="4" placeholder="Detail how to reproduce the vulnerability..."></textarea>
+                <label for="vuln-desc">Description & Repro Steps</label>
+                <textarea id="vuln-desc" class="input-desc" rows="4" placeholder="Detail how to reproduce the vulnerability..."></textarea>
               </div>
 
               <div class="status-msg" style="display: none;"></div>
@@ -183,12 +183,56 @@
             inputCve.value = '';
             statusMsg.style.display = 'none';
             btnSubmit.disabled = false;
+            setTimeout(() => {
+              inputTitle.focus();
+            }, 50);
+          } else {
+            reportTrigger.focus();
           }
         };
 
         reportTrigger.addEventListener('click', toggleModal);
         closeBtn.addEventListener('click', toggleModal);
         btnCancel.addEventListener('click', toggleModal);
+
+        // Trap focus and close on Escape (Section 508 / WCAG Compliance)
+        this.shadowRoot.addEventListener('keydown', e => {
+          const visible = modalOverlay.style.display !== 'none';
+          if (!visible) return;
+
+          if (e.key === 'Escape' || e.key === 'Esc') {
+            toggleModal();
+            e.preventDefault();
+            return;
+          }
+
+          if (e.key === 'Tab') {
+            const focusables = [
+              closeBtn,
+              inputTitle,
+              inputSeverity,
+              inputCve,
+              inputDesc,
+              btnCancel,
+              btnSubmit,
+            ];
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            const activeEl = this.shadowRoot.activeElement;
+
+            if (e.shiftKey) {
+              if (activeEl === first) {
+                last.focus();
+                e.preventDefault();
+              }
+            } else {
+              if (activeEl === last) {
+                first.focus();
+                e.preventDefault();
+              }
+            }
+          }
+        });
 
         const getBrowserThreatIndicators = () => {
           const indicators = {
@@ -432,7 +476,7 @@
 
   // Auto-initialize legacy script-only installations
   const currentScript =
-    document.currentScript || document.querySelector('script[src*="platform-widget.js"]');
+    document.currentScript || document.querySelector('script[src*="widget.js"]');
   if (currentScript && currentScript.hasAttribute('data-page-id')) {
     const pageId = currentScript.getAttribute('data-page-id');
     const backendUrl = currentScript.getAttribute('data-backend-url');

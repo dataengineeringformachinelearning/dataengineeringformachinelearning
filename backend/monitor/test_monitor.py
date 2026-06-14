@@ -286,3 +286,46 @@ def test_db_cleanup_command():
 
   assert BugReport.objects.filter(id=bug_new.id).exists()
   assert not BugReport.objects.filter(id=bug_old.id).exists()
+
+
+@pytest.mark.django_db
+def test_log_audit_event(test_user):
+  from unittest.mock import MagicMock
+
+  from utils.audit import log_audit_event
+
+  mock_request = MagicMock()
+  mock_request.user = test_user
+  mock_request.headers = {"x-forwarded-for": "192.168.1.1", "user-agent": "Mozilla/5.0"}
+  mock_request.META = {}
+
+  log = log_audit_event(
+    request=mock_request, action="TEST_ACTION", resource_id="res-123", details={"key": "val"}
+  )
+
+  assert log is not None
+  assert log.user == test_user
+  assert log.action == "TEST_ACTION"
+  assert log.resource_id == "res-123"
+  assert log.details == {"key": "val"}
+  assert log.ip_address == "192.168.1.1"
+  assert log.user_agent == "Mozilla/5.0"
+
+  # Test anonymous user
+  from django.contrib.auth.models import AnonymousUser
+
+  mock_request.user = AnonymousUser()
+  log_anon = log_audit_event(
+    request=mock_request,
+    action="TEST_ANON",
+  )
+  assert log_anon.user is None
+  assert log_anon.action == "TEST_ANON"
+
+  # Test database write failure handling
+  with patch("monitor.models.AuditLog.objects.create", side_effect=Exception("Database down")):
+    log_fail = log_audit_event(
+      request=mock_request,
+      action="TEST_FAILURE",
+    )
+    assert log_fail is None

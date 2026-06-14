@@ -42,3 +42,4 @@ firebase-admin==6.6.0
 sentry-sdk==2.62.0
 google-cloud-kms==3.13.0
 google-cloud-logging==3.16.0
+pytest-asyncio>=0.24.0

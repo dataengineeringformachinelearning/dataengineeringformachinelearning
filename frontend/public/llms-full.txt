@@ -1048,7 +1048,11 @@ To transition our telemetry platform toward enterprise maturity, we implement st
 4. **Vulnerability Firewalls, Linters & IaC checks**: We configure automated pre-commit hooks executing **Socket.dev** (scanning dependencies for supply-chain compromises), **Checkov** and **Trivy** (scanning configurations and infrastructure files for security flaws), **Django Migration Linter** (detecting backward-incompatible SQL actions), and **Gitleaks** & **detect-secrets** (using a baseline to prevent credential commits).
 5. **Secrets Management (Infisical)**: We delegate credentials orchestration to **Infisical**, utilizing the Infisical CLI for local development and native Railway automated secrets syncing in production.
 
-### Chapter 21.2: Acknowledgements & Technologies
+## Chapter 23: Acknowledgements & Technologies
+
+### Chapter 23.1: Introduction
+
+#### Chapter 23.1.1: Acknowledgements & Technologies
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
 
@@ -1056,8 +1060,8 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Backend & APIs**: [Django](https://www.djangoproject.com) ([Django Ninja](https://django-ninja.rest-framework.com)), [Gunicorn](https://gunicorn.org), [NGINX](https://nginx.org), [cryptography](https://cryptography.io)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org), [Redpanda](https://redpanda.com), [Polars](https://pola.rs)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Semgrep](https://semgrep.dev), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Cloudflare Web Analytics](https://cloudflare.com), [Resend](https://resend.com)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Semgrep](https://semgrep.dev), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Checkov](https://www.checkov.io), [Trivy](https://trivy.dev), [Socket.dev](https://socket.dev), [Gitleaks](https://github.com/gitleaks/gitleaks), [detect-secrets](https://github.com/Yelp/detect-secrets), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Cloudflare Web Analytics](https://cloudflare.com), [Resend](https://resend.com)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [Infisical](https://infisical.com), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 - **Graphics & Icons**: "Data Quality" icon by vectorspoint from Noun Project (https://thenounproject.com/icon/data-quality-6448061/)
 
 ---
