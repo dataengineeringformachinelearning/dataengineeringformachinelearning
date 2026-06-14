@@ -137,6 +137,38 @@
                           placeholder="Description of this status page..."
                         ></textarea>
                       </mat-form-field>
+                      <div class="settings-actions">
+                        <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
+                          Publish Status Page (makes it visible in the public Explore directory)
+                        </mat-checkbox>
+                        <button
+                          mat-flat-button
+                          class="save-settings-btn"
+                          (click)="updateStatusPage()"
+                          [disabled]="!editTitle || !editSlug || isUpdatingPage()"
+                        >
+                          @if (!isUpdatingPage()) {
+                          <mat-icon>save</mat-icon>
+                          } @if (isUpdatingPage()) {
+                          <span class="btn-spinner"></span>
+                          }
+                          <span>Save Settings</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Telemetry Tracking IDs Section -->
+                  <div class="panel-section">
+                    <h3 class="section-heading">
+                      <mat-icon>analytics</mat-icon> Telemetry Tracking IDs
+                    </h3>
+                    <div class="settings-form-panel panel-clean">
+                      <p class="embed-desc">
+                        Configure your third-party tracking scripts by entering your analytics
+                        property IDs. These scripts are injected directly onto your public status
+                        page to let you monitor visitor traffic and telemetry.
+                      </p>
                       <div class="form-row">
                         <mat-form-field appearance="outline">
                           <mat-label>Google Analytics ID</mat-label>
@@ -163,13 +195,10 @@
                           />
                         </mat-form-field>
                       </div>
-                      <div class="settings-actions">
-                        <mat-checkbox [(ngModel)]="editIsPublished" color="primary">
-                          Publish Status Page (makes it visible in the public Explore directory)
-                        </mat-checkbox>
+                      <div class="settings-actions justify-end" style="justify-content: flex-end">
                         <button
                           mat-flat-button
-                          color="primary"
+                          class="save-settings-btn"
                           (click)="updateStatusPage()"
                           [disabled]="!editTitle || !editSlug || isUpdatingPage()"
                         >
@@ -178,11 +207,12 @@
                           } @if (isUpdatingPage()) {
                           <span class="btn-spinner"></span>
                           }
-                          <span>Save Settings</span>
+                          <span>Save Tracking IDs</span>
                         </button>
                       </div>
                     </div>
                   </div>
+
                   <div class="panel-section">
                     <h3 class="section-heading"><mat-icon>dns</mat-icon> Monitored Services</h3>
                     <div class="service-form-panel panel-clean">

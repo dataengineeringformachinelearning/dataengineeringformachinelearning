@@ -628,6 +628,61 @@ To resolve this issue, you must disassociate the third-party credential from the
 4. Log out and sign back in to the primary email/password account.
 5. Perform the linking action again to successfully connect the provider.
 
+#### Chapter 7.1.5: Shielding API Endpoints with Firebase App Check
+
+To achieve the highest level of security and prevent API abuse, data scraping, and billing spikes, the platform integrates **Firebase App Check** with the **reCAPTCHA Enterprise** provider. This ensures that only requests originating from our verified web application are permitted to access Firestore, Cloud Storage, and custom backend services.
+
+##### Client-Side Integration (Angular)
+
+We initialize App Check during the application configuration phase. Using `provideAppCheck()` from the `@angular/fire` SDK, we set up the `ReCaptchaEnterpriseProvider` with our public reCAPTCHA Enterprise site key. Under the hood, this dynamically requests attestation tokens from Google's reCAPTCHA service to verify the integrity of the client session:
+
+```typescript
+// frontend/src/app/app.config.ts
+import {
+  provideAppCheck,
+  initializeAppCheck,
+  ReCaptchaEnterpriseProvider,
+} from "@angular/fire/app-check";
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideAppCheck(() => {
+      // Use the ReCaptchaEnterpriseProvider for advanced risk analysis and bot mitigation
+      const provider = new ReCaptchaEnterpriseProvider(
+        "<YOUR_RECAPTCHA_ENTERPRISE_SITE_KEY>",
+      );
+      return initializeAppCheck(getApp(), {
+        provider,
+        isTokenAutoRefreshEnabled: true,
+      });
+    }),
+  ],
+};
+```
+
+##### Backend App Check Token Verification (Python)
+
+To secure custom backend endpoints, all incoming client requests include the `X-Firebase-App-Check` header. Our server-side authentication middleware parses and verifies this token using the Firebase Admin SDK. Requests carrying invalid, expired, or missing App Check tokens are immediately rejected with a `401 Unauthorized` or `403 Forbidden` status before any application logic or database queries execute:
+
+```python
+# backend/middleware/app_check.py
+from firebase_admin import app_check
+from flask import request, jsonify
+
+def verify_app_check_token():
+    app_check_token = request.headers.get('X-Firebase-App-Check')
+    if not app_check_token:
+        return jsonify({"error": "Missing App Check token"}), 401
+
+    try:
+        # Verify the authenticity and expiration of the App Check token
+        decoded_token = app_check.verify_token(app_check_token)
+        # Proceed with request handling
+        request.app_check_claims = decoded_token
+    except Exception as e:
+        return jsonify({"error": "Invalid App Check token", "details": str(e)}), 403
+```
+
 ---
 
 ## Chapter 8: Enhancing observability
@@ -950,15 +1005,15 @@ To provide tenants with comprehensive third-party telemetry, we integrated Cloud
 
 ---
 
-## Chapter 20: Team Workflows and Vulnerability Management with Plane
+## Chapter 20: Team Workflows and Vulnerability Management
 
 ### Chapter 20.1: Introduction
 
-#### Chapter 20.1.1: Vulnerability Tracking with Plane.so
+#### Chapter 20.1.1: Integrated Vulnerability Tracking
 
-To facilitate structured triaging and resolution of security concerns, the platform integrates with Plane (plane.so)—an open-source project management tool.
+To facilitate structured triaging and resolution of security concerns, the platform features a self-contained, integrated vulnerability tracking and management component.
 
-1. **Bidirectional Sync**: We created workflows to synchronize vulnerability states and security reports directly with Plane projects, automating issue creation, prioritization, and tracking.
+1. **Kanban Board Workflows**: We created interactive Kanban board workflows to track vulnerability states, prioritize security concerns based on custom severity scores (Impact and Likelihood), and manage remediation efforts natively within the application.
 2. **Pre-Commit Accessibility Scanning**: Configured `axe-core` accessibility checks within git pre-commit hooks to automatically validate changed HTML files for WCAG 2.1 AA compliance (e.g., heading hierarchy and ARIA roles).
 3. **UI Enhancements**:
    - Developed a **Boneyard-inspired skeleton loader** providing sleek, pixel-perfect layout shimmers during asynchronous data fetching.
@@ -966,15 +1021,19 @@ To facilitate structured triaging and resolution of security concerns, the platf
 
 ---
 
-## My Notes on Deployment & Release
+## Chapter 21: Production Deployment and Release on Railway
+
+### Chapter 21.1: Production Deployment Configuration
 
 Throughout this book's draft, we build a platform fully optimized and ready for production release. I've configured the final deployment on Railway across three integrated services:
 
 1. **Web Frontend**: A highly interactive, accessibly-compliant (a11y) Angular application featuring responsive status cards, telemetry charts, and a standalone public status dashboard.
-2. **Web Backend**: A robust Django Ninja API coordinating authentication, CORS handling, data persistence, and threat detection.
+2. **Web Backend**: A robust Django Ninja API coordinating authentication, CORS handling, and threat detection.
 3. **Telemetry Worker**: An asynchronous background consumer processing Redpanda message streams and executing PyTorch ML model pipelines for SLA forecasting.
 
-### Acknowledgements & Technologies
+For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to my [RAILWAY.md](./RAILWAY.md) file.
+
+### Chapter 21.2: Acknowledgements & Technologies
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
 
@@ -982,11 +1041,9 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Backend & APIs**: [Django](https://www.djangoproject.com) ([Django Ninja](https://django-ninja.rest-framework.com)), [Gunicorn](https://gunicorn.org), [NGINX](https://nginx.org), [cryptography](https://cryptography.io)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org), [Redpanda](https://redpanda.com), [Polars](https://pola.rs)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org), [Scikit-learn](https://scikit-learn.org), [Skops](https://skops.readthedocs.io), [LangChain](https://www.langchain.com), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://ai.google.dev), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Cloudflare Web Analytics](https://cloudflare.com), [Plane](https://plane.so), [Resend](https://resend.com)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io), [Snyk](https://snyk.io), [FOSSA](https://fossa.com), [Sanity.io](https://www.sanity.io), [AbuseIPDB](https://www.abuseipdb.com), [ipify](https://www.ipify.org), [Google Analytics](https://analytics.google.com), [Microsoft Clarity](https://clarity.microsoft.com), [Cloudflare Web Analytics](https://cloudflare.com), [Resend](https://resend.com)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com), [Railway](https://railway.app), [pre-commit](https://pre-commit.com), [Ruff](https://docs.astral.sh/ruff)
 - **Graphics & Icons**: "Data Quality" icon by vectorspoint from Noun Project (https://thenounproject.com/icon/data-quality-6448061/)
-
-For detailed configuration settings, environmental variables, scaling limits, and CI/CD triggers, please refer to my [RAILWAY.md](./RAILWAY.md) file.
 
 ---
 

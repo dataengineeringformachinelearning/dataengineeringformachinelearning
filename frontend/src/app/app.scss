@@ -27,28 +27,28 @@
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 2.5rem;
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.03);
+    padding: var(--card-padding);
+    border-radius: var(--border-radius-md);
+    background: var(--card-bg);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--border);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--shadow-md);
     max-width: 90%;
     width: 320px;
   }
 
   .loader-logo {
     height: 48px;
-    margin-bottom: 2rem;
+    margin-bottom: var(--grid-gap);
     animation: pulse 2s infinite ease-in-out;
   }
 
   .premium-spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid rgba(159, 184, 173, 0.1);
-    border-top: 3px solid var(--color-primary, #183a37);
+    border: 3px solid var(--color-border-precision);
+    border-top: 3px solid var(--color-primary);
     border-radius: 50%;
     animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
     margin-bottom: 1.5rem;

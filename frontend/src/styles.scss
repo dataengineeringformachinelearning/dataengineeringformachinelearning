@@ -764,3 +764,8 @@ html[data-theme='light'] {
   margin: 0.25rem 0 0 0;
   font-family: monospace;
 }
+
+/* Hide floating invisible reCAPTCHA badge globally */
+.grecaptcha-badge {
+  visibility: hidden !important;
+}
