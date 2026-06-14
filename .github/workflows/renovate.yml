@@ -1,0 +1,24 @@
+name: Renovate
+on:
+  schedule:
+    # Run once a week on Sundays at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch: # Allows you to trigger the run manually from the GitHub UI
+
+jobs:
+  renovate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Self-hosted Renovate
+        uses: renovatebot/github-action@v40.1.11
+        with:
+          configurationFile: renovate.json
+          # You MUST add a Personal Access Token (PAT) as a repository secret
+          # named RENOVATE_TOKEN for this to successfully create Pull Requests.
+          token: ${{ secrets.RENOVATE_TOKEN }}
+        env:
+          # Tell Renovate which repository to scan
+          RENOVATE_REPOSITORIES: ${{ github.repository }}
