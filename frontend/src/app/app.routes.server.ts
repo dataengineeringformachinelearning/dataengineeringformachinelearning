@@ -30,7 +30,11 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
-    path: 'manage',
+    path: 'settings',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'vulnerabilities',
     renderMode: RenderMode.Client,
   },
   {

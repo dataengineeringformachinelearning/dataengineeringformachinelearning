@@ -6,25 +6,25 @@
   color: var(--text-color);
 
   /* Set up theme-driven variables following THEME.md */
-  --manage-accent: var(--color-primary-container);
-  --manage-highlight: var(--color-primary-container);
+  --settings-accent: var(--color-primary-container);
+  --settings-highlight: var(--color-primary-container);
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
   --new-page-hover-border: var(--color-primary-container);
   --new-page-border: rgba(255, 255, 255, 0.25);
-  --manage-active-gradient: linear-gradient(135deg, rgba(45, 71, 57, 0.25) 0%, rgba(192, 197, 193, 0.08) 100%);
+  --settings-active-gradient: linear-gradient(135deg, rgba(45, 71, 57, 0.25) 0%, rgba(192, 197, 193, 0.08) 100%);
 }
 
 /* Light theme overrides matching THEME.md */
 :host-context(html[data-theme='light']) {
-  --manage-accent: var(--color-primary);
-  --manage-highlight: var(--color-primary);
+  --settings-accent: var(--color-primary);
+  --settings-highlight: var(--color-primary);
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
   --new-page-hover-border: var(--color-primary);
   --new-page-border: rgba(24, 40, 33, 0.15);
-  --manage-active-gradient: linear-gradient(135deg, rgba(225, 230, 226, 0.8) 0%, rgba(45, 71, 57, 0.08) 100%);
+  --settings-active-gradient: linear-gradient(135deg, rgba(225, 230, 226, 0.8) 0%, rgba(45, 71, 57, 0.08) 100%);
 }
 
-.manage-container {
+.settings-container {
   position: relative;
   width: 100%;
   min-height: calc(100vh - 64px);
@@ -52,10 +52,11 @@
 .sphere-3 {
   width: 450px;
   height: 450px;
-  background: var(--manage-accent); /* Warm red-orange glow */
+  background: var(--settings-accent); /* Warm red-orange glow */
   bottom: -150px;
   right: -100px;
 }
+
 
 .dashboard-layout {
   position: relative;

@@ -8,7 +8,12 @@ if (files.length === 0) {
 
 // Convert files to absolute file:// URLs
 const urls = files.map((file) => {
+  // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
   const absolutePath = path.resolve(file);
+  const workspaceRoot = path.resolve(__dirname, "..");
+  if (!absolutePath.startsWith(workspaceRoot)) {
+    throw new Error(`Access denied: ${file} is outside workspace`);
+  }
   return `file://${absolutePath}`;
 });
 

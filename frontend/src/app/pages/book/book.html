@@ -3,83 +3,60 @@
   <div class="glow-sphere sphere-1"></div>
   <div class="glow-sphere sphere-2"></div>
 
-  <div class="dashboard-layout">
-    <!-- Sidebar / Table of Contents -->
-    <app-sidebar>
-      <div sidebar-extra class="sidebar-section">
-        <h3 class="section-title">Table of Contents</h3>
-        <div class="page-list">
-          @for (chapter of chapters(); track chapter; let idx = $index) {
-          <div
-            class="page-item"
-            [ngClass]="{ 'active': activePageIndex() === idx }"
-            (click)="goToPage(idx)"
-          >
-            <span class="page-title">{{ chapter.title }}</span>
+  <div class="dashboard-content-area">
+    <div class="content-wrapper">
+      <header class="hud-header">
+        <div class="hud-brand">
+          <div class="pulse-indicator"></div>
+          <div class="title-group">
+            <h1 class="hud-title">Documentation</h1>
+            <p class="hud-subtitle">Interactive guide, working notes, and reference material</p>
           </div>
-          }
         </div>
+      </header>
+
+      <!-- Reading Progress Bar -->
+      <div class="progress-bar-header">
+        <span class="progress-label">Reading Progress</span>
+        <span class="progress-percentage">{{ bookService.progress() }}%</span>
       </div>
-    </app-sidebar>
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" [style.width.%]="bookService.progress()"></div>
+      </div>
 
-    <!-- Main Content -->
-    <main class="dashboard-main">
-      <div class="dashboard-content-area">
-        <div class="content-wrapper">
-          <header class="hud-header">
-            <div class="hud-brand">
-              <div class="pulse-indicator"></div>
-              <div class="title-group">
-                <h1 class="hud-title">Documentation</h1>
-                <p class="hud-subtitle">Interactive guide, working notes, and reference material</p>
-              </div>
-            </div>
-          </header>
-
-          <!-- Reading Progress Bar -->
-          <div class="progress-bar-header">
-            <span class="progress-label">Reading Progress</span>
-            <span class="progress-percentage">{{ progress() }}%</span>
-          </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar-fill" [style.width.%]="progress()"></div>
-          </div>
-
-          <!-- Page Card -->
-          <div class="status-card-outlined book-card">
-            <div class="card-body-clean book-body">
-              <div class="page-transition-container">
-                <app-page [data]="activeChapter()?.content || ''"></app-page>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagination Controls -->
-          <div class="pagination-controls-outlined" (click)="scrollToTop()">
-            <button
-              mat-flat-button
-              class="pagination-btn"
-              [disabled]="activePageIndex() === 0"
-              (click)="prevPage()"
-            >
-              <mat-icon>chevron_left</mat-icon>
-              Previous
-            </button>
-            <span class="page-counter">
-              Chapter {{ activePageIndex() + 1 }} of {{ chapters().length }}
-            </span>
-            <button
-              mat-flat-button
-              class="pagination-btn"
-              [disabled]="activePageIndex() === chapters().length - 1"
-              (click)="nextPage()"
-            >
-              Next
-              <mat-icon>chevron_right</mat-icon>
-            </button>
+      <!-- Page Card -->
+      <div class="status-card-outlined book-card">
+        <div class="card-body-clean book-body">
+          <div class="page-transition-container">
+            <app-page [data]="bookService.activeChapter()?.content || ''"></app-page>
           </div>
         </div>
       </div>
-    </main>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls-outlined" (click)="bookService.scrollToTop()">
+        <button
+          mat-flat-button
+          class="pagination-btn"
+          [disabled]="bookService.activePageIndex() === 0"
+          (click)="bookService.prevPage()"
+        >
+          <mat-icon>chevron_left</mat-icon>
+          Previous
+        </button>
+        <span class="page-counter">
+          Chapter {{ bookService.activePageIndex() + 1 }} of {{ bookService.chapters().length }}
+        </span>
+        <button
+          mat-flat-button
+          class="pagination-btn"
+          [disabled]="bookService.activePageIndex() === bookService.chapters().length - 1"
+          (click)="bookService.nextPage()"
+        >
+          Next
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
   </div>
 </div>

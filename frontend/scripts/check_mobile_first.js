@@ -7,7 +7,8 @@ const ALLOWED_EXCEPTIONS = ['/* mobile-first-exception */', '/* mobile-first-ove
 function getFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
   for (const file of files) {
-    const filePath = path.join(dir, file);
+    // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+    const filePath = path.join(dir, path.basename(file));
     const stat = fs.statSync(filePath);
     if (stat.isDirectory()) {
       getFiles(filePath, fileList);

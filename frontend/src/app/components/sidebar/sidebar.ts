@@ -8,9 +8,12 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { BookService } from '../../services/book.service';
+import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
+import { filter } from 'rxjs/operators';
 import {
   MonitorService,
   StatusPageData,
@@ -30,8 +33,20 @@ export class Sidebar implements OnInit {
   public authService = inject(AuthService);
   private monitorService = inject(MonitorService);
   private cdr = inject(ChangeDetectorRef);
+  public bookService = inject(BookService);
+  public settingsService = inject(SettingsService);
+  private router = inject(Router);
+
+  isCollapsed = signal<boolean>(false);
+  isDocumentationActive = signal(false);
+  isSettingsActive = signal(false);
+
+  toggleCollapse() {
+    this.isCollapsed.update(c => !c);
+  }
 
   statusPages = signal<StatusPageData[]>([]);
+
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
@@ -56,6 +71,16 @@ export class Sidebar implements OnInit {
   });
 
   ngOnInit() {
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.isDocumentationActive.set(this.router.url.startsWith('/documentation'));
+        this.isSettingsActive.set(this.router.url.startsWith('/settings'));
+        this.cdr.markForCheck();
+      });
+    this.isDocumentationActive.set(this.router.url.startsWith('/documentation'));
+    this.isSettingsActive.set(this.router.url.startsWith('/settings'));
+
     this.monitorService.getStatusPages().subscribe({
       next: data => {
         this.statusPages.set(data);

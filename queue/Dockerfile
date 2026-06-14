@@ -11,6 +11,9 @@ FROM redpandadata/redpanda:v26.1.9
 # Expose the Kafka port so Railway registers this service on the internal DNS
 EXPOSE 9092
 
+# Run as non-root user
+USER redpanda
+
 CMD ["redpanda", "start", \
      "--mode", "dev-container", \
      "--smp", "1", \

@@ -13,12 +13,23 @@
 } @if (authService.isInitialized() && !authService.isProcessing()) {
 <!-- Navbar -->
 <app-navbar></app-navbar>
+
+@if (isDashboardPage()) {
+<div class="dashboard-wrapper">
+  <app-sidebar></app-sidebar>
+  <div class="dashboard-content">
+    <router-outlet />
+  </div>
+</div>
+} @else {
 <!-- Main Content -->
 <main class="main-content">
   <router-outlet />
 </main>
 <!-- Footer -->
 <app-footer></app-footer>
+}
+
 <!-- Issue Reporter FAB -->
 <app-issue-reporter></app-issue-reporter>
 <!-- Cookie Consent Banner -->

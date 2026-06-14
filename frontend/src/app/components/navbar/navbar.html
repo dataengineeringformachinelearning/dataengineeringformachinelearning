@@ -45,13 +45,13 @@
         @if (authService.isAuthenticated()) {
         <a
           mat-button
-          routerLink="/manage"
+          routerLink="/settings"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}"
           class="nav-btn"
         >
           <mat-icon>settings</mat-icon>
-          <span>Manage</span>
+          <span>Settings</span>
         </a>
         <a
           mat-button
@@ -131,14 +131,14 @@
     @if (authService.isAuthenticated()) {
     <a
       mat-button
-      routerLink="/manage"
+      routerLink="/settings"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{exact: true}"
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
       <mat-icon>settings</mat-icon>
-      <span>Manage</span>
+      <span>Settings</span>
     </a>
     <a
       mat-button

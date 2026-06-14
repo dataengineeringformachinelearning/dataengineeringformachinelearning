@@ -22,7 +22,7 @@ self.addEventListener('install', event => {
               return cache.put(url, response);
             })
             .catch(error => {
-              console.warn(`[Service Worker] Failed to cache ${url}:`, error);
+              console.warn('[Service Worker] Failed to cache asset:', url, error);
             });
         }),
       );

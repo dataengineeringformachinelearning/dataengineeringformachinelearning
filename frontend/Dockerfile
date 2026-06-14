@@ -62,6 +62,9 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Expose port
 EXPOSE 8080
 
+# Run as non-root user
+USER nginx
+
 # Use dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["nginx", "-g", "daemon off;"]

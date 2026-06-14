@@ -1,78 +1,207 @@
 <div class="status-container">
-  <!-- Glow Spheres for Homepage Unity -->
+  <!-- Glowing atmospheric spheres -->
   <div class="glow-sphere sphere-1"></div>
   <div class="glow-sphere sphere-2"></div>
 
-  <div class="dashboard-layout">
-    <!-- Sidebar -->
-    <app-sidebar></app-sidebar>
+  <div class="dashboard-content-area">
+    <!-- Top header bar -->
+    <header class="dashboard-topbar-custom">
+      <div class="topbar-left-custom">
+        <h2 class="topbar-brand-title">DEML Platform</h2>
+        <div class="topbar-search-box">
+          <mat-icon>search</mat-icon>
+          <input
+            type="text"
+            placeholder="Search..."
+            aria-label="Search"
+            class="topbar-search-input"
+          />
+        </div>
+      </div>
+      <div class="topbar-right-custom">
+        <button mat-icon-button aria-label="Notifications" class="topbar-btn">
+          <mat-icon>notifications</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="Settings" class="topbar-btn" routerLink="/settings">
+          <mat-icon>settings</mat-icon>
+        </button>
+        <div class="user-profile-badge">
+          <mat-icon>account_circle</mat-icon>
+          <span class="user-profile-name" *ngIf="authService.isAuthenticated()">Active User</span>
+        </div>
+      </div>
+    </header>
 
-    <!-- Main Content -->
-    <main class="dashboard-main">
-      <div class="dashboard-content-area">
-        <div class="content-wrapper">
-          <header class="hud-header">
-            <div class="hud-brand">
-              <div class="pulse-indicator"></div>
-              <div class="title-group">
-                <h1 class="hud-title">Explore Public Statuses</h1>
-                <p class="hud-subtitle">
-                  Browse status cards published by users on our platform. Or view the
-                  <a routerLink="/status/platform-status" class="inline-status-link"
-                    >Platform Status Page</a
-                  >
-                </p>
+    <div class="dashboard-content-area-custom">
+      <!-- Top Metrics Row (KPIs) -->
+      <div class="top-metrics-row">
+        <div class="metric-card-kpi">
+          <span class="kpi-label">Data Rate</span>
+          <span class="kpi-value">0.15 ml/h</span>
+          <span class="kpi-status-dot active"></span>
+        </div>
+        <div class="metric-card-kpi">
+          <span class="kpi-label">Blast</span>
+          <span class="kpi-value">0.5 P/sh</span>
+          <span class="kpi-status-dot active"></span>
+        </div>
+        <div class="metric-card-kpi">
+          <span class="kpi-label">Cums</span>
+          <span class="kpi-value">1438</span>
+          <span class="kpi-status-dot active"></span>
+        </div>
+      </div>
+
+      <!-- Central Main Section and Right Column Grid -->
+      <div class="main-console-grid">
+        <!-- Left Main Area: Central Sankey Flow / Node Graph -->
+        <div class="central-diagram-panel">
+          <div class="panel-header-custom">
+            <mat-icon>account_tree</mat-icon>
+            <h3>Central Data Lineage / Sankey Flow</h3>
+          </div>
+
+          <div class="sankey-diagram-visual">
+            <!-- Animated SVG data paths and glowing node endpoints -->
+            <svg class="sankey-svg" viewBox="0 0 600 300" preserveAspectRatio="xMidYMid meet">
+              <!-- Data Paths -->
+              <path d="M 50 150 Q 150 50, 300 70" class="data-stream-path path-1" />
+              <path d="M 50 150 Q 150 150, 300 150" class="data-stream-path path-2" />
+              <path d="M 50 150 Q 150 250, 300 230" class="data-stream-path path-3" />
+              <path d="M 300 70 Q 400 70, 500 50" class="data-stream-path path-1" />
+              <path d="M 300 70 Q 400 120, 500 120" class="data-stream-path path-1" />
+              <path d="M 300 150 Q 400 150, 500 190" class="data-stream-path path-2" />
+              <path d="M 300 230 Q 400 230, 500 260" class="data-stream-path path-3" />
+
+              <!-- Nodes -->
+              <circle cx="50" cy="150" r="10" class="node-point node-source" />
+              <text x="35" y="130" class="node-label">Legal Source</text>
+
+              <circle cx="300" cy="70" r="8" class="node-point node-middle" />
+              <circle cx="300" cy="150" r="8" class="node-point node-middle" />
+              <circle cx="300" cy="230" r="8" class="node-point node-middle" />
+
+              <circle cx="500" cy="50" r="8" class="node-point node-dest" />
+              <text x="520" y="55" class="node-label">Dest Alpha</text>
+              <circle cx="500" cy="120" r="8" class="node-point node-dest" />
+              <text x="520" y="125" class="node-label">Dest Beta</text>
+              <circle cx="500" cy="190" r="8" class="node-point node-dest" />
+              <text x="520" y="195" class="node-label">Dest Gamma</text>
+              <circle cx="500" cy="260" r="8" class="node-point node-dest" />
+              <text x="520" y="265" class="node-label">Dest Delta</text>
+            </svg>
+
+            <!-- Central CTA Overlay Button -->
+            <div class="cta-overlay-box">
+              <a routerLink="/documentation" class="btn-cta-glow">
+                <span>Get Started</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column Area: Notive Data Data Waveform & Exsite Dents Table -->
+        <div class="right-analytics-column">
+          <!-- Waveform chart -->
+          <div class="analytics-card-compact">
+            <div class="card-header-compact">
+              <mat-icon>insights</mat-icon>
+              <span>Notive Data Data</span>
+            </div>
+            <div class="waveform-container">
+              <div class="waveform-bars">
+                <span class="wave-bar" style="height: 30%"></span>
+                <span class="wave-bar" style="height: 45%"></span>
+                <span class="wave-bar" style="height: 60%"></span>
+                <span class="wave-bar" style="height: 80%"></span>
+                <span class="wave-bar" style="height: 50%"></span>
+                <span class="wave-bar" style="height: 35%"></span>
+                <span class="wave-bar" style="height: 70%"></span>
+                <span class="wave-bar" style="height: 90%"></span>
+                <span class="wave-bar" style="height: 40%"></span>
+                <span class="wave-bar" style="height: 65%"></span>
+                <span class="wave-bar" style="height: 85%"></span>
+                <span class="wave-bar" style="height: 50%"></span>
+                <span class="wave-bar" style="height: 30%"></span>
               </div>
             </div>
-          </header>
+          </div>
 
-          <div class="status-stack">
-            @for (page of statusPages(); track page) {
-            <app-status-card
-              [page]="page"
-              [services]="servicesMap()[page.id] || []"
-              [predictedSla]="mlService.latestStats()[page.id]"
-              [threatReport]="mlService.latestThreatReports()[page.id] || null"
-              [incidents]="incidentsMap()[page.id] || []"
-              [linkHeader]="true"
-              [showViewButton]="true"
-            ></app-status-card>
-            } @if (loadFailed()) {
-            <div class="status-error-state">
-              <div class="error-glow-sphere"></div>
-              <mat-icon class="error-state-icon">cloud_off</mat-icon>
-              <h2 class="error-title">Unable to Connect</h2>
-              <p class="error-subtitle">
-                We couldn't connect to the status service. Please check that the backend is running
-                and try again.
-              </p>
-              <button
-                mat-raised-button
-                color="primary"
-                class="retry-btn"
-                (click)="retryLoad()"
-                [disabled]="isRetrying()"
-              >
-                @if (!isRetrying()) {
-                <mat-icon>refresh</mat-icon>
-                } @if (isRetrying()) {
-                <span class="btn-spinner"></span>
-                }
-                <span>Retry Connection</span>
-              </button>
+          <!-- Exsite Dents Grid Table -->
+          <div class="analytics-card-compact">
+            <div class="card-header-compact">
+              <mat-icon>grid_on</mat-icon>
+              <span>Exsite Dents</span>
             </div>
-            } @if (!loadFailed() && statusPages().length === 0) {
-            <app-status-cta
-              badgeIcon="explore"
-              badgeText="Explore Directory"
-              title="No Public Status Pages"
-              subtitle="Users haven't published any status pages yet. Create and publish one in the management console!"
-            >
-            </app-status-cta>
-            }
+            <div class="grid-table-container">
+              <table class="grid-data-table">
+                <thead>
+                  <tr>
+                    <th>Node ID</th>
+                    <th>Throughput</th>
+                    <th>SLA Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>DL-IN-01</td>
+                    <td>12.5 GB/s</td>
+                    <td class="status-up">99.98%</td>
+                  </tr>
+                  <tr>
+                    <td>DL-TF-04</td>
+                    <td>4.2 GB/s</td>
+                    <td class="status-up">100.0%</td>
+                  </tr>
+                  <tr>
+                    <td>DL-OUT-08</td>
+                    <td>8.7 GB/s</td>
+                    <td class="status-degraded">97.8%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-    </main>
+
+      <!-- Bottom Row Status Cards -->
+      <div class="bottom-status-row">
+        <div class="bottom-status-card">
+          <div class="bottom-card-header">
+            <mat-icon>waves</mat-icon>
+            <span>Reges Date Late</span>
+          </div>
+          <div class="wave-graph-placeholder">
+            <svg class="small-wave-svg" viewBox="0 0 300 60">
+              <path
+                d="M 0 30 Q 30 10, 60 30 T 120 30 T 180 30 T 240 30 T 300 30"
+                fill="none"
+                stroke="var(--color-cyber-cyan)"
+                stroke-width="2"
+                class="anim-wave-path"
+              />
+            </svg>
+          </div>
+        </div>
+        <div class="bottom-status-card">
+          <div class="bottom-card-header">
+            <mat-icon>waves</mat-icon>
+            <span>Cesphiline</span>
+          </div>
+          <div class="wave-graph-placeholder">
+            <svg class="small-wave-svg" viewBox="0 0 300 60">
+              <path
+                d="M 0 30 Q 30 50, 60 30 T 120 30 T 180 30 T 240 30 T 300 30"
+                fill="none"
+                stroke="var(--color-primary-container)"
+                stroke-width="2"
+                class="anim-wave-path-alt"
+              />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

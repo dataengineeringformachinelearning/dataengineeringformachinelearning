@@ -1,57 +1,170 @@
-<aside class="dashboard-sidebar">
-  <div class="sidebar-brand">
+<aside class="dashboard-sidebar" [class.collapsed]="isCollapsed()">
+  <div class="sidebar-brand" (click)="toggleCollapse()">
     <mat-icon class="brand-icon">analytics</mat-icon>
-    <h2>Platform</h2>
+    <h2 class="brand-title">Platform</h2>
+    <button class="collapse-toggle-btn" aria-label="Toggle Sidebar">
+      <mat-icon>{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+    </button>
   </div>
-  <nav class="sidebar-nav">
-    <a
-      class="nav-item"
-      routerLink="/documentation"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-    >
-      <mat-icon>description</mat-icon>
-      Documentation
-    </a>
 
+  <div class="sidebar-search" *ngIf="!isCollapsed()">
+    <mat-icon>search</mat-icon>
+    <input type="text" placeholder="Search..." aria-label="Search" class="sidebar-search-input" />
+  </div>
+
+  <nav class="sidebar-nav">
     <a
       class="nav-item"
       routerLink="/explore"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{exact: true}"
+      title="Explore"
     >
       <mat-icon>explore</mat-icon>
-      Explore
+      <span class="nav-text">Explore</span>
     </a>
-    @if (authService.isAuthenticated()) {
+
+    <div class="nav-tree-section" *ngIf="!isCollapsed()">
+      <div class="nav-tree-header">
+        <mat-icon class="tree-arrow">arrow_drop_down</mat-icon>
+        <mat-icon class="tree-icon">data_object</mat-icon>
+        <span class="tree-label">Data</span>
+      </div>
+      <div class="nav-tree-children">
+        <span class="tree-child-item">- Dummies</span>
+        <span class="tree-child-item">- Convolutes</span>
+        <span class="tree-child-item">- Mutations</span>
+      </div>
+      <div class="nav-tree-header">
+        <mat-icon class="tree-arrow">arrow_right</mat-icon>
+        <mat-icon class="tree-icon">receipt_long</mat-icon>
+        <span class="tree-label">Costuries</span>
+      </div>
+      <div class="nav-tree-header">
+        <mat-icon class="tree-arrow">arrow_right</mat-icon>
+        <mat-icon class="tree-icon">bubble_chart</mat-icon>
+        <span class="tree-label">Ontlation</span>
+      </div>
+    </div>
+
     <a
       class="nav-item"
-      routerLink="/manage"
+      routerLink="/documentation"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{exact: true}"
+      title="Documentation"
     >
-      <mat-icon>settings</mat-icon>
-      Manage
+      <mat-icon>description</mat-icon>
+      <span class="nav-text">Documentation</span>
     </a>
+
+    <div class="nav-tree-section" *ngIf="!isCollapsed() && isDocumentationActive()">
+      <div class="nav-tree-header">
+        <mat-icon class="tree-arrow">arrow_drop_down</mat-icon>
+        <mat-icon class="tree-icon">menu_book</mat-icon>
+        <span class="tree-label">Chapters</span>
+      </div>
+      <div class="nav-tree-children">
+        @for (chapter of bookService.chapters(); track chapter; let idx = $index) {
+        <span
+          class="tree-child-item"
+          [class.active]="bookService.activePageIndex() === idx"
+          (click)="bookService.goToPage(idx)"
+        >
+          - {{ chapter.title }}
+        </span>
+        }
+      </div>
+    </div>
+
+    @if (authService.isAuthenticated()) {
     <a
       class="nav-item"
       routerLink="/vulnerabilities"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{exact: true}"
+      title="Vulnerabilities"
     >
       <mat-icon>security</mat-icon>
-      Vulnerabilities
+      <span class="nav-text">Vulnerabilities</span>
     </a>
+    <a
+      class="nav-item"
+      routerLink="/settings"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      title="Settings"
+    >
+      <mat-icon>settings</mat-icon>
+      <span class="nav-text">Settings</span>
+    </a>
+
+    <div class="nav-tree-section" *ngIf="!isCollapsed() && isSettingsActive()">
+      <div class="nav-tree-header">
+        <mat-icon class="tree-arrow">arrow_drop_down</mat-icon>
+        <mat-icon class="tree-icon">wysiwyg</mat-icon>
+        <span class="tree-label">Your Pages</span>
+      </div>
+      <div class="nav-tree-children">
+        @for (page of settingsService.statusPages(); track page) {
+        <span
+          class="tree-child-item"
+          [class.active]="settingsService.selectedPage()?.id === page.id"
+          (click)="settingsService.selectPage(page)"
+        >
+          - {{ page.title }}
+        </span>
+        } @if (settingsService.statusPages().length === 0) {
+        <span class="tree-child-item">No pages yet.</span>
+        }
+        <button
+          mat-button
+          class="new-page-btn"
+          (click)="settingsService.selectPage(null)"
+          style="
+            background: transparent;
+            border: none;
+            color: var(--status-accent);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 4px 0;
+            margin-top: 4px;
+          "
+        >
+          <mat-icon style="font-size: 14px; width: 14px; height: 14px">add</mat-icon>
+          New Page
+        </button>
+      </div>
+    </div>
     }
   </nav>
 
-  <!-- Slot for dynamic page-specific content like Table of Contents or Page lists -->
+  <!-- Dynamic sidebar contents (extra lists) -->
   <ng-content select="[sidebar-extra]"></ng-content>
 
+  <!-- Nested Corporate Sales Bar Chart -->
+  <div class="sidebar-mini-chart" *ngIf="!isCollapsed()">
+    <div class="chart-header">
+      <span class="chart-title">Corporate Sales</span>
+      <span class="chart-value">78%</span>
+    </div>
+    <div class="chart-bar-visual">
+      <span class="chart-bar" style="width: 78%"></span>
+    </div>
+  </div>
+
   <div class="sidebar-footer">
-    <div class="system-health" [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}">
+    <div
+      class="system-health"
+      [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}"
+      [title]="globalStatus()"
+    >
       <span class="health-dot"></span>
-      {{ globalStatus() }}
+      <span class="health-text" *ngIf="!isCollapsed()">{{ globalStatus() }}</span>
     </div>
   </div>
 </aside>

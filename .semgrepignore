@@ -1,0 +1,2 @@
+# Ignore local Docker Compose configuration (contains development-only service settings)
+docker-compose.yml

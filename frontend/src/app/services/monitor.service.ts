@@ -63,7 +63,7 @@ export class MonitorService {
         next: incidents => {
           this.incidentsMap.update(map => ({ ...map, [page.id]: incidents }));
         },
-        error: err => console.error(`Error fetching incidents for ${page.id}:`, err),
+        error: err => console.error('Error fetching incidents for status page:', page.id, err),
       });
     });
   }
@@ -74,7 +74,7 @@ export class MonitorService {
         next: services => {
           this.servicesMap.update(map => ({ ...map, [page.id]: services }));
         },
-        error: err => console.error(`Error fetching services for ${page.id}:`, err),
+        error: err => console.error('Error fetching services for status page:', page.id, err),
       });
     });
   }
