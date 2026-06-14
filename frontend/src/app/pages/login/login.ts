@@ -1,4 +1,11 @@
-import { Component, inject, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  ChangeDetectionStrategy,
+  signal,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,7 +37,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './login.scss',
 })
-export class Login implements OnInit {
+export class Login implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -77,6 +84,21 @@ export class Login implements OnInit {
         this.isRegisterMode.set(true);
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.recaptchaVerifier) {
+      try {
+        this.recaptchaVerifier.clear();
+      } catch (e) {
+        console.error('Error clearing recaptcha verifier', e);
+      }
+      this.recaptchaVerifier = null;
+    }
+    const element = document.getElementById('recaptcha-container');
+    if (element) {
+      element.remove();
+    }
   }
 
   toggleMode(): void {
@@ -186,10 +208,10 @@ export class Login implements OnInit {
       return;
     }
     try {
-      let element = document.getElementById('firebase-recaptcha-container');
+      let element = document.getElementById('recaptcha-container');
       if (!element) {
         element = document.createElement('div');
-        element.id = 'firebase-recaptcha-container';
+        element.id = 'recaptcha-container';
         document.body.appendChild(element);
       }
       this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {

@@ -1,4 +1,4 @@
-@if (!authService.isInitialized() || authService.isProcessing()) {
+@if (!authService.isInitialized()) {
 <div class="global-auth-loader">
   <div class="loader-content">
     <img
@@ -10,7 +10,7 @@
     <p class="loader-text">Securing your session...</p>
   </div>
 </div>
-} @if (authService.isInitialized() && !authService.isProcessing()) {
+} @else {
 <!-- Navbar -->
 <app-navbar></app-navbar>
 

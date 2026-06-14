@@ -1,4 +1,11 @@
-import { Component, inject, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
+import {
+  Component,
+  inject,
+  ChangeDetectionStrategy,
+  signal,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -29,7 +36,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './login-dialog.scss',
 })
-export class LoginDialog implements OnInit {
+export class LoginDialog implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   public dialogRef = inject(MatDialogRef<LoginDialog>);
   private authService = inject(AuthService);
@@ -66,6 +73,21 @@ export class LoginDialog implements OnInit {
       this.loginForm.get('username')?.updateValueAndValidity();
       this.loginForm.get('password')?.setValidators([Validators.required]);
       this.loginForm.get('password')?.updateValueAndValidity();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.recaptchaVerifier) {
+      try {
+        this.recaptchaVerifier.clear();
+      } catch (e) {
+        console.error('Error clearing recaptcha verifier', e);
+      }
+      this.recaptchaVerifier = null;
+    }
+    const element = document.getElementById('recaptcha-container');
+    if (element) {
+      element.remove();
     }
   }
 
@@ -176,10 +198,10 @@ export class LoginDialog implements OnInit {
       return;
     }
     try {
-      let element = document.getElementById('firebase-recaptcha-container');
+      let element = document.getElementById('recaptcha-container');
       if (!element) {
         element = document.createElement('div');
-        element.id = 'firebase-recaptcha-container';
+        element.id = 'recaptcha-container';
         document.body.appendChild(element);
       }
       this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {

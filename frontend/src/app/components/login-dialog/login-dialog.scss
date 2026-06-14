@@ -209,10 +209,8 @@
   margin-top: 1.25rem;
   margin-bottom: 0.75rem;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  flex-wrap: wrap;
   gap: 8px;
   font-size: 0.9rem;
   width: 100%;
@@ -221,9 +219,9 @@
     background: rgba(255, 255, 255, 0.02) !important;
     border: 1px solid var(--border) !important;
     border-radius: var(--border-radius-sm) !important;
-    padding: 6px 12px !important;
+    padding: 10px 16px !important;
     color: var(--text-color) !important;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 500;
     text-decoration: none;
     cursor: pointer;
@@ -232,6 +230,7 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
 
     &:hover {
       background: rgba(255, 255, 255, 0.06) !important;
@@ -270,7 +269,7 @@
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 0.5rem 0;
+  margin: 1.5rem 0;
   color: var(--text-muted);
   font-size: 0.8rem;
   text-transform: uppercase;
