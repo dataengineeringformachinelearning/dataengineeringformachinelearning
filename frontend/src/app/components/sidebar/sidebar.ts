@@ -41,6 +41,10 @@ export class Sidebar implements OnInit {
   isDocumentationActive = signal(false);
   isSettingsActive = signal(false);
 
+  // Tree view expansion states
+  isChaptersExpanded = signal<boolean>(true);
+  isYourPagesExpanded = signal<boolean>(true);
+
   toggleCollapse() {
     this.isCollapsed.update(c => !c);
   }

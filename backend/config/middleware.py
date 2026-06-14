@@ -20,7 +20,21 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
     token = auth_header.split(" ")[1]
     try:
       # Verify the Firebase ID token
-      decoded_token = auth.verify_id_token(token)
+      from django.conf import settings
+
+      if settings.DEBUG and (token.startswith("mock-token-") or token == "mock-system-token"):
+        # Format: mock-token-uid-email
+        parts = token.split("-")
+        uid = parts[2] if len(parts) > 2 else "mock_user"
+        email = parts[3] if len(parts) > 3 else f"{uid}@example.com"
+        name = uid.capitalize()
+        decoded_token = {
+          "uid": uid,
+          "email": email,
+          "name": name,
+        }
+      else:
+        decoded_token = auth.verify_id_token(token)
       uid = decoded_token.get("uid")
       email = decoded_token.get("email")
       name = decoded_token.get("name") or decoded_token.get("display_name", "")

@@ -136,3 +136,16 @@ rm -rf node_modules package-lock.json
 npm cache clean --force
 npm install --legacy-peer-deps
 ```
+
+---
+
+## 6. Local Mock Authentication
+
+When developing locally, you can bypass the cloud Firebase Authentication backend and run completely offline:
+
+1. In the `frontend/.env` file, leave the Firebase API Key as `PLACEHOLDER_API_KEY`.
+2. When the frontend starts, it detects this placeholder and enables **mock authentication mode** automatically.
+3. You can log in with **any username/email and password**:
+   - **Security Admin** (full access): Use email `admin@dataengineeringformachinelearning.com` (any password).
+   - **Operator** (standard access): Use any other email or username.
+4. When `settings.DEBUG = True`, the backend Django API server intercepts the mock tokens and automatically creates/logs in the corresponding Django user profile.

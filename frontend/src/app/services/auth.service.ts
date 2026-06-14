@@ -41,46 +41,73 @@ export class AuthService {
   private http = inject(HttpClient);
   public auth: any;
 
+  private useMock =
+    typeof window !== 'undefined' && environment.firebase.apiKey === 'PLACEHOLDER_API_KEY'; // pragma: allowlist secret
+
   constructor() {
     if (typeof window !== 'undefined') {
-      const app = initializeApp(environment.firebase);
-      this.auth = getAuth(app);
-
-      onAuthStateChanged(this.auth, async (user: FirebaseUser | null) => {
-        this.isProcessing.set(true);
-        if (user) {
-          try {
-            const token = await user.getIdToken();
-            const res: any = await firstValueFrom(
-              this.http
-                .get(`${environment.backendUrl}/api/v1/auth/user`, {
-                  headers: { Authorization: `Bearer ${token}` },
-                })
-                .pipe(timeout(20000)),
-            );
-            if (res.status === 'success') {
-              this.isAuthenticated.set(true);
-              this.currentUserId.set(res.user_id);
-              this.currentUserRole.set(res.role);
-            } else {
-              this.isAuthenticated.set(false);
-              this.currentUserId.set(null);
-              this.currentUserRole.set(null);
-            }
-          } catch (e) {
-            console.error('Failed to sync auth with backend', e);
-            this.isAuthenticated.set(false);
-            this.currentUserId.set(null);
-            this.currentUserRole.set(null);
-          }
+      if (this.useMock) {
+        const mockUserStr = localStorage.getItem('mock_user');
+        if (mockUserStr) {
+          const user = JSON.parse(mockUserStr);
+          this.auth = {
+            currentUser: {
+              getIdToken: async () => `mock-token-${user.username}-${user.email}`,
+              displayName: user.username,
+              email: user.email,
+            },
+          };
+          this.isAuthenticated.set(true);
+          this.currentUserId.set(user.id || 1);
+          this.currentUserRole.set(user.role || 'Operator');
         } else {
+          this.auth = null;
           this.isAuthenticated.set(false);
           this.currentUserId.set(null);
           this.currentUserRole.set(null);
         }
         this.isInitialized.set(true);
         this.isProcessing.set(false);
-      });
+      } else {
+        const app = initializeApp(environment.firebase);
+        this.auth = getAuth(app);
+
+        onAuthStateChanged(this.auth, async (user: FirebaseUser | null) => {
+          this.isProcessing.set(true);
+          if (user) {
+            try {
+              const token = await user.getIdToken();
+              const res: any = await firstValueFrom(
+                this.http
+                  .get(`${environment.backendUrl}/api/v1/auth/user`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                  })
+                  .pipe(timeout(20000)),
+              );
+              if (res.status === 'success') {
+                this.isAuthenticated.set(true);
+                this.currentUserId.set(res.user_id);
+                this.currentUserRole.set(res.role);
+              } else {
+                this.isAuthenticated.set(false);
+                this.currentUserId.set(null);
+                this.currentUserRole.set(null);
+              }
+            } catch (e) {
+              console.error('Failed to sync auth with backend', e);
+              this.isAuthenticated.set(false);
+              this.currentUserId.set(null);
+              this.currentUserRole.set(null);
+            }
+          } else {
+            this.isAuthenticated.set(false);
+            this.currentUserId.set(null);
+            this.currentUserRole.set(null);
+          }
+          this.isInitialized.set(true);
+          this.isProcessing.set(false);
+        });
+      }
     } else {
       this.isInitialized.set(true);
       this.isProcessing.set(false);
@@ -89,6 +116,35 @@ export class AuthService {
 
   async checkAuth() {
     this.isProcessing.set(true);
+    if (this.useMock) {
+      const mockUserStr = localStorage.getItem('mock_user');
+      if (mockUserStr) {
+        const user = JSON.parse(mockUserStr);
+        try {
+          const token = `mock-token-${user.username}-${user.email}`;
+          const res: any = await firstValueFrom(
+            this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          );
+          if (res.status === 'success') {
+            this.isAuthenticated.set(true);
+            this.currentUserId.set(res.user_id);
+            this.currentUserRole.set(res.role);
+          }
+        } catch (e) {
+          this.isAuthenticated.set(true);
+          this.currentUserId.set(user.id || 1);
+          this.currentUserRole.set(user.role || 'Operator');
+        }
+      } else {
+        this.isAuthenticated.set(false);
+        this.currentUserId.set(null);
+        this.currentUserRole.set(null);
+      }
+      this.isProcessing.set(false);
+      return;
+    }
     if (!this.auth) {
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
@@ -129,6 +185,40 @@ export class AuthService {
 
   async login(credentials: any): Promise<{ success: boolean; error?: string; resolver?: any }> {
     this.isProcessing.set(true);
+    if (this.useMock) {
+      const email = credentials.username || 'user@example.com';
+      const username = email.split('@')[0] || 'mockuser';
+      const role =
+        email === 'admin@dataengineeringformachinelearning.com' ? 'Security Admin' : 'Operator';
+      const mockUser = { username, email, role, id: 1 };
+      localStorage.setItem('mock_user', JSON.stringify(mockUser));
+      this.auth = {
+        currentUser: {
+          getIdToken: async () => `mock-token-${username}-${email}`,
+          displayName: username,
+          email: email,
+        },
+      };
+      try {
+        const token = `mock-token-${username}-${email}`;
+        const res: any = await firstValueFrom(
+          this.http.get(`${environment.backendUrl}/api/v1/auth/user`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        );
+        if (res.status === 'success') {
+          this.isAuthenticated.set(true);
+          this.currentUserId.set(res.user_id);
+          this.currentUserRole.set(res.role);
+        }
+      } catch (e) {
+        this.isAuthenticated.set(true);
+        this.currentUserId.set(1);
+        this.currentUserRole.set(role);
+      }
+      this.isProcessing.set(false);
+      return { success: true };
+    }
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       // Treat credentials.username as the login email
@@ -165,6 +255,9 @@ export class AuthService {
 
   async register(credentials: any): Promise<{ success: boolean; error?: string }> {
     this.isProcessing.set(true);
+    if (this.useMock) {
+      return this.login({ username: credentials.email, password: credentials.password });
+    }
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       const userCredential = await createUserWithEmailAndPassword(
@@ -208,6 +301,15 @@ export class AuthService {
 
   async logout() {
     this.isProcessing.set(true);
+    if (this.useMock) {
+      localStorage.removeItem('mock_user');
+      this.auth = null;
+      this.isAuthenticated.set(false);
+      this.currentUserId.set(null);
+      this.currentUserRole.set(null);
+      this.isProcessing.set(false);
+      return;
+    }
     try {
       if (this.auth) {
         await signOut(this.auth);
@@ -293,6 +395,9 @@ export class AuthService {
 
   async loginWithApple(): Promise<{ success: boolean; error?: string; resolver?: any }> {
     this.isProcessing.set(true);
+    if (this.useMock) {
+      return this.login({ username: 'apple-user@example.com', password: 'password' }); // pragma: allowlist secret
+    }
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       const provider = new OAuthProvider('apple.com');
@@ -328,6 +433,9 @@ export class AuthService {
 
   async loginWithGoogle(): Promise<{ success: boolean; error?: string; resolver?: any }> {
     this.isProcessing.set(true);
+    if (this.useMock) {
+      return this.login({ username: 'google-user@example.com', password: 'password' }); // pragma: allowlist secret
+    }
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       const provider = new GoogleAuthProvider();

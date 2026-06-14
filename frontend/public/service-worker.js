@@ -50,6 +50,10 @@ self.addEventListener('fetch', event => {
   // Only handle HTTP/HTTPS (ignore chrome-extension://, etc.)
   if (!event.request.url.startsWith('http')) return;
 
+  // Only handle same-origin requests to prevent CORS issues with third-party APIs
+  const requestUrl = new URL(event.request.url);
+  if (requestUrl.origin !== self.location.origin) return;
+
   // Do not handle/intercept API requests or non-GET requests
   if (event.request.method !== 'GET' || event.request.url.includes('/api/')) return;
 

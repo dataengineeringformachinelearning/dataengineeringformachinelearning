@@ -25,14 +25,24 @@
   min-height: calc(100vh - 64px);
 }
 
-.dashboard-main {
+.dashboard-content-area {
   flex: 1;
-  padding: 1.5rem;
+  padding: var(--grid-gap);
   display: flex;
   flex-direction: column;
   height: calc(100vh - 64px);
   overflow: hidden;
   box-sizing: border-box;
+}
+
+.content-wrapper {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .hud-metrics {

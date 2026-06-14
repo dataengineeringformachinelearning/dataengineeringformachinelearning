@@ -12,148 +12,139 @@
     <input type="text" placeholder="Search..." aria-label="Search" class="sidebar-search-input" />
   </div>
 
-  <nav class="sidebar-nav">
-    <a
-      class="nav-item"
-      routerLink="/explore"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      title="Explore"
-    >
-      <mat-icon>explore</mat-icon>
-      <span class="nav-text">Explore</span>
-    </a>
+  <div class="sidebar-scroll-container">
+    <nav class="sidebar-nav">
+      <a
+        class="nav-item"
+        routerLink="/explore"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        title="Explore"
+      >
+        <mat-icon>explore</mat-icon>
+        <span class="nav-text">Explore</span>
+      </a>
 
-    <div class="nav-tree-section" *ngIf="!isCollapsed()">
-      <div class="nav-tree-header">
-        <mat-icon class="tree-arrow">arrow_drop_down</mat-icon>
-        <mat-icon class="tree-icon">data_object</mat-icon>
-        <span class="tree-label">Data</span>
-      </div>
-      <div class="nav-tree-children">
-        <span class="tree-child-item">- Dummies</span>
-        <span class="tree-child-item">- Convolutes</span>
-        <span class="tree-child-item">- Mutations</span>
-      </div>
-      <div class="nav-tree-header">
-        <mat-icon class="tree-arrow">arrow_right</mat-icon>
-        <mat-icon class="tree-icon">receipt_long</mat-icon>
-        <span class="tree-label">Costuries</span>
-      </div>
-      <div class="nav-tree-header">
-        <mat-icon class="tree-arrow">arrow_right</mat-icon>
-        <mat-icon class="tree-icon">bubble_chart</mat-icon>
-        <span class="tree-label">Ontlation</span>
-      </div>
-    </div>
+      <a
+        class="nav-item"
+        routerLink="/documentation"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        title="Documentation"
+      >
+        <mat-icon>description</mat-icon>
+        <span class="nav-text">Documentation</span>
+      </a>
 
-    <a
-      class="nav-item"
-      routerLink="/documentation"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      title="Documentation"
-    >
-      <mat-icon>description</mat-icon>
-      <span class="nav-text">Documentation</span>
-    </a>
-
-    <div class="nav-tree-section" *ngIf="!isCollapsed() && isDocumentationActive()">
-      <div class="nav-tree-header">
-        <mat-icon class="tree-arrow">arrow_drop_down</mat-icon>
-        <mat-icon class="tree-icon">menu_book</mat-icon>
-        <span class="tree-label">Chapters</span>
-      </div>
-      <div class="nav-tree-children">
-        @for (chapter of bookService.chapters(); track chapter; let idx = $index) {
-        <span
-          class="tree-child-item"
-          [class.active]="bookService.activePageIndex() === idx"
-          (click)="bookService.goToPage(idx)"
+      <div class="nav-tree-section" *ngIf="!isCollapsed() && isDocumentationActive()">
+        <div
+          class="nav-tree-header"
+          (click)="isChaptersExpanded.set(!isChaptersExpanded())"
+          style="cursor: pointer"
         >
-          - {{ chapter.title }}
-        </span>
-        }
+          <mat-icon class="tree-arrow"
+            >{{ isChaptersExpanded() ? 'arrow_drop_down' : 'arrow_right' }}</mat-icon
+          >
+          <mat-icon class="tree-icon">menu_book</mat-icon>
+          <span class="tree-label">Chapters</span>
+        </div>
+        <div class="nav-tree-children" *ngIf="isChaptersExpanded()">
+          @for (chapter of bookService.chapters(); track chapter; let idx = $index) {
+          <span
+            class="tree-child-item"
+            [class.active]="bookService.activePageIndex() === idx"
+            (click)="bookService.goToPage(idx)"
+          >
+            - {{ chapter.title }}
+          </span>
+          }
+        </div>
       </div>
-    </div>
 
-    @if (authService.isAuthenticated()) {
-    <a
-      class="nav-item"
-      routerLink="/vulnerabilities"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      title="Vulnerabilities"
-    >
-      <mat-icon>security</mat-icon>
-      <span class="nav-text">Vulnerabilities</span>
-    </a>
-    <a
-      class="nav-item"
-      routerLink="/settings"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      title="Settings"
-    >
-      <mat-icon>settings</mat-icon>
-      <span class="nav-text">Settings</span>
-    </a>
+      @if (authService.isAuthenticated()) {
+      <a
+        class="nav-item"
+        routerLink="/vulnerabilities"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        title="Vulnerabilities"
+      >
+        <mat-icon>security</mat-icon>
+        <span class="nav-text">Vulnerabilities</span>
+      </a>
+      <a
+        class="nav-item"
+        routerLink="/settings"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        title="Settings"
+      >
+        <mat-icon>settings</mat-icon>
+        <span class="nav-text">Settings</span>
+      </a>
 
-    <div class="nav-tree-section" *ngIf="!isCollapsed() && isSettingsActive()">
-      <div class="nav-tree-header">
-        <mat-icon class="tree-arrow">arrow_drop_down</mat-icon>
-        <mat-icon class="tree-icon">wysiwyg</mat-icon>
-        <span class="tree-label">Your Pages</span>
-      </div>
-      <div class="nav-tree-children">
-        @for (page of settingsService.statusPages(); track page) {
-        <span
-          class="tree-child-item"
-          [class.active]="settingsService.selectedPage()?.id === page.id"
-          (click)="settingsService.selectPage(page)"
+      <div class="nav-tree-section" *ngIf="!isCollapsed() && isSettingsActive()">
+        <div
+          class="nav-tree-header"
+          (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
+          style="cursor: pointer"
         >
-          - {{ page.title }}
-        </span>
-        } @if (settingsService.statusPages().length === 0) {
-        <span class="tree-child-item">No pages yet.</span>
-        }
-        <button
-          mat-button
-          class="new-page-btn"
-          (click)="settingsService.selectPage(null)"
-          style="
-            background: transparent;
-            border: none;
-            color: var(--status-accent);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 4px 0;
-            margin-top: 4px;
-          "
-        >
-          <mat-icon style="font-size: 14px; width: 14px; height: 14px">add</mat-icon>
-          New Page
-        </button>
+          <mat-icon class="tree-arrow"
+            >{{ isYourPagesExpanded() ? 'arrow_drop_down' : 'arrow_right' }}</mat-icon
+          >
+          <mat-icon class="tree-icon">wysiwyg</mat-icon>
+          <span class="tree-label">Your Pages</span>
+        </div>
+        <div class="nav-tree-children" *ngIf="isYourPagesExpanded()">
+          @for (page of settingsService.statusPages(); track page) {
+          <span
+            class="tree-child-item"
+            [class.active]="settingsService.selectedPage()?.id === page.id"
+            (click)="settingsService.selectPage(page)"
+          >
+            - {{ page.title }}
+          </span>
+          } @if (settingsService.statusPages().length === 0) {
+          <span class="tree-child-item">No pages yet.</span>
+          }
+          <button
+            mat-button
+            class="new-page-btn"
+            (click)="settingsService.selectPage(null)"
+            style="
+              background: transparent;
+              border: none;
+              color: var(--status-accent);
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              font-size: 0.8rem;
+              font-weight: 600;
+              padding: 4px 0;
+              margin-top: 4px;
+            "
+          >
+            <mat-icon style="font-size: 14px; width: 14px; height: 14px">add</mat-icon>
+            New Page
+          </button>
+        </div>
       </div>
-    </div>
-    }
-  </nav>
+      }
+    </nav>
 
-  <!-- Dynamic sidebar contents (extra lists) -->
-  <ng-content select="[sidebar-extra]"></ng-content>
+    <!-- Dynamic sidebar contents (extra lists) -->
+    <ng-content select="[sidebar-extra]"></ng-content>
 
-  <!-- Nested Corporate Sales Bar Chart -->
-  <div class="sidebar-mini-chart" *ngIf="!isCollapsed()">
-    <div class="chart-header">
-      <span class="chart-title">Corporate Sales</span>
-      <span class="chart-value">78%</span>
-    </div>
-    <div class="chart-bar-visual">
-      <span class="chart-bar" style="width: 78%"></span>
+    <!-- Nested Corporate Sales Bar Chart -->
+    <div class="sidebar-mini-chart" *ngIf="!isCollapsed()">
+      <div class="chart-header">
+        <span class="chart-title">Corporate Sales</span>
+        <span class="chart-value">78%</span>
+      </div>
+      <div class="chart-bar-visual">
+        <span class="chart-bar" style="width: 78%"></span>
+      </div>
     </div>
   </div>
 

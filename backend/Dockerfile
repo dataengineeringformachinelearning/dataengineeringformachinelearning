@@ -16,6 +16,10 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Re-link python symlinks to /usr/bin/python (runtime image's python path)
+RUN ln -sf /usr/bin/python /opt/venv/bin/python && \
+    ln -sf /usr/bin/python /opt/venv/bin/python3
+
 # Copy application code for collectstatic
 COPY . .
 RUN python manage.py collectstatic --noinput --clear
@@ -24,6 +28,7 @@ RUN python manage.py collectstatic --noinput --clear
 FROM cgr.dev/chainguard/python:latest
 
 ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONPATH="/opt/venv/lib/python3.14/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
