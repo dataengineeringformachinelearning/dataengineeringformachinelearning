@@ -146,8 +146,10 @@
         with 90-day rotation), immutable audit logging streamed directly to centralized Google Cloud
         Logging buckets for SIEM ingestion, granular Role-Based Access Control (RBAC) supporting
         Viewer, Operator, and Security Admin configurations, hardened distroless Chainguard
-        container images, and continuous vulnerability guarding via local Socket.dev and Checkov IaC
-        scans.
+        container images executing under least-privilege non-root policies (`USER nginx`), strict
+        Content-Security-Policy (CSP) and HSTS security headers, and continuous vulnerability
+        guarding via local Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets (with custom
+        baseline filters), and Django Migration Linter checks.
       </p>
     </section>
 

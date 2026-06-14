@@ -1054,8 +1054,8 @@ To transition our telemetry platform toward enterprise maturity, we implement st
 
 1. **Identity & Role-Based Access Control (RBAC)**: We replace insecure MFA mechanisms with Google SSO (Firebase Auth) supporting WebAuthn cryptographic keys. We enforce strict role configurations (`Viewer`, `Operator`, `Security Admin`) on both the backend decorators and the Angular user interface.
 2. **Immutable SIEM Logging**: We integrate Python's `google-cloud-logging` client, streaming all administrative and security actions logged locally in PostgreSQL directly to centralized Google Cloud Logging buckets.
-3. **Container Hardening (Chainguard)**: We migrate both frontend Nginx and backend Python runtime Docker images to distroless, shell-less `cgr.dev/chainguard` base images to minimize host attack surfaces.
-4. **Vulnerability Firewalls & IaC checks**: We configure automated pre-commit hooks executing **Socket.dev** (scanning dependencies for supply-chain compromises) and **Checkov** (scanning Terraform infrastructure files for security misconfigurations).
+3. **Container Hardening & Least Privilege**: We migrate both frontend Nginx and backend Python runtime Docker images to distroless, shell-less `cgr.dev/chainguard` base images to minimize host attack surfaces, run the frontend container under a non-root `USER nginx` specification, and configure strict Content-Security-Policy (CSP) and HSTS security headers.
+4. **Vulnerability Firewalls, Linters & IaC checks**: We configure automated pre-commit hooks executing **Socket.dev** (scanning dependencies for supply-chain compromises), **Checkov** and **Trivy** (scanning configurations and infrastructure files for security flaws), **Django Migration Linter** (detecting backward-incompatible SQL actions), and **Gitleaks** & **detect-secrets** (using a baseline to prevent credential commits).
 5. **Secrets Management (Infisical)**: We delegate credentials orchestration to **Infisical**, utilizing the Infisical CLI for local development and native Railway automated secrets syncing in production.
 
 ### Chapter 21.2: Acknowledgements & Technologies
