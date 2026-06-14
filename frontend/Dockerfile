@@ -38,33 +38,13 @@ RUN npm run check:mobile-first
 RUN npm run build --prod
 
 # Production stage
-FROM nginx:1.27-alpine
-
-# Install security updates and remove unnecessary packages
-RUN apk update && apk upgrade && \
-    apk add --no-cache dumb-init && \
-    rm -rf /var/cache/apk/*
-
-# Create nginx cache directories and set permissions
-RUN mkdir -p /var/cache/nginx /var/log/nginx /var/run && \
-    chown -R nginx:nginx /var/cache/nginx /var/log/nginx /var/run
+FROM cgr.dev/chainguard/nginx:latest
 
 # Copy built application from builder stage
-COPY --from=builder --chown=nginx:nginx /app/dist/frontend/browser /usr/share/nginx/html
+COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
 
-# Verify Angular build files exist
-RUN ls -la /usr/share/nginx/html/ && test -f /usr/share/nginx/html/index.html
-
-# Remove default nginx configuration and copy our config
-RUN rm -f /etc/nginx/conf.d/default.conf
+# Copy our custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 8080
-
-# Run as non-root user
-USER nginx
-
-# Use dumb-init for proper signal handling
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["nginx", "-g", "daemon off;"]

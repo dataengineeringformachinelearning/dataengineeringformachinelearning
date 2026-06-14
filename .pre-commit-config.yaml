@@ -51,3 +51,13 @@ repos:
         language: system
         files: \.(css|scss)$
         pass_filenames: false
+      - id: socket-scan
+        name: Socket.dev Dependency Scan
+        entry: bash -c 'if [ -z "$SOCKET_API_KEY" ]; then echo "Socket API key not set, skipping scan."; else npx -y socket ci; fi'
+        language: system
+        pass_filenames: false
+      - id: checkov
+        name: Checkov IaC Security Scan
+        entry: uvx checkov -d terraform/ --framework terraform
+        language: system
+        pass_filenames: false

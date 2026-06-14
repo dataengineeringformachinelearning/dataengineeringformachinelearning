@@ -24,11 +24,11 @@ npm start
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
-## Local Configuration (Firebase)
+## Local Configuration (Firebase & Infisical)
 
 To run the application with your own Firebase keys locally without committing them to source control, configure your environment variables:
 
-1. **Create your `.env` file**:
+1. **Option A: Create your `.env` file**:
    Copy the sample environment variables:
 
    ```bash
@@ -37,8 +37,15 @@ To run the application with your own Firebase keys locally without committing th
 
    Open the `.env` file and fill in your actual Firebase configurations.
 
-2. **Run with `dotenvx`**:
-   Run the dev server using the locally installed `dotenvx`:
+2. **Option B: Infisical Secret Vault (Recommended)**:
+   Ensure you have the Infisical CLI installed (`brew install infisical/tap/infisical`) and run:
+
+   ```bash
+   infisical run -- npm start
+   ```
+
+3. **Run with `dotenvx`**:
+   Alternatively, run the dev server using the locally installed `dotenvx`:
    ```bash
    npx dotenvx run -- npm start
    ```
@@ -46,6 +53,10 @@ To run the application with your own Firebase keys locally without committing th
 
 > [!NOTE]
 > If you ever need to manually install additional dependencies in this project, you must append `--legacy-peer-deps` due to the strict version constraints of the test suite and framework dependencies (e.g., `npm install @dotenvx/dotenvx --save-dev --legacy-peer-deps`).
+
+### Production Container Design
+
+In production, the Angular build output is served via Nginx using the highly secure `cgr.dev/chainguard/nginx:latest` container image. This base image has a zero-vulnerability footprint and does not run as root, ensuring compliance with SOC 2 CC6.6 and CMMC 2.0 SC.L2-3.13.1.
 
 ### Troubleshooting NPM running slow
 

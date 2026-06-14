@@ -12,6 +12,14 @@ Install `uv`:
 brew install uv
 ```
 
+### Infisical CLI installation (Recommended)
+
+This codebase uses [Infisical](https://infisical.com/) for secure, centralized secret management to fulfill SOC 2 / CMMC requirements. Install it locally to easily run commands with automatic secret injection:
+
+```bash
+brew install infisical/tap/infisical
+```
+
 ## How to run locally
 
 1. Navigate to the `backend` directory:
@@ -58,6 +66,14 @@ You will need **two separate terminal windows** (or tabs) for this step. Ensure 
 
 **Terminal 1 (API Server):**
 
+Using Infisical (Recommended):
+
+```bash
+infisical run -- python manage.py runserver
+```
+
+Or with a local `.env` file:
+
 ```bash
 python manage.py runserver
 ```
@@ -68,7 +84,7 @@ Open a new terminal window, navigate to the `backend` directory, activate the vi
 ```bash
 cd backend
 source .venv/bin/activate
-python manage.py telemetry_worker
+infisical run -- python manage.py telemetry_worker
 ```
 
 **Terminal 3 (ML Worker):**
@@ -77,7 +93,7 @@ Open a new terminal window, navigate to the `backend` directory, activate the vi
 ```bash
 cd backend
 source .venv/bin/activate
-python manage.py ml_worker
+infisical run -- python manage.py ml_worker
 ```
 
 Once the server is running, your backend API will be accessible at `http://localhost:8000/`. You can test the healthcheck endpoint at `http://localhost:8000/api/health`.
@@ -141,11 +157,13 @@ python manage.py fetch_threat_intel
 
 ### Configuration
 
-You can configure real-time reputation lookups and automated threat submissions by setting the following environment variables in your `backend/.env` file:
+You can configure real-time reputation lookups and automated threat submissions by setting the following environment variables in your `backend/.env` file or storing them in Infisical:
 
 - `ABUSEIPDB_API_KEY`: API Key for checking IP abuse confidence scores from AbuseIPDB.
 - `OTX_API_KEY`: API Key for checking threat intelligence indicators from AlienVault OTX.
 - `CISA_TAXII_ENDPOINT`: Ingestion URL for routing STIX format reports directly to CISA AIS (TAXII protocol).
 - `ISAC_API_KEY`: API authentication key for IT-ISAC/MS-ISAC threat sharing servers.
+- `GCP_KMS_PROJECT_ID`, `GCP_KMS_LOCATION`, `GCP_KMS_KEY_RING`, `GCP_KMS_KEY_NAME`: Credentials for Google Cloud KMS envelope encryption.
+- `GCP_LOGGING_ENABLED`: Flag to stream audit and system logs to GCP Cloud Logging.
 
 _Note: If these environment variables are not present, the sync utility and the threat sharing pipelines run in **Simulation/Sandbox Mode**, evaluating metrics locally and logging transaction flows without actual outbound transmission._

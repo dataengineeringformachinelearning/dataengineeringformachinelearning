@@ -1,35 +1,40 @@
-FROM python:3.14-slim
+# Builder stage
+FROM python:3.14-slim AS builder
 
-# Prevent Python from writing pyc files and buffer output
-ENV PYTHONUNBUFFERED=1 \
+WORKDIR /app
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc g++ python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Install requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code for collectstatic
+COPY . .
+RUN python manage.py collectstatic --noinput --clear
+
+# Runtime stage
+FROM cgr.dev/chainguard/python:latest
+
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /app
 
-# Install system dependencies (required for PostgreSQL/psycopg2)
-RUN apt-get update && apt-get install -y \
-    libpq-dev gcc g++ python3-dev zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy virtual env and code from builder
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=builder /app /app
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy project code
-COPY . .
-
-# Collect static files
-RUN python manage.py collectstatic --noinput --clear
-
-# Create a non-root user and group
-RUN groupadd -r appgroup && useradd -r -g appgroup -u 1001 appuser
-RUN chown -R appuser:appgroup /app
-
-# Expose port
 EXPOSE 8000
 
-# Use non-root user
-USER appuser
+USER python
 
-# Run migrations, clean up database, train initial models, then start Gunicorn
-CMD ["sh", "-c", "python manage.py migrate && python manage.py train_all_models && gunicorn --bind 0.0.0.0:${PORT:-8000} config.wsgi:application --workers 3 --timeout 120"]
+ENTRYPOINT ["python", "start.py"]
