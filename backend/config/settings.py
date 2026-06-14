@@ -24,6 +24,33 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from a .env file located at the BASE_DIR (backend/)
 load_dotenv(BASE_DIR / ".env")
 
+# Write GCP service account JSON from environment variable to a file if provided
+gcp_sa_json = os.getenv("GCP_SERVICE_ACCOUNT_JSON")
+if gcp_sa_json:
+  gcp_sa_json_clean = gcp_sa_json.strip()
+  if gcp_sa_json_clean.startswith('"') and gcp_sa_json_clean.endswith('"'):
+    import json
+
+    try:
+      # Strip potential double JSON encoding wrapper
+      decoded = json.loads(gcp_sa_json_clean)
+      if isinstance(decoded, str):
+        gcp_sa_json_clean = decoded
+    except Exception:
+      pass
+
+  # Write to /tmp/gcp-service-account.json and set the standard env var path
+  temp_credentials_path = "/tmp/gcp-service-account.json"
+  try:
+    with open(temp_credentials_path, "w") as f:
+      f.write(gcp_sa_json_clean)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
+  except Exception as e:
+    import logging
+
+    logging.getLogger("django").warning("Failed to write GCP JSON file: %s", e)
+
+
 import sentry_sdk
 
 sentry_sdk.init(

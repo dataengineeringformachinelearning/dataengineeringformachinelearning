@@ -1044,7 +1044,7 @@ For detailed configuration settings, environmental variables, scaling limits, an
 
 ---
 
-## Chapter 22: Enterprise Security, Compliance (SOC 2) & Secrets Management
+## Chapter 22: Enterprise Security, Compliance (CMMC 2.0 with SOC 2) & Secrets Management
 
 ### Chapter 22.1: Introduction
 

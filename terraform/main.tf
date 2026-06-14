@@ -73,3 +73,13 @@ resource "google_project_iam_member" "logging_iam" {
   role    = "roles/logging.logWriter"
   member  = "serviceAccount:${google_service_account.app_sa.email}"
 }
+
+# Data source to get GCS service agent
+data "google_storage_project_service_account" "gcs_account" {}
+
+# Grant GCS service agent KMS Encrypter/Decrypter permissions to enable customer-managed encryption keys (CMEK)
+resource "google_kms_crypto_key_iam_member" "gcs_kms_iam" {
+  crypto_key_id = google_kms_crypto_key.crypto_key.id
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+}

@@ -13,7 +13,7 @@ variable "region" {
 variable "kms_location" {
   type        = string
   description = "The KMS keyring location (typically global or regional)."
-  default     = "global"
+  default     = "us-central1"
 }
 
 variable "kms_key_ring_name" {
