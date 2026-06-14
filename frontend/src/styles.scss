@@ -743,6 +743,7 @@ html[data-theme='light'] #global-error-toast {
 .grecaptcha-bubble-holder,
 div.grecaptcha-bubble-holder,
 #recaptcha-container,
+#firebase-recaptcha-container,
 iframe[src*="recaptcha"],
 iframe[src*="google.com/recaptcha"],
 body > div[style*="z-index"]:has(iframe[src*="recaptcha"]),

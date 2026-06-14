@@ -176,10 +176,10 @@ export class LoginDialog implements OnInit {
       return;
     }
     try {
-      let element = document.getElementById('recaptcha-container');
+      let element = document.getElementById('firebase-recaptcha-container');
       if (!element) {
         element = document.createElement('div');
-        element.id = 'recaptcha-container';
+        element.id = 'firebase-recaptcha-container';
         document.body.appendChild(element);
       }
       this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
@@ -241,7 +241,6 @@ export class LoginDialog implements OnInit {
 
   async sendMfaVerificationCode(resolver: any) {
     this.initRecaptcha();
-    this.isLoading.set(true);
     try {
       const phoneInfoOptions = {
         multiFactorHint: resolver.hints[0],
@@ -261,8 +260,6 @@ export class LoginDialog implements OnInit {
     } catch (e: any) {
       console.error(e);
       this.error.set(e.message || 'Failed to send MFA code.');
-    } finally {
-      this.isLoading.set(false);
     }
   }
 
@@ -293,7 +290,13 @@ export class LoginDialog implements OnInit {
 
     this.error.set(null);
     this.successMessage.set(null);
-    this.isLoading.set(true);
+
+    // Only set loading if it's not a normal login or MFA verification
+    const isNormalLogin =
+      !this.isForgotMode() && !this.isResetMode() && !this.isPhoneMode() && !this.mfaRequired();
+    if (!isNormalLogin) {
+      this.isLoading.set(true);
+    }
 
     try {
       if (this.isForgotMode()) {

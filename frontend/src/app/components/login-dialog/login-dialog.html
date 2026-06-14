@@ -16,8 +16,6 @@
 </div>
 
 <div class="modal-body">
-  <div id="recaptcha-container" aria-live="polite"></div>
-
   @if (successMessage()) {
   <div class="success-text" role="status" aria-live="polite">{{ successMessage() }}</div>
   } @if (mfaRequired() && !successMessage()) {

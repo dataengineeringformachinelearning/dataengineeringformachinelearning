@@ -78,6 +78,12 @@ self.addEventListener('fetch', event => {
             networkResponse.status !== 200 ||
             networkResponse.type !== 'basic'
           ) {
+            if (
+              event.request.mode === 'navigate' &&
+              (!networkResponse || networkResponse.status >= 400)
+            ) {
+              return caches.match('/index.html').then(cached => cached || networkResponse);
+            }
             return networkResponse;
           }
           const responseToCache = networkResponse.clone();
@@ -89,7 +95,7 @@ self.addEventListener('fetch', event => {
         .catch(error => {
           // Fallback for offline reading of documentation/book page
           if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+            return caches.match('/index.html').then(cached => cached || Response.error());
           }
           throw error;
         });
