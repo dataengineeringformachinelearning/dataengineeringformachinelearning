@@ -121,6 +121,7 @@ class Command(BaseCommand):
               "location": f"{row['city']}, {row['country']}",
               "active_users": row["active_users"],
               "suspicious_requests": row["suspicious_requests"],
+              "raw_payload": row,
               "timestamp": timezone.now().isoformat(),
             }
             await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
@@ -257,6 +258,7 @@ class Command(BaseCommand):
               "abuse_confidence_score": rep["abuse_score"],
               "otx_pulses": rep["otx_pulses"],
               "is_malicious": rep["is_malicious"],
+              "raw_payload": {"session": sess, "reputation": rep},
               "timestamp": timezone.now().isoformat(),
             }
             await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
@@ -324,6 +326,7 @@ class Command(BaseCommand):
               "abuse_confidence_score": rep["abuse_score"],
               "otx_pulses": rep["otx_pulses"],
               "is_malicious": rep["is_malicious"],
+              "raw_payload": {"session": sess, "reputation": rep},
               "timestamp": timezone.now().isoformat(),
             }
             await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))

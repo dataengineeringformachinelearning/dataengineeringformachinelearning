@@ -64,30 +64,38 @@ class Command(BaseCommand):
 
           if tp.topic == "app-events":
             data_list = []
+            threat_data_list = []
             for msg in messages:
               try:
                 payload = json.loads(msg.value.decode("utf-8"))
-                data_list.append(payload)
+                if "source" in payload and payload["source"].endswith("_threat_intel"):
+                  threat_data_list.append(payload)
+                else:
+                  data_list.append(payload)
               except Exception as e:
                 self.stderr.write(self.style.ERROR(f"Failed to parse msg: {e}"))
 
-            if not data_list:
+            if not data_list and not threat_data_list:
               continue
-
-            # Process with Polars
-            df = pl.DataFrame(data_list)
 
             success = False
             while not success:
               try:
-                # DB save
-                await self.save_to_db(df)
+                if data_list:
+                  df = pl.DataFrame(data_list)
+                  await self.save_to_db(df)
+
+                if threat_data_list:
+                  await self.save_threat_intel_to_db(threat_data_list)
+
                 success = True
 
                 # Explicitly commit offset
                 await consumer.commit()
                 self.stdout.write(
-                  self.style.SUCCESS(f"Processed and committed batch of {len(data_list)} messages")
+                  self.style.SUCCESS(
+                    f"Processed and committed batch of {len(data_list)} telemetry and {len(threat_data_list)} threat messages"
+                  )
                 )
               except Exception as e:
                 self.stderr.write(self.style.ERROR(f"Database insertion failed: {e}"))
@@ -128,6 +136,44 @@ class Command(BaseCommand):
       )
     except BugReport.DoesNotExist:
       self.stderr.write(self.style.WARNING(f"BugReport {bug_report_id} not found in database."))
+
+  @sync_to_async
+  def save_threat_intel_to_db(self, threat_data_list: list):
+    from django.contrib.auth import get_user_model
+    from monitor.models import ThreatIntelligence
+
+    User = get_user_model()
+
+    objects_to_create = []
+    users_cache = {}
+
+    for payload in threat_data_list:
+      user_id = payload.get("user_id")
+      user_obj = None
+      if user_id:
+        if user_id not in users_cache:
+          try:
+            users_cache[user_id] = User.objects.get(id=user_id)
+          except User.DoesNotExist:
+            users_cache[user_id] = None
+        user_obj = users_cache[user_id]
+
+      ti = ThreatIntelligence(
+        user=user_obj,
+        source=payload.get("source"),
+        ip_address=payload.get("ip"),
+        location=payload.get("location"),
+        abuse_confidence_score=payload.get("abuse_confidence_score", 0),
+        otx_pulses=payload.get("otx_pulses", 0),
+        is_malicious=payload.get("is_malicious", False),
+        active_users=payload.get("active_users"),
+        suspicious_requests=payload.get("suspicious_requests"),
+        raw_payload=payload.get("raw_payload"),
+      )
+      objects_to_create.append(ti)
+
+    if objects_to_create:
+      ThreatIntelligence.objects.bulk_create(objects_to_create)
 
   @sync_to_async
   def save_to_db(self, df: pl.DataFrame):

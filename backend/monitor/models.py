@@ -253,3 +253,27 @@ class UserProfile(models.Model):
 
   def __str__(self):
     return f"{self.user.username} - {self.role}"
+
+
+class ThreatIntelligence(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="threat_intelligence", null=True, blank=True
+  )
+  source = models.CharField(max_length=255)
+  ip_address = models.GenericIPAddressField(null=True, blank=True)
+  location = models.CharField(max_length=255, null=True, blank=True)
+  abuse_confidence_score = models.IntegerField(default=0)
+  otx_pulses = models.IntegerField(default=0)
+  is_malicious = models.BooleanField(default=False)
+  active_users = models.IntegerField(null=True, blank=True)
+  suspicious_requests = models.IntegerField(null=True, blank=True)
+  raw_payload = models.JSONField(null=True, blank=True)
+  timestamp = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "threat_intelligence"
+    ordering = ["-timestamp"]
+
+  def __str__(self):
+    return f"{self.source} - {self.ip_address or self.location} ({self.timestamp})"
