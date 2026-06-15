@@ -146,11 +146,12 @@ export class Whitepaper implements OnInit {
         ],
       },
       {
-        title: '6. Next-Generation SIEM/SOAR Digest',
+        title: '6. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing',
         paragraphs: [
           'Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and Generative AI, has evolved into a powerful agentic paradigm for threat analysis. Because we can only plan for what we know or what history provides precedent for, we face a distinct challenge: if past data dictates future risk, we must engineer an entirely new way forward.',
-          'To address this, we outline an agentic digest pipeline designed to aggregate, summarize, and publish security intelligence periodically. Just as the future will require multiple specialized AI agents, it will also demand domain-specific digests. These pipelines ingest massive streams of threat analysis and distill them into actionable, real-time security digests and executive briefings.',
-          'Framed conceptually as a book and built with the collaborative power of Gemini and Grok, this open-source framework is designed to test this theory. The ultimate goal is to build upon this foundation over time, eventually engineering an open-source engine for next-generation SIEM/SOAR (Security Information and Event Management / Security Orchestration, Automation, and Response) digests.',
+          'To address this, the DEML Platform integrates a next-generation threat intelligence sharing pipeline that automatically serializes PyTorch neural network anomaly predictions into standard STIX 2.1 JSON payloads. These payloads define structural indicator, observed-data, and identity objects to map out threat signatures.',
+          'Using TAXII 2.1 and REST protocols, these indicators are routed natively to federal databases like CISA AIS (Automated Indicator Sharing) and industry hubs like MS-ISAC or IT-ISAC. To protect public feeds from pollution, a sandbox mode safely runs simulated transmissions locally unless live credentials are provided.',
+          'Furthermore, to support SOC 2 Type II and CMMC 2.0 (Level 2) Readiness and compliance audits, the platform implements an end-to-end security architecture. This includes real-time E2E encryption telemetry (TLS 1.3 in-transit, and GCP KMS-backed envelope encryption at-rest with 90-day rotation), immutable audit logging streamed directly to centralized Google Cloud Logging buckets for SIEM ingestion, granular Role-Based Access Control (RBAC) supporting Viewer, Operator, and Security Admin configurations, hardened distroless Chainguard container images executing under least-privilege non-root policies (USER nginx), strict Content-Security-Policy (CSP) and HSTS security headers, and continuous vulnerability guarding via Semgrep (for continuous code and dependency scanning), Renovate (for automated dependency upgrades), local Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets (with custom baseline filters), and Django Migration Linter checks.',
         ],
       },
       {
