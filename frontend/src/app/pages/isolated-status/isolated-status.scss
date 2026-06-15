@@ -370,6 +370,12 @@
     &:hover {
       background: rgba(255, 255, 255, 0.03);
     }
+
+    @media (max-width: 600px) { /* mobile-first-exception */
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
   }
 
   .service-identity {
@@ -472,6 +478,12 @@
   .section-title-wrapper {
     justify-content: space-between;
     width: 100%;
+
+    @media (max-width: 600px) { /* mobile-first-exception */
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
   }
 
   .threat-title-container {
@@ -547,6 +559,12 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1.5rem;
+
+    @media (max-width: 600px) { /* mobile-first-exception */
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
 
     h3 {
       margin: 0;
