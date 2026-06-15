@@ -824,6 +824,16 @@ This integration with Google Analytics and Microsoft Clarity serves as a critica
 
 - **AbuseIPDB**: To query crowd-sourced abuse reports and retrieve abuse confidence percentages.
 - **AlienVault OTX (Open Threat Exchange)**: To query threat pulse records and active botnet/malicious indicators.
+- **IPinfo**: To pull detailed ISP and organizational associations.
+
+To further enrich this data locally without relying on paid APIs, the pipeline performs **Active Network Reconnaissance** via:
+
+- **Reverse DNS (PTR)**: To identify underlying hostnames and spoofed domains.
+- **ICMP Ping Latency**: To calculate true round-trip times and detect geographical mismatches.
+- **Active Port Probing**: To silently scan suspicious ports (e.g., 22, 3389, 8080) indicating compromised infrastructure.
+- **WHOIS Queries**: To extract autonomous system (ASN) and registrar metadata natively.
+
+All of this enriched data is seamlessly grouped into a `raw_payload` JSON blob and synced into PostgreSQL for long-term SIEM monitoring.
 
 We also support automated STIX 2.1 threat sharing to federal databases and industry ISACs via:
 

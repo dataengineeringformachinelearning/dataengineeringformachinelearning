@@ -140,7 +140,13 @@ class Command(BaseCommand):
     otx_key = os.getenv("OTX_API_KEY")
     ipinfo_key = os.getenv("IPINFO_API_KEY")
 
-    reputation = {"abuse_score": 0, "otx_pulses": 0, "isp": "Unknown", "is_malicious": False}
+    reputation = {
+      "abuse_score": 0,
+      "otx_pulses": 0,
+      "isp": "Unknown",
+      "is_malicious": False,
+      "recon": self.perform_active_recon(ip),
+    }
 
     # IPinfo API Check (for enhanced ISP/organization data)
     if ipinfo_key:
@@ -200,6 +206,51 @@ class Command(BaseCommand):
       reputation["is_malicious"] = True
 
     return reputation
+
+  def perform_active_recon(self, ip):
+    import re
+    import socket
+    import subprocess
+
+    recon_data = {"rdns": None, "ping_ms": None, "open_ports": [], "whois_raw": None}
+
+    # 1. Reverse DNS
+    try:
+      host, _, _ = socket.gethostbyaddr(ip)
+      recon_data["rdns"] = host
+    except Exception:
+      pass
+
+    # 2. ICMP Ping Latency
+    try:
+      # Mac/Linux compatible: ping -c 1 -W 1 <ip>
+      result = subprocess.run(
+        ["ping", "-c", "1", "-W", "1", ip], capture_output=True, text=True, timeout=2
+      )
+      if result.returncode == 0:
+        match = re.search(r"time=([\d\.]+)\s*ms", result.stdout)
+        if match:
+          recon_data["ping_ms"] = float(match.group(1))
+    except Exception:
+      pass
+
+    # 3. Active Port Probing
+    for port in [22, 3389, 8080]:
+      try:
+        with socket.create_connection((ip, port), timeout=0.5):
+          recon_data["open_ports"].append(port)
+      except Exception:
+        pass
+
+    # 4. WHOIS Data
+    try:
+      result = subprocess.run(["whois", ip], capture_output=True, text=True, timeout=3)
+      if result.returncode == 0 and result.stdout:
+        recon_data["whois_raw"] = result.stdout[:1000]
+    except Exception:
+      pass
+
+    return recon_data
 
   def sync_microsoft_clarity(self, integration):
     credentials = integration.credentials
