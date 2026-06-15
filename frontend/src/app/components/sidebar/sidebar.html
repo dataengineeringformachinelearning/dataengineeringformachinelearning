@@ -48,11 +48,10 @@
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
           style="cursor: pointer"
         >
-          <mat-icon class="tree-arrow"
-            >{{ isChaptersExpanded() ? 'arrow_drop_down' : 'arrow_right' }}</mat-icon
-          >
-          <mat-icon class="tree-icon">menu_book</mat-icon>
           <span class="tree-label">Chapters</span>
+          <mat-icon class="tree-arrow"
+            >{{ isChaptersExpanded() ? 'expand_more' : 'chevron_right' }}</mat-icon
+          >
         </div>
         @if (isChaptersExpanded()) {
         <div class="nav-tree-children">
@@ -62,7 +61,7 @@
             [class.active]="bookService.activePageIndex() === idx"
             (click)="bookService.goToPage(idx)"
           >
-            - {{ chapter.title }}
+            {{ chapter.title }}
           </span>
           }
         </div>
@@ -97,11 +96,10 @@
           (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
           style="cursor: pointer"
         >
-          <mat-icon class="tree-arrow"
-            >{{ isYourPagesExpanded() ? 'arrow_drop_down' : 'arrow_right' }}</mat-icon
-          >
-          <mat-icon class="tree-icon">wysiwyg</mat-icon>
           <span class="tree-label">Your Pages</span>
+          <mat-icon class="tree-arrow"
+            >{{ isYourPagesExpanded() ? 'expand_more' : 'chevron_right' }}</mat-icon
+          >
         </div>
         @if (isYourPagesExpanded()) {
         <div class="nav-tree-children">
@@ -111,30 +109,13 @@
             [class.active]="settingsService.selectedPage()?.id === page.id"
             (click)="settingsService.selectPage(page)"
           >
-            - {{ page.title }}
+            {{ page.title }}
           </span>
           } @if (settingsService.statusPages().length === 0) {
-          <span class="tree-child-item">No pages yet.</span>
+          <span class="tree-child-item empty-state">No pages yet.</span>
           }
-          <button
-            mat-button
-            class="new-page-btn"
-            (click)="settingsService.selectPage(null)"
-            style="
-              background: transparent;
-              border: none;
-              color: var(--status-accent);
-              cursor: pointer;
-              display: flex;
-              align-items: center;
-              gap: 4px;
-              font-size: 0.8rem;
-              font-weight: 600;
-              padding: 4px 0;
-              margin-top: 4px;
-            "
-          >
-            <mat-icon style="font-size: 14px; width: 14px; height: 14px">add</mat-icon>
+          <button class="tree-child-item new-page-btn" (click)="settingsService.selectPage(null)">
+            <mat-icon class="new-page-icon">add</mat-icon>
             New Page
           </button>
         </div>

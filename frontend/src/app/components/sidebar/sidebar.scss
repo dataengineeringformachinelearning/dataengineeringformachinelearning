@@ -243,23 +243,20 @@
 .nav-tree-section {
   display: flex;
   flex-direction: column;
-  padding: 0.5rem 1.25rem 0.5rem calc(1.25rem + 3px);
-  margin: 0.25rem 0;
-  border-left: 1px solid var(--sidebar-border);
-  margin-left: calc(1.25rem + 10px);
-  gap: 4px;
+  margin-bottom: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .nav-tree-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  padding: 0.5rem 1.25rem 0.5rem 3.35rem;
   color: var(--text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.7rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 0;
+  letter-spacing: 0.1em;
   cursor: pointer;
   transition: color 0.2s;
 
@@ -268,46 +265,76 @@
   }
 
   .tree-arrow {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
     color: var(--text-muted);
-  }
-
-  .tree-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
-    color: var(--sidebar-accent);
   }
 }
 
 .nav-tree-children {
   display: flex;
   flex-direction: column;
-  padding-left: 14px;
-  gap: 6px;
-  margin: 4px 0 0 0;
-  border-left: 1px dotted var(--sidebar-border);
+  padding: 0;
+  margin: 0;
+  border: none;
 
   .tree-child-item {
-    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1.25rem 0.65rem 3.35rem;
     color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
-    padding: 3px 0;
-    transition: var(--transition-smooth);
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    text-decoration: none;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background: transparent;
 
     &:hover {
-      color: var(--sidebar-accent);
-      padding-left: 4px;
+      background-color: var(--sidebar-hover-bg);
+      color: var(--text-color);
     }
 
     &.active {
-      color: var(--sidebar-accent);
-      font-weight: 700;
+      background: var(--sidebar-active-bg);
+      border-left-color: var(--sidebar-active-border);
+      color: var(--sidebar-active-border);
+      font-weight: 600;
+    }
+
+    &.empty-state {
+      font-style: italic;
+      color: var(--text-muted);
+      cursor: default;
+
+      &:hover {
+        background-color: transparent;
+        color: var(--text-muted);
+      }
+    }
+
+    &.new-page-btn {
+      border: none;
+      color: var(--status-accent);
+      font-weight: 600;
+      border-left: 3px solid transparent;
+
+      .new-page-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      &:hover {
+        background-color: var(--sidebar-hover-bg);
+        color: var(--status-accent);
+      }
     }
   }
 }
