@@ -29,9 +29,45 @@
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   height: auto;
-  position: static;
+  position: relative;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
+
+  &.dragging {
+    transition: none;
+    user-select: none;
+  }
+}
+
+.resize-handle {
+  position: absolute;
+  right: -4px;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  cursor: col-resize;
+  z-index: 10;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &::after {
+    content: '';
+    height: 24px;
+    width: 4px;
+    border-left: 1px solid var(--text-muted);
+    border-right: 1px solid var(--text-muted);
+    opacity: 0.3;
+    border-radius: 1px;
+    transition: opacity 0.2s, border-color 0.2s;
+  }
+
+  &:hover::after, &:active::after {
+    opacity: 1;
+    border-left-color: var(--sidebar-accent);
+    border-right-color: var(--sidebar-accent);
+  }
 }
 
 .sidebar-brand {
@@ -402,6 +438,7 @@
   width: 68px;
 
   .brand-title,
+  .brand-icon,
   .sidebar-search,
   .nav-text,
   .nav-tree-section,
@@ -412,12 +449,6 @@
   .sidebar-brand {
     padding: 1.5rem 0.5rem;
     justify-content: center;
-
-    .brand-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-    }
   }
 
   .nav-item {

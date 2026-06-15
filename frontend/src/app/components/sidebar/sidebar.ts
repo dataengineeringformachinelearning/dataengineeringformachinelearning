@@ -52,6 +52,12 @@ export class Sidebar implements OnInit {
   isChaptersExpanded = signal<boolean>(true);
   isYourPagesExpanded = signal<boolean>(true);
 
+  // Resizing state
+  sidebarWidth = signal<number>(260);
+  isDragging = signal<boolean>(false);
+  private startX = 0;
+  private startWidth = 0;
+
   constructor() {
     effect(() => {
       const chapters = this.bookService.chapters();
@@ -105,6 +111,36 @@ export class Sidebar implements OnInit {
     }
   }
 
+  startResize(event: MouseEvent) {
+    if (this.isCollapsed()) return;
+    this.isDragging.set(true);
+    this.startX = event.clientX;
+    this.startWidth = this.sidebarWidth();
+    document.body.style.cursor = 'col-resize';
+    event.preventDefault();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent) {
+    if (!this.isDragging()) return;
+    const diff = event.clientX - this.startX;
+    let newWidth = this.startWidth + diff;
+
+    if (newWidth < 200) newWidth = 200;
+    if (newWidth > 800) newWidth = 800;
+
+    this.sidebarWidth.set(newWidth);
+  }
+
+  @HostListener('document:mouseup')
+  onMouseUp() {
+    if (this.isDragging()) {
+      this.isDragging.set(false);
+      document.body.style.cursor = '';
+      localStorage.setItem('sidebarWidth', this.sidebarWidth().toString());
+    }
+  }
+
   openSearchDialog() {
     // Check if dialog is already open
     if (this.dialog.openDialogs.some(d => d.componentInstance instanceof SearchDialog)) {
@@ -148,6 +184,11 @@ export class Sidebar implements OnInit {
   });
 
   ngOnInit() {
+    const savedWidth = localStorage.getItem('sidebarWidth');
+    if (savedWidth) {
+      this.sidebarWidth.set(parseInt(savedWidth, 10));
+    }
+
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(() => {

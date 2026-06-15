@@ -1,4 +1,10 @@
-<aside class="dashboard-sidebar" [class.collapsed]="isCollapsed()">
+<aside
+  class="dashboard-sidebar"
+  [class.collapsed]="isCollapsed()"
+  [class.dragging]="isDragging()"
+  [style.width]="isCollapsed() ? '' : (sidebarWidth() + 'px')"
+>
+  <div class="resize-handle" (mousedown)="startResize($event)" *ngIf="!isCollapsed()"></div>
   <div class="sidebar-brand" (click)="toggleCollapse()">
     <mat-icon class="brand-icon">analytics</mat-icon>
     <h2 class="brand-title">Platform</h2>
