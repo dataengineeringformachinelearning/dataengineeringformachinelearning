@@ -44,6 +44,20 @@ export class App implements OnInit {
           path => url.startsWith(path),
         );
         this.isDashboardPage.set(isDashboard);
+
+        if (isPlatformBrowser(this.platformId)) {
+          setTimeout(() => {
+            window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) mainContent.scrollTop = 0;
+
+            const dashboardContent = document.querySelector('.dashboard-content');
+            if (dashboardContent) dashboardContent.scrollTop = 0;
+          }, 50); // Small delay to allow DOM to render
+        }
       });
 
     if (isPlatformBrowser(this.platformId)) {
