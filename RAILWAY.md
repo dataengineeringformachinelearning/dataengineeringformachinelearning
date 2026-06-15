@@ -167,6 +167,7 @@ No specific backend environment variables are usually required at runtime if the
 - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
 - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.dataengineeringformachinelearning.com/api/v1/system-status/integrations/google/callback` (OAuth callback URL)
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For Threat Intelligence geo-blocking data)
+- **IPINFO_API_KEY**: `<your-ipinfo-api-key>` (For enhanced ISP and location data)
 - **CISA_TAXII_ENDPOINT**: `<your-cisa-taxii-endpoint>` (Optional, for STIX formatted threat reports submission)
 - **ISAC_API_KEY**: `<your-isac-api-key>` (Optional, for threat sharing authentication)
 - **OTX_API_KEY**: `<your-alienvault-otx-api-key>` (For Threat Intelligence vulnerability data)
@@ -222,6 +223,7 @@ The security worker uses the same Django backend codebase and requires identical
 - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>` (For threat intel GA4 sync)
 - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
 - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>` (For geo-blocking metadata check)
+- **IPINFO_API_KEY**: `<your-ipinfo-api-key>` (For enhanced ISP and location data)
 - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
 - **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
 - **GCP_KMS_LOCATION**: Location of the Key Ring

@@ -137,8 +137,22 @@ class Command(BaseCommand):
 
     abuseipdb_key = os.getenv("ABUSEIPDB_API_KEY")
     otx_key = os.getenv("OTX_API_KEY")
+    ipinfo_key = os.getenv("IPINFO_API_KEY")
 
     reputation = {"abuse_score": 0, "otx_pulses": 0, "isp": "Unknown", "is_malicious": False}
+
+    # IPinfo API Check (for enhanced ISP/organization data)
+    if ipinfo_key:
+      try:
+        url = f"https://ipinfo.io/{ip}/json"
+        headers = {"Authorization": f"Bearer {ipinfo_key}", "Accept": "application/json"}
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+          data = response.json()
+          if "org" in data:
+            reputation["isp"] = data["org"]
+      except Exception as e:
+        self.stderr.write(f"IPinfo API check failed for {ip}: {e}")
 
     # AbuseIPDB API Check
     if abuseipdb_key:
