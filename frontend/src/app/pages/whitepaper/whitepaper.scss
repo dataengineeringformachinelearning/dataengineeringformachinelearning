@@ -54,6 +54,10 @@
   border-bottom: 1px solid var(--border);
   padding-bottom: 2.5rem;
 
+  .section-tag-row {
+    justify-content: center;
+  }
+
   .meta-label {
     font-size: 0.8rem;
     font-weight: 700;

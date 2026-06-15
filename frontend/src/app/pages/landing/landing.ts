@@ -59,13 +59,13 @@ export class Landing implements OnInit, OnDestroy {
   pipelineSteps: PipelineStep[] = [
     {
       id: 'ingest',
-      name: 'Data Ingestion',
+      name: 'Widget Telemetry Streaming',
       icon: 'sync_alt',
-      tag: 'STREAMING & BATCH',
+      tag: 'CLIENT-SIDE EMBED',
       description:
-        'Ingest analytics traffic, GA4 event data, and raw log files securely via authenticated GA4 API and endpoints.',
+        "The embedded status widget securely streams real-time, zero-dependency telemetry (visitor logs, anomalies) directly from the tenant's site into our ingestion pipeline.",
       codeSnippet:
-        'POST /api/v1/telemetry/ingest\n{\n  "source": "ga4_events",\n  "timestamp": 1718302300,\n  "payload": { "sessions": 1420, "errors": 3 }\n}',
+        '<script src="https://platform.demo/assets/widget.js" data-page-id="tenant-id"></script>',
     },
     {
       id: 'clean',
@@ -111,13 +111,13 @@ export class Landing implements OnInit, OnDestroy {
 
     if (isPlatformBrowser(this.platformId)) {
       // Load status widget script
-      const footer = this.elementRef.nativeElement.querySelector('.landing-footer');
-      if (footer) {
+      const mount = this.elementRef.nativeElement.querySelector('#hero-widget-mount');
+      if (mount) {
         const script = document.createElement('script');
         script.src = 'assets/widget.js';
         script.setAttribute('data-page-id', 'platform-status');
         script.setAttribute('data-backend-url', environment.backendUrl);
-        footer.appendChild(script);
+        mount.appendChild(script);
       }
 
       // Auto-play the pipeline flow animation

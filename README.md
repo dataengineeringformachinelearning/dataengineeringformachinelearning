@@ -736,7 +736,11 @@ async def post_telemetry(request, payload: dict):
 
 A standalone background telemetry worker subscribes to the `app-events` topic, pulls messages in batches, and processes them using Polars before writing to PostgreSQL. This ensures high throughput without slowing down the user experience.
 
-#### Chapter 8.1.2: Integrating Sentry for Full-Stack Error Tracking
+#### Chapter 8.1.2: Client-Side Embedded Status Widget
+
+The embedded status widget securely streams real-time, zero-dependency telemetry (visitor logs, anomalies) directly from the tenant's site into our ingestion pipeline. By dropping a single `<script>` tag into their page, tenants gain a sleek, localized status monitor while automatically funneling vital security and performance metrics into our Redpanda broker.
+
+#### Chapter 8.1.3: Integrating Sentry for Full-Stack Error Tracking
 
 To capture real-time errors in production, I integrated Sentry across both the frontend and backend:
 
@@ -744,14 +748,14 @@ To capture real-time errors in production, I integrated Sentry across both the f
 - **Backend**: I configure the Sentry Python SDK (`sentry-sdk`) in `settings.py`, enabling `send_default_pii=True` so we capture full request contexts during exceptions.
 - **Environments**: In production, DSN keys are loaded from the environment (`SENTRY_DSN`) to keep credentials secure.
 
-#### Chapter 8.1.3: Continuous Security Auditing with Semgrep
+#### Chapter 8.1.4: Continuous Security Auditing with Semgrep
 
 I want to emphasize security by design. To do this, I integrated Semgrep to automate vulnerability checks throughout the development lifecycle:
 
 - **Static Analysis (SAST)**: I run Semgrep scans to find logic and security issues in my custom source code.
 - **Dependency & Container Auditing**: Semgrep inspects manifest files and Dockerfiles across my services (`frontend`, `backend`, and `queue`) to detect configuration and vulnerability issues.
 
-#### Chapter 8.1.4: Open-Source License Compliance with FOSSA
+#### Chapter 8.1.5: Open-Source License Compliance with FOSSA
 
 To protect against licensing issues, I integrated FOSSA to run automated scans:
 
