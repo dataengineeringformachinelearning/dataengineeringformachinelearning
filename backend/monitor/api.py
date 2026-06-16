@@ -190,13 +190,13 @@ def _build_status_page_out(p):
     )
     cumulative_sla = round((up_count / total_count) * 100.0, 2) if total_count > 0 else 100.0
 
-    # Compute 90-day history
+    # Compute 30-day history
     import datetime as dt
     from collections import defaultdict
 
     from django.utils import timezone
 
-    cutoff = timezone.now() - dt.timedelta(days=90)
+    cutoff = timezone.now() - dt.timedelta(days=30)
     logs = (
       Endpoints.objects.filter(url__in=urls, last_tested__gte=cutoff)
       .exclude(status_code=0)
@@ -204,7 +204,7 @@ def _build_status_page_out(p):
     )
 
     today = timezone.now().date()
-    days_list = [today - dt.timedelta(days=i) for i in range(90)]
+    days_list = [today - dt.timedelta(days=i) for i in range(30)]
     days_list.reverse()  # past to present
 
     daily_logs = defaultdict(list)
@@ -243,7 +243,7 @@ def _build_status_page_out(p):
     )
     uptime_history = history_list
   else:
-    for _ in range(90):
+    for _ in range(30):
       uptime_history.append(UptimeDaySchema(status="no_data", uptime=100.0))
 
   return StatusPageOut(

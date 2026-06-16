@@ -59,7 +59,7 @@ class Command(BaseCommand):
 
   async def compliance_scheduler(self) -> None:
     self.stdout.write(
-      self.style.SUCCESS("Starting Compliance (90-day rotation/cleanup) scheduler...")
+      self.style.SUCCESS("Starting Compliance (30-day rotation/cleanup) scheduler...")
     )
     while True:
       try:
@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
         # Trigger DB logs/telemetry cleanup
         self.stdout.write(
-          "Security Worker: Cleaning up database telemetry and logs older than 90 days..."
+          "Security Worker: Cleaning up database telemetry and logs older than 30 days..."
         )
         await sync_to_async(call_command)("db_cleanup")
         self.stdout.write(self.style.SUCCESS("Security Worker: Database cleanup completed."))
@@ -93,10 +93,10 @@ class Command(BaseCommand):
       return
 
     age = timezone.now() - active_key.created_at
-    if age >= timedelta(days=90):
+    if age >= timedelta(days=30):
       self.stdout.write(
         self.style.WARNING(
-          f"Active Data Encryption Key ({active_key.id}) is {age.days} days old (exceeds 90-day limit). Triggering key rotation..."
+          f"Active Data Encryption Key ({active_key.id}) is {age.days} days old (exceeds 30-day limit). Triggering key rotation..."
         )
       )
       call_command("rotate_keys")

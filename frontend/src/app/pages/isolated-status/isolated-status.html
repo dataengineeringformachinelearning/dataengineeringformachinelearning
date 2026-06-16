@@ -119,7 +119,7 @@
             </div>
             <div class="sla-details">
               <span class="sla-label">Predicted SLA</span>
-              <span class="sla-desc">90-day forecast via ML</span>
+              <span class="sla-desc">30-day forecast via ML</span>
               <span class="sla-valHighlight"
                 >{{ (mlService.latestStats()[page.id] !== undefined &&
                 mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id] :
@@ -148,7 +148,7 @@
             </div>
             <div class="sla-details">
               <span class="sla-label">Predicted TA</span>
-              <span class="sla-desc">90-day threat forecast via ML</span>
+              <span class="sla-desc">30-day threat forecast via ML</span>
               <span class="sla-valHighlight">
                 {{ (mlService.latestThreatReports()[page.id]!.anomaly_score! * 100) | number:'1.1-2'
                 }}%
@@ -234,10 +234,10 @@
             }
           </div>
         </section>
-        <!-- Uptime Timeline (90 Days) -->
+        <!-- Uptime Timeline (30 Days) -->
         <section class="standalone-uptime-section">
           <div class="uptime-header">
-            <h3>Uptime History (Last 90 Days)</h3>
+            <h3>Uptime History (Last 30 Days)</h3>
             <span class="uptime-pct"
               >{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}%
               operational</span
@@ -256,7 +256,7 @@
             </div>
           </div>
           <div class="timeline-labels">
-            <span>90 days ago</span>
+            <span>30 days ago</span>
             <span class="timeline-divider"></span>
             <span>Today</span>
           </div>

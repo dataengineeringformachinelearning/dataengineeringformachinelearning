@@ -47,7 +47,7 @@
           <mat-icon class="stat-icon">online_prediction</mat-icon>
           <div>
             <span class="stat-title">Predicted SLA</span>
-            <span class="stat-subtitle">90-day forecast via ML</span>
+            <span class="stat-subtitle">30-day forecast via ML</span>
           </div>
         </div>
         <div class="stat-value-container">
@@ -84,7 +84,7 @@
           <mat-icon class="stat-icon">online_prediction</mat-icon>
           <div>
             <span class="stat-title">Predicted TA</span>
-            <span class="stat-subtitle">90-day threat forecast via ML</span>
+            <span class="stat-subtitle">30-day threat forecast via ML</span>
           </div>
         </div>
         <div class="stat-value-container">
@@ -125,7 +125,7 @@
     <!-- Historical Uptime Section -->
     <div class="timeline-panel">
       <div class="panel-header">
-        <h3 class="panel-title">Uptime History (Last 90 Days)</h3>
+        <h3 class="panel-title">Uptime History (Last 30 Days)</h3>
         <span class="uptime-percentage">
           {{ (page.overall_uptime !== null && page.overall_uptime !== undefined ?
           page.overall_uptime : 100.0) | number:'1.2-2' }}% operational
@@ -144,7 +144,7 @@
         </div>
       </div>
       <div class="timeline-labels">
-        <span>90 days ago</span>
+        <span>30 days ago</span>
         <span class="timeline-divider"></span>
         <span>Today</span>
       </div>

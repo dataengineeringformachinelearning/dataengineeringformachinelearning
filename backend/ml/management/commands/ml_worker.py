@@ -21,7 +21,7 @@ class Command(BaseCommand):
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
-    # Start periodic hourly scheduler task
+    # Start periodic daily scheduler task
     task = asyncio.create_task(self.periodic_scheduler())
     self.background_tasks.add(task)
     task.add_done_callback(self.background_tasks.discard)
@@ -121,9 +121,7 @@ class Command(BaseCommand):
       self.stderr.write(self.style.ERROR(f"Failed to train tenant: {e}"))
 
   async def periodic_scheduler(self):
-    self.stdout.write(
-      self.style.SUCCESS("Starting periodic hourly training & cleanup scheduler...")
-    )
+    self.stdout.write(self.style.SUCCESS("Starting periodic daily training & cleanup scheduler..."))
     # Wait 10 seconds for startup to stabilize
     await asyncio.sleep(10)
     while True:
@@ -134,11 +132,11 @@ class Command(BaseCommand):
         await sync_to_async(call_command)("train_all_models")
         self.stdout.write(
           self.style.SUCCESS(
-            "Periodic Scheduler: Successfully completed hourly training & cleanup run."
+            "Periodic Scheduler: Successfully completed daily training & cleanup run."
           )
         )
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Periodic Scheduler: Hourly run failed: {e}"))
 
-      # Wait 1 hour (3600 seconds)
-      await asyncio.sleep(3600)
+      # Wait 1 day (86400 seconds)
+      await asyncio.sleep(86400)
