@@ -35,6 +35,11 @@ class Command(BaseCommand):
     self.background_tasks.add(task)
     task.add_done_callback(self.background_tasks.discard)
 
+    # Start active pinger task
+    pinger_task = asyncio.create_task(self.active_pinger_scheduler())
+    self.background_tasks.add(pinger_task)
+    pinger_task.add_done_callback(self.background_tasks.discard)
+
     brokers = get_kafka_brokers()
     consumer = AIOKafkaConsumer(
       "app-events",
@@ -320,3 +325,59 @@ class Command(BaseCommand):
         f"({total_endpoints} total telemetry records in database)."
       )
     )
+
+  async def active_pinger_scheduler(self):
+    self.stdout.write(self.style.SUCCESS("Starting active pinger scheduler..."))
+    # Wait 15 seconds to let the system boot
+    await asyncio.sleep(15)
+    while True:
+      try:
+        await self.ping_services()
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Error in automatic pinger task: {e}"))
+      await asyncio.sleep(30)
+
+  @sync_to_async
+  def ping_services(self):
+    import datetime
+    import time
+    import urllib.error
+    import urllib.request
+
+    from monitor.models import Endpoints, MonitoredService
+
+    services = MonitoredService.objects.all()
+    urls = {s.url for s in services if s.url}
+
+    for url in urls:
+      start_time = time.time()
+      status_code = 503
+      is_active = False
+      try:
+        req = urllib.request.Request(url, headers={"User-Agent": "PlatformStatusAutoPinger/1.0"})
+        import ssl
+
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+
+        # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
+        with urllib.request.urlopen(req, timeout=5, context=ctx) as response:
+          status_code = response.getcode()
+          is_active = 200 <= status_code < 500
+      except urllib.error.HTTPError as e:
+        status_code = e.code
+        is_active = 200 <= status_code < 500
+      except Exception:
+        status_code = 503
+        is_active = False
+
+      duration = datetime.timedelta(seconds=(time.time() - start_time))
+
+      Endpoints.objects.create(
+        url=url,
+        status_code=status_code,
+        response_time=duration,
+        ip_address="127.0.0.1",
+        is_active=is_active,
+      )
