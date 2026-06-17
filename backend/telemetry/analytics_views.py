@@ -7,11 +7,16 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
+import os
+
+
 def get_clickhouse_client():
   try:
-    # Connect to the ClickHouse instance defined in docker-compose.telemetry.yml
     return clickhouse_connect.get_client(
-      host="localhost", port=8123, username="default", password=""
+      host=os.environ.get("CLICKHOUSE_HOST", "localhost"),
+      port=int(os.environ.get("CLICKHOUSE_PORT", "8123")),
+      username=os.environ.get("CLICKHOUSE_USER", "default"),
+      password=os.environ.get("CLICKHOUSE_PASSWORD", "password"),
     )
   except Exception as e:
     logger.error(f"ClickHouse connection failed: {e}")

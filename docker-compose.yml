@@ -45,8 +45,12 @@ services:
       - ./backend:/app
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
-      - DATABASE_URL=postgres://admin:password@postgres:5432/machinelearning
-      - REDPANDA_BROKERS=redpanda:9092
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
+      - CLICKHOUSE_HOST=${CLICKHOUSE_HOST:-clickhouse}
+      - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,8 +66,12 @@ services:
       - ./backend:/app
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
-      - DATABASE_URL=postgres://admin:password@postgres:5432/machinelearning
-      - REDPANDA_BROKERS=redpanda:9092
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
+      - CLICKHOUSE_HOST=${CLICKHOUSE_HOST:-clickhouse}
+      - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
     depends_on:
       backend:
         condition: service_started
@@ -77,8 +85,12 @@ services:
       - ./backend:/app
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
-      - DATABASE_URL=postgres://admin:password@postgres:5432/machinelearning
-      - REDPANDA_BROKERS=redpanda:9092
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
+      - CLICKHOUSE_HOST=${CLICKHOUSE_HOST:-clickhouse}
+      - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
     depends_on:
       backend:
         condition: service_started
@@ -86,14 +98,18 @@ services:
       sh -c "python manage.py ml_worker"
 
   clickhouse:
-    image: clickhouse/clickhouse-server:latest
+    build:
+      context: ./clickhouse
     container_name: clickhouse
+    environment:
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
+      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
     ports:
       - "8123:8123"
       - "9000:9000"
     volumes:
       - clickhouse-data:/var/lib/clickhouse
-      - ./config/clickhouse-config.xml:/etc/clickhouse-server/config.d/custom-config.xml
     healthcheck:
       test: ['CMD', 'wget', '--spider', '-q', 'localhost:8123/ping']
       interval: 5s
@@ -108,16 +124,14 @@ services:
     restart: unless-stopped
 
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:latest
+    build:
+      context: ./telemetry
     container_name: otel-collector
-    command: ["--config=/etc/otel-collector-config.yaml"]
-    volumes:
-      - ./config/otel-collector-config.yaml:/etc/otel-collector-config.yaml
     environment:
-      - CLICKHOUSE_HOST=clickhouse
-      - CLICKHOUSE_USER=default
-      - CLICKHOUSE_PASSWORD=
-      - ALLOWED_CORS_ORIGINS=https://dataengineeringformachinelearning.com
+      - CLICKHOUSE_HOST=${CLICKHOUSE_HOST:-clickhouse}
+      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
+      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
+      - ALLOWED_CORS_ORIGINS=${ALLOWED_CORS_ORIGINS:-https://dataengineeringformachinelearning.com}
     ports:
       - "4317:4317" # OTLP gRPC
       - "4318:4318" # OTLP HTTP

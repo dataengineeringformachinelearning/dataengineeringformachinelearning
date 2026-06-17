@@ -68,6 +68,10 @@ This service runs the main Django web server.
   - **ALLOWED_HOSTS**: `backend.dataengineeringformachinelearning.com`
   - **FRONTEND_URL**: `https://dataengineeringformachinelearning.com`
   - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+  - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g., `deml-clickhouse.railway.internal`).
+  - **CLICKHOUSE_PORT**: `8123` (HTTP port for the python client)
+  - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
+  - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
   - **CORS_ALLOW_CREDENTIALS**: `True`
   - **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
   - **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
