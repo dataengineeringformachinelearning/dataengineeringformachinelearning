@@ -2,7 +2,6 @@
 <clickhouse>
     <users>
         <admin>
-            <password from_env="CLICKHOUSE_PASSWORD" />
             <networks>
                 <ip>::/0</ip>
             </networks>
