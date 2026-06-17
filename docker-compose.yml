@@ -115,8 +115,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 3
-    security_opt:
-      - no-new-privileges:true
     # read_only: true # Removed to allow ClickHouse to write preprocessed configs
     tmpfs:
       - /var/log/clickhouse-server
