@@ -10,4 +10,4 @@ class MonitorConfig(AppConfig):
   name = "monitor"
 
   def ready(self):
-    pass
+    import monitor.signals  # noqa
