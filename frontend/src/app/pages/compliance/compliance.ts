@@ -5,6 +5,7 @@ import {
   ChangeDetectionStrategy,
   signal,
   ChangeDetectorRef,
+  afterNextRender,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -64,6 +65,12 @@ export class Compliance implements OnInit {
     rotationDaysRemaining: 74,
   });
 
+  constructor() {
+    afterNextRender(() => {
+      this.loadComplianceData();
+    });
+  }
+
   ngOnInit() {
     this.titleService.setTitle(
       'Security Compliance & Threat Reporting - Data Engineering for Machine Learning',
@@ -73,8 +80,6 @@ export class Compliance implements OnInit {
       content:
         'Audit SOC 2 readiness, view E2E encryption status, and export automated threat intelligence in CISA-standard STIX 2.1 format.',
     });
-
-    this.loadComplianceData();
   }
 
   loadComplianceData() {

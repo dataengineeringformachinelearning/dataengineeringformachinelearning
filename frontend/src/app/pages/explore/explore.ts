@@ -6,6 +6,8 @@ import {
   signal,
   ChangeDetectorRef,
   effect,
+  afterNextRender,
+  Injector,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -33,6 +35,7 @@ export class Explore implements OnInit {
   private cdr = inject(ChangeDetectorRef);
   private titleService = inject(Title);
   private metaService = inject(Meta);
+  private injector = inject(Injector);
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
@@ -40,10 +43,15 @@ export class Explore implements OnInit {
   servicesMap = this.monitorService.servicesMap;
 
   constructor() {
-    effect(() => {
-      if (this.authService.isInitialized()) {
-        this.loadData();
-      }
+    afterNextRender(() => {
+      effect(
+        () => {
+          if (this.authService.isInitialized()) {
+            this.loadData();
+          }
+        },
+        { injector: this.injector },
+      );
     });
   }
 

@@ -6,6 +6,7 @@ import {
   signal,
   ChangeDetectorRef,
   effect,
+  afterNextRender,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -125,6 +126,10 @@ export class Settings implements OnInit {
   providerSuccess = signal<string | null>(null);
 
   constructor() {
+    afterNextRender(() => {
+      this.loadIntegrations();
+    });
+
     effect(() => {
       if (this.authService.isInitialized()) {
         if (!this.authService.isAuthenticated()) {
@@ -197,8 +202,6 @@ export class Settings implements OnInit {
       content:
         'Configure your custom status pages, add monitored services, post incident updates, or manage account settings.',
     });
-    this.loadStatusPages();
-    this.loadIntegrations();
   }
 
   loadStatusPages() {

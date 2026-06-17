@@ -7,6 +7,8 @@ import {
   ChangeDetectorRef,
   effect,
   computed,
+  afterNextRender,
+  Injector,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -49,6 +51,7 @@ export class Status implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public sanityService = inject(SanityService);
+  private injector = inject(Injector);
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
@@ -77,10 +80,17 @@ export class Status implements OnInit {
   }
 
   constructor() {
-    effect(() => {
-      if (this.authService.isInitialized()) {
-        this.loadData();
-      }
+    afterNextRender(() => {
+      this.sanityService.fetchAnnouncements();
+
+      effect(
+        () => {
+          if (this.authService.isInitialized()) {
+            this.loadData();
+          }
+        },
+        { injector: this.injector },
+      );
     });
   }
 
@@ -91,7 +101,6 @@ export class Status implements OnInit {
       content:
         'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.',
     });
-    this.sanityService.fetchAnnouncements();
   }
 
   loadData() {

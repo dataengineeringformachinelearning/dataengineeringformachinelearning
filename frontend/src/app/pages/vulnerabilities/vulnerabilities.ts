@@ -6,6 +6,7 @@ import {
   computed,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  afterNextRender,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -68,6 +69,12 @@ export class Vulnerabilities implements OnInit {
         .filter(v => v.severity === 'Critical' && v.status !== 'Resolved').length,
   );
 
+  constructor() {
+    afterNextRender(() => {
+      this.loadVulnerabilities();
+    });
+  }
+
   ngOnInit() {
     this.titleService.setTitle('Threat Matrix & Vulnerability Center - Platform Status');
     this.metaService.updateTag({
@@ -75,7 +82,6 @@ export class Vulnerabilities implements OnInit {
       content:
         'Palantir-style vulnerability ingestion, analysis, and threat prioritization dashboard.',
     });
-    this.loadVulnerabilities();
   }
 
   loadVulnerabilities() {

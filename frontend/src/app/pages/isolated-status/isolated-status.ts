@@ -7,6 +7,8 @@ import {
   ChangeDetectorRef,
   computed,
   effect,
+  afterNextRender,
+  Injector,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
@@ -47,6 +49,7 @@ export class IsolatedStatus implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public sanityService = inject(SanityService);
+  private injector = inject(Injector);
 
   formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
@@ -101,12 +104,19 @@ export class IsolatedStatus implements OnInit {
   slug = signal<string | null>(null);
 
   constructor() {
-    effect(() => {
-      const currentSlug = this.slug();
-      const isAuthInit = this.authService.isInitialized();
-      if (currentSlug && isAuthInit) {
-        this.loadPage(currentSlug);
-      }
+    afterNextRender(() => {
+      this.sanityService.fetchAnnouncements();
+
+      effect(
+        () => {
+          const currentSlug = this.slug();
+          const isAuthInit = this.authService.isInitialized();
+          if (currentSlug && isAuthInit) {
+            this.loadPage(currentSlug);
+          }
+        },
+        { injector: this.injector },
+      );
     });
   }
 
@@ -115,7 +125,6 @@ export class IsolatedStatus implements OnInit {
       const slug = params.get('slug');
       this.slug.set(slug);
     });
-    this.sanityService.fetchAnnouncements();
   }
 
   loadPage(slug: string) {

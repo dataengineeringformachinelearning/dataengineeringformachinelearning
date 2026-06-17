@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, effect } from '@angular/core';
+import { Component, OnInit, inject, effect, afterNextRender } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AgCharts } from 'ag-charts-angular';
@@ -67,6 +67,12 @@ export class AnalyticsComponent implements OnInit {
       const activeTheme = this.themeService.theme();
       this.updateChartTheme(activeTheme);
     });
+
+    // Ensure the page renders immediately (with the skeleton loader visible)
+    // and only fetch data in the browser environment.
+    afterNextRender(() => {
+      this.loadAnalyticsData();
+    });
   }
 
   private updateChartTheme(theme: 'light' | 'dark') {
@@ -115,6 +121,10 @@ export class AnalyticsComponent implements OnInit {
   }
 
   ngOnInit() {
+    // ngOnInit remains empty; data is loaded purely on the client side via afterNextRender.
+  }
+
+  private loadAnalyticsData() {
     this.http.get<any>('/api/v1/analytics/overview').subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
