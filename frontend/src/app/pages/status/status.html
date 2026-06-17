@@ -77,6 +77,29 @@
           </div>
           }
 
+          <!-- Analytics Overview CTA -->
+          <div
+            class="analytics-cta-container panel-clean"
+            style="
+              margin-bottom: 24px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              padding: 24px;
+            "
+          >
+            <div>
+              <h2 class="section-title-premium" style="margin-bottom: 8px">
+                <mat-icon>analytics</mat-icon>
+                System Telemetry
+              </h2>
+              <p class="embed-desc" style="margin: 0">
+                View detailed real-time metrics, latency charts, and traffic analysis.
+              </p>
+            </div>
+            <a mat-flat-button color="primary" routerLink="/analytics"> View Analytics </a>
+          </div>
+
           <boneyard-skeleton name="status-pages" [loading]="isLoading() && !loadFailed()">
             <div class="status-stack">
               @for (page of displayPages(); track page.id) {

@@ -90,6 +90,7 @@ This service runs the main Django web server.
   - **GCP_KMS_KEY_NAME**: Name of the Key Encrypting Key (KEK)
   - **GCP_LOGGING_ENABLED**: `True`
   - **GOOGLE_APPLICATION_CREDENTIALS**: Path to GCP service account JSON
+  - **GCP_SERVICE_ACCOUNT_JSON**: Raw JSON string of your GCP service account credentials
 
 ### 3. Redpanda Broker (Message Queue)
 

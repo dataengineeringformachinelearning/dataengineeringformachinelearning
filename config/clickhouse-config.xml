@@ -6,4 +6,6 @@
     </logger>
     <!-- Basic defaults to prevent excessive memory usage during initial setup -->
     <max_server_memory_usage_to_ram_ratio>0.9</max_server_memory_usage_to_ram_ratio>
+    <listen_host>0.0.0.0</listen_host>
+    <listen_host>::</listen_host>
 </clickhouse>

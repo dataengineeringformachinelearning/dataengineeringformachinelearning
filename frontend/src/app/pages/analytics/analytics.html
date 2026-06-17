@@ -1,34 +1,46 @@
-<div class="analytics-container">
-  <div class="header">
-    <h1>Platform Analytics</h1>
-    <p>Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse.</p>
-  </div>
+<div class="dashboard-page-container">
+  <!-- Glow Spheres for Homepage Unity -->
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
 
-  <div class="metrics-grid" *ngIf="!isLoading">
-    <div class="metric-card">
-      <div class="metric-title">P99 Latency</div>
-      <div class="metric-value">{{ p99Latency }} <span class="unit">ms</span></div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">Service Uptime</div>
-      <div class="metric-value">{{ uptimePercent }} <span class="unit">%</span></div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">Total Requests (24h)</div>
-      <div class="metric-value">{{ totalRequests | number }}</div>
-    </div>
-    <div class="metric-card" [class.alert]="activeIncidents > 0">
-      <div class="metric-title">Active Incidents</div>
-      <div class="metric-value">{{ activeIncidents }}</div>
-    </div>
-  </div>
+  <div class="dashboard-content-area">
+    <div class="content-wrapper">
+      <header class="hud-header">
+        <div class="title-group">
+          <div class="section-tag-row">
+            <span class="section-tag">Platform Analytics</span>
+          </div>
+          <h1 class="hud-title">System Analytics</h1>
+          <p class="hud-subtitle">
+            Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse.
+          </p>
+        </div>
+      </header>
 
-  <div class="loading-state" *ngIf="isLoading">
-    <div class="spinner"></div>
-    <p>Loading telemetry data...</p>
-  </div>
+      <div class="metrics-grid">
+        <div class="status-card-outlined metric-card">
+          <div class="metric-title">P99 Latency</div>
+          <div class="metric-value">{{ p99Latency }} <span class="unit">ms</span></div>
+        </div>
+        <div class="status-card-outlined metric-card">
+          <div class="metric-title">Service Uptime</div>
+          <div class="metric-value">{{ uptimePercent }} <span class="unit">%</span></div>
+        </div>
+        <div class="status-card-outlined metric-card">
+          <div class="metric-title">Total Requests (24h)</div>
+          <div class="metric-value">{{ totalRequests | number }}</div>
+        </div>
+        <div class="status-card-outlined metric-card" [class.alert]="activeIncidents > 0">
+          <div class="metric-title">Active Incidents</div>
+          <div class="metric-value">{{ activeIncidents }}</div>
+        </div>
+      </div>
 
-  <div class="chart-container" *ngIf="!isLoading">
-    <ag-charts [options]="chartOptions"></ag-charts>
+      <div class="status-card-outlined chart-card">
+        <div class="chart-container">
+          <ag-charts [options]="chartOptions"></ag-charts>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

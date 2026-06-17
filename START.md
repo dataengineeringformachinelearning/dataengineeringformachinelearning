@@ -9,7 +9,7 @@ This guide compiles instructions from across the workspace to help you run the d
 Make sure Docker Desktop is open and running, then execute the following command from the repository root:
 
 ```bash
-docker-compose up -d postgres redpanda
+docker-compose up -d postgres redpanda clickhouse otel-collector
 ```
 
 ---
@@ -24,6 +24,7 @@ If you haven't set up the Python virtual environment or applied migrations yet:
 
 ```bash
 cd backend
+cp .env.example .env
 uv venv
 source .venv/bin/activate
 uv pip install -r requirements.txt

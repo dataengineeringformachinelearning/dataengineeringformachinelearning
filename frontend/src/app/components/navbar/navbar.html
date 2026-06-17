@@ -42,6 +42,17 @@
           <span>Explore</span>
         </a>
 
+        <a
+          mat-button
+          routerLink="/analytics"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="nav-btn"
+        >
+          <mat-icon>analytics</mat-icon>
+          <span>Analytics</span>
+        </a>
+
         @if (authService.isAuthenticated()) {
         <a
           mat-button
@@ -126,6 +137,18 @@
     >
       <mat-icon>explore</mat-icon>
       <span>Explore</span>
+    </a>
+
+    <a
+      mat-button
+      routerLink="/analytics"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
+      <mat-icon>analytics</mat-icon>
+      <span>Analytics</span>
     </a>
 
     @if (authService.isAuthenticated()) {
