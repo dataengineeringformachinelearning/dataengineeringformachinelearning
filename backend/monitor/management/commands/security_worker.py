@@ -41,11 +41,21 @@ class Command(BaseCommand):
       await asyncio.sleep(3600)
 
   async def threat_intel_scheduler(self) -> None:
+    from django.db import close_old_connections
+
+    @sync_to_async
+    def run_sync_command(cmd_name):
+      close_old_connections()
+      try:
+        call_command(cmd_name)
+      finally:
+        close_old_connections()
+
     self.stdout.write(self.style.SUCCESS("Starting Threat Intel sync scheduler..."))
     while True:
       try:
         self.stdout.write("Security Worker: Syncing threat intelligence data...")
-        await sync_to_async(call_command)("fetch_threat_intel")
+        await run_sync_command("fetch_threat_intel")
         self.stdout.write(
           self.style.SUCCESS("Security Worker: Threat intelligence sync completed.")
         )
@@ -58,6 +68,16 @@ class Command(BaseCommand):
       await asyncio.sleep(3600)
 
   async def compliance_scheduler(self) -> None:
+    from django.db import close_old_connections
+
+    @sync_to_async
+    def run_sync_command(cmd_name):
+      close_old_connections()
+      try:
+        call_command(cmd_name)
+      finally:
+        close_old_connections()
+
     self.stdout.write(
       self.style.SUCCESS("Starting Compliance (30-day rotation/cleanup) scheduler...")
     )
@@ -70,7 +90,7 @@ class Command(BaseCommand):
         self.stdout.write(
           "Security Worker: Cleaning up database telemetry and logs older than 30 days..."
         )
-        await sync_to_async(call_command)("db_cleanup")
+        await run_sync_command("db_cleanup")
         self.stdout.write(self.style.SUCCESS("Security Worker: Database cleanup completed."))
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Compliance task run failed: {e}"))
@@ -80,29 +100,35 @@ class Command(BaseCommand):
 
   @sync_to_async
   def check_and_rotate_keys(self) -> None:
-    self.stdout.write("Security Worker: Checking Data Encryption Key (DEK) status...")
-    active_key = DataEncryptionKey.objects.filter(is_active=True).order_by("-created_at").first()
+    from django.db import close_old_connections
 
-    if not active_key:
-      self.stdout.write(
-        self.style.WARNING(
-          "No active Data Encryption Key found. Triggering initial key rotation..."
-        )
-      )
-      call_command("rotate_keys")
-      return
+    close_old_connections()
+    try:
+      self.stdout.write("Security Worker: Checking Data Encryption Key (DEK) status...")
+      active_key = DataEncryptionKey.objects.filter(is_active=True).order_by("-created_at").first()
 
-    age = timezone.now() - active_key.created_at
-    if age >= timedelta(days=30):
-      self.stdout.write(
-        self.style.WARNING(
-          f"Active Data Encryption Key ({active_key.id}) is {age.days} days old (exceeds 30-day limit). Triggering key rotation..."
+      if not active_key:
+        self.stdout.write(
+          self.style.WARNING(
+            "No active Data Encryption Key found. Triggering initial key rotation..."
+          )
         )
-      )
-      call_command("rotate_keys")
-    else:
-      self.stdout.write(
-        self.style.SUCCESS(
-          f"Active Data Encryption Key ({active_key.id}) is compliant ({age.days} days old)."
+        call_command("rotate_keys")
+        return
+
+      age = timezone.now() - active_key.created_at
+      if age >= timedelta(days=30):
+        self.stdout.write(
+          self.style.WARNING(
+            f"Active Data Encryption Key ({active_key.id}) is {age.days} days old (exceeds 30-day limit). Triggering key rotation..."
+          )
         )
-      )
+        call_command("rotate_keys")
+      else:
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"Active Data Encryption Key ({active_key.id}) is compliant ({age.days} days old)."
+          )
+        )
+    finally:
+      close_old_connections()

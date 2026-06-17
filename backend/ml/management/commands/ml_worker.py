@@ -40,7 +40,13 @@ class Command(BaseCommand):
 
     try:
       while True:
-        result = await consumer.getmany(timeout_ms=1000, max_records=10)
+        try:
+          result = await consumer.getmany(timeout_ms=1000, max_records=10)
+        except Exception as e:
+          self.stderr.write(self.style.ERROR(f"Kafka connection error: {e}. Retrying in 5s..."))
+          await asyncio.sleep(5)
+          continue
+
         if not result:
           continue
 
@@ -65,34 +71,43 @@ class Command(BaseCommand):
 
   @sync_to_async
   def train_all(self):
-    pages = StatusPage.objects.all()
-    for page in pages:
-      try:
-        run = train_tenant_sla(page)
-        if run:
-          self.stdout.write(
-            self.style.SUCCESS(
-              f"Trained SLA forecast model for tenant '{page.title}' (SLA: {run.average_sla:.2f}%)"
-            )
-          )
-        else:
-          self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
+    from django.db import close_old_connections
 
-        # Automate Threat Model training along with the SLA model
-        if page.user:
-          from ml.ml_services import train_threat_model
-
-          report = train_threat_model(page.user)
-          self.stdout.write(
-            self.style.SUCCESS(
-              f"Trained threat forecast model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+    close_old_connections()
+    try:
+      pages = StatusPage.objects.all()
+      for page in pages:
+        try:
+          run = train_tenant_sla(page)
+          if run:
+            self.stdout.write(
+              self.style.SUCCESS(
+                f"Trained SLA forecast model for tenant '{page.title}' (SLA: {run.average_sla:.2f}%)"
+              )
             )
-          )
-      except Exception as e:
-        self.stderr.write(self.style.ERROR(f"Failed to train tenant '{page.title}': {e}"))
+          else:
+            self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
+
+          # Automate Threat Model training along with the SLA model
+          if page.user:
+            from ml.ml_services import train_threat_model
+
+            report = train_threat_model(page.user)
+            self.stdout.write(
+              self.style.SUCCESS(
+                f"Trained threat forecast model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+              )
+            )
+        except Exception as e:
+          self.stderr.write(self.style.ERROR(f"Failed to train tenant '{page.title}': {e}"))
+    finally:
+      close_old_connections()
 
   @sync_to_async
   def train_single(self, tenant_id):
+    from django.db import close_old_connections
+
+    close_old_connections()
     try:
       page = StatusPage.objects.get(id=tenant_id)
       run = train_tenant_sla(page)
@@ -119,6 +134,8 @@ class Command(BaseCommand):
       self.stderr.write(self.style.WARNING(f"Tenant ID {tenant_id} not found"))
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"Failed to train tenant: {e}"))
+    finally:
+      close_old_connections()
 
   async def periodic_scheduler(self):
     self.stdout.write(self.style.SUCCESS("Starting periodic daily training & cleanup scheduler..."))

@@ -605,10 +605,14 @@ export class Settings implements OnInit {
 
   checkMfaStatus() {
     const user = this.authService.auth?.currentUser;
-    if (user) {
-      const enrolled = multiFactor(user).enrolledFactors;
-      this.mfaEnrolledFactors.set(enrolled);
-      this.isMfaEnrolled.set(enrolled.length > 0);
+    if (user && typeof user.reload === 'function') {
+      try {
+        const enrolled = multiFactor(user).enrolledFactors;
+        this.mfaEnrolledFactors.set(enrolled);
+        this.isMfaEnrolled.set(enrolled.length > 0);
+      } catch (e) {
+        console.warn('MFA check skipped or failed:', e);
+      }
     }
   }
 

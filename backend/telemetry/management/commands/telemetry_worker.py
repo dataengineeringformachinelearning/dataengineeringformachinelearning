@@ -58,7 +58,12 @@ class Command(BaseCommand):
     try:
       while True:
         # Get a batch of messages
-        result = await consumer.getmany(timeout_ms=1000, max_records=100)
+        try:
+          result = await consumer.getmany(timeout_ms=1000, max_records=100)
+        except Exception as e:
+          self.stderr.write(self.style.ERROR(f"Kafka connection error: {e}. Retrying in 5s..."))
+          await asyncio.sleep(5)
+          continue
 
         if not result:
           continue
@@ -344,40 +349,45 @@ class Command(BaseCommand):
     import urllib.error
     import urllib.request
 
+    from django.db import close_old_connections
     from monitor.models import Endpoints, MonitoredService
 
-    services = MonitoredService.objects.all()
-    urls = {s.url for s in services if s.url}
+    close_old_connections()
+    try:
+      services = MonitoredService.objects.all()
+      urls = {s.url for s in services if s.url}
 
-    for url in urls:
-      start_time = time.time()
-      status_code = 503
-      is_active = False
-      try:
-        req = urllib.request.Request(url, headers={"User-Agent": "PlatformStatusAutoPinger/1.0"})
-        import ssl
-
-        ctx = ssl.create_default_context()
-        ctx.check_hostname = False
-        ctx.verify_mode = ssl.CERT_NONE
-
-        # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
-        with urllib.request.urlopen(req, timeout=5, context=ctx) as response:
-          status_code = response.getcode()
-          is_active = 200 <= status_code < 500
-      except urllib.error.HTTPError as e:
-        status_code = e.code
-        is_active = 200 <= status_code < 500
-      except Exception:
+      for url in urls:
+        start_time = time.time()
         status_code = 503
         is_active = False
+        try:
+          req = urllib.request.Request(url, headers={"User-Agent": "PlatformStatusAutoPinger/1.0"})
+          import ssl
 
-      duration = datetime.timedelta(seconds=(time.time() - start_time))
+          ctx = ssl.create_default_context()
+          ctx.check_hostname = False
+          ctx.verify_mode = ssl.CERT_NONE
 
-      Endpoints.objects.create(
-        url=url,
-        status_code=status_code,
-        response_time=duration,
-        ip_address="127.0.0.1",
-        is_active=is_active,
-      )
+          # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
+          with urllib.request.urlopen(req, timeout=5, context=ctx) as response:
+            status_code = response.getcode()
+            is_active = 200 <= status_code < 500
+        except urllib.error.HTTPError as e:
+          status_code = e.code
+          is_active = 200 <= status_code < 500
+        except Exception:
+          status_code = 503
+          is_active = False
+
+        duration = datetime.timedelta(seconds=(time.time() - start_time))
+
+        Endpoints.objects.create(
+          url=url,
+          status_code=status_code,
+          response_time=duration,
+          ip_address="127.0.0.1",
+          is_active=is_active,
+        )
+    finally:
+      close_old_connections()
