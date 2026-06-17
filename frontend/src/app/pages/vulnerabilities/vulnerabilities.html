@@ -76,8 +76,9 @@
             </div>
             } @else if (filteredVulnerabilities().length === 0) {
             <div class="empty-state">
-              <mat-icon>security</mat-icon>
-              <p>No vulnerabilities reported matching filters.</p>
+              <mat-icon>verified_user</mat-icon>
+              <h3 class="empty-title">SYSTEM SECURE</h3>
+              <p>No active threats detected matching current filter parameters.</p>
             </div>
             } @else { @for (v of filteredVulnerabilities(); track v.id) {
             <div
@@ -234,9 +235,14 @@
           </div>
           @} @else {
           <div class="no-selection-state">
-            <mat-icon class="huge-icon">biotech</mat-icon>
-            <h2>No Vulnerability Selected</h2>
-            <p>Select an item from the triage queue to examine telemetry and manage risk scores.</p>
+            <div class="radar-scan">
+              <mat-icon class="huge-icon">radar</mat-icon>
+            </div>
+            <h2>Awaiting Threat Selection</h2>
+            <p>
+              Select an item from the ingestion queue to map risk matrices, analyze diagnostic
+              payload data, and execute remediation protocols.
+            </p>
           </div>
           }
         </section>

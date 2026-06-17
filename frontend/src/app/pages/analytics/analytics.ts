@@ -23,7 +23,11 @@ export class AnalyticsComponent implements OnInit {
   public isLoading = true;
 
   public chartOptions: AgChartOptions = {
-    title: { text: 'System Latency (Last 24h)' },
+    title: {
+      text: 'System Latency (Last 24h)',
+      color: '#e8ecea',
+      fontFamily: 'Inter, sans-serif',
+    },
     data: [],
     series: [
       {
@@ -31,13 +35,27 @@ export class AnalyticsComponent implements OnInit {
         xKey: 'time',
         yKey: 'latency',
         yName: 'Latency (ms)',
-        stroke: '#3b82f6',
-        marker: { fill: '#3b82f6', stroke: '#2563eb' },
+        stroke: '#00f2fe',
+        strokeWidth: 2,
+        marker: { fill: '#0f1814', stroke: '#00f2fe', strokeWidth: 2, size: 4 },
       },
     ],
     axes: [
-      { type: 'category', position: 'bottom', title: { text: 'Time' } },
-      { type: 'number', position: 'left', title: { text: 'Milliseconds' } },
+      {
+        type: 'category',
+        position: 'bottom',
+        title: { text: 'Time', color: '#c0c5c1' },
+        label: { color: '#c0c5c1' },
+        line: { color: 'rgba(255, 255, 255, 0.08)' },
+      },
+      {
+        type: 'number',
+        position: 'left',
+        title: { text: 'Milliseconds', color: '#c0c5c1' },
+        label: { color: '#c0c5c1' },
+        line: { color: 'rgba(255, 255, 255, 0.08)' },
+        gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.04)' }] },
+      },
     ] as any,
     background: { fill: 'transparent' },
   };
