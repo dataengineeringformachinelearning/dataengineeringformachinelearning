@@ -1,10 +1,11 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions } from 'ag-charts-community';
 import { SkeletonComponent } from 'boneyard-js/angular';
 import { MatIconModule } from '@angular/material/icon';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-analytics',
@@ -15,6 +16,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class AnalyticsComponent implements OnInit {
   private http = inject(HttpClient);
+  private themeService = inject(ThemeService);
 
   public p99Latency = 0;
   public uptimePercent = 0;
@@ -60,6 +62,58 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
+  constructor() {
+    effect(() => {
+      const activeTheme = this.themeService.theme();
+      this.updateChartTheme(activeTheme);
+    });
+  }
+
+  private updateChartTheme(theme: 'light' | 'dark') {
+    const isDark = theme === 'dark';
+    const titleColor = isDark ? '#e8ecea' : '#182821';
+    const labelColor = isDark ? '#c0c5c1' : '#4a5450';
+    const lineColor = isDark ? '#00f2fe' : '#2d4739';
+    const markerFill = isDark ? '#0f1814' : '#ffffff';
+    const axisLineColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.15)';
+    const gridLineColor = isDark ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.06)';
+
+    this.chartOptions = {
+      ...this.chartOptions,
+      title: {
+        ...this.chartOptions.title,
+        color: titleColor,
+      },
+      series: [
+        {
+          ...this.chartOptions.series?.[0],
+          stroke: lineColor,
+          marker: {
+            fill: markerFill,
+            stroke: lineColor,
+            strokeWidth: 2,
+            size: 4,
+          },
+        } as any,
+      ],
+      axes: [
+        {
+          ...((this.chartOptions as any).axes?.[0] as any),
+          title: { text: 'Time', color: labelColor },
+          label: { color: labelColor },
+          line: { color: axisLineColor },
+        },
+        {
+          ...((this.chartOptions as any).axes?.[1] as any),
+          title: { text: 'Milliseconds', color: labelColor },
+          label: { color: labelColor },
+          line: { color: axisLineColor },
+          gridLine: { style: [{ stroke: gridLineColor }] },
+        },
+      ] as any,
+    };
+  }
+
   ngOnInit() {
     this.http.get<any>('/api/v1/analytics/overview').subscribe({
       next: response => {
@@ -72,7 +126,7 @@ export class AnalyticsComponent implements OnInit {
 
           this.chartOptions = {
             ...this.chartOptions,
-            data: data.time_series,
+            data: data.time_series || [],
           };
         }
         this.isLoading = false;

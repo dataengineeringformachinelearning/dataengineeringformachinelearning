@@ -194,9 +194,12 @@ ClickHouse is used to securely store all high-volume OpenTelemetry data from the
 - **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/var/lib/clickhouse`.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
-  - **CLICKHOUSE_USER**: Set a secure username (e.g., `admin`)
-  - **CLICKHOUSE_PASSWORD**: Set a secure password.
+  - **CLICKHOUSE_USER**: Leave this variable **completely unset/deleted** on the ClickHouse service if you want to use the `default` user. If you define it as `default` explicitly, ClickHouse's entrypoint will skip setting the password, causing connection errors in other services.
+  - **CLICKHOUSE_PASSWORD**: Set a secure password (e.g. for the default user).
   - **CLICKHOUSE_DB**: `otel`
+
+> [!IMPORTANT]
+> **ClickHouse Password Gotcha**: Do not define `CLICKHOUSE_USER` as `default` in the ClickHouse service environment variables. If you wish to use the `default` user, simply omit the `CLICKHOUSE_USER` variable entirely from the ClickHouse service. The entrypoint script will automatically apply your `CLICKHOUSE_PASSWORD` to the default user. Make sure `CLICKHOUSE_USER` is still set to `default` in your otel-collector and backend services so they connect correctly.
 
 ### 8. OpenTelemetry Collector (Router)
 

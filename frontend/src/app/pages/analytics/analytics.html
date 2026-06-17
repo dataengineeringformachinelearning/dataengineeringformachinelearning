@@ -77,11 +77,49 @@
           </div>
 
           <boneyard-skeleton name="analytics-chart" [loading]="isLoading">
-            <div class="card-body-clean" style="min-height: 400px">
+            <div class="card-body-clean" style="min-height: 400px; position: relative">
+              <!-- Empty state: visible only when not loading and data is empty -->
+              <div
+                *ngIf="!isLoading && (!chartOptions.data || chartOptions.data.length === 0)"
+                class="empty-chart-state"
+                role="alert"
+                aria-live="polite"
+              >
+                <mat-icon class="empty-icon">analytics</mat-icon>
+                <h3 class="empty-title">No Telemetry Data Available</h3>
+                <p class="empty-subtitle">
+                  We couldn't retrieve any latency metrics for this time period. Please verify your
+                  systems are running and active.
+                </p>
+              </div>
+
+              <!-- Chart: visible when data is present -->
               <ag-charts
+                *ngIf="chartOptions.data && chartOptions.data.length > 0"
                 [options]="chartOptions"
+                role="img"
+                aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
                 style="width: 100%; height: 400px; display: block"
               ></ag-charts>
+
+              <!-- Screen Reader Only Tabular Alternative for Section 508 Compliance -->
+              <div class="sr-only" *ngIf="chartOptions.data && chartOptions.data.length > 0">
+                <h3>Tabular Data: System Latency (Last 24h)</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th scope="col">Time</th>
+                      <th scope="col">Latency (ms)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let item of chartOptions.data">
+                      <td>{{ item.time }}</td>
+                      <td>{{ item.latency }} ms</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </boneyard-skeleton>
         </section>

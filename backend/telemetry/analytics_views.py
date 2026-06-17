@@ -8,18 +8,27 @@ router = Router()
 
 
 import os
+import time
+
+_last_ch_fail_time = 0.0
 
 
 def get_clickhouse_client():
+  global _last_ch_fail_time
+  # Cache failure state for 15 seconds to prevent blocking UI loading when DB is down
+  if time.time() - _last_ch_fail_time < 15.0:
+    return None
   try:
     return clickhouse_connect.get_client(
       host=os.environ.get("CLICKHOUSE_HOST", "localhost"),
       port=int(os.environ.get("CLICKHOUSE_PORT", "8123")),
       username=os.environ.get("CLICKHOUSE_USER", "default"),
       password=os.environ.get("CLICKHOUSE_PASSWORD", "password"),
+      connect_timeout=1.5,
     )
   except Exception as e:
     logger.error(f"ClickHouse connection failed: {e}")
+    _last_ch_fail_time = time.time()
     return None
 
 
