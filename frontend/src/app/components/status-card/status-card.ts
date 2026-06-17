@@ -26,6 +26,11 @@ export class StatusCard {
   @Input() showIncidents = false;
   @Input() linkHeader = false;
 
+  // Analytics inputs
+  @Input() p99Latency?: number;
+  @Input() totalRequests?: number;
+  @Input() uptimePercent?: number;
+
   formatServiceName = formatServiceName;
 
   getPageStatus(): string {

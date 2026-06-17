@@ -1,3 +1,4 @@
+exclude: '^(?:\.venv|backend/\.venv|frontend/node_modules)/'
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -63,7 +64,7 @@ repos:
         pass_filenames: false
       - id: trivy
         name: Trivy Config Security Scan
-        entry: trivy fs . --scanners config --severity HIGH,CRITICAL --exit-code 1 --quiet
+        entry: trivy fs . --scanners config --severity HIGH,CRITICAL --exit-code 1 --quiet --skip-dirs .venv --skip-dirs backend/.venv --skip-dirs frontend/node_modules
         language: system
         pass_filenames: false
       - id: django-migration-linter

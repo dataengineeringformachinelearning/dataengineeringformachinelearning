@@ -11,7 +11,7 @@ import { IsolatedStatus } from './pages/isolated-status/isolated-status';
 import { Whitepaper } from './pages/whitepaper/whitepaper';
 import { Compliance } from './pages/compliance/compliance';
 import { Vulnerabilities } from './pages/vulnerabilities/vulnerabilities';
-import { Login } from './pages/login/login';
+import { AnalyticsComponent } from './pages/analytics/analytics';
 
 export const routes: Routes = [
   { path: '', component: Landing },
@@ -20,8 +20,9 @@ export const routes: Routes = [
   { path: 'status', component: Status },
   { path: 'status/:slug', component: IsolatedStatus },
   { path: 'explore', component: Explore },
-  { path: 'settings', component: Settings },
   { path: 'vulnerabilities', component: Vulnerabilities },
+  { path: 'analytics', component: AnalyticsComponent },
+  { path: 'settings', component: Settings },
   { path: 'compliance', component: Compliance },
   { path: 'privacy', component: Privacy },
   { path: 'terms', component: Terms },

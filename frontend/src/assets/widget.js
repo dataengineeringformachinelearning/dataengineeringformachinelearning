@@ -375,11 +375,47 @@
           };
 
           try {
+            // Send legacy payload to backend for threat analysis
             await fetch(`${backendUrl}/api/v1/telemetry/endpoints`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(telemetryPayload),
             });
+
+            // Dynamically load OpenTelemetry SDK via ESM to send traces to OTel Collector
+            try {
+              const { WebTracerProvider } =
+                await import('https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1');
+              const { OTLPTraceExporter } =
+                await import('https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1');
+              const { BatchSpanProcessor } =
+                await import('https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1');
+
+              const provider = new WebTracerProvider();
+
+              // Dynamically read the collector URL from the script tag's data attribute, default to production domain
+              const scriptTag =
+                document.currentScript || document.querySelector('script[src*="widget.js"]');
+              const otelUrl =
+                scriptTag?.getAttribute('data-otel-url') ||
+                'https://telemetry.dataengineeringformachinelearning.com/v1/traces';
+
+              const exporter = new OTLPTraceExporter({
+                url: otelUrl,
+              });
+
+              provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+              provider.register();
+
+              const tracer = provider.getTracer('widget-telemetry');
+              const span = tracer.startSpan('page_load');
+              span.setAttribute('fcp_ms', fcpTime);
+              span.setAttribute('response_time_ms', responseTimeMs);
+              span.setAttribute('client_ip', this.clientIp);
+              span.end();
+            } catch (otelErr) {
+              console.warn('Failed to initialize OpenTelemetry', otelErr);
+            }
           } catch (e) {
             console.warn('Threat analysis telemetry reporting offline', e);
           }

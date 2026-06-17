@@ -14,11 +14,16 @@ api = NinjaAPI(
 # Import routers from apps
 from ml.ml_api import router as ml_router
 from monitor.api import router as monitor_router
+
 from telemetry.api import router as telemetry_router
 
 api.add_router("/system-status/", monitor_router)
 api.add_router("/ml/", ml_router)
 api.add_router("/telemetry/", telemetry_router)
+
+from telemetry.analytics_views import router as analytics_router
+
+api.add_router("/analytics/", analytics_router)
 
 # We can also add auth endpoints directly here or via a router
 from .api_auth import router as auth_router
