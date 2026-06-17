@@ -40,9 +40,13 @@ export class App implements OnInit {
         const isStandalone = url.startsWith('/status/') && url !== '/status';
         this.isStandaloneStatusPage.set(isStandalone);
 
-        const isDashboard = ['/explore', '/documentation', '/settings', '/vulnerabilities'].some(
-          path => url.startsWith(path),
-        );
+        const isDashboard = [
+          '/explore',
+          '/documentation',
+          '/settings',
+          '/vulnerabilities',
+          '/analytics',
+        ].some(path => url.startsWith(path));
         this.isDashboardPage.set(isDashboard);
 
         if (isPlatformBrowser(this.platformId)) {

@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions } from 'ag-charts-community';
+import { SkeletonComponent } from 'boneyard-js/angular';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, AgCharts],
+  imports: [CommonModule, AgCharts, SkeletonComponent, MatIconModule],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })

@@ -17,29 +17,74 @@
         </div>
       </header>
 
-      <div class="metrics-grid">
-        <div class="status-card-outlined metric-card">
-          <div class="metric-title">P99 Latency</div>
-          <div class="metric-value">{{ p99Latency }} <span class="unit">ms</span></div>
+      <boneyard-skeleton name="analytics-metrics" [loading]="isLoading">
+        <div
+          class="ml-stat-panels-row"
+          style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"
+        >
+          <div class="ml-stat-panel">
+            <div class="stat-info">
+              <div>
+                <span class="stat-title">P99 LATENCY</span>
+              </div>
+            </div>
+            <span class="stat-value"
+              >{{ p99Latency }} <span style="font-size: 14px; opacity: 0.7">ms</span></span
+            >
+          </div>
+          <div class="ml-stat-panel">
+            <div class="stat-info">
+              <div>
+                <span class="stat-title">SERVICE UPTIME</span>
+              </div>
+            </div>
+            <span class="stat-value"
+              >{{ uptimePercent }} <span style="font-size: 14px; opacity: 0.7">%</span></span
+            >
+          </div>
+          <div class="ml-stat-panel">
+            <div class="stat-info">
+              <div>
+                <span class="stat-title">TOTAL REQUESTS</span>
+              </div>
+            </div>
+            <span class="stat-value">{{ totalRequests | number }}</span>
+          </div>
+          <div
+            class="ml-stat-panel"
+            [style.border-color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
+            [style.background-color]="activeIncidents > 0 ? 'rgba(244, 67, 54, 0.05)' : ''"
+          >
+            <div class="stat-info">
+              <div>
+                <span class="stat-title">ACTIVE INCIDENTS</span>
+              </div>
+            </div>
+            <span class="stat-value" [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
+              >{{ activeIncidents }}</span
+            >
+          </div>
         </div>
-        <div class="status-card-outlined metric-card">
-          <div class="metric-title">Service Uptime</div>
-          <div class="metric-value">{{ uptimePercent }} <span class="unit">%</span></div>
-        </div>
-        <div class="status-card-outlined metric-card">
-          <div class="metric-title">Total Requests (24h)</div>
-          <div class="metric-value">{{ totalRequests | number }}</div>
-        </div>
-        <div class="status-card-outlined metric-card" [class.alert]="activeIncidents > 0">
-          <div class="metric-title">Active Incidents</div>
-          <div class="metric-value">{{ activeIncidents }}</div>
-        </div>
-      </div>
+      </boneyard-skeleton>
 
-      <div class="status-card-outlined chart-card">
-        <div class="chart-container">
-          <ag-charts [options]="chartOptions"></ag-charts>
-        </div>
+      <div class="dashboard-grid" style="grid-template-columns: 1fr">
+        <section class="status-card-outlined">
+          <div class="panel-header" style="padding: 1.5rem 1.5rem 0">
+            <h2 class="panel-title" style="display: flex; align-items: center; gap: 6px">
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px">insights</mat-icon>
+              Performance Telemetry
+            </h2>
+          </div>
+
+          <boneyard-skeleton name="analytics-chart" [loading]="isLoading">
+            <div class="card-body-clean" style="min-height: 400px">
+              <ag-charts
+                [options]="chartOptions"
+                style="width: 100%; height: 400px; display: block"
+              ></ag-charts>
+            </div>
+          </boneyard-skeleton>
+        </section>
       </div>
     </div>
   </div>

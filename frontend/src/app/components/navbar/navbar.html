@@ -20,6 +20,7 @@
     <div class="navbar-right">
       <!-- Desktop Navigation Container -->
       <div class="desktop-nav">
+        @if (authService.isAuthenticated()) {
         <a
           mat-button
           routerLink="/documentation"
@@ -53,7 +54,17 @@
           <span>Analytics</span>
         </a>
 
-        @if (authService.isAuthenticated()) {
+        <a
+          mat-button
+          routerLink="/vulnerabilities"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="nav-btn"
+        >
+          <mat-icon>security</mat-icon>
+          <span>Vulnerabilities</span>
+        </a>
+
         <a
           mat-button
           routerLink="/settings"
@@ -64,15 +75,27 @@
           <mat-icon>settings</mat-icon>
           <span>Settings</span>
         </a>
+        } @else {
         <a
           mat-button
-          routerLink="/vulnerabilities"
+          routerLink="/explore"
           routerLinkActive="active"
           [routerLinkActiveOptions]="{exact: true}"
           class="nav-btn"
         >
-          <mat-icon>security</mat-icon>
-          <span>Vulnerabilities</span>
+          <mat-icon>explore</mat-icon>
+          <span>Explore</span>
+        </a>
+
+        <a
+          mat-button
+          routerLink="/documentation"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          class="nav-btn"
+        >
+          <mat-icon>description</mat-icon>
+          <span>Documentation</span>
         </a>
         }
 
@@ -116,6 +139,7 @@
 
   <!-- Mobile Collapsible Menu Dropdown -->
   <div class="mobile-menu" [class.open]="isMobileMenuOpen()">
+    @if (authService.isAuthenticated()) {
     <a
       mat-button
       routerLink="/documentation"
@@ -127,6 +151,7 @@
       <mat-icon>description</mat-icon>
       <span>Documentation</span>
     </a>
+
     <a
       mat-button
       routerLink="/explore"
@@ -151,7 +176,18 @@
       <span>Analytics</span>
     </a>
 
-    @if (authService.isAuthenticated()) {
+    <a
+      mat-button
+      routerLink="/vulnerabilities"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
+      <mat-icon>security</mat-icon>
+      <span>Vulnerabilities</span>
+    </a>
+
     <a
       mat-button
       routerLink="/settings"
@@ -163,16 +199,29 @@
       <mat-icon>settings</mat-icon>
       <span>Settings</span>
     </a>
+    } @else {
     <a
       mat-button
-      routerLink="/vulnerabilities"
+      routerLink="/explore"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{exact: true}"
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>security</mat-icon>
-      <span>Vulnerabilities</span>
+      <mat-icon>explore</mat-icon>
+      <span>Explore</span>
+    </a>
+
+    <a
+      mat-button
+      routerLink="/documentation"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
+      <mat-icon>description</mat-icon>
+      <span>Documentation</span>
     </a>
     }
 

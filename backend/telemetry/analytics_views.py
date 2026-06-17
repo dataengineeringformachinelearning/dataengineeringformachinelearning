@@ -20,6 +20,11 @@ def get_clickhouse_client():
 
 @router.get("/overview")
 def get_analytics_overview(request):
+  if not request.user.is_authenticated:
+    from ninja.errors import HttpError
+
+    raise HttpError(401, "Not authenticated")
+
   client = get_clickhouse_client()
 
   # We provide a default mock data structure so the frontend always has data to render,
