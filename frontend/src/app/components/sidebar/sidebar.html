@@ -4,8 +4,15 @@
   [class.dragging]="isDragging()"
   [style.width]="isCollapsed() ? '' : (sidebarWidth() + 'px')"
 >
-  <div class="resize-handle" (mousedown)="startResize($event)" *ngIf="!isCollapsed()"></div>
-  <div class="sidebar-brand" (click)="toggleCollapse()">
+  @if (!isCollapsed()) {
+  <div class="resize-handle" (mousedown)="startResize($event)"></div>
+  }
+  <div
+    class="sidebar-brand"
+    (click)="toggleCollapse()"
+    tabindex="0"
+    (keydown.enter)="toggleCollapse()"
+  >
     <mat-icon class="brand-icon">analytics</mat-icon>
     <h2 class="brand-title">Platform</h2>
     <button class="collapse-toggle-btn" aria-label="Toggle Sidebar">
@@ -14,7 +21,13 @@
   </div>
 
   @if (!isCollapsed()) {
-  <div class="sidebar-search" (click)="openSearchDialog()" style="cursor: pointer">
+  <div
+    class="sidebar-search"
+    (click)="openSearchDialog()"
+    style="cursor: pointer"
+    tabindex="0"
+    (keydown.enter)="openSearchDialog()"
+  >
     <div class="search-wrapper">
       <mat-icon>search</mat-icon>
       <span class="sidebar-search-placeholder">Search...</span>
@@ -43,6 +56,8 @@
           class="nav-tree-header"
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
           style="cursor: pointer"
+          tabindex="0"
+          (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
         >
           <span class="tree-label">Chapters</span>
           <mat-icon class="tree-arrow"
@@ -56,6 +71,8 @@
             class="tree-child-item"
             [class.active]="bookService.activePageIndex() === idx"
             (click)="bookService.goToPage(idx)"
+            tabindex="0"
+            (keydown.enter)="bookService.goToPage(idx)"
           >
             {{ chapter.title }}
           </span>
@@ -115,6 +132,8 @@
           class="nav-tree-header"
           (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
           style="cursor: pointer"
+          tabindex="0"
+          (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
         >
           <span class="tree-label">Your Pages</span>
           <mat-icon class="tree-arrow"
@@ -128,6 +147,8 @@
             class="tree-child-item"
             [class.active]="settingsService.selectedPage()?.id === page.id"
             (click)="settingsService.selectPage(page)"
+            tabindex="0"
+            (keydown.enter)="settingsService.selectPage(page)"
           >
             {{ page.title }}
           </span>
@@ -170,6 +191,8 @@
           class="nav-tree-header"
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
           style="cursor: pointer"
+          tabindex="0"
+          (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
         >
           <span class="tree-label">Chapters</span>
           <mat-icon class="tree-arrow"
@@ -183,6 +206,8 @@
             class="tree-child-item"
             [class.active]="bookService.activePageIndex() === idx"
             (click)="bookService.goToPage(idx)"
+            tabindex="0"
+            (keydown.enter)="bookService.goToPage(idx)"
           >
             {{ chapter.title }}
           </span>

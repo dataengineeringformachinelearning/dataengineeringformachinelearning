@@ -45,6 +45,7 @@ export class StatusCard implements OnInit {
   public p99Latency?: number;
   public totalRequests?: number;
   public uptimePercent?: number;
+  public simulatedThreatReport?: { suspicious_ratio: number; anomaly_score: number };
 
   private cdr = inject(ChangeDetectorRef);
 
@@ -59,6 +60,10 @@ export class StatusCard implements OnInit {
         );
         this.totalRequests = Math.floor(1000 + Math.random() * 5000);
         this.uptimePercent = baseSla;
+        this.simulatedThreatReport = {
+          suspicious_ratio: Math.random() * 0.4,
+          anomaly_score: Math.random() * 0.5,
+        };
         this.cdr.markForCheck();
       },
       800 + Math.random() * 700,

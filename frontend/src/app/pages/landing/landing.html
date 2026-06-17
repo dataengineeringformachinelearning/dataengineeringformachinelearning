@@ -80,7 +80,12 @@
           (ended)="videoPlaying.set(false)"
         ></video>
         @if (!videoPlaying()) {
-        <div class="video-overlay" (click)="videoPlayer.play()">
+        <div
+          class="video-overlay"
+          (click)="videoPlayer.play()"
+          tabindex="0"
+          (keydown.enter)="videoPlayer.play()"
+        >
           <div class="overlay-glow"></div>
           <div class="play-button-premium">
             <mat-icon class="play-icon">play_arrow</mat-icon>

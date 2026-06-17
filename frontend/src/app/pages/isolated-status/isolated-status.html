@@ -131,16 +131,15 @@
           </section>
         </boneyard-skeleton>
 
-        <!-- SLA & Threat Intelligence Metrics Overview -->
+        <!-- SLA Metrics Overview -->
         <div class="metrics-overview-header" style="margin-top: 24px">
           <h3 class="section-title-premium">
             <mat-icon>analytics</mat-icon>
-            SLA & Threat Intelligence
+            Service Level Agreement (SLA)
           </h3>
           <p class="section-description-premium">
-            Real-time service level agreement (SLA) status and threat analysis (TA) telemetry
-            powered by our extensible deep learning pipeline, featuring active prediction modules
-            with support for future expansions.
+            Real-time service level agreement (SLA) status powered by our extensible deep learning
+            pipeline, featuring active prediction modules with support for future expansions.
           </p>
         </div>
 
@@ -173,8 +172,23 @@
               >
             </div>
           </div>
+        </section>
+
+        <!-- Threat Intelligence Metrics Overview -->
+        @if (mlService.latestThreatReports()[page.id]) {
+        <div class="metrics-overview-header" style="margin-top: 24px">
+          <h3 class="section-title-premium">
+            <mat-icon>security</mat-icon>
+            Threat Intelligence
+          </h3>
+          <p class="section-description-premium">
+            Threat analysis (TA) telemetry powered by our extensible deep learning pipeline,
+            featuring active prediction modules with support for future expansions.
+          </p>
+        </div>
+
+        <section class="standalone-sla-row">
           <!-- Threat Anomaly Cards -->
-          @if (mlService.latestThreatReports()[page.id]) {
           <div class="standalone-sla-card">
             <div class="sla-icon-box">
               <mat-icon>security</mat-icon>
@@ -201,8 +215,8 @@
               </span>
             </div>
           </div>
-          }
         </section>
+        }
 
         <!-- Threat Details Section -->
         @if (mlService.latestThreatReports()[page.id]) {

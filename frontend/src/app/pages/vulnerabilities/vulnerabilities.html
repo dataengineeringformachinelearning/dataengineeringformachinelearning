@@ -85,6 +85,8 @@
               class="queue-item"
               [class.active]="selectedVuln()?.id === v.id"
               (click)="selectVulnerability(v)"
+              tabindex="0"
+              (keydown.enter)="selectVulnerability(v)"
             >
               <div class="item-header">
                 <span class="item-id">VULN-{{ v.id.substring(0, 8).toUpperCase() }}</span>

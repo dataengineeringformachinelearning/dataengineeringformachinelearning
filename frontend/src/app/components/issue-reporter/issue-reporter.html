@@ -5,8 +5,13 @@
 
 <!-- Modal Overlay -->
 @if (isOpen()) {
-<div class="modal-overlay" (click)="toggleModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
+<div class="modal-overlay" (click)="toggleModal()" tabindex="0" (keydown.enter)="toggleModal()">
+  <div
+    class="modal-content"
+    (click)="$event.stopPropagation()"
+    tabindex="0"
+    (keydown.enter)="$event.stopPropagation()"
+  >
     <div class="modal-header">
       <div class="title-wrapper">
         <mat-icon class="header-icon">report_problem</mat-icon>

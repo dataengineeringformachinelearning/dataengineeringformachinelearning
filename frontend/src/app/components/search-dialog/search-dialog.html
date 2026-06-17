@@ -24,6 +24,8 @@
         class="search-result-item"
         [class.selected]="i === selectedIndex()"
         (click)="handleResultClick(result)"
+        (keydown.enter)="handleResultClick(result)"
+        tabindex="0"
         (mouseenter)="selectedIndex.set(i)"
       >
         <div class="result-icon-wrapper">
@@ -48,19 +50,39 @@
     <div class="suggestions-container">
       <div class="suggestions-header">Quick Navigation</div>
       <div class="suggestions-grid">
-        <div class="suggestion-item" (click)="onSuggestionClick('SLA')">
+        <div
+          class="suggestion-item"
+          (click)="onSuggestionClick('SLA')"
+          tabindex="0"
+          (keydown.enter)="onSuggestionClick('SLA')"
+        >
           <mat-icon>speed</mat-icon>
           <span>SLA Monitoring</span>
         </div>
-        <div class="suggestion-item" (click)="onSuggestionClick('neural')">
+        <div
+          class="suggestion-item"
+          (click)="onSuggestionClick('neural')"
+          tabindex="0"
+          (keydown.enter)="onSuggestionClick('neural')"
+        >
           <mat-icon>psychology</mat-icon>
           <span>Neural Networks</span>
         </div>
-        <div class="suggestion-item" (click)="onSuggestionClick('kafka')">
+        <div
+          class="suggestion-item"
+          (click)="onSuggestionClick('kafka')"
+          tabindex="0"
+          (keydown.enter)="onSuggestionClick('kafka')"
+        >
           <mat-icon>lan</mat-icon>
           <span>Kafka Streams</span>
         </div>
-        <div class="suggestion-item" (click)="onSuggestionClick('vulnerabilities')">
+        <div
+          class="suggestion-item"
+          (click)="onSuggestionClick('vulnerabilities')"
+          tabindex="0"
+          (keydown.enter)="onSuggestionClick('vulnerabilities')"
+        >
           <mat-icon>security</mat-icon>
           <span>Security Reports</span>
         </div>

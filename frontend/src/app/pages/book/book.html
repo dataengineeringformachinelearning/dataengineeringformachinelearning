@@ -34,7 +34,12 @@
       </div>
 
       <!-- Pagination Controls -->
-      <div class="pagination-controls-outlined" (click)="bookService.scrollToTop()">
+      <div
+        class="pagination-controls-outlined"
+        (click)="bookService.scrollToTop()"
+        tabindex="0"
+        (keydown.enter)="bookService.scrollToTop()"
+      >
         <button
           mat-flat-button
           class="pagination-btn"
