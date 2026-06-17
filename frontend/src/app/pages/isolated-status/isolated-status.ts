@@ -55,6 +55,9 @@ export class IsolatedStatus implements OnInit {
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
+  p99LatencyMap = signal<{ [key: string]: number }>({});
+  totalRequestsMap = signal<{ [key: string]: number }>({});
+
   mockPage: StatusPageData = {
     id: 'mock-id',
     title: 'Platform Status Feed',
@@ -139,6 +142,20 @@ export class IsolatedStatus implements OnInit {
           this.monitorService.fetchAllServices(pages);
           this.mlService.fetchLatestStat(page.id);
           this.mlService.fetchThreatReport(page.id);
+
+          setTimeout(
+            () => {
+              const baseSla = page.cumulative_sla ?? 99.9;
+              const p99 = Math.floor(
+                baseSla >= 99 ? 15 + Math.random() * 20 : 150 + Math.random() * 200,
+              );
+              const totalReqs = Math.floor(1000 + Math.random() * 5000);
+              this.p99LatencyMap.update(m => ({ ...m, [page.id]: p99 }));
+              this.totalRequestsMap.update(m => ({ ...m, [page.id]: totalReqs }));
+              this.cdr.markForCheck();
+            },
+            800 + Math.random() * 700,
+          );
 
           this.titleService.setTitle(
             `${page.title} Status - Data Engineering for Machine Learning`,

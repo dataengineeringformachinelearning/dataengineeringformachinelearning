@@ -1,0 +1,3 @@
+# False positive for official ClickHouse image which uses gosu to drop privileges
+DS-0002
+AVD-DS-0002

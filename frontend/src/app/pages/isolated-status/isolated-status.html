@@ -85,8 +85,54 @@
         </div>
         }
 
-        <!-- SLA & Threat Intelligence Metrics Overview -->
+        <!-- Analytics Overview -->
         <div class="metrics-overview-header">
+          <h3 class="section-title-premium">
+            <mat-icon>monitoring</mat-icon>
+            Analytics & Traffic
+          </h3>
+          <p class="section-description-premium">
+            Real-time traffic analytics including tail latency tracking and overall request volume
+            for this service.
+          </p>
+        </div>
+
+        <boneyard-skeleton
+          name="status-analytics-{{page.id}}"
+          [loading]="p99LatencyMap()[page.id] === undefined || totalRequestsMap()[page.id] === undefined"
+        >
+          <section class="standalone-sla-row">
+            <div class="standalone-sla-card">
+              <div class="sla-icon-box">
+                <mat-icon>timer</mat-icon>
+              </div>
+              <div class="sla-details">
+                <span class="sla-label">P99 Latency</span>
+                <span class="sla-desc">Last 24h</span>
+                <span class="sla-val">
+                  {{ p99LatencyMap()[page.id] !== undefined ? p99LatencyMap()[page.id] + 'ms' :
+                  'N/A' }}
+                </span>
+              </div>
+            </div>
+            <div class="standalone-sla-card">
+              <div class="sla-icon-box">
+                <mat-icon>bar_chart</mat-icon>
+              </div>
+              <div class="sla-details">
+                <span class="sla-label">Total Requests</span>
+                <span class="sla-desc">Last 24h</span>
+                <span class="sla-val">
+                  {{ totalRequestsMap()[page.id] !== undefined ? (totalRequestsMap()[page.id] |
+                  number) : 'N/A' }}
+                </span>
+              </div>
+            </div>
+          </section>
+        </boneyard-skeleton>
+
+        <!-- SLA & Threat Intelligence Metrics Overview -->
+        <div class="metrics-overview-header" style="margin-top: 24px">
           <h3 class="section-title-premium">
             <mat-icon>analytics</mat-icon>
             SLA & Threat Intelligence

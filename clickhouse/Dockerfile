@@ -8,5 +8,3 @@ RUN chmod 644 /etc/clickhouse-server/config.d/custom-config.xml
 
 # Expose HTTP and Native ports
 EXPOSE 8123 9000
-
-USER clickhouse

@@ -447,11 +447,30 @@
             }
           } catch {}
 
-          const apiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
           try {
-            const res = await fetch(apiUrl);
-            const data = await res.json();
-            const page = data.find(p => p.id === pageId || p.slug === pageId);
+            let page = null;
+            const slugApiUrl = `${backendUrl}/api/v1/system-status/status_pages/slug/${pageId}`;
+            try {
+              const res = await fetch(slugApiUrl);
+              if (res.ok) {
+                page = await res.json();
+              }
+            } catch (e) {
+              // Network error, ignore and try fallback
+            }
+
+            if (!page) {
+              // Fallback to fetching the list
+              const listApiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
+              const res = await fetch(listApiUrl);
+              if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data)) {
+                  page = data.find(p => p.id === pageId || p.slug === pageId);
+                }
+              }
+            }
+
             if (page) {
               const href = `${frontendHost}/status/${page.slug}`;
               widgetLink.href = href;
@@ -464,24 +483,31 @@
                   fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`),
                   fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`),
                 ]);
-                const incidents = await incidentsRes.json();
-                const services = await servicesRes.json();
 
-                const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
-                const outages = services.filter(s => s.status === 'Outage');
-                const degraded = services.filter(s => s.status === 'Degraded');
+                if (incidentsRes.ok && servicesRes.ok) {
+                  const incidents = await incidentsRes.json();
+                  const services = await servicesRes.json();
 
-                if (activeIncidents.length > 0) {
-                  color = '#ef4444';
-                  textContent = `Incident: ${activeIncidents[0].status}`;
-                } else if (outages.length > 0) {
-                  color = '#ef4444';
-                  textContent = 'Service Outage';
-                } else if (degraded.length > 0) {
-                  color = '#f59e0b';
-                  textContent = 'Degraded Performance';
+                  if (Array.isArray(incidents) && Array.isArray(services)) {
+                    const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
+                    const outages = services.filter(s => s.status === 'Outage');
+                    const degraded = services.filter(s => s.status === 'Degraded');
+
+                    if (activeIncidents.length > 0) {
+                      color = '#ef4444';
+                      textContent = `Incident: ${activeIncidents[0].status}`;
+                    } else if (outages.length > 0) {
+                      color = '#ef4444';
+                      textContent = 'Service Outage';
+                    } else if (degraded.length > 0) {
+                      color = '#f59e0b';
+                      textContent = 'Degraded Performance';
+                    }
+                  }
                 }
-              } catch {}
+              } catch (err) {
+                console.warn('Failed to fetch incidents or services for widget', err);
+              }
 
               dot.style.backgroundColor = color;
               text.innerText = textContent;
@@ -499,7 +525,7 @@
               dot.style.backgroundColor = '#ef4444';
               text.innerText = 'Status Page Not Found';
             }
-          } catch {
+          } catch (globalErr) {
             dot.style.backgroundColor = '#94a3b8';
             text.innerText = 'Status Unknown';
           }
