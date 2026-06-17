@@ -76,6 +76,14 @@
         By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), we achieve
         sub-millisecond dispatch latencies and avoid JVM resource overhead.
       </p>
+      <p>
+        Additionally, to standardize our distributed tracing and metrics, we've integrated an
+        <strong>OpenTelemetry (OTel) Collector</strong>. The collector receives native OTLP
+        telemetry from our application services and infrastructure, exporting it directly to
+        <strong>ClickHouse</strong>&mdash;a lightning-fast columnar database optimized for OLAP
+        workloads. This separation allows us to scale observability and query distributed traces
+        efficiently without burdening our primary PostgreSQL transactional database.
+      </p>
     </section>
 
     <section class="paper-section">

@@ -10,4 +10,4 @@ RUN chmod 644 /etc/clickhouse-server/config.d/custom-config.xml
 EXPOSE 8123 9000
 
 USER clickhouse
-CMD ["clickhouse-server"]
+CMD ["clickhouse-server", "--config-file=/etc/clickhouse-server/config.xml"]

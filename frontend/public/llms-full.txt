@@ -484,6 +484,11 @@ async def post_telemetry(request, payload: dict):
 
 A background worker subscribes to this topic, pulling messages and processing them with Polars. I also integrated Sentry for full-stack error tracking, and Semgrep to automate vulnerability checks.
 
+### OpenTelemetry and ClickHouse Integration
+
+To standardize our tracing and metrics, we've integrated **OpenTelemetry (OTel)** alongside **ClickHouse**.
+An OpenTelemetry Collector receives native OTLP telemetry (via gRPC/HTTP) from our application services and infrastructure. It processes, batches, and exports this high-volume data directly to ClickHouse—a lightning-fast columnar database optimized for OLAP workloads. This allows us to scale observability and query distributed traces efficiently without burdening our primary PostgreSQL transactional database.
+
 ---
 
 ## Chapter 9: Applying a Use-Case (The Status Page)

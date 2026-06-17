@@ -23,7 +23,6 @@ exporters:
     password: ${env:CLICKHOUSE_PASSWORD}
     database: otel
     ttl: 720h # 30 days
-    create_schema: true
 
 service:
   pipelines:
