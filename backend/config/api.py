@@ -11,6 +11,17 @@ api = NinjaAPI(
   docs_url="/docs" if settings.DEBUG else None,
 )
 
+
+@api.exception_handler(Exception)
+def handle_uncaught_exception(request, exc):
+  logger.exception("Uncaught exception in API")
+  return api.create_response(
+    request,
+    {"error": "Internal Server Error", "message": "An unexpected error occurred."},
+    status=500,
+  )
+
+
 # Import routers from apps
 from ml.ml_api import router as ml_router
 from monitor.api import router as monitor_router

@@ -1,0 +1,52 @@
+name: 30-60-90 Automation Schedule
+
+on:
+  schedule:
+    # 30-Day Automation: Security & Dependency Review
+    # Runs on the 1st of every month
+    - cron: '0 0 1 * *'
+
+    # 60-Day Automation: Infrastructure & Telemetry Health Check
+    # Runs on the 1st of every even month (Feb, Apr, Jun, etc.)
+    - cron: '0 0 1 */2 *'
+
+    # 90-Day Automation: Full System Audit & Performance Review
+    # Runs on the 1st of every quarter (Jan, Apr, Jul, Oct)
+    - cron: '0 0 1 1,4,7,10 *'
+
+  workflow_dispatch:
+
+jobs:
+  automation-30-day:
+    name: 30-Day Security & Dependency Cycle
+    if: github.event.schedule == '0 0 1 * *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Security Scan (Semgrep)
+        run: |
+          pip install semgrep
+          semgrep scan --config auto --error
+      - name: Dependency Audit
+        run: |
+          npm audit
+          cd backend && pip install uv && uv lock
+
+
+
+  automation-90-day:
+    name: 90-Day Performance & Audit Cycle
+    if: github.event.schedule == '0 0 1 1,4,7,10 *' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Frontend Performance Audit
+        run: |
+          cd frontend
+          npm install
+          npm run build
+      - name: Backend Static Analysis
+        run: |
+          cd backend
+          pip install ruff
+          ruff check .

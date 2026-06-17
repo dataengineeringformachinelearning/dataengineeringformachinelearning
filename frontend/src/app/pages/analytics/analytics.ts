@@ -36,7 +36,7 @@ export class AnalyticsComponent implements OnInit {
     axes: [
       { type: 'category', position: 'bottom', title: { text: 'Time' } },
       { type: 'number', position: 'left', title: { text: 'Milliseconds' } },
-    ],
+    ] as any,
     background: { fill: 'transparent' },
   };
 

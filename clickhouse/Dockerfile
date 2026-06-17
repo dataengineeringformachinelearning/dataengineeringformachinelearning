@@ -1,7 +1,7 @@
 FROM clickhouse/clickhouse-server:24.3
 
 # Copy the custom XML configuration for ClickHouse
-COPY ./config/clickhouse-config.xml /etc/clickhouse-server/config.d/custom-config.xml
+COPY clickhouse-config.xml /etc/clickhouse-server/config.d/custom-config.xml
 
 # Ensure correct permissions
 RUN chmod 644 /etc/clickhouse-server/config.d/custom-config.xml

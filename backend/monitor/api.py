@@ -163,11 +163,19 @@ def list_status_pages(request):
   from django.db.models import Q
 
   if request.user.is_authenticated:
-    pages = StatusPage.objects.filter(
-      Q(is_published=True) | Q(user=request.user) | Q(slug="platform-status")
-    ).distinct()
+    pages = (
+      StatusPage.objects.filter(
+        Q(is_published=True) | Q(user=request.user) | Q(slug="platform-status")
+      )
+      .distinct()
+      .prefetch_related("services")
+    )
   else:
-    pages = StatusPage.objects.filter(Q(is_published=True) | Q(slug="platform-status")).distinct()
+    pages = (
+      StatusPage.objects.filter(Q(is_published=True) | Q(slug="platform-status"))
+      .distinct()
+      .prefetch_related("services")
+    )
 
   return [_build_status_page_out(p) for p in pages]
 
@@ -512,8 +520,9 @@ def create_incident(request, page_id: str, payload: IncidentIn):
 
   # Send email alert to the owner via Resend
   if page.user and page.user.email:
-    from config.email import send_resend_email
     from django.conf import settings
+
+    from config.email import send_resend_email
 
     subject = f"[Status Alert] {page.title}: {payload.title} ({payload.status})"
     # nosemgrep: python.django.security.injection.raw-html-format.raw-html-format
@@ -677,7 +686,7 @@ def save_clarity(request, payload: ClarityIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
 
-  integ, created = AnalyticsIntegration.objects.update_or_create(
+  integ, _ = AnalyticsIntegration.objects.update_or_create(
     user=request.user,
     provider="microsoft",
     defaults={
@@ -703,7 +712,7 @@ def save_cloudflare(request, payload: CloudflareIn):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
 
-  integ, created = AnalyticsIntegration.objects.update_or_create(
+  integ, _ = AnalyticsIntegration.objects.update_or_create(
     user=request.user,
     provider="cloudflare",
     defaults={
