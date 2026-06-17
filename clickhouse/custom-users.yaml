@@ -1,0 +1,5 @@
+users:
+  default:
+    password:
+      "@from_env": CLICKHOUSE_PASSWORD
+    access_management: 1

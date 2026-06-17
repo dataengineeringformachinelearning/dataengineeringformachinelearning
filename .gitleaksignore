@@ -12,4 +12,4 @@
 .secrets.baseline:generic-api-key:227
 
 # False positive for environment variable reference in XML config
-clickhouse/custom-users.xml:hashicorp-tf-password:4
+clickhouse/custom-users.yaml:hashicorp-tf-password:4
