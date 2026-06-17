@@ -2,13 +2,14 @@ import datetime
 
 import pytest
 from django.contrib.auth.models import User
+from django.test import Client
 from monitor.models import Endpoints, MonitoredService, StatusPage
 
 from ml.models import TrainingRun
 
 
 @pytest.mark.django_db
-def test_train_model_no_data(client):
+def test_train_model_no_data(client: Client) -> None:
   user = User.objects.create_user(username="testuser", password="password")
   StatusPage.objects.create(user=user, title="Platform Status", slug="platform-status")
   response = client.post("/api/v1/ml/train")
@@ -17,7 +18,7 @@ def test_train_model_no_data(client):
 
 
 @pytest.mark.django_db
-def test_train_model_success(client):
+def test_train_model_success(client: Client) -> None:
   user = User.objects.create_user(username="testuser", password="password")
   page = StatusPage.objects.create(user=user, title="Platform Status", slug="platform-status")
   MonitoredService.objects.create(status_page=page, name="Test Service", url="http://test.com")
@@ -45,7 +46,7 @@ def test_train_model_success(client):
 
 
 @pytest.mark.django_db
-def test_get_latest_training(client):
+def test_get_latest_training(client: Client) -> None:
   # No runs initially
   response = client.get("/api/v1/ml/latest")
   assert response.status_code == 200
@@ -63,7 +64,7 @@ def test_get_latest_training(client):
 
 
 @pytest.mark.django_db
-def test_train_and_latest_with_status_page(client):
+def test_train_and_latest_with_status_page(client: Client) -> None:
   user = User.objects.create_user(username="testuser", password="password")
   page = StatusPage.objects.create(
     user=user, title="Tenant Status", slug="tenant-status", is_published=True

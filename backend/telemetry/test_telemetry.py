@@ -1,10 +1,11 @@
 from unittest.mock import AsyncMock, patch
 
 import pytest
+from django.test import AsyncClient
 
 
 @pytest.mark.asyncio
-async def test_ingest_endpoint_telemetry(async_client):
+async def test_ingest_endpoint_telemetry(async_client: AsyncClient) -> None:
   payload = {
     "url": "http://telemetry-test.com",
     "status_code": 200,
@@ -30,7 +31,7 @@ async def test_ingest_endpoint_telemetry(async_client):
 
 @pytest.mark.django_db
 @pytest.mark.asyncio
-async def test_cookie_consent_endpoint(async_client):
+async def test_cookie_consent_endpoint(async_client: AsyncClient) -> None:
   payload = {"necessary": True, "analytical": True, "marketing": False}
   response = await async_client.post(
     "/api/v1/telemetry/cookie-consent", data=payload, content_type="application/json"
@@ -51,7 +52,7 @@ async def test_cookie_consent_endpoint(async_client):
 
 @pytest.mark.django_db
 @pytest.mark.asyncio
-async def test_telemetry_worker_normalization():
+async def test_telemetry_worker_normalization() -> None:
   import polars as pl
   from asgiref.sync import sync_to_async
   from monitor.models import Endpoints, MonitoredService
@@ -97,7 +98,7 @@ async def test_telemetry_worker_normalization():
 
 @pytest.mark.django_db
 @pytest.mark.asyncio
-async def test_subscribe_newsletter_endpoint(async_client):
+async def test_subscribe_newsletter_endpoint(async_client: AsyncClient) -> None:
   from asgiref.sync import sync_to_async
   from monitor.models import NewsletterSubscription
 

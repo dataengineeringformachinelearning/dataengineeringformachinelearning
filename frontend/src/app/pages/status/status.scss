@@ -46,7 +46,7 @@
 .sphere-1 {
   width: 500px;
   height: 500px;
-  background: var(--primary-color);
+  background: var(--color-amber);
   top: -150px;
   left: -150px;
 }
@@ -54,7 +54,7 @@
 .sphere-2 {
   width: 450px;
   height: 450px;
-  background: var(--status-accent);
+  background: var(--color-cyber-indigo);
   bottom: -150px;
   right: -100px;
 }
@@ -329,11 +329,11 @@
   }
 
   &.bar-warning {
-    background-color: #f59e0b;
+    background-color: var(--color-amber);
   }
 
   &.bar-danger {
-    background-color: #d32f2f;
+    background-color: var(--color-gauge-red);
   }
 
   &.bar-nodata {

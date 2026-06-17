@@ -30,3 +30,11 @@ This document defines the core roles and collaboration rules for our development
 - **Asynchronous Operations**: Always use `async`/`await` with proper `try`/`catch` (JS/TS) or `try`/`except` (Python) blocks for error handling. Avoid raw `.then()`/.`catch()` or old callback-style code.
 - **Constants (Python)**: Use `typing.Final` to specify constants (e.g. `MY_CONSTANT: Final = "value"`).
 - **Functions (Python)**: Add type annotations to all arguments and return values. Ensure function signatures are modern and clean.
+- **Test-Driven Development**: All testing files (e.g., `*.spec.ts`, `test_*.py`) must strictly adhere to the above code style and modernization rules. In particular, Python tests must have full type annotations for arguments (e.g., fixtures like `client: Client`, `db: Any`) and return values (e.g., `-> None`).
+
+## Documentation & Whitepaper Rules
+
+- **Whitepaper Maintenance**: Any new architectural decisions or broad conceptual changes MUST be documented in `WHITEPAPER.md`.
+- **Whitepaper Chapter Depth**: Each chapter in `WHITEPAPER.md` must be comprehensive, containing at least three paragraphs of approximately 200 words each (minimum 600 words per chapter). Ensure it reads like a structured "real chapter".
+- **README Synchronization**: The `README.md` file serves as the project overview. It should be kept concise and linked to the `WHITEPAPER.md` for deep dives. Maintain an updated table of contents.
+- **Acknowledgements**: Whenever a new technology, framework, or dependency is adopted into the stack, it MUST be explicitly appended to the `## Acknowledgements & Technologies` section in `README.md`. Always ensure there is a clear link from the top of the documentation to the acknowledgements section.

@@ -6,6 +6,13 @@ Welcome to my working notebook and companion repository. These are my active not
 
 My goal here is simple: I want to take you on a journey. We're going to build a production-grade, full-stack telemetry and machine learning platform together. We'll start from a completely fresh Mac install and work our way up to a deployed, secure, and observable system. We'll integrate modern data engineering practices directly with machine learning workflows, and by the end, you'll know how to build, observe, and secure an ML-driven application.
 
+For deep dives into the architectural and conceptual design of this system, please read the [Whitepaper](WHITEPAPER.md).
+
+## Quick Links
+
+- [Whitepaper](WHITEPAPER.md)
+- [Acknowledgements & Technologies](#acknowledgements--technologies)
+
 ---
 
 ## Chapter 1: The Fresh Install & Environment Setup
@@ -650,12 +657,12 @@ We leverage GitHub Actions and external bots strictly for code-level audits, sta
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
 
-- **Frontend**: Angular, Prettier, ESLint
-- **Backend & APIs**: Django (Django Ninja), Gunicorn, NGINX, cryptography
-- **Data & Broker**: PostgreSQL, Redpanda, Polars
-- **Machine Learning & AI**: PyTorch, Scikit-learn, Skops, LangChain, LangGraph, Google Gemini, Antigravity AI Agent (Google DeepMind)
-- **Observability, Security & CMS**: Sentry, Semgrep, Renovate, FOSSA, Checkov, Trivy, Socket.dev, Gitleaks, detect-secrets, Sanity.io, AbuseIPDB, ipify, IPinfo, Google Analytics, Microsoft Clarity, Cloudflare Web Analytics, Resend
-- **DevOps, Infrastructure & Tooling**: Docker, Railway, Infisical, pre-commit, Ruff, Django Migration Linter
+- **Frontend**: [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/)
+- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/)
+- **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Polars](https://pola.rs/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://deepmind.google/technologies/gemini/), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google/)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Railway](https://railway.app/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 
 ---
 

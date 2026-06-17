@@ -23,6 +23,12 @@
   --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
 
+  /* Cyber & Telemetry Tokens */
+  --color-amber: #ffb74d;
+  --color-cyber-indigo: #4a00e0;
+  --color-cyber-cyan: #00f2fe;
+  --color-gauge-red: #d5001c;
+
   /* Aliases for UI Components */
   --primary-color: var(--color-primary);
   --accent-color: var(--color-primary-container);
@@ -66,6 +72,11 @@
     --shadow-hover: 0 8px 24px rgba(24, 40, 33, 0.16);
     --shadow-glow: 0 0 12px rgba(45, 71, 57, 0.15);
 
+    --color-amber: #b07219;
+    --color-cyber-indigo: #31009c;
+    --color-cyber-cyan: #008fa6;
+    --color-gauge-red: #d5001c;
+
     --primary-color: var(--color-primary);
     --accent-color: var(--color-primary-container);
     --hover-color: var(--color-primary-container);
@@ -97,6 +108,11 @@ html[data-theme="light"] {
   --shadow-hover: 0 8px 24px rgba(24, 40, 33, 0.16);
   --shadow-glow: 0 0 12px rgba(45, 71, 57, 0.15);
 
+  --color-amber: #b07219;
+  --color-cyber-indigo: #31009c;
+  --color-cyber-cyan: #008fa6;
+  --color-gauge-red: #d5001c;
+
   --primary-color: var(--color-primary);
   --accent-color: var(--color-primary-container);
   --hover-color: var(--color-primary-container);
@@ -127,6 +143,11 @@ html[data-theme="dark"] {
   --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.6);
   --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
 
+  --color-amber: #ffb74d;
+  --color-cyber-indigo: #4a00e0;
+  --color-cyber-cyan: #00f2fe;
+  --color-gauge-red: #d5001c;
+
   --primary-color: var(--color-primary);
   --accent-color: var(--color-primary-container);
   --hover-color: var(--color-surface);
@@ -150,6 +171,17 @@ body {
 
 body {
   background-color: var(--bg-color);
+  background-image:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(255, 183, 77, 0.05) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(74, 0, 224, 0.04) 0%,
+      transparent 50%
+    );
   color: var(--text-color);
   font-family: "Inter", sans-serif;
   font-size: 1.125rem;
@@ -160,6 +192,20 @@ body {
     background-color 0.3s,
     color 0.3s;
   position: relative;
+}
+
+html[data-theme="light"] body {
+  background-image:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(176, 114, 25, 0.03) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 100% 100%,
+      rgba(49, 0, 156, 0.02) 0%,
+      transparent 50%
+    );
 }
 
 /* Accessibility: Visually Hidden utility */
@@ -218,7 +264,7 @@ button:focus-visible,
 .sphere-1 {
   width: 600px;
   height: 600px;
-  background: var(--primary-color);
+  background: var(--color-amber);
   top: -150px;
   left: -200px;
 }
@@ -226,7 +272,7 @@ button:focus-visible,
 .sphere-2 {
   width: 500px;
   height: 500px;
-  background: var(--accent-color);
+  background: var(--color-cyber-indigo);
   bottom: -100px;
   right: -100px;
 }

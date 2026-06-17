@@ -10,12 +10,13 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from asgiref.sync import sync_to_async
+from django.test import AsyncClient, Client
 from monitor.models import BugReport
 
 
 @pytest.mark.django_db
 @pytest.mark.asyncio
-async def test_report_issue_endpoint(async_client):
+async def test_report_issue_endpoint(async_client: AsyncClient) -> None:
   payload = {
     "user_description": "There is a bug in the telemetry pipeline",
     "telemetry_context": {
@@ -52,7 +53,7 @@ async def test_report_issue_endpoint(async_client):
 
 
 @pytest.mark.django_db
-def test_vulnerability_lifecycle(client):
+def test_vulnerability_lifecycle(client: Client) -> None:
   # 1. Report a vulnerability
   payload = {
     "title": "SQL Injection in Search Endpoint",

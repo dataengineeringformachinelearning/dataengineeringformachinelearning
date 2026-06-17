@@ -215,6 +215,8 @@ app-root {
 
 body {
   background-color: var(--bg-color);
+  background-image: radial-gradient(circle at 50% 0%, rgba(255, 183, 77, 0.05) 0%, transparent 50%),
+                    radial-gradient(circle at 100% 100%, rgba(74, 0, 224, 0.04) 0%, transparent 50%);
   color: var(--text-color);
   font-family: 'Inter', sans-serif;
   font-size: 1.125rem;
@@ -224,6 +226,11 @@ body {
   transition:
     background-color 0.3s,
     color 0.3s;
+}
+
+html[data-theme='light'] body {
+  background-image: radial-gradient(circle at 50% 0%, rgba(176, 114, 25, 0.03) 0%, transparent 50%),
+                    radial-gradient(circle at 100% 100%, rgba(49, 0, 156, 0.02) 0%, transparent 50%);
 }
 
 // ====================== TYPOGRAPHY & READABILITY ======================
@@ -252,6 +259,8 @@ h2 {
 }
 h3 {
   font-size: 1.5rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 ul,

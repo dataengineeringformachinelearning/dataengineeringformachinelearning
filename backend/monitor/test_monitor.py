@@ -1,7 +1,9 @@
 import datetime
+from typing import Any
 
 import pytest
 from django.contrib.auth import get_user_model
+from django.test import Client
 
 from monitor.models import Endpoints, MonitoredService, StatusPage
 
@@ -9,7 +11,7 @@ User = get_user_model()
 
 
 @pytest.fixture
-def test_user(db):
+def test_user(db: Any) -> User:
   return User.objects.create_user(
     username="testuser", password="password123", email="test@example.com"
   )
@@ -19,14 +21,14 @@ from unittest.mock import patch
 
 
 @pytest.fixture
-def mock_verify_token():
+def mock_verify_token() -> Any:
   with patch("firebase_admin.auth.verify_id_token") as mock:
     mock.return_value = {"uid": "testuser", "email": "test@example.com", "name": "testuser"}
     yield mock
 
 
 @pytest.fixture
-def authenticated_client(client, test_user, mock_verify_token):
+def authenticated_client(client: Client, test_user: User, mock_verify_token: Any) -> Any:
   # Monkeypatch client.request to inject Bearer token
   original_request = client.request
 
@@ -40,14 +42,14 @@ def authenticated_client(client, test_user, mock_verify_token):
 
 
 @pytest.mark.django_db
-def test_api_health(client):
+def test_api_health(client: Client) -> None:
   response = client.get("/api/v1/system-status/health")
   assert response.status_code == 200
   assert response.json() == {"status": "ok"}
 
 
 @pytest.mark.django_db
-def test_get_all_endpoints(client):
+def test_get_all_endpoints(client: Client) -> None:
   Endpoints.objects.create(
     url="http://test.com",
     status_code=200,
@@ -63,7 +65,7 @@ def test_get_all_endpoints(client):
 
 
 @pytest.mark.django_db
-def test_list_status_pages(client):
+def test_list_status_pages(client: Client) -> None:
   # This endpoint auto-creates the default platform-status page if not present
   response = client.get("/api/v1/system-status/status_pages")
   assert response.status_code == 200
@@ -73,7 +75,7 @@ def test_list_status_pages(client):
 
 
 @pytest.mark.django_db
-def test_create_status_page(authenticated_client):
+def test_create_status_page(authenticated_client: Client) -> None:
   payload = {
     "title": "New Status Page",
     "slug": "new-status",
@@ -90,7 +92,7 @@ def test_create_status_page(authenticated_client):
 
 
 @pytest.mark.django_db
-def test_create_status_page_unauthenticated(client):
+def test_create_status_page_unauthenticated(client: Client) -> None:
   payload = {"title": "Unauth Status Page", "slug": "unauth-status"}
   response = client.post(
     "/api/v1/system-status/status_pages", data=payload, content_type="application/json"
@@ -99,7 +101,7 @@ def test_create_status_page_unauthenticated(client):
 
 
 @pytest.mark.django_db
-def test_delete_status_page(authenticated_client, test_user):
+def test_delete_status_page(authenticated_client: Client, test_user: User) -> None:
   page = StatusPage.objects.create(
     user=test_user, title="Custom Status Page", slug="custom-status", description="Demo"
   )
@@ -110,7 +112,7 @@ def test_delete_status_page(authenticated_client, test_user):
 
 
 @pytest.mark.django_db
-def test_delete_system_status_page_forbidden(authenticated_client, test_user):
+def test_delete_system_status_page_forbidden(authenticated_client: Client, test_user: User) -> None:
   # Cannot delete default platform-status page
   page = StatusPage.objects.create(
     user=test_user, title="Platform Status", slug="platform-status", description="Demo"
@@ -120,7 +122,7 @@ def test_delete_system_status_page_forbidden(authenticated_client, test_user):
 
 
 @pytest.mark.django_db
-def test_add_service(authenticated_client, test_user):
+def test_add_service(authenticated_client: Client, test_user: User) -> None:
   page = StatusPage.objects.create(user=test_user, title="My Status", slug="my-status")
   payload = {"name": "Frontend Web Server", "url": "http://frontend.local"}
   response = authenticated_client.post(
@@ -136,7 +138,7 @@ def test_add_service(authenticated_client, test_user):
 
 
 @pytest.mark.django_db
-def test_list_services(client, test_user):
+def test_list_services(client: Client, test_user: User) -> None:
   page = StatusPage.objects.create(
     user=test_user, title="My Status", slug="my-status", is_published=True
   )
@@ -158,7 +160,9 @@ def test_list_services(client, test_user):
 
 
 @pytest.mark.django_db
-def test_create_and_list_incidents(client, authenticated_client, test_user):
+def test_create_and_list_incidents(
+  client: Client, authenticated_client: Client, test_user: User
+) -> None:
   page = StatusPage.objects.create(
     user=test_user, title="Incident Test Page", slug="incident-test", is_published=True
   )
@@ -184,7 +188,7 @@ def test_create_and_list_incidents(client, authenticated_client, test_user):
 
 
 @pytest.mark.django_db
-def test_private_status_page_anonymous_denied(client, test_user):
+def test_private_status_page_anonymous_denied(client: Client, test_user: User) -> None:
   # Create a private status page for test_user
   page = StatusPage.objects.create(
     user=test_user, title="Private Page", slug="private-page", is_published=False
@@ -200,7 +204,7 @@ def test_private_status_page_anonymous_denied(client, test_user):
 
 
 @pytest.mark.django_db
-def test_private_status_page_owner_allowed(authenticated_client, test_user):
+def test_private_status_page_owner_allowed(authenticated_client: Client, test_user: User) -> None:
   # Create a private status page for test_user
   page = StatusPage.objects.create(
     user=test_user, title="Private Page", slug="private-page", is_published=False
@@ -212,7 +216,7 @@ def test_private_status_page_owner_allowed(authenticated_client, test_user):
 
 
 @pytest.mark.django_db
-def test_analytics_integration_encryption(test_user):
+def test_analytics_integration_encryption(test_user: User) -> None:
   from monitor.models import AnalyticsIntegration
 
   integration = AnalyticsIntegration.objects.create(
@@ -241,7 +245,7 @@ def test_analytics_integration_encryption(test_user):
 
 
 @pytest.mark.django_db
-def test_db_cleanup_command():
+def test_db_cleanup_command() -> None:
   from datetime import timedelta
 
   from django.core.management import call_command
@@ -289,7 +293,7 @@ def test_db_cleanup_command():
 
 
 @pytest.mark.django_db
-def test_log_audit_event(test_user):
+def test_log_audit_event(test_user: User) -> None:
   from unittest.mock import MagicMock
 
   from utils.audit import log_audit_event

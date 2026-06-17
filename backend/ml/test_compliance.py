@@ -1,12 +1,13 @@
 import pytest
 from django.contrib.auth.models import User
+from django.test import Client
 from monitor.models import StatusPage
 
 from ml.models import ThreatReport
 
 
 @pytest.mark.django_db
-def test_get_threat_report_stix(client):
+def test_get_threat_report_stix(client: Client) -> None:
   # Set up status page and threat report
   user = User.objects.create_user(username="compliance_user", password="password")
   StatusPage.objects.create(user=user, title="Platform Status", slug="platform-status")
@@ -38,7 +39,7 @@ def test_get_threat_report_stix(client):
 
 
 @pytest.mark.django_db
-def test_submit_to_isac_sandbox(client):
+def test_submit_to_isac_sandbox(client: Client) -> None:
   import json
 
   user = User.objects.create_user(username="compliance_user", password="password")
@@ -58,7 +59,7 @@ def test_submit_to_isac_sandbox(client):
 
 
 @pytest.mark.django_db
-def test_get_soc_status(client):
+def test_get_soc_status(client: Client) -> None:
   response = client.get("/api/v1/ml/compliance/soc-status")
   assert response.status_code == 200
   data = response.json()
