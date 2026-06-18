@@ -167,7 +167,7 @@ export class Whitepaper implements OnInit {
         title: '8. Team Workflows and Integrated Vulnerability Management',
         paragraphs: [
           'To facilitate collaborative security workflows and structured issue tracking, the platform implements a self-contained, integrated vulnerability tracking and management component. This component features an interactive Kanban board layout to prioritize, assign, and track remediation efforts natively, allowing security teams to update vulnerability states based on customized impact and likelihood metrics.',
-          'Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. To maintain high visual quality, we implemented a custom skeleton loader for smooth page-loading transitions, and aligned the user interface with a premium, high-contrast Porsche Jet Green Metallic-inspired design system.',
+          'Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. To maintain high visual quality, we implemented a custom skeleton loader for smooth page-loading transitions, and aligned the user interface with a premium, high-contrast Data Engineering Jet Green Metallic-inspired design system.',
         ],
       },
       {

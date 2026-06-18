@@ -62,7 +62,7 @@ export class Compliance implements OnInit {
     transit: 'TLS 1.3 / SSL Encryption active on all connections',
     rest: 'KMS / AES-256 managed keys active on database volumes',
     clientPayload: 'Active payload signing & end-to-end telemetry integrity verification',
-    rotationDaysRemaining: 74,
+    rotationDaysRemaining: 0,
   });
 
   constructor() {

@@ -30,8 +30,6 @@
 }
 
 .content-wrapper {
-  max-width: var(--container-max-width);
-  margin: 0 auto;
   width: 100%;
   flex: 1;
   display: flex;
@@ -62,7 +60,7 @@
 
   .metric-label {
     font-size: 0.85rem;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     color: var(--text-muted);
     letter-spacing: 0.05em;
   }
@@ -70,7 +68,7 @@
   .metric-value {
     font-size: 2.2rem;
     font-weight: bold;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     line-height: 1.2;
   }
 
@@ -144,7 +142,7 @@
     padding: 0.1rem 0.5rem;
     border-radius: 20px;
     font-weight: bold;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
   }
 }
 
@@ -166,7 +164,7 @@
   label {
     font-size: 0.85rem;
     font-weight: 600;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     color: var(--text-muted);
     margin-bottom: 0.4rem;
     text-transform: uppercase;
@@ -234,7 +232,7 @@
 
   .item-id {
     font-size: 0.65rem;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     color: var(--text-muted);
   }
 
@@ -244,7 +242,7 @@
     text-transform: uppercase;
     padding: 0.1rem 0.4rem;
     border-radius: 3px;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
 
     &[data-severity="low"] { background-color: rgba(76, 175, 80, 0.15); color: #81c784; }
     &[data-severity="medium"] { background-color: rgba(255, 193, 7, 0.15); color: #ffd54f; }
@@ -266,7 +264,7 @@
   align-items: center;
   font-size: 0.65rem;
   color: var(--text-muted);
-  font-family: monospace;
+  font-family: 'Inter', monospace;
 
   .client-id {
     display: flex;
@@ -307,7 +305,7 @@
 }
 
 .vuln-id-tag {
-  font-family: monospace;
+  font-family: 'Inter', monospace;
   font-size: 0.7rem;
   background-color: var(--color-background);
   padding: 0.15rem 0.5rem;
@@ -316,7 +314,7 @@
 }
 
 .cve-tag {
-  font-family: monospace;
+  font-family: 'Inter', monospace;
   font-size: 0.7rem;
   font-weight: bold;
   background-color: rgba(213, 0, 28, 0.15);
@@ -383,7 +381,7 @@
 }
 
 .y-axis-label {
-  font-family: monospace;
+  font-family: 'Inter', monospace;
   font-size: 0.7rem;
   font-weight: bold;
   writing-mode: vertical-rl;
@@ -407,7 +405,7 @@
   .row-label {
     width: 20px;
     text-align: right;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     font-size: 0.75rem;
     color: var(--text-muted);
     margin-right: 0.5rem;
@@ -423,7 +421,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: monospace;
+  font-family: 'Inter', monospace;
   font-weight: bold;
   font-size: 0.9rem;
   transition: var(--transition-smooth);
@@ -477,7 +475,7 @@
   .col-label {
     width: 60px;
     text-align: center;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     font-size: 0.65rem;
     color: var(--text-muted);
   }
@@ -489,7 +487,7 @@
 
 .x-axis-label {
   text-align: center;
-  font-family: monospace;
+  font-family: 'Inter', monospace;
   font-size: 0.7rem;
   font-weight: bold;
   margin-top: 0.75rem;
@@ -534,7 +532,7 @@
   font-size: 0.75rem;
   cursor: pointer;
   transition: var(--transition-smooth);
-  font-family: monospace;
+  font-family: 'Inter', monospace;
   outline: none;
 
   &:hover {
@@ -565,7 +563,7 @@
   margin: 0;
 
   code {
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     font-size: 0.75rem;
     color: #a5d6a7;
   }
@@ -615,7 +613,7 @@
   h2 {
     font-size: 1.1rem;
     margin: 0 0 0.5rem 0;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     color: var(--color-on-surface);
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -653,7 +651,7 @@
 
   .empty-title {
     font-size: 0.9rem;
-    font-family: monospace;
+    font-family: 'Inter', monospace;
     font-weight: bold;
     color: var(--color-success);
     margin: 0 0 0.5rem 0;
@@ -672,7 +670,7 @@
   color: var(--text-muted);
   text-align: center;
 
-  p { font-size: 0.8rem; margin: 0; font-family: monospace; }
+  p { font-size: 0.8rem; margin: 0; font-family: 'Inter', monospace; }
 }
 
 .spinner {

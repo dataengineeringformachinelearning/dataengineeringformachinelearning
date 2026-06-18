@@ -1,5 +1,9 @@
 @use '../status/status.scss' as *;
 
+.content-wrapper {
+  max-width: 100%;
+}
+
 .chart-container {
   height: 400px;
   width: 100%;

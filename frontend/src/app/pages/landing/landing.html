@@ -1,40 +1,98 @@
-<div class="landing-container bladerunner-theme">
-  <!-- Ambient Lighting / Water Ripples -->
-  <div class="ambient-glow"></div>
+<div class="landing-container platform-theme bento-layout">
+  <!-- Ambient Lighting with heavy Amber accents -->
+  <div class="ambient-glow primary-glow"></div>
+  <div class="ambient-glow amber-glow"></div>
   <div class="ambient-ripple"></div>
 
   <!-- Hero Section -->
   <header class="hero-section">
     <div class="hero-badge">
       <span class="badge-dot"></span>
-      <span class="badge-text">Version {{ version }} Production Platform</span>
+      <span class="badge-text">Version {{ version }}</span>
     </div>
 
-    <div class="hero-logo-container">
-      <mat-icon class="brand-icon">analytics</mat-icon>
+    <div class="hero-content">
+      <h1 class="title" id="main-title">Data Engineering<br />for Machine Learning</h1>
+      <p class="subtitle">
+        Embed a single line of code to stream zero-dependency telemetry into our deep learning
+        pipeline and protect your infrastructure with anomaly forecasting.
+      </p>
+
+      <div class="cta-group">
+        <a routerLink="/documentation" class="cta-button primary-btn">
+          <mat-icon>menu_book</mat-icon>
+          <span>Explore Documentation</span>
+        </a>
+        <a routerLink="/status/platform-status" class="cta-button secondary-btn">
+          <span>View Platform Status</span>
+        </a>
+      </div>
     </div>
+  </header>
 
-    <h1 class="title" id="main-title">Data Engineering for Machine Learning</h1>
-    <p class="subtitle">
-      Embed a single line of code to stream zero-dependency telemetry into our deep learning
-      pipeline and protect your infrastructure with anomaly forecasting.
-    </p>
+  <!-- Bento Grid Restructure -->
+  <div class="bento-grid-container">
+    <!-- Interactive Pipeline Flow Simulation (Spans 2 columns) -->
+    <section class="bento-item pipeline-bento" aria-labelledby="simulator-title">
+      <div class="bento-header">
+        <h2 id="simulator-title">Real-time Telemetry Pipeline</h2>
+        <p>Observe the raw data streams passing through the predictive models in real-time.</p>
+      </div>
 
-    <div class="cta-group">
-      <a routerLink="/documentation" class="cta-button primary-btn">
-        <mat-icon>menu_book</mat-icon>
-        <span>Read Documentation</span>
-      </a>
-      <a routerLink="/status/platform-status" class="cta-button secondary-btn">
-        <mat-icon>analytics</mat-icon>
-        <span>View Statuses</span>
-      </a>
-    </div>
+      <div class="simulator-grid">
+        <div class="steps-nav" role="tablist" aria-label="Pipeline Stages">
+          @for (step of pipelineSteps; track step.id; let idx = $index) {
+          <button
+            role="tab"
+            [attr.aria-selected]="activeStepIndex === idx"
+            [attr.aria-controls]="'step-panel-' + step.id"
+            [id]="'step-tab-' + step.id"
+            [class.active]="activeStepIndex === idx"
+            (click)="setStep(idx)"
+            class="step-nav-item"
+          >
+            <div class="step-nav-icon">
+              <mat-icon>{{ step.icon }}</mat-icon>
+            </div>
+            <div class="step-nav-info">
+              <span class="step-nav-name">{{ step.name }}</span>
+            </div>
+          </button>
+          }
+        </div>
 
-    <!-- Live Widget Hero Showcase -->
-    <div class="widget-hero-showcase">
+        <div class="step-display-panel">
+          @for (step of pipelineSteps; track step.id; let idx = $index) { @if (activeStepIndex ===
+          idx) {
+          <div
+            [id]="'step-panel-' + step.id"
+            role="tabpanel"
+            [attr.aria-labelledby]="'step-tab-' + step.id"
+            class="step-content-box"
+          >
+            <div class="step-text-content">
+              <h3>{{ step.name }}</h3>
+              <p>{{ step.description }}</p>
+            </div>
+            <div class="step-code-visual">
+              <div class="code-header">
+                <span class="file-name"
+                  >{{ step.id === 'predict' ? 'threat_model.py' : step.id === 'clean' ?
+                  'events.sqlx' : step.id === 'analyze' ? 'query.sql' : 'payload.json' }}</span
+                >
+              </div>
+              <pre><code>{{ step.codeSnippet }}</code></pre>
+            </div>
+          </div>
+          } }
+        </div>
+      </div>
+    </section>
+
+    <!-- Live Widget Hero Showcase (Spans 1 column) -->
+    <div class="bento-item widget-bento">
       <div class="showcase-content">
-        <div class="showcase-header">
+        <div class="bento-header">
           <span class="showcase-tag">LIVE TELEMETRY WIDGET</span>
           <div class="embed-code">
             <code>&lt;script src=".../widget.js"&gt;&lt;/script&gt;</code>
@@ -43,87 +101,12 @@
         <div class="widget-mount-point" id="hero-widget-mount"></div>
       </div>
     </div>
-  </header>
 
-  <!-- Interactive Pipeline Flow Simulation -->
-  <section class="pipeline-simulator" aria-labelledby="simulator-title">
-    <div class="simulator-header">
-      <h2 id="simulator-title">Real-time Telemetry Pipeline</h2>
-      <p>Observe the raw data streams passing through the predictive models in real-time.</p>
-    </div>
-
-    <div class="simulator-grid">
-      <!-- Steps Navigation -->
-      <div class="steps-nav" role="tablist" aria-label="Pipeline Stages">
-        @for (step of pipelineSteps; track step.id; let idx = $index) {
-        <button
-          role="tab"
-          [attr.aria-selected]="activeStepIndex === idx"
-          [attr.aria-controls]="'step-panel-' + step.id"
-          [id]="'step-tab-' + step.id"
-          [class.active]="activeStepIndex === idx"
-          (click)="setStep(idx)"
-          class="step-nav-item"
-        >
-          <div class="step-nav-icon">
-            <mat-icon>{{ step.icon }}</mat-icon>
-          </div>
-          <div class="step-nav-info">
-            <span class="step-nav-tag">{{ step.tag }}</span>
-            <span class="step-nav-name">{{ step.name }}</span>
-          </div>
-        </button>
-        }
-      </div>
-
-      <!-- Step Content Display -->
-      <div class="step-display-panel">
-        @for (step of pipelineSteps; track step.id; let idx = $index) { @if (activeStepIndex ===
-        idx) {
-        <div
-          [id]="'step-panel-' + step.id"
-          role="tabpanel"
-          [attr.aria-labelledby]="'step-tab-' + step.id"
-          class="step-content-box"
-        >
-          <div class="step-text-content">
-            <span class="step-pill">{{ step.tag }}</span>
-            <h3>{{ step.name }}</h3>
-            <p>{{ step.description }}</p>
-          </div>
-          <div class="step-code-visual">
-            <div class="code-header">
-              <span class="dot red"></span>
-              <span class="dot yellow"></span>
-              <span class="dot green"></span>
-              <span class="file-name"
-                >{{ step.id === 'predict' ? 'threat_model.py' : step.id === 'clean' ? 'events.sqlx'
-                : step.id === 'analyze' ? 'query.sql' : 'payload.json' }}</span
-              >
-            </div>
-            <pre><code>{{ step.codeSnippet }}</code></pre>
-          </div>
-        </div>
-        } }
-      </div>
-    </div>
-  </section>
-
-  <!-- Platform Video presentation -->
-  <section class="video-presentation-section" aria-labelledby="video-title">
-    <div class="video-flat-container">
+    <!-- Platform Video presentation -->
+    <section class="bento-item video-bento" aria-labelledby="video-title">
       <div class="telemetry-bar">
-        <div class="telemetry-left">
-          <span class="telemetry-dot amber"></span>
-          <span class="telemetry-tag">VIDEO FEED // DEEP_LEARNING_ORCHESTRATOR</span>
-        </div>
-        <div class="telemetry-right">
-          <span class="telemetry-metric">29.97 FPS</span>
-          <span class="telemetry-divider">|</span>
-          <span class="telemetry-metric">RES: 2160P</span>
-          <span class="telemetry-divider">|</span>
-          <span class="telemetry-metric">STATUS: SYNCED</span>
-        </div>
+        <span class="telemetry-dot amber"></span>
+        <span class="telemetry-tag">VIDEO FEED</span>
       </div>
       <div class="video-frame-flat">
         <video
@@ -145,94 +128,70 @@
           tabindex="0"
           (keydown.enter)="videoPlayer.play()"
         >
-          <div class="overlay-glow"></div>
           <div class="play-button-premium">
             <mat-icon class="play-icon">play_arrow</mat-icon>
           </div>
-          <span class="play-hint">ACCESS ARCHIVE RECORDING</span>
         </div>
         }
       </div>
       @if (sanityService.platformVideo(); as video) { @if (video.description) {
-      <div class="video-flat-info">
-        <span class="info-pre-tag">DOCUMENTARY ARCHIVE</span>
+      <div class="bento-footer">
         <h2 id="video-title">{{ video.title }}</h2>
         <p>{{ video.description }}</p>
       </div>
       } }
+    </section>
+
+    <!-- Feature Cards Grid inside Bento -->
+    <section class="bento-item features-bento" aria-labelledby="features-title">
+      <div class="bento-header">
+        <span class="section-tag">CAPABILITIES</span>
+        <h2 id="features-title">Engineered for Reliability</h2>
+      </div>
+
+      <div class="bento-features-grid">
+        <div class="feature-card">
+          <mat-icon class="amber-icon">explore</mat-icon>
+          <h3>Data Discovery</h3>
+          <p>Traverse massive databanks and identify key metrics.</p>
+        </div>
+        <div class="feature-card">
+          <mat-icon class="amber-icon">analytics</mat-icon>
+          <h3>Telemetry Analytics</h3>
+          <p>Monitor real-time health and performance drops.</p>
+        </div>
+        <div class="feature-card">
+          <mat-icon class="amber-icon">security</mat-icon>
+          <h3>Threat Mitigation</h3>
+          <p>Detect rogue models and scan for infrastructure flaws.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  <!-- End Bento Grid -->
+
+  <!-- Data Transparency -->
+  <section class="transparency-atmospheric" aria-labelledby="transparency-title">
+    <div class="atmospheric-header">
+      <span class="section-tag">COMPLIANCE PROTOCOL</span>
+      <h2 id="transparency-title">Absolute Transparency</h2>
+      <p>Guarantees the integrity of our creations.</p>
     </div>
-  </section>
-
-  <!-- Feature Cards Grid -->
-  <section class="features-section" aria-labelledby="features-title">
-    <div class="section-intro">
-      <span class="section-tag">CAPABILITIES</span>
-      <h2 id="features-title">Engineered for Reliability & Scale</h2>
-      <p>
-        Our extensible deep learning pipeline features SLA predictions and Threat Anomaly analytics.
-      </p>
-    </div>
-
-    <div class="features-grid">
-      <div class="feature-card">
-        <span class="card-tag">EXPLORE</span>
-        <div class="feature-icon"><mat-icon>explore</mat-icon></div>
-        <h2>Data Discovery</h2>
-        <p>Traverse massive databanks and identify key metrics across sector 4.</p>
-      </div>
-
-      <div class="feature-card">
-        <span class="card-tag">ANALYTICS</span>
-        <div class="feature-icon"><mat-icon>analytics</mat-icon></div>
-        <h2>Telemetry Analytics</h2>
-        <p>Monitor real-time robotic health, emotional baselines, and performance drops.</p>
-      </div>
-
-      <div class="feature-card">
-        <span class="card-tag">VULNERABILITIES</span>
-        <div class="feature-icon"><mat-icon>security</mat-icon></div>
-        <h2>Threat Mitigation</h2>
-        <p>Detect rogue models and scan for systemic infrastructure flaws.</p>
-      </div>
-
-      <div class="feature-card">
-        <span class="card-tag">DOCS</span>
-        <div class="feature-icon"><mat-icon>library_books</mat-icon></div>
-        <h2>System Archives</h2>
-        <p>Access the library for structural guides and whitepapers.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- Data Transparency & Trust Section -->
-  <section class="transparency-section" aria-labelledby="transparency-title">
-    <div class="transparency-grid">
-      <div class="transparency-left">
-        <span class="section-tag">COMPLIANCE PROTOCOL</span>
-        <h2 id="transparency-title">Absolute Transparency</h2>
-        <p>
-          The <strong>Data Engineering for Machine Learning Platform</strong> guarantees the
-          integrity of our creations.
-        </p>
-      </div>
-      <div class="transparency-right">
-        <ul class="purpose-list">
-          <li>
-            <mat-icon>shield</mat-icon>
-            <div class="purpose-text">
-              <strong>System Telemetry Syncing:</strong>
-              <p>Aggregates anonymized traffic parameters to feed into our neural matrix.</p>
-            </div>
-          </li>
-          <li>
-            <mat-icon>vpn_key</mat-icon>
-            <div class="purpose-text">
-              <strong>Admin Authentication:</strong>
-              <p>Authenticates high-level executives for planetary pipeline orchestrations.</p>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+    <ul class="purpose-list">
+      <li>
+        <mat-icon>shield</mat-icon>
+        <div class="purpose-text">
+          <strong>System Telemetry</strong>
+          Aggregates anonymized parameters.
+        </div>
+      </li>
+      <li>
+        <mat-icon>vpn_key</mat-icon>
+        <div class="purpose-text">
+          <strong>Data Tenancy</strong>
+          Enforces strict isolation across pipeline boundaries.
+        </div>
+      </li>
+    </ul>
   </section>
 </div>

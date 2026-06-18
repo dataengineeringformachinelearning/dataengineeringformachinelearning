@@ -146,6 +146,9 @@ To elevate the dark-first visual look of the application to a premium, high-perf
 
 - **Industrial Amber**:
   - `--color-amber`: `#ffb74d` (Dark), `#b07219` (Light) — represents glowing console panels and active telemetry.
+  - `--color-amber-container`: `rgba(255, 183, 77, 0.15)` (Dark), `rgba(176, 114, 25, 0.1)` (Light) — background color for amber-accented cards and grids.
+  - `--color-on-amber-container`: `#ffe0b2` (Dark), `#5c3a00` (Light) — text over amber containers.
+  - `--color-amber-glow`: `rgba(255, 183, 77, 0.4)` (Dark) — used to provide a warm, cinematic ambient light across the dark grid layout.
 - **Instrument Gauge Red**:
   - `--color-gauge-red`: `#d5001c` — used for critical status lines, needles, and high-importance alerts.
 - **Precision Tones**:

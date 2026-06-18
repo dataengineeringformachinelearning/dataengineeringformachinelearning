@@ -230,11 +230,7 @@
   padding: var(--grid-gap);
 }
 
-.content-wrapper {
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-}
-
+/* content-wrapper removed to inherit 100% width from app.scss */
 .settings-stack,
 .manage-stack {
   display: flex;
@@ -638,7 +634,7 @@
 }
 
 .code-block-outlined {
-  font-family: 'Fira Code', monospace;
+  font-family: 'Inter', monospace;
   font-size: 0.85rem;
   overflow-x: auto;
   white-space: pre-wrap;

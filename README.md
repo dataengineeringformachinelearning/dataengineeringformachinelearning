@@ -550,7 +550,7 @@ We expanded our telemetry by adding Cloudflare Web Analytics. We securely store 
 
 ## Chapter 20: Team Workflows and Vulnerability Management
 
-To resolve security concerns efficiently, we built an integrated Kanban board workflow. We also refined the UI, creating a Boneyard-inspired skeleton loader and a luxurious "Porsche Jet Green Metallic" color palette to give the application a truly premium feel.
+To resolve security concerns efficiently, we built an integrated Kanban board workflow. We also refined the UI, creating a Boneyard-inspired skeleton loader and a luxurious "Data Engineering Jet Green Metallic" color palette to give the application a truly premium feel.
 
 ---
 
@@ -611,7 +611,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Frontend**: [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/)
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Polars](https://pola.rs/)
-- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://deepmind.google/technologies/gemini/), [Antigravity AI Agent (Google DeepMind)](https://deepmind.google/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Railway](https://railway.app/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 

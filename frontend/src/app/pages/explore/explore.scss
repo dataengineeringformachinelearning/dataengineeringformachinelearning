@@ -1,5 +1,9 @@
 @use '../status/status.scss' as *;
 
+.content-wrapper {
+  max-width: 100%;
+}
+
 .inline-status-link {
   color: var(--status-accent);
   font-weight: 500;

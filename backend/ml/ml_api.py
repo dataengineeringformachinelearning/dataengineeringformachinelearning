@@ -396,7 +396,7 @@ def get_soc_status(request: Any) -> Any:
       "category": "Confidentiality",
       "status": "compliant",
       "description": "Telemetry logs, status page variables, and credentials must be encrypted at rest.",
-      "details": "Active. Data is envelope-encrypted using a local/GCP KMS cryptographic Key Encrypting Key (KEK) with automated 90-day rotation.",
+      "details": "Active. Data is envelope-encrypted using a local/GCP KMS cryptographic Key Encrypting Key (KEK) with automated 30-day rotation.",
     },
     {
       "name": "Audit Logging & Threat Anomaly Tracking",
@@ -433,9 +433,9 @@ def get_soc_status(request: Any) -> Any:
   dek_obj = DataEncryptionKey.objects.filter(is_active=True).order_by("-created_at").first()
   if dek_obj:
     days_passed = (timezone.now() - dek_obj.created_at).days
-    rotation_days_remaining = max(0, 90 - days_passed)
+    rotation_days_remaining = max(0, 30 - days_passed)
   else:
-    rotation_days_remaining = 90
+    rotation_days_remaining = 30
 
   e2e_encryption = {
     "transit": "TLS 1.3 / SSL Encryption active on all connections",

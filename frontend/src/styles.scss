@@ -488,7 +488,7 @@ main.main {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: calc(100% - var(--grid-gap) * 2);
+  max-width: var(--container-max-width);
   padding: 1.5rem;
   margin: 0 auto;
   box-sizing: border-box;
@@ -515,7 +515,7 @@ main.main {
   bottom: 24px;
   right: 24px;
   z-index: 99999;
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Inter', sans-serif;
   max-width: 400px;
   animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -760,7 +760,7 @@ html[data-theme='light'] #global-error-toast {
   font-size: 0.75rem;
   color: var(--text-muted);
   margin: 0.25rem 0 0 0;
-  font-family: monospace;
+  font-family: 'Inter', monospace;
 }
 
 /* Hide floating invisible reCAPTCHA badge globally */
@@ -808,7 +808,7 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 
 
 
-// ====================== SLEEK DEEPMIND CONSOLE SCROLLBARS ======================
+// ====================== SLEEK PLATFORM CONSOLE SCROLLBARS ======================
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -825,7 +825,7 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
   box-shadow: 0 0 10px var(--color-amber);
 }
 
-// ====================== WALLACE CORP GLASSMORPHISM PANELS ======================
+// ====================== DATA ENGINEERING GLASSMORPHISM PANELS ======================
 .glass-panel {
   background: rgba(24, 40, 33, 0.45) !important;
   backdrop-filter: blur(20px) saturate(160%) !important;
@@ -887,4 +887,14 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 }
 .mat-mdc-raised-button.mat-primary:hover::before {
   left: 150%;
+}
+
+/* Glow styles for global icons */
+.glowing-icon-sm {
+  color: #9fb8ad !important;
+  filter: drop-shadow(0 0 6px rgba(159, 184, 173, 0.6));
+  transition: all 0.3s ease;
+}
+.glowing-icon-sm:hover {
+  filter: drop-shadow(0 0 10px rgba(159, 184, 173, 0.9));
 }
