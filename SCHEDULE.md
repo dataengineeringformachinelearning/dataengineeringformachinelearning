@@ -1,6 +1,20 @@
 # Platform Automation Schedule
 
-This document outlines the concrete, implemented automations that are actively running in the repository via GitHub Actions workflows and Django management commands.
+This document outlines the concrete, implemented automations that are actively running in the repository via GitHub Actions workflows, Django management commands, and continuously running background workers.
+
+## Continuous Background Workers
+
+**Focus:** Real-time stream processing, active health pinging, hourly aggregations, and asynchronous ML training.
+**Execution:** These run continuously as standalone services (e.g., via Docker Compose or Railway).
+
+- **Telemetry Worker (`python manage.py telemetry_worker`)**
+  - **Stream Processing:** Continuously consumes and processes Redpanda Kafka streams (`app-events`, `user-issues`) in near real-time.
+  - **Active Pinger:** Automatically pings and records the health status/latency of all monitored services every **30 seconds**.
+  - **Analytics Aggregation:** Runs the `aggregate_analytics` command every **1 hour** to synthesize raw telemetry, threat intelligence, and widget signals into streamlined Postgres time-series buckets.
+
+- **ML Worker (`python manage.py ml_worker`)**
+  - **Event-Driven Training:** Continuously listens for `ml-training-events` on Redpanda to trigger on-demand model training for specific tenants.
+  - **Daily Fallback/Cleanup:** Automatically triggers full `train_all_models` (which includes `db_cleanup.py`) every **24 hours** to ensure no tenant is left behind.
 
 ## Daily Cycle: Models & Threat Intelligence
 

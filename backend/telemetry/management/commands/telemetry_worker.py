@@ -317,8 +317,20 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Telemetry Scheduler: Hourly check failed: {e}"))
 
+      try:
+        await self.run_aggregation_command()
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Telemetry Scheduler: Aggregation failed: {e}"))
+
       # Check hourly
       await asyncio.sleep(3600)
+
+  @sync_to_async
+  def run_aggregation_command(self):
+    from django.core.management import call_command
+
+    self.stdout.write("Triggering aggregate_analytics command from worker...")
+    call_command("aggregate_analytics")
 
   @sync_to_async
   def log_telemetry_metrics(self):

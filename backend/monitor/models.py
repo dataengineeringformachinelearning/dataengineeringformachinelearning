@@ -277,3 +277,43 @@ class ThreatIntelligence(models.Model):
 
   def __str__(self):
     return f"{self.source} - {self.ip_address or self.location} ({self.timestamp})"
+
+
+class AggregatedAnalytics(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  timestamp = models.DateTimeField(
+    db_index=True, help_text="The start time of the aggregation bucket"
+  )
+  bucket_size = models.CharField(max_length=50, default="1h", help_text="e.g., '1h', '1d'")
+
+  # Traffic & Telemetry (Clickhouse & Endpoints)
+  total_requests = models.BigIntegerField(default=0)
+  avg_latency_ms = models.FloatField(default=0.0)
+  p99_latency_ms = models.FloatField(default=0.0)
+  error_rate_percent = models.FloatField(default=0.0)
+
+  # Security & Threats
+  threats_detected = models.IntegerField(default=0)
+  active_incidents = models.IntegerField(default=0)
+
+  # 3rd Party Analytics & Cookies
+  unique_visitors = models.IntegerField(default=0)
+  cookie_consents_analytical = models.IntegerField(default=0)
+  cookie_consents_marketing = models.IntegerField(default=0)
+
+  # Widget Signals
+  widget_interactions = models.IntegerField(default=0)
+
+  # Enrichments & Extensible payload
+  metadata = models.JSONField(default=dict, blank=True)
+
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "aggregated_analytics"
+    ordering = ["-timestamp"]
+    unique_together = ("timestamp", "bucket_size")
+
+  def __str__(self):
+    return f"Analytics {self.bucket_size} bucket at {self.timestamp}"
