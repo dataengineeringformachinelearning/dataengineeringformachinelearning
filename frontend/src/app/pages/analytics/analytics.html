@@ -117,7 +117,7 @@
       </section>
 
       <!-- USER METRICS SECTION -->
-      <div class="metrics-overview-header analytics-extracted-10">
+      <div class="metrics-overview-header metrics-section-spacing">
         <h2 class="section-title-premium">
           <mat-icon>person</mat-icon>
           Your Analytics
@@ -127,16 +127,14 @@
         </p>
       </div>
       <!-- REGULAR STATS -->
-      <div class="ml-stat-panels-row analytics-extracted-3">
+      <div class="ml-stat-panels-row stat-panels-grid">
         <div class="ml-stat-panel">
           <div class="stat-info">
             <div>
               <span class="stat-title">P99 LATENCY</span>
             </div>
           </div>
-          <span class="stat-value"
-            >{{ p99Latency }} <span class="analytics-extracted-4">ms</span></span
-          >
+          <span class="stat-value">{{ p99Latency }} <span class="stat-unit">ms</span></span>
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -144,9 +142,7 @@
               <span class="stat-title">SERVICE UPTIME</span>
             </div>
           </div>
-          <span class="stat-value"
-            >{{ uptimePercent }} <span class="analytics-extracted-4">%</span></span
-          >
+          <span class="stat-value">{{ uptimePercent }} <span class="stat-unit">%</span></span>
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -171,16 +167,16 @@
         </div>
       </div>
 
-      <div class="dashboard-grid analytics-extracted-7">
+      <div class="dashboard-grid dashboard-grid-single">
         <section class="status-card-outlined">
-          <div class="panel-header analytics-extracted-12">
-            <h3 class="panel-title analytics-extracted-9">
-              <mat-icon class="analytics-extracted-11">insights</mat-icon>
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">insights</mat-icon>
               Performance Telemetry
             </h3>
           </div>
 
-          <div class="card-body-clean analytics-extracted-6">
+          <div class="card-body-clean chart-container-large">
             <!-- Empty state: visible only when not loading and data is empty -->
             @if (!isLoading && (!chartOptions.data || chartOptions.data.length === 0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
@@ -199,7 +195,7 @@
               [options]="chartOptions"
               role="img"
               aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
-              class="analytics-extracted-5"
+              class="ag-chart-large"
             ></ag-charts>
             }
 
@@ -230,7 +226,7 @@
       </div>
 
       <!-- TRAFFIC ANALYTICS SECTION -->
-      <div class="metrics-overview-header analytics-extracted-10">
+      <div class="metrics-overview-header metrics-section-spacing">
         <h2 class="section-title-premium">
           <mat-icon>traffic</mat-icon>
           Traffic Analytics
@@ -239,16 +235,16 @@
           Geographic origins, frequency trends, and endpoint usage patterns.
         </p>
       </div>
-      <div class="dashboard-grid analytics-extracted-2">
+      <div class="dashboard-grid dashboard-grid-responsive">
         <!-- Origin Chart -->
         <section class="status-card-outlined">
-          <div class="panel-header analytics-extracted-12">
-            <h3 class="panel-title analytics-extracted-9">
-              <mat-icon class="analytics-extracted-11">public</mat-icon>
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">public</mat-icon>
               Origins
             </h3>
           </div>
-          <div class="card-body-clean analytics-extracted-1">
+          <div class="card-body-clean chart-container-medium">
             @if (!isLoading && (!originChartOptions.data || originChartOptions.data.length === 0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
@@ -260,7 +256,7 @@
               [options]="originChartOptions"
               role="img"
               aria-label="Line chart displaying geographic origins."
-              class="analytics-extracted-8"
+              class="ag-chart-medium"
             ></ag-charts>
             }
           </div>
@@ -268,13 +264,13 @@
 
         <!-- Frequency Chart -->
         <section class="status-card-outlined">
-          <div class="panel-header analytics-extracted-12">
-            <h3 class="panel-title analytics-extracted-9">
-              <mat-icon class="analytics-extracted-11">timeline</mat-icon>
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">timeline</mat-icon>
               Frequency
             </h3>
           </div>
-          <div class="card-body-clean analytics-extracted-1">
+          <div class="card-body-clean chart-container-medium">
             @if (!isLoading && (!frequencyChartOptions.data || frequencyChartOptions.data.length ===
             0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
@@ -287,7 +283,7 @@
               [options]="frequencyChartOptions"
               role="img"
               aria-label="Line chart displaying request frequency."
-              class="analytics-extracted-8"
+              class="ag-chart-medium"
             ></ag-charts>
             }
           </div>
@@ -295,13 +291,13 @@
 
         <!-- Endpoint Chart -->
         <section class="status-card-outlined">
-          <div class="panel-header analytics-extracted-12">
-            <h3 class="panel-title analytics-extracted-9">
-              <mat-icon class="analytics-extracted-11">api</mat-icon>
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">api</mat-icon>
               Endpoint Usage
             </h3>
           </div>
-          <div class="card-body-clean analytics-extracted-1">
+          <div class="card-body-clean chart-container-medium">
             @if (!isLoading && (!endpointChartOptions.data || endpointChartOptions.data.length ===
             0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
@@ -314,7 +310,7 @@
               [options]="endpointChartOptions"
               role="img"
               aria-label="Line chart displaying endpoint usage."
-              class="analytics-extracted-8"
+              class="ag-chart-medium"
             ></ag-charts>
             }
           </div>
@@ -322,7 +318,7 @@
       </div>
 
       <!-- SIEM / SECURITY INSIGHTS SECTION -->
-      <div class="metrics-overview-header analytics-extracted-10">
+      <div class="metrics-overview-header metrics-section-spacing">
         <h2 class="section-title-premium">
           <mat-icon>security</mat-icon>
           SIEM / Security Insights
@@ -331,16 +327,16 @@
           Threat events, anomalies, and HTTP status distribution.
         </p>
       </div>
-      <div class="dashboard-grid analytics-extracted-2">
+      <div class="dashboard-grid dashboard-grid-responsive">
         <!-- Status Chart -->
         <section class="status-card-outlined">
-          <div class="panel-header analytics-extracted-12">
-            <h3 class="panel-title analytics-extracted-9">
-              <mat-icon class="analytics-extracted-11">http</mat-icon>
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">http</mat-icon>
               Status Distribution
             </h3>
           </div>
-          <div class="card-body-clean analytics-extracted-1">
+          <div class="card-body-clean chart-container-medium">
             @if (!isLoading && (!statusChartOptions.data || statusChartOptions.data.length === 0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
@@ -352,7 +348,7 @@
               [options]="statusChartOptions"
               role="img"
               aria-label="Line chart displaying HTTP statuses."
-              class="analytics-extracted-8"
+              class="ag-chart-medium"
             ></ag-charts>
             }
           </div>
@@ -360,13 +356,13 @@
 
         <!-- Threat Chart -->
         <section class="status-card-outlined">
-          <div class="panel-header analytics-extracted-12">
-            <h3 class="panel-title analytics-extracted-9">
-              <mat-icon class="analytics-extracted-11">warning</mat-icon>
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">warning</mat-icon>
               Threat Severity
             </h3>
           </div>
-          <div class="card-body-clean analytics-extracted-1">
+          <div class="card-body-clean chart-container-medium">
             @if (!isLoading && (!threatSeverityChartOptions.data ||
             threatSeverityChartOptions.data.length === 0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
@@ -379,7 +375,7 @@
               [options]="threatSeverityChartOptions"
               role="img"
               aria-label="Line chart displaying threat severity."
-              class="analytics-extracted-8"
+              class="ag-chart-medium"
             ></ag-charts>
             }
           </div>
@@ -387,13 +383,13 @@
 
         <!-- Anomalies Chart -->
         <section class="status-card-outlined">
-          <div class="panel-header analytics-extracted-12">
-            <h3 class="panel-title analytics-extracted-9">
-              <mat-icon class="analytics-extracted-11">radar</mat-icon>
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">radar</mat-icon>
               Security Anomalies
             </h3>
           </div>
-          <div class="card-body-clean analytics-extracted-1">
+          <div class="card-body-clean chart-container-medium">
             @if (!isLoading && (!securityAlertsChartOptions.data ||
             securityAlertsChartOptions.data.length === 0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
@@ -406,7 +402,7 @@
               [options]="securityAlertsChartOptions"
               role="img"
               aria-label="Line chart displaying security anomalies."
-              class="analytics-extracted-8"
+              class="ag-chart-medium"
             ></ag-charts>
             }
           </div>

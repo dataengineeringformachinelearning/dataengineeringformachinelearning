@@ -6,7 +6,7 @@
 .empty-state-premium {
   position: relative;
   text-align: center;
-  padding: 3.5rem 2.5rem;
+  padding: 54px 36px;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -58,8 +58,8 @@
   z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 1rem;
+  gap: 9px;
+  padding: 9px 18px;
   background: rgba(45, 71, 57, 0.1);
   border: 1px solid rgba(45, 71, 57, 0.3);
   border-radius: 30px;
@@ -68,7 +68,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--color-primary-container);
-  margin-bottom: 1.5rem;
+  margin-bottom: 27px;
 
   .badge-icon {
     font-size: 16px;
@@ -102,7 +102,7 @@
   font-size: 1.85rem;
   font-weight: 700;
   color: var(--text-color);
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 9px 0;
   letter-spacing: -0.02em;
 }
 
@@ -112,7 +112,7 @@
   font-size: 1.05rem;
   color: var(--text-muted);
   max-width: 520px;
-  margin: 0 auto 2.5rem auto;
+  margin: 0 auto 36px auto;
   line-height: 1.6;
 }
 
@@ -121,18 +121,18 @@
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 27px;
   width: 100%;
   max-width: 480px;
-  margin-bottom: 2.5rem;
+  margin-bottom: 36px;
   text-align: left;
 }
 
 .feature-item {
   display: flex;
   align-items: flex-start;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 18px;
+  padding: 18px;
   background: rgba(255, 255, 255, 0.01);
   border: 1px solid rgba(255, 255, 255, 0.03);
   border-radius: 10px;
@@ -182,7 +182,7 @@
 .feature-text {
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 9px;
 
   strong {
     font-size: 0.95rem;
@@ -201,25 +201,25 @@
   z-index: 1;
   font-size: 0.9rem;
   color: var(--text-muted);
-  margin-bottom: 1.25rem;
+  margin-bottom: 18px;
 }
 
 .cta-actions {
   position: relative;
   z-index: 1;
   display: flex;
-  gap: 1rem;
+  gap: 18px;
 }
 
 .cta-main-btn {
   font-weight: 600;
   border-radius: 24px;
-  padding: 12px 32px;
+  padding: 9px 36px;
   height: 52px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 9px;
   text-decoration: none;
   transition: all 0.2s ease;
 

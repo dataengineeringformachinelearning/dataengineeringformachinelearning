@@ -49,14 +49,16 @@ def test_api_health(client: Client) -> None:
 
 
 @pytest.mark.django_db
-def test_get_all_endpoints(client: Client) -> None:
+def test_get_all_endpoints(authenticated_client: Client, test_user: User) -> None:
+  page = StatusPage.objects.create(user=test_user, title="My Status", slug="my-status")
+  MonitoredService.objects.create(status_page=page, name="test", url="http://test.com")
   Endpoints.objects.create(
     url="http://test.com",
     status_code=200,
     response_time=datetime.timedelta(milliseconds=150),
     is_active=True,
   )
-  response = client.get("/api/v1/system-status/endpoints")
+  response = authenticated_client.get("/api/v1/system-status/endpoints")
   assert response.status_code == 200
   data = response.json()
   assert len(data) == 1

@@ -1,12 +1,12 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 18px;
   min-width: 320px;
-  padding: 8px 0;
+  padding: 9px 0;
 
   mat-icon[matPrefix] {
-    margin-right: 8px;
+    margin-right: 9px;
     color: var(--text-muted);
   }
 
@@ -42,8 +42,8 @@
 }
 
 .success-text {
-  padding: 12px;
-  margin-bottom: 16px;
+  padding: 9px;
+  margin-bottom: 18px;
   border-radius: var(--border-radius-sm);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -55,8 +55,8 @@
 }
 
 .info-text {
-  padding: 12px;
-  margin-bottom: 16px;
+  padding: 9px;
+  margin-bottom: 18px;
   border-radius: var(--border-radius-sm);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -71,9 +71,9 @@
   color: var(--color-error);
   font-size: 0.85rem;
   font-weight: 500;
-  margin-bottom: 12px;
+  margin-bottom: 9px;
   background: rgba(211, 47, 47, 0.1);
-  padding: 0.5rem;
+  padding: 9px;
   border-radius: var(--border-radius-sm);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -83,7 +83,7 @@
 }
 
 .modal-header {
-  padding: 1.5rem;
+  padding: 27px;
   border-bottom: 1px solid var(--border);
   border-top: 3px solid var(--color-amber); /* Industrial amber accent */
   display: flex;
@@ -103,7 +103,7 @@
   .title-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
   }
 
   .header-icon {
@@ -132,16 +132,16 @@
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 27px;
 }
 
 .modal-footer {
-  padding: 1rem 1.5rem;
+  padding: 18px 27px;
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 12px;
+  gap: 9px;
   background: rgba(0, 0, 0, 0.05);
 
   .btn-icon {
@@ -151,7 +151,7 @@
   }
 
   button {
-    padding: 0.5rem 1.25rem;
+    padding: 9px 18px;
     border-radius: var(--border-radius-sm);
     font-weight: 600;
     cursor: pointer;
@@ -165,7 +165,7 @@
       color: var(--text-color);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
 
       &:hover:not(:disabled) {
         background: var(--hover-color);
@@ -180,7 +180,7 @@
       min-width: 100px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       justify-content: center;
       box-shadow: var(--shadow-sm) !important;
       font-weight: 700 !important;
@@ -206,12 +206,12 @@
 
 .toggle-link {
   text-align: center;
-  margin-top: 1.25rem;
-  margin-bottom: 0.75rem;
+  margin-top: 18px;
+  margin-bottom: 9px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   font-size: 0.9rem;
   width: 100%;
 
@@ -219,7 +219,7 @@
     background: rgba(255, 255, 255, 0.02) !important;
     border: 1px solid var(--border) !important;
     border-radius: var(--border-radius-sm) !important;
-    padding: 10px 16px !important;
+    padding: 9px 18px  !important;
     color: var(--text-color) !important;
     font-size: 0.85rem;
     font-weight: 500;
@@ -269,7 +269,7 @@
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 1.5rem 0;
+  margin: 27px 0;
   color: var(--text-muted);
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -294,7 +294,7 @@
 .social-buttons-container {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 9px;
   width: 100%;
 }
 
@@ -303,7 +303,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 9px;
   width: 100%;
   height: 48px;
   border-radius: var(--border-radius-sm);

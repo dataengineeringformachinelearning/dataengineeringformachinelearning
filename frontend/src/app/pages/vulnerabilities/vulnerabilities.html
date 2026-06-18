@@ -87,6 +87,9 @@
               (click)="selectVulnerability(v)"
               tabindex="0"
               (keydown.enter)="selectVulnerability(v)"
+              (keydown.space)="$event.preventDefault(); selectVulnerability(v)"
+              role="button"
+              [attr.aria-label]="'Select vulnerability ' + v.title"
             >
               <div class="item-header">
                 <span class="item-id">VULN-{{ v.id.substring(0, 8).toUpperCase() }}</span>

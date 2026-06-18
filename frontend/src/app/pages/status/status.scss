@@ -71,8 +71,8 @@
 .ml-stat-panels-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 18px;
+  margin-bottom: 27px;
 
   .ml-stat-panel {
     margin-bottom: 0;
@@ -88,11 +88,11 @@
 }
 
 .dashboard-topbar {
-  padding: 1.25rem 1.5rem;
+  padding: 18px 27px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 18px;
   border-bottom: 1px solid var(--border);
   background-color: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(8px);
@@ -117,7 +117,7 @@
 }
 
 .page-description {
-  margin: 0.25rem 0 0;
+  margin: 9px 0 0;
   font-size: 0.9rem;
   color: var(--text-muted);
 }
@@ -142,15 +142,7 @@
   }
 }
 
-.dashboard-content-area {
-  flex: 1;
-  padding: var(--grid-gap);
-}
 
-.content-wrapper {
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-}
 
 .status-stack {
   display: flex;
@@ -180,7 +172,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1rem;
+  gap: 18px;
   background-color: rgba(255, 255, 255, 0.01);
 }
 
@@ -192,7 +184,7 @@
 }
 
 .card-subtitle {
-  margin: 0.25rem 0 0;
+  margin: 9px 0 0;
   color: var(--text-muted);
   font-size: 0.85rem;
 }
@@ -200,8 +192,8 @@
 .status-badge-premium {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
+  gap: 9px;
+  padding: 9px 18px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 0.75rem;
@@ -237,7 +229,7 @@
 .stat-info {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 18px;
 
   .stat-icon {
     font-size: 28px;
@@ -258,7 +250,7 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   display: block;
-  margin-top: 0.15rem;
+  margin-top: 9px;
 }
 
 .stat-value {
@@ -270,10 +262,10 @@
 
 /* Timeline panel */
 .timeline-panel {
-  margin-bottom: 2rem;
+  margin-bottom: 36px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 1rem;
+  padding: 18px;
   background-color: rgba(255, 255, 255, 0.01);
 }
 
@@ -281,8 +273,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.25rem;
-  margin-bottom: 1rem;
+  gap: 9px;
+  margin-bottom: 18px;
 }
 
 .panel-title {
@@ -302,7 +294,7 @@
 
 .timeline-bars-wrapper {
   background: var(--bg-color);
-  padding: 0.5rem;
+  padding: 9px;
   border-radius: 6px;
   border: 1px solid var(--border);
 }
@@ -346,32 +338,32 @@
   justify-content: space-between;
   color: var(--text-muted);
   font-size: 0.75rem;
-  margin-top: 0.75rem;
+  margin-top: 9px;
 }
 
 .timeline-divider {
   flex: 1;
   border-top: 1px dashed var(--border);
-  margin: 0.5rem 1rem 0;
+  margin: 9px 18px 0;
 }
 
 /* Incidents panel */
 .incidents-panel {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  margin-top: 36px;
+  padding-top: 27px;
   border-top: 1px solid var(--border);
 }
 
 .incidents-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: 18px;
+  margin-top: 18px;
 }
 
 .incident-item-outlined {
   position: relative;
-  padding: 1rem 1rem 1rem 1.5rem;
+  padding: 18px 18px 18px 27px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background-color: rgba(255, 255, 255, 0.01);
@@ -403,8 +395,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.35rem;
-  margin-bottom: 0.75rem;
+  gap: 9px;
+  margin-bottom: 9px;
   flex-wrap: wrap;
 }
 
@@ -412,7 +404,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 0.2rem 0.5rem;
+  padding: 9px 9px;
   border-radius: 4px;
   letter-spacing: 0.05em;
   background-color: rgba(255, 193, 7, 0.1);
@@ -436,7 +428,7 @@
 .incident-date {
   font-size: 0.75rem;
   color: var(--text-muted);
-  margin-top: 0.15rem;
+  margin-top: 9px;
 }
 
 .incident-body-text {
@@ -463,10 +455,10 @@
 }
 
 .services-status-panel {
-  margin-bottom: 24px;
+  margin-bottom: 27px;
 
   .panel-title {
-    margin-bottom: 12px;
+    margin-bottom: 9px;
     font-size: 16px;
     font-weight: 600;
   }
@@ -474,15 +466,15 @@
   .services-status-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 9px;
   }
 
   .service-status-row {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
-    padding: 12px;
+    gap: 9px;
+    padding: 9px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
@@ -503,7 +495,7 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 9px;
 
     mat-icon {
       font-size: 14px;
@@ -522,8 +514,8 @@
     align-items: center;
     justify-content: space-between;
     border-top: 1px solid var(--border);
-    padding-top: 8px;
-    margin-top: 4px;
+    padding-top: 9px;
+    margin-top: 9px;
   }
 
   .service-sla {
@@ -534,7 +526,7 @@
   }
 
   .status-badge-premium {
-    padding: 4px 8px;
+    padding: 9px 9px;
     font-size: 12px;
     height: auto;
   }
@@ -543,7 +535,7 @@
     color: var(--text-muted);
     font-size: 14px;
     text-align: center;
-    padding: 12px;
+    padding: 9px;
   }
 }
 
@@ -553,7 +545,7 @@
   }
 
   .dashboard-topbar {
-    padding: 1.5rem 2rem;
+    padding: 27px 36px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -570,9 +562,6 @@
     }
   }
 
-  .dashboard-content-area {
-    padding: var(--grid-gap);
-  }
 
   .card-header-clean {
     padding: var(--card-padding);
@@ -587,23 +576,23 @@
   }
 
   .timeline-panel {
-    padding: 1.5rem;
+    padding: 27px;
 
     .panel-header {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.25rem;
+      margin-bottom: 18px;
     }
   }
 
   .timeline-bars-wrapper {
-    padding: 0.75rem;
+    padding: 9px;
   }
 
   .timeline-bars {
     height: 34px;
-    gap: 3px;
+    gap: 9px;
   }
 
   .timeline-labels {
@@ -615,7 +604,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
+      padding: 9px 18px;
     }
 
     .service-stats {
@@ -623,19 +612,19 @@
       border-top: none;
       padding-top: 0;
       margin-top: 0;
-      gap: 16px;
+      gap: 18px;
     }
   }
 
   .incidents-panel {
     .incident-item-outlined {
-      padding: 1.25rem 1.25rem 1.25rem 1.75rem;
+      padding: 18px 18px 18px 27px;
     }
 
     .incident-header-row {
       flex-direction: row;
       align-items: center;
-      gap: 0.75rem;
+      gap: 9px;
     }
 
     .incident-date {
@@ -652,8 +641,8 @@
 
 /* Sanity.io Announcements Premium UI Styles */
 .announcements-container {
-  margin-bottom: 2.5rem;
-  padding: 1.5rem;
+  margin-bottom: 36px;
+  padding: 27px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.01);
   border: 1px solid var(--border);
@@ -667,13 +656,13 @@
 .section-title-premium {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 9px;
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-color);
   margin-top: 0;
-  margin-bottom: 1.25rem;
+  margin-bottom: 18px;
 
   mat-icon {
     color: var(--status-accent);
@@ -686,10 +675,10 @@
 .announcements-loader {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 9px;
   color: var(--text-muted);
   font-size: 0.9rem;
-  padding: 1rem 0;
+  padding: 18px 0;
 
   .btn-spinner {
     width: 16px;
@@ -709,10 +698,10 @@
 .announcements-error {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 9px;
   color: var(--color-error);
   font-size: 0.9rem;
-  padding: 1rem 0;
+  padding: 18px 0;
 
   mat-icon {
     font-size: 18px;
@@ -724,12 +713,12 @@
 .announcements-list-premium {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 18px;
 }
 
 .announcement-card-premium {
   position: relative;
-  padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+  padding: 18px 18px 18px 27px;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.02);
@@ -778,14 +767,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 9px;
 }
 
 .ann-severity-badge {
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 0.15rem 0.5rem;
+  padding: 9px 9px;
   border-radius: 4px;
   letter-spacing: 0.05em;
   background: rgba(255, 255, 255, 0.05);
@@ -813,7 +802,7 @@
 }
 
 .ann-title {
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 9px 0;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-color);
@@ -832,12 +821,12 @@
   margin: 0;
 }
 .status-extracted-2 {
-  margin-bottom: 24px;
+  margin-bottom: 27px;
               display: flex;
               justify-content: space-between;
               align-items: center;
-              padding: 24px;
+              padding: 27px;
 }
 .status-extracted-3 {
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 }
