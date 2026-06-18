@@ -43,11 +43,11 @@ def train_tenant_sla(status_page: Any) -> TrainingRun | None:
 
     x_data.append([status, resp_time, active])
 
-    target_sla = 100.0
+    target_sla = 1.0
     if not ep.is_active or ep.status_code >= 500:
       target_sla = 0.0
     else:
-      target_sla = max(0.0, 100.0 - (max(0.0, resp_time - 1.0) * 0.5))
+      target_sla = max(0.0, 1.0 - (max(0.0, resp_time - 1.0) * 0.005))
 
     y_data.append([target_sla])
 
@@ -70,7 +70,7 @@ def train_tenant_sla(status_page: Any) -> TrainingRun | None:
   model.eval()
   with torch.no_grad():
     preds = model(X)
-    avg_predicted_sla = preds.mean().item()
+    avg_predicted_sla = preds.mean().item() * 100.0
 
   run = TrainingRun.objects.create(
     status_page=status_page, average_sla=avg_predicted_sla, loss=final_loss
