@@ -30,22 +30,39 @@
 .navbar-content {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
 }
 
-.spacer {
-  flex: 1 1 auto;
+.navbar-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .navbar-right {
+  flex: 1;
   display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.navbar-center {
+  display: flex;
+  justify-content: center;
+}
+
+.desktop-nav {
+  display: none;
   align-items: center;
   gap: 9px;
 }
 
-.desktop-nav {
+.desktop-auth {
   display: none;
   align-items: center;
   gap: 9px;
@@ -239,6 +256,10 @@
 
 @media (min-width: 769px) {
   .desktop-nav {
+    display: flex;
+  }
+
+  .desktop-auth {
     display: flex;
   }
 
