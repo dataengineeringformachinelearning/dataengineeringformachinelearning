@@ -130,6 +130,7 @@
   display: inline-flex !important;
   align-items: center !important;
   gap: 9px  !important;
+  white-space: nowrap !important;
 
   mat-icon {
     margin: 0;
@@ -232,7 +233,8 @@
   border: none !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 9px  !important;
+  gap: 9px !important;
+  white-space: nowrap !important;
 }
 
 @media (min-width: 769px) {
