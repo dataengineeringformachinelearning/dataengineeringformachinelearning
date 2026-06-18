@@ -59,7 +59,7 @@ def test_vulnerability_lifecycle(client: Client) -> None:
     "title": "SQL Injection in Search Endpoint",
     "description": "Found a potential SQLi vulnerability at /api/explore",
     "telemetry_context": {"browser": "Chrome"},
-    "customer_id": "Cust-123",
+    "customer_id": "Internal",
     "severity": "High",
   }
 

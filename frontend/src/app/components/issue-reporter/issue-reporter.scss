@@ -1,7 +1,7 @@
 .fab-button {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: 36px;
+  right: 36px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -73,7 +73,7 @@
 }
 
 .modal-header {
-  padding: 1.5rem;
+  padding: 27px;
   border-bottom: 1px solid var(--border);
   border-top: 3px solid var(--color-amber); /* Industrial amber accent */
   display: flex;
@@ -93,7 +93,7 @@
   .title-wrapper {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 9px;
   }
 
   .header-icon {
@@ -122,10 +122,10 @@
 }
 
 .modal-body {
-  padding: 1.5rem;
+  padding: 27px;
 
   .helper-text {
-    margin: 0 0 1rem 0;
+    margin: 0 0 18px 0;
     color: var(--text-color);
     opacity: 0.8;
     font-size: 0.95rem;
@@ -134,7 +134,7 @@
 
   textarea {
     width: 100%;
-    padding: 1rem;
+    padding: 18px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.2);
@@ -176,13 +176,13 @@
   }
 
   .status-msg {
-    margin-top: 1rem;
-    padding: 0.75rem;
+    margin-top: 18px;
+    padding: 9px;
     border-radius: 6px;
     font-size: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 9px;
 
     .status-icon {
       font-size: 18px;
@@ -205,12 +205,12 @@
 }
 
 .modal-footer {
-  padding: 1.25rem 1.5rem;
+  padding: 18px 27px;
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 12px;
+  gap: 9px;
   background: rgba(0, 0, 0, 0.05);
 
   .btn-icon {
@@ -220,7 +220,7 @@
   }
 
   button {
-    padding: 0.6rem 1.25rem;
+    padding: 9px 18px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
@@ -234,7 +234,7 @@
       color: var(--text-color);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 9px;
 
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.05);
@@ -249,7 +249,7 @@
       min-width: 100px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 9px;
       justify-content: center;
       box-shadow: var(--shadow-sm) !important;
       font-weight: 700 !important;

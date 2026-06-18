@@ -1,13 +1,13 @@
 .terms-header {
   border-bottom: 1px solid var(--border);
-  padding-bottom: 1.5rem;
-  margin-bottom: 2rem;
+  padding-bottom: 27px;
+  margin-bottom: 36px;
   text-align: center;
 
   h1 {
     font-size: 2.25rem;
     font-weight: 700;
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 9px 0;
     letter-spacing: -0.03em;
     color: var(--hero-title-color);
   }
@@ -20,17 +20,17 @@
 }
 
 .terms-section {
-  margin-bottom: 2.5rem;
+  margin-bottom: 36px;
 
   h2 {
     font-size: 1.5rem;
     font-weight: 600;
     margin-top: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 18px;
     letter-spacing: -0.02em;
     color: var(--text-color);
     border-left: 4px solid var(--color-success);
-    padding-left: 0.75rem;
+    padding-left: 9px;
   }
 
   p {
@@ -38,15 +38,15 @@
     line-height: 1.65;
     color: var(--text-color);
     opacity: 0.95;
-    margin-bottom: 1.25rem;
+    margin-bottom: 18px;
   }
 
   ul {
-    padding-left: 1.5rem;
-    margin-bottom: 1.25rem;
+    padding-left: 27px;
+    margin-bottom: 18px;
 
     li {
-      margin-bottom: 0.75rem;
+      margin-bottom: 9px;
       font-size: 1.025rem;
 
       strong {
@@ -60,15 +60,20 @@
   background: rgba(128, 128, 128, 0.05);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 1.25rem;
-  margin-top: 1rem;
+  padding: 18px;
+  margin-top: 18px;
 
   p {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 9px 0;
     font-size: 0.95rem;
 
     &:last-child {
       margin: 0;
     }
+  }
+
+  a {
+    overflow-wrap: anywhere;
+    word-break: break-all;
   }
 }

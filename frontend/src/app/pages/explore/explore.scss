@@ -1,8 +1,5 @@
 @use '../status/status.scss' as *;
 
-.content-wrapper {
-  max-width: 100%;
-}
 
 .inline-status-link {
   color: var(--status-accent);
@@ -23,10 +20,10 @@
 }
 
 .services-status-panel {
-  margin-bottom: 24px;
+  margin-bottom: 27px;
 
   .panel-title {
-    margin-bottom: 12px;
+    margin-bottom: 9px;
     font-size: 16px;
     font-weight: 600;
   }
@@ -34,14 +31,14 @@
   .services-status-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 9px;
   }
 
   .service-status-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 16px;
+    padding: 9px 18px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
@@ -62,7 +59,7 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 9px;
 
     mat-icon {
       font-size: 14px;
@@ -79,7 +76,7 @@
   .service-stats {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 18px;
   }
 
   .service-sla {
@@ -90,7 +87,7 @@
   }
 
   .status-badge-premium {
-    padding: 4px 8px;
+    padding: 9px 9px;
     font-size: 12px;
     height: auto;
   }
@@ -99,7 +96,7 @@
     color: var(--text-muted);
     font-size: 14px;
     text-align: center;
-    padding: 12px;
+    padding: 9px;
   }
 }
 
@@ -114,7 +111,7 @@
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  gap: 9px  !important;
   background: var(--button-primary) !important;
   color: var(--button-primary-text) !important;
 

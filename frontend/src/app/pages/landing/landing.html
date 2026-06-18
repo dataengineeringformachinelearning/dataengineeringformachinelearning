@@ -127,6 +127,9 @@
           (click)="videoPlayer.play()"
           tabindex="0"
           (keydown.enter)="videoPlayer.play()"
+          (keydown.space)="$event.preventDefault(); videoPlayer.play()"
+          role="button"
+          aria-label="Play video"
         >
           <div class="play-button-premium">
             <mat-icon class="play-icon">play_arrow</mat-icon>

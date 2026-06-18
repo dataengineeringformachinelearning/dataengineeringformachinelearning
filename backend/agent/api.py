@@ -114,8 +114,10 @@ def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> A
 def list_vulnerabilities(request: Any) -> Any:
   from monitor.models import Vulnerability
 
-  # For now, let's return all vulnerabilities sorted by creation time
-  vulns = Vulnerability.objects.all().order_by("-created_at")
+  if request.user.is_authenticated:
+    vulns = Vulnerability.objects.filter(customer_id=str(request.user.id)).order_by("-created_at")
+  else:
+    vulns = Vulnerability.objects.filter(customer_id="Internal").order_by("-created_at")
   return [
     {
       "id": str(v.id),

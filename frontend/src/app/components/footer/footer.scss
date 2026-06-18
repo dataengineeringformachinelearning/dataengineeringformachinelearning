@@ -1,7 +1,7 @@
 footer {
   margin-top: 0;
-  padding-top: 2.5rem;
-  padding-bottom: 2.5rem;
+  padding-top: 36px;
+  padding-bottom: 36px;
   border-top: 1px solid var(--border);
 }
 
@@ -16,7 +16,7 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
+  gap: 9px;
   color: var(--text-muted);
   font-size: 0.85rem;
   line-height: 1.8;
@@ -32,7 +32,7 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.15rem;
+  gap: 9px;
 }
 
 .highlight {
@@ -53,7 +53,7 @@ footer {
 }
 
 .sub-footer {
-  margin-top: 2.5rem;
+  margin-top: 36px;
   display: flex;
   justify-content: center;
 }
@@ -61,8 +61,8 @@ footer {
 .backend-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.4rem 0.85rem;
+  gap: 9px;
+  padding: 9px 18px;
   background-color: rgba(24, 58, 55, 0.3);
   border: 1px solid var(--border);
   border-radius: 9999px;
@@ -101,12 +101,12 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.35rem;
+  gap: 9px;
   color: var(--text-muted);
   font-size: 0.75rem;
   line-height: 1.8;
   letter-spacing: 0.4px;
-  margin-top: 0.75rem;
+  margin-top: 9px;
 
   a {
     color: var(--text-muted);
@@ -147,7 +147,7 @@ footer {
     flex-direction: row;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 0.5rem 0.8rem;
+    gap: 9px 9px;
   }
 
   .footer-line {
@@ -159,7 +159,7 @@ footer {
 
     span {
       display: inline;
-      margin-right: 0.25rem;
+      margin-right: 9px;
 
       &:last-child {
         margin-right: 0;
@@ -171,7 +171,7 @@ footer {
   .footer-compliance {
     .footer-line:not(:last-child)::after {
       content: '|';
-      margin-left: 0.8rem;
+      margin-left: 9px;
       color: var(--border);
       opacity: 0.7;
     }
@@ -181,8 +181,8 @@ footer {
 .usa-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.2rem 0.5rem;
+  gap: 9px;
+  padding: 9px 9px;
   background-color: rgba(45, 71, 57, 0.05);
   border: 1px solid var(--border);
   border-radius: 4px;
@@ -207,6 +207,6 @@ footer {
 .footer-badge-container {
   display: flex;
   justify-content: center;
-  margin-top: 2.5rem;
-  margin-bottom: 2.5rem;
+  margin-top: 36px;
+  margin-bottom: 36px;
 }

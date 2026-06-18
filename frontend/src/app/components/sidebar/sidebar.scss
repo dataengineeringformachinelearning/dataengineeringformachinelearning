@@ -72,10 +72,10 @@
 }
 
 .sidebar-brand {
-  padding: 1.5rem;
+  padding: 27px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 9px;
   border-bottom: 1px solid var(--sidebar-border);
   cursor: pointer;
   justify-content: space-between;
@@ -116,7 +116,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 6px;
+    padding: 9px;
     border-radius: 50%;
     transition: var(--transition-smooth);
 
@@ -128,20 +128,20 @@
 }
 
 .sidebar-search {
-  padding: 0.85rem 1.25rem;
+  padding: 18px 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   border-bottom: 1px solid var(--sidebar-border);
 
   .search-wrapper {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 9px;
     background: rgba(0, 0, 0, 0.15);
     border: 1px solid var(--sidebar-border);
-    padding: 6px 12px;
+    padding: 9px 9px;
     border-radius: 20px;
     transition: var(--transition-smooth);
 
@@ -158,7 +158,7 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--sidebar-border);
       border-radius: 4px;
-      padding: 2px 5px;
+      padding: 2px 9px;
       line-height: 1;
       pointer-events: none;
       white-space: nowrap;
@@ -232,17 +232,17 @@
 }
 
 .sidebar-nav {
-  padding: 1rem 0;
+  padding: 18px 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 9px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem;
+  gap: 9px;
+  padding: 9px 18px;
   color: var(--text-color);
   text-decoration: none;
   font-weight: 600;
@@ -280,15 +280,15 @@
 .nav-tree-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.5rem;
-  margin-top: 0.25rem;
+  margin-bottom: 9px;
+  margin-top: 9px;
 }
 
 .nav-tree-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 1.25rem 0.5rem 3.35rem;
+  padding: 9px 18px 9px 54px;
   color: var(--text-muted);
   font-size: 0.7rem;
   font-weight: 800;
@@ -319,8 +319,8 @@
   .tree-child-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.65rem 1.25rem 0.65rem 3.35rem;
+    gap: 9px;
+    padding: 9px 18px 9px 54px;
     color: var(--text-muted);
     font-size: 0.8rem;
     font-weight: 500;
@@ -377,14 +377,14 @@
 }
 
 .sidebar-footer {
-  padding: 1.25rem;
+  padding: 18px;
   border-top: 1px solid var(--sidebar-border);
 }
 
 .system-health {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 9px;
   font-size: 0.8rem;
   color: var(--text-muted);
   font-weight: 600;
@@ -448,13 +448,13 @@
   }
 
   .sidebar-brand {
-    padding: 1.5rem 0.5rem;
+    padding: 27px 9px;
     justify-content: center;
   }
 
   .nav-item {
     justify-content: center;
-    padding: 0.75rem;
+    padding: 9px;
     border-left: 3px solid transparent;
 
     &.active {
@@ -465,7 +465,7 @@
   .sidebar-footer {
     display: flex;
     justify-content: center;
-    padding: 1.25rem 0;
+    padding: 18px 0;
   }
 }
 
@@ -476,16 +476,16 @@
     border-bottom: none;
     height: calc(100vh - 64px);
     position: sticky;
-    top: 64px;
+    top: 63px;
     display: flex !important;
   }
 }
 
 .search-results-list {
-  padding: 1rem 1.25rem;
+  padding: 18px 18px;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 9px;
 
   .search-results-header {
     font-size: 0.75rem;
@@ -493,14 +493,14 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
-    margin-bottom: 0.25rem;
+    margin-bottom: 9px;
   }
 
   .search-result-item {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 0.75rem;
+    gap: 9px;
+    padding: 9px 9px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--sidebar-border);
@@ -557,7 +557,7 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-top: 4px;
+      margin-top: 9px;
     }
 
     mark.search-highlight {
@@ -578,7 +578,7 @@
     font-size: 0.8rem;
     color: var(--text-muted);
     text-align: center;
-    padding: 1rem 0;
+    padding: 18px 0;
   }
 }
 

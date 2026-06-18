@@ -3,7 +3,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 0.75rem;
+  padding: 9px;
   z-index: 9999;
   display: flex;
   justify-content: center;
@@ -19,10 +19,10 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: var(--shadow-hover);
-  padding: 1.5rem;
+  padding: 27px;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 18px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: all 0.3s ease;
@@ -37,7 +37,7 @@
   .title-group {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 9px;
     color: var(--text-color);
 
     .cookie-icon {
@@ -60,7 +60,7 @@
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 4px;
+    padding: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,7 +80,7 @@
 .cookie-banner-body {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 18px;
 
   .cookie-description {
     font-size: 0.95rem;
@@ -107,8 +107,8 @@
 .cookie-preferences-form {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
+  gap: 9px;
+  padding: 18px;
   background: rgba(128, 128, 128, 0.05);
   border-radius: 12px;
   border: 1px solid var(--border);
@@ -118,8 +118,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 1rem;
-    padding-bottom: 0.75rem;
+    gap: 18px;
+    padding-bottom: 9px;
     border-bottom: 1px solid rgba(128, 128, 128, 0.1);
 
     &:last-child {
@@ -130,7 +130,7 @@
     .pref-info {
       display: flex;
       flex-direction: column;
-      gap: 0.15rem;
+      gap: 9px;
 
       .pref-name {
         font-size: 0.925rem;
@@ -156,7 +156,7 @@
         text-transform: uppercase;
         color: var(--color-success);
         background: rgba(76, 175, 80, 0.1);
-        padding: 4px 8px;
+        padding: 9px 9px;
         border-radius: 4px;
         letter-spacing: 0.5px;
       }
@@ -200,13 +200,13 @@
 
 // Footer buttons
 .cookie-banner-footer {
-  margin-top: 0.5rem;
+  margin-top: 9px;
 
   .footer-buttons {
     display: flex;
     flex-direction: column;
     align-items: stretch !important;
-    gap: 1rem;
+    gap: 18px;
 
     .settings-btn {
       padding: 0;
@@ -227,7 +227,7 @@
 
     .primary-actions {
       display: flex;
-      gap: 0.5rem;
+      gap: 9px;
       align-items: center;
       flex-wrap: wrap;
       justify-content: flex-end;
@@ -235,7 +235,7 @@
 
       button {
         height: 38px !important;
-        padding: 0 16px !important;
+        padding: 0 18px  !important;
         font-size: 0.875rem !important;
         border-radius: 8px !important;
         flex: 1;
@@ -302,7 +302,7 @@
 // Responsive layout
 @media (min-width: 577px) {
   .cookie-banner-overlay {
-    padding: 1.5rem;
+    padding: 27px;
     justify-content: flex-end;
   }
 
@@ -313,7 +313,7 @@
   .footer-buttons {
     flex-direction: row;
     align-items: center !important;
-    gap: 0.75rem;
+    gap: 9px;
 
     .settings-btn {
       align-self: auto;
