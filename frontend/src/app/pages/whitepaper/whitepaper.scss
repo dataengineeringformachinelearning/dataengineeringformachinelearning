@@ -14,35 +14,51 @@
   padding: 4rem 1.5rem 1.5rem 1.5rem;
 }
 
-/* Glow Spheres for Homepage Unity */
-.glow-sphere {
+/* Ambient Lighting with Heavy Amber Accents */
+.ambient-glow {
   position: absolute;
   border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.15;
+  filter: blur(140px);
+  opacity: 0.3;
   z-index: 0;
   pointer-events: none;
 }
 
-.sphere-1 {
-  width: 500px;
-  height: 500px;
-  background: var(--primary-color);
+.primary-glow {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, var(--color-primary-container) 0%, transparent 70%);
   top: -150px;
-  left: -150px;
+  left: -200px;
 }
 
-.sphere-2 {
-  width: 450px;
-  height: 450px;
-  background: var(--color-primary-container);
-  bottom: -150px;
-  right: -100px;
+.amber-glow {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--color-amber-glow, rgba(255, 183, 77, 0.4)) 0%, transparent 70%);
+  bottom: 10%;
+  right: -150px;
+  opacity: 0.25;
+}
+
+.ambient-ripple {
+  position: absolute;
+  bottom: 0; left: 0; right: 0; height: 300px;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 183, 77, 0.05) 0px,
+    rgba(255, 183, 77, 0.05) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 :host-context(html[data-theme='light']) {
-  .sphere-2 {
-    background: var(--color-primary);
+  .amber-glow {
+    background: radial-gradient(circle, rgba(176, 114, 25, 0.15) 0%, transparent 70%);
   }
 }
 
@@ -105,12 +121,30 @@
   gap: 2.5rem;
 
   .paper-section {
+    background: var(--color-surface, #182821);
+    border: 1px solid var(--color-border-precision, rgba(255, 255, 255, 0.08));
+    border-radius: 24px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: var(--color-amber, rgba(255, 183, 77, 0.5));
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(255, 183, 77, 0.15);
+    }
+
     h2 {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: 700;
-      letter-spacing: -0.02em;
+      margin: 0;
       color: var(--text-color);
-      margin: 0 0 1rem;
+      letter-spacing: -0.02em;
+      border-bottom: 1px solid rgba(255, 183, 77, 0.2);
+      padding-bottom: 0.5rem;
     }
 
     p {
@@ -118,7 +152,7 @@
       line-height: 1.7;
       color: var(--text-color);
       opacity: 0.85;
-      margin: 0 0 1.25rem;
+      margin: 0;
       text-align: justify;
     }
   }
@@ -265,10 +299,16 @@
     .paper-section {
       page-break-inside: avoid;
       break-inside: avoid;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 0 !important;
+      margin-bottom: 2rem !important;
 
       h2 {
         color: #000000 !important;
         border-left: 4px solid #2d4739;
+        border-bottom: none !important;
         padding-left: 10px;
         margin-top: 1.5rem;
       }
@@ -315,6 +355,23 @@
 
     .diagram-arrow {
       color: #555555 !important;
+    }
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .paper-section {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      border-color: #b07219;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1), 0 0 15px rgba(176, 114, 25, 0.15);
+    }
+
+    h2 {
+      border-bottom-color: rgba(176, 114, 25, 0.2);
     }
   }
 }

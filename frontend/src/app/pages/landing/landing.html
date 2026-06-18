@@ -167,6 +167,45 @@
         </div>
       </div>
     </section>
+
+    <!-- Whitepaper CTA -->
+    <section class="bento-item whitepaper-cta-bento" aria-labelledby="whitepaper-cta-title">
+      <div class="bento-header">
+        <span class="section-tag">RESEARCH & ARCHITECTURE</span>
+        <h2 id="whitepaper-cta-title">Technical Whitepaper</h2>
+        <p>
+          Dive deep into our architecture, scalable telemetry, and automated threat mitigation
+          strategies.
+        </p>
+      </div>
+      <div class="cta-group" style="justify-content: flex-start; margin-top: 0">
+        <a routerLink="/whitepaper" class="cta-button primary-btn">
+          <mat-icon>description</mat-icon>
+          <span>Read Whitepaper</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- Subscribe Section -->
+    <section class="bento-item subscribe-bento" aria-labelledby="subscribe-title">
+      <div class="bento-header">
+        <span class="section-tag">STAY UPDATED</span>
+        <h2 id="subscribe-title">Subscribe to Platform Updates</h2>
+        <p>
+          Get notified about new features, threat intelligence reports, and platform scaling
+          milestones.
+        </p>
+      </div>
+      <form class="subscribe-form" (submit)="$event.preventDefault()">
+        <input
+          type="email"
+          placeholder="Enter your email address"
+          aria-label="Email Address"
+          required
+        />
+        <button type="submit" class="cta-button secondary-btn">Subscribe</button>
+      </form>
+    </section>
   </div>
   <!-- End Bento Grid -->
 

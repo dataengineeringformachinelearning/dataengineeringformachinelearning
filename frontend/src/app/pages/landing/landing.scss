@@ -380,6 +380,45 @@
   }
 }
 
+.whitepaper-cta-bento {
+  grid-column: 1 / -1;
+  @media (min-width: 900px) {
+    grid-column: span 1;
+  }
+}
+
+.subscribe-bento {
+  grid-column: 1 / -1;
+  @media (min-width: 900px) {
+    grid-column: span 2;
+  }
+
+  .subscribe-form {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+
+    input {
+      flex: 1;
+      min-width: 250px;
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--border, rgba(255, 255, 255, 0.2));
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--text-color);
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s ease;
+
+      &:focus {
+        border-color: var(--color-amber);
+        box-shadow: 0 0 10px rgba(255, 183, 77, 0.2);
+      }
+    }
+  }
+}
+
 /* Transparency Atmospheric Section */
 .transparency-atmospheric {
   width: 100%;
@@ -554,6 +593,16 @@
   .hero-badge { background: rgba(176, 114, 25, 0.1); border-color: rgba(176, 114, 25, 0.3); .badge-text { color: #b07219; } .badge-dot { background: #b07219; box-shadow: none; } }
 
   .video-bento .telemetry-bar { background: #f4f7f5; border-bottom-color: rgba(0, 0, 0, 0.1); color: #b07219; .telemetry-dot { background: #b07219; box-shadow: none; } }
+
+  .subscribe-bento .subscribe-form input {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #182821;
+    &:focus {
+      border-color: #b07219;
+      box-shadow: 0 0 10px rgba(176, 114, 25, 0.15);
+    }
+  }
 
   .step-display-panel { background: #f4f7f5; border-color: rgba(0, 0, 0, 0.05); }
   .step-code-visual { background: #ffffff; border-color: rgba(176, 114, 25, 0.3); .code-header { background: #f4f7f5; color: #b07219; border-bottom-color: rgba(176, 114, 25, 0.2); } pre code { color: #182821; } }
