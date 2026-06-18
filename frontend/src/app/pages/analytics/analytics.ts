@@ -3,14 +3,13 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions } from 'ag-charts-community';
-import { SkeletonComponent } from 'boneyard-js/angular';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, AgCharts, SkeletonComponent, MatIconModule],
+  imports: [CommonModule, AgCharts, MatIconModule],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })
@@ -43,11 +42,11 @@ export class AnalyticsComponent implements OnInit {
         xKey: 'time',
         yKey: 'latency',
         yName: 'Latency (ms)',
-        stroke: 'var(--color-cyber-cyan)',
+        stroke: 'var(--color-success)',
         strokeWidth: 2,
         marker: {
-          fill: 'var(--bg-color)',
-          stroke: 'var(--color-cyber-cyan)',
+          fill: 'rgba(76, 175, 80, 0.1)',
+          stroke: 'var(--color-success)',
           strokeWidth: 2,
           size: 4,
         },

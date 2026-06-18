@@ -787,7 +787,7 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 }
 
 
-// ====================== SECTION TAGS & SKELETON SHIMMER ======================
+// ====================== SECTION TAGS ======================
 .section-tag-row {
   display: flex;
   align-items: center;
@@ -806,39 +806,7 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
   display: inline-block;
 }
 
-/* Custom Premium Skeleton Shimmer */
-[data-boneyard-bone="true"] {
-  position: relative;
-  overflow: hidden;
-  background-color: var(--color-surface) !important;
-  background-image: linear-gradient(
-    90deg,
-    var(--color-surface) 25%,
-    rgba(255, 183, 77, 0.12) 50%,
-    var(--color-surface) 75%
-  ) !important;
-  background-size: 200% 100% !important;
-  animation: skeleton-shimmer 2.2s infinite linear !important;
-}
 
-html[data-theme='light'] [data-boneyard-bone="true"] {
-  background-color: rgba(0, 0, 0, 0.05) !important;
-  background-image: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.05) 25%,
-    rgba(45, 71, 57, 0.08) 50%,
-    rgba(0, 0, 0, 0.05) 75%
-  ) !important;
-}
-
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
 
 // ====================== SLEEK DEEPMIND CONSOLE SCROLLBARS ======================
 ::-webkit-scrollbar {

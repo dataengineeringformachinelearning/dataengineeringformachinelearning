@@ -21,20 +21,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
-import { SkeletonComponent } from 'boneyard-js/angular';
+
 import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-isolated-status',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    RouterModule,
-    SkeletonComponent,
-  ],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, RouterModule],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './isolated-status.scss',
@@ -130,9 +123,7 @@ export class IsolatedStatus implements OnInit {
   loadPage(slug: string) {
     this.isLoading.set(true);
     this.loadFailed.set(false);
-    const isCrawler =
-      typeof navigator !== 'undefined' &&
-      (navigator.webdriver || window.location.search.includes('boneyard'));
+    const isCrawler = typeof navigator !== 'undefined' && navigator.webdriver;
     if (isCrawler) {
       this.statusPages.set([this.mockPage]);
       this.isLoading.set(false);

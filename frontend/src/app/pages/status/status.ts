@@ -22,7 +22,7 @@ import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { SanityService } from '../../services/sanity.service';
 import { StatusCard } from '../../components/status-card/status-card';
-import { SkeletonComponent } from 'boneyard-js/angular';
+
 import { timeout } from 'rxjs';
 
 @Component({
@@ -36,7 +36,6 @@ import { timeout } from 'rxjs';
     Sidebar,
     StatusCta,
     StatusCard,
-    SkeletonComponent,
   ],
   templateUrl: './status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -106,9 +105,7 @@ export class Status implements OnInit {
   loadData() {
     this.isLoading.set(true);
     this.loadFailed.set(false);
-    const isCrawler =
-      typeof navigator !== 'undefined' &&
-      (navigator.webdriver || window.location.search.includes('boneyard'));
+    const isCrawler = typeof navigator !== 'undefined' && navigator.webdriver;
     if (isCrawler) {
       this.statusPages.set([this.mockPage]);
       this.isLoading.set(false);

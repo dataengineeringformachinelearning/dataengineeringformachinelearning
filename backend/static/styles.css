@@ -25,8 +25,6 @@
 
   /* Cyber & Telemetry Tokens */
   --color-amber: #ffb74d;
-  --color-cyber-indigo: #4a00e0;
-  --color-cyber-cyan: #00f2fe;
   --color-gauge-red: #d5001c;
 
   /* Aliases for UI Components */
@@ -73,8 +71,6 @@
     --shadow-glow: 0 0 12px rgba(45, 71, 57, 0.15);
 
     --color-amber: #b07219;
-    --color-cyber-indigo: #31009c;
-    --color-cyber-cyan: #008fa6;
     --color-gauge-red: #d5001c;
 
     --primary-color: var(--color-primary);
@@ -109,8 +105,6 @@ html[data-theme="light"] {
   --shadow-glow: 0 0 12px rgba(45, 71, 57, 0.15);
 
   --color-amber: #b07219;
-  --color-cyber-indigo: #31009c;
-  --color-cyber-cyan: #008fa6;
   --color-gauge-red: #d5001c;
 
   --primary-color: var(--color-primary);
@@ -144,8 +138,6 @@ html[data-theme="dark"] {
   --shadow-glow: 0 0 12px rgba(159, 184, 173, 0.3);
 
   --color-amber: #ffb74d;
-  --color-cyber-indigo: #4a00e0;
-  --color-cyber-cyan: #00f2fe;
   --color-gauge-red: #d5001c;
 
   --primary-color: var(--color-primary);
@@ -179,7 +171,7 @@ body {
     ),
     radial-gradient(
       circle at 100% 100%,
-      rgba(74, 0, 224, 0.04) 0%,
+      rgba(45, 71, 57, 0.08) 0%,
       transparent 50%
     );
   color: var(--text-color);
@@ -203,7 +195,7 @@ html[data-theme="light"] body {
     ),
     radial-gradient(
       circle at 100% 100%,
-      rgba(49, 0, 156, 0.02) 0%,
+      rgba(45, 71, 57, 0.04) 0%,
       transparent 50%
     );
 }
@@ -272,7 +264,7 @@ button:focus-visible,
 .sphere-2 {
   width: 500px;
   height: 500px;
-  background: var(--color-cyber-indigo);
+  background: var(--color-primary);
   bottom: -100px;
   right: -100px;
 }

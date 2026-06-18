@@ -11,7 +11,7 @@ import { RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { SkeletonComponent } from 'boneyard-js/angular';
+
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
 import { ThreatReportResponse } from '../../services/ml.service';
 import { formatServiceName } from '../../core/utils/formatter.utils';
@@ -19,14 +19,7 @@ import { formatServiceName } from '../../core/utils/formatter.utils';
 @Component({
   selector: 'app-status-card',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    SkeletonComponent,
-  ],
+  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule],
   templateUrl: './status-card.html',
   styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

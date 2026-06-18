@@ -17,123 +17,121 @@
         </div>
       </header>
 
-      <boneyard-skeleton name="analytics-metrics" [loading]="isLoading">
-        <!-- CES METER SECTION -->
-        <section class="ces-meter-section">
-          <div class="ces-gauge-cluster">
-            <!-- THREAT GAUGE -->
-            <div class="gauge-wrapper threat-gauge">
-              <svg class="gauge-svg glow-orange" viewBox="0 0 100 100">
-                <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-                <circle
-                  class="gauge-fill"
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  [style.stroke-dasharray]="getGaugeStroke(threatLevel, 251.2)"
-                ></circle>
-              </svg>
-              <div class="gauge-center-text threat-text">
-                <span class="value turbo-font">{{ threatLevel | number:'1.0-0' }}</span>
-                <span class="unit turbo-font">%</span>
-              </div>
-              <div class="gauge-label">
-                <span class="turbo-font">THREAT</span>
-              </div>
+      <!-- CES METER SECTION -->
+      <section class="ces-meter-section">
+        <div class="ces-gauge-cluster">
+          <!-- THREAT GAUGE -->
+          <div class="gauge-wrapper threat-gauge">
+            <svg class="gauge-svg classic-orange" viewBox="0 0 100 100">
+              <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+              <circle
+                class="gauge-fill"
+                cx="50"
+                cy="50"
+                r="40"
+                [style.stroke-dasharray]="getGaugeStroke(threatLevel, 251.2)"
+              ></circle>
+            </svg>
+            <div class="gauge-center-text threat-text">
+              <span class="value">{{ threatLevel | number:'1.0-0' }}</span>
+              <span class="unit">%</span>
             </div>
+            <div class="gauge-label">
+              <span>THREAT</span>
+            </div>
+          </div>
 
-            <!-- MAIN CES GAUGE -->
-            <div class="gauge-wrapper main-gauge">
-              <svg class="gauge-svg" viewBox="0 0 100 100">
-                <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-                <circle
-                  class="gauge-fill"
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  [style.stroke-dasharray]="getGaugeStroke(cesLevel, 251.2)"
-                ></circle>
-              </svg>
-              <div class="gauge-center-text main-text">
-                <span class="value turbo-font">{{ cesLevel | number:'1.0-0' }}</span>
-                <span class="unit turbo-font">CES</span>
-              </div>
-              <div class="gauge-label">
-                <span class="turbo-font">EFFECTIVENESS</span>
-              </div>
+          <!-- MAIN CES GAUGE -->
+          <div class="gauge-wrapper main-gauge">
+            <svg class="gauge-svg" viewBox="0 0 100 100">
+              <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+              <circle
+                class="gauge-fill"
+                cx="50"
+                cy="50"
+                r="40"
+                [style.stroke-dasharray]="getGaugeStroke(cesLevel, 251.2)"
+              ></circle>
+            </svg>
+            <div class="gauge-center-text main-text">
+              <span class="value">{{ cesLevel | number:'1.0-0' }}</span>
+              <span class="unit">CES</span>
             </div>
+            <div class="gauge-label">
+              <span>EFFECTIVENESS</span>
+            </div>
+          </div>
 
-            <!-- STABLENESS GAUGE -->
-            <div class="gauge-wrapper stability-gauge">
-              <svg class="gauge-svg glow-cyan" viewBox="0 0 100 100">
-                <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-                <circle
-                  class="gauge-fill"
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 251.2)"
-                ></circle>
-              </svg>
-              <div class="gauge-center-text stability-text">
-                <span class="value turbo-font">{{ stabilityLevel | number:'1.0-0' }}</span>
-                <span class="unit turbo-font">%</span>
-              </div>
-              <div class="gauge-label">
-                <span class="turbo-font">STABLENESS</span>
-              </div>
+          <!-- STABLENESS GAUGE -->
+          <div class="gauge-wrapper stability-gauge">
+            <svg class="gauge-svg classic-cyan" viewBox="0 0 100 100">
+              <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+              <circle
+                class="gauge-fill"
+                cx="50"
+                cy="50"
+                r="40"
+                [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 251.2)"
+              ></circle>
+            </svg>
+            <div class="gauge-center-text stability-text">
+              <span class="value">{{ stabilityLevel | number:'1.0-0' }}</span>
+              <span class="unit">%</span>
             </div>
-          </div>
-        </section>
-
-        <!-- REGULAR STATS -->
-        <div
-          class="ml-stat-panels-row"
-          style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"
-        >
-          <div class="ml-stat-panel">
-            <div class="stat-info">
-              <div>
-                <span class="stat-title">P99 LATENCY</span>
-              </div>
+            <div class="gauge-label">
+              <span>STABLENESS</span>
             </div>
-            <span class="stat-value"
-              >{{ p99Latency }} <span style="font-size: 14px; opacity: 0.7">ms</span></span
-            >
-          </div>
-          <div class="ml-stat-panel">
-            <div class="stat-info">
-              <div>
-                <span class="stat-title">SERVICE UPTIME</span>
-              </div>
-            </div>
-            <span class="stat-value"
-              >{{ uptimePercent }} <span style="font-size: 14px; opacity: 0.7">%</span></span
-            >
-          </div>
-          <div class="ml-stat-panel">
-            <div class="stat-info">
-              <div>
-                <span class="stat-title">TOTAL REQUESTS</span>
-              </div>
-            </div>
-            <span class="stat-value">{{ totalRequests | number }}</span>
-          </div>
-          <div
-            class="ml-stat-panel"
-            [style.border-color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-          >
-            <div class="stat-info">
-              <div>
-                <span class="stat-title">ACTIVE INCIDENTS</span>
-              </div>
-            </div>
-            <span class="stat-value" [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-              >{{ activeIncidents }}</span
-            >
           </div>
         </div>
-      </boneyard-skeleton>
+      </section>
+
+      <!-- REGULAR STATS -->
+      <div
+        class="ml-stat-panels-row"
+        style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"
+      >
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">P99 LATENCY</span>
+            </div>
+          </div>
+          <span class="stat-value"
+            >{{ p99Latency }} <span style="font-size: 14px; opacity: 0.7">ms</span></span
+          >
+        </div>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">SERVICE UPTIME</span>
+            </div>
+          </div>
+          <span class="stat-value"
+            >{{ uptimePercent }} <span style="font-size: 14px; opacity: 0.7">%</span></span
+          >
+        </div>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">TOTAL REQUESTS</span>
+            </div>
+          </div>
+          <span class="stat-value">{{ totalRequests | number }}</span>
+        </div>
+        <div
+          class="ml-stat-panel"
+          [style.border-color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
+        >
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">ACTIVE INCIDENTS</span>
+            </div>
+          </div>
+          <span class="stat-value" [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
+            >{{ activeIncidents }}</span
+          >
+        </div>
+      </div>
 
       <div class="dashboard-grid" style="grid-template-columns: 1fr">
         <section class="status-card-outlined">
@@ -144,54 +142,52 @@
             </h2>
           </div>
 
-          <boneyard-skeleton name="analytics-chart" [loading]="isLoading">
-            <div class="card-body-clean" style="min-height: 400px; position: relative">
-              <!-- Empty state: visible only when not loading and data is empty -->
-              @if (!isLoading && (!chartOptions.data || chartOptions.data.length === 0)) {
-              <div class="empty-chart-state" role="alert" aria-live="polite">
-                <mat-icon class="empty-icon">analytics</mat-icon>
-                <h3 class="empty-title">No Telemetry Data Available</h3>
-                <p class="empty-subtitle">
-                  We couldn't retrieve any latency metrics for this time period. Please verify your
-                  systems are running and active.
-                </p>
-              </div>
-              }
-
-              <!-- Chart: visible when data is present -->
-              @if (chartOptions.data && chartOptions.data.length > 0) {
-              <ag-charts
-                [options]="chartOptions"
-                role="img"
-                aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
-                style="width: 100%; height: 400px; display: block"
-              ></ag-charts>
-              }
-
-              <!-- Screen Reader Only Tabular Alternative for Section 508 Compliance -->
-              @if (chartOptions.data && chartOptions.data.length > 0) {
-              <div class="sr-only">
-                <h3>Tabular Data: System Latency (Last 24h)</h3>
-                <table>
-                  <thead>
-                    <tr>
-                      <th scope="col">Time</th>
-                      <th scope="col">Latency (ms)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @for (item of chartOptions.data; track item) {
-                    <tr>
-                      <td>{{ item.time }}</td>
-                      <td>{{ item.latency }} ms</td>
-                    </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-              }
+          <div class="card-body-clean" style="min-height: 400px; position: relative">
+            <!-- Empty state: visible only when not loading and data is empty -->
+            @if (!isLoading && (!chartOptions.data || chartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">analytics</mat-icon>
+              <h3 class="empty-title">No Telemetry Data Available</h3>
+              <p class="empty-subtitle">
+                We couldn't retrieve any latency metrics for this time period. Please verify your
+                systems are running and active.
+              </p>
             </div>
-          </boneyard-skeleton>
+            }
+
+            <!-- Chart: visible when data is present -->
+            @if (chartOptions.data && chartOptions.data.length > 0) {
+            <ag-charts
+              [options]="chartOptions"
+              role="img"
+              aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
+              style="width: 100%; height: 400px; display: block"
+            ></ag-charts>
+            }
+
+            <!-- Screen Reader Only Tabular Alternative for Section 508 Compliance -->
+            @if (chartOptions.data && chartOptions.data.length > 0) {
+            <div class="sr-only">
+              <h3>Tabular Data: System Latency (Last 24h)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Time</th>
+                    <th scope="col">Latency (ms)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of chartOptions.data; track item) {
+                  <tr>
+                    <td>{{ item.time }}</td>
+                    <td>{{ item.latency }} ms</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            }
+          </div>
         </section>
       </div>
     </div>

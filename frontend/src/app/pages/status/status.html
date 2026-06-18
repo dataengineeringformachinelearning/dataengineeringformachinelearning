@@ -45,34 +45,34 @@
               <span>{{ sanityService.error() }}</span>
             </div>
             } @else {
-            <boneyard-skeleton name="announcements" [loading]="sanityService.loading()">
-              <div class="announcements-list-premium">
-                @if (sanityService.loading()) {
-                <div class="announcement-card-premium info">
-                  <div class="ann-header">
-                    <span class="ann-severity-badge info">info</span>
-                    <span class="ann-date">Jun 13, 2026</span>
-                  </div>
-                  <h3 class="ann-title">System Status Update</h3>
-                  <p class="ann-body">
-                    We are investigating reports of system latency. Our engineering team is
-                    currently working to resolve the issue as quickly as possible.
-                  </p>
+
+            <div class="announcements-list-premium">
+              @if (sanityService.loading()) {
+              <div class="announcement-card-premium info">
+                <div class="ann-header">
+                  <span class="ann-severity-badge info">info</span>
+                  <span class="ann-date">Jun 13, 2026</span>
                 </div>
-                } @else { @for (ann of sanityService.announcements(); track ann._id) {
-                <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
-                  <div class="ann-header">
-                    <span class="ann-severity-badge" [ngClass]="ann.severity || 'info'">
-                      {{ ann.severity || 'info' }}
-                    </span>
-                    <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
-                  </div>
-                  <h3 class="ann-title">{{ ann.title }}</h3>
-                  <p class="ann-body">{{ ann.body }}</p>
-                </div>
-                } }
+                <h3 class="ann-title">System Status Update</h3>
+                <p class="ann-body">
+                  We are investigating reports of system latency. Our engineering team is currently
+                  working to resolve the issue as quickly as possible.
+                </p>
               </div>
-            </boneyard-skeleton>
+              } @else { @for (ann of sanityService.announcements(); track ann._id) {
+              <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
+                <div class="ann-header">
+                  <span class="ann-severity-badge" [ngClass]="ann.severity || 'info'">
+                    {{ ann.severity || 'info' }}
+                  </span>
+                  <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
+                </div>
+                <h3 class="ann-title">{{ ann.title }}</h3>
+                <p class="ann-body">{{ ann.body }}</p>
+              </div>
+              } }
+            </div>
+
             }
           </div>
           }
@@ -100,46 +100,44 @@
             <a mat-flat-button color="primary" routerLink="/analytics"> View Analytics </a>
           </div>
 
-          <boneyard-skeleton name="status-pages" [loading]="isLoading() && !loadFailed()">
-            <div class="status-stack">
-              @for (page of displayPages(); track page.id) {
-              <app-status-card
-                [page]="page"
-                [services]="servicesMap()[page.id] || []"
-                [predictedSla]="mlService.latestStats()[page.id]"
-                [threatReport]="mlService.latestThreatReports()[page.id] || null"
-                [incidents]="incidentsMap()[page.id] || []"
-                [showIncidents]="true"
-              ></app-status-card>
-              } @if (loadFailed()) {
-              <div class="status-error-state">
-                <div class="error-glow-sphere"></div>
-                <mat-icon class="error-state-icon">cloud_off</mat-icon>
-                <h2 class="error-title">Unable to Connect</h2>
-                <p class="error-subtitle">
-                  We couldn't connect to the status service. Please check that the backend is
-                  running and try again.
-                </p>
-                <button
-                  mat-raised-button
-                  color="primary"
-                  class="retry-btn"
-                  (click)="retryLoad()"
-                  [disabled]="isRetrying()"
-                >
-                  @if (!isRetrying()) {
-                  <mat-icon>refresh</mat-icon>
-                  } @if (isRetrying()) {
-                  <span class="btn-spinner"></span>
-                  }
-                  <span>Retry Connection</span>
-                </button>
-              </div>
-              } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
-              <app-status-cta></app-status-cta>
-              }
+          <div class="status-stack">
+            @for (page of displayPages(); track page.id) {
+            <app-status-card
+              [page]="page"
+              [services]="servicesMap()[page.id] || []"
+              [predictedSla]="mlService.latestStats()[page.id]"
+              [threatReport]="mlService.latestThreatReports()[page.id] || null"
+              [incidents]="incidentsMap()[page.id] || []"
+              [showIncidents]="true"
+            ></app-status-card>
+            } @if (loadFailed()) {
+            <div class="status-error-state">
+              <div class="error-glow-sphere"></div>
+              <mat-icon class="error-state-icon">cloud_off</mat-icon>
+              <h2 class="error-title">Unable to Connect</h2>
+              <p class="error-subtitle">
+                We couldn't connect to the status service. Please check that the backend is running
+                and try again.
+              </p>
+              <button
+                mat-raised-button
+                color="primary"
+                class="retry-btn"
+                (click)="retryLoad()"
+                [disabled]="isRetrying()"
+              >
+                @if (!isRetrying()) {
+                <mat-icon>refresh</mat-icon>
+                } @if (isRetrying()) {
+                <span class="btn-spinner"></span>
+                }
+                <span>Retry Connection</span>
+              </button>
             </div>
-          </boneyard-skeleton>
+            } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
+            <app-status-cta></app-status-cta>
+            }
+          </div>
         </div>
       </div>
     </main>
