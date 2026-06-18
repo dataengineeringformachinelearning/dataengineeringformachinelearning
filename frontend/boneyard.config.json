@@ -2,12 +2,9 @@
   "breakpoints": [375, 768, 1280],
   "out": "./src/app/bones",
   "animate": "shimmer",
-  "routes": ["/status"],
+  "routes": ["/status", "/analytics"],
   "color": "#e1e6e2",
-  "shimmerColor": "#f4f7f5",
   "darkColor": "#182821",
-  "darkShimmerColor": "#2d4739",
   "stagger": true,
-  "transition": true,
-  "speed": "1.6s"
+  "transition": true
 }

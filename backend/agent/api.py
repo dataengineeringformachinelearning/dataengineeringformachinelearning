@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from django.http import HttpResponse
 from ninja import Router, Schema
@@ -48,7 +49,7 @@ class VulnerabilityOut(Schema):
 
 
 @router.post("/report-issue")
-async def report_issue(request, payload: IssueReportPayload):
+async def report_issue(request: Any, payload: IssueReportPayload) -> Any:
   try:
     from asgiref.sync import sync_to_async
     from monitor.models import BugReport
@@ -76,7 +77,7 @@ async def report_issue(request, payload: IssueReportPayload):
 
 
 @router.post("/vulnerabilities", response=VulnerabilityOut)
-def report_vulnerability(request, payload: VulnerabilityReportPayload):
+def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> Any:
   from monitor.models import Vulnerability
 
   # Set default severity if not provided or valid
@@ -110,7 +111,7 @@ def report_vulnerability(request, payload: VulnerabilityReportPayload):
 
 
 @router.get("/vulnerabilities", response=list[VulnerabilityOut])
-def list_vulnerabilities(request):
+def list_vulnerabilities(request: Any) -> Any:
   from monitor.models import Vulnerability
 
   # For now, let's return all vulnerabilities sorted by creation time
@@ -135,7 +136,7 @@ def list_vulnerabilities(request):
 
 
 @router.patch("/vulnerabilities/{vuln_id}", response=VulnerabilityOut)
-def update_vulnerability(request, vuln_id: str, payload: VulnerabilityUpdatePayload):
+def update_vulnerability(request: Any, vuln_id: str, payload: VulnerabilityUpdatePayload) -> Any:
   from django.shortcuts import get_object_or_404
   from monitor.models import Vulnerability
 

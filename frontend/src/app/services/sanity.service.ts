@@ -35,7 +35,7 @@ export class SanityService {
     });
   }
 
-  fetchAnnouncements(): void {
+  async fetchAnnouncements(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
 
@@ -47,20 +47,18 @@ export class SanityService {
       severity
     }`;
 
-    this.client
-      .fetch<SanityAnnouncement[]>(query)
-      .then(data => {
-        this.announcements.set(data || []);
-        this.loading.set(false);
-      })
-      .catch(err => {
-        console.error('Error fetching Sanity announcements:', err);
-        this.error.set('Failed to load system announcements.');
-        this.loading.set(false);
-      });
+    try {
+      const data = await this.client.fetch<SanityAnnouncement[]>(query);
+      this.announcements.set(data || []);
+      this.loading.set(false);
+    } catch (err) {
+      console.error('Error fetching Sanity announcements:', err);
+      this.error.set('Failed to load system announcements.');
+      this.loading.set(false);
+    }
   }
 
-  fetchPlatformVideo(): void {
+  async fetchPlatformVideo(): Promise<void> {
     this.loading.set(true);
     this.error.set(null);
 
@@ -70,16 +68,14 @@ export class SanityService {
       "videoUrl": videoFile.asset->url
     }`;
 
-    this.client
-      .fetch<SanityPlatformVideo>(query)
-      .then(data => {
-        this.platformVideo.set(data || null);
-        this.loading.set(false);
-      })
-      .catch(err => {
-        console.error('Error fetching Sanity platform video:', err);
-        this.error.set('Failed to load platform video.');
-        this.loading.set(false);
-      });
+    try {
+      const data = await this.client.fetch<SanityPlatformVideo>(query);
+      this.platformVideo.set(data || null);
+      this.loading.set(false);
+    } catch (err) {
+      console.error('Error fetching Sanity platform video:', err);
+      this.error.set('Failed to load platform video.');
+      this.loading.set(false);
+    }
   }
 }

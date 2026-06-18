@@ -292,8 +292,34 @@
               setTheme(currentTheme === "light" ? "dark" : "light");
             });
           }
+
+          // Confetti for USA Badge
+          const usaBadge = document.querySelector(".usa-badge");
+          if (usaBadge) {
+            usaBadge.addEventListener("mouseenter", (e) => {
+              const rect = e.currentTarget.getBoundingClientRect();
+              const x = (rect.left + rect.width / 2) / window.innerWidth;
+              const y = (rect.top + rect.height / 2) / window.innerHeight;
+
+              if (window.confetti) {
+                window.confetti({
+                  particleCount: 50,
+                  spread: 60,
+                  origin: { x, y },
+                  colors: ["#FF0000", "#FFFFFF", "#0000FF"],
+                  disableForReducedMotion: true,
+                  zIndex: 9999,
+                });
+              }
+            });
+          }
         });
       })();
     </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"
+      integrity="sha384-0esPaJH+F9evp2lsJYN36SW7XkRbaYviuyF+PpnbjDXBC9i1CWGiJyGrXCyiyGqZ"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>

@@ -95,7 +95,7 @@ html[data-theme='light'] .mat-form-field-flex:has(input:focus-visible, textarea:
 @import 'prismjs/themes/prism-okaidia.css';
 
 pre[class*='language-'] {
-  background-color: #1e1e1e !important;
+  background-color: var(--card-bg) !important;
   border: 1px solid var(--border);
   border-radius: var(--border-radius-md);
   padding: 1.5rem 1.6rem;
@@ -309,7 +309,7 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-vi
 
 // ====================== INLINE CODE ======================
 :not(pre) > code {
-  background-color: rgba(128, 128, 128, 0.15);
+  background-color: var(--color-dark-grey-btn-bg);
   padding: 3px 7px;
   border-radius: var(--border-radius-sm);
   font-size: 0.92rem;
@@ -351,7 +351,7 @@ main.main {
 }
 
 .blur-backdrop {
-  background-color: rgba(19, 42, 36, 0.5) !important;
+  background-color: var(--navbar-bg) !important;
   backdrop-filter: blur(8px) !important;
   -webkit-backdrop-filter: blur(8px) !important;
 }
@@ -397,15 +397,15 @@ main.main {
 .mat-mdc-flat-button.mat-primary,
 .mdc-button--raised.mat-primary {
   background-color: var(--color-primary) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px 0 rgba(24, 58, 55, 0.4) !important;
+  color: var(--color-on-primary) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 .mat-mdc-raised-button.mat-primary:hover,
 .mat-mdc-flat-button.mat-primary:hover,
 .mdc-button--raised.mat-primary:hover {
-  box-shadow: 0 6px 20px rgba(24, 58, 55, 0.6) !important;
-  background-color: #ffffff !important;
+  box-shadow: var(--shadow-hover) !important;
+  background-color: var(--color-on-primary) !important;
   color: var(--color-primary) !important;
 }
 
@@ -433,13 +433,13 @@ main.main {
 .mat-mdc-flat-button.mat-warn,
 .mdc-button--raised.mat-warn {
   background-color: var(--color-error) !important;
-  color: #ffffff !important;
+  color: var(--color-on-primary) !important;
 }
 
 .mat-mdc-raised-button.mat-warn:hover,
 .mat-mdc-flat-button.mat-warn:hover,
 .mdc-button--raised.mat-warn:hover {
-  background-color: #d32f2f !important;
+  opacity: 0.9 !important;
 }
 
 /* Standard/Navbar Text Buttons */

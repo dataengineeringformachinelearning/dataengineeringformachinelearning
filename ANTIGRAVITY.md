@@ -34,7 +34,6 @@ This document defines the core roles and collaboration rules for our development
 
 ## Documentation & Whitepaper Rules
 
-- **Whitepaper Maintenance**: Any new architectural decisions or broad conceptual changes MUST be documented in `WHITEPAPER.md`.
-- **Whitepaper Chapter Depth**: Each chapter in `WHITEPAPER.md` must be comprehensive, containing at least three paragraphs of approximately 200 words each (minimum 600 words per chapter). Ensure it reads like a structured "real chapter".
-- **README Synchronization**: The `README.md` file serves as the project overview. It should be kept concise and linked to the `WHITEPAPER.md` for deep dives. Maintain an updated table of contents.
+- **README as the Book**: The `README.md` file serves as "the book". Each chapter must be comprehensive, containing at least three paragraphs of approximately 200 words each (minimum 600 words per chapter). It must include generic sample code snippets that demonstrate the features, and provide links to all technologies used.
+- **Whitepaper Maintenance**: The `WHITEPAPER.md` is a brief, focused on the value add and hypothesis of the platform. It should include architecture diagrams and algorithms, styled similarly to trending papers on HuggingFace. It should be concise and conceptual.
 - **Acknowledgements**: Whenever a new technology, framework, or dependency is adopted into the stack, it MUST be explicitly appended to the `## Acknowledgements & Technologies` section in `README.md`. Always ensure there is a clear link from the top of the documentation to the acknowledgements section.

@@ -1,4 +1,5 @@
 import datetime
+from typing import Any
 
 from monitor.models import StatusPage
 from ninja import Router, Schema
@@ -27,7 +28,7 @@ class LatestRunOut(Schema):
 
 
 @router.api_operation(["GET", "POST"], "/train", response=TrainOut)
-def train_model(request, status_page_id: str | None = None):
+def train_model(request: Any, status_page_id: str | None = None) -> Any:
   status_page = None
   if status_page_id:
     try:
@@ -59,7 +60,7 @@ def train_model(request, status_page_id: str | None = None):
 
 
 @router.get("/latest", response=LatestRunOut)
-def get_latest_training(request, status_page_id: str | None = None):
+def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
   status_page = None
   if status_page_id:
     try:
@@ -110,7 +111,7 @@ class ThreatReportOut(Schema):
 
 
 @router.post("/threat-intel/train", response=ThreatReportOut)
-def train_threat_intel(request):
+def train_threat_intel(request: Any) -> Any:
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
 
@@ -126,7 +127,7 @@ def train_threat_intel(request):
 
 
 @router.get("/threat-intel/report", response=ThreatReportOut)
-def get_threat_report(request, status_page_id: str | None = None):
+def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
   target_user = None
   if status_page_id:
     try:
@@ -197,7 +198,7 @@ class STIXBundleOut(Schema):
 
 
 @router.get("/threat-intel/stix", response=STIXBundleOut)
-def get_threat_report_stix(request, status_page_id: str | None = None):
+def get_threat_report_stix(request: Any, status_page_id: str | None = None) -> Any:
   # Get threat report same as standard endpoint
   target_user = None
   if status_page_id:
@@ -291,7 +292,7 @@ class ISACSubmissionOut(Schema):
 
 
 @router.post("/threat-intel/submit-isac", response=ISACSubmissionOut)
-def submit_to_isac(request, payload: ISACSubmissionIn):
+def submit_to_isac(request: Any, payload: ISACSubmissionIn) -> Any:
   import os
   import uuid
 
@@ -380,7 +381,7 @@ class SOCStatusOut(Schema):
 
 
 @router.get("/compliance/soc-status", response=SOCStatusOut)
-def get_soc_status(request):
+def get_soc_status(request: Any) -> Any:
   # Standardize readiness checkpoints
   criteria = [
     {

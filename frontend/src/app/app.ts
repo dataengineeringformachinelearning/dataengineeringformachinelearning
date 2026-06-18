@@ -71,12 +71,14 @@ export class App implements OnInit {
     }
   }
 
-  registerServiceWorker() {
+  async registerServiceWorker() {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js').then(
-        registration => console.log('ServiceWorker registered with scope: ', registration.scope),
-        err => console.log('ServiceWorker registration failed: ', err),
-      );
+      try {
+        const registration = await navigator.serviceWorker.register('/service-worker.js');
+        console.log('ServiceWorker registered with scope: ', registration.scope);
+      } catch (err) {
+        console.log('ServiceWorker registration failed: ', err);
+      }
     }
   }
 

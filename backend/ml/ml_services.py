@@ -1,9 +1,11 @@
+from typing import Any
+
 from monitor.models import Endpoints, MonitoredService
 
-from ml.models import TrainingRun
+from ml.models import ThreatReport, TrainingRun
 
 
-def train_tenant_sla(status_page):
+def train_tenant_sla(status_page: Any) -> TrainingRun | None:
   import torch
   import torch.nn as nn
   import torch.optim as optim
@@ -76,7 +78,7 @@ def train_tenant_sla(status_page):
   return run
 
 
-def train_threat_model(user):
+def train_threat_model(user: Any) -> ThreatReport:
   import datetime as dt
   import random
 

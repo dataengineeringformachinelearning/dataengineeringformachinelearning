@@ -13,6 +13,7 @@
 
   /* Semantic Statuses */
   --color-success: #4caf50;
+  --color-success-dim: rgba(76, 175, 80, 0.12);
   --color-warning: #ffc107;
   --color-error: #f44336;
   --color-info: #2196f3;
@@ -69,6 +70,7 @@ html[data-theme='light'] {
   --color-on-background: #182821;
 
   --color-success: #2e7d32;
+  --color-success-dim: rgba(46, 125, 50, 0.12);
   --color-warning: #b25e00;
   --color-error: #d32f2f;
   --color-info: #0288d1;

@@ -110,7 +110,7 @@
           <div class="modal-content">
             <div class="modal-header">
               <h3 id="modal-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-error, #ef4444);" aria-hidden="true">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
                 Report Security Threat
@@ -475,7 +475,7 @@
               const href = `${frontendHost}/status/${page.slug}`;
               widgetLink.href = href;
 
-              let color = '#10b981';
+              let color = 'var(--color-success, #10b981)';
               let textContent = 'All Systems Operational';
 
               try {
@@ -494,13 +494,13 @@
                     const degraded = services.filter(s => s.status === 'Degraded');
 
                     if (activeIncidents.length > 0) {
-                      color = '#ef4444';
+                      color = 'var(--color-error, #ef4444)';
                       textContent = `Incident: ${activeIncidents[0].status}`;
                     } else if (outages.length > 0) {
-                      color = '#ef4444';
+                      color = 'var(--color-error, #ef4444)';
                       textContent = 'Service Outage';
                     } else if (degraded.length > 0) {
-                      color = '#f59e0b';
+                      color = 'var(--color-warning, #f59e0b)';
                       textContent = 'Degraded Performance';
                     }
                   }
@@ -522,11 +522,11 @@
                 );
               } catch {}
             } else {
-              dot.style.backgroundColor = '#ef4444';
+              dot.style.backgroundColor = 'var(--color-error, #ef4444)';
               text.innerText = 'Status Page Not Found';
             }
           } catch (globalErr) {
-            dot.style.backgroundColor = '#94a3b8';
+            dot.style.backgroundColor = 'var(--text-muted, #94a3b8)';
             text.innerText = 'Status Unknown';
           }
         };

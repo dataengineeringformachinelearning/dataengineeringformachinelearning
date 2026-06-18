@@ -18,6 +18,75 @@
       </header>
 
       <boneyard-skeleton name="analytics-metrics" [loading]="isLoading">
+        <!-- CES METER SECTION -->
+        <section class="ces-meter-section">
+          <div class="ces-gauge-cluster">
+            <!-- THREAT GAUGE -->
+            <div class="gauge-wrapper threat-gauge">
+              <svg class="gauge-svg glow-orange" viewBox="0 0 100 100">
+                <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                <circle
+                  class="gauge-fill"
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  [style.stroke-dasharray]="getGaugeStroke(threatLevel, 251.2)"
+                ></circle>
+              </svg>
+              <div class="gauge-center-text threat-text">
+                <span class="value turbo-font">{{ threatLevel | number:'1.0-0' }}</span>
+                <span class="unit turbo-font">%</span>
+              </div>
+              <div class="gauge-label">
+                <span class="turbo-font">THREAT</span>
+              </div>
+            </div>
+
+            <!-- MAIN CES GAUGE -->
+            <div class="gauge-wrapper main-gauge">
+              <svg class="gauge-svg" viewBox="0 0 100 100">
+                <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                <circle
+                  class="gauge-fill"
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  [style.stroke-dasharray]="getGaugeStroke(cesLevel, 251.2)"
+                ></circle>
+              </svg>
+              <div class="gauge-center-text main-text">
+                <span class="value turbo-font">{{ cesLevel | number:'1.0-0' }}</span>
+                <span class="unit turbo-font">CES</span>
+              </div>
+              <div class="gauge-label">
+                <span class="turbo-font">EFFECTIVENESS</span>
+              </div>
+            </div>
+
+            <!-- STABLENESS GAUGE -->
+            <div class="gauge-wrapper stability-gauge">
+              <svg class="gauge-svg glow-cyan" viewBox="0 0 100 100">
+                <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
+                <circle
+                  class="gauge-fill"
+                  cx="50"
+                  cy="50"
+                  r="40"
+                  [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 251.2)"
+                ></circle>
+              </svg>
+              <div class="gauge-center-text stability-text">
+                <span class="value turbo-font">{{ stabilityLevel | number:'1.0-0' }}</span>
+                <span class="unit turbo-font">%</span>
+              </div>
+              <div class="gauge-label">
+                <span class="turbo-font">STABLENESS</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- REGULAR STATS -->
         <div
           class="ml-stat-panels-row"
           style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"
@@ -53,7 +122,6 @@
           <div
             class="ml-stat-panel"
             [style.border-color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-            [style.background-color]="activeIncidents > 0 ? 'rgba(244, 67, 54, 0.05)' : ''"
           >
             <div class="stat-info">
               <div>

@@ -4,12 +4,17 @@ import { configureBoneyard } from 'boneyard-js/angular';
 
 import _isolated_status_page from './isolated-status-page.bones.json';
 import _announcements from './announcements.bones.json';
+import _status_analytics_mock_id from './status-analytics-mock-id.bones.json';
 import _status_pages from './status-pages.bones.json';
+import _status_analytics from './status-analytics.bones.json';
+import _threat_intel from './threat-intel.bones.json';
+import _analytics_metrics from './analytics-metrics.bones.json';
+import _analytics_chart from './analytics-chart.bones.json';
 
 configureBoneyard({
-  animate: 'shimmer',
   color: '#e1e6e2',
   darkColor: '#182821',
+  animate: 'shimmer',
   stagger: true,
   transition: true,
 });
@@ -17,5 +22,10 @@ configureBoneyard({
 registerBones({
   'isolated-status-page': _isolated_status_page,
   announcements: _announcements,
+  'status-analytics-mock-id': _status_analytics_mock_id,
   'status-pages': _status_pages,
+  'status-analytics': _status_analytics,
+  'threat-intel': _threat_intel,
+  'analytics-metrics': _analytics_metrics,
+  'analytics-chart': _analytics_chart,
 });

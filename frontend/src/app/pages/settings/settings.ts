@@ -178,18 +178,20 @@ export class Settings implements OnInit {
     return `<script src="${origin}/assets/widget.js" data-page-id="${page.slug}"></script>`;
   }
 
-  copyWidgetCode() {
+  async copyWidgetCode() {
     const code = this.getWidgetCode();
     if (code) {
-      navigator.clipboard.writeText(code).then(() => {
+      try {
+        await navigator.clipboard.writeText(code);
         this.copied.set(true);
         setTimeout(() => {
-          this.copied.set(true); // wait, should reset to false
           this.copied.set(false);
           this.cdr.markForCheck();
         }, 2000);
         this.cdr.markForCheck();
-      });
+      } catch (err) {
+        console.error('Failed to copy', err);
+      }
     }
   }
 
@@ -345,44 +347,42 @@ export class Settings implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
+    dialogRef.afterClosed().subscribe(async confirmed => {
       if (confirmed) {
         this.isDeletingAccount.set(true);
-        this.authService
-          .deleteAccount()
-          .then(async success => {
-            this.isDeletingAccount.set(false);
-            if (success) {
-              const successDialog = this.dialog.open(ConfirmDialog, {
-                width: '400px',
-                data: {
-                  title: 'Account Deleted',
-                  message: 'Your account and all associated data have been permanently deleted.',
-                  type: 'alert',
-                  confirmBtnText: 'OK',
-                },
-              });
-              successDialog.afterClosed().subscribe(async () => {
-                await this.router.navigate(['/']);
-                window.location.reload();
-              });
-            } else {
-              this.dialog.open(ConfirmDialog, {
-                width: '400px',
-                data: {
-                  title: 'Deletion Failed',
-                  message: 'Failed to delete account.',
-                  type: 'alert',
-                  confirmBtnText: 'OK',
-                  confirmBtnColor: 'warn',
-                },
-              });
-            }
-          })
-          .catch(err => {
-            this.isDeletingAccount.set(false);
-            console.error(err);
-          });
+        try {
+          const success = await this.authService.deleteAccount();
+          this.isDeletingAccount.set(false);
+          if (success) {
+            const successDialog = this.dialog.open(ConfirmDialog, {
+              width: '400px',
+              data: {
+                title: 'Account Deleted',
+                message: 'Your account and all associated data have been permanently deleted.',
+                type: 'alert',
+                confirmBtnText: 'OK',
+              },
+            });
+            successDialog.afterClosed().subscribe(async () => {
+              await this.router.navigate(['/']);
+              window.location.reload();
+            });
+          } else {
+            this.dialog.open(ConfirmDialog, {
+              width: '400px',
+              data: {
+                title: 'Deletion Failed',
+                message: 'Failed to delete account.',
+                type: 'alert',
+                confirmBtnText: 'OK',
+                confirmBtnColor: 'warn',
+              },
+            });
+          }
+        } catch (err) {
+          this.isDeletingAccount.set(false);
+          console.error(err);
+        }
       }
     });
   }
