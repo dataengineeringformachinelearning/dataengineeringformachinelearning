@@ -16,9 +16,11 @@ import { CookieBanner } from './components/cookie-banner/cookie-banner';
 import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
 
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Sidebar, Footer, IssueReporter, CookieBanner],
+  imports: [RouterOutlet, Navbar, Sidebar, Footer, IssueReporter, CookieBanner, MatIconModule],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',

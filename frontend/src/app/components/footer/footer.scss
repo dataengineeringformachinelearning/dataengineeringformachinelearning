@@ -5,6 +5,13 @@ footer {
   border-top: 1px solid var(--border);
 }
 
+.footer-logo {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: var(--color-amber);
+}
+
 .copyright {
   display: flex;
   flex-direction: column;

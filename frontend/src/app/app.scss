@@ -39,7 +39,10 @@
   }
 
   .loader-logo {
+    font-size: 48px;
+    width: 48px;
     height: 48px;
+    color: var(--color-amber);
     margin-bottom: var(--grid-gap);
     animation: pulse 2s infinite ease-in-out;
   }
@@ -145,7 +148,7 @@
   }
 
   .content-wrapper {
-    max-width: var(--container-max-width);
+    max-width: 100%;
     margin: 0 auto;
     width: 100%;
     display: flex;

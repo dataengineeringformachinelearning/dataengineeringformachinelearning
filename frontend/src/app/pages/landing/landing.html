@@ -1,7 +1,7 @@
-<div class="landing-container">
-  <!-- Glow Spheres for Premium Aesthetics -->
-  <div class="glow-sphere sphere-1" aria-hidden="true"></div>
-  <div class="glow-sphere sphere-2" aria-hidden="true"></div>
+<div class="landing-container bladerunner-theme">
+  <!-- Ambient Lighting / Water Ripples -->
+  <div class="ambient-glow"></div>
+  <div class="ambient-ripple"></div>
 
   <!-- Hero Section -->
   <header class="hero-section">
@@ -9,6 +9,11 @@
       <span class="badge-dot"></span>
       <span class="badge-text">Version {{ version }} Production Platform</span>
     </div>
+
+    <div class="hero-logo-container">
+      <mat-icon class="brand-icon">analytics</mat-icon>
+    </div>
+
     <h1 class="title" id="main-title">Data Engineering for Machine Learning</h1>
     <p class="subtitle">
       Embed a single line of code to stream zero-dependency telemetry into our deep learning
@@ -16,19 +21,11 @@
     </p>
 
     <div class="cta-group">
-      <a
-        routerLink="/documentation"
-        class="cta-button primary-btn"
-        aria-label="Read system documentation and guides"
-      >
+      <a routerLink="/documentation" class="cta-button primary-btn">
         <mat-icon>menu_book</mat-icon>
         <span>Read Documentation</span>
       </a>
-      <a
-        routerLink="/status/platform-status"
-        class="cta-button secondary-btn"
-        aria-label="View real-time platform statuses"
-      >
+      <a routerLink="/status/platform-status" class="cta-button secondary-btn">
         <mat-icon>analytics</mat-icon>
         <span>View Statuses</span>
       </a>
@@ -48,71 +45,11 @@
     </div>
   </header>
 
-  <!-- Platform Video presentation (delivered from Sanity.io CDN) -->
-  @if (sanityService.platformVideo(); as video) {
-  <section class="video-presentation-section" aria-labelledby="video-title">
-    <div class="video-flat-container">
-      <!-- Telemetry Header (Precision Console Style) -->
-      <div class="telemetry-bar">
-        <div class="telemetry-left">
-          <span class="telemetry-dot"></span>
-          <span class="telemetry-tag">VIDEO FEED // DEEP_LEARNING_ORCHESTRATOR</span>
-        </div>
-        <div class="telemetry-right">
-          <span class="telemetry-metric">29.97 FPS</span>
-          <span class="telemetry-divider">|</span>
-          <span class="telemetry-metric">RES: 2160P</span>
-          <span class="telemetry-divider">|</span>
-          <span class="telemetry-metric">STATUS: OPERATIONAL</span>
-        </div>
-      </div>
-      <div class="video-frame-flat">
-        <video
-          #videoPlayer
-          [src]="video.videoUrl"
-          controls
-          preload="metadata"
-          playsinline
-          class="platform-video-player-flat"
-          [attr.aria-label]="video.title"
-          (play)="videoPlaying.set(true)"
-          (pause)="videoPlaying.set(false)"
-          (ended)="videoPlaying.set(false)"
-        ></video>
-        @if (!videoPlaying()) {
-        <div
-          class="video-overlay"
-          (click)="videoPlayer.play()"
-          tabindex="0"
-          (keydown.enter)="videoPlayer.play()"
-        >
-          <div class="overlay-glow"></div>
-          <div class="play-button-premium">
-            <mat-icon class="play-icon">play_arrow</mat-icon>
-          </div>
-          <span class="play-hint">CLICK TO INITIALIZE FEED</span>
-        </div>
-        }
-      </div>
-      @if (video.description) {
-      <div class="video-flat-info">
-        <span class="info-pre-tag">DOCUMENTARY ARCHIVE</span>
-        <h2 id="video-title">{{ video.title }}</h2>
-        <p>{{ video.description }}</p>
-      </div>
-      }
-    </div>
-  </section>
-  }
-
   <!-- Interactive Pipeline Flow Simulation -->
   <section class="pipeline-simulator" aria-labelledby="simulator-title">
     <div class="simulator-header">
-      <h2 id="simulator-title">Live Telemetry & ML Prediction Pipeline</h2>
-      <p>
-        Click through the stages below to explore how data streams from ingestion to deep learning
-        forecasts in real-time.
-      </p>
+      <h2 id="simulator-title">Real-time Telemetry Pipeline</h2>
+      <p>Observe the raw data streams passing through the predictive models in real-time.</p>
     </div>
 
     <div class="simulator-grid">
@@ -172,65 +109,97 @@
     </div>
   </section>
 
+  <!-- Platform Video presentation -->
+  <section class="video-presentation-section" aria-labelledby="video-title">
+    <div class="video-flat-container">
+      <div class="telemetry-bar">
+        <div class="telemetry-left">
+          <span class="telemetry-dot amber"></span>
+          <span class="telemetry-tag">VIDEO FEED // DEEP_LEARNING_ORCHESTRATOR</span>
+        </div>
+        <div class="telemetry-right">
+          <span class="telemetry-metric">29.97 FPS</span>
+          <span class="telemetry-divider">|</span>
+          <span class="telemetry-metric">RES: 2160P</span>
+          <span class="telemetry-divider">|</span>
+          <span class="telemetry-metric">STATUS: SYNCED</span>
+        </div>
+      </div>
+      <div class="video-frame-flat">
+        <video
+          #videoPlayer
+          [src]="sanityService.platformVideo()?.videoUrl || ''"
+          controls
+          preload="metadata"
+          playsinline
+          class="platform-video-player-flat"
+          [attr.aria-label]="sanityService.platformVideo()?.title || 'Platform Video'"
+          (play)="videoPlaying.set(true)"
+          (pause)="videoPlaying.set(false)"
+          (ended)="videoPlaying.set(false)"
+        ></video>
+        @if (!videoPlaying()) {
+        <div
+          class="video-overlay"
+          (click)="videoPlayer.play()"
+          tabindex="0"
+          (keydown.enter)="videoPlayer.play()"
+        >
+          <div class="overlay-glow"></div>
+          <div class="play-button-premium">
+            <mat-icon class="play-icon">play_arrow</mat-icon>
+          </div>
+          <span class="play-hint">ACCESS ARCHIVE RECORDING</span>
+        </div>
+        }
+      </div>
+      @if (sanityService.platformVideo(); as video) { @if (video.description) {
+      <div class="video-flat-info">
+        <span class="info-pre-tag">DOCUMENTARY ARCHIVE</span>
+        <h2 id="video-title">{{ video.title }}</h2>
+        <p>{{ video.description }}</p>
+      </div>
+      } }
+    </div>
+  </section>
+
   <!-- Feature Cards Grid -->
   <section class="features-section" aria-labelledby="features-title">
     <div class="section-intro">
       <span class="section-tag">CAPABILITIES</span>
       <h2 id="features-title">Engineered for Reliability & Scale</h2>
       <p>
-        Our extensible deep learning pipeline currently features two active modules—Service Level
-        Agreement (SLA) predictions and Threat Anomaly (TA) analytics—with architectural support for
-        future predictive modules.
+        Our extensible deep learning pipeline features SLA predictions and Threat Anomaly analytics.
       </p>
     </div>
 
     <div class="features-grid">
       <div class="feature-card">
+        <span class="card-tag">EXPLORE</span>
+        <div class="feature-icon"><mat-icon>explore</mat-icon></div>
+        <h2>Data Discovery</h2>
+        <p>Traverse massive databanks and identify key metrics across sector 4.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="card-tag">ANALYTICS</span>
+        <div class="feature-icon"><mat-icon>analytics</mat-icon></div>
+        <h2>Telemetry Analytics</h2>
+        <p>Monitor real-time robotic health, emotional baselines, and performance drops.</p>
+      </div>
+
+      <div class="feature-card">
+        <span class="card-tag">VULNERABILITIES</span>
+        <div class="feature-icon"><mat-icon>security</mat-icon></div>
+        <h2>Threat Mitigation</h2>
+        <p>Detect rogue models and scan for systemic infrastructure flaws.</p>
+      </div>
+
+      <div class="feature-card">
         <span class="card-tag">DOCS</span>
-        <div class="feature-icon">
-          <mat-icon>library_books</mat-icon>
-        </div>
-        <h2>Interactive Documentation</h2>
-        <p>
-          Explore step-by-step guides, working notes, and AI-driven annotations on data engineering
-          paradigms.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <span class="card-tag">TELEMETRY</span>
-        <div class="feature-icon">
-          <mat-icon>dns</mat-icon>
-        </div>
-        <h2>Real-Time System Monitoring</h2>
-        <p>
-          Track live service health, response times, and system statuses across all our core
-          ingestion endpoints.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <span class="card-tag">DEEP LEARNING</span>
-        <div class="feature-icon">
-          <mat-icon>trending_up</mat-icon>
-        </div>
-        <h2>SLA Compliance Forecasts</h2>
-        <p>
-          Leverage predictive deep learning models to estimate Service Level Agreement (SLA) status
-          up to 90 days out.
-        </p>
-      </div>
-
-      <div class="feature-card">
-        <span class="card-tag">SECURITY</span>
-        <div class="feature-icon">
-          <mat-icon>security</mat-icon>
-        </div>
-        <h2>Threat Anomaly Analytics</h2>
-        <p>
-          Detect unusual usage patterns and identify potential threats with our deep learning
-          anomaly forecasting.
-        </p>
+        <div class="feature-icon"><mat-icon>library_books</mat-icon></div>
+        <h2>System Archives</h2>
+        <p>Access the library for structural guides and whitepapers.</p>
       </div>
     </div>
   </section>
@@ -239,135 +208,31 @@
   <section class="transparency-section" aria-labelledby="transparency-title">
     <div class="transparency-grid">
       <div class="transparency-left">
-        <span class="section-tag">COMPLIANCE & TRANSPARENCY</span>
-        <h2 id="transparency-title">Platform Transparency & OAuth Integrity</h2>
+        <span class="section-tag">COMPLIANCE PROTOCOL</span>
+        <h2 id="transparency-title">Absolute Transparency</h2>
         <p>
-          The <strong>Data Engineering for Machine Learning Platform</strong> runs ingestion tests,
-          live service health tracking, and deep learning analytics.
-        </p>
-        <p>
-          To enable authenticated data syncing, the platform utilizes Google Analytics 4 (GA4) API
-          integration. We explicitly request OAuth scopes for the following workflows:
+          The <strong>Data Engineering for Machine Learning Platform</strong> guarantees the
+          integrity of our creations.
         </p>
       </div>
-
       <div class="transparency-right">
         <ul class="purpose-list">
           <li>
             <mat-icon>shield</mat-icon>
             <div class="purpose-text">
               <strong>System Telemetry Syncing:</strong>
-              <p>
-                Aggregates anonymized traffic parameters to feed into our PyTorch-based neural
-                network anomaly detection model.
-              </p>
+              <p>Aggregates anonymized traffic parameters to feed into our neural matrix.</p>
             </div>
           </li>
           <li>
             <mat-icon>vpn_key</mat-icon>
             <div class="purpose-text">
               <strong>Admin Authentication:</strong>
-              <p>
-                Authenticates system administrators for pipeline orchestrations and config
-                modifications.
-              </p>
-            </div>
-          </li>
-          <li>
-            <mat-icon>speed</mat-icon>
-            <div class="purpose-text">
-              <strong>Latency Tuning:</strong>
-              <p>
-                Identifies geographical bottlenecks and SLA latency deviations across distributed
-                instances.
-              </p>
+              <p>Authenticates high-level executives for planetary pipeline orchestrations.</p>
             </div>
           </li>
         </ul>
       </div>
-    </div>
-
-    <div class="transparency-footer">
-      <mat-icon>lock</mat-icon>
-      <span
-        >Privacy Safeguard: The platform is end-to-end encrypted in transit (TLS 1.3) and at-rest
-        (AES-256 for database credentials). All status metrics and telemetry are private-by-default
-        and never shared publicly unless you explicitly approve and publish your page.</span
-      >
-    </div>
-  </section>
-
-  <!-- Newsletter Subscription Section -->
-  <section class="newsletter-section" aria-labelledby="newsletter-title">
-    <div class="newsletter-container">
-      <div class="newsletter-info">
-        <h2 id="newsletter-title">Subscribe to DEML Platform updates</h2>
-        <p class="newsletter-desc">
-          Stay informed with the latest insights from our data engineering and machine learning
-          platform.
-        </p>
-      </div>
-
-      <form (ngSubmit)="onSubscribe()" #subForm="ngForm" class="newsletter-form" novalidate>
-        <div class="input-container">
-          <input
-            type="email"
-            [(ngModel)]="emailVal"
-            name="email"
-            #emailInput="ngModel"
-            required
-            email
-            placeholder="name@company.com"
-            aria-label="Email address"
-            [class.error]="showErrors && (emailInput.invalid || !emailVal)"
-            class="newsletter-input"
-          />
-          @if (showErrors && (emailInput.invalid || !emailVal)) {
-          <span class="error-message">Please enter a valid email address.</span>
-          }
-        </div>
-
-        <div class="consent-container">
-          <label class="consent-checkbox-label">
-            <input
-              type="checkbox"
-              [(ngModel)]="consentVal"
-              name="consent"
-              required
-              class="consent-checkbox"
-            />
-            <span class="consent-text">
-              I accept the DEML Platform's
-              <a routerLink="/terms" target="_blank">Terms and Conditions</a>
-              and acknowledge that my information will be used in accordance with the
-              <a routerLink="/privacy" target="_blank">Privacy Policy</a>.
-            </span>
-          </label>
-          @if (showErrors && !consentVal) {
-          <span class="error-message block">You must accept the Terms and Conditions.</span>
-          }
-        </div>
-
-        <button type="submit" [disabled]="submitting()" class="subscribe-btn">
-          @if (submitting()) {
-          <span>Submitting...</span>
-          } @else {
-          <span>Subscribe</span>
-          }
-        </button>
-      </form>
-
-      @if (successMessage()) {
-      <div class="status-alert success" role="alert">
-        <mat-icon>check_circle</mat-icon>
-        <span>{{ successMessage() }}</span>
-      </div>
-      } @if (errorMessage()) {
-      <div class="status-alert error" role="alert">
-        <mat-icon>error</mat-icon>
-        <span>{{ errorMessage() }}</span>
-      </div>
-      }
     </div>
   </section>
 </div>

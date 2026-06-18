@@ -41,20 +41,20 @@ def get_analytics_overview(request):
 
   client = get_clickhouse_client()
 
-  # We provide a default mock data structure so the frontend always has data to render,
+  # We provide a zeroed-out data structure so the frontend always has the correct schema to render,
   # even if ClickHouse isn't fully spun up or the OTel schema isn't created yet.
   data = {
-    "p99_latency_ms": 45,
-    "uptime_percent": 99.99,
-    "total_requests_24h": 15000,
+    "p99_latency_ms": 0,
+    "uptime_percent": 0,
+    "total_requests_24h": 0,
     "active_incidents": 0,
-    "time_series": [
-      {"time": "08:00", "latency": 42},
-      {"time": "09:00", "latency": 45},
-      {"time": "10:00", "latency": 41},
-      {"time": "11:00", "latency": 39},
-      {"time": "12:00", "latency": 50},
-    ],
+    "time_series": [],
+    "origin_distribution": [],
+    "request_frequency": [],
+    "http_statuses": [],
+    "endpoint_counts": [],
+    "threat_severity": [],
+    "security_alerts": [],
   }
 
   if not client:

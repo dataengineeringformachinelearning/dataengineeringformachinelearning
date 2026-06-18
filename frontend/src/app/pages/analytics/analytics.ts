@@ -72,6 +72,136 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
+  public originChartOptions: AgChartOptions = {
+    data: [],
+    series: [
+      { type: 'pie', angleKey: 'count', calloutLabelKey: 'origin', sectorLabelKey: 'count' },
+    ],
+    title: {
+      text: 'Geographic Origins',
+      color: 'var(--text-color)',
+      fontFamily: 'Inter, sans-serif',
+    },
+    background: { fill: 'transparent' },
+  };
+
+  public frequencyChartOptions: AgChartOptions = {
+    data: [],
+    series: [{ type: 'line', xKey: 'time', yKey: 'requests', stroke: 'var(--color-primary)' }],
+    title: {
+      text: 'Request Frequency',
+      color: 'var(--text-color)',
+      fontFamily: 'Inter, sans-serif',
+    },
+    axes: [
+      {
+        type: 'category',
+        position: 'bottom',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+      },
+      {
+        type: 'number',
+        position: 'left',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+        gridLine: { style: [{ stroke: 'var(--border)' }] },
+      },
+    ] as any,
+    background: { fill: 'transparent' },
+  };
+
+  public statusChartOptions: AgChartOptions = {
+    data: [],
+    series: [{ type: 'bar', xKey: 'status', yKey: 'count', fill: 'var(--color-warning)' }],
+    title: {
+      text: 'HTTP Status Distribution',
+      color: 'var(--text-color)',
+      fontFamily: 'Inter, sans-serif',
+    },
+    axes: [
+      {
+        type: 'category',
+        position: 'bottom',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+      },
+      {
+        type: 'number',
+        position: 'left',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+        gridLine: { style: [{ stroke: 'var(--border)' }] },
+      },
+    ] as any,
+    background: { fill: 'transparent' },
+  };
+
+  public endpointChartOptions: AgChartOptions = {
+    data: [],
+    series: [{ type: 'bar', xKey: 'endpoint', yKey: 'count', fill: 'var(--color-success)' }],
+    title: {
+      text: 'Request Counts per Endpoint',
+      color: 'var(--text-color)',
+      fontFamily: 'Inter, sans-serif',
+    },
+    axes: [
+      {
+        type: 'category',
+        position: 'bottom',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+      },
+      {
+        type: 'number',
+        position: 'left',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+        gridLine: { style: [{ stroke: 'var(--border)' }] },
+      },
+    ] as any,
+    background: { fill: 'transparent' },
+  };
+
+  public threatSeverityChartOptions: AgChartOptions = {
+    data: [],
+    series: [
+      { type: 'donut', angleKey: 'count', calloutLabelKey: 'severity', innerRadiusRatio: 0.7 },
+    ],
+    title: {
+      text: 'Threat Events by Severity',
+      color: 'var(--text-color)',
+      fontFamily: 'Inter, sans-serif',
+    },
+    background: { fill: 'transparent' },
+  };
+
+  public securityAlertsChartOptions: AgChartOptions = {
+    data: [],
+    series: [{ type: 'bar', xKey: 'time', yKey: 'count', fill: 'var(--color-error)' }],
+    title: {
+      text: 'Recent Security Anomalies',
+      color: 'var(--text-color)',
+      fontFamily: 'Inter, sans-serif',
+    },
+    axes: [
+      {
+        type: 'category',
+        position: 'bottom',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+      },
+      {
+        type: 'number',
+        position: 'left',
+        label: { color: 'var(--text-muted)' },
+        line: { color: 'var(--border)' },
+        gridLine: { style: [{ stroke: 'var(--border)' }] },
+      },
+    ] as any,
+    background: { fill: 'transparent' },
+  };
+
   constructor() {
     effect(() => {
       const activeTheme = this.themeService.theme();
@@ -145,17 +275,45 @@ export class AnalyticsComponent implements OnInit {
             ...this.chartOptions,
             data: data.time_series || [],
           };
+          this.originChartOptions = {
+            ...this.originChartOptions,
+            data: data.origin_distribution || [],
+          };
+          this.frequencyChartOptions = {
+            ...this.frequencyChartOptions,
+            data: data.request_frequency || [],
+          };
+          this.statusChartOptions = { ...this.statusChartOptions, data: data.http_statuses || [] };
+          this.endpointChartOptions = {
+            ...this.endpointChartOptions,
+            data: data.endpoint_counts || [],
+          };
+          this.threatSeverityChartOptions = {
+            ...this.threatSeverityChartOptions,
+            data: data.threat_severity || [],
+          };
+          this.securityAlertsChartOptions = {
+            ...this.securityAlertsChartOptions,
+            data: data.security_alerts || [],
+          };
         }
         this.isLoading = false;
       },
       error: err => {
         console.error('Failed to load analytics data', err);
         // Fallback for visual demo if API fails
-        this.p99Latency = 245;
-        this.uptimePercent = 99.98;
-        this.totalRequests = 1250000;
+        this.p99Latency = 0;
+        this.uptimePercent = 0;
+        this.totalRequests = 0;
         this.activeIncidents = 0;
         this.calculateCESMetrics();
+        this.chartOptions = { ...this.chartOptions, data: [] };
+        this.originChartOptions = { ...this.originChartOptions, data: [] };
+        this.frequencyChartOptions = { ...this.frequencyChartOptions, data: [] };
+        this.statusChartOptions = { ...this.statusChartOptions, data: [] };
+        this.endpointChartOptions = { ...this.endpointChartOptions, data: [] };
+        this.threatSeverityChartOptions = { ...this.threatSeverityChartOptions, data: [] };
+        this.securityAlertsChartOptions = { ...this.securityAlertsChartOptions, data: [] };
 
         this.isLoading = false;
       },

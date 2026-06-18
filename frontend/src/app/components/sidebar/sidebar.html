@@ -22,9 +22,8 @@
 
   @if (!isCollapsed()) {
   <div
-    class="sidebar-search"
+    class="sidebar-search sidebar-extracted-1"
     (click)="openSearchDialog()"
-    style="cursor: pointer"
     tabindex="0"
     (keydown.enter)="openSearchDialog()"
   >
@@ -53,9 +52,8 @@
       @if (!isCollapsed() && isDocumentationActive()) {
       <div class="nav-tree-section">
         <div
-          class="nav-tree-header"
+          class="nav-tree-header sidebar-extracted-1"
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
-          style="cursor: pointer"
           tabindex="0"
           (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
         >
@@ -129,9 +127,8 @@
       @if (!isCollapsed() && isSettingsActive()) {
       <div class="nav-tree-section">
         <div
-          class="nav-tree-header"
+          class="nav-tree-header sidebar-extracted-1"
           (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
-          style="cursor: pointer"
           tabindex="0"
           (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
         >
@@ -188,9 +185,8 @@
       @if (!isCollapsed() && isDocumentationActive()) {
       <div class="nav-tree-section">
         <div
-          class="nav-tree-header"
+          class="nav-tree-header sidebar-extracted-1"
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
-          style="cursor: pointer"
           tabindex="0"
           (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
         >

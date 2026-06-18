@@ -3,9 +3,11 @@ import { RouterLink } from '@angular/router';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 import confetti from 'canvas-confetti';
 
+import { MatIconModule } from '@angular/material/icon';
+
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink],
+  imports: [RouterLink, MatIconModule],
   templateUrl: './footer.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './footer.scss',

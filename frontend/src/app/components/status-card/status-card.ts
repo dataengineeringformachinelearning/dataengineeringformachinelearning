@@ -35,10 +35,13 @@ export class StatusCard implements OnInit {
   @Input() linkHeader = false;
 
   // Analytics local state
-  public p99Latency?: number;
-  public totalRequests?: number;
-  public uptimePercent?: number;
-  public simulatedThreatReport?: { suspicious_ratio: number; anomaly_score: number };
+  public p99Latency?: number = 0;
+  public totalRequests?: number = 0;
+  public uptimePercent?: number = 0;
+  public simulatedThreatReport?: { suspicious_ratio: number; anomaly_score: number } = {
+    suspicious_ratio: 0,
+    anomaly_score: 0,
+  };
 
   private cdr = inject(ChangeDetectorRef);
 

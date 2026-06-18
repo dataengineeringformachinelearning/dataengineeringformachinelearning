@@ -14,22 +14,22 @@
           <h1 class="hud-title">Vulnerability Prioritization & Triage</h1>
           <p class="hud-subtitle">Active security threat monitoring and telemetry orchestration</p>
         </div>
-
-        <div class="hud-metrics">
-          <div class="metric-card">
-            <span class="metric-label">TOTAL INGESTED</span>
-            <span class="metric-value">{{ totalCount() }}</span>
-          </div>
-          <div class="metric-card warning">
-            <span class="metric-label">ACTIVE THREATS</span>
-            <span class="metric-value">{{ openCount() }}</span>
-          </div>
-          <div class="metric-card critical">
-            <span class="metric-label">CRITICAL CVSS</span>
-            <span class="metric-value">{{ criticalCount() }}</span>
-          </div>
-        </div>
       </header>
+
+      <div class="hud-metrics">
+        <div class="metric-card">
+          <span class="metric-label">TOTAL INGESTED</span>
+          <span class="metric-value">{{ totalCount() }}</span>
+        </div>
+        <div class="metric-card warning">
+          <span class="metric-label">ACTIVE THREATS</span>
+          <span class="metric-value">{{ openCount() }}</span>
+        </div>
+        <div class="metric-card critical">
+          <span class="metric-label">CRITICAL CVSS</span>
+          <span class="metric-value">{{ criticalCount() }}</span>
+        </div>
+      </div>
 
       <!-- Dashboard Panel Grid -->
       <div class="dashboard-grid">

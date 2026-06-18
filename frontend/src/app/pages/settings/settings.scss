@@ -1007,3 +1007,43 @@
     color: var(--color-success);
   }
 }
+
+/* Extracted Inline Styles */
+.settings-extracted-1 {
+  width: 100%; margin-bottom: 0;
+}
+.settings-extracted-2 {
+  margin-bottom: 24px; display: flex; align-items: center; gap: 8px;
+}
+.settings-extracted-3 {
+  margin-top: 4px; display: block; font-size: 13px; opacity: 0.7;
+}
+.settings-extracted-4 {
+  display: flex; align-items: center; gap: 8px;
+}
+.settings-extracted-5 {
+  vertical-align: middle;
+}
+.settings-extracted-6 {
+  margin-bottom: 12px;
+}
+.settings-extracted-7 {
+  margin-top: 16px;
+}
+.settings-extracted-8 {
+  display: inline-block; vertical-align: middle; margin-right: 24px;
+}
+.settings-extracted-9 {
+  margin-right: 12px; vertical-align: middle;
+}
+.settings-extracted-10 {
+  justify-content: flex-end;
+}
+.settings-extracted-11 {
+  font-size: 12px; opacity: 0.7;
+}
+.settings-extracted-12 {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                    padding-bottom: 16px;
+                    margin-bottom: 16px;
+}

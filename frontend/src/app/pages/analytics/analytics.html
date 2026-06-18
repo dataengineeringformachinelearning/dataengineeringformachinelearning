@@ -17,79 +17,117 @@
         </div>
       </header>
 
-      <!-- CES METER SECTION -->
+      <!-- GLOBAL METRICS SECTION -->
+      <div class="metrics-overview-header">
+        <h2 class="section-title-premium">
+          <mat-icon>public</mat-icon>
+          Global Platform Metrics
+        </h2>
+        <p class="section-description-premium">
+          Aggregate performance and security telemetry across all nodes.
+        </p>
+      </div>
       <section class="ces-meter-section">
         <div class="ces-gauge-cluster">
           <!-- THREAT GAUGE -->
-          <div class="gauge-wrapper threat-gauge">
-            <svg class="gauge-svg classic-orange" viewBox="0 0 100 100">
-              <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-              <circle
-                class="gauge-fill"
-                cx="50"
-                cy="50"
-                r="40"
-                [style.stroke-dasharray]="getGaugeStroke(threatLevel, 251.2)"
-              ></circle>
-            </svg>
-            <div class="gauge-center-text threat-text">
-              <span class="value">{{ threatLevel | number:'1.0-0' }}</span>
-              <span class="unit">%</span>
+          <div class="gauge-card">
+            <div class="gauge-card-header">
+              <h3>System Threat</h3>
+              <mat-icon>security</mat-icon>
             </div>
-            <div class="gauge-label">
-              <span>THREAT</span>
+            <div class="gauge-wrapper threat-gauge">
+              <svg class="gauge-svg theme-amber" viewBox="0 0 100 60">
+                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+                <path
+                  class="gauge-fill"
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  [style.stroke-dasharray]="getGaugeStroke(threatLevel, 125.66)"
+                />
+              </svg>
+              <div class="gauge-center-text threat-text">
+                <mat-icon class="gauge-inner-icon">warning</mat-icon>
+                <span class="unit">DETECTED</span>
+                <span class="value"
+                  >{{ threatLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+                >
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <mat-icon>info</mat-icon>
+              <span>Current threat exposure score</span>
             </div>
           </div>
 
           <!-- MAIN CES GAUGE -->
-          <div class="gauge-wrapper main-gauge">
-            <svg class="gauge-svg" viewBox="0 0 100 100">
-              <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-              <circle
-                class="gauge-fill"
-                cx="50"
-                cy="50"
-                r="40"
-                [style.stroke-dasharray]="getGaugeStroke(cesLevel, 251.2)"
-              ></circle>
-            </svg>
-            <div class="gauge-center-text main-text">
-              <span class="value">{{ cesLevel | number:'1.0-0' }}</span>
-              <span class="unit">CES</span>
+          <div class="gauge-card">
+            <div class="gauge-card-header">
+              <h3>Platform Effectiveness</h3>
+              <mat-icon>analytics</mat-icon>
             </div>
-            <div class="gauge-label">
-              <span>EFFECTIVENESS</span>
+            <div class="gauge-wrapper main-gauge">
+              <svg class="gauge-svg theme-red" viewBox="0 0 100 60">
+                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+                <path
+                  class="gauge-fill"
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  [style.stroke-dasharray]="getGaugeStroke(cesLevel, 125.66)"
+                />
+              </svg>
+              <div class="gauge-center-text main-text">
+                <mat-icon class="gauge-inner-icon">stars</mat-icon>
+                <span class="unit">SCORE</span>
+                <span class="value">{{ cesLevel | number:'1.0-0' }}</span>
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <mat-icon>info</mat-icon>
+              <span>Overall CES performance metric</span>
             </div>
           </div>
 
           <!-- STABLENESS GAUGE -->
-          <div class="gauge-wrapper stability-gauge">
-            <svg class="gauge-svg classic-cyan" viewBox="0 0 100 100">
-              <circle class="gauge-bg" cx="50" cy="50" r="40"></circle>
-              <circle
-                class="gauge-fill"
-                cx="50"
-                cy="50"
-                r="40"
-                [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 251.2)"
-              ></circle>
-            </svg>
-            <div class="gauge-center-text stability-text">
-              <span class="value">{{ stabilityLevel | number:'1.0-0' }}</span>
-              <span class="unit">%</span>
+          <div class="gauge-card">
+            <div class="gauge-card-header">
+              <h3>Network Stability</h3>
+              <mat-icon>health_and_safety</mat-icon>
             </div>
-            <div class="gauge-label">
-              <span>STABLENESS</span>
+            <div class="gauge-wrapper stability-gauge">
+              <svg class="gauge-svg theme-primary" viewBox="0 0 100 60">
+                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+                <path
+                  class="gauge-fill"
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 125.66)"
+                />
+              </svg>
+              <div class="gauge-center-text stability-text">
+                <mat-icon class="gauge-inner-icon">monitor_heart</mat-icon>
+                <span class="unit">UPTIME</span>
+                <span class="value"
+                  >{{ stabilityLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+                >
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <mat-icon>info</mat-icon>
+              <span>System resilience index</span>
             </div>
           </div>
         </div>
       </section>
 
+      <!-- USER METRICS SECTION -->
+      <div class="metrics-overview-header analytics-extracted-10">
+        <h2 class="section-title-premium">
+          <mat-icon>person</mat-icon>
+          Your Analytics
+        </h2>
+        <p class="section-description-premium">
+          Performance data isolated to your active projects and workloads.
+        </p>
+      </div>
       <!-- REGULAR STATS -->
-      <div
-        class="ml-stat-panels-row"
-        style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))"
-      >
+      <div class="ml-stat-panels-row analytics-extracted-3">
         <div class="ml-stat-panel">
           <div class="stat-info">
             <div>
@@ -97,7 +135,7 @@
             </div>
           </div>
           <span class="stat-value"
-            >{{ p99Latency }} <span style="font-size: 14px; opacity: 0.7">ms</span></span
+            >{{ p99Latency }} <span class="analytics-extracted-4">ms</span></span
           >
         </div>
         <div class="ml-stat-panel">
@@ -107,7 +145,7 @@
             </div>
           </div>
           <span class="stat-value"
-            >{{ uptimePercent }} <span style="font-size: 14px; opacity: 0.7">%</span></span
+            >{{ uptimePercent }} <span class="analytics-extracted-4">%</span></span
           >
         </div>
         <div class="ml-stat-panel">
@@ -133,16 +171,16 @@
         </div>
       </div>
 
-      <div class="dashboard-grid" style="grid-template-columns: 1fr">
+      <div class="dashboard-grid analytics-extracted-7">
         <section class="status-card-outlined">
-          <div class="panel-header" style="padding: 1.5rem 1.5rem 0">
-            <h2 class="panel-title" style="display: flex; align-items: center; gap: 6px">
-              <mat-icon style="font-size: 18px; width: 18px; height: 18px">insights</mat-icon>
+          <div class="panel-header analytics-extracted-12">
+            <h3 class="panel-title analytics-extracted-9">
+              <mat-icon class="analytics-extracted-11">insights</mat-icon>
               Performance Telemetry
-            </h2>
+            </h3>
           </div>
 
-          <div class="card-body-clean" style="min-height: 400px; position: relative">
+          <div class="card-body-clean analytics-extracted-6">
             <!-- Empty state: visible only when not loading and data is empty -->
             @if (!isLoading && (!chartOptions.data || chartOptions.data.length === 0)) {
             <div class="empty-chart-state" role="alert" aria-live="polite">
@@ -161,7 +199,7 @@
               [options]="chartOptions"
               role="img"
               aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
-              style="width: 100%; height: 400px; display: block"
+              class="analytics-extracted-5"
             ></ag-charts>
             }
 
@@ -186,6 +224,190 @@
                 </tbody>
               </table>
             </div>
+            }
+          </div>
+        </section>
+      </div>
+
+      <!-- TRAFFIC ANALYTICS SECTION -->
+      <div class="metrics-overview-header analytics-extracted-10">
+        <h2 class="section-title-premium">
+          <mat-icon>traffic</mat-icon>
+          Traffic Analytics
+        </h2>
+        <p class="section-description-premium">
+          Geographic origins, frequency trends, and endpoint usage patterns.
+        </p>
+      </div>
+      <div class="dashboard-grid analytics-extracted-2">
+        <!-- Origin Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header analytics-extracted-12">
+            <h3 class="panel-title analytics-extracted-9">
+              <mat-icon class="analytics-extracted-11">public</mat-icon>
+              Origins
+            </h3>
+          </div>
+          <div class="card-body-clean analytics-extracted-1">
+            @if (!isLoading && (!originChartOptions.data || originChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No geographic data available.</p>
+            </div>
+            } @if (originChartOptions.data && originChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="originChartOptions"
+              role="img"
+              aria-label="Line chart displaying geographic origins."
+              class="analytics-extracted-8"
+            ></ag-charts>
+            }
+          </div>
+        </section>
+
+        <!-- Frequency Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header analytics-extracted-12">
+            <h3 class="panel-title analytics-extracted-9">
+              <mat-icon class="analytics-extracted-11">timeline</mat-icon>
+              Frequency
+            </h3>
+          </div>
+          <div class="card-body-clean analytics-extracted-1">
+            @if (!isLoading && (!frequencyChartOptions.data || frequencyChartOptions.data.length ===
+            0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No frequency data available.</p>
+            </div>
+            } @if (frequencyChartOptions.data && frequencyChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="frequencyChartOptions"
+              role="img"
+              aria-label="Line chart displaying request frequency."
+              class="analytics-extracted-8"
+            ></ag-charts>
+            }
+          </div>
+        </section>
+
+        <!-- Endpoint Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header analytics-extracted-12">
+            <h3 class="panel-title analytics-extracted-9">
+              <mat-icon class="analytics-extracted-11">api</mat-icon>
+              Endpoint Usage
+            </h3>
+          </div>
+          <div class="card-body-clean analytics-extracted-1">
+            @if (!isLoading && (!endpointChartOptions.data || endpointChartOptions.data.length ===
+            0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No endpoint data available.</p>
+            </div>
+            } @if (endpointChartOptions.data && endpointChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="endpointChartOptions"
+              role="img"
+              aria-label="Line chart displaying endpoint usage."
+              class="analytics-extracted-8"
+            ></ag-charts>
+            }
+          </div>
+        </section>
+      </div>
+
+      <!-- SIEM / SECURITY INSIGHTS SECTION -->
+      <div class="metrics-overview-header analytics-extracted-10">
+        <h2 class="section-title-premium">
+          <mat-icon>security</mat-icon>
+          SIEM / Security Insights
+        </h2>
+        <p class="section-description-premium">
+          Threat events, anomalies, and HTTP status distribution.
+        </p>
+      </div>
+      <div class="dashboard-grid analytics-extracted-2">
+        <!-- Status Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header analytics-extracted-12">
+            <h3 class="panel-title analytics-extracted-9">
+              <mat-icon class="analytics-extracted-11">http</mat-icon>
+              Status Distribution
+            </h3>
+          </div>
+          <div class="card-body-clean analytics-extracted-1">
+            @if (!isLoading && (!statusChartOptions.data || statusChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No status data available.</p>
+            </div>
+            } @if (statusChartOptions.data && statusChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="statusChartOptions"
+              role="img"
+              aria-label="Line chart displaying HTTP statuses."
+              class="analytics-extracted-8"
+            ></ag-charts>
+            }
+          </div>
+        </section>
+
+        <!-- Threat Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header analytics-extracted-12">
+            <h3 class="panel-title analytics-extracted-9">
+              <mat-icon class="analytics-extracted-11">warning</mat-icon>
+              Threat Severity
+            </h3>
+          </div>
+          <div class="card-body-clean analytics-extracted-1">
+            @if (!isLoading && (!threatSeverityChartOptions.data ||
+            threatSeverityChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No threat data available.</p>
+            </div>
+            } @if (threatSeverityChartOptions.data && threatSeverityChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="threatSeverityChartOptions"
+              role="img"
+              aria-label="Line chart displaying threat severity."
+              class="analytics-extracted-8"
+            ></ag-charts>
+            }
+          </div>
+        </section>
+
+        <!-- Anomalies Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header analytics-extracted-12">
+            <h3 class="panel-title analytics-extracted-9">
+              <mat-icon class="analytics-extracted-11">radar</mat-icon>
+              Security Anomalies
+            </h3>
+          </div>
+          <div class="card-body-clean analytics-extracted-1">
+            @if (!isLoading && (!securityAlertsChartOptions.data ||
+            securityAlertsChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No anomaly data available.</p>
+            </div>
+            } @if (securityAlertsChartOptions.data && securityAlertsChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="securityAlertsChartOptions"
+              role="img"
+              aria-label="Line chart displaying security anomalies."
+              class="analytics-extracted-8"
+            ></ag-charts>
             }
           </div>
         </section>

@@ -66,39 +66,74 @@
 /* ------------------------------------- */
 
 .ces-meter-section {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2rem;
   margin-bottom: 2rem;
-  justify-content: center;
-  background: var(--surface-card, #1e1e1e);
-  padding: 3rem 2rem;
-  border-radius: 12px;
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-  position: relative;
-  overflow: hidden;
-
-  /* Cross-stitch / precise interior trim effect */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 6px;
-    left: 6px;
-    right: 6px;
-    bottom: 6px;
-    border: 1px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    pointer-events: none;
-  }
 }
 
 .ces-gauge-cluster {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 3rem;
-  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--grid-gap, 2rem);
   width: 100%;
+}
+
+.gauge-card {
+  background: var(--card-bg, #182821);
+  border-radius: var(--border-radius-md, 12px);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  padding: var(--card-padding, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth, all 0.3s ease);
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
+
+  .gauge-card-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    mat-icon {
+      color: var(--text-muted);
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .gauge-card-footer {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: var(--color-warning, #FFC107);
+    }
+  }
 }
 
 .gauge-wrapper {
@@ -106,97 +141,112 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-
-  &.main-gauge {
-    transform: scale(1.2);
-    margin: 0 2rem;
-  }
+  width: 100%;
 }
 
 .gauge-svg {
-  width: 180px;
-  height: 180px;
-  transform: rotate(-90deg);
+  width: 100%;
+  max-width: 280px;
 
   .gauge-bg {
     fill: none;
     stroke: rgba(255, 255, 255, 0.08);
-    stroke-width: 6;
-    stroke-linecap: butt;
+    stroke-width: 8;
+    stroke-linecap: round;
   }
 
   .gauge-fill {
     fill: none;
-    stroke-width: 6;
-    stroke-linecap: butt;
+    stroke-width: 8;
+    stroke-linecap: round;
     transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &.classic-cyan .gauge-fill { stroke: var(--color-info, #00d2ff); }
-  &.classic-orange .gauge-fill { stroke: #ff9900; }
-}
-
-.main-gauge .gauge-svg {
-  width: 240px;
-  height: 240px;
-  .gauge-bg, .gauge-fill {
-    stroke-width: 8;
-  }
-  .gauge-fill {
-    stroke: #d50000; /* Classic GT3 Red */
-  }
+  &.theme-amber .gauge-fill { stroke: var(--color-amber, #ffb74d); }
+  &.theme-red .gauge-fill { stroke: var(--color-gauge-red, #d5001c); }
+  &.theme-primary .gauge-fill { stroke: var(--color-primary, #2d4739); }
+  &.theme-success .gauge-fill { stroke: var(--color-success, #4CAF50); }
 }
 
 .gauge-center-text {
   position: absolute;
-  top: 40%;
+  bottom: 0;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 
-  &.threat-text { color: #ff9900; }
-  &.main-text { color: #d50000; }
-  &.stability-text { color: var(--color-info, #00d2ff); }
+  &.threat-text { color: var(--color-amber, #ffb74d); }
+  &.main-text { color: var(--color-gauge-red, #d5001c); }
+  &.stability-text { color: var(--color-primary, #2d4739); }
 
-  .value {
-    font-size: 2.5rem;
-    line-height: 1;
-    color: var(--text-color) !important;
-    font-weight: 600;
+  .gauge-inner-icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+    opacity: 0.8;
   }
 
   .unit {
-    font-size: 0.8rem;
-    margin-top: 4px;
+    font-size: 0.75rem;
+    margin-bottom: 4px;
     color: var(--text-muted) !important;
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
-}
 
-.main-gauge .gauge-center-text {
   .value {
-    font-size: 4rem;
-  }
-  .unit {
-    font-size: 1rem;
+    font-size: 2.25rem;
+    line-height: 1;
+    color: var(--text-color) !important;
+    font-weight: 700;
+
+    .unit-symbol {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-left: 2px;
+      color: var(--text-muted) !important;
+    }
   }
 }
 
-.gauge-label {
-  margin-top: 1rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  text-align: center;
-  max-width: 160px;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  font-weight: 500;
+/* Extracted Inline Styles */
+.analytics-extracted-1 {
+  min-height: 300px; position: relative;
 }
-
-.main-gauge .gauge-label {
-  font-size: 1rem;
-  letter-spacing: 0.2em;
+.analytics-extracted-2 {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem;
+}
+.analytics-extracted-3 {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.analytics-extracted-4 {
+  font-size: 14px; opacity: 0.7;
+}
+.analytics-extracted-5 {
+  width: 100%; height: 400px; display: block;
+}
+.analytics-extracted-6 {
+  min-height: 400px; position: relative;
+}
+.analytics-extracted-7 {
+  display: grid; grid-template-columns: 1fr; gap: 2rem;
+}
+.analytics-extracted-8 {
+  width: 100%; height: 300px; display: block;
+}
+.analytics-extracted-9 {
+  display: flex; align-items: center; gap: 6px;
+}
+.analytics-extracted-10 {
+  margin-top: 3rem;
+}
+.analytics-extracted-11 {
+  font-size: 18px; width: 18px; height: 18px;
+}
+.analytics-extracted-12 {
+  padding: 1.5rem 1.5rem 0;
 }
