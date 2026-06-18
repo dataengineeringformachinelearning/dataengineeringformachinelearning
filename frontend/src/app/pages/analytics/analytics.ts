@@ -5,6 +5,7 @@ import { AgCharts } from 'ag-charts-angular';
 import { AgChartOptions } from 'ag-charts-community';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-analytics',
@@ -260,7 +261,7 @@ export class AnalyticsComponent implements OnInit {
   }
 
   private loadAnalyticsData() {
-    this.http.get<any>('/api/v1/analytics/overview').subscribe({
+    this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/overview`).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const data = response.data;

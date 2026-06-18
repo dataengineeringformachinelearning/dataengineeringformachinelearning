@@ -1,0 +1,17 @@
+name: Purge Cloudflare Cache
+
+on:
+  deployment_status:
+
+jobs:
+  purge-cache:
+    # Only run if the deployment was successful
+    if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Purge Cloudflare Cache
+        uses: jakejarvis/cloudflare-purge-action@master
+        env:
+          CLOUDFLARE_ZONE: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
