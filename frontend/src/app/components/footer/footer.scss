@@ -141,6 +141,19 @@ footer {
   }
 }
 
+.footer-section-divider {
+  width: 100%;
+  max-width: 150px;
+  height: 1px;
+  background-color: var(--border);
+  margin: 24px auto;
+  opacity: 0.5;
+
+  @media (min-width: 640px) {
+    display: none;
+  }
+}
+
 @media (min-width: 640px) {
   .copyright,
   .footer-compliance {
