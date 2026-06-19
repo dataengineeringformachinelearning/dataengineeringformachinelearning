@@ -40,35 +40,42 @@ export class EndpointsChart implements OnChanges {
       data: [],
       series: [
         {
-          type: 'line',
+          type: 'area',
           xKey: 'time',
           yKey: 'statusCode',
           yName: 'Status Code',
-          stroke: '#9fb8ad',
+          fill: 'var(--color-primary)',
+          fillOpacity: 0.15,
+          stroke: 'var(--color-primary)',
           strokeWidth: 3,
+          interpolation: { type: 'smooth' },
           marker: {
-            fill: '#183a37',
-            stroke: '#9fb8ad',
-            size: 6,
-            strokeWidth: 2,
+            enabled: false,
           },
         },
       ],
-      axes: {
-        x: {
+      axes: [
+        {
           type: 'category',
-          gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.2)' }] },
-          label: { color: '#ffffff', fontFamily: 'Work Sans, sans-serif' },
-          line: { stroke: 'rgba(255, 255, 255, 0.4)' },
+          position: 'bottom',
+          label: { color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' },
+          line: { width: 0 },
+          tick: { size: 0 },
         },
-        y: {
+        {
           type: 'number',
-          title: { text: 'Status Code', color: '#ffffff', fontFamily: 'Work Sans, sans-serif' },
-          gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.2)' }] },
-          label: { color: '#ffffff', fontFamily: 'Work Sans, sans-serif' },
-          line: { stroke: 'rgba(255, 255, 255, 0.4)' },
+          position: 'left',
+          title: {
+            text: 'Status Code',
+            color: 'var(--text-muted)',
+            fontFamily: 'Inter, sans-serif',
+          },
+          label: { color: 'var(--text-muted)', fontFamily: 'Inter, sans-serif' },
+          line: { width: 0 },
+          tick: { size: 0 },
+          gridLine: { style: [{ stroke: 'var(--border)', lineDash: [4, 4] }] },
         },
-      },
+      ],
     } as any;
   }
 
