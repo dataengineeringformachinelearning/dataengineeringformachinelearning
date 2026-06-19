@@ -3,409 +3,411 @@
   <div class="glow-sphere sphere-1"></div>
   <div class="glow-sphere sphere-2"></div>
 
-  <div class="page-inner-wrapper">
-    <header class="hud-header">
-      <div class="title-group">
-        <div class="section-tag-row">
-          <span class="section-tag">Platform Analytics</span>
+  <div class="dashboard-content-area">
+    <div class="content-wrapper">
+      <header class="hud-header">
+        <div class="title-group">
+          <div class="section-tag-row">
+            <span class="section-tag">Platform Analytics</span>
+          </div>
+          <h1 class="hud-title">System Analytics</h1>
+          <p class="hud-subtitle">
+            Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse.
+          </p>
         </div>
-        <h1 class="hud-title">System Analytics</h1>
-        <p class="hud-subtitle">
-          Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse.
+      </header>
+
+      <!-- GLOBAL METRICS SECTION -->
+      <div class="metrics-overview-header">
+        <h2 class="section-title-premium">
+          <mat-icon>public</mat-icon>
+          Global Platform Metrics
+        </h2>
+        <p class="section-description-premium">
+          Aggregate performance and security telemetry across all nodes.
         </p>
       </div>
-    </header>
-
-    <!-- GLOBAL METRICS SECTION -->
-    <div class="metrics-overview-header">
-      <h2 class="section-title-premium">
-        <mat-icon>public</mat-icon>
-        Global Platform Metrics
-      </h2>
-      <p class="section-description-premium">
-        Aggregate performance and security telemetry across all nodes.
-      </p>
-    </div>
-    <section class="ces-meter-section">
-      <div class="ces-gauge-cluster">
-        <!-- THREAT GAUGE -->
-        <div class="gauge-card">
-          <div class="gauge-card-header">
-            <h3>System Threat</h3>
-            <mat-icon>security</mat-icon>
-          </div>
-          <div class="gauge-wrapper threat-gauge">
-            <svg class="gauge-svg theme-amber" viewBox="0 0 100 60">
-              <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
-              <path
-                class="gauge-fill"
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                [style.stroke-dasharray]="getGaugeStroke(threatLevel, 125.66)"
-              />
-            </svg>
-            <div class="gauge-center-text threat-text">
-              <mat-icon class="gauge-inner-icon">warning</mat-icon>
-              <span class="unit">DETECTED</span>
-              <span class="value"
-                >{{ threatLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
-              >
+      <section class="ces-meter-section">
+        <div class="ces-gauge-cluster">
+          <!-- THREAT GAUGE -->
+          <div class="gauge-card">
+            <div class="gauge-card-header">
+              <h3>System Threat</h3>
+              <mat-icon>security</mat-icon>
+            </div>
+            <div class="gauge-wrapper threat-gauge">
+              <svg class="gauge-svg theme-amber" viewBox="0 0 100 60">
+                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+                <path
+                  class="gauge-fill"
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  [style.stroke-dasharray]="getGaugeStroke(threatLevel, 125.66)"
+                />
+              </svg>
+              <div class="gauge-center-text threat-text">
+                <mat-icon class="gauge-inner-icon">warning</mat-icon>
+                <span class="unit">DETECTED</span>
+                <span class="value"
+                  >{{ threatLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+                >
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <mat-icon>info</mat-icon>
+              <span>Current threat exposure score</span>
             </div>
           </div>
-          <div class="gauge-card-footer">
-            <mat-icon>info</mat-icon>
-            <span>Current threat exposure score</span>
-          </div>
-        </div>
 
-        <!-- MAIN CES GAUGE -->
-        <div class="gauge-card">
-          <div class="gauge-card-header">
-            <h3>Platform Effectiveness</h3>
-            <mat-icon>analytics</mat-icon>
-          </div>
-          <div class="gauge-wrapper main-gauge">
-            <svg class="gauge-svg theme-red" viewBox="0 0 100 60">
-              <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
-              <path
-                class="gauge-fill"
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                [style.stroke-dasharray]="getGaugeStroke(cesLevel, 125.66)"
-              />
-            </svg>
-            <div class="gauge-center-text main-text">
-              <mat-icon class="gauge-inner-icon">stars</mat-icon>
-              <span class="unit">SCORE</span>
-              <span class="value">{{ cesLevel | number:'1.0-0' }}</span>
+          <!-- MAIN CES GAUGE -->
+          <div class="gauge-card">
+            <div class="gauge-card-header">
+              <h3>Platform Effectiveness</h3>
+              <mat-icon>analytics</mat-icon>
+            </div>
+            <div class="gauge-wrapper main-gauge">
+              <svg class="gauge-svg theme-red" viewBox="0 0 100 60">
+                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+                <path
+                  class="gauge-fill"
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  [style.stroke-dasharray]="getGaugeStroke(cesLevel, 125.66)"
+                />
+              </svg>
+              <div class="gauge-center-text main-text">
+                <mat-icon class="gauge-inner-icon">stars</mat-icon>
+                <span class="unit">SCORE</span>
+                <span class="value">{{ cesLevel | number:'1.0-0' }}</span>
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <mat-icon>info</mat-icon>
+              <span>Overall CES performance metric</span>
             </div>
           </div>
-          <div class="gauge-card-footer">
-            <mat-icon>info</mat-icon>
-            <span>Overall CES performance metric</span>
-          </div>
-        </div>
 
-        <!-- STABLENESS GAUGE -->
-        <div class="gauge-card">
-          <div class="gauge-card-header">
-            <h3>Network Stability</h3>
-            <mat-icon>health_and_safety</mat-icon>
-          </div>
-          <div class="gauge-wrapper stability-gauge">
-            <svg class="gauge-svg theme-primary" viewBox="0 0 100 60">
-              <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
-              <path
-                class="gauge-fill"
-                d="M 10 50 A 40 40 0 0 1 90 50"
-                [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 125.66)"
-              />
-            </svg>
-            <div class="gauge-center-text stability-text">
-              <mat-icon class="gauge-inner-icon">monitor_heart</mat-icon>
-              <span class="unit">UPTIME</span>
-              <span class="value"
-                >{{ stabilityLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
-              >
+          <!-- STABLENESS GAUGE -->
+          <div class="gauge-card">
+            <div class="gauge-card-header">
+              <h3>Network Stability</h3>
+              <mat-icon>health_and_safety</mat-icon>
+            </div>
+            <div class="gauge-wrapper stability-gauge">
+              <svg class="gauge-svg theme-primary" viewBox="0 0 100 60">
+                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+                <path
+                  class="gauge-fill"
+                  d="M 10 50 A 40 40 0 0 1 90 50"
+                  [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 125.66)"
+                />
+              </svg>
+              <div class="gauge-center-text stability-text">
+                <mat-icon class="gauge-inner-icon">monitor_heart</mat-icon>
+                <span class="unit">UPTIME</span>
+                <span class="value"
+                  >{{ stabilityLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
+                >
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <mat-icon>info</mat-icon>
+              <span>System resilience index</span>
             </div>
           </div>
-          <div class="gauge-card-footer">
-            <mat-icon>info</mat-icon>
-            <span>System resilience index</span>
-          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- USER METRICS SECTION -->
-    <div class="metrics-overview-header metrics-section-spacing">
-      <h2 class="section-title-premium">
-        <mat-icon>person</mat-icon>
-        Your Analytics
-      </h2>
-      <p class="section-description-premium">
-        Performance data isolated to your active projects and workloads.
-      </p>
-    </div>
-    <!-- REGULAR STATS -->
-    <div class="ml-stat-panels-row stat-panels-grid">
-      <div class="ml-stat-panel">
-        <div class="stat-info">
-          <div>
-            <span class="stat-title">P99 LATENCY</span>
-          </div>
-        </div>
-        <span class="stat-value">{{ p99Latency }} <span class="stat-unit">ms</span></span>
+      <!-- USER METRICS SECTION -->
+      <div class="metrics-overview-header metrics-section-spacing">
+        <h2 class="section-title-premium">
+          <mat-icon>person</mat-icon>
+          Your Analytics
+        </h2>
+        <p class="section-description-premium">
+          Performance data isolated to your active projects and workloads.
+        </p>
       </div>
-      <div class="ml-stat-panel">
-        <div class="stat-info">
-          <div>
-            <span class="stat-title">SERVICE UPTIME</span>
+      <!-- REGULAR STATS -->
+      <div class="ml-stat-panels-row stat-panels-grid">
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">P99 LATENCY</span>
+            </div>
           </div>
+          <span class="stat-value">{{ p99Latency }} <span class="stat-unit">ms</span></span>
         </div>
-        <span class="stat-value">{{ uptimePercent }} <span class="stat-unit">%</span></span>
-      </div>
-      <div class="ml-stat-panel">
-        <div class="stat-info">
-          <div>
-            <span class="stat-title">TOTAL REQUESTS</span>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">SERVICE UPTIME</span>
+            </div>
           </div>
+          <span class="stat-value">{{ uptimePercent }} <span class="stat-unit">%</span></span>
         </div>
-        <span class="stat-value">{{ totalRequests | number }}</span>
-      </div>
-      <div
-        class="ml-stat-panel"
-        [style.border-color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-      >
-        <div class="stat-info">
-          <div>
-            <span class="stat-title">ACTIVE INCIDENTS</span>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">TOTAL REQUESTS</span>
+            </div>
           </div>
+          <span class="stat-value">{{ totalRequests | number }}</span>
         </div>
-        <span class="stat-value" [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-          >{{ activeIncidents }}</span
+        <div
+          class="ml-stat-panel"
+          [style.border-color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
         >
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">ACTIVE INCIDENTS</span>
+            </div>
+          </div>
+          <span class="stat-value" [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
+            >{{ activeIncidents }}</span
+          >
+        </div>
       </div>
-    </div>
 
-    <div class="dashboard-grid dashboard-grid-single">
-      <section class="status-card-outlined">
-        <div class="panel-header panel-header-padded">
-          <h3 class="panel-title panel-title-flex">
-            <mat-icon class="icon-small">insights</mat-icon>
-            Performance Telemetry
-          </h3>
-        </div>
-
-        <div class="card-body-clean chart-container-large">
-          <!-- Empty state: visible only when not loading and data is empty -->
-          @if (!isLoading && (!chartOptions.data || chartOptions.data.length === 0)) {
-          <div class="empty-chart-state" role="alert" aria-live="polite">
-            <mat-icon class="empty-icon">analytics</mat-icon>
-            <h3 class="empty-title">No Telemetry Data Available</h3>
-            <p class="empty-subtitle">
-              We couldn't retrieve any latency metrics for this time period. Please verify your
-              systems are running and active.
-            </p>
+      <div class="dashboard-grid dashboard-grid-single">
+        <section class="status-card-outlined">
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">insights</mat-icon>
+              Performance Telemetry
+            </h3>
           </div>
-          }
 
-          <!-- Chart: visible when data is present -->
-          @if (chartOptions.data && chartOptions.data.length > 0) {
-          <ag-charts
-            [options]="chartOptions"
-            role="img"
-            aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
-            class="ag-chart-large"
-          ></ag-charts>
-          }
+          <div class="card-body-clean chart-container-large">
+            <!-- Empty state: visible only when not loading and data is empty -->
+            @if (!isLoading && (!chartOptions.data || chartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">analytics</mat-icon>
+              <h3 class="empty-title">No Telemetry Data Available</h3>
+              <p class="empty-subtitle">
+                We couldn't retrieve any latency metrics for this time period. Please verify your
+                systems are running and active.
+              </p>
+            </div>
+            }
 
-          <!-- Screen Reader Only Tabular Alternative for Section 508 Compliance -->
-          @if (chartOptions.data && chartOptions.data.length > 0) {
-          <div class="sr-only">
-            <h3>Tabular Data: System Latency (Last 24h)</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th scope="col">Time</th>
-                  <th scope="col">Latency (ms)</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (item of chartOptions.data; track item) {
-                <tr>
-                  <td>{{ item.time }}</td>
-                  <td>{{ item.latency }} ms</td>
-                </tr>
-                }
-              </tbody>
-            </table>
+            <!-- Chart: visible when data is present -->
+            @if (chartOptions.data && chartOptions.data.length > 0) {
+            <ag-charts
+              [options]="chartOptions"
+              role="img"
+              aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
+              class="ag-chart-large"
+            ></ag-charts>
+            }
+
+            <!-- Screen Reader Only Tabular Alternative for Section 508 Compliance -->
+            @if (chartOptions.data && chartOptions.data.length > 0) {
+            <div class="sr-only">
+              <h3>Tabular Data: System Latency (Last 24h)</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Time</th>
+                    <th scope="col">Latency (ms)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (item of chartOptions.data; track item) {
+                  <tr>
+                    <td>{{ item.time }}</td>
+                    <td>{{ item.latency }} ms</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            }
           </div>
-          }
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
 
-    <!-- TRAFFIC ANALYTICS SECTION -->
-    <div class="metrics-overview-header metrics-section-spacing">
-      <h2 class="section-title-premium">
-        <mat-icon>traffic</mat-icon>
-        Traffic Analytics
-      </h2>
-      <p class="section-description-premium">
-        Geographic origins, frequency trends, and endpoint usage patterns.
-      </p>
-    </div>
-    <div class="dashboard-grid dashboard-grid-responsive">
-      <!-- Origin Chart -->
-      <section class="status-card-outlined">
-        <div class="panel-header panel-header-padded">
-          <h3 class="panel-title panel-title-flex">
-            <mat-icon class="icon-small">public</mat-icon>
-            Origins
-          </h3>
-        </div>
-        <div class="card-body-clean chart-container-medium">
-          @if (!isLoading && (!originChartOptions.data || originChartOptions.data.length === 0)) {
-          <div class="empty-chart-state" role="alert" aria-live="polite">
-            <mat-icon class="empty-icon">satellite_alt</mat-icon>
-            <h3 class="empty-title">Waiting for Signal</h3>
-            <p class="empty-subtitle">No geographic data available.</p>
+      <!-- TRAFFIC ANALYTICS SECTION -->
+      <div class="metrics-overview-header metrics-section-spacing">
+        <h2 class="section-title-premium">
+          <mat-icon>traffic</mat-icon>
+          Traffic Analytics
+        </h2>
+        <p class="section-description-premium">
+          Geographic origins, frequency trends, and endpoint usage patterns.
+        </p>
+      </div>
+      <div class="dashboard-grid dashboard-grid-responsive">
+        <!-- Origin Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">public</mat-icon>
+              Origins
+            </h3>
           </div>
-          } @if (originChartOptions.data && originChartOptions.data.length > 0) {
-          <ag-charts
-            [options]="originChartOptions"
-            role="img"
-            aria-label="Line chart displaying geographic origins."
-            class="ag-chart-medium"
-          ></ag-charts>
-          }
-        </div>
-      </section>
+          <div class="card-body-clean chart-container-medium">
+            @if (!isLoading && (!originChartOptions.data || originChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No geographic data available.</p>
+            </div>
+            } @if (originChartOptions.data && originChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="originChartOptions"
+              role="img"
+              aria-label="Line chart displaying geographic origins."
+              class="ag-chart-medium"
+            ></ag-charts>
+            }
+          </div>
+        </section>
 
-      <!-- Frequency Chart -->
-      <section class="status-card-outlined">
-        <div class="panel-header panel-header-padded">
-          <h3 class="panel-title panel-title-flex">
-            <mat-icon class="icon-small">timeline</mat-icon>
-            Frequency
-          </h3>
-        </div>
-        <div class="card-body-clean chart-container-medium">
-          @if (!isLoading && (!frequencyChartOptions.data || frequencyChartOptions.data.length ===
-          0)) {
-          <div class="empty-chart-state" role="alert" aria-live="polite">
-            <mat-icon class="empty-icon">satellite_alt</mat-icon>
-            <h3 class="empty-title">Waiting for Signal</h3>
-            <p class="empty-subtitle">No frequency data available.</p>
+        <!-- Frequency Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">timeline</mat-icon>
+              Frequency
+            </h3>
           </div>
-          } @if (frequencyChartOptions.data && frequencyChartOptions.data.length > 0) {
-          <ag-charts
-            [options]="frequencyChartOptions"
-            role="img"
-            aria-label="Line chart displaying request frequency."
-            class="ag-chart-medium"
-          ></ag-charts>
-          }
-        </div>
-      </section>
+          <div class="card-body-clean chart-container-medium">
+            @if (!isLoading && (!frequencyChartOptions.data || frequencyChartOptions.data.length ===
+            0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No frequency data available.</p>
+            </div>
+            } @if (frequencyChartOptions.data && frequencyChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="frequencyChartOptions"
+              role="img"
+              aria-label="Line chart displaying request frequency."
+              class="ag-chart-medium"
+            ></ag-charts>
+            }
+          </div>
+        </section>
 
-      <!-- Endpoint Chart -->
-      <section class="status-card-outlined">
-        <div class="panel-header panel-header-padded">
-          <h3 class="panel-title panel-title-flex">
-            <mat-icon class="icon-small">api</mat-icon>
-            Endpoint Usage
-          </h3>
-        </div>
-        <div class="card-body-clean chart-container-medium">
-          @if (!isLoading && (!endpointChartOptions.data || endpointChartOptions.data.length === 0))
-          {
-          <div class="empty-chart-state" role="alert" aria-live="polite">
-            <mat-icon class="empty-icon">satellite_alt</mat-icon>
-            <h3 class="empty-title">Waiting for Signal</h3>
-            <p class="empty-subtitle">No endpoint data available.</p>
+        <!-- Endpoint Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">api</mat-icon>
+              Endpoint Usage
+            </h3>
           </div>
-          } @if (endpointChartOptions.data && endpointChartOptions.data.length > 0) {
-          <ag-charts
-            [options]="endpointChartOptions"
-            role="img"
-            aria-label="Line chart displaying endpoint usage."
-            class="ag-chart-medium"
-          ></ag-charts>
-          }
-        </div>
-      </section>
-    </div>
+          <div class="card-body-clean chart-container-medium">
+            @if (!isLoading && (!endpointChartOptions.data || endpointChartOptions.data.length ===
+            0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No endpoint data available.</p>
+            </div>
+            } @if (endpointChartOptions.data && endpointChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="endpointChartOptions"
+              role="img"
+              aria-label="Line chart displaying endpoint usage."
+              class="ag-chart-medium"
+            ></ag-charts>
+            }
+          </div>
+        </section>
+      </div>
 
-    <!-- SIEM / SECURITY INSIGHTS SECTION -->
-    <div class="metrics-overview-header metrics-section-spacing">
-      <h2 class="section-title-premium">
-        <mat-icon>security</mat-icon>
-        SIEM / Security Insights
-      </h2>
-      <p class="section-description-premium">
-        Threat events, anomalies, and HTTP status distribution.
-      </p>
-    </div>
-    <div class="dashboard-grid dashboard-grid-responsive">
-      <!-- Status Chart -->
-      <section class="status-card-outlined">
-        <div class="panel-header panel-header-padded">
-          <h3 class="panel-title panel-title-flex">
-            <mat-icon class="icon-small">http</mat-icon>
-            Status Distribution
-          </h3>
-        </div>
-        <div class="card-body-clean chart-container-medium">
-          @if (!isLoading && (!statusChartOptions.data || statusChartOptions.data.length === 0)) {
-          <div class="empty-chart-state" role="alert" aria-live="polite">
-            <mat-icon class="empty-icon">satellite_alt</mat-icon>
-            <h3 class="empty-title">Waiting for Signal</h3>
-            <p class="empty-subtitle">No status data available.</p>
+      <!-- SIEM / SECURITY INSIGHTS SECTION -->
+      <div class="metrics-overview-header metrics-section-spacing">
+        <h2 class="section-title-premium">
+          <mat-icon>security</mat-icon>
+          SIEM / Security Insights
+        </h2>
+        <p class="section-description-premium">
+          Threat events, anomalies, and HTTP status distribution.
+        </p>
+      </div>
+      <div class="dashboard-grid dashboard-grid-responsive">
+        <!-- Status Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">http</mat-icon>
+              Status Distribution
+            </h3>
           </div>
-          } @if (statusChartOptions.data && statusChartOptions.data.length > 0) {
-          <ag-charts
-            [options]="statusChartOptions"
-            role="img"
-            aria-label="Line chart displaying HTTP statuses."
-            class="ag-chart-medium"
-          ></ag-charts>
-          }
-        </div>
-      </section>
+          <div class="card-body-clean chart-container-medium">
+            @if (!isLoading && (!statusChartOptions.data || statusChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No status data available.</p>
+            </div>
+            } @if (statusChartOptions.data && statusChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="statusChartOptions"
+              role="img"
+              aria-label="Line chart displaying HTTP statuses."
+              class="ag-chart-medium"
+            ></ag-charts>
+            }
+          </div>
+        </section>
 
-      <!-- Threat Chart -->
-      <section class="status-card-outlined">
-        <div class="panel-header panel-header-padded">
-          <h3 class="panel-title panel-title-flex">
-            <mat-icon class="icon-small">warning</mat-icon>
-            Threat Severity
-          </h3>
-        </div>
-        <div class="card-body-clean chart-container-medium">
-          @if (!isLoading && (!threatSeverityChartOptions.data ||
-          threatSeverityChartOptions.data.length === 0)) {
-          <div class="empty-chart-state" role="alert" aria-live="polite">
-            <mat-icon class="empty-icon">satellite_alt</mat-icon>
-            <h3 class="empty-title">Waiting for Signal</h3>
-            <p class="empty-subtitle">No threat data available.</p>
+        <!-- Threat Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">warning</mat-icon>
+              Threat Severity
+            </h3>
           </div>
-          } @if (threatSeverityChartOptions.data && threatSeverityChartOptions.data.length > 0) {
-          <ag-charts
-            [options]="threatSeverityChartOptions"
-            role="img"
-            aria-label="Line chart displaying threat severity."
-            class="ag-chart-medium"
-          ></ag-charts>
-          }
-        </div>
-      </section>
+          <div class="card-body-clean chart-container-medium">
+            @if (!isLoading && (!threatSeverityChartOptions.data ||
+            threatSeverityChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No threat data available.</p>
+            </div>
+            } @if (threatSeverityChartOptions.data && threatSeverityChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="threatSeverityChartOptions"
+              role="img"
+              aria-label="Line chart displaying threat severity."
+              class="ag-chart-medium"
+            ></ag-charts>
+            }
+          </div>
+        </section>
 
-      <!-- Anomalies Chart -->
-      <section class="status-card-outlined">
-        <div class="panel-header panel-header-padded">
-          <h3 class="panel-title panel-title-flex">
-            <mat-icon class="icon-small">radar</mat-icon>
-            Security Anomalies
-          </h3>
-        </div>
-        <div class="card-body-clean chart-container-medium">
-          @if (!isLoading && (!securityAlertsChartOptions.data ||
-          securityAlertsChartOptions.data.length === 0)) {
-          <div class="empty-chart-state" role="alert" aria-live="polite">
-            <mat-icon class="empty-icon">satellite_alt</mat-icon>
-            <h3 class="empty-title">Waiting for Signal</h3>
-            <p class="empty-subtitle">No anomaly data available.</p>
+        <!-- Anomalies Chart -->
+        <section class="status-card-outlined">
+          <div class="panel-header panel-header-padded">
+            <h3 class="panel-title panel-title-flex">
+              <mat-icon class="icon-small">radar</mat-icon>
+              Security Anomalies
+            </h3>
           </div>
-          } @if (securityAlertsChartOptions.data && securityAlertsChartOptions.data.length > 0) {
-          <ag-charts
-            [options]="securityAlertsChartOptions"
-            role="img"
-            aria-label="Line chart displaying security anomalies."
-            class="ag-chart-medium"
-          ></ag-charts>
-          }
-        </div>
-      </section>
+          <div class="card-body-clean chart-container-medium">
+            @if (!isLoading && (!securityAlertsChartOptions.data ||
+            securityAlertsChartOptions.data.length === 0)) {
+            <div class="empty-chart-state" role="alert" aria-live="polite">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">Waiting for Signal</h3>
+              <p class="empty-subtitle">No anomaly data available.</p>
+            </div>
+            } @if (securityAlertsChartOptions.data && securityAlertsChartOptions.data.length > 0) {
+            <ag-charts
+              [options]="securityAlertsChartOptions"
+              role="img"
+              aria-label="Line chart displaying security anomalies."
+              class="ag-chart-medium"
+            ></ag-charts>
+            }
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </div>

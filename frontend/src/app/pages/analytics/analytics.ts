@@ -5,11 +5,12 @@ import {
   effect,
   afterNextRender,
   ChangeDetectorRef,
+  PLATFORM_ID,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AgCharts } from 'ag-charts-angular';
-import { AgChartOptions } from 'ag-charts-community';
+import { AgChartOptions, ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../../environments/environment';
@@ -25,6 +26,7 @@ export class AnalyticsComponent implements OnInit {
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
+  private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
 
   public p99Latency = 0;
   public uptimePercent = 0;
@@ -37,6 +39,8 @@ export class AnalyticsComponent implements OnInit {
   public threatLevel = 0;
   public slaLevel = 0;
   public stabilityLevel = 0;
+
+  private static modulesRegistered = false;
 
   public chartOptions: any = {
     title: {
@@ -53,14 +57,12 @@ export class AnalyticsComponent implements OnInit {
         xKey: 'time',
         yKey: 'latency',
         yName: 'Latency (ms)',
-        fill: 'var(--color-success)',
-        fillOpacity: 0.15,
-        stroke: 'var(--color-success)',
-        strokeWidth: 3,
+        fill: 'var(--color-amber)',
+        fillOpacity: 0.2,
+        stroke: 'var(--color-amber)',
+        strokeWidth: 2,
         interpolation: { type: 'smooth' },
-        marker: {
-          enabled: false,
-        },
+        marker: { enabled: false },
         tooltip: {
           renderer: (params: any) => ({
             content: `${params.yValue.toFixed(2)} ms`,
@@ -84,7 +86,7 @@ export class AnalyticsComponent implements OnInit {
         tick: { size: 0 },
         gridLine: { style: [{ stroke: 'var(--border)', lineDash: [4, 4] }] },
       },
-    ] as any,
+    ],
     background: { fill: 'transparent' },
   };
 
@@ -92,21 +94,21 @@ export class AnalyticsComponent implements OnInit {
     data: [],
     series: [
       {
-        type: 'pie',
+        type: 'donut',
         angleKey: 'count',
         calloutLabelKey: 'origin',
         sectorLabelKey: 'count',
         innerRadiusRatio: 0.7,
         calloutLabel: { color: 'var(--text-color)' },
         sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
-        stroke: 'var(--color-surface)',
+        strokes: ['var(--color-surface)'],
         strokeWidth: 2,
         fills: [
+          'var(--color-info)',
           'var(--color-primary)',
           'var(--color-success)',
           'var(--color-amber)',
           'var(--color-warning)',
-          'var(--color-info)',
         ],
       },
     ],
@@ -127,14 +129,12 @@ export class AnalyticsComponent implements OnInit {
         type: 'area',
         xKey: 'time',
         yKey: 'requests',
-        fill: 'var(--color-primary)',
-        fillOpacity: 0.15,
-        stroke: 'var(--color-primary)',
-        strokeWidth: 3,
+        fill: 'var(--color-info)',
+        fillOpacity: 0.2,
+        stroke: 'var(--color-info)',
+        strokeWidth: 2,
         interpolation: { type: 'smooth' },
-        marker: {
-          enabled: false,
-        },
+        marker: { enabled: false },
         tooltip: {
           renderer: (params: any) => ({
             content: `${params.yValue} requests`,
@@ -165,7 +165,7 @@ export class AnalyticsComponent implements OnInit {
         tick: { size: 0 },
         gridLine: { style: [{ stroke: 'var(--border)', lineDash: [4, 4] }] },
       },
-    ] as any,
+    ],
     background: { fill: 'transparent' },
   };
 
@@ -178,7 +178,7 @@ export class AnalyticsComponent implements OnInit {
         yKey: 'count',
         fill: 'var(--color-warning)',
         strokeWidth: 0,
-        cornerRadius: 6,
+        cornerRadius: 4,
       },
     ],
     title: {
@@ -204,7 +204,7 @@ export class AnalyticsComponent implements OnInit {
         tick: { size: 0 },
         gridLine: { style: [{ stroke: 'var(--border)', lineDash: [4, 4] }] },
       },
-    ] as any,
+    ],
     background: { fill: 'transparent' },
   };
 
@@ -217,7 +217,7 @@ export class AnalyticsComponent implements OnInit {
         yKey: 'count',
         fill: 'var(--color-success)',
         strokeWidth: 0,
-        cornerRadius: 6,
+        cornerRadius: 4,
       },
     ],
     title: {
@@ -243,7 +243,7 @@ export class AnalyticsComponent implements OnInit {
         tick: { size: 0 },
         gridLine: { style: [{ stroke: 'var(--border)', lineDash: [4, 4] }] },
       },
-    ] as any,
+    ],
     background: { fill: 'transparent' },
   };
 
@@ -251,18 +251,18 @@ export class AnalyticsComponent implements OnInit {
     data: [],
     series: [
       {
-        type: 'pie',
+        type: 'donut',
         angleKey: 'count',
         calloutLabelKey: 'severity',
         innerRadiusRatio: 0.75,
         calloutLabel: { color: 'var(--text-color)' },
         sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
-        stroke: 'var(--color-surface)',
+        strokes: ['var(--color-surface)'],
         strokeWidth: 2,
         fills: [
           'var(--color-error)',
+          'var(--color-gauge-red)',
           'var(--color-warning)',
-          'var(--color-info)',
           'var(--color-amber)',
         ],
       },
@@ -286,7 +286,7 @@ export class AnalyticsComponent implements OnInit {
         yKey: 'count',
         fill: 'var(--color-error)',
         strokeWidth: 0,
-        cornerRadius: 6,
+        cornerRadius: 4,
       },
     ],
     title: {
@@ -312,52 +312,39 @@ export class AnalyticsComponent implements OnInit {
         tick: { size: 0 },
         gridLine: { style: [{ stroke: 'var(--border)', lineDash: [4, 4] }] },
       },
-    ] as any,
+    ],
     background: { fill: 'transparent' },
   };
 
   constructor() {
+    if (this.isBrowser && !AnalyticsComponent.modulesRegistered) {
+      ModuleRegistry.registerModules([AllCommunityModule]);
+      AnalyticsComponent.modulesRegistered = true;
+    }
+
     effect(() => {
       const activeTheme = this.themeService.theme();
       this.updateChartTheme(activeTheme);
     });
 
-    // Ensure the page renders immediately (with the skeleton loader visible)
-    // and only fetch data in the browser environment.
     afterNextRender(() => {
       this.loadAnalyticsData();
     });
   }
 
   private updateChartTheme(theme: 'light' | 'dark') {
-    // The chart now directly uses CSS variables mapped to the current theme.
-    // We retain this method in case we need to trigger an explicit redraw or handle specific non-CSS configurable properties.
-    this.chartOptions = {
-      ...this.chartOptions,
-    };
+    this.chartOptions = { ...this.chartOptions };
   }
 
-  ngOnInit() {
-    // ngOnInit remains empty; data is loaded purely on the client side via afterNextRender.
-  }
+  ngOnInit() {}
 
   private calculateCESMetrics() {
-    // Simulate/Calculate gauge values based on telemetry
-    // Threat Level: based on incidents and latency spikes (0-100, lower is better, but gauge usually shows high as bad)
-    // We will invert it for a "health" gauge if needed, but let's say Threat is a 0-100% danger scale.
     this.threatLevel = Math.min(100, this.activeIncidents * 20 + (this.p99Latency > 500 ? 30 : 0));
-
-    // SLA Level: essentially uptime and performance bounds.
     this.slaLevel = Math.max(0, this.uptimePercent - (this.p99Latency > 800 ? 5 : 0));
-
-    // Stability Level: based on steady latency.
     this.stabilityLevel = Math.max(
       0,
       100 - this.activeIncidents * 10 - (this.p99Latency > 300 ? 15 : 0),
     );
-
-    // Overall CES Level: A weighted average, representing Countermeasure Effectiveness Standard
-    // High CES is good (100 is perfect).
     this.cesLevel = Math.max(
       0,
       Math.min(
@@ -367,7 +354,6 @@ export class AnalyticsComponent implements OnInit {
     );
   }
 
-  // Helper method to calculate the SVG dash array for the gauges
   public getGaugeStroke(value: number, circumference: number): string {
     const dash = (value / 100) * circumference;
     return `${dash} ${circumference}`;
@@ -416,7 +402,6 @@ export class AnalyticsComponent implements OnInit {
       },
       error: err => {
         console.error('Failed to load analytics data', err);
-        // Fallback for visual demo if API fails
         this.p99Latency = 0;
         this.uptimePercent = 0;
         this.totalRequests = 0;
