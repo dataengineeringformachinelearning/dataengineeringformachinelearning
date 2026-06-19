@@ -3,68 +3,66 @@
   <div class="glow-sphere sphere-1"></div>
   <div class="glow-sphere sphere-2"></div>
 
-  <div class="dashboard-content-area">
-    <div class="content-wrapper">
-      <header class="hud-header">
-        <div class="title-group">
-          <div class="section-tag-row">
-            <span class="section-tag">Status Directory</span>
-          </div>
-          <h1 class="hud-title">Explore Public Statuses</h1>
-          <p class="hud-subtitle">
-            Browse status cards published by users on our platform. Refer to the
-            <a routerLink="/status/platform-status" class="inline-status-link"
-              >Platform Status Page</a
-            >
-            to see an example of real-time service health tracking.
-          </p>
+  <div class="page-inner-wrapper">
+    <header class="hud-header">
+      <div class="title-group">
+        <div class="section-tag-row">
+          <span class="section-tag">Status Directory</span>
         </div>
-      </header>
-      <div class="status-stack">
-        @for (page of statusPages(); track page) {
-        <app-status-card
-          [page]="page"
-          [services]="servicesMap()[page.id] || []"
-          [predictedSla]="mlService.latestStats()[page.id]"
-          [threatReport]="mlService.latestThreatReports()[page.id] || null"
-          [incidents]="incidentsMap()[page.id] || []"
-          [linkHeader]="true"
-          [showViewButton]="true"
-        ></app-status-card>
-        } @if (loadFailed()) {
-        <div class="status-error-state">
-          <div class="error-glow-sphere"></div>
-          <mat-icon class="error-state-icon">cloud_off</mat-icon>
-          <h2 class="error-title">Unable to Connect</h2>
-          <p class="error-subtitle">
-            We couldn't connect to the status service. Please check that the backend is running and
-            try again.
-          </p>
-          <button
-            mat-raised-button
-            color="primary"
-            class="retry-btn"
-            (click)="retryLoad()"
-            [disabled]="isRetrying()"
+        <h1 class="hud-title">Explore Public Statuses</h1>
+        <p class="hud-subtitle">
+          Browse status cards published by users on our platform. Refer to the
+          <a routerLink="/status/platform-status" class="inline-status-link"
+            >Platform Status Page</a
           >
-            @if (!isRetrying()) {
-            <mat-icon>refresh</mat-icon>
-            } @if (isRetrying()) {
-            <span class="btn-spinner"></span>
-            }
-            <span>Retry Connection</span>
-          </button>
-        </div>
-        } @if (!loadFailed() && statusPages().length === 0) {
-        <app-status-cta
-          badgeIcon="explore"
-          badgeText="Explore Directory"
-          title="No Public Status Pages"
-          subtitle="Users haven't published any status pages yet. Create and publish one in the management console!"
-        >
-        </app-status-cta>
-        }
+          to see an example of real-time service health tracking.
+        </p>
       </div>
+    </header>
+    <div class="status-stack">
+      @for (page of statusPages(); track page) {
+      <app-status-card
+        [page]="page"
+        [services]="servicesMap()[page.id] || []"
+        [predictedSla]="mlService.latestStats()[page.id]"
+        [threatReport]="mlService.latestThreatReports()[page.id] || null"
+        [incidents]="incidentsMap()[page.id] || []"
+        [linkHeader]="true"
+        [showViewButton]="true"
+      ></app-status-card>
+      } @if (loadFailed()) {
+      <div class="status-error-state">
+        <div class="error-glow-sphere"></div>
+        <mat-icon class="error-state-icon">cloud_off</mat-icon>
+        <h2 class="error-title">Unable to Connect</h2>
+        <p class="error-subtitle">
+          We couldn't connect to the status service. Please check that the backend is running and
+          try again.
+        </p>
+        <button
+          mat-raised-button
+          color="primary"
+          class="retry-btn"
+          (click)="retryLoad()"
+          [disabled]="isRetrying()"
+        >
+          @if (!isRetrying()) {
+          <mat-icon>refresh</mat-icon>
+          } @if (isRetrying()) {
+          <span class="btn-spinner"></span>
+          }
+          <span>Retry Connection</span>
+        </button>
+      </div>
+      } @if (!loadFailed() && statusPages().length === 0) {
+      <app-status-cta
+        badgeIcon="explore"
+        badgeText="Explore Directory"
+        title="No Public Status Pages"
+        subtitle="Users haven't published any status pages yet. Create and publish one in the management console!"
+      >
+      </app-status-cta>
+      }
     </div>
   </div>
 </div>

@@ -2,766 +2,752 @@
   <!-- Glow Spheres for Homepage Unity -->
   <div class="glow-sphere sphere-1"></div>
   <div class="glow-sphere sphere-2"></div>
-  <div class="dashboard-content-area">
-    <div class="content-wrapper">
-      <header class="hud-header">
-        <div class="title-group">
-          <div class="section-tag-row">
-            <span class="section-tag">Management Console</span>
-          </div>
-          <h1 class="hud-title">Settings Console</h1>
-          <p class="hud-subtitle">
-            Configure your telemetry pages, endpoints, and status reporting settings
-          </p>
+  <div class="page-inner-wrapper">
+    <header class="hud-header">
+      <div class="title-group">
+        <div class="section-tag-row">
+          <span class="section-tag">Management Console</span>
         </div>
-      </header>
+        <h1 class="hud-title">Settings Console</h1>
+        <p class="hud-subtitle">
+          Configure your telemetry pages, endpoints, and status reporting settings
+        </p>
+      </div>
+    </header>
 
-      <div class="settings-stack">
-        @if (isViewer) {
-        <div class="alert alert-warning alert-viewer-banner">
-          <mat-icon>lock</mat-icon>
-          <span
-            ><strong>Read-Only Access:</strong> Your user profile is assigned the
-            <strong>Viewer</strong> role. You cannot perform administrative modifications to status
-            pages, monitored endpoints, incident reports, or integrations.</span
+    <div class="settings-stack">
+      @if (isViewer) {
+      <div class="alert alert-warning alert-viewer-banner">
+        <mat-icon>lock</mat-icon>
+        <span
+          ><strong>Read-Only Access:</strong> Your user profile is assigned the
+          <strong>Viewer</strong> role. You cannot perform administrative modifications to status
+          pages, monitored endpoints, incident reports, or integrations.</span
+        >
+      </div>
+      }
+
+      <div class="status-card-outlined">
+        <div class="card-header-clean">
+          @if (selectedPage()) {
+          <h2 class="card-title-main">
+            <mat-icon>wysiwyg</mat-icon>
+            {{ selectedPage()!.title }}
+          </h2>
+          } @if (selectedPage()) {
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteStatusPage(selectedPage()!.id)"
+            title="Delete status page"
+            class="delete-page-btn"
+            [disabled]="isViewer"
           >
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+          } @if (!selectedPage()) {
+          <h2 class="card-title-main">
+            <mat-icon>add_box</mat-icon>
+            Create Status Page
+          </h2>
+          }
         </div>
-        }
 
-        <div class="status-card-outlined">
-          <div class="card-header-clean">
-            @if (selectedPage()) {
-            <h2 class="card-title-main">
-              <mat-icon>wysiwyg</mat-icon>
-              {{ selectedPage()!.title }}
-            </h2>
-            } @if (selectedPage()) {
-            <button
-              mat-icon-button
-              color="warn"
-              (click)="deleteStatusPage(selectedPage()!.id)"
-              title="Delete status page"
-              class="delete-page-btn"
-              [disabled]="isViewer"
-            >
-              <mat-icon>delete_forever</mat-icon>
-            </button>
-            } @if (!selectedPage()) {
-            <h2 class="card-title-main">
-              <mat-icon>add_box</mat-icon>
-              Create Status Page
-            </h2>
-            }
-          </div>
-
-          <div class="card-body-clean">
-            <!-- New Page Form -->
-            @if (!selectedPage()) {
-            <div class="form-col">
-              <p class="embed-desc">
-                Create a new status page to start monitoring your services. Refer to the
-                <a routerLink="/status/platform-status" class="inline-status-link"
-                  >Platform Status Page</a
-                >
-                as a live example of layout, services, and incident configurations.
-              </p>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Title</mat-label>
-                <input
-                  matInput
-                  [(ngModel)]="newPageTitle"
-                  placeholder="e.g. My API Status"
-                  [disabled]="isViewer"
-                />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Slug</mat-label>
-                <input
-                  matInput
-                  [(ngModel)]="newPageSlug"
-                  placeholder="e.g. my-api"
-                  [disabled]="isViewer"
-                />
-              </mat-form-field>
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="createStatusPage()"
-                [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || isViewer"
-                class="create-page-btn"
+        <div class="card-body-clean">
+          <!-- New Page Form -->
+          @if (!selectedPage()) {
+          <div class="form-col">
+            <p class="embed-desc">
+              Create a new status page to start monitoring your services. Refer to the
+              <a routerLink="/status/platform-status" class="inline-status-link"
+                >Platform Status Page</a
               >
-                @if (!isCreatingPage()) {
-                <mat-icon>add_circle</mat-icon>
-                } @if (isCreatingPage()) {
-                <span class="btn-spinner"></span>
-                }
-                <span>Create Page</span>
-              </button>
-            </div>
-            }
+              as a live example of layout, services, and incident configurations.
+            </p>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Title</mat-label>
+              <input
+                matInput
+                [(ngModel)]="newPageTitle"
+                placeholder="e.g. My API Status"
+                [disabled]="isViewer"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Slug</mat-label>
+              <input
+                matInput
+                [(ngModel)]="newPageSlug"
+                placeholder="e.g. my-api"
+                [disabled]="isViewer"
+              />
+            </mat-form-field>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="createStatusPage()"
+              [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || isViewer"
+              class="create-page-btn"
+            >
+              @if (!isCreatingPage()) {
+              <mat-icon>add_circle</mat-icon>
+              } @if (isCreatingPage()) {
+              <span class="btn-spinner"></span>
+              }
+              <span>Create Page</span>
+            </button>
+          </div>
+          }
 
-            <!-- Existing Page View -->
-            @if (selectedPage()) {
-            <div>
-              <!-- Page Settings Section -->
-              <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>settings</mat-icon> Page Settings</h3>
-                <div class="settings-form-panel panel-clean">
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Title</mat-label>
-                      <input
-                        matInput
-                        [(ngModel)]="editTitle"
-                        placeholder="e.g. My API Status"
-                        [disabled]="isViewer"
-                      />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Slug</mat-label>
-                      <input
-                        matInput
-                        [(ngModel)]="editSlug"
-                        placeholder="e.g. my-api"
-                        [disabled]="isViewer"
-                      />
-                    </mat-form-field>
-                  </div>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Description</mat-label>
-                    <textarea
-                      matInput
-                      [(ngModel)]="editDescription"
-                      rows="2"
-                      placeholder="Description of this status page..."
-                      [disabled]="isViewer"
-                    ></textarea>
-                  </mat-form-field>
-                  <div class="settings-actions">
-                    <mat-checkbox
-                      [(ngModel)]="editIsPublished"
-                      color="primary"
-                      [disabled]="isViewer"
-                    >
-                      Publish Status Page (makes it visible in the public Explore directory)
-                    </mat-checkbox>
-                    <button
-                      mat-flat-button
-                      class="save-settings-btn"
-                      (click)="updateStatusPage()"
-                      [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
-                    >
-                      @if (!isUpdatingPage()) {
-                      <mat-icon>save</mat-icon>
-                      } @if (isUpdatingPage()) {
-                      <span class="btn-spinner"></span>
-                      }
-                      <span>Save Settings</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Telemetry Tracking IDs Section -->
-              <div class="panel-section">
-                <h3 class="section-heading">
-                  <mat-icon>analytics</mat-icon> Telemetry Tracking IDs
-                </h3>
-                <div class="settings-form-panel panel-clean">
-                  <p class="embed-desc">
-                    Configure your third-party tracking scripts by entering your analytics property
-                    IDs. These scripts are injected directly onto your public status page to let you
-                    monitor visitor traffic and telemetry.
-                  </p>
-                  <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Google Analytics ID</mat-label>
-                      <input
-                        matInput
-                        [(ngModel)]="editGoogleAnalyticsId"
-                        placeholder="e.g. G-XXXXXXX"
-                        [disabled]="isViewer"
-                      />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Microsoft Clarity ID</mat-label>
-                      <input
-                        matInput
-                        [(ngModel)]="editMicrosoftClarityId"
-                        placeholder="e.g. xxxxxxxx"
-                        [disabled]="isViewer"
-                      />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Cloudflare Analytics ID</mat-label>
-                      <input
-                        matInput
-                        [(ngModel)]="editCloudflareAnalyticsId"
-                        placeholder="e.g. xxxxxxxx"
-                        [disabled]="isViewer"
-                      />
-                    </mat-form-field>
-                  </div>
-                  <div class="settings-actions justify-end">
-                    <button
-                      mat-flat-button
-                      class="save-settings-btn"
-                      (click)="updateStatusPage()"
-                      [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
-                    >
-                      @if (!isUpdatingPage()) {
-                      <mat-icon>save</mat-icon>
-                      } @if (isUpdatingPage()) {
-                      <span class="btn-spinner"></span>
-                      }
-                      <span>Save Tracking IDs</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>dns</mat-icon> Monitored Services</h3>
-                <div class="service-form-panel panel-clean">
-                  <div class="service-inputs-row">
-                    <mat-form-field appearance="outline" class="flex-1">
-                      <mat-label>Service Name</mat-label>
-                      <input
-                        matInput
-                        [(ngModel)]="newServiceName"
-                        placeholder="e.g. Auth API"
-                        [disabled]="isViewer"
-                      />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" class="flex-2">
-                      <mat-label>Health Check URL</mat-label>
-                      <input
-                        matInput
-                        [(ngModel)]="newServiceUrl"
-                        placeholder="https://api.example.com/health"
-                        [disabled]="isViewer"
-                      />
-                    </mat-form-field>
-                  </div>
-                  <button
-                    mat-flat-button
-                    class="add-service-btn"
-                    (click)="addService()"
-                    [disabled]="!newServiceName || !newServiceUrl || isAddingService() || isViewer"
-                  >
-                    @if (!isAddingService()) {
-                    <mat-icon>add</mat-icon>
-                    } @if (isAddingService()) {
-                    <span class="btn-spinner"></span>
-                    }
-                    <span>Add Service</span>
-                  </button>
-                </div>
-                <div class="data-list-outlined">
-                  @for (service of services(); track service) {
-                  <div class="data-item-row">
-                    <div class="data-info">
-                      <span class="data-title">{{ service.name }}</span>
-                      <span class="data-subtitle">{{ service.url }}</span>
-                    </div>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      (click)="deleteService(service.id)"
-                      [disabled]="isViewer"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                  } @if (services().length === 0) {
-                  <div class="empty-data-text">No services monitored yet. Add one above!</div>
-                  }
-                </div>
-              </div>
-              <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>error_outline</mat-icon> Report Incident</h3>
-                <div class="incident-form panel-clean">
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Incident Title</mat-label>
+          <!-- Existing Page View -->
+          @if (selectedPage()) {
+          <div>
+            <!-- Page Settings Section -->
+            <div class="panel-section">
+              <h3 class="section-heading"><mat-icon>settings</mat-icon> Page Settings</h3>
+              <div class="settings-form-panel panel-clean">
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Title</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="newIncidentTitle"
-                      placeholder="e.g. API Degraded Performance"
+                      [(ngModel)]="editTitle"
+                      placeholder="e.g. My API Status"
                       [disabled]="isViewer"
                     />
                   </mat-form-field>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Message / Update</mat-label>
-                    <textarea
+                  <mat-form-field appearance="outline">
+                    <mat-label>Slug</mat-label>
+                    <input
                       matInput
-                      [(ngModel)]="newIncidentMessage"
-                      rows="2"
-                      placeholder="Describe what is happening and what actions are being taken..."
+                      [(ngModel)]="editSlug"
+                      placeholder="e.g. my-api"
                       [disabled]="isViewer"
-                    ></textarea>
+                    />
                   </mat-form-field>
-                  <div class="form-row-actions">
-                    <div class="select-wrapper">
-                      <select
-                        [(ngModel)]="newIncidentStatus"
-                        class="native-select-custom"
-                        aria-label="Incident Status"
-                        [disabled]="isViewer"
-                      >
-                        <option value="Investigating">Investigating</option>
-                        <option value="Identified">Identified</option>
-                        <option value="Monitoring">Monitoring</option>
-                        <option value="Resolved">Resolved</option>
-                      </select>
-                    </div>
-                    <button
-                      mat-flat-button
-                      class="post-incident-btn"
-                      (click)="addIncident()"
-                      [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident() || isViewer"
-                    >
-                      @if (!isAddingIncident()) {
-                      <mat-icon>notification_important</mat-icon>
-                      } @if (isAddingIncident()) {
-                      <span class="btn-spinner"></span>
-                      }
-                      <span>Post Incident</span>
-                    </button>
-                  </div>
                 </div>
-                <div class="data-list-outlined">
-                  @for (incident of incidents(); track incident) {
-                  <div class="data-item-row">
-                    <div class="data-info">
-                      <span class="data-title">{{ incident.title }}</span>
-                      <span class="data-subtitle"
-                        >{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span
-                      >
-                    </div>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      (click)="deleteIncident(incident.id)"
-                      [disabled]="isViewer"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                  } @if (incidents().length === 0) {
-                  <div class="empty-data-text">No incidents reported yet.</div>
-                  }
-                </div>
-              </div>
-              <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>code</mat-icon> Embeddable Widget</h3>
-                <p class="embed-desc">
-                  Copy and paste this script tag onto your website to display a live status badge.
-                </p>
-                <div class="code-block-container">
-                  <div class="code-block-outlined">
-                    <code>{{ getWidgetCode() }}</code>
-                  </div>
-                  <button mat-flat-button class="copy-btn" (click)="copyWidgetCode()">
-                    <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
-                    <span>{{ copied() ? 'Copied' : 'Copy' }}</span>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Description</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="editDescription"
+                    rows="2"
+                    placeholder="Description of this status page..."
+                    [disabled]="isViewer"
+                  ></textarea>
+                </mat-form-field>
+                <div class="settings-actions">
+                  <mat-checkbox [(ngModel)]="editIsPublished" color="primary" [disabled]="isViewer">
+                    Publish Status Page (makes it visible in the public Explore directory)
+                  </mat-checkbox>
+                  <button
+                    mat-flat-button
+                    class="save-settings-btn"
+                    (click)="updateStatusPage()"
+                    [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
+                  >
+                    @if (!isUpdatingPage()) {
+                    <mat-icon>save</mat-icon>
+                    } @if (isUpdatingPage()) {
+                    <span class="btn-spinner"></span>
+                    }
+                    <span>Save Settings</span>
                   </button>
                 </div>
               </div>
-              <div class="panel-section">
-                <h3 class="section-heading">
-                  <mat-icon>analytics</mat-icon> Threat Intel & API Integrations
-                </h3>
+            </div>
+
+            <!-- Telemetry Tracking IDs Section -->
+            <div class="panel-section">
+              <h3 class="section-heading"><mat-icon>analytics</mat-icon> Telemetry Tracking IDs</h3>
+              <div class="settings-form-panel panel-clean">
                 <p class="embed-desc">
-                  Link your analytics providers to securely sync geolocation and visitor access
-                  telemetry. This data feeds directly into our threat intelligence and ML anomaly
-                  detection models to monitor traffic access patterns.
+                  Configure your third-party tracking scripts by entering your analytics property
+                  IDs. These scripts are injected directly onto your public status page to let you
+                  monitor visitor traffic and telemetry.
                 </p>
-                <div class="integrations-list panel-clean">
-                  <div class="integration-item">
+                <div class="form-row">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Google Analytics ID</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="editGoogleAnalyticsId"
+                      placeholder="e.g. G-XXXXXXX"
+                      [disabled]="isViewer"
+                    />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Microsoft Clarity ID</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="editMicrosoftClarityId"
+                      placeholder="e.g. xxxxxxxx"
+                      [disabled]="isViewer"
+                    />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>Cloudflare Analytics ID</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="editCloudflareAnalyticsId"
+                      placeholder="e.g. xxxxxxxx"
+                      [disabled]="isViewer"
+                    />
+                  </mat-form-field>
+                </div>
+                <div class="settings-actions justify-end">
+                  <button
+                    mat-flat-button
+                    class="save-settings-btn"
+                    (click)="updateStatusPage()"
+                    [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
+                  >
+                    @if (!isUpdatingPage()) {
+                    <mat-icon>save</mat-icon>
+                    } @if (isUpdatingPage()) {
+                    <span class="btn-spinner"></span>
+                    }
+                    <span>Save Tracking IDs</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-section">
+              <h3 class="section-heading"><mat-icon>dns</mat-icon> Monitored Services</h3>
+              <div class="service-form-panel panel-clean">
+                <div class="service-inputs-row">
+                  <mat-form-field appearance="outline" class="flex-1">
+                    <mat-label>Service Name</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="newServiceName"
+                      placeholder="e.g. Auth API"
+                      [disabled]="isViewer"
+                    />
+                  </mat-form-field>
+                  <mat-form-field appearance="outline" class="flex-2">
+                    <mat-label>Health Check URL</mat-label>
+                    <input
+                      matInput
+                      [(ngModel)]="newServiceUrl"
+                      placeholder="https://api.example.com/health"
+                      [disabled]="isViewer"
+                    />
+                  </mat-form-field>
+                </div>
+                <button
+                  mat-flat-button
+                  class="add-service-btn"
+                  (click)="addService()"
+                  [disabled]="!newServiceName || !newServiceUrl || isAddingService() || isViewer"
+                >
+                  @if (!isAddingService()) {
+                  <mat-icon>add</mat-icon>
+                  } @if (isAddingService()) {
+                  <span class="btn-spinner"></span>
+                  }
+                  <span>Add Service</span>
+                </button>
+              </div>
+              <div class="data-list-outlined">
+                @for (service of services(); track service) {
+                <div class="data-item-row">
+                  <div class="data-info">
+                    <span class="data-title">{{ service.name }}</span>
+                    <span class="data-subtitle">{{ service.url }}</span>
+                  </div>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteService(service.id)"
+                    [disabled]="isViewer"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                } @if (services().length === 0) {
+                <div class="empty-data-text">No services monitored yet. Add one above!</div>
+                }
+              </div>
+            </div>
+            <div class="panel-section">
+              <h3 class="section-heading"><mat-icon>error_outline</mat-icon> Report Incident</h3>
+              <div class="incident-form panel-clean">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Incident Title</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="newIncidentTitle"
+                    placeholder="e.g. API Degraded Performance"
+                    [disabled]="isViewer"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Message / Update</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="newIncidentMessage"
+                    rows="2"
+                    placeholder="Describe what is happening and what actions are being taken..."
+                    [disabled]="isViewer"
+                  ></textarea>
+                </mat-form-field>
+                <div class="form-row-actions">
+                  <div class="select-wrapper">
+                    <select
+                      [(ngModel)]="newIncidentStatus"
+                      class="native-select-custom"
+                      aria-label="Incident Status"
+                      [disabled]="isViewer"
+                    >
+                      <option value="Investigating">Investigating</option>
+                      <option value="Identified">Identified</option>
+                      <option value="Monitoring">Monitoring</option>
+                      <option value="Resolved">Resolved</option>
+                    </select>
+                  </div>
+                  <button
+                    mat-flat-button
+                    class="post-incident-btn"
+                    (click)="addIncident()"
+                    [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident() || isViewer"
+                  >
+                    @if (!isAddingIncident()) {
+                    <mat-icon>notification_important</mat-icon>
+                    } @if (isAddingIncident()) {
+                    <span class="btn-spinner"></span>
+                    }
+                    <span>Post Incident</span>
+                  </button>
+                </div>
+              </div>
+              <div class="data-list-outlined">
+                @for (incident of incidents(); track incident) {
+                <div class="data-item-row">
+                  <div class="data-info">
+                    <span class="data-title">{{ incident.title }}</span>
+                    <span class="data-subtitle"
+                      >{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span
+                    >
+                  </div>
+                  <button
+                    mat-icon-button
+                    color="warn"
+                    (click)="deleteIncident(incident.id)"
+                    [disabled]="isViewer"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+                } @if (incidents().length === 0) {
+                <div class="empty-data-text">No incidents reported yet.</div>
+                }
+              </div>
+            </div>
+            <div class="panel-section">
+              <h3 class="section-heading"><mat-icon>code</mat-icon> Embeddable Widget</h3>
+              <p class="embed-desc">
+                Copy and paste this script tag onto your website to display a live status badge.
+              </p>
+              <div class="code-block-container">
+                <div class="code-block-outlined">
+                  <code>{{ getWidgetCode() }}</code>
+                </div>
+                <button mat-flat-button class="copy-btn" (click)="copyWidgetCode()">
+                  <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
+                  <span>{{ copied() ? 'Copied' : 'Copy' }}</span>
+                </button>
+              </div>
+            </div>
+            <div class="panel-section">
+              <h3 class="section-heading">
+                <mat-icon>analytics</mat-icon> Threat Intel & API Integrations
+              </h3>
+              <p class="embed-desc">
+                Link your analytics providers to securely sync geolocation and visitor access
+                telemetry. This data feeds directly into our threat intelligence and ML anomaly
+                detection models to monitor traffic access patterns.
+              </p>
+              <div class="integrations-list panel-clean">
+                <div class="integration-item">
+                  <div class="integration-info">
+                    <strong class="integration-name">Google Analytics</strong>
+                    <span class="integration-status">
+                      @if (integrations().find(i => i.provider === 'google' && i.active)) {
+                      Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                      'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected }
+                    </span>
+                  </div>
+                  <div class="integration-action">
+                    @if (integrations().find(i => i.provider === 'google' && i.active)) {
+                    <button
+                      mat-flat-button
+                      color="warn"
+                      (click)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
+                      [disabled]="isViewer"
+                    >
+                      Disconnect
+                    </button>
+                    } @else {
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      (click)="connectGoogleAnalytics()"
+                      [disabled]="isConnectingGoogle() || isViewer"
+                    >
+                      Connect GA4 API
+                    </button>
+                    }
+                  </div>
+                </div>
+                <div class="integration-item clarity-item">
+                  <div class="integration-header">
                     <div class="integration-info">
-                      <strong class="integration-name">Google Analytics</strong>
+                      <strong class="integration-name">Microsoft Clarity</strong>
                       <span class="integration-status">
-                        @if (integrations().find(i => i.provider === 'google' && i.active)) {
+                        @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
                         Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                        'google')?.last_sync | date:'medium') || 'Never' }} } @else { Not Connected
-                        }
+                        'microsoft')?.last_sync | date:'medium') || 'Never' }} } @else { Not
+                        Connected }
                       </span>
                     </div>
+                    @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
                     <div class="integration-action">
-                      @if (integrations().find(i => i.provider === 'google' && i.active)) {
                       <button
                         mat-flat-button
                         color="warn"
-                        (click)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
+                        (click)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
                         [disabled]="isViewer"
                       >
                         Disconnect
                       </button>
-                      } @else {
-                      <button
-                        mat-flat-button
-                        color="primary"
-                        (click)="connectGoogleAnalytics()"
-                        [disabled]="isConnectingGoogle() || isViewer"
-                      >
-                        Connect GA4 API
-                      </button>
-                      }
                     </div>
+                    }
                   </div>
-                  <div class="integration-item clarity-item">
-                    <div class="integration-header">
-                      <div class="integration-info">
-                        <strong class="integration-name">Microsoft Clarity</strong>
-                        <span class="integration-status">
-                          @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                          Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                          'microsoft')?.last_sync | date:'medium') || 'Never' }} } @else { Not
-                          Connected }
-                        </span>
-                      </div>
-                      @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                      <div class="integration-action">
-                        <button
-                          mat-flat-button
-                          color="warn"
-                          (click)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                  @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
+                  <div class="clarity-form-row">
+                    <div class="inputs-group">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Clarity Project ID</mat-label>
+                        <input
+                          matInput
+                          [(ngModel)]="clarityProjectId"
+                          placeholder="Project ID"
                           [disabled]="isViewer"
-                        >
-                          Disconnect
-                        </button>
-                      </div>
-                      }
+                        />
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                        <mat-label>API Token / Key</mat-label>
+                        <input
+                          matInput
+                          [(ngModel)]="clarityApiKey"
+                          type="password"
+                          placeholder="Clarity API Key"
+                          [disabled]="isViewer"
+                        />
+                      </mat-form-field>
                     </div>
-                    @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
-                    <div class="clarity-form-row">
-                      <div class="inputs-group">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Clarity Project ID</mat-label>
-                          <input
-                            matInput
-                            [(ngModel)]="clarityProjectId"
-                            placeholder="Project ID"
-                            [disabled]="isViewer"
-                          />
-                        </mat-form-field>
-                        <mat-form-field appearance="outline">
-                          <mat-label>API Token / Key</mat-label>
-                          <input
-                            matInput
-                            [(ngModel)]="clarityApiKey"
-                            type="password"
-                            placeholder="Clarity API Key"
-                            [disabled]="isViewer"
-                          />
-                        </mat-form-field>
-                      </div>
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      (click)="connectMicrosoftClarity()"
+                      [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity() || isViewer"
+                    >
+                      Connect API
+                    </button>
+                  </div>
+                  }
+                </div>
+                <div class="integration-item cloudflare-item">
+                  <div class="integration-header">
+                    <div class="integration-info">
+                      <strong class="integration-name">Cloudflare Analytics</strong>
+                      <span class="integration-status">
+                        @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                        Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
+                        'cloudflare')?.last_sync | date:'medium') || 'Never' }} } @else { Not
+                        Connected }
+                      </span>
+                    </div>
+                    @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                    <div class="integration-action">
                       <button
                         mat-flat-button
-                        color="primary"
-                        (click)="connectMicrosoftClarity()"
-                        [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity() || isViewer"
+                        color="warn"
+                        (click)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
+                        [disabled]="isViewer"
                       >
-                        Connect API
+                        Disconnect
                       </button>
                     </div>
                     }
                   </div>
-                  <div class="integration-item cloudflare-item">
-                    <div class="integration-header">
-                      <div class="integration-info">
-                        <strong class="integration-name">Cloudflare Analytics</strong>
-                        <span class="integration-status">
-                          @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                          Connected &bull; Last Synced: {{ (integrations().find(i => i.provider ===
-                          'cloudflare')?.last_sync | date:'medium') || 'Never' }} } @else { Not
-                          Connected }
-                        </span>
-                      </div>
-                      @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                      <div class="integration-action">
-                        <button
-                          mat-flat-button
-                          color="warn"
-                          (click)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
+                  @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
+                  <div class="cloudflare-form-row">
+                    <div class="inputs-group">
+                      <mat-form-field appearance="outline">
+                        <mat-label>Cloudflare Account ID</mat-label>
+                        <input
+                          matInput
+                          [(ngModel)]="cloudflareProjectId"
+                          placeholder="Account ID"
                           [disabled]="isViewer"
-                        >
-                          Disconnect
-                        </button>
-                      </div>
-                      }
+                        />
+                      </mat-form-field>
+                      <mat-form-field appearance="outline">
+                        <mat-label>API Token / Key</mat-label>
+                        <input
+                          matInput
+                          [(ngModel)]="cloudflareApiKey"
+                          type="password"
+                          placeholder="Cloudflare API Token"
+                          [disabled]="isViewer"
+                        />
+                      </mat-form-field>
                     </div>
-                    @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
-                    <div class="cloudflare-form-row">
-                      <div class="inputs-group">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Cloudflare Account ID</mat-label>
-                          <input
-                            matInput
-                            [(ngModel)]="cloudflareProjectId"
-                            placeholder="Account ID"
-                            [disabled]="isViewer"
-                          />
-                        </mat-form-field>
-                        <mat-form-field appearance="outline">
-                          <mat-label>API Token / Key</mat-label>
-                          <input
-                            matInput
-                            [(ngModel)]="cloudflareApiKey"
-                            type="password"
-                            placeholder="Cloudflare API Token"
-                            [disabled]="isViewer"
-                          />
-                        </mat-form-field>
-                      </div>
-                      <button
-                        mat-flat-button
-                        color="primary"
-                        (click)="connectCloudflare()"
-                        [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare() || isViewer"
-                      >
-                        Connect API
-                      </button>
-                    </div>
-                    }
+                    <button
+                      mat-flat-button
+                      color="primary"
+                      (click)="connectCloudflare()"
+                      [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare() || isViewer"
+                    >
+                      Connect API
+                    </button>
                   </div>
+                  }
                 </div>
               </div>
             </div>
-            }
           </div>
+          }
         </div>
+      </div>
 
-        <!-- Multi-Factor Authentication (MFA) -->
-        <div class="status-card-outlined mfa-settings-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
-              <mat-icon>security</mat-icon>
-              Multi-Factor Authentication (MFA)
-            </h2>
-          </div>
-          <div class="card-body-clean">
-            <div>
-              <p class="embed-desc">
-                Secure your account by requiring a secondary verification method (SMS) during login.
-                This is required under SOC2 policies to perform administrative updates to system
-                status pages.
-              </p>
+      <!-- Multi-Factor Authentication (MFA) -->
+      <div class="status-card-outlined mfa-settings-card">
+        <div class="card-header-clean">
+          <h2 class="card-title-main">
+            <mat-icon>security</mat-icon>
+            Multi-Factor Authentication (MFA)
+          </h2>
+        </div>
+        <div class="card-body-clean">
+          <div>
+            <p class="embed-desc">
+              Secure your account by requiring a secondary verification method (SMS) during login.
+              This is required under SOC2 policies to perform administrative updates to system
+              status pages.
+            </p>
 
-              @if (isMfaEnrolled()) {
-              <div class="mfa-status-enrolled panel-clean">
-                <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
-                <div class="mfa-info mfa-info-inline">
-                  <strong>MFA Enrolled & Enforced</strong>
-                  <div class="mfa-status-desc">SMS verification is active for your account.</div>
-                </div>
-                <button mat-stroked-button color="warn" (click)="disableMfa()">Disable MFA</button>
+            @if (isMfaEnrolled()) {
+            <div class="mfa-status-enrolled panel-clean">
+              <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
+              <div class="mfa-info mfa-info-inline">
+                <strong>MFA Enrolled & Enforced</strong>
+                <div class="mfa-status-desc">SMS verification is active for your account.</div>
               </div>
-              } @else {
-              <div class="mfa-enrollment-form panel-clean">
+              <button mat-stroked-button color="warn" (click)="disableMfa()">Disable MFA</button>
+            </div>
+            } @else {
+            <div class="mfa-enrollment-form panel-clean">
+              <p class="mfa-step-title">
+                <strong
+                  >Step 1: Enter your phone number (international format e.g. +11234567890)</strong
+                >
+              </p>
+              <div class="mfa-inline-form">
+                <mat-form-field appearance="outline" class="mfa-input-full">
+                  <mat-label>Phone Number</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="mfaPhoneNumber"
+                    placeholder="+11234567890"
+                    [disabled]="mfaVerificationId !== null"
+                  />
+                </mat-form-field>
+                <button
+                  mat-flat-button
+                  color="primary"
+                  (click)="sendMfaCode()"
+                  [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
+                  class="mfa-btn"
+                >
+                  @if (isSendingMfaCode()) {
+                  <span class="btn-spinner"></span>
+                  } @else { Send SMS Code }
+                </button>
+              </div>
+
+              @if (mfaVerificationId) {
+              <div class="verification-step">
                 <p class="mfa-step-title">
-                  <strong
-                    >Step 1: Enter your phone number (international format e.g.
-                    +11234567890)</strong
-                  >
+                  <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
                 </p>
                 <div class="mfa-inline-form">
                   <mat-form-field appearance="outline" class="mfa-input-full">
-                    <mat-label>Phone Number</mat-label>
-                    <input
-                      matInput
-                      [(ngModel)]="mfaPhoneNumber"
-                      placeholder="+11234567890"
-                      [disabled]="mfaVerificationId !== null"
-                    />
+                    <mat-label>Verification Code</mat-label>
+                    <input matInput [(ngModel)]="mfaVerificationCode" placeholder="123456" />
                   </mat-form-field>
                   <button
                     mat-flat-button
-                    color="primary"
-                    (click)="sendMfaCode()"
-                    [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
+                    color="accent"
+                    (click)="verifyMfaCode()"
+                    [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
                     class="mfa-btn"
                   >
-                    @if (isSendingMfaCode()) {
+                    @if (isVerifyingMfaCode()) {
                     <span class="btn-spinner"></span>
-                    } @else { Send SMS Code }
+                    } @else { Verify & Enroll }
                   </button>
                 </div>
+              </div>
+              }
+            </div>
+            }
 
-                @if (mfaVerificationId) {
-                <div class="verification-step">
-                  <p class="mfa-step-title">
-                    <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
-                  </p>
-                  <div class="mfa-inline-form">
-                    <mat-form-field appearance="outline" class="mfa-input-full">
-                      <mat-label>Verification Code</mat-label>
-                      <input matInput [(ngModel)]="mfaVerificationCode" placeholder="123456" />
-                    </mat-form-field>
-                    <button
-                      mat-flat-button
-                      color="accent"
-                      (click)="verifyMfaCode()"
-                      [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
-                      class="mfa-btn"
+            <!-- Hidden Recaptcha Container -->
+            <div id="mfa-recaptcha-container"></div>
+
+            @if (mfaError()) {
+            <div class="alert alert-error">{{ mfaError() }}</div>
+            } @if (mfaSuccess()) {
+            <div class="alert alert-success">{{ mfaSuccess() }}</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Connected Accounts -->
+      <div class="status-card-outlined mfa-settings-card">
+        <div class="card-header-clean">
+          <h2 class="card-title-main">
+            <mat-icon>link</mat-icon>
+            Connected Accounts
+          </h2>
+        </div>
+        <div class="card-body-clean">
+          <div>
+            <p class="embed-desc">
+              Reconcile your credentials by linking third-party identity providers to this account.
+              Once connected, you can sign in using either method.
+            </p>
+
+            <div class="integrations-list panel-clean mt-3">
+              <!-- Google Link/Unlink -->
+              <div class="integration-item integration-item-bordered">
+                <div class="integration-info">
+                  <strong class="integration-name integration-name-flex">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="integration-icon"
                     >
-                      @if (isVerifyingMfaCode()) {
-                      <span class="btn-spinner"></span>
-                      } @else { Verify & Enroll }
-                    </button>
-                  </div>
+                      <path
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        fill="#4285F4"
+                      />
+                      <path
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        fill="#34A853"
+                      />
+                      <path
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                        fill="#FBBC05"
+                      />
+                      <path
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        fill="#EA4335"
+                      />
+                    </svg>
+                    Google Account
+                  </strong>
+                  <span class="integration-status integration-sub-status">
+                    {{ isGoogleLinked() ? 'Connected' : 'Not Connected' }}
+                  </span>
                 </div>
-                }
-              </div>
-              }
-
-              <!-- Hidden Recaptcha Container -->
-              <div id="mfa-recaptcha-container"></div>
-
-              @if (mfaError()) {
-              <div class="alert alert-error">{{ mfaError() }}</div>
-              } @if (mfaSuccess()) {
-              <div class="alert alert-success">{{ mfaSuccess() }}</div>
-              }
-            </div>
-          </div>
-        </div>
-
-        <!-- Connected Accounts -->
-        <div class="status-card-outlined mfa-settings-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
-              <mat-icon>link</mat-icon>
-              Connected Accounts
-            </h2>
-          </div>
-          <div class="card-body-clean">
-            <div>
-              <p class="embed-desc">
-                Reconcile your credentials by linking third-party identity providers to this
-                account. Once connected, you can sign in using either method.
-              </p>
-
-              <div class="integrations-list panel-clean mt-3">
-                <!-- Google Link/Unlink -->
-                <div class="integration-item integration-item-bordered">
-                  <div class="integration-info">
-                    <strong class="integration-name integration-name-flex">
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="integration-icon"
-                      >
-                        <path
-                          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                          fill="#4285F4"
-                        />
-                        <path
-                          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                          fill="#34A853"
-                        />
-                        <path
-                          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                          fill="#FBBC05"
-                        />
-                        <path
-                          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                          fill="#EA4335"
-                        />
-                      </svg>
-                      Google Account
-                    </strong>
-                    <span class="integration-status integration-sub-status">
-                      {{ isGoogleLinked() ? 'Connected' : 'Not Connected' }}
-                    </span>
-                  </div>
-                  <div class="integration-action">
-                    @if (isGoogleLinked()) {
-                    <button mat-flat-button color="warn" (click)="unlinkGoogle()">
-                      Disconnect
-                    </button>
-                    } @else {
-                    <button mat-flat-button color="primary" (click)="linkGoogle()">
-                      Link Google
-                    </button>
-                    }
-                  </div>
-                </div>
-
-                <!-- Apple Link/Unlink -->
-                <div class="integration-item">
-                  <div class="integration-info">
-                    <strong class="integration-name integration-name-flex">
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="integration-icon"
-                      >
-                        <path
-                          d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.5-.63.73-1.18 1.87-1.03 2.97 1.12.09 2.27-.57 2.98-1.41z"
-                        />
-                      </svg>
-                      Apple ID
-                    </strong>
-                    <span class="integration-status integration-sub-status">
-                      {{ isAppleLinked() ? 'Connected' : 'Not Connected' }}
-                    </span>
-                  </div>
-                  <div class="integration-action">
-                    @if (isAppleLinked()) {
-                    <button mat-flat-button color="warn" (click)="unlinkApple()">Disconnect</button>
-                    } @else {
-                    <button mat-flat-button color="primary" (click)="linkApple()">
-                      Link Apple
-                    </button>
-                    }
-                  </div>
+                <div class="integration-action">
+                  @if (isGoogleLinked()) {
+                  <button mat-flat-button color="warn" (click)="unlinkGoogle()">Disconnect</button>
+                  } @else {
+                  <button mat-flat-button color="primary" (click)="linkGoogle()">
+                    Link Google
+                  </button>
+                  }
                 </div>
               </div>
 
-              @if (providerError()) {
-              <div class="alert alert-error mt-3">{{ providerError() }}</div>
-              } @if (providerSuccess()) {
-              <div class="alert alert-success mt-3">{{ providerSuccess() }}</div>
-              }
+              <!-- Apple Link/Unlink -->
+              <div class="integration-item">
+                <div class="integration-info">
+                  <strong class="integration-name integration-name-flex">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="integration-icon"
+                    >
+                      <path
+                        d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.17c.66-.81 1.11-1.93.99-3.06-1 .04-2.22.67-2.94 1.5-.63.73-1.18 1.87-1.03 2.97 1.12.09 2.27-.57 2.98-1.41z"
+                      />
+                    </svg>
+                    Apple ID
+                  </strong>
+                  <span class="integration-status integration-sub-status">
+                    {{ isAppleLinked() ? 'Connected' : 'Not Connected' }}
+                  </span>
+                </div>
+                <div class="integration-action">
+                  @if (isAppleLinked()) {
+                  <button mat-flat-button color="warn" (click)="unlinkApple()">Disconnect</button>
+                  } @else {
+                  <button mat-flat-button color="primary" (click)="linkApple()">Link Apple</button>
+                  }
+                </div>
+              </div>
             </div>
+
+            @if (providerError()) {
+            <div class="alert alert-error mt-3">{{ providerError() }}</div>
+            } @if (providerSuccess()) {
+            <div class="alert alert-success mt-3">{{ providerSuccess() }}</div>
+            }
           </div>
         </div>
+      </div>
 
-        <!-- Account Settings & Danger Zone -->
-        <div class="status-card-outlined danger-zone-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
-              <mat-icon>warning</mat-icon>
-              Danger Zone
-            </h2>
+      <!-- Account Settings & Danger Zone -->
+      <div class="status-card-outlined danger-zone-card">
+        <div class="card-header-clean">
+          <h2 class="card-title-main">
+            <mat-icon>warning</mat-icon>
+            Danger Zone
+          </h2>
+        </div>
+        <div class="card-body-clean">
+          <div>
+            <h3>Delete Account</h3>
+            <p>
+              Permanently delete your account, tracked pages, monitored services, and all associated
+              data. This action is irreversible.
+            </p>
           </div>
-          <div class="card-body-clean">
-            <div>
-              <h3>Delete Account</h3>
-              <p>
-                Permanently delete your account, tracked pages, monitored services, and all
-                associated data. This action is irreversible.
-              </p>
-            </div>
-            <button
-              mat-flat-button
-              color="warn"
-              (click)="deleteAccount()"
-              [disabled]="isDeletingAccount()"
-            >
-              @if (isDeletingAccount()) {
-              <span class="btn-spinner"></span>
-              }
-              <span>Delete Account</span>
-            </button>
-          </div>
+          <button
+            mat-flat-button
+            color="warn"
+            (click)="deleteAccount()"
+            [disabled]="isDeletingAccount()"
+          >
+            @if (isDeletingAccount()) {
+            <span class="btn-spinner"></span>
+            }
+            <span>Delete Account</span>
+          </button>
         </div>
       </div>
     </div>
