@@ -15,6 +15,8 @@ class MlConfig(AppConfig):
   name = "ml"
 
   def ready(self):
+    import ml.signals  # noqa
+
     # Only start the thread in the main process (skip Django's auto-reloader process)
     if os.environ.get("RUN_MAIN") == "true" or not os.environ.get("DJANGO_SETTINGS_MODULE"):
       threading.Thread(target=self.start_scheduler, daemon=True).start()

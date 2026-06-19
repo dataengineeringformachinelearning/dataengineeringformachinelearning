@@ -50,3 +50,4 @@ pytest-asyncio>=0.24.0
 user-agents
 ipwhois
 requests
+resend==2.4.0
