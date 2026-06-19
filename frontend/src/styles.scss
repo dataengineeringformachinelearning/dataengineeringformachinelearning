@@ -542,9 +542,9 @@ main.main {
   animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   /* Default Dark Theme variables */
-  --toast-bg: rgba(239, 68, 68, 0.15);
+  --toast-bg: rgba(20, 5, 5, 0.95);
   --toast-backdrop: blur(16px);
-  --toast-border: 1px solid rgba(239, 68, 68, 0.25);
+  --toast-border: 1px solid rgba(239, 68, 68, 0.4);
   --toast-text: var(--color-error);
   --toast-title: var(--color-on-surface);
   --toast-icon: var(--color-error);

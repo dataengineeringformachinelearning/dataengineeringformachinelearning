@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { PageComponent } from '../../components/page/page';
@@ -69,6 +69,15 @@ export class Book implements OnInit {
         // Swiped right -> Previous page
         this.bookService.prevPage();
       }
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'ArrowRight') {
+      this.bookService.nextPage();
+    } else if (event.key === 'ArrowLeft') {
+      this.bookService.prevPage();
     }
   }
 }
