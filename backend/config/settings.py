@@ -255,6 +255,15 @@ CORS_ALLOWED_ORIGINS = (
 if "https://dataengineeringformachinelearning.com" not in CORS_ALLOWED_ORIGINS:
   CORS_ALLOWED_ORIGINS.append("https://dataengineeringformachinelearning.com")
 
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = [
+  *default_headers,
+  "cache-control",
+  "pragma",
+  "expires",
+]
+
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
