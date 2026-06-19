@@ -95,7 +95,7 @@ html[data-theme='light'] .mat-form-field-flex:has(input:focus-visible, textarea:
 @import 'prismjs/themes/prism-okaidia.css';
 
 pre[class*='language-'] {
-  background-color: var(--card-bg) !important;
+  background-color: #1a1a1a !important;
   border: 1px solid var(--border);
   border-radius: var(--border-radius-md);
   padding: 27px 27px;
@@ -107,7 +107,7 @@ pre[class*='language-'] {
 code[class*='language-'] {
   font-size: 0.925rem;
   line-height: 1.65;
-  color: var(--text-color);
+  color: #f8f8f2 !important;
 }
 
 // ====================== GOOGLE FONT ======================
@@ -292,10 +292,12 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-vi
 
 // ====================== MATERIAL CARDS ======================
 .mat-mdc-card {
-  background-color: var(--card-bg) !important;
+  background-color: rgba(24, 40, 33, 0.45) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
   color: var(--text-color) !important;
-  box-shadow: var(--shadow-sm) !important;
-  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-glow) !important;
+  border: 1px solid var(--color-border-precision) !important;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease,
@@ -303,8 +305,9 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-vi
 }
 
 .mat-mdc-card:hover {
-  box-shadow: var(--shadow-hover) !important;
+  box-shadow: var(--shadow-glow) !important;
   transform: translateY(-2px);
+  border-color: var(--color-primary-container) !important;
 }
 
 // ====================== INLINE CODE ======================
@@ -492,10 +495,12 @@ main.main {
   padding: 27px;
   margin: 0 auto;
   box-sizing: border-box;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
+  background-color: rgba(24, 40, 33, 0.45);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--color-border-precision);
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-glow);
 }
 
 @media (min-width: 769px) {

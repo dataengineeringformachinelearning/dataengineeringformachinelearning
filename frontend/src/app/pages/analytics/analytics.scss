@@ -1,5 +1,10 @@
 @use '../status/status.scss' as *;
 
+:host-context(html[data-theme='light']) {
+  .gauge-card {
+    background-color: rgba(255, 255, 255, 0.65);
+  }
+}
 
 .chart-container {
   height: 400px;
@@ -33,7 +38,7 @@
   text-align: center;
   padding: 45px 27px;
   border-radius: var(--border-radius-md);
-  background: var(--color-dark-grey-btn-bg);
+  background: var(--card-bg);
   border: 1px dashed var(--border);
   min-height: 380px;
 
@@ -78,15 +83,17 @@
 }
 
 .gauge-card {
-  background: var(--card-bg);
+  background: rgba(24, 40, 33, 0.45);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   border-radius: var(--border-radius-md, 12px);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--color-border-precision);
   padding: var(--card-padding, 1.5rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-glow);
   transition: var(--transition-smooth, all 0.3s ease);
 
   &:hover {

@@ -53,16 +53,17 @@ export class AnalyticsComponent implements OnInit {
     data: [],
     series: [
       {
-        type: 'area',
+        type: 'line',
         xKey: 'time',
         yKey: 'latency',
         yName: 'Latency (ms)',
-        fill: 'var(--color-amber)',
-        fillOpacity: 0.2,
         stroke: 'var(--color-amber)',
-        strokeWidth: 2,
+        strokeWidth: 3,
         interpolation: { type: 'smooth' },
-        marker: { enabled: false },
+        marker: {
+          enabled: true,
+          size: 0, // hide by default
+        },
         tooltip: {
           renderer: (params: any) => ({
             content: `${params.yValue.toFixed(2)} ms`,
@@ -103,6 +104,12 @@ export class AnalyticsComponent implements OnInit {
         sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
         strokes: ['var(--color-surface)'],
         strokeWidth: 2,
+        shadow: {
+          color: 'var(--color-primary-container)',
+          xOffset: 0,
+          yOffset: 0,
+          blur: 10,
+        },
         fills: [
           'var(--color-info)',
           'var(--color-primary)',
@@ -126,15 +133,16 @@ export class AnalyticsComponent implements OnInit {
     data: [],
     series: [
       {
-        type: 'area',
+        type: 'line',
         xKey: 'time',
         yKey: 'requests',
-        fill: 'var(--color-info)',
-        fillOpacity: 0.2,
         stroke: 'var(--color-info)',
-        strokeWidth: 2,
+        strokeWidth: 3,
         interpolation: { type: 'smooth' },
-        marker: { enabled: false },
+        marker: {
+          enabled: true,
+          size: 0,
+        },
         tooltip: {
           renderer: (params: any) => ({
             content: `${params.yValue} requests`,
@@ -179,6 +187,12 @@ export class AnalyticsComponent implements OnInit {
         fill: 'var(--color-warning)',
         strokeWidth: 0,
         cornerRadius: 4,
+        shadow: {
+          color: 'var(--color-warning)',
+          xOffset: 0,
+          yOffset: 0,
+          blur: 12,
+        },
       },
     ],
     title: {
@@ -218,6 +232,12 @@ export class AnalyticsComponent implements OnInit {
         fill: 'var(--color-success)',
         strokeWidth: 0,
         cornerRadius: 4,
+        shadow: {
+          color: 'var(--color-success)',
+          xOffset: 0,
+          yOffset: 0,
+          blur: 12,
+        },
       },
     ],
     title: {
@@ -259,6 +279,12 @@ export class AnalyticsComponent implements OnInit {
         sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
         strokes: ['var(--color-surface)'],
         strokeWidth: 2,
+        shadow: {
+          color: 'var(--color-error)',
+          xOffset: 0,
+          yOffset: 0,
+          blur: 10,
+        },
         fills: [
           'var(--color-error)',
           'var(--color-gauge-red)',
@@ -287,6 +313,12 @@ export class AnalyticsComponent implements OnInit {
         fill: 'var(--color-error)',
         strokeWidth: 0,
         cornerRadius: 4,
+        shadow: {
+          color: 'var(--color-error)',
+          xOffset: 0,
+          yOffset: 0,
+          blur: 12,
+        },
       },
     ],
     title: {
@@ -333,7 +365,14 @@ export class AnalyticsComponent implements OnInit {
   }
 
   private updateChartTheme(theme: 'light' | 'dark') {
-    this.chartOptions = { ...this.chartOptions };
+    const agTheme = theme === 'dark' ? 'ag-default-dark' : 'ag-default';
+    this.chartOptions = { ...this.chartOptions, theme: agTheme };
+    this.originChartOptions = { ...this.originChartOptions, theme: agTheme };
+    this.frequencyChartOptions = { ...this.frequencyChartOptions, theme: agTheme };
+    this.statusChartOptions = { ...this.statusChartOptions, theme: agTheme };
+    this.endpointChartOptions = { ...this.endpointChartOptions, theme: agTheme };
+    this.threatSeverityChartOptions = { ...this.threatSeverityChartOptions, theme: agTheme };
+    this.securityAlertsChartOptions = { ...this.securityAlertsChartOptions, theme: agTheme };
   }
 
   ngOnInit() {}

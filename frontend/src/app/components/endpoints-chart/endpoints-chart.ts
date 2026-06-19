@@ -40,17 +40,16 @@ export class EndpointsChart implements OnChanges {
       data: [],
       series: [
         {
-          type: 'area',
+          type: 'line',
           xKey: 'time',
           yKey: 'statusCode',
           yName: 'Status Code',
-          fill: 'var(--color-primary)',
-          fillOpacity: 0.15,
           stroke: 'var(--color-primary)',
           strokeWidth: 3,
           interpolation: { type: 'smooth' },
           marker: {
-            enabled: false,
+            enabled: true,
+            size: 0,
           },
         },
       ],

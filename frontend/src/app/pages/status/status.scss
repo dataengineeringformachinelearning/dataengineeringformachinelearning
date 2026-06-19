@@ -24,6 +24,10 @@
   .timeline-bar-outlined.bar-nodata {
     background-color: rgba(0, 0, 0, 0.08) !important;
   }
+
+  .status-card-outlined, .ml-stat-panel {
+    background-color: rgba(255, 255, 255, 0.65);
+  }
 }
 
 .status-container {
@@ -150,13 +154,15 @@
   gap: var(--grid-gap);
 }
 
-/* Outlined status card - Google Site aesthetic */
+/* Outlined status card - Digital Oasis aesthetic */
 .status-card-outlined {
   border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border);
-  background-color: var(--card-bg);
+  border: 1px solid var(--color-border-precision);
+  background-color: rgba(24, 40, 33, 0.45);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-glow);
   transition: var(--transition-smooth);
 
   &:hover {
@@ -216,14 +222,23 @@
 
 /* Predictive SLA panel */
 .ml-stat-panel {
-  background-color: rgba(255, 255, 255, 0.01);
-  border: 1px solid var(--border);
+  background-color: rgba(24, 40, 33, 0.45);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--color-border-precision);
   border-radius: var(--border-radius-md);
   padding: var(--card-padding);
   margin-bottom: var(--grid-gap);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: var(--shadow-glow);
+  transition: var(--transition-smooth);
+
+  &:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+  }
 }
 
 .stat-info {
