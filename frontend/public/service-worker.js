@@ -1,4 +1,4 @@
-const CACHE_NAME = 'deml-cache-v3';
+const CACHE_NAME = 'deml-cache-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -57,13 +57,39 @@ self.addEventListener('fetch', event => {
   // Do not handle/intercept API requests or non-GET requests
   if (event.request.method !== 'GET' || event.request.url.includes('/api/')) return;
 
+  // Network-First strategy for HTML navigation requests (index.html)
+  if (
+    event.request.mode === 'navigate' ||
+    event.request.headers.get('accept').includes('text/html')
+  ) {
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+            return networkResponse;
+          }
+          return caches.match(event.request).then(cached => cached || networkResponse);
+        })
+        .catch(() => {
+          // Fallback to cache if offline
+          return caches.match('/index.html');
+        }),
+    );
+    return;
+  }
+
+  // Cache-First (Stale-While-Revalidate) for static assets (JS, CSS, images)
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       if (cachedResponse) {
         // Return cached response, fetch new version in background
         fetch(event.request)
           .then(networkResponse => {
-            if (networkResponse.status === 200) {
+            if (networkResponse && networkResponse.status === 200) {
               caches.open(CACHE_NAME).then(cache => cache.put(event.request, networkResponse));
             }
           })
@@ -74,29 +100,18 @@ self.addEventListener('fetch', event => {
       return fetch(event.request)
         .then(networkResponse => {
           if (
-            !networkResponse ||
-            networkResponse.status !== 200 ||
-            networkResponse.type !== 'basic'
+            networkResponse &&
+            networkResponse.status === 200 &&
+            networkResponse.type === 'basic'
           ) {
-            if (
-              event.request.mode === 'navigate' &&
-              (!networkResponse || networkResponse.status >= 400)
-            ) {
-              return caches.match('/index.html').then(cached => cached || networkResponse);
-            }
-            return networkResponse;
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
           }
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
           return networkResponse;
         })
         .catch(error => {
-          // Fallback for offline reading of documentation/book page
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html').then(cached => cached || Response.error());
-          }
           throw error;
         });
     }),
