@@ -38,7 +38,7 @@ export class AnalyticsComponent implements OnInit {
   public slaLevel = 0;
   public stabilityLevel = 0;
 
-  public chartOptions: AgChartOptions = {
+  public chartOptions: any = {
     title: {
       text: 'System Latency (Last 24h)',
       color: 'var(--text-color)',
@@ -88,11 +88,11 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
-  public originChartOptions: AgChartOptions = {
+  public originChartOptions: any = {
     data: [],
     series: [
       {
-        type: 'donut',
+        type: 'pie',
         angleKey: 'count',
         calloutLabelKey: 'origin',
         sectorLabelKey: 'count',
@@ -120,7 +120,7 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
-  public frequencyChartOptions: AgChartOptions = {
+  public frequencyChartOptions: any = {
     data: [],
     series: [
       {
@@ -169,7 +169,7 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
-  public statusChartOptions: AgChartOptions = {
+  public statusChartOptions: any = {
     data: [],
     series: [
       {
@@ -208,7 +208,7 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
-  public endpointChartOptions: AgChartOptions = {
+  public endpointChartOptions: any = {
     data: [],
     series: [
       {
@@ -247,11 +247,11 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
-  public threatSeverityChartOptions: AgChartOptions = {
+  public threatSeverityChartOptions: any = {
     data: [],
     series: [
       {
-        type: 'donut',
+        type: 'pie',
         angleKey: 'count',
         calloutLabelKey: 'severity',
         innerRadiusRatio: 0.75,
@@ -277,7 +277,7 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
-  public securityAlertsChartOptions: AgChartOptions = {
+  public securityAlertsChartOptions: any = {
     data: [],
     series: [
       {
