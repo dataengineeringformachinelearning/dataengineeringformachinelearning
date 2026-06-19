@@ -11,13 +11,16 @@
     class="sidebar-brand"
     (click)="toggleCollapse()"
     tabindex="0"
+    role="button"
+    aria-label="Toggle collapse"
     (keydown.enter)="toggleCollapse()"
+    (keydown.space)="$event.preventDefault(); toggleCollapse()"
   >
     <mat-icon class="brand-icon">analytics</mat-icon>
     <h2 class="brand-title">Platform</h2>
-    <button class="collapse-toggle-btn" aria-label="Toggle Sidebar">
+    <div class="collapse-toggle-btn" aria-hidden="true">
       <mat-icon>{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
-    </button>
+    </div>
   </div>
 
   @if (!isCollapsed()) {
@@ -25,7 +28,10 @@
     class="sidebar-search sidebar-extracted-1"
     (click)="openSearchDialog()"
     tabindex="0"
+    role="button"
+    aria-label="Open search dialog"
     (keydown.enter)="openSearchDialog()"
+    (keydown.space)="$event.preventDefault(); openSearchDialog()"
   >
     <div class="search-wrapper">
       <mat-icon>search</mat-icon>
@@ -55,7 +61,10 @@
           class="nav-tree-header sidebar-extracted-1"
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
           tabindex="0"
+          role="button"
+          [attr.aria-expanded]="isChaptersExpanded()"
           (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
+          (keydown.space)="$event.preventDefault(); isChaptersExpanded.set(!isChaptersExpanded())"
         >
           <span class="tree-label">Chapters</span>
           <mat-icon class="tree-arrow"
@@ -70,7 +79,9 @@
             [class.active]="bookService.activePageIndex() === idx"
             (click)="bookService.goToPage(idx)"
             tabindex="0"
+            role="button"
             (keydown.enter)="bookService.goToPage(idx)"
+            (keydown.space)="$event.preventDefault(); bookService.goToPage(idx)"
           >
             {{ chapter.title }}
           </span>
@@ -130,6 +141,8 @@
           class="nav-tree-header sidebar-extracted-1"
           (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
           tabindex="0"
+          role="button"
+          [attr.aria-expanded]="isYourPagesExpanded()"
           (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
         >
           <span class="tree-label">Your Pages</span>
@@ -145,7 +158,9 @@
             [class.active]="settingsService.selectedPage()?.id === page.id"
             (click)="settingsService.selectPage(page)"
             tabindex="0"
+            role="button"
             (keydown.enter)="settingsService.selectPage(page)"
+            (keydown.space)="$event.preventDefault(); settingsService.selectPage(page)"
           >
             {{ page.title }}
           </span>
@@ -188,7 +203,10 @@
           class="nav-tree-header sidebar-extracted-1"
           (click)="isChaptersExpanded.set(!isChaptersExpanded())"
           tabindex="0"
+          role="button"
+          [attr.aria-expanded]="isChaptersExpanded()"
           (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
+          (keydown.space)="$event.preventDefault(); isChaptersExpanded.set(!isChaptersExpanded())"
         >
           <span class="tree-label">Chapters</span>
           <mat-icon class="tree-arrow"
@@ -203,7 +221,9 @@
             [class.active]="bookService.activePageIndex() === idx"
             (click)="bookService.goToPage(idx)"
             tabindex="0"
+            role="button"
             (keydown.enter)="bookService.goToPage(idx)"
+            (keydown.space)="$event.preventDefault(); bookService.goToPage(idx)"
           >
             {{ chapter.title }}
           </span>

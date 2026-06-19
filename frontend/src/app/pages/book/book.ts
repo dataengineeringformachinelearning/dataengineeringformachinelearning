@@ -38,4 +38,37 @@ export class Book implements OnInit {
         'Interactive guide, working notes, and reference chapters on Data Engineering for Machine Learning.',
     });
   }
+
+  private touchStartX = 0;
+  private touchStartY = 0;
+  private touchEndX = 0;
+  private touchEndY = 0;
+
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.changedTouches[0].screenX;
+    this.touchStartY = event.changedTouches[0].screenY;
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.touchEndX = event.changedTouches[0].screenX;
+    this.touchEndY = event.changedTouches[0].screenY;
+    this.handleSwipe();
+  }
+
+  private handleSwipe() {
+    const swipeThreshold = 50;
+    const diffX = this.touchStartX - this.touchEndX;
+    const diffY = this.touchStartY - this.touchEndY;
+
+    // Only trigger if horizontal swipe is significantly larger than vertical
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold) {
+      if (diffX > 0) {
+        // Swiped left -> Next page
+        this.bookService.nextPage();
+      } else {
+        // Swiped right -> Previous page
+        this.bookService.prevPage();
+      }
+    }
+  }
 }

@@ -78,7 +78,7 @@
 }
 
 .gauge-card {
-  background: var(--card-bg, #182821);
+  background: var(--card-bg);
   border-radius: var(--border-radius-md, 12px);
   border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
   padding: var(--card-padding, 1.5rem);
@@ -132,7 +132,7 @@
       font-size: 16px;
       width: 16px;
       height: 16px;
-      color: var(--color-warning, #FFC107);
+      color: var(--color-warning);
     }
   }
 }
@@ -163,10 +163,10 @@
     transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &.theme-amber .gauge-fill { stroke: var(--color-amber, #ffb74d); }
-  &.theme-red .gauge-fill { stroke: var(--color-gauge-red, #d5001c); }
-  &.theme-primary .gauge-fill { stroke: var(--color-primary, #2d4739); }
-  &.theme-success .gauge-fill { stroke: var(--color-success, #4CAF50); }
+  &.theme-amber .gauge-fill { stroke: var(--color-amber); }
+  &.theme-red .gauge-fill { stroke: var(--color-gauge-red); }
+  &.theme-primary .gauge-fill { stroke: var(--color-primary); }
+  &.theme-success .gauge-fill { stroke: var(--color-success); }
 }
 
 .gauge-center-text {
@@ -179,9 +179,9 @@
   align-items: center;
   width: 100%;
 
-  &.threat-text { color: var(--color-amber, #ffb74d); }
-  &.main-text { color: var(--color-gauge-red, #d5001c); }
-  &.stability-text { color: var(--color-primary, #2d4739); }
+  &.threat-text { color: var(--color-amber); }
+  &.main-text { color: var(--color-gauge-red); }
+  &.stability-text { color: var(--color-primary); }
 
   .gauge-inner-icon {
     font-size: 24px;

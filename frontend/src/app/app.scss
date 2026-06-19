@@ -114,6 +114,18 @@
   display: flex;
   flex-direction: column;
 
+  /* Added constraint wrapper for all inner content */
+  .page-inner-wrapper {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: var(--card-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--grid-gap);
+    flex: 1;
+  }
+
   .glow-sphere {
     position: absolute;
     border-radius: 50%;

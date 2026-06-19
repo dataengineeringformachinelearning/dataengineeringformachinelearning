@@ -86,10 +86,12 @@ export class BookService {
   }
 
   scrollToTop() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    const contentArea = document.querySelector('.dashboard-main');
-    if (contentArea) {
-      contentArea.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) {
+        mainContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 50);
   }
 }

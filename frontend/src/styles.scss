@@ -19,8 +19,8 @@
   position: absolute;
   top: -100px;
   left: 18px;
-  background-color: var(--color-primary);
-  color: var(--color-on-primary);
+  background-color: #000000 !important;
+  color: #ffffff !important;
   padding: 9px 18px;
   z-index: 10000;
   border-radius: var(--border-radius-sm);
@@ -545,11 +545,11 @@ main.main {
   --toast-bg: rgba(239, 68, 68, 0.15);
   --toast-backdrop: blur(16px);
   --toast-border: 1px solid rgba(239, 68, 68, 0.25);
-  --toast-text: #fca5a5;
-  --toast-title: #ffffff;
-  --toast-icon: #ef4444;
-  --toast-close: #fca5a5;
-  --toast-close-hover: #ef4444;
+  --toast-text: var(--color-error);
+  --toast-title: var(--color-on-surface);
+  --toast-icon: var(--color-error);
+  --toast-close: var(--text-muted);
+  --toast-close-hover: var(--color-error);
   --toast-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -558,11 +558,11 @@ html[data-theme='light'] #global-error-toast {
   --toast-bg: rgba(254, 242, 242, 0.9);
   --toast-backdrop: blur(16px);
   --toast-border: 1px solid rgba(239, 68, 68, 0.3);
-  --toast-text: #991b1b;
-  --toast-title: #182821;
-  --toast-icon: #dc2626;
-  --toast-close: #991b1b;
-  --toast-close-hover: #dc2626;
+  --toast-text: var(--color-error);
+  --toast-title: var(--color-on-surface);
+  --toast-icon: var(--color-error);
+  --toast-close: var(--text-muted);
+  --toast-close-hover: var(--color-error);
   --toast-shadow: 0 12px 32px rgba(24, 40, 33, 0.08), 0 8px 16px rgba(24, 40, 33, 0.06);
 }
 
@@ -913,7 +913,7 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 
 /* Glow styles for global icons */
 .glowing-icon-sm {
-  color: #9fb8ad !important;
+  color: var(--primary-text-color) !important;
   filter: drop-shadow(0 0 6px rgba(159, 184, 173, 0.6));
   transition: all 0.3s ease;
 }
