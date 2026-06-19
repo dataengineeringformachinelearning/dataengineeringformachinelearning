@@ -290,16 +290,31 @@ class Command(BaseCommand):
           status_page=page, name=url_mapping.get(u, "Django Web Server"), url=u
         )
 
+    from utils.enrichment import get_ip_enrichment, parse_user_agent
+
     objects_to_create = []
     for row in df.iter_rows(named=True):
       duration = timedelta(seconds=row["response_time"])
+
+      ip = row.get("ip_address")
+      ua = row.get("user_agent", "")
+
+      ip_data = get_ip_enrichment(ip)
+      ua_data = parse_user_agent(ua)
 
       # Create instance (we don't save yet to do it in bulk)
       ep = Endpoints(
         url=row["url"],
         status_code=row["status_code"],
         response_time=duration,
-        ip_address=row.get("ip_address"),
+        ip_address=ip,
+        location=ip_data["location"],
+        asn=ip_data["asn"],
+        isp=ip_data["isp"],
+        device_type=ua_data["device_type"],
+        os_name=ua_data["os_name"],
+        browser_name=ua_data["browser_name"],
+        is_bot=ua_data["is_bot"],
         is_active=row["is_active"],
       )
       objects_to_create.append(ep)
@@ -399,6 +414,13 @@ class Command(BaseCommand):
           status_code=status_code,
           response_time=duration,
           ip_address="127.0.0.1",
+          location="Localhost",
+          asn="N/A",
+          isp="Local Network",
+          device_type="Bot",
+          os_name="Unknown",
+          browser_name="Unknown",
+          is_bot=True,
           is_active=is_active,
         )
     finally:

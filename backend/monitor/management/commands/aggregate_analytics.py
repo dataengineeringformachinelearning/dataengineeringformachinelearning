@@ -59,8 +59,8 @@ class Command(BaseCommand):
     # 5. Metadata Enrichment
     statuses_agg = list(endpoints_data.values("status_code").annotate(count=Count("id")))
     origin_agg = list(
-      ThreatIntelligence.objects.filter(timestamp__gte=hour_start, timestamp__lt=hour_end)
-      .exclude(location__isnull=True)
+      endpoints_data.exclude(location__isnull=True)
+      .exclude(location__in=["Unknown", "Localhost", ""])
       .values("location")
       .annotate(count=Count("id"))
       .order_by("-count")[:5]
@@ -68,7 +68,7 @@ class Command(BaseCommand):
 
     metadata = {
       "http_statuses": {str(s["status_code"]): s["count"] for s in statuses_agg},
-      "top_threat_origins": {o["location"]: o["count"] for o in origin_agg},
+      "top_traffic_origins": {o["location"]: o["count"] for o in origin_agg},
     }
 
     obj, created = AggregatedAnalytics.objects.update_or_create(

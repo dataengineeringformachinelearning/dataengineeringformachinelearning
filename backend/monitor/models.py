@@ -46,6 +46,13 @@ class Endpoints(models.Model):
   status_code = models.IntegerField()
   response_time = models.DurationField()
   ip_address = models.GenericIPAddressField(null=True, blank=True)
+  location = models.CharField(max_length=255, null=True, blank=True)
+  asn = models.CharField(max_length=255, null=True, blank=True)
+  isp = models.CharField(max_length=255, null=True, blank=True)
+  device_type = models.CharField(max_length=50, null=True, blank=True)
+  os_name = models.CharField(max_length=50, null=True, blank=True)
+  browser_name = models.CharField(max_length=50, null=True, blank=True)
+  is_bot = models.BooleanField(default=False, null=True, blank=True)
   is_active = models.BooleanField(default=True)
 
   class Meta:

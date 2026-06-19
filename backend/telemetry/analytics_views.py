@@ -95,7 +95,7 @@ def get_analytics_overview(request):
     for status, count in statuses.items():
       http_statuses_agg[status] = http_statuses_agg.get(status, 0) + count
 
-    origins = b.metadata.get("top_threat_origins", {})
+    origins = b.metadata.get("top_traffic_origins", {})
     for loc, count in origins.items():
       origin_agg[loc] = origin_agg.get(loc, 0) + count
 
@@ -103,7 +103,11 @@ def get_analytics_overview(request):
 
   # Sort origins and get top 5
   sorted_origins = sorted(origin_agg.items(), key=lambda item: item[1], reverse=True)[:5]
-  origin_distribution = [{"origin": k, "count": v} for k, v in sorted_origins]
+
+  if sorted_origins:
+    origin_distribution = [{"origin": k, "count": v} for k, v in sorted_origins]
+  else:
+    origin_distribution = [{"origin": "No Data", "count": 1}]
 
   # For endpoints/threat severity, we can either pull them from metadata or keep mocking
   # if they are not explicitly in the metadata yet.

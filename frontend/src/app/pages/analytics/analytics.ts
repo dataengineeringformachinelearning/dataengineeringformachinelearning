@@ -47,14 +47,16 @@ export class AnalyticsComponent implements OnInit {
     data: [],
     series: [
       {
-        type: 'line',
+        type: 'area',
         xKey: 'time',
         yKey: 'latency',
         yName: 'Latency (ms)',
+        fill: 'var(--color-success)',
+        fillOpacity: 0.15,
         stroke: 'var(--color-success)',
         strokeWidth: 2,
         marker: {
-          fill: 'rgba(76, 175, 80, 0.1)',
+          fill: 'var(--color-surface)',
           stroke: 'var(--color-success)',
           strokeWidth: 2,
           size: 4,
@@ -84,7 +86,15 @@ export class AnalyticsComponent implements OnInit {
   public originChartOptions: AgChartOptions = {
     data: [],
     series: [
-      { type: 'pie', angleKey: 'count', calloutLabelKey: 'origin', sectorLabelKey: 'count' },
+      {
+        type: 'donut',
+        angleKey: 'count',
+        calloutLabelKey: 'origin',
+        sectorLabelKey: 'count',
+        innerRadiusRatio: 0.6,
+        calloutLabel: { color: 'var(--text-color)' },
+        sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
+      },
     ],
     title: {
       text: 'Geographic Origins',
@@ -96,7 +106,23 @@ export class AnalyticsComponent implements OnInit {
 
   public frequencyChartOptions: AgChartOptions = {
     data: [],
-    series: [{ type: 'line', xKey: 'time', yKey: 'requests', stroke: 'var(--color-primary)' }],
+    series: [
+      {
+        type: 'area',
+        xKey: 'time',
+        yKey: 'requests',
+        fill: 'var(--color-primary)',
+        fillOpacity: 0.15,
+        stroke: 'var(--color-primary)',
+        strokeWidth: 2,
+        marker: {
+          fill: 'var(--color-surface)',
+          stroke: 'var(--color-primary)',
+          strokeWidth: 2,
+          size: 4,
+        },
+      },
+    ],
     title: {
       text: 'Request Frequency',
       color: 'var(--text-color)',
@@ -122,7 +148,16 @@ export class AnalyticsComponent implements OnInit {
 
   public statusChartOptions: AgChartOptions = {
     data: [],
-    series: [{ type: 'bar', xKey: 'status', yKey: 'count', fill: 'var(--color-warning)' }],
+    series: [
+      {
+        type: 'bar',
+        xKey: 'status',
+        yKey: 'count',
+        fill: 'var(--color-warning)',
+        strokeWidth: 0,
+        cornerRadius: 4,
+      },
+    ],
     title: {
       text: 'HTTP Status Distribution',
       color: 'var(--text-color)',
@@ -148,7 +183,16 @@ export class AnalyticsComponent implements OnInit {
 
   public endpointChartOptions: AgChartOptions = {
     data: [],
-    series: [{ type: 'bar', xKey: 'endpoint', yKey: 'count', fill: 'var(--color-success)' }],
+    series: [
+      {
+        type: 'bar',
+        xKey: 'endpoint',
+        yKey: 'count',
+        fill: 'var(--color-success)',
+        strokeWidth: 0,
+        cornerRadius: 4,
+      },
+    ],
     title: {
       text: 'Request Counts per Endpoint',
       color: 'var(--text-color)',
@@ -175,7 +219,14 @@ export class AnalyticsComponent implements OnInit {
   public threatSeverityChartOptions: AgChartOptions = {
     data: [],
     series: [
-      { type: 'donut', angleKey: 'count', calloutLabelKey: 'severity', innerRadiusRatio: 0.7 },
+      {
+        type: 'donut',
+        angleKey: 'count',
+        calloutLabelKey: 'severity',
+        innerRadiusRatio: 0.7,
+        calloutLabel: { color: 'var(--text-color)' },
+        sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
+      },
     ],
     title: {
       text: 'Threat Events by Severity',
@@ -187,7 +238,16 @@ export class AnalyticsComponent implements OnInit {
 
   public securityAlertsChartOptions: AgChartOptions = {
     data: [],
-    series: [{ type: 'bar', xKey: 'time', yKey: 'count', fill: 'var(--color-error)' }],
+    series: [
+      {
+        type: 'bar',
+        xKey: 'time',
+        yKey: 'count',
+        fill: 'var(--color-error)',
+        strokeWidth: 0,
+        cornerRadius: 4,
+      },
+    ],
     title: {
       text: 'Recent Security Anomalies',
       color: 'var(--text-color)',
