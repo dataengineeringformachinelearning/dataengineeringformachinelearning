@@ -1,4 +1,11 @@
-import { Component, OnInit, inject, effect, afterNextRender } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  inject,
+  effect,
+  afterNextRender,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { AgCharts } from 'ag-charts-angular';
@@ -17,6 +24,7 @@ import { environment } from '../../../environments/environment';
 export class AnalyticsComponent implements OnInit {
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
+  private cdr = inject(ChangeDetectorRef);
 
   public p99Latency = 0;
   public uptimePercent = 0;
@@ -299,6 +307,7 @@ export class AnalyticsComponent implements OnInit {
           };
         }
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: err => {
         console.error('Failed to load analytics data', err);
@@ -317,6 +326,7 @@ export class AnalyticsComponent implements OnInit {
         this.securityAlertsChartOptions = { ...this.securityAlertsChartOptions, data: [] };
 
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
     });
   }
