@@ -15,6 +15,7 @@ import {
 // Markdown parsing libraries
 import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@angular/common/http';
 import { credentialsInterceptor } from './interceptors/credentials.interceptor';
+import { cacheInterceptor } from './interceptors/cache.interceptor';
 import { telemetryInterceptor } from './core/interceptors/telemetry.interceptor';
 import { provideMarkdown } from 'ngx-markdown';
 import { ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
@@ -31,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
     provideHttpClient(
       withFetch(),
-      withInterceptors([credentialsInterceptor, telemetryInterceptor]),
+      withInterceptors([credentialsInterceptor, cacheInterceptor, telemetryInterceptor]),
     ),
     provideMarkdown({ loader: HttpClient }),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },

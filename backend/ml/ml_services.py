@@ -70,7 +70,7 @@ def train_tenant_sla(status_page: Any) -> TrainingRun | None:
   model.eval()
   with torch.no_grad():
     preds = model(X)
-    avg_predicted_sla = preds.mean().item() * 100.0
+    avg_predicted_sla = max(0.0, min(100.0, preds.mean().item() * 100.0))
 
   run = TrainingRun.objects.create(
     status_page=status_page, average_sla=avg_predicted_sla, loss=final_loss
