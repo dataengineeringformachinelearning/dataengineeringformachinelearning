@@ -1,7 +1,7 @@
 variable "project_id" {
   type        = string
   description = "The Google Cloud Platform project ID."
-  default     = "dataengineering-ml-prod"
+  default     = "demldotcom"
 }
 
 variable "region" {

@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc g++ python3-dev \
+    gcc g++ python3-dev cmake ninja-build libssl-dev git \
     && rm -rf /var/lib/apt/lists/*
 
 # Create virtual environment

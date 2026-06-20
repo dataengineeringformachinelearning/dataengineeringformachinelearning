@@ -24,3 +24,17 @@ Please include the following information in your report:
 - Any potential impact or risk associated with the vulnerability.
 
 We will acknowledge receipt of your vulnerability report as soon as possible and strive to provide regular updates on the progress of our investigation and mitigation efforts.
+
+## Post-Quantum Cryptography (PQC) & Lattice Security
+
+As part of our forward-looking security posture, we are actively evaluating and preparing for the transition to Post-Quantum Cryptography (PQC). Quantum computers pose a theoretical threat to current public-key cryptography (such as RSA and ECC). To mitigate this, we are planning the integration of **Lattice-based cryptography**, which is recognized by NIST as the standard for quantum-resistant algorithms:
+
+- **ML-KEM (formerly CRYSTALS-Kyber):** For quantum-secure key encapsulation and exchange.
+- **ML-DSA (formerly CRYSTALS-Dilithium):** For quantum-secure digital signatures.
+
+### Current Implementation Status
+
+- **Google Cloud KMS:** We monitor and intend to enable GCP's Post-Quantum KMS keys as they become generally available for our infrastructure.
+- **Application Layer:** We are evaluating libraries such as `liboqs-python` to implement hybrid key exchange (combining classical ECC with lattice-based ML-KEM) in our data pipelines to ensure long-term confidentiality of data transmitted today (Harvest Now, Decrypt Later attacks).
+
+If you are interested in contributing to our PQC transition, please reach out to the maintainers.

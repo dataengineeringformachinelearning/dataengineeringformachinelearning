@@ -773,16 +773,28 @@ Finally, the fully enriched vulnerability ledger is written to `ClickHouse` via 
 
 ---
 
+## Chapter 27: Preparations for Q-Day and Quantum Encryption
+
+As we secure our platform against contemporary threats, we must also gaze towards the horizon of cryptography to prepare for an inevitable event: Q-Day. Q-Day refers to the theoretical point in time when quantum computers reach sufficient operational scale and error correction capability (often measured in millions of physical qubits) to successfully run Shor's algorithm. When this occurs, the foundational asymmetric encryption algorithms that secure the modern internet—specifically RSA, Diffie-Hellman, and Elliptic Curve Cryptography (ECC)—will be fundamentally compromised. While experts debate the exact timeline, the threat of "Harvest Now, Decrypt Later" attacks means that sensitive telemetry and configuration data intercepted today could be decrypted tomorrow.
+
+To ensure our zero-compromise security posture remains resilient against future quantum adversaries, we must proactively begin integrating Post-Quantum Cryptography (PQC). PQC refers to cryptographic algorithms—such as those based on lattice-based cryptography, hash-based signatures, or multivariate equations—that are designed to run on classical computers but are mathematically resistant to attacks from both classical and quantum machines.
+
+My initial preparations involve auditing our entire cryptographic stack. For our TLS 1.3 terminations and internal service-to-service communication, we are exploring the integration of the Open Quantum Safe (OQS) project and `liboqs`. By implementing hybrid key encapsulation mechanisms (KEMs), we can combine classical ECC (for proven security today) with lattice-based algorithms like Kyber (recently standardized as ML-KEM by NIST). This hybrid approach provides a safety net: even if the novel quantum algorithm is somehow compromised by classical means, the traditional ECC layer still provides robust protection.
+
+Furthermore, our data-at-rest encryption (currently AES-256-GCM) is generally considered quantum-resistant, as Grover's algorithm only halves the effective key size (reducing 256-bit to an effective 128-bit security level, which remains highly secure). However, the key management infrastructure (KMS) and the digital signatures used for verifying JSON Web Tokens (JWTs) and software manifests will require transitioning to quantum-resistant signature schemes like Dilithium (ML-DSA) or SPHINCS+. By laying this groundwork now and maintaining cryptographic agility, we ensure that our platform's intelligence and our users' data remain imperviously locked, both today and in the post-quantum future.
+
+---
+
 ## Acknowledgements & Technologies
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
 
 - **Frontend**: [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/)
-- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/)
+- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Polars](https://pola.rs/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Railway](https://railway.app/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 
 ---
 

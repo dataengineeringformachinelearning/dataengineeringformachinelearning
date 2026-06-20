@@ -30,6 +30,24 @@ resource "google_kms_crypto_key" "crypto_key" {
   }
 }
 
+# KMS Asymmetric Key (Prepared for Post-Quantum Cryptography - ML-DSA / Dilithium)
+# Note: algorithm is temporarily set to an available standard until PQC algorithms
+# (e.g., ML_DSA_65) are globally available in GCP KMS.
+resource "google_kms_crypto_key" "pqc_asymmetric_key" {
+  name     = "${var.kms_key_name}-pqc"
+  key_ring = google_kms_key_ring.keyring.id
+  purpose  = "ASYMMETRIC_SIGN"
+
+  version_template {
+    algorithm        = "EC_SIGN_P256_SHA256" # Placeholder for PQC (e.g., PQ_SIGN_ML_DSA)
+    protection_level = "SOFTWARE"
+  }
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
 # Tamper-Proof Centralized Immutable Logging Bucket
 resource "google_storage_bucket" "logging_bucket" {
   #checkov:skip=CKV_GCP_62:This is the destination audit logging bucket, self-logging causes infinite loop.
