@@ -74,6 +74,7 @@
     a {
       color: var(--color-primary);
       text-decoration: none;
+      border-bottom: none;
       &:hover {
         text-decoration: underline;
       }
@@ -236,6 +237,7 @@
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 2px;
+    border-bottom: none;
 
     &:hover {
       text-decoration: none;
