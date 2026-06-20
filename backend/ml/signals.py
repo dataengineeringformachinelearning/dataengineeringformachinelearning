@@ -5,17 +5,20 @@ from django.dispatch import receiver
 @receiver(post_save, sender="ml.TrainingRun")
 def notify_training_run_completed(sender, instance, created, **kwargs):
   if created:
+    from utils.discord import send_discord_alert
     from utils.email import get_recent_stats_text, send_alert_email
 
     subject = f"Alert: ML Model Training Run Completed - {instance.id}"
     message = f"An ML model training run has completed:\n\nRun ID: {instance.id}\nAverage SLA: {instance.average_sla:.2f}\nLoss: {instance.loss:.4f}\n\n"
     message += get_recent_stats_text()
     send_alert_email(subject, message)
+    send_discord_alert(subject, message)
 
 
 @receiver(post_save, sender="ml.ThreatReport")
 def notify_ml_threat_report_created(sender, instance, created, **kwargs):
   if created:
+    from utils.discord import send_discord_alert
     from utils.email import get_recent_stats_text, send_alert_email
 
     subject = f"Alert: ML Threat Report Generated - Anomaly Score {instance.anomaly_score:.2%}"
@@ -29,3 +32,4 @@ def notify_ml_threat_report_created(sender, instance, created, **kwargs):
     )
     message += get_recent_stats_text()
     send_alert_email(subject, message)
+    send_discord_alert(subject, message)
