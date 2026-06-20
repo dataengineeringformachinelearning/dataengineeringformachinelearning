@@ -144,7 +144,11 @@ async def scan_infrastructure(payload: InfraPayload):
     if cpe_2_3:
       try:
         nvd_url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName={cpe_2_3}"
-        nvd_resp = await client.get(nvd_url, timeout=10.0)
+        headers = {}
+        if os.getenv("NVD_API_KEY"):
+          headers["apiKey"] = os.getenv("NVD_API_KEY")
+
+        nvd_resp = await client.get(nvd_url, headers=headers, timeout=10.0)
         if nvd_resp.status_code == 200:
           nvd_data = nvd_resp.json()
           for item in nvd_data.get("vulnerabilities", []):
