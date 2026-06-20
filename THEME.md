@@ -83,6 +83,7 @@ To guarantee layout consistency and a pixel-perfect feel, follow these guideline
 - **Hover effects**: Use sharp, precise interactions. Avoid diffuse glows or muddy shadows. Use stark contrast shifts or solid bottom borders.
 - **Borders**: Must be extremely light/subtle in both modes to create a sterile, clinical division of space without visual clutter.
 - **Backgrounds**: Do not use glowing orbs, gradients, or ambient noise. Backgrounds must be pure `#ffffff` (light mode) or `#121212` (dark mode) to focus entirely on data.
+- **Emojis**: Emojis are strictly prohibited throughout the entire project to maintain a highly professional, clinical appearance. The _only_ exception to this rule is the American flag emoji (🇺🇸), which is permitted for use in specific badges (e.g., "Made in the U.S.A").
 
 ## 5. Video Feeds
 

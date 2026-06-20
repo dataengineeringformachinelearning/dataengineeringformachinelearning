@@ -27,11 +27,23 @@ jobs:
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
 
-          # Replace <YOUR_HF_USERNAME> and <YOUR_SPACE_NAME> with the target space
-          # Example: https://huggingface.co/spaces/joealongi/deml-platform
           if [ -n "$HF_TOKEN" ] && [ -n "${{ secrets.HF_SPACE_REPO }}" ]; then
+            # Hugging Face rejects raw binary blobs in Git history.
+            # We create a fresh orphan branch, enforce Git LFS via .gitattributes,
+            # and push a clean squashed commit to HF.
+            git checkout --orphan hf-deploy
+
+            echo "*.png filter=lfs diff=lfs merge=lfs -text" > .gitattributes
+            echo "*.mp4 filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
+            echo "*.jpg filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
+            echo "*.jpeg filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
+
+            git add .gitattributes
+            git add .
+            git commit -m "Deploy to Hugging Face Spaces"
+
             git remote add hf "https://user:$HF_TOKEN@huggingface.co/spaces/${{ secrets.HF_SPACE_REPO }}"
-            git push --force hf main
+            git push --force hf hf-deploy:main
           else
             echo "HF_TOKEN or HF_SPACE_REPO is not set. Skipping Hugging Face push."
           fi

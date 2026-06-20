@@ -153,11 +153,12 @@ Authorization: Bearer YOUR_API_KEY
 
 ---
 
-## Hugging Face Integrations
+## Hugging Face Integrations & Global Threat Intelligence
 
-The DEML Platform natively integrates with Hugging Face to automate the sharing of PyTorch models and static assets.
+The DEML Platform natively integrates with Hugging Face to automate the sharing of PyTorch models and static assets. We employ a privacy-first, aggregated architecture to share threat intelligence globally without exposing user data.
 
-- **Model Hub**: Background workers automatically push trained PyTorch threat and SLA models to the Hugging Face Hub using the `huggingface_hub` API.
+- **Global Platform Models**: Background workers securely aggregate anonymized telemetry across the entire platform to train a single global `platform_threat_model.pt`. This model benefits from "herd immunity" without exposing any single tenant's data.
+- **Model Hub**: The global PyTorch threat models and SLA models are automatically pushed to the Hugging Face Hub using the `huggingface_hub` API.
 - **Spaces Deployment**: GitHub Actions are configured to automatically sync the Whitepaper and UI to a Hugging Face Space upon commits to `main`.
 
 **Requirements:**
@@ -187,6 +188,8 @@ We provide dedicated support for our users:
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20778532.svg)](https://doi.org/10.5281/zenodo.20778532)
 
 [![Semgrep SAST Scan](https://img.shields.io/badge/Semgrep_SAST_Scan-4C4A73?logo=semgrep&logoColor=fff)](https://semgrep.dev)
 

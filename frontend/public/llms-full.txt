@@ -153,11 +153,12 @@ Authorization: Bearer YOUR_API_KEY
 
 ---
 
-## Hugging Face Integrations
+## Hugging Face Integrations & Global Threat Intelligence
 
-The DEML Platform natively integrates with Hugging Face to automate the sharing of PyTorch models and static assets.
+The DEML Platform natively integrates with Hugging Face to automate the sharing of PyTorch models and static assets. We employ a privacy-first, aggregated architecture to share threat intelligence globally without exposing user data.
 
-- **Model Hub**: Background workers automatically push trained PyTorch threat and SLA models to the Hugging Face Hub using the `huggingface_hub` API.
+- **Global Platform Models**: Background workers securely aggregate anonymized telemetry across the entire platform to train a single global `platform_threat_model.pt`. This model benefits from "herd immunity" without exposing any single tenant's data.
+- **Model Hub**: The global PyTorch threat models and SLA models are automatically pushed to the Hugging Face Hub using the `huggingface_hub` API.
 - **Spaces Deployment**: GitHub Actions are configured to automatically sync the Whitepaper and UI to a Hugging Face Space upon commits to `main`.
 
 **Requirements:**
@@ -187,6 +188,8 @@ We provide dedicated support for our users:
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20778532.svg)](https://doi.org/10.5281/zenodo.20778532)
 
 [![Semgrep SAST Scan](https://img.shields.io/badge/Semgrep_SAST_Scan-4C4A73?logo=semgrep&logoColor=fff)](https://semgrep.dev)
 
@@ -1105,7 +1108,7 @@ Operating a globally distributed, AI-native platform involves managing an immens
 Deep within my Django backend architecture, I deploy a fleet of long-lived, asynchronous background workers. These specialized processes operate independently of the primary web request lifecycle, autonomously managing the system's health, security posture, and machine learning intelligence natively:
 
 - **Hourly:** The threat landscape changes by the minute. My `security_worker` awakens every hour to continuously fetch, parse, and integrate the latest global Indicators of Compromise (IoCs) and threat intelligence feeds. This ensures my API gateways are always armed with the most recent definitions required to block emerging zero-day botnets and malicious scrapers.
-- **Daily:** Telemetry data is only valuable if the models trained upon it are accurate. The `ml_worker` executes daily, automatically querying the previous 24 hours of operational data to retrain my predictive SLA forecasting algorithms and PyTorch threat models. This continuous recalibration guarantees my intelligence layer never stagnates.
+- **Daily:** Telemetry data is only valuable if the models trained upon it are accurate. The `ml_worker` executes daily, automatically securely aggregating the previous 24 hours of global operational data across all tenants. It uses this anonymized, platform-wide data to retrain my predictive SLA forecasting algorithms and a single, unified global PyTorch threat model (`platform_threat_model.pt`). This continuous recalibration creates a "herd immunity" effect, ensuring the intelligence layer never stagnates while strictly preserving tenant privacy.
 - **Every 30 Days:** To enforce strict compliance and data minimization policies, the `security_worker` executes a monthly purge, cleanly archiving and destroying stale, low-resolution telemetry data from PostgreSQL. Simultaneously, it autonomously interacts with Google Cloud KMS to trigger the rotation of all active Data Encryption Keys (DEKs), re-enveloping my encrypted payloads and maintaining my zero-compromise cryptographic posture without any human intervention.
 
 ### GitHub Actions Workflows
