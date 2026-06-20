@@ -1,4 +1,10 @@
 ---
+title: DEML Platform
+emoji: 🥷🏻
+colorFrom: blue
+colorTo: indigo
+sdk: static
+pinned: false
 license: apache-2.0
 ---
 
