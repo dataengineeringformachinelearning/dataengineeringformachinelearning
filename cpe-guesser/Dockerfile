@@ -11,7 +11,7 @@ RUN git clone https://github.com/vulsio/cpe-guesser.git . && \
     CGO_ENABLED=0 go build -ldflags="-s -w" -o cpe-guesser .
 
 # Production stage (Secure distroless base)
-FROM gcr.io/distroless/static-debian12:latest-nonroot
+FROM gcr.io/distroless/static-debian12:nonroot
 
 WORKDIR /app
 
