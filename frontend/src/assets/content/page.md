@@ -1017,7 +1017,7 @@ Background worker process to consume telemetry/streaming data from Redpanda and 
 - **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
 - **Start Command**: `/opt/venv/bin/python manage.py telemetry_worker`
 - **Target Port**: None (Background worker process)
-- **Private Internal DNS**: `deml-telemetry.railway.internal`
+- **Private Internal DNS**: `deml-telemetry-worker.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
@@ -1039,7 +1039,7 @@ Background ML training process to consume training triggers from Redpanda, load 
 - **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
 - **Start Command**: `/opt/venv/bin/python manage.py ml_worker`
 - **Target Port**: None (Background worker process)
-- **Private Internal DNS**: `deml-ml.railway.internal`
+- **Private Internal DNS**: `deml-machine-learning-worker.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
@@ -1058,7 +1058,7 @@ Periodic security worker to fetch threat intelligence data and manage 90-day com
 - **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
 - **Start Command**: `/opt/venv/bin/python manage.py security_worker`
 - **Target Port**: None (Background worker process)
-- **Private Internal DNS**: `deml-security.railway.internal`
+- **Private Internal DNS**: `deml-security-worker.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
@@ -1103,7 +1103,7 @@ ClickHouse is used to securely store all high-volume OpenTelemetry data from the
 The OpenTelemetry Collector receives all spans and metrics from the frontend widget and backend, processing them securely before batch-inserting into ClickHouse.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/telemetry`
+- **Root Directory**: `/otel-collector`
 - **Builder**: Dockerfile (utilizes secure `otel/opentelemetry-collector-contrib` distroless base)
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `4318` (OTLP HTTP)
@@ -1166,7 +1166,7 @@ This service manages the Software Bill of Materials (SBOM) and tracks vulnerabil
 - **Public URL**: None (Strictly an internal service)
 - **Environment Variables**:
   - **ALPINE_DATABASE_MODE**: `external`
-  - **ALPINE_DATABASE_URL**: `jdbc:postgresql://deml-postgres.railway.internal:5432/dtrack`
+  - **ALPINE_DATABASE_URL**: `jdbc:postgresql://deml-postgres.railway.internal:5432/railway`
   - **ALPINE_DATABASE_USERNAME**: Database username
   - **ALPINE_DATABASE_PASSWORD**: Database password
 
