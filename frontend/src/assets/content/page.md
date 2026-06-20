@@ -1019,6 +1019,8 @@ This service runs the main Django web server.
   - **ISAC_API_KEY**: `<your-isac-api-key>`
   - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
   - **RESEND_API_KEY**: `<your-resend-api-key>`
+  - **ALERT_EMAIL_TARGET**: `<your-target-email@example.com>`
+  - **ALERT_EMAIL_FROM**: `notifications@dataengineeringformachinelearning.com`
   - **SENTRY_DSN**: `<your-sentry-dsn>`
   - **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
   - **GCP_KMS_LOCATION**: Location of the Key Ring

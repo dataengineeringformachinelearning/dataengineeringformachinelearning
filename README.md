@@ -168,6 +168,16 @@ The DEML Platform natively integrates with Hugging Face to automate the sharing 
 
 ---
 
+## Alerting & Notifications
+
+The platform supports automated email alerts for system events and model training completion. To configure these notifications:
+
+- Set `RESEND_API_KEY` to your Resend API Key in your backend environment variables.
+- Set `ALERT_EMAIL_TARGET` to the destination email address for system alerts.
+- (Optional) Set `ALERT_EMAIL_FROM` to customize the sender address (defaults to `notifications@dataengineeringformachinelearning.com`).
+
+---
+
 ## Enterprise Security & Compliance
 
 We take data security seriously. As a multi-tenant SaaS platform, we employ strict isolation protocols to protect your data.

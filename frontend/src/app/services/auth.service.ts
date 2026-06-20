@@ -393,6 +393,40 @@ export class AuthService {
     await multiFactor(this.auth.currentUser).unenroll(factorInfo);
   }
 
+  private async signInWithPopupCentered(provider: any): Promise<any> {
+    const originalOpen = window.open;
+    window.open = function (url?: string | URL, target?: string, features?: string) {
+      if (features) {
+        const w = 500;
+        const h = 600;
+        const screenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
+        const screenTop = window.screenTop !== undefined ? window.screenTop : window.screenY;
+        const innerWidth =
+          window.innerWidth || document.documentElement.clientWidth || window.screen.width;
+        const innerHeight =
+          window.innerHeight || document.documentElement.clientHeight || window.screen.height;
+
+        const left = screenLeft + (innerWidth - w) / 2;
+        const top = screenTop + (innerHeight - h) / 2;
+
+        features = features.replace(/left=\d+/, `left=${left}`).replace(/top=\d+/, `top=${top}`);
+        if (!features.includes('left=')) {
+          features += `,left=${left}`;
+        }
+        if (!features.includes('top=')) {
+          features += `,top=${top}`;
+        }
+      }
+      return originalOpen.call(window, url, target, features);
+    };
+
+    try {
+      return await signInWithPopup(this.auth, provider);
+    } finally {
+      window.open = originalOpen;
+    }
+  }
+
   async loginWithApple(): Promise<{ success: boolean; error?: string; resolver?: any }> {
     this.isProcessing.set(true);
     if (this.useMock) {
@@ -401,7 +435,7 @@ export class AuthService {
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       const provider = new OAuthProvider('apple.com');
-      const userCredential = await signInWithPopup(this.auth, provider);
+      const userCredential = await this.signInWithPopupCentered(provider);
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
@@ -439,7 +473,7 @@ export class AuthService {
     try {
       if (!this.auth) throw new Error('Firebase Auth not initialized');
       const provider = new GoogleAuthProvider();
-      const userCredential = await signInWithPopup(this.auth, provider);
+      const userCredential = await this.signInWithPopupCentered(provider);
 
       if (userCredential.user) {
         const token = await userCredential.user.getIdToken();
