@@ -16,10 +16,10 @@ RUN git clone --branch 0.15.0 --depth 1 https://github.com/open-quantum-safe/lib
     ninja && ninja install
 
 # Set environment variables for the compiler and runtime to find liboqs
-ENV LD_LIBRARY_PATH="/opt/oqs/lib:${LD_LIBRARY_PATH:-}" \
-    C_INCLUDE_PATH="/opt/oqs/include:${C_INCLUDE_PATH:-}" \
-    CPLUS_INCLUDE_PATH="/opt/oqs/include:${CPLUS_INCLUDE_PATH:-}" \
-    LIBRARY_PATH="/opt/oqs/lib:${LIBRARY_PATH:-}"
+ENV LD_LIBRARY_PATH="/opt/oqs/lib" \
+    C_INCLUDE_PATH="/opt/oqs/include" \
+    CPLUS_INCLUDE_PATH="/opt/oqs/include" \
+    LIBRARY_PATH="/opt/oqs/lib"
 
 # Create virtual environment
 RUN python -m venv /opt/venv
@@ -47,7 +47,7 @@ ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/opt/venv/lib/python3.11/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    LD_LIBRARY_PATH="/opt/oqs/lib:${LD_LIBRARY_PATH:-}"
+    LD_LIBRARY_PATH="/opt/oqs/lib"
 
 WORKDIR /app
 
