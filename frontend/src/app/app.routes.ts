@@ -2,8 +2,11 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '', loadComponent: () => import('./pages/landing/landing').then(m => m.Landing) },
-  { path: 'book', redirectTo: 'documentation', pathMatch: 'full' },
-  { path: 'documentation', loadComponent: () => import('./pages/book/book').then(m => m.Book) },
+  { path: 'book', loadComponent: () => import('./pages/book/book').then(m => m.Book) },
+  {
+    path: 'documentation',
+    loadComponent: () => import('./pages/documentation/documentation').then(m => m.Documentation),
+  },
   { path: 'status', loadComponent: () => import('./pages/status/status').then(m => m.Status) },
   {
     path: 'status/:slug',
@@ -34,11 +37,7 @@ export const routes: Routes = [
     path: 'whitepaper',
     loadComponent: () => import('./pages/whitepaper/whitepaper').then(m => m.Whitepaper),
   },
-  {
-    path: 'security-benefits',
-    loadComponent: () =>
-      import('./pages/security-benefits/security-benefits').then(m => m.SecurityBenefits),
-  },
+
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },
   { path: '**', loadComponent: () => import('./pages/not-found/not-found').then(m => m.NotFound) },
 ];

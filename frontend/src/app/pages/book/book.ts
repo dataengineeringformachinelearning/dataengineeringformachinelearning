@@ -29,7 +29,7 @@ export class Book implements OnInit {
   private metaService = inject(Meta);
 
   ngOnInit() {
-    this.titleService.setTitle('Documentation & Book Chapters - Web Application');
+    this.titleService.setTitle('The Book - Web Application');
     this.metaService.updateTag({
       name: 'description',
       content: 'Interactive guide, working notes, and reference chapters on Web Application.',

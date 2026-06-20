@@ -1,3 +1,4 @@
+import glob
 import os
 
 
@@ -7,33 +8,59 @@ def sync_readme():
   # Get the root directory (one level up)
   root_dir = os.path.dirname(script_dir)
 
+  book_path = os.path.join(root_dir, "BOOK.md")
   readme_path = os.path.join(root_dir, "README.md")
+
   llms_path = os.path.join(root_dir, "frontend", "public", "llms.txt")
   llms_full_path = os.path.join(root_dir, "frontend", "public", "llms-full.txt")
+
   page_md_path = os.path.join(root_dir, "frontend", "src", "assets", "content", "page.md")
+  readme_md_path = os.path.join(root_dir, "frontend", "src", "assets", "content", "readme.md")
 
   try:
-    with open(readme_path, encoding="utf-8") as f:
-      lines = f.readlines()
+    # --- 1. Process BOOK.md for page.md ---
+    with open(book_path, encoding="utf-8") as f:
+      book_lines = f.readlines()
 
-    # Find the index of the first line starting with "## Chapter"
+    # Find the index of the first line starting with "## Introduction" (or "## Chapter" as fallback)
     start_idx = 0
-    for idx, line in enumerate(lines):
-      if line.startswith("## Chapter"):
+    for idx, line in enumerate(book_lines):
+      if line.startswith("## Introduction") or line.startswith("## Chapter"):
         start_idx = idx
         break
 
-    content = "".join(lines[start_idx:])
-
-    with open(llms_full_path, "w", encoding="utf-8") as f:
-      f.write(content)
+    book_content = "".join(book_lines[start_idx:])
 
     with open(page_md_path, "w", encoding="utf-8") as f:
-      f.write(content)
+      f.write(book_content)
 
-    print(f"Successfully synced {readme_path} to:")
+    # --- 2. Process README.md for readme.md ---
+    with open(readme_path, encoding="utf-8") as f:
+      readme_content = f.read()
+
+    with open(readme_md_path, "w", encoding="utf-8") as f:
+      f.write(readme_content)
+
+    # --- 3. Process LLMS-full.txt ---
+    llms_full_content = readme_content + "\n\n"
+
+    # Concatenate all integrations docs
+    integrations_dir = os.path.join(root_dir, "docs", "integrations")
+    if os.path.exists(integrations_dir):
+      for md_file in glob.glob(os.path.join(integrations_dir, "*.md")):
+        with open(md_file, encoding="utf-8") as f:
+          llms_full_content += f.read() + "\n\n"
+
+    # Add BOOK.md
+    llms_full_content += "".join(book_lines)
+
+    with open(llms_full_path, "w", encoding="utf-8") as f:
+      f.write(llms_full_content)
+
+    print("Successfully synced markdown content to:")
     print(f" - {llms_full_path}")
     print(f" - {page_md_path}")
+    print(f" - {readme_md_path}")
 
     # Also sync llms.txt description if present
     if os.path.exists(llms_path):
@@ -43,14 +70,14 @@ def sync_readme():
       # Update line 3/description to the new style
       if len(llms_lines) >= 3:
         llms_lines[2] = (
-          "Working notes and book prototypes on Data Engineering for Machine Learning by Joe Alongi.\n"
+          "Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.\n"
         )
         with open(llms_path, "w", encoding="utf-8") as f:
           f.writelines(llms_lines)
         print(f" - {llms_path}")
 
   except Exception as e:
-    print(f"Error syncing README.md: {e}")
+    print(f"Error syncing markdown content: {e}")
 
 
 def sync_version():

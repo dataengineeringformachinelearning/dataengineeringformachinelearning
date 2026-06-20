@@ -1,6 +1,6 @@
 # Data Engineering for Machine Learning
 
-Working notes and book prototypes on Data Engineering for Machine Learning by Joe Alongi.
+Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
 
 ## Homepage
 /

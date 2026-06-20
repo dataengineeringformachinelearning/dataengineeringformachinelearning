@@ -55,42 +55,6 @@
         <span class="nav-text">Documentation</span>
       </a>
 
-      @if (!isCollapsed() && isDocumentationActive()) {
-      <div class="nav-tree-section">
-        <div
-          class="nav-tree-header sidebar-extracted-1"
-          (click)="isChaptersExpanded.set(!isChaptersExpanded())"
-          tabindex="0"
-          role="button"
-          [attr.aria-expanded]="isChaptersExpanded()"
-          (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
-          (keydown.space)="$event.preventDefault(); isChaptersExpanded.set(!isChaptersExpanded())"
-        >
-          <span class="tree-label">Chapters</span>
-          <mat-icon class="tree-arrow"
-            >{{ isChaptersExpanded() ? 'expand_more' : 'chevron_right' }}</mat-icon
-          >
-        </div>
-        @if (isChaptersExpanded()) {
-        <div class="nav-tree-children">
-          @for (chapter of bookService.chapters(); track chapter; let idx = $index) {
-          <span
-            class="tree-child-item"
-            [class.active]="bookService.activePageIndex() === idx"
-            (click)="bookService.goToPage(idx)"
-            tabindex="0"
-            role="button"
-            (keydown.enter)="bookService.goToPage(idx)"
-            (keydown.space)="$event.preventDefault(); bookService.goToPage(idx)"
-          >
-            {{ chapter.title }}
-          </span>
-          }
-        </div>
-        }
-      </div>
-      }
-
       <a
         class="nav-item"
         routerLink="/explore"
@@ -197,41 +161,7 @@
         <span class="nav-text">Documentation</span>
       </a>
 
-      @if (!isCollapsed() && isDocumentationActive()) {
-      <div class="nav-tree-section">
-        <div
-          class="nav-tree-header sidebar-extracted-1"
-          (click)="isChaptersExpanded.set(!isChaptersExpanded())"
-          tabindex="0"
-          role="button"
-          [attr.aria-expanded]="isChaptersExpanded()"
-          (keydown.enter)="isChaptersExpanded.set(!isChaptersExpanded())"
-          (keydown.space)="$event.preventDefault(); isChaptersExpanded.set(!isChaptersExpanded())"
-        >
-          <span class="tree-label">Chapters</span>
-          <mat-icon class="tree-arrow"
-            >{{ isChaptersExpanded() ? 'expand_more' : 'chevron_right' }}</mat-icon
-          >
-        </div>
-        @if (isChaptersExpanded()) {
-        <div class="nav-tree-children">
-          @for (chapter of bookService.chapters(); track chapter; let idx = $index) {
-          <span
-            class="tree-child-item"
-            [class.active]="bookService.activePageIndex() === idx"
-            (click)="bookService.goToPage(idx)"
-            tabindex="0"
-            role="button"
-            (keydown.enter)="bookService.goToPage(idx)"
-            (keydown.space)="$event.preventDefault(); bookService.goToPage(idx)"
-          >
-            {{ chapter.title }}
-          </span>
-          }
-        </div>
-        }
-      </div>
-      } }
+      }
     </nav>
 
     <!-- Dynamic sidebar contents (extra lists) -->

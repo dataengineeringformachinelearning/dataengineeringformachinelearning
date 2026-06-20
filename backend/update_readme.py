@@ -1,6 +1,6 @@
 import re
 
-with open("README.md") as f:
+with open("BOOK.md") as f:
   content = f.read()
 
 # Replace chapter numbers from 20 up
@@ -29,5 +29,5 @@ content = content.replace(
   new_chapter + "## Chapter 21: Team Workflows and Vulnerability Management",
 )
 
-with open("README.md", "w") as f:
+with open("BOOK.md", "w") as f:
   f.write(content)

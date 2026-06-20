@@ -1,3 +1,20 @@
+## Introduction
+
+_By Joe Alongi_
+
+Welcome to my working notebook and companion repository. As 2026 began, I found myself immersed in a project that felt like the culmination of a decade's work. Instead of simply building another app, I was architecting a production-grade, full-stack telemetry and machine learning platform. This `README.md` acts as **"The Book"**, documenting the entire journey. Each chapter provides comprehensive narrative deep dives (minimum 600 words), alongside code snippets and technology links.
+
+Over the last ten years, my path has evolved from early web development, through the founding of startups, to deep software engineering and architecture. Those foundational years unlocked the paradigms I am now pouring into this platform. My goal here is simple: to champion the thoughtful coders. We're going to build this system together, starting from a completely fresh Mac install and working my way up to a deployed, secure, and observable ML-driven application. I will merge rigorous data engineering with the predictive power of machine learning, prioritizing quality and precision every step of the way.
+
+For a brief summary of the platform's hypothesis, value add, architecture diagrams, and algorithms, please read the [Whitepaper](WHITEPAPER.md).
+
+## Quick Links
+
+- [Whitepaper](WHITEPAPER.md)
+- [Acknowledgements & Technologies](#acknowledgements--technologies)
+
+---
+
 ## Chapter 1: The Fresh Install & Environment Setup
 
 Establishing a rock-solid foundation is arguably the most critical step in this journey. When embarking on a complex software engineering path, I’ve found that the development environment must be meticulously configured to eliminate friction. For developers like me operating within the Apple ecosystem, leveraging native package management tools is an absolute necessity. [Homebrew](https://brew.sh/) serves as the cornerstone here, providing a robust mechanism for system-level dependencies.
@@ -103,30 +120,6 @@ uvx pre-commit run --all-files
 ```
 
 By cementing these automated guardrails into the bedrock of my development lifecycle, I foster an environment of high-velocity precision engineering. It liberates the team to focus on what truly matters: architecting robust data pipelines, training predictive machine learning models, and delivering a world-class platform resilient to the chaotic realities of production software.
-
----
-
-## Appendix A: Extra Code Samples
-
-```python
-# A sample background worker for processing data
-def process_telemetry_batch():
-    # Simulated lab-coat clean data processing
-    import polars as pl
-    df = pl.DataFrame({"status": [200, 500, 200], "latency": [12, 104, 15]})
-    clean_df = df.filter(pl.col("latency") < 100)
-    return clean_df
-```
-
-```typescript
-// A sample clean UI state manager
-import { signal } from "@angular/core";
-
-export const globalState = signal({
-  isLabCoatMode: true,
-  theme: "light",
-});
-```
 
 ---
 
@@ -798,12 +791,633 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 
 ---
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
-[![Semgrep SAST Scan](https://img.shields.io/badge/Semgrep_SAST_Scan-4C4A73?logo=semgrep&logoColor=fff)](https://semgrep.dev)
+## Appendix A: Security Policy
 
-![GitHub contributors](https://img.shields.io/github/contributors/dataengineeringformachinelearning/dataengineeringformachinelearning)
-![GitHub Repo stars](https://img.shields.io/github/stars/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
-![GitHub forks](https://img.shields.io/github/forks/dataengineeringformachinelearning/dataengineeringformachinelearning?style=social)
-![GitHub issues](https://img.shields.io/github/issues/dataengineeringformachinelearning/dataengineeringformachinelearning)
-![GitHub license](https://img.shields.io/github/license/dataengineeringformachinelearning/dataengineeringformachinelearning)
+## Supported Versions
+
+We currently support the following versions of this project with security updates:
+
+| Version | Supported          |
+| ------- | ------------------ |
+| 1.0.x   | :white_check_mark: |
+| < 1.0   | :x:                |
+
+## Reporting a Vulnerability
+
+If you discover a security vulnerability within this project, please report it immediately. We take all security issues seriously and will respond promptly.
+
+**Please do not report security vulnerabilities through public GitHub issues.**
+
+Instead, please send an email directly to the project maintainers or use the private vulnerability reporting feature on GitHub if enabled for this repository.
+
+Please include the following information in your report:
+
+- A description of the vulnerability.
+- Steps to reproduce the issue.
+- Any potential impact or risk associated with the vulnerability.
+
+We will acknowledge receipt of your vulnerability report as soon as possible and strive to provide regular updates on the progress of our investigation and mitigation efforts.
+
+## Post-Quantum Cryptography (PQC) & Lattice Security
+
+As part of our forward-looking security posture, we are actively evaluating and preparing for the transition to Post-Quantum Cryptography (PQC). Quantum computers pose a theoretical threat to current public-key cryptography (such as RSA and ECC). To mitigate this, we are planning the integration of **Lattice-based cryptography**, which is recognized by NIST as the standard for quantum-resistant algorithms:
+
+- **ML-KEM (formerly CRYSTALS-Kyber):** For quantum-secure key encapsulation and exchange.
+- **ML-DSA (formerly CRYSTALS-Dilithium):** For quantum-secure digital signatures.
+
+### Current Implementation Status
+
+- **Google Cloud KMS:** We monitor and intend to enable GCP's Post-Quantum KMS keys as they become generally available for our infrastructure.
+- **Application Layer:** We are evaluating libraries such as `liboqs-python` to implement hybrid key exchange (combining classical ECC with lattice-based ML-KEM) in our data pipelines to ensure long-term confidentiality of data transmitted today (Harvest Now, Decrypt Later attacks).
+
+If you are interested in contributing to our PQC transition, please reach out to the maintainers.
+
+## Appendix B: Data Engineering & Processing
+
+This document outlines our strategy for collecting, aggregating, and enriching network traffic and telemetry data to provide a comprehensive view of system performance, cybersecurity risks, and user behavior.
+
+## 1. Data Collection Strategy
+
+The application acts as a central hub for collecting telemetry across multiple fronts:
+
+- **General Endpoints Traffic:** Captures raw requests, latency, HTTP status codes, and IP addresses of clients interacting with monitored systems.
+- **Threat Intelligence:** Identifies malicious IPs, abuse scores, and suspicious payloads by leveraging external signals or internal heuristic detections.
+- **User Interactions & Consents:** Records UI interactions (widget clicks) and explicit privacy choices (Analytical/Marketing cookie consents).
+- **Incident & Status Telemetry:** Logs downtime, service degraded states, and system incidents.
+
+## 2. Traffic Enrichments
+
+To build a cyber-aware understanding of our traffic, raw data points (such as IP address and User-Agent strings) are piped through an enrichment layer.
+
+### 2.1 Geographic Origins (GeoIP)
+
+- **Source:** External IP-to-Geo API (`https://ipwho.is/`) / Local DB.
+- **Fields Extracted:** `location` (City, Country), `asn`, `isp`.
+- **Purpose:** Identifies regions with unusual spikes in traffic, maps where threats originate, and allows geographic bounding of SLA commitments.
+
+### 2.2 Network Topology (ASN & ISP)
+
+- **Source:** `ipwhois` (RDAP lookups).
+- **Fields Extracted:** `asn` (Autonomous System Number), `isp` (Internet Service Provider or Org name).
+- **Purpose:** Crucial for cybersecurity. Helps differentiate between residential ISPs (normal users) and Data Center ASNs (e.g., AWS, DigitalOcean), which are common sources of botnets, scrapers, and volumetric attacks.
+
+### 2.3 User-Agent Parsing
+
+- **Source:** `user-agents` Python library.
+- **Fields Extracted:** `device_type` (Mobile, Desktop, Tablet, Bot), `os_name`, `browser_name`, `is_bot`.
+- **Purpose:** Allows us to aggregate performance metrics by device class (e.g., identifying if latency is worse on mobile) and cleanly separate human traffic from automated bot/crawler traffic.
+
+### 2.4 Vulnerability Scanner & Asset Inventory
+
+- **Source:** Internal `scanner` microservice (`osv-scanner` & `cpe-guesser`).
+- **Fields Extracted:** `cve_id`, `cvss_score`, `remediation`, `cpe_2_3`.
+- **Purpose:** Normalizes infrastructure signatures and application lockfiles into known Common Platform Enumerations (CPEs) to automatically cross-reference with localized CVE databases. Enriches our telemetry to proactively map known software vulnerabilities to specific tenants and infrastructure components.
+
+## 3. Cybersecurity & Risk Context
+
+By joining the enriched general traffic with the Threat Intelligence models, we unlock several advanced analytical capabilities:
+
+- **Anomaly Detection:** Sudden influxes of traffic from a single ASN or country that do not align with regular user behavior can trigger preemptive rate-limiting or alerts.
+- **Threat Correlation:** If an IP is flagged in `ThreatIntelligence`, we can immediately trace its historical `Endpoints` activity to assess what services were probed before the attack.
+- **Bot Mitigation:** Enriched `is_bot` flags combined with Data Center ASN detection provide a high-confidence signal to filter out non-human traffic from our core SLA and latency calculations.
+
+## 4. Data Privacy & Compliance
+
+Because we are processing potentially identifiable information (IP addresses, precise locations), we strictly adhere to the following principles:
+
+- **Consent Gateways:** Enriched analytical tracking relies on the `CookieConsent` model. If a user rejects analytical cookies, their data is aggregated anonymously.
+- **Data Minimization:** Once an IP is enriched to an ASN/Geo and its session concludes, we strive to drop the raw IP from long-term aggregate storage (using the `AggregatedAnalytics` roll-up buckets) to prevent unauthorized PII accumulation.
+- **Security by Design:** All third-party integrations (Google Analytics, Microsoft Clarity) are opt-in and handled via secure encrypted credential storage in `AnalyticsIntegration`.
+
+## Appendix C: Railway Deployment
+
+This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into eight main services.
+
+## How to Deploy in One Project
+
+To deploy all these components under a single Railway project:
+
+1. **Create a New Project**: Go to your Railway dashboard and click **New Project** -> **Empty Project**.
+2. **Add Services**: For each component below, click **New Service** -> **GitHub Repo**, and select this repository.
+3. **Configure Services**:
+   - Go to the **Settings** tab for each newly created service.
+   - Set the **Root Directory** as specified for each service below.
+   - Override the **Start Command** if specified.
+4. **Environment Variables**: Add a Postgres database (via **New Service** -> **Database** -> **Add PostgreSQL**) and configure all necessary environment variables in the **Variables** tab for each service according to the configurations listed below.
+
+## Infisical Integration
+
+To satisfy strict secret management guidelines (SOC 2, CMMC 2.0 CC6.1/CC6.2), all secret keys, passwords, and API credentials are kept out of raw service settings and stored inside [Infisical](https://infisical.com/).
+
+1. Set up an Infisical organization and create a project for `dataengineeringformachinelearning`.
+2. Connect your Railway services to Infisical via the official Railway Infisical Integration.
+3. For local development, run tasks using the Infisical CLI:
+   ```bash
+   infisical run -- python manage.py runserver
+   ```
+
+## Services Overview
+
+### 1. Web Frontend
+
+This service serves the user interface.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/frontend`
+- **Builder**: Dockerfile (utilizes secure `nginxinc/nginx-unprivileged:alpine-slim` base image)
+- **Start Command**: `nginx -g "daemon off;"` (Default in Dockerfile)
+- **Public URL**: `https://dataengineeringformachinelearning.com`
+- **Target Port**: `8080`
+- **Private Internal DNS**: `dataengineeringformachinelearnin.railway.internal`
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **FIREBASE_API_KEY**: Your Firebase web app API key.
+  - **FIREBASE_PROJECT_ID**: Your Firebase web app project ID.
+  - **FIREBASE_APP_ID**: Your Firebase web app ID.
+  - **FIREBASE_AUTH_DOMAIN**: Your Firebase web app auth domain.
+  - **FIREBASE_STORAGE_BUCKET**: Your Firebase storage bucket.
+  - **FIREBASE_MESSAGING_SENDER_ID**: Your Firebase messaging sender ID.
+  - **SANITY_PROJECT_ID**: Your Sanity.io project ID.
+  - **SANITY_DATASET**: Your Sanity.io dataset name (e.g., `production`).
+  - **BACKEND_URL**: `https://backend.dataengineeringformachinelearning.com`
+
+### 2. Web Backend (API)
+
+This service runs the main Django web server.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile (utilizes secure, minimal `gcr.io/distroless/python3-debian12` distroless runtime)
+- **Start Command**: `/opt/venv/bin/python start.py` (Default in Dockerfile)
+- **Public URL**: `https://backend.dataengineeringformachinelearning.com`
+- **Target Port**: `8080`
+- **Private Internal DNS**: `deml-frontend.railway.internal`
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **SECRET_KEY**: `<your-production-secret-key>`
+  - **DEBUG**: `False`
+  - **ALLOWED_HOSTS**: `backend.dataengineeringformachinelearning.com`
+  - **FRONTEND_URL**: `https://dataengineeringformachinelearning.com`
+  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+  - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g., `deml-clickhouse.railway.internal`).
+  - **CLICKHOUSE_PORT**: `8123` (HTTP port for the python client)
+  - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
+  - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
+  - **CORS_ALLOW_CREDENTIALS**: `True`
+  - **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
+  - **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
+  - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
+  - **FIREBASE_SERVICE_ACCOUNT_JSON**: Raw JSON string of your Firebase service account credentials.
+  - **GOOGLE_API_KEY**: `<your-google-api-key>`
+  - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>`
+  - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
+  - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.dataengineeringformachinelearning.com/api/v1/system-status/integrations/google/callback`
+  - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>`
+  - **IPINFO_API_KEY**: `<your-ipinfo-api-key>`
+  - **CISA_TAXII_ENDPOINT**: `<your-cisa-taxii-endpoint>`
+  - **ISAC_API_KEY**: `<your-isac-api-key>`
+  - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
+  - **RESEND_API_KEY**: `<your-resend-api-key>`
+  - **SENTRY_DSN**: `<your-sentry-dsn>`
+  - **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
+  - **GCP_KMS_LOCATION**: Location of the Key Ring
+  - **GCP_KMS_KEY_RING**: Name of the KMS Key Ring
+  - **GCP_KMS_KEY_NAME**: Name of the Key Encrypting Key (KEK)
+  - **GCP_LOGGING_ENABLED**: `True`
+  - **GOOGLE_APPLICATION_CREDENTIALS**: Path to GCP service account JSON
+  - **GCP_SERVICE_ACCOUNT_JSON**: Raw JSON string of your GCP service account credentials
+
+### 3. Redpanda Broker (Message Queue)
+
+This is the actual Redpanda message broker database that stores the streaming data.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/queue`
+- **Builder**: Dockerfile
+- **Start Command**: Uses default Docker entrypoint
+- **Target Port**: `9092` (Kafka API)
+- **Private Internal DNS**: `deml-queue.railway.internal:9092`
+- **Public URL**: None (Strictly internal for security)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data`.
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **REDPANDA_BROKERS**: Not strictly needed, but ensure port `9092` is exposed internally.
+
+### 4. Telemetry Worker (Consumer)
+
+Background worker process to consume telemetry/streaming data from Redpanda and write it to Postgres.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
+- **Start Command**: `/opt/venv/bin/python manage.py telemetry_worker`
+- **Target Port**: None (Background worker process)
+- **Private Internal DNS**: `deml-telemetry.railway.internal`
+- **Public URL**: None (Strictly an internal background process)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+  - **DEBUG**: `False`
+  - **SECRET_KEY**: `<your-production-secret-key>`
+  - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
+
+> [!WARNING]
+> The `REDPANDA_BROKERS` environment variable MUST point to the actual Redpanda Broker's internal TCP address (e.g., `deml-queue.railway.internal:9092`).
+
+### 5. ML Training Worker (Consumer)
+
+Background ML training process to consume training triggers from Redpanda, load PyTorch, run model training, and write results to Postgres.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
+- **Start Command**: `/opt/venv/bin/python manage.py ml_worker`
+- **Target Port**: None (Background worker process)
+- **Private Internal DNS**: `deml-ml.railway.internal`
+- **Public URL**: None (Strictly an internal background process)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+  - **DEBUG**: `False`
+  - **SECRET_KEY**: `<your-production-secret-key>`
+  - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
+
+### 6. Security and Compliance Worker (Scheduler)
+
+Periodic security worker to fetch threat intelligence data and manage 90-day compliance checks.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
+- **Start Command**: `/opt/venv/bin/python manage.py security_worker`
+- **Target Port**: None (Background worker process)
+- **Private Internal DNS**: `deml-security.railway.internal`
+- **Public URL**: None (Strictly an internal background process)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
+  - **DEBUG**: `False`
+  - **SECRET_KEY**: `<your-production-secret-key>`
+  - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>`
+  - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
+  - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>`
+  - **IPINFO_API_KEY**: `<your-ipinfo-api-key>`
+  - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
+  - **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
+  - **GCP_KMS_LOCATION**: Location of the Key Ring
+  - **GCP_KMS_KEY_RING**: Name of the KMS Key Ring
+  - **GCP_KMS_KEY_NAME**: Name of the Key Encrypting Key (KEK)
+
+### 7. ClickHouse Database (Telemetry Storage)
+
+ClickHouse is used to securely store all high-volume OpenTelemetry data from the widget and backend services.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/clickhouse`
+- **Builder**: Dockerfile (utilizes `clickhouse/clickhouse-server:24.3`)
+- **Start Command**: Uses default Docker entrypoint
+- **Target Port**: `8123` (HTTP) and `9000` (Native)
+- **Private Internal DNS**: `deml-clickhouse.railway.internal`
+- **Public URL**: None (Strictly an internal database)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/var/lib/clickhouse`.
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **CLICKHOUSE_USER**: Leave this variable **completely unset/deleted** on the ClickHouse service if you want to use the `default` user. If you define it as `default` explicitly, ClickHouse's entrypoint will skip setting the password, causing connection errors in other services.
+  - **CLICKHOUSE_PASSWORD**: Set a secure password (e.g. for the default user).
+  - **CLICKHOUSE_DB**: `otel`
+
+> [!IMPORTANT]
+> **ClickHouse Password Gotcha**: Do not define `CLICKHOUSE_USER` as `default` in the ClickHouse service environment variables. If you wish to use the `default` user, simply omit the `CLICKHOUSE_USER` variable entirely from the ClickHouse service. The entrypoint script will automatically apply your `CLICKHOUSE_PASSWORD` to the default user. Make sure `CLICKHOUSE_USER` is still set to `default` in your otel-collector and backend services so they connect correctly.
+
+### 8. OpenTelemetry Collector (Router)
+
+The OpenTelemetry Collector receives all spans and metrics from the frontend widget and backend, processing them securely before batch-inserting into ClickHouse.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/telemetry`
+- **Builder**: Dockerfile (utilizes secure `otel/opentelemetry-collector-contrib` distroless base)
+- **Start Command**: Uses default Docker entrypoint
+- **Target Port**: `4318` (OTLP HTTP)
+- **Private Internal DNS**: `deml-telemetry.railway.internal`
+- **Public URL**: `https://telemetry.dataengineeringformachinelearning.com`
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g. `deml-clickhouse.railway.internal`).
+  - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
+  - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
+  - **ALLOWED_CORS_ORIGINS**: Set this to the exact domain where your widget will be hosted (e.g., `https://dataengineeringformachinelearning.com`).
+
+### 9. Vulnerability Scanner Engine
+
+This microservice provides an offline, isolated environment for executing `osv-scanner` and `cpe-guesser` to enrich telemetry without bloating the main backend image.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/scanner`
+- **Builder**: Dockerfile (utilizes `python:3.11-slim` with the official Google `osv-scanner` binary)
+- **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 8000` (Default in Dockerfile)
+- **Target Port**: `8000` (FastAPI)
+- **Private Internal DNS**: `deml-scanner.railway.internal:8000`
+- **Public URL**: None (Strictly an internal service)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/data/osv` so the OSV database dump does not have to be repeatedly downloaded.
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **OSV_DB_PATH**: `/data/osv` (The mounted volume path)
+  - **CPE_GUESSER_URL**: `http://deml-cpe-guesser.railway.internal:1323/unique`
+
+### 10. CPE Guesser Service
+
+This service converts raw technology strings into CPE 2.3 identifiers. It is required for the Vulnerability Scanner Engine to properly normalize infrastructure data.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/cpe-guesser`
+- **Builder**: Dockerfile (Builds from source using Golang, deployed on a secure `distroless/static` image)
+- **Start Command**: `/app/cpe-guesser server` (Default in Dockerfile)
+- **Target Port**: `1323`
+- **Private Internal DNS**: `deml-cpe-guesser.railway.internal`
+- **Public URL**: None (Strictly an internal service)
+- **Compute Limits**: 1 vCPU / 1 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**: None required by default.
+
+_(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vulnerability Scanner Engine** points to this internal DNS, e.g., `http://deml-cpe-guesser.railway.internal:1323/unique`)_
+
+## Internal Networking
+
+Services within this environment can communicate securely over Railway's private internal network without traversing the public internet.
+
+- **Backend API**: Accessible internally at `deml-backend.railway.internal:8080`
+- **Frontend**: Accessible internally at `deml-frontend.railway.internal:8080`
+- **Postgres Database**: Connected via the internal network. Ensure the `DATABASE_URL` environment variable uses the internal connection string.
+- **Redpanda Broker**: Connected via the internal TCP network (e.g., `deml-queue.railway.internal:9092`).
+
+## CI/CD Pipeline
+
+- All services are linked to the `main` branch of the `dataengineeringformachinelearning` repository.
+- Pushes to the `main` branch will automatically trigger new builds and deployments for the affected services.
+- Automated security testing via **Socket.dev** and **Checkov** pre-commit hooks runs on every push.
+- **Watch Paths**: You can set gitignore-style rules (e.g., `/frontend/**` or `/backend/**`) in the Railway settings to ensure that a service only rebuilds when its specific directory changes.
+
+## Reliability and Scaling
+
+- **Restart Policy**: All services are configured to restart "On Failure" with a maximum of 10 retries, ensuring automatic recovery from temporary crashes.
+- **Region**: US East (Virginia, USA)
+- **Replicas**: 1 replica per service.
+
+## Appendix D: Release Schedule & Roadmap
+
+This document outlines the concrete, implemented automations that are actively running in the repository via GitHub Actions workflows, Django management commands, and continuously running background workers.
+
+## Continuous Background Workers
+
+**Focus:** Real-time stream processing, active health pinging, hourly aggregations, and asynchronous ML training.
+**Execution:** These run continuously as standalone services (e.g., via Docker Compose or Railway).
+
+- **Telemetry Worker (`python manage.py telemetry_worker`)**
+  - **Stream Processing:** Continuously consumes and processes Redpanda Kafka streams (`app-events`, `user-issues`) in near real-time.
+  - **Active Pinger:** Automatically pings and records the health status/latency of all monitored services every **30 seconds**.
+  - **Analytics Aggregation:** Runs the `aggregate_analytics` command every **1 hour** to synthesize raw telemetry, threat intelligence, and widget signals into streamlined Postgres time-series buckets.
+
+- **ML Worker (`python manage.py ml_worker`)**
+  - **Event-Driven Training:** Continuously listens for `ml-training-events` on Redpanda to trigger on-demand model training for specific tenants.
+  - **Daily Fallback/Cleanup:** Automatically triggers full `train_all_models` (which includes `db_cleanup.py`) every **24 hours** to ensure no tenant is left behind.
+
+## Daily Cycle: Models & Threat Intelligence
+
+**Focus:** Continuous Learning and Threat Protection.
+**Workflow:** `.github/workflows/daily-automation.yml` (Runs daily at midnight UTC)
+
+- **Automations:**
+  - Execute `fetch_threat_intel.py`: Contacts Google, Microsoft Clarity, Cloudflare, AbuseIPDB, and AlienVault OTX APIs to fetch fresh threat data and IP blacklists.
+  - Execute `train_all_models.py`: Retrains the predictive scaling and anomaly detection ML models for all active tenants.
+  - _Note: `train_all_models.py` natively triggers `db_cleanup.py` internally, which prunes stale telemetry and log records older than 30 days._
+
+## Weekly Cycle: Dependency Management
+
+**Focus:** Proactive Dependency Updates.
+**Workflow:** `.github/workflows/renovate.yml` (Runs weekly on Sundays)
+
+- **Automations:**
+  - **Renovate Bot**: Automatically scans and creates Pull Requests to update outdated packages across the stack.
+
+## 30-Day Cycle: Security & Maintenance
+
+**Focus:** Vulnerability Scanning and Secret Rotation.
+**Workflow:** `.github/workflows/30-60-90-automation.yml` (Runs on the 1st of every month)
+
+- **Automations:**
+  - Execute `rotate_keys.py`: Rotates active API keys and integrations to prevent long-lived credential leaks.
+  - **Semgrep Audit**: Runs a static analysis vulnerability scan across the codebase.
+  - **Dependency Audit**: Runs `npm audit` for the frontend and `uv lock` checks for the backend to flag insecure dependencies.
+
+## 90-Day Cycle: System & Performance Audits
+
+**Focus:** Codebase Minification and Integrity.
+**Workflow:** `.github/workflows/30-60-90-automation.yml` (Runs quarterly)
+
+- **Automations:**
+  - **Frontend Build Audit**: Triggers a clean `npm run build` using the esbuild AOT compiler to enforce strict bundle size budgets and verify lazy loading compilation.
+  - **Backend Static Analysis**: Runs `ruff check .` to catch newly introduced linting/formatting deviations or dead code.
+
+## Appendix E: Contributing Guidelines & Getting Started
+
+This guide compiles instructions from across the workspace to help you run the development environment manually using split terminals in your preferred IDE (e.g., VSCode).
+
+---
+
+## 1. Start Backing Services (Docker)
+
+Make sure Docker Desktop is open and running, then execute the following command from the repository root:
+
+```bash
+docker-compose up -d postgres redpanda clickhouse otel-collector
+```
+
+---
+
+## 2. Start Django Backend Services
+
+Open **4 separate split terminals** in your editor, navigate to `backend/`, activate the virtual environment, and run each command:
+
+### Setup (First-time only)
+
+If you haven't set up the Python virtual environment or applied migrations yet:
+
+```bash
+cd backend
+cp .env.example .env
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+### Tab A: Django API Server
+
+```bash
+cd backend
+source .venv/bin/activate
+python manage.py runserver
+```
+
+### Tab B: Telemetry Worker
+
+_Required to consume telemetry events from Redpanda and save them to the database so your dashboard stats load._
+
+```bash
+cd backend
+source .venv/bin/activate
+python manage.py telemetry_worker
+```
+
+### Tab C: ML Worker
+
+_Required to run PyTorch training runs in a decoupled process to calculate SLA and threat anomaly forecasts._
+
+```bash
+cd backend
+source .venv/bin/activate
+python manage.py ml_worker
+```
+
+### Tab D: Security Worker
+
+```bash
+cd backend
+source .venv/bin/activate
+python manage.py security_worker
+```
+
+---
+
+## 3. Start Frontend Client (Angular)
+
+In a new terminal window or split:
+
+### Setup (First-time only)
+
+```bash
+cd frontend
+cp .env.example .env  # Add your actual Firebase configurations here
+npm install --legacy-peer-deps
+```
+
+### Run Server
+
+```bash
+cd frontend
+npx dotenvx run -- npm start
+```
+
+The client will be hosted at `http://localhost:4200/`.
+
+---
+
+## 4. Start Sanity Studio (CMS)
+
+In a new terminal window or split:
+
+### Setup (First-time only)
+
+```bash
+cd studio
+npm install
+```
+
+### Run Server
+
+```bash
+cd studio
+npm run dev
+```
+
+The studio interface will be hosted at `http://localhost:3333/`.
+
+---
+
+## 5. Troubleshooting & Maintenance
+
+### Resetting Python Environment
+
+```bash
+cd backend
+deactivate
+rm -rf .venv
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+```
+
+### Resetting Frontend/Studio NPM Dependencies
+
+If you encounter dependency issues or slow installs, reset the NPM tree:
+
+```bash
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install --legacy-peer-deps
+```
+
+---
+
+## 6. Local Mock Authentication
+
+When developing locally, you can bypass the cloud Firebase Authentication backend and run completely offline:
+
+1. In the `frontend/.env` file, leave the Firebase API Key as `PLACEHOLDER_API_KEY`.
+2. When the frontend starts, it detects this placeholder and enables **mock authentication mode** automatically.
+3. You can log in with **any username/email and password**:
+   - **Security Admin** (full access): Use email `admin@dataengineeringformachinelearning.com` (any password).
+   - **Operator** (standard access): Use any other email or username.
+4. When `settings.DEBUG = True`, the backend Django API server intercepts the mock tokens and automatically creates/logs in the corresponding Django user profile.
+
+## Appendix F: Telemetry Security Benefits
+
+## 1. The Telemetry Agent
+
+The Telemetry Embed is a zero-dependency JavaScript module designed to stream real-time diagnostic payload data directly from a tenant's site into the ingestion pipeline. By injecting a single script tag into your application, you gain immediate access to machine-learning forecasted service levels and threat anomaly detection without altering your core architecture.
+
+## 2. Sandboxed Execution
+
+The agent is strictly read-only and executes within a hardened sandbox environment. It enforces a strict Content-Security-Policy (CSP) and does not access cross-origin storage or cookies unless explicitly permitted by the tenant's configuration.
+
+## 3. End-to-End Encryption
+
+All telemetry is encrypted end-to-end using TLS 1.3 before being transmitted to the message brokers. Data in transit is secured against interception, and the ingestion endpoints enforce mutual TLS (mTLS) for enterprise tenants.
+
+## 4. Data Privacy & Multi-Tenancy
+
+All data collected is anonymized before leaving the client's browser. Personally Identifiable Information (PII) is automatically redacted at the edge. Data is stored in isolated PostgreSQL tables to guarantee strict multi-tenancy boundaries, ensuring that no tenant can access another's telemetry.
+
+---
+
+## Appendix G: Extra Code Samples
+
+```python
+# A sample background worker for processing data
+def process_telemetry_batch():
+    # Simulated lab-coat clean data processing
+    import polars as pl
+    df = pl.DataFrame({"status": [200, 500, 200], "latency": [12, 104, 15]})
+    clean_df = df.filter(pl.col("latency") < 100)
+    return clean_df
+```
+
+```typescript
+// A sample clean UI state manager
+import { signal } from "@angular/core";
+
+export const globalState = signal({
+  isLabCoatMode: true,
+  theme: "light",
+});
+```

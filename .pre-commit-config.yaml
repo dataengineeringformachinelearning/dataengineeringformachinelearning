@@ -41,10 +41,10 @@ repos:
         files: \.(html)$
         pass_filenames: true
       - id: sync-content
-        name: Sync README.md to frontend files
+        name: Sync BOOK.md to frontend files
         entry: python scripts/sync_content.py
         language: system
-        files: ^(README\.md|version\.txt)$
+        files: ^(BOOK\.md|version\.txt)$
         pass_filenames: false
       - id: check-mobile-first
         name: Verify styles are mobile-first

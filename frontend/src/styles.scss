@@ -158,6 +158,13 @@ html.dark {
   box-sizing: border-box;
 }
 
+pre, code {
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+  word-break: break-word !important;
+  max-width: 100%;
+}
+
 html,
 body {
   height: 100%;

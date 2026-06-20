@@ -30,15 +30,20 @@ export class BookService {
   }
 
   parseMarkdown() {
-    // Split content dynamically by '## Chapter ', '## My Notes...', or '## Acknowledgements' headers
+    // Split content dynamically by '## Chapter ', '## Appendix', '## My Notes...', '## Acknowledgements', or '## Introduction' headers
     const rawChunks = pageMarkdown.split(
-      /(?=^## (?:Chapter \d+:|My Notes on Deployment & Release|Acknowledgements))/m,
+      /(?=^## (?:Chapter \d+:|Appendix|My Notes on Deployment & Release|Acknowledgements|Introduction))/m,
     );
-    const parsed: Chapter[] = [];
+    const parsed: Chapter[] = [
+      {
+        title: 'Cover',
+        content: '',
+      },
+    ];
 
-    for (const chunk of rawChunks) {
+    rawChunks.forEach(chunk => {
       const trimmed = chunk.trim();
-      if (!trimmed) continue;
+      if (!trimmed) return;
 
       // Extract title from the first line (starts with '## ')
       const lines = trimmed.split('\n');
@@ -51,10 +56,10 @@ export class BookService {
         title,
         content: trimmed,
       });
-    }
+    });
 
     // If no chapters parsed, push the entire content as fallback
-    if (parsed.length === 0) {
+    if (parsed.length === 1 && parsed[0].title === 'Cover') {
       parsed.push({
         title: 'Book Content',
         content: pageMarkdown,

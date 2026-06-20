@@ -1,0 +1,148 @@
+<div class="dashboard-page-container">
+  <div class="dashboard-content-area" style="padding-top: 32px">
+    <!-- Hero Section -->
+    <header class="docs-hero">
+      <div
+        style="
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          padding: 8px 16px;
+          border-radius: 999px;
+          margin-bottom: 24px;
+          box-shadow: var(--shadow-sm);
+        "
+      >
+        <span
+          style="
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--color-primary);
+          "
+        ></span>
+        <span
+          style="
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--text-color);
+            text-transform: uppercase;
+          "
+          >Developer Portal</span
+        >
+      </div>
+      <h1 class="docs-title">API Gateway & Integrations</h1>
+      <p class="docs-subtitle">
+        The central nervous system for your MLOps workflows. Seamlessly connect your infrastructure,
+        stream telemetry, and interface with powerful models through our secure endpoints.
+      </p>
+    </header>
+
+    <div class="docs-bento-grid">
+      <!-- API Key Management -->
+      <div class="docs-bento-card docs-bento-full">
+        <div class="bento-header">
+          <mat-icon>vpn_key</mat-icon>
+          <h2>Authentication & Access</h2>
+        </div>
+        <p style="color: var(--text-muted); line-height: 1.6; margin: 0; font-size: 1.05rem">
+          Secure access to our high-throughput pipelines requires an API key. Register an account,
+          generate a secure token in your user profile, and pass it in the Authorization header.
+        </p>
+        <div class="code-block-premium">
+          <div class="code-header">HTTP Header</div>
+          <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+        </div>
+      </div>
+
+      <!-- Data Ingestion Endpoint -->
+      <div class="docs-bento-card">
+        <div class="bento-header">
+          <mat-icon>input</mat-icon>
+          <h2>Data Ingestion</h2>
+        </div>
+        <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+          High-throughput endpoint optimized for receiving batched or streaming data from
+          distributed pipelines like Apache Spark or Databricks.
+        </p>
+        <div class="endpoint-badge">
+          <span class="method">POST</span>
+          <span class="path">/api/v1/ingest</span>
+        </div>
+        <div class="code-block-premium" style="margin-top: auto">
+          <div class="code-header">cURL Request</div>
+          <pre><code>curl -X POST https://api.domain.com/v1/ingest \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{{ '{' }}"batch_id": "123", "records": [{{ '{' }}"feature1": 1.0{{ '}' }}]{{ '}' }}'</code></pre>
+        </div>
+      </div>
+
+      <!-- Inference Endpoint -->
+      <div class="docs-bento-card">
+        <div class="bento-header">
+          <mat-icon>model_training</mat-icon>
+          <h2>Real-time Inference</h2>
+        </div>
+        <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+          Low-latency endpoint for model inference, ideal for Kubernetes sidecars or deep learning
+          services calling models directly.
+        </p>
+        <div class="endpoint-badge">
+          <span class="method">POST</span>
+          <span class="path">/api/v1/predict</span>
+        </div>
+        <div class="code-block-premium" style="margin-top: auto">
+          <div class="code-header">cURL Request</div>
+          <pre><code>curl -X POST https://api.domain.com/v1/predict \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{{ '{' }}"model_version": "v2", "inputs": [0.5, 0.2]{{ '}' }}'</code></pre>
+        </div>
+      </div>
+
+      <!-- Official SDKs -->
+      <div class="docs-bento-card">
+        <div class="bento-header">
+          <mat-icon>terminal</mat-icon>
+          <h2>Native Integrations</h2>
+        </div>
+        <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+          We provide native support and documentation for integrating with the industry's leading
+          tools, including:
+        </p>
+        <ul
+          style="
+            color: var(--text-color);
+            line-height: 1.8;
+            margin: 0;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          "
+        >
+          <li><strong>Kubernetes:</strong> Connect via CRDs or sidecar proxies.</li>
+          <li><strong>TensorFlow:</strong> Stream using <code>tf.data.Dataset</code>.</li>
+          <li><strong>Apache Spark:</strong> Write DataFrames directly.</li>
+        </ul>
+      </div>
+
+      <!-- Security -->
+      <div class="docs-bento-card">
+        <div class="bento-header">
+          <mat-icon>security</mat-icon>
+          <h2>Enterprise Security</h2>
+        </div>
+        <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+          All tenant data is cryptographically isolated using strict multi-tenancy rules. Our
+          infrastructure undergoes continuous vulnerability scanning to ensure your models are safe.
+          We enforce rate limits up to 1,000+ req/min for Pro tiers.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

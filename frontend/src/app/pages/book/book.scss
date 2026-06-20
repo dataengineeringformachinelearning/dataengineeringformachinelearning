@@ -331,3 +331,134 @@
     max-height: none;
   }
 }
+
+
+/* Whitepaper aesthetic additions */
+.whitepaper-container {
+  position: relative;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Ambient Lighting with Heavy Amber Accents */
+.ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.primary-glow {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, var(--color-primary-container) 0%, transparent 70%);
+  top: -150px;
+  left: -200px;
+}
+
+.amber-glow {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--crayola-blue-glow, rgba(33, 118, 255, 0.4)) 0%, transparent 70%);
+  bottom: 10%;
+  right: -150px;
+  opacity: 0.25;
+}
+
+.ambient-ripple {
+  position: absolute;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(33, 118, 255, 0.05) 0px,
+    rgba(33, 118, 255, 0.05) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+:host-context(html[data-theme='light']) {
+  .amber-glow {
+    background: radial-gradient(circle, rgba(33, 118, 255, 0.15) 0%, transparent 70%);
+  }
+}
+
+.whitepaper-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 56px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 32px;
+
+  .section-tag-row {
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: var(--text-color);
+    margin: 0 0 16px;
+  }
+
+  .subtitle {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    color: var(--text-muted);
+    max-width: 620px;
+    margin: 0 auto 24px;
+  }
+}
+
+.whitepaper-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  .paper-section {
+    background: var(--color-surface, var(--color-surface));
+    border: 1px solid var(--color-border-precision, rgba(255, 255, 255, 0.08));
+    border-radius: 24px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+      border-color: var(--crayola-blue, rgba(33, 118, 255, 0.5));
+      box-shadow: var(--shadow-hover);
+    }
+  }
+}
+
+:host-context(html[data-theme='light']) {
+  .paper-section {
+    background: #ffffff;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-sm);
+
+    &:hover {
+      border-color: var(--crayola-blue);
+      box-shadow: var(--shadow-hover);
+    }
+  }
+}
+
+@media (min-width: 601px) {
+  .whitepaper-header .title {
+    font-size: 2.75rem;
+  }
+}
