@@ -4,8 +4,6 @@
   (touchend)="onTouchEnd($event)"
 >
   <!-- Glow Spheres for Homepage Unity -->
-  <div class="glow-sphere sphere-1"></div>
-  <div class="glow-sphere sphere-2"></div>
   <div class="dashboard-content-area">
     <div class="content-wrapper full-width">
       <header class="hud-header">
@@ -19,19 +17,23 @@
       </header>
 
       <!-- Reading Progress Bar -->
-      <div class="progress-bar-header">
-        <span class="progress-label">Reading Progress</span>
-        <span class="progress-percentage">{{ bookService.progress() }}%</span>
+      <div class="progress-bar-header grid-layout">
+        <span class="progress-label col-span-2 col-span-md-6">Reading Progress</span>
+        <span class="progress-percentage col-span-2 col-span-md-6 text-right"
+          >{{ bookService.progress() }}%</span
+        >
       </div>
       <div class="progress-bar-container">
         <div class="progress-bar-fill" [style.width.%]="bookService.progress()"></div>
       </div>
 
       <!-- Page Card -->
-      <div class="status-card-outlined book-card">
-        <div class="card-body-clean book-body">
-          <div class="page-transition-container">
-            <app-page [data]="bookService.activeChapter().content || ''"></app-page>
+      <div class="grid-layout">
+        <div class="status-card-outlined book-card col-span-4 col-span-md-12">
+          <div class="card-body-clean book-body">
+            <div class="page-transition-container">
+              <app-page [data]="bookService.activeChapter().content || ''"></app-page>
+            </div>
           </div>
         </div>
       </div>

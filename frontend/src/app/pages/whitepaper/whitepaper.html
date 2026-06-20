@@ -13,9 +13,9 @@
           </div>
           <h1 class="title">Scalable Telemetry, Predictive SLAs, & Automated Threat Mitigation</h1>
           <p class="subtitle">
-            Architecting the Web Application Platform (DEML Platform): A comprehensive guide to
-            high-throughput event pipelines, ML-forecasted service levels, automated STIX 2.1 threat
-            sharing, and integrated vulnerability management.
+            <strong>Abstract:</strong> Architecting the Web Application Platform (DEML Platform): A
+            comprehensive guide to high-throughput event pipelines, ML-forecasted service levels,
+            automated STIX 2.1 threat sharing, and integrated vulnerability management.
           </p>
           <div class="author-meta">
             <span>Published: June 2026</span>
@@ -52,25 +52,25 @@
 
         <div class="whitepaper-content">
           <section class="paper-section">
-            <h2>1. Executive Summary</h2>
+            <h2>1. Introduction</h2>
             <p>
               Modern Software-as-a-Service (SaaS) applications demand continuous reliability.
               Traditionally, status dashboards and SLA tracking have been reactive—updating only
-              after an incident is resolved. This paper details the architecture of the **Data
-              Engineering for Machine Learning Platform** (DEML Platform): a next-generation
-              observability pipeline that ingests real-time telemetry at scale and uses Machine
-              Learning to forecast service level agreement compliance and threat anomalies 30 days
-              into the future.
+              after an incident is resolved. This paper details the architecture of the
+              <strong>Data Engineering for Machine Learning Platform</strong> (DEML Platform): a
+              next-generation observability pipeline that ingests real-time telemetry at scale and
+              uses Machine Learning to forecast service level agreement compliance and threat
+              anomalies 30 days into the future.
             </p>
           </section>
 
           <section class="paper-section">
             <h2>2. High-Throughput Ingestion Architecture</h2>
             <p>
-              To decouple telemetry parsing from main application databases, we implement an
-              asynchronous broker-based pipeline. User-facing client events and microservice health
-              pings are ingested via non-blocking API endpoints and immediately dispatched to a
-              **Redpanda** message broker.
+              To decouple telemetry parsing from main application databases, the platform implements
+              an asynchronous broker-based pipeline. User-facing client events and microservice
+              health pings are ingested via non-blocking API endpoints and immediately dispatched to
+              a **Redpanda** message broker.
             </p>
             <div class="diagram-placeholder">
               <div class="diagram-node">Client Telemetry</div>
@@ -82,16 +82,17 @@
               <div class="diagram-node primary">PostgreSQL</div>
             </div>
             <p>
-              By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), we achieve
-              sub-millisecond dispatch latencies and avoid JVM resource overhead.
+              By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), the system
+              achieves sub-millisecond dispatch latencies and avoids JVM resource overhead.
             </p>
             <p>
-              Additionally, to standardize our distributed tracing and metrics, we've integrated an
+              Additionally, to standardize distributed tracing and metrics, the platform integrates
+              an
               <strong>OpenTelemetry (OTel) Collector</strong>. The collector receives native OTLP
-              telemetry from our application services and infrastructure, exporting it directly to
+              telemetry from the application services and infrastructure, exporting it directly to
               <strong>ClickHouse</strong>&mdash;a lightning-fast columnar database optimized for
-              OLAP workloads. This separation allows us to scale observability and query distributed
-              traces efficiently without burdening our primary PostgreSQL transactional database.
+              OLAP workloads. This separation enables scaled observability and efficient distributed
+              tracing without burdening the primary PostgreSQL transactional database.
             </p>
           </section>
 
@@ -104,18 +105,19 @@
               DataFrame library written in Rust.
             </p>
             <p>
-              By batching calculations, we compute historical uptime graphs (30-day intervals) and
-              update cumulative SLA and threat records efficiently, reducing disk I/O by over 80%.
+              By batching calculations, historical uptime graphs (30-day intervals) are computed and
+              cumulative SLA and threat records are updated efficiently, reducing disk I/O by over
+              80%.
             </p>
           </section>
 
           <section class="paper-section">
             <h2>4. ML-Powered 30-Day SLA Forecasts</h2>
             <p>
-              To transition from reactive monitoring to proactive SLA planning, we introduce a
-              predictive neural network built in **PyTorch**. The network consumes sequence features
-              derived from recent response-time variances, historical error rates, and peak usage
-              patterns to forecast future SLA breaches.
+              To transition from reactive monitoring to proactive SLA planning, the architecture
+              introduces a predictive neural network built in **PyTorch**. The network consumes
+              sequence features derived from recent response-time variances, historical error rates,
+              and peak usage patterns to forecast future SLA breaches.
             </p>
             <p>
               These predictions are loaded into the status pages to give operators early warnings of
@@ -130,12 +132,12 @@
               third-party analytics platforms (**Google Analytics / GA4**, **Microsoft Clarity**,
               and **Cloudflare Web Analytics**) serves as a critical telemetry ingestion phase. By
               retrieving rich visitor logs, geolocation distributions, token metrics, and request
-              patterns from these platforms, we train a custom PyTorch neural network model
-              (ThreatModel) to detect anomalies and forecast threat risks 30 days into the future.
-              Looking forward, this third-party ingestion model serves as a precursor to an embedded
+              patterns from these platforms, a custom PyTorch neural network model (ThreatModel) is
+              trained to detect anomalies and forecast threat risks 30 days into the future. Looking
+              forward, this third-party ingestion model serves as a precursor to an embedded
               first-party solution. The embedded status widget securely streams real-time,
               zero-dependency telemetry (visitor logs, anomalies) directly from the tenant's site
-              into our ingestion pipeline.
+              into the ingestion pipeline.
             </p>
           </section>
 
@@ -144,9 +146,9 @@
             <p>
               Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and
               Generative AI, has evolved into a powerful agentic paradigm for threat analysis.
-              Because we can only plan for what we know or what history provides precedent for, we
-              face a distinct challenge: if past data dictates future risk, we must engineer an
-              entirely new way forward.
+              Because planning can only encompass known quantities or historical precedents, there
+              exists a distinct challenge: if past data dictates future risk, an entirely new
+              paradigm must be engineered.
             </p>
             <p>
               To address this, the DEML Platform integrates a next-generation threat intelligence
@@ -204,7 +206,7 @@
               application deployment and runs continuously every hour.
             </p>
             <p>
-              Furthermore, our engineering roadmap includes integrations with monetization systems
+              Furthermore, the engineering roadmap includes integrations with monetization systems
               like Stripe. This will enable paid tiers where models and forecasts are refreshed at a
               high-frequency interval (every 15 minutes), while standard tiers continue on the
               baseline hourly retraining schedule.
@@ -221,11 +223,11 @@
               vulnerability states based on customized impact and likelihood metrics.
             </p>
             <p>
-              Furthermore, we enforce strict compliance by integrating automated accessibility
+              Furthermore, strict compliance is enforced by integrating automated accessibility
               scanners (such as **Axe-Core**) directly into local Git hooks, ensuring no
-              inaccessible templates are staged or committed. To maintain high visual quality, we
-              implemented a custom skeleton loader for smooth page-loading transitions, and aligned
-              the user interface with a premium, high-contrast **Scandinavian Ocean Deep
+              inaccessible templates are staged or committed. To maintain high visual quality, a
+              custom skeleton loader was implemented for smooth page-loading transitions, and the
+              user interface aligns with a premium, high-contrast **Scandinavian Ocean Deep
               Metallic-inspired** design system.
             </p>
           </section>
@@ -234,8 +236,8 @@
             <h2>9. Conclusion</h2>
             <p>
               By combining asynchronous broker patterns, ultra-fast DataFrame engines, and
-              predictive deep learning models, we establish a robust data engineering framework that
-              elevates the reliability of machine learning infrastructure.
+              predictive deep learning models, the platform establishes a robust data engineering
+              framework that elevates the reliability of machine learning infrastructure.
             </p>
           </section>
         </div>

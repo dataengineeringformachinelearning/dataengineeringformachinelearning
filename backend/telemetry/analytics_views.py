@@ -18,124 +18,124 @@ def get_analytics_overview(request):
   now = timezone.now()
   last_24h = now - timedelta(days=1)
 
-  # Fetch the latest 24 hourly buckets
+  # ==========================================
+  # 1. GLOBAL CES (Anonymized & Aggregated)
+  # ==========================================
   from monitor.models import AggregatedAnalytics
 
-  analytics_data = list(
-    AggregatedAnalytics.objects.filter(timestamp__gte=last_24h, bucket_size="1h").order_by(
-      "timestamp"
+  global_analytics = list(
+    AggregatedAnalytics.objects.filter(timestamp__gte=last_24h, bucket_size="1h")
+  )
+  if global_analytics:
+    global_buckets = len(global_analytics)
+    global_p99 = (
+      sum(b.p99_latency_ms for b in global_analytics) / global_buckets if global_buckets else 0
     )
+    global_incidents = global_analytics[-1].active_incidents if global_analytics else 0
+    global_uptime = 100 - (sum(b.error_rate_percent for b in global_analytics) / global_buckets)
+  else:
+    global_p99 = 45
+    global_incidents = 0
+    global_uptime = 99.9
+
+  # Calculate CES mathematically from global anonymous aggregates
+  ces_threat_level = min(100, global_incidents * 20 + (30 if global_p99 > 500 else 0))
+  ces_sla_level = max(0, global_uptime - (5 if global_p99 > 800 else 0))
+  ces_stability_level = max(0, 100 - global_incidents * 10 - (15 if global_p99 > 300 else 0))
+  ces_level = max(
+    0, min(100, ces_sla_level * 0.5 + ces_stability_level * 0.4 + (100 - ces_threat_level) * 0.1)
   )
 
-  # Fallback generation if no data is found (e.g. command hasn't run yet)
-  if not analytics_data:
-    # 1. Provide minimal safe fallback structure so the frontend doesn't crash
+  # ==========================================
+  # 2. STRICT USER TENANCY (Isolated Metrics)
+  # ==========================================
+  from monitor.models import Endpoints, Incident, MonitoredService, StatusPage, ThreatIntelligence
+
+  user_pages = StatusPage.objects.filter(user=request.user)
+  user_urls = MonitoredService.objects.filter(status_page__in=user_pages).values_list(
+    "url", flat=True
+  )
+
+  endpoints = Endpoints.objects.filter(url__in=user_urls, last_tested__gte=last_24h).exclude(
+    status_code=0
+  )
+  total_reqs = endpoints.count()
+  up_reqs = endpoints.filter(is_active=True, status_code__lt=500).count()
+  uptime_percent = round((up_reqs / total_reqs) * 100.0, 2) if total_reqs > 0 else 100.0
+
+  active_incidents = Incident.objects.filter(
+    status_page__user=request.user, status__in=["Investigating", "Identified"]
+  ).count()
+
+  latencies = list(endpoints.values_list("response_time", flat=True))
+  if latencies and any(latencies):
+    ms_list = sorted([lat.total_seconds() * 1000 for lat in latencies if lat])
+    p99_idx = int(len(ms_list) * 0.99)
+    p99_latency = round(ms_list[p99_idx if p99_idx < len(ms_list) else -1], 2)
+  else:
+    p99_latency = 0.0
+
+  threats = ThreatIntelligence.objects.filter(user=request.user, timestamp__gte=last_24h)
+
+  # Basic safe fallbacks if no data exists
+  if total_reqs == 0:
     time_series = [
-      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "latency": 45} for i in range(24)
+      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "latency": 0} for i in range(24)
     ]
     request_frequency = [
-      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": 100}
+      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": 0} for i in range(24)
+    ]
+    origin_distribution = []
+    http_statuses = []
+    endpoint_counts = []
+  else:
+    # Build isolated time series manually (simplified for summary)
+    time_series = [
+      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "latency": p99_latency}
       for i in range(24)
     ]
-    security_alerts = [
-      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "count": 0} for i in range(24)
+    request_frequency = [
+      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": total_reqs // 24}
+      for i in range(24)
+    ]
+    origin_distribution = [{"origin": "Isolated User Nodes", "count": total_reqs}]
+    http_statuses = [
+      {"status": "200", "count": up_reqs},
+      {"status": "5xx", "count": total_reqs - up_reqs},
+    ]
+    endpoint_counts = [
+      {"endpoint": url, "count": endpoints.filter(url=url).count()} for url in user_urls
     ]
 
-    data = {
-      "p99_latency_ms": 45,
-      "uptime_percent": 99.9,
-      "total_requests_24h": 2400,
-      "active_incidents": 0,
+  security_alerts = [
+    {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "count": threats.count() // 24}
+    for i in range(24)
+  ]
+  threat_severity = [{"severity": "Medium", "count": threats.count()}] if threats.exists() else []
+
+  data = {
+    "ces": {
+      "level": round(ces_level, 2),
+      "threat": round(ces_threat_level, 2),
+      "sla": round(ces_sla_level, 2),
+      "stability": round(ces_stability_level, 2),
+    },
+    "user_metrics": {
+      "p99_latency_ms": p99_latency,
+      "uptime_percent": uptime_percent,
+      "total_requests_24h": total_reqs,
+      "active_incidents": active_incidents,
       "time_series": time_series,
-      "origin_distribution": [{"origin": "Unknown", "count": 100}],
+      "origin_distribution": origin_distribution,
       "request_frequency": request_frequency,
-      "http_statuses": [{"status": "200", "count": 100}],
-      "endpoint_counts": [{"endpoint": "/api/v1/auth", "count": 100}],
-      "threat_severity": [{"severity": "Low", "count": 1}],
+      "http_statuses": http_statuses,
+      "endpoint_counts": endpoint_counts,
+      "threat_severity": threat_severity,
       "security_alerts": security_alerts,
       "cookie_consents": {"analytical": 0, "marketing": 0},
       "widget_interactions": 0,
       "unique_visitors": 0,
-    }
-    return {"status": "success", "data": data}
-
-  # Aggregate the fetched buckets
-  total_requests = sum(b.total_requests for b in analytics_data)
-
-  # Approximate global metrics from the buckets
-  total_buckets = len(analytics_data)
-  p99_latency = (
-    sum(b.p99_latency_ms for b in analytics_data) / total_buckets if total_buckets else 0
-  )
-  active_incidents = (
-    analytics_data[-1].active_incidents if analytics_data else 0
-  )  # Latest bucket status
-
-  unique_visitors = sum(b.unique_visitors for b in analytics_data)
-  cookie_analytical = sum(b.cookie_consents_analytical for b in analytics_data)
-  cookie_marketing = sum(b.cookie_consents_marketing for b in analytics_data)
-  widget_interactions = sum(b.widget_interactions for b in analytics_data)
-
-  # Time series data
-  time_series = [
-    {"time": b.timestamp.strftime("%H:00"), "latency": b.p99_latency_ms} for b in analytics_data
-  ]
-  request_frequency = [
-    {"time": b.timestamp.strftime("%H:00"), "requests": b.total_requests} for b in analytics_data
-  ]
-  security_alerts = [
-    {"time": b.timestamp.strftime("%H:00"), "count": b.threats_detected} for b in analytics_data
-  ]
-
-  # Aggregate metadata across all buckets
-  http_statuses_agg = {}
-  origin_agg = {}
-  for b in analytics_data:
-    statuses = b.metadata.get("http_statuses", {})
-    for status, count in statuses.items():
-      http_statuses_agg[status] = http_statuses_agg.get(status, 0) + count
-
-    origins = b.metadata.get("top_traffic_origins", {})
-    for loc, count in origins.items():
-      origin_agg[loc] = origin_agg.get(loc, 0) + count
-
-  http_statuses = [{"status": k, "count": v} for k, v in http_statuses_agg.items()]
-
-  # Sort origins and get top 5
-  sorted_origins = sorted(origin_agg.items(), key=lambda item: item[1], reverse=True)[:5]
-
-  if sorted_origins:
-    origin_distribution = [{"origin": k, "count": v} for k, v in sorted_origins]
-  else:
-    origin_distribution = [{"origin": "No Data", "count": 1}]
-
-  # For endpoints/threat severity, we can either pull them from metadata or keep mocking
-  # if they are not explicitly in the metadata yet.
-  # Assuming they will be added to metadata in the future, we return safe defaults for now.
-  endpoint_counts = [{"endpoint": "/api/v1/auth", "count": total_requests}]
-  threat_severity = [
-    {"severity": "Medium", "count": sum(b.threats_detected for b in analytics_data)}
-  ]
-
-  data = {
-    "p99_latency_ms": round(p99_latency, 2),
-    "uptime_percent": round(
-      100 - (sum(b.error_rate_percent for b in analytics_data) / total_buckets), 2
-    )
-    if total_buckets
-    else 100.0,
-    "total_requests_24h": total_requests,
-    "active_incidents": active_incidents,
-    "time_series": time_series,
-    "origin_distribution": origin_distribution,
-    "request_frequency": request_frequency,
-    "http_statuses": http_statuses,
-    "endpoint_counts": endpoint_counts,
-    "threat_severity": threat_severity,
-    "security_alerts": security_alerts,
-    "cookie_consents": {"analytical": cookie_analytical, "marketing": cookie_marketing},
-    "widget_interactions": widget_interactions,
-    "unique_visitors": unique_visitors,
+    },
   }
 
   return {"status": "success", "data": data}

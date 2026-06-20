@@ -24,6 +24,11 @@ export class Footer {
     this.consentService.openSettings();
   }
 
+  openBugReporter(event: Event) {
+    event.preventDefault();
+    window.dispatchEvent(new CustomEvent('openBugReporter'));
+  }
+
   fireConfetti(event: MouseEvent) {
     const target = event.currentTarget as HTMLElement;
     const rect = target.getBoundingClientRect();

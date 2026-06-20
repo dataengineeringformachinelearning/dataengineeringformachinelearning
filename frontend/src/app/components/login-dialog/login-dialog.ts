@@ -326,7 +326,7 @@ export class LoginDialog implements OnInit, OnDestroy {
         const success = await this.authService.forgotPassword(email);
         if (success) {
           this.successMessage.set(
-            'If that email exists in our records, we have sent a password reset link.',
+            'If that email exists in the system records, a password reset link has been sent.',
           );
         } else {
           this.error.set('Failed to submit request. Please try again.');

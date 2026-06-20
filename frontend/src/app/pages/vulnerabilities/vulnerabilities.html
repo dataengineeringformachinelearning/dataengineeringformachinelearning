@@ -1,7 +1,5 @@
 <div class="dashboard-page-container">
   <!-- Glowing atmospheric spheres -->
-  <div class="glow-sphere sphere-1"></div>
-  <div class="glow-sphere sphere-2"></div>
   <div class="dashboard-content-area">
     <div class="content-wrapper full-width">
       <!-- High Density HUD Header -->
@@ -16,15 +14,15 @@
       </header>
 
       <div class="hud-metrics">
-        <div class="metric-card">
+        <div class="metric-card col-span-4 col-span-md-4">
           <span class="metric-label">TOTAL INGESTED</span>
           <span class="metric-value">{{ totalCount() }}</span>
         </div>
-        <div class="metric-card warning">
+        <div class="metric-card warning col-span-4 col-span-md-4">
           <span class="metric-label">ACTIVE THREATS</span>
           <span class="metric-value">{{ openCount() }}</span>
         </div>
-        <div class="metric-card critical">
+        <div class="metric-card critical col-span-4 col-span-md-4">
           <span class="metric-label">CRITICAL CVSS</span>
           <span class="metric-value">{{ criticalCount() }}</span>
         </div>
@@ -33,7 +31,7 @@
       <!-- Dashboard Panel Grid -->
       <div class="dashboard-grid">
         <!-- Left Triage Queue Panel -->
-        <section class="panel-section queue-panel">
+        <section class="panel-section queue-panel col-span-4 col-span-md-4">
           <div class="panel-header">
             <mat-icon class="panel-icon">sort</mat-icon>
             <h2>Ingestion Queue</h2>
@@ -112,7 +110,7 @@
         </section>
 
         <!-- Center Triage Detail & Interactive Matrix Panel -->
-        <section class="panel-section detail-panel">
+        <section class="panel-section detail-panel col-span-4 col-span-md-8">
           @if (selectedVuln()) {
           <div class="panel-header border-b">
             <mat-icon class="panel-icon">assessment</mat-icon>

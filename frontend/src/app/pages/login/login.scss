@@ -18,12 +18,12 @@
 }
 
 .modal-footer {
-  padding: 27px 0  !important;
+  padding: 24px 0  !important;
   border: none !important;
   background: transparent !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 9px  !important;
+  gap: 8px  !important;
   width: 100% !important;
 
   .btn-submit {
@@ -40,7 +40,7 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 9px  !important;
+    gap: 8px  !important;
     box-sizing: border-box !important;
   }
 
@@ -49,7 +49,7 @@
     height: 1px !important;
     background-color: var(--border) !important;
     opacity: 0.35 !important;
-    margin: 27px 0  !important;
+    margin: 24px 0  !important;
   }
 }
 
@@ -61,5 +61,5 @@
   max-width: 480px; margin: 0 auto; gap: 1rem;
 }
 .login-extracted-3 {
-  margin-bottom: 27px;
+  margin-bottom: 24px;
 }

@@ -36,7 +36,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 45px 27px;
+  padding: 48px 24px;
   border-radius: var(--border-radius-md);
   background: var(--card-bg);
   border: 1px dashed var(--border);
@@ -46,7 +46,7 @@
     font-size: 48px;
     width: 48px;
     height: 48px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     color: var(--status-accent);
     opacity: 0.8;
   }
@@ -54,7 +54,7 @@
   .empty-title {
     font-size: 1.25rem;
     font-weight: 600;
-    margin: 0 0 9px 0;
+    margin: 0 0 8px 0;
     color: var(--text-color);
   }
 
@@ -72,29 +72,31 @@
 /* ------------------------------------- */
 
 .ces-meter-section {
-  margin-bottom: 36px;
+  margin-bottom: 32px;
 }
 
 .ces-gauge-cluster {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--grid-gap, 2rem);
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gap, 24px);
   width: 100%;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(12, 1fr);
+  }
 }
 
 .gauge-card {
-  background: color-mix(in srgb, var(--color-surface) 45%, transparent);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border-radius: var(--border-radius-md, 12px);
-  border: 1px solid var(--color-border-precision);
-  padding: var(--card-padding, 1.5rem);
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--border);
+  padding: var(--card-padding);
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  box-shadow: var(--shadow-glow);
-  transition: var(--transition-smooth, all 0.3s ease);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-smooth);
 
   &:hover {
     box-shadow: var(--shadow-hover);
@@ -106,7 +108,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 27px;
+    margin-bottom: 24px;
 
     h3 {
       font-size: 1.1rem;
@@ -125,15 +127,15 @@
 
   .gauge-card-footer {
     width: 100%;
-    margin-top: 27px;
-    padding-top: 18px;
+    margin-top: 24px;
+    padding-top: 16px;
     border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
     font-size: 0.85rem;
     color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
+    gap: 8px;
 
     mat-icon {
       font-size: 16px;
@@ -170,7 +172,7 @@
     transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &.theme-amber .gauge-fill { stroke: var(--color-amber); }
+  &.theme-amber .gauge-fill { stroke: var(--crayola-blue); }
   &.theme-red .gauge-fill { stroke: var(--color-gauge-red); }
   &.theme-primary .gauge-fill { stroke: var(--color-primary); }
   &.theme-success .gauge-fill { stroke: var(--color-success); }
@@ -186,7 +188,7 @@
   align-items: center;
   width: 100%;
 
-  &.threat-text { color: var(--color-amber); }
+  &.threat-text { color: var(--crayola-blue); }
   &.main-text { color: var(--color-gauge-red); }
   &.stability-text { color: var(--color-primary); }
 
@@ -194,13 +196,13 @@
     font-size: 24px;
     width: 24px;
     height: 24px;
-    margin-bottom: 9px;
+    margin-bottom: 8px;
     opacity: 0.8;
   }
 
   .unit {
     font-size: 0.75rem;
-    margin-bottom: 9px;
+    margin-bottom: 8px;
     color: var(--text-muted) !important;
     text-transform: uppercase;
     letter-spacing: 0.1em;
@@ -229,8 +231,12 @@
 
 .dashboard-grid-responsive {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 36px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gap);
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(12, 1fr);
+  }
 }
 
 .stat-panels-grid {
@@ -256,7 +262,7 @@
 .dashboard-grid-single {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 36px;
+  gap: var(--grid-gap);
 }
 
 .ag-chart-medium {
@@ -268,19 +274,19 @@
 .panel-title-flex {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
 }
 
 .metrics-section-spacing {
-  margin-top: 45px;
+  margin-top: 48px;
 }
 
 .icon-small {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
 }
 
 .panel-header-padded {
-  padding: 27px 27px 0;
+  padding: 24px 24px 0;
 }

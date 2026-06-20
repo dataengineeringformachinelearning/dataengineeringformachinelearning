@@ -18,15 +18,15 @@
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 9px  !important;
+  gap: 8px  !important;
   background: var(--button-primary) !important;
   color: var(--button-primary-text) !important;
 
   mat-icon {
     margin: 0;
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
@@ -37,5 +37,5 @@
 
 /* Extracted Inline Styles */
 .status-card-extracted-1 {
-  margin-top: 18px;
+  margin-top: 16px;
 }

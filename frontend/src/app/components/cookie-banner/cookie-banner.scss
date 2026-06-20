@@ -3,7 +3,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 9px;
+  padding: 8px;
   z-index: 9999;
   display: flex;
   justify-content: center;
@@ -19,10 +19,10 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow: var(--shadow-hover);
-  padding: 27px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: all 0.3s ease;
@@ -37,7 +37,7 @@
   .title-group {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
     color: var(--text-color);
 
     .cookie-icon {
@@ -60,7 +60,7 @@
     border: none;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 9px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,7 +80,7 @@
 .cookie-banner-body {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 
   .cookie-description {
     font-size: 0.95rem;
@@ -107,8 +107,8 @@
 .cookie-preferences-form {
   display: flex;
   flex-direction: column;
-  gap: 9px;
-  padding: 18px;
+  gap: 8px;
+  padding: 16px;
   background: rgba(128, 128, 128, 0.05);
   border-radius: 12px;
   border: 1px solid var(--border);
@@ -118,8 +118,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 18px;
-    padding-bottom: 9px;
+    gap: 16px;
+    padding-bottom: 8px;
     border-bottom: 1px solid rgba(128, 128, 128, 0.1);
 
     &:last-child {
@@ -130,7 +130,7 @@
     .pref-info {
       display: flex;
       flex-direction: column;
-      gap: 9px;
+      gap: 8px;
 
       .pref-name {
         font-size: 0.925rem;
@@ -156,7 +156,7 @@
         text-transform: uppercase;
         color: var(--color-success);
         background: color-mix(in srgb, var(--color-success) 10%, transparent);
-        padding: 9px 9px;
+        padding: 8px 8px;
         border-radius: 4px;
         letter-spacing: 0.5px;
       }
@@ -200,13 +200,13 @@
 
 // Footer buttons
 .cookie-banner-footer {
-  margin-top: 9px;
+  margin-top: 8px;
 
   .footer-buttons {
     display: flex;
     flex-direction: column;
     align-items: stretch !important;
-    gap: 18px;
+    gap: 16px;
 
     .settings-btn {
       padding: 0;
@@ -229,7 +229,7 @@
 
     .primary-actions {
       display: flex;
-      gap: 9px;
+      gap: 8px;
       align-items: center;
       flex-wrap: wrap;
       justify-content: flex-end;
@@ -237,7 +237,7 @@
 
       button {
         height: 38px !important;
-        padding: 0 18px  !important;
+        padding: 0 16px  !important;
         font-size: 0.875rem !important;
         border-radius: 8px !important;
         flex: 1;
@@ -304,7 +304,7 @@
 // Responsive layout
 @media (min-width: 577px) {
   .cookie-banner-overlay {
-    padding: 27px;
+    padding: 24px;
     justify-content: flex-end;
   }
 
@@ -315,7 +315,7 @@
   .footer-buttons {
     flex-direction: row;
     align-items: center !important;
-    gap: 9px;
+    gap: 8px;
 
     .settings-btn {
       align-self: auto;

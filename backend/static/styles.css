@@ -298,7 +298,7 @@ main.main {
   padding: 3rem 2rem;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   max-width: 720px;
   width: 100%;
   box-sizing: border-box;

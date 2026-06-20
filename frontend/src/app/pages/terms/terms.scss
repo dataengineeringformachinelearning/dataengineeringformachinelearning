@@ -1,13 +1,13 @@
 .terms-header {
   border-bottom: 1px solid var(--border);
-  padding-bottom: 27px;
-  margin-bottom: 36px;
+  padding-bottom: 24px;
+  margin-bottom: 32px;
   text-align: center;
 
   h1 {
     font-size: 2.25rem;
     font-weight: 700;
-    margin: 0 0 9px 0;
+    margin: 0 0 8px 0;
     letter-spacing: -0.03em;
     color: var(--hero-title-color);
   }
@@ -20,17 +20,17 @@
 }
 
 .terms-section {
-  margin-bottom: 36px;
+  margin-bottom: 32px;
 
   h2 {
     font-size: 1.5rem;
     font-weight: 600;
     margin-top: 0;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
     letter-spacing: -0.02em;
     color: var(--text-color);
     border-left: 4px solid var(--color-success);
-    padding-left: 9px;
+    padding-left: 8px;
   }
 
   p {
@@ -38,15 +38,15 @@
     line-height: 1.65;
     color: var(--text-color);
     opacity: 0.95;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
 
   ul {
-    padding-left: 27px;
-    margin-bottom: 18px;
+    padding-left: 24px;
+    margin-bottom: 16px;
 
     li {
-      margin-bottom: 9px;
+      margin-bottom: 8px;
       font-size: 1.025rem;
 
       strong {
@@ -60,11 +60,11 @@
   background: rgba(128, 128, 128, 0.05);
   border: 1px solid var(--border);
   border-radius: 10px;
-  padding: 18px;
-  margin-top: 18px;
+  padding: 16px;
+  margin-top: 16px;
 
   p {
-    margin: 0 0 9px 0;
+    margin: 0 0 8px 0;
     font-size: 0.95rem;
 
     &:last-child {

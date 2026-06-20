@@ -42,7 +42,7 @@
     font-size: 48px;
     width: 48px;
     height: 48px;
-    color: var(--color-amber);
+    color: var(--color-primary);
     margin-bottom: var(--grid-gap);
     animation: pulse 2s infinite ease-in-out;
   }
@@ -50,11 +50,11 @@
   .premium-spinner {
     width: 40px;
     height: 40px;
-    border: 3px solid var(--color-border-precision);
+    border: 3px solid var(--border);
     border-top: 3px solid var(--color-primary);
     border-radius: 50%;
     animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-    margin-bottom: 27px;
+    margin-bottom: 24px;
   }
 
   .loader-text {
@@ -126,30 +126,7 @@
     flex: 1;
   }
 
-  .glow-sphere {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(120px);
-    opacity: 0.15;
-    z-index: 0;
-    pointer-events: none;
 
-    &.sphere-1 {
-      width: 500px;
-      height: 500px;
-      background: var(--primary-color);
-      top: -150px;
-      left: -150px;
-    }
-
-    &.sphere-2 {
-      width: 450px;
-      height: 450px;
-      background: var(--accent-color);
-      bottom: -150px;
-      right: -100px;
-    }
-  }
 
 
   .hud-header {
@@ -157,22 +134,22 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 27px;
-    padding-bottom: 27px;
+    gap: 24px;
+    padding-bottom: 24px;
     border-bottom: 1px solid var(--border);
     margin-bottom: var(--grid-gap);
 
-    @media (min-width: 769px) {
+    @media (min-width: 768px) {
       flex-direction: row;
       align-items: center;
     }
 
     .title-group {
       .section-tag-row {
-        margin-bottom: 9px;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
-        gap: 9px;
+        gap: 8px;
       }
 
       .section-tag {
@@ -194,7 +171,7 @@
       }
 
       .hud-subtitle {
-        margin: 9px 0 0;
+        margin: 8px 0 0;
         font-size: 0.95rem;
         color: var(--text-muted);
         line-height: 1.4;

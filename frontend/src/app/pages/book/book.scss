@@ -28,14 +28,7 @@
 }
 
 /* Glow Spheres */
-.glow-sphere {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.15;
-  z-index: 0;
-  pointer-events: none;
-}
+
 
 .sphere-1 {
   width: 500px;
@@ -65,7 +58,7 @@
 
 .sidebar-section {
   flex: 1;
-  padding: 27px 18px;
+  padding: 24px 16px;
   overflow-y: auto;
 
   .section-title {
@@ -73,7 +66,7 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
-    margin: 0 0 9px 9px;
+    margin: 0 0 8px 8px;
     font-weight: 600;
   }
 }
@@ -81,11 +74,11 @@
 .page-list {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 8px;
 }
 
 .page-item {
-  padding: 9px 18px;
+  padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -119,7 +112,7 @@
     .page-title {
       color: var(--book-accent);
       font-weight: 600;
-      padding-left: 9px;
+      padding-left: 8px;
     }
   }
 
@@ -141,11 +134,11 @@
 }
 
 .dashboard-topbar {
-  padding: 18px 27px;
+  padding: 16px 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 9px;
+  gap: 8px;
   border-bottom: 1px solid var(--border);
   background-color: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(8px);
@@ -160,7 +153,7 @@
 }
 
 .page-description {
-  margin: 9px 0 0;
+  margin: 8px 0 0;
   font-size: 0.9rem;
   color: var(--text-muted);
 }
@@ -175,8 +168,8 @@
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-muted);
-  margin-bottom: 9px;
-  padding: 0 9px;
+  margin-bottom: 8px;
+  padding: 0 8px;
 }
 
 .progress-percentage {
@@ -216,12 +209,12 @@
 
   &:hover {
     border-color: var(--book-accent);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-hover);
   }
 }
 
 .card-body-clean.book-body {
-  padding: 18px 27px;
+  padding: 16px 24px;
 }
 
 /* Page Transition and style tweaks */
@@ -245,8 +238,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  padding: 18px;
+  gap: 16px;
+  padding: 16px;
   border: 1px solid var(--border);
   border-radius: 12px;
   background-color: var(--card-bg);
@@ -271,7 +264,7 @@
   transition: all 0.2s ease !important;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
 
   &:not([disabled]):hover {
     transform: translateY(-2px);
@@ -293,7 +286,7 @@
 
 @media (min-width: 601px) {
   .dashboard-topbar {
-    padding: 27px 36px;
+    padding: 24px 32px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -302,15 +295,15 @@
 
 
   .card-body-clean.book-body {
-    padding: 36px;
+    padding: 32px;
   }
 
   .pagination-controls-outlined {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 27px;
-    padding: 18px 36px;
+    gap: 24px;
+    padding: 16px 32px;
 
     .pagination-btn {
       width: auto;

@@ -38,19 +38,12 @@
 }
 
 /* Glow Spheres for Homepage Unity */
-.glow-sphere {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.15;
-  z-index: 0;
-  pointer-events: none;
-}
+
 
 .sphere-1 {
   width: 500px;
   height: 500px;
-  background: var(--color-amber);
+  background: var(--crayola-blue);
   top: -150px;
   left: -150px;
 }
@@ -75,8 +68,8 @@
 .ml-stat-panels-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
-  margin-bottom: 27px;
+  gap: 16px;
+  margin-bottom: 24px;
 
   .ml-stat-panel {
     margin-bottom: 0;
@@ -92,11 +85,11 @@
 }
 
 .dashboard-topbar {
-  padding: 18px 27px;
+  padding: 16px 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 18px;
+  gap: 16px;
   border-bottom: 1px solid var(--border);
   background-color: rgba(255, 255, 255, 0.02);
   backdrop-filter: blur(8px);
@@ -121,7 +114,7 @@
 }
 
 .page-description {
-  margin: 9px 0 0;
+  margin: 8px 0 0;
   font-size: 0.9rem;
   color: var(--text-muted);
 }
@@ -157,12 +150,12 @@
 /* Outlined status card - Digital Oasis aesthetic */
 .status-card-outlined {
   border-radius: var(--border-radius-lg);
-  border: 1px solid var(--color-border-precision);
+  border: 1px solid var(--border);
   background-color: color-mix(in srgb, var(--color-surface) 45%, transparent);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   overflow: hidden;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-sm);
   transition: var(--transition-smooth);
 
   &:hover {
@@ -178,7 +171,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 18px;
+  gap: 16px;
   background-color: rgba(255, 255, 255, 0.01);
 }
 
@@ -190,7 +183,7 @@
 }
 
 .card-subtitle {
-  margin: 9px 0 0;
+  margin: 8px 0 0;
   color: var(--text-muted);
   font-size: 0.85rem;
 }
@@ -198,8 +191,8 @@
 .status-badge-premium {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 9px 18px;
+  gap: 8px;
+  padding: 8px 16px;
   border-radius: 20px;
   font-weight: 600;
   font-size: 0.75rem;
@@ -225,14 +218,14 @@
   background-color: color-mix(in srgb, var(--color-surface) 45%, transparent);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--color-border-precision);
+  border: 1px solid var(--border);
   border-radius: var(--border-radius-md);
   padding: var(--card-padding);
   margin-bottom: var(--grid-gap);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-sm);
   transition: var(--transition-smooth);
 
   &:hover {
@@ -244,7 +237,7 @@
 .stat-info {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 
   .stat-icon {
     font-size: 28px;
@@ -265,7 +258,7 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   display: block;
-  margin-top: 9px;
+  margin-top: 8px;
 }
 
 .stat-value {
@@ -277,10 +270,10 @@
 
 /* Timeline panel */
 .timeline-panel {
-  margin-bottom: 36px;
+  margin-bottom: 32px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  padding: 18px;
+  padding: 16px;
   background-color: rgba(255, 255, 255, 0.01);
 }
 
@@ -288,8 +281,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 9px;
-  margin-bottom: 18px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .panel-title {
@@ -309,7 +302,7 @@
 
 .timeline-bars-wrapper {
   background: var(--bg-color);
-  padding: 9px;
+  padding: 8px;
   border-radius: 6px;
   border: 1px solid var(--border);
 }
@@ -336,7 +329,7 @@
   }
 
   &.bar-warning {
-    background-color: var(--color-amber);
+    background-color: var(--crayola-blue);
   }
 
   &.bar-danger {
@@ -353,32 +346,32 @@
   justify-content: space-between;
   color: var(--text-muted);
   font-size: 0.75rem;
-  margin-top: 9px;
+  margin-top: 8px;
 }
 
 .timeline-divider {
   flex: 1;
   border-top: 1px dashed var(--border);
-  margin: 9px 18px 0;
+  margin: 8px 16px 0;
 }
 
 /* Incidents panel */
 .incidents-panel {
-  margin-top: 36px;
-  padding-top: 27px;
+  margin-top: 32px;
+  padding-top: 24px;
   border-top: 1px solid var(--border);
 }
 
 .incidents-list {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  margin-top: 18px;
+  gap: 16px;
+  margin-top: 16px;
 }
 
 .incident-item-outlined {
   position: relative;
-  padding: 18px 18px 18px 27px;
+  padding: 16px 16px 16px 24px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background-color: rgba(255, 255, 255, 0.01);
@@ -410,8 +403,8 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 9px;
-  margin-bottom: 9px;
+  gap: 8px;
+  margin-bottom: 8px;
   flex-wrap: wrap;
 }
 
@@ -419,7 +412,7 @@
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 9px 9px;
+  padding: 8px 8px;
   border-radius: 4px;
   letter-spacing: 0.05em;
   background-color: rgba(255, 193, 7, 0.1);
@@ -443,7 +436,7 @@
 .incident-date {
   font-size: 0.75rem;
   color: var(--text-muted);
-  margin-top: 9px;
+  margin-top: 8px;
 }
 
 .incident-body-text {
@@ -470,10 +463,10 @@
 }
 
 .services-status-panel {
-  margin-bottom: 27px;
+  margin-bottom: 24px;
 
   .panel-title {
-    margin-bottom: 9px;
+    margin-bottom: 8px;
     font-size: 16px;
     font-weight: 600;
   }
@@ -481,15 +474,15 @@
   .services-status-list {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 8px;
   }
 
   .service-status-row {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 9px;
-    padding: 9px;
+    gap: 8px;
+    padding: 8px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
@@ -510,7 +503,7 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
 
     mat-icon {
       font-size: 14px;
@@ -529,8 +522,8 @@
     align-items: center;
     justify-content: space-between;
     border-top: 1px solid var(--border);
-    padding-top: 9px;
-    margin-top: 9px;
+    padding-top: 8px;
+    margin-top: 8px;
   }
 
   .service-sla {
@@ -541,7 +534,7 @@
   }
 
   .status-badge-premium {
-    padding: 9px 9px;
+    padding: 8px 8px;
     font-size: 12px;
     height: auto;
   }
@@ -550,7 +543,7 @@
     color: var(--text-muted);
     font-size: 14px;
     text-align: center;
-    padding: 9px;
+    padding: 8px;
   }
 }
 
@@ -560,7 +553,7 @@
   }
 
   .dashboard-topbar {
-    padding: 27px 36px;
+    padding: 24px 32px;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
@@ -591,23 +584,23 @@
   }
 
   .timeline-panel {
-    padding: 27px;
+    padding: 24px;
 
     .panel-header {
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
   }
 
   .timeline-bars-wrapper {
-    padding: 9px;
+    padding: 8px;
   }
 
   .timeline-bars {
     height: 34px;
-    gap: 9px;
+    gap: 8px;
   }
 
   .timeline-labels {
@@ -619,7 +612,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      padding: 9px 18px;
+      padding: 8px 16px;
     }
 
     .service-stats {
@@ -627,19 +620,19 @@
       border-top: none;
       padding-top: 0;
       margin-top: 0;
-      gap: 18px;
+      gap: 16px;
     }
   }
 
   .incidents-panel {
     .incident-item-outlined {
-      padding: 18px 18px 18px 27px;
+      padding: 16px 16px 16px 24px;
     }
 
     .incident-header-row {
       flex-direction: row;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
     }
 
     .incident-date {
@@ -656,8 +649,8 @@
 
 /* Sanity.io Announcements Premium UI Styles */
 .announcements-container {
-  margin-bottom: 36px;
-  padding: 27px;
+  margin-bottom: 32px;
+  padding: 24px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.01);
   border: 1px solid var(--border);
@@ -671,13 +664,13 @@
 .section-title-premium {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-color);
   margin-top: 0;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 
   mat-icon {
     color: var(--status-accent);
@@ -690,10 +683,10 @@
 .announcements-loader {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   color: var(--text-muted);
   font-size: 0.9rem;
-  padding: 18px 0;
+  padding: 16px 0;
 
   .btn-spinner {
     width: 16px;
@@ -713,27 +706,27 @@
 .announcements-error {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   color: var(--color-error);
   font-size: 0.9rem;
-  padding: 18px 0;
+  padding: 16px 0;
 
   mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
   }
 }
 
 .announcements-list-premium {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .announcement-card-premium {
   position: relative;
-  padding: 18px 18px 18px 27px;
+  padding: 16px 16px 16px 24px;
   border-radius: 10px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.02);
@@ -782,14 +775,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 }
 
 .ann-severity-badge {
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 9px 9px;
+  padding: 8px 8px;
   border-radius: 4px;
   letter-spacing: 0.05em;
   background: rgba(255, 255, 255, 0.05);
@@ -817,7 +810,7 @@
 }
 
 .ann-title {
-  margin: 0 0 9px 0;
+  margin: 0 0 8px 0;
   font-size: 1.05rem;
   font-weight: 600;
   color: var(--text-color);
@@ -836,12 +829,12 @@
   margin: 0;
 }
 .status-extracted-2 {
-  margin-bottom: 27px;
+  margin-bottom: 24px;
               display: flex;
               justify-content: space-between;
               align-items: center;
-              padding: 27px;
+              padding: 24px;
 }
 .status-extracted-3 {
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 }

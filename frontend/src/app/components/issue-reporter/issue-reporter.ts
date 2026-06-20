@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, HostListener } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -34,6 +34,13 @@ export class IssueReporter {
       }
       originalError.apply(console, args);
     };
+  }
+
+  @HostListener('window:openBugReporter')
+  onOpenBugReporter() {
+    if (!this.isOpen()) {
+      this.toggleModal();
+    }
   }
 
   toggleModal() {

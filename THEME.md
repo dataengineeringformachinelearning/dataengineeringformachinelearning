@@ -6,7 +6,7 @@ This document outlines the core semantic color tokens, typography, and visual st
 
 ## 1. Core Color Palette
 
-These are the semantic tokens used across the application for both light and dark modes.
+These are the semantic tokens used across the application for both light and dark modes, adhering to the "Lab Coat" minimalist aesthetic (high contrast, clean, scientific precision).
 
 /_ CSS HEX _/
 --jet-black: #31393cff;
@@ -60,8 +60,9 @@ $gradient-radial: radial-gradient(#31393cff, #2176ffff, #33a1fdff, #fdca40ff, #f
 
 ## 2. Typography
 
-- Base font size: 13px+
+- Base font size: 16px
 - Header letter spacing should use negative/smaller spacing (`letter-spacing: -0.02em` or similar) to ensure a clean, modern look.
+- Use bold, high-contrast typography to emphasize metrics and data over decorative elements.
 
 ## 3. UI Component Aliases (Unified mapping)
 
@@ -79,8 +80,9 @@ For convenience, these generic architectural aliases map dynamically to the acti
 To guarantee layout consistency and a pixel-perfect feel, follow these guidelines:
 
 - **Buttons**: Always use `--crayola-blue` background and `--white` text.
-- **Hover effects**: Use Material Design ripples or smooth background transitions.
-- **Borders**: Must be extremely light/subtle in both modes.
+- **Hover effects**: Use sharp, precise interactions. Avoid diffuse glows or muddy shadows. Use stark contrast shifts or solid bottom borders.
+- **Borders**: Must be extremely light/subtle in both modes to create a sterile, clinical division of space without visual clutter.
+- **Backgrounds**: Do not use glowing orbs, gradients, or ambient noise. Backgrounds must be pure `#ffffff` (light mode) or `#121212` (dark mode) to focus entirely on data.
 
 ## 5. Video Feeds
 

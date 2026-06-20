@@ -4,7 +4,7 @@
   /* Set up theme-driven variables following THEME.md */
   --sidebar-accent: var(--color-primary-container);
   --sidebar-border: rgba(255, 255, 255, 0.06);
-  --sidebar-bg: rgba(15, 24, 20, 0.45);
+  --sidebar-bg: rgba(18, 18, 18, 0.45);
   --sidebar-hover-bg: rgba(255, 255, 255, 0.03);
   --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, color-mix(in srgb, var(--color-surface) 4%, transparent) 100%);
   --sidebar-active-border: var(--color-primary-container);
@@ -13,7 +13,7 @@
 :host-context(html[data-theme='light']) {
   --sidebar-accent: var(--color-primary);
   --sidebar-border: color-mix(in srgb, var(--color-surface) 8%, transparent);
-  --sidebar-bg: rgba(244, 247, 245, 0.85);
+  --sidebar-bg: rgba(255, 255, 255, 0.85);
   --sidebar-hover-bg: rgba(0, 0, 0, 0.03);
   --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 8%, transparent) 0%, color-mix(in srgb, var(--color-surface) 2%, transparent) 100%);
   --sidebar-active-border: var(--color-primary);
@@ -72,10 +72,10 @@
 }
 
 .sidebar-brand {
-  padding: 27px;
+  padding: 24px;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   border-bottom: 1px solid var(--sidebar-border);
   cursor: pointer;
   justify-content: space-between;
@@ -116,7 +116,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 9px;
+    padding: 8px;
     border-radius: 50%;
     transition: var(--transition-smooth);
 
@@ -128,26 +128,26 @@
 }
 
 .sidebar-search {
-  padding: 18px 18px;
+  padding: 16px 16px;
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   border-bottom: 1px solid var(--sidebar-border);
 
   .search-wrapper {
     width: 100%;
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
     background: rgba(0, 0, 0, 0.15);
     border: 1px solid var(--sidebar-border);
-    padding: 9px 9px;
+    padding: 8px 8px;
     border-radius: 20px;
     transition: var(--transition-smooth);
 
     &:focus-within {
       border-color: var(--sidebar-accent);
-      box-shadow: 0 0 10px rgba(159, 184, 173, 0.15);
+      box-shadow: 0 0 10px color-mix(in srgb, var(--sidebar-accent) 15%, transparent);
     }
 
     .search-shortcut {
@@ -158,7 +158,7 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--sidebar-border);
       border-radius: 4px;
-      padding: 2px 9px;
+      padding: 2px 8px;
       line-height: 1;
       pointer-events: none;
       white-space: nowrap;
@@ -232,17 +232,17 @@
 }
 
 .sidebar-nav {
-  padding: 18px 0;
+  padding: 16px 0;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 8px;
 }
 
 .nav-item {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 9px 18px;
+  gap: 8px;
+  padding: 8px 16px;
   color: var(--text-color);
   text-decoration: none;
   font-weight: 600;
@@ -280,15 +280,15 @@
 .nav-tree-section {
   display: flex;
   flex-direction: column;
-  margin-bottom: 9px;
-  margin-top: 9px;
+  margin-bottom: 8px;
+  margin-top: 8px;
 }
 
 .nav-tree-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 18px 9px 54px;
+  padding: 8px 16px 8px 56px;
   color: var(--text-muted);
   font-size: 0.7rem;
   font-weight: 800;
@@ -302,9 +302,9 @@
   }
 
   .tree-arrow {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
     color: var(--text-muted);
   }
 }
@@ -319,8 +319,8 @@
   .tree-child-item {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 9px 18px 9px 54px;
+    gap: 8px;
+    padding: 8px 16px 8px 56px;
     color: var(--text-muted);
     font-size: 0.8rem;
     font-weight: 500;
@@ -377,14 +377,14 @@
 }
 
 .sidebar-footer {
-  padding: 18px;
+  padding: 16px;
   border-top: 1px solid var(--sidebar-border);
 }
 
 .system-health {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   font-size: 0.8rem;
   color: var(--text-muted);
   font-weight: 600;
@@ -448,13 +448,13 @@
   }
 
   .sidebar-brand {
-    padding: 27px 9px;
+    padding: 24px 8px;
     justify-content: center;
   }
 
   .nav-item {
     justify-content: center;
-    padding: 9px;
+    padding: 8px;
     border-left: 3px solid transparent;
 
     &.active {
@@ -465,7 +465,7 @@
   .sidebar-footer {
     display: flex;
     justify-content: center;
-    padding: 18px 0;
+    padding: 16px 0;
   }
 }
 
@@ -476,16 +476,16 @@
     border-bottom: none;
     height: calc(100vh - 64px);
     position: sticky;
-    top: 63px;
+    top: 64px;
     display: flex !important;
   }
 }
 
 .search-results-list {
-  padding: 18px 18px;
+  padding: 16px 16px;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 8px;
 
   .search-results-header {
     font-size: 0.75rem;
@@ -493,14 +493,14 @@
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--text-muted);
-    margin-bottom: 9px;
+    margin-bottom: 8px;
   }
 
   .search-result-item {
     display: flex;
     align-items: center;
-    gap: 9px;
-    padding: 9px 9px;
+    gap: 8px;
+    padding: 8px 8px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--sidebar-border);
@@ -517,9 +517,9 @@
     }
 
     .result-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
       color: var(--text-muted);
     }
 
@@ -557,19 +557,19 @@
       color: var(--text-muted);
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      margin-top: 9px;
+      margin-top: 8px;
     }
 
     mark.search-highlight {
-      background: rgba(255, 183, 77, 0.25);
-      color: var(--color-amber);
+      background: rgba(33, 118, 255, 0.25);
+      color: var(--crayola-blue);
       font-weight: 700;
       border-radius: 2px;
       padding: 0 2px;
 
       :host-context(html[data-theme='light']) & {
-        background: rgba(176, 114, 25, 0.15);
-        color: var(--color-amber);
+        background: rgba(33, 118, 255, 0.15);
+        color: var(--crayola-blue);
       }
     }
   }
@@ -578,7 +578,7 @@
     font-size: 0.8rem;
     color: var(--text-muted);
     text-align: center;
-    padding: 18px 0;
+    padding: 16px 0;
   }
 }
 

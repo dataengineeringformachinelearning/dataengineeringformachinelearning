@@ -1,11 +1,11 @@
 .fab-button {
   position: fixed;
-  bottom: 36px;
-  right: 36px;
+  bottom: 32px;
+  right: 32px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--color-amber);
+  background: var(--crayola-blue);
   color: var(--color-background);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -67,9 +67,9 @@
 }
 
 .modal-header {
-  padding: 27px;
+  padding: 24px;
   border-bottom: 1px solid var(--border);
-  border-top: 3px solid var(--color-amber); /* Industrial amber accent */
+  border-top: 3px solid var(--crayola-blue); /* Industrial amber accent */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -87,7 +87,7 @@
   .title-wrapper {
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
   }
 
   .header-icon {
@@ -95,7 +95,7 @@
     font-size: 24px;
     width: 24px;
     height: 24px;
-    color: var(--color-amber);
+    color: var(--crayola-blue);
   }
 
   .close-btn {
@@ -110,16 +110,16 @@
     justify-content: center;
 
     &:hover {
-      color: var(--color-amber);
+      color: var(--crayola-blue);
     }
   }
 }
 
 .modal-body {
-  padding: 27px;
+  padding: 24px;
 
   .helper-text {
-    margin: 0 0 18px 0;
+    margin: 0 0 16px 0;
     color: var(--text-color);
     opacity: 0.8;
     font-size: 0.95rem;
@@ -128,7 +128,7 @@
 
   textarea {
     width: 100%;
-    padding: 18px;
+    padding: 16px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.2);
@@ -170,18 +170,18 @@
   }
 
   .status-msg {
-    margin-top: 18px;
-    padding: 9px;
+    margin-top: 16px;
+    padding: 8px;
     border-radius: 6px;
     font-size: 0.9rem;
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
 
     .status-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
     }
 
     &.success {
@@ -199,22 +199,22 @@
 }
 
 .modal-footer {
-  padding: 18px 27px;
+  padding: 16px 24px;
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   background: rgba(0, 0, 0, 0.05);
 
   .btn-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
   }
 
   button {
-    padding: 9px 18px;
+    padding: 8px 16px;
     border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
@@ -228,22 +228,22 @@
       color: var(--text-color);
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
 
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.05);
-        border-color: var(--color-amber);
+        border-color: var(--crayola-blue);
       }
     }
 
     &.btn-submit {
-      background: var(--color-amber) !important;
+      background: var(--crayola-blue) !important;
       border: none !important;
       color: var(--color-background) !important;
       min-width: 100px;
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
       justify-content: center;
       box-shadow: var(--shadow-sm) !important;
       font-weight: 700 !important;
@@ -270,10 +270,10 @@
       color: var(--color-primary);
     }
     .header-icon {
-      color: var(--color-amber);
+      color: var(--crayola-blue);
     }
     .close-btn:hover {
-      color: var(--color-amber);
+      color: var(--crayola-blue);
     }
   }
   .modal-footer {
@@ -281,7 +281,7 @@
     button.btn-cancel {
       &:hover:not(:disabled) {
         background: rgba(0, 0, 0, 0.04);
-        border-color: var(--color-amber);
+        border-color: var(--crayola-blue);
       }
     }
   }

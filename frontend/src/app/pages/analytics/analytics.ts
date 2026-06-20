@@ -57,7 +57,7 @@ export class AnalyticsComponent implements OnInit {
         xKey: 'time',
         yKey: 'latency',
         yName: 'Latency (ms)',
-        stroke: 'var(--color-amber)',
+        stroke: 'var(--crayola-blue)',
         strokeWidth: 3,
         interpolation: { type: 'smooth' },
         marker: {
@@ -114,7 +114,7 @@ export class AnalyticsComponent implements OnInit {
           'var(--color-info)',
           'var(--color-primary)',
           'var(--color-success)',
-          'var(--color-amber)',
+          'var(--crayola-blue)',
           'var(--color-warning)',
         ],
       },
@@ -289,7 +289,7 @@ export class AnalyticsComponent implements OnInit {
           'var(--color-error)',
           'var(--color-gauge-red)',
           'var(--color-warning)',
-          'var(--color-amber)',
+          'var(--crayola-blue)',
         ],
       },
     ],
@@ -371,7 +371,7 @@ export class AnalyticsComponent implements OnInit {
       palette: {
         fills: [
           'var(--color-primary)',
-          'var(--color-amber)',
+          'var(--crayola-blue)',
           'var(--color-primary-container)',
           'var(--color-error)',
           'var(--color-success)',
@@ -379,7 +379,7 @@ export class AnalyticsComponent implements OnInit {
         ],
         strokes: [
           'var(--color-primary)',
-          'var(--color-amber)',
+          'var(--crayola-blue)',
           'var(--color-primary-container)',
           'var(--color-error)',
           'var(--color-success)',
@@ -400,19 +400,8 @@ export class AnalyticsComponent implements OnInit {
   ngOnInit() {}
 
   private calculateCESMetrics() {
-    this.threatLevel = Math.min(100, this.activeIncidents * 20 + (this.p99Latency > 500 ? 30 : 0));
-    this.slaLevel = Math.max(0, this.uptimePercent - (this.p99Latency > 800 ? 5 : 0));
-    this.stabilityLevel = Math.max(
-      0,
-      100 - this.activeIncidents * 10 - (this.p99Latency > 300 ? 15 : 0),
-    );
-    this.cesLevel = Math.max(
-      0,
-      Math.min(
-        100,
-        this.slaLevel * 0.5 + this.stabilityLevel * 0.4 + (100 - this.threatLevel) * 0.1,
-      ),
-    );
+    // Note: CES is now securely calculated on the backend to prevent cross-tenant data leakage.
+    // The frontend merely displays the pre-calculated global math aggregate values.
   }
 
   public getGaugeStroke(value: number, circumference: number): string {
@@ -424,38 +413,45 @@ export class AnalyticsComponent implements OnInit {
     this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/overview`).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
-          const data = response.data;
-          this.p99Latency = data.p99_latency_ms;
-          this.uptimePercent = data.uptime_percent;
-          this.totalRequests = data.total_requests_24h;
-          this.activeIncidents = data.active_incidents;
+          const { ces, user_metrics } = response.data;
 
-          this.calculateCESMetrics();
+          this.cesLevel = ces?.level || 0;
+          this.threatLevel = ces?.threat || 0;
+          this.slaLevel = ces?.sla || 0;
+          this.stabilityLevel = ces?.stability || 0;
+
+          this.p99Latency = user_metrics?.p99_latency_ms || 0;
+          this.uptimePercent = user_metrics?.uptime_percent || 0;
+          this.totalRequests = user_metrics?.total_requests_24h || 0;
+          this.activeIncidents = user_metrics?.active_incidents || 0;
 
           this.chartOptions = {
             ...this.chartOptions,
-            data: data.time_series || [],
+            data: user_metrics?.time_series || [],
           };
           this.originChartOptions = {
             ...this.originChartOptions,
-            data: data.origin_distribution || [],
+            data: user_metrics?.origin_distribution || [],
           };
           this.frequencyChartOptions = {
             ...this.frequencyChartOptions,
-            data: data.request_frequency || [],
+            data: user_metrics?.request_frequency || [],
           };
-          this.statusChartOptions = { ...this.statusChartOptions, data: data.http_statuses || [] };
+          this.statusChartOptions = {
+            ...this.statusChartOptions,
+            data: user_metrics?.http_statuses || [],
+          };
           this.endpointChartOptions = {
             ...this.endpointChartOptions,
-            data: data.endpoint_counts || [],
+            data: user_metrics?.endpoint_counts || [],
           };
           this.threatSeverityChartOptions = {
             ...this.threatSeverityChartOptions,
-            data: data.threat_severity || [],
+            data: user_metrics?.threat_severity || [],
           };
           this.securityAlertsChartOptions = {
             ...this.securityAlertsChartOptions,
-            data: data.security_alerts || [],
+            data: user_metrics?.security_alerts || [],
           };
         }
         this.isLoading = false;

@@ -6,13 +6,16 @@
   min-height: 450px;
   display: flex;
   flex-direction: column;
-  box-shadow: none !important;
-  border: none;
-  background-color: transparent;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border);
+  background-color: var(--card-bg);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  box-sizing: border-box;
 
   .widget-header {
     flex: 0 0 auto;
-    padding-bottom: 18px;
+    padding-bottom: 16px;
 
     .widget-title {
       font-size: 1.25rem;

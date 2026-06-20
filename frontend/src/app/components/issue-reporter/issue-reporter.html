@@ -23,13 +23,13 @@
     </div>
     <div class="modal-body">
       <p class="helper-text">
-        Describe what went wrong. We'll automatically attach diagnostic info (like recent errors) to
-        help us fix it faster.
+        Describe what went wrong. Diagnostic info (like recent errors) will be automatically
+        attached to assist in resolving the issue.
       </p>
       <textarea
         id="issue-description-input"
         [(ngModel)]="issueDescription"
-        placeholder="E.g., The chart didn't load when I clicked the refresh button..."
+        placeholder="E.g., The chart failed to load when the refresh button was clicked..."
         rows="5"
         [disabled]="isSubmitting()"
         aria-label="Describe what went wrong"
