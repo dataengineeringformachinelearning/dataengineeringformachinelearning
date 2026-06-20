@@ -143,5 +143,16 @@ services:
       - /tmp
     restart: unless-stopped
 
+  cpe-guesser:
+    build:
+      context: ./cpe-guesser
+    container_name: cpe-guesser
+    ports:
+      - "1323:1323"
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    restart: unless-stopped
+
 volumes:
   clickhouse-data:

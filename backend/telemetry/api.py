@@ -8,6 +8,7 @@ from utils.request import get_client_ip, get_user_agent
 
 logger = logging.getLogger(__name__)
 router = Router()
+background_tasks = set()
 
 
 class TelemetryPayload(Schema):
@@ -104,3 +105,55 @@ async def subscribe_newsletter(request, payload: SubscribePayload):
   )
 
   return {"status": "success", "email": payload.email, "email_sent": email_sent}
+
+
+class TelemetryDualStreamPayload(Schema):
+  tenant_id: str
+  url: str | None = None
+  stream_type: str  # "infrastructure" or "application_dependency"
+  # For infrastructure
+  tech_name: str | None = None
+  version: str | None = None
+  # For application_dependency
+  manifest_type: str | None = None
+  manifest_content: str | None = None
+
+
+@router.post("/technology")
+async def ingest_technology_telemetry(request, payload: TelemetryDualStreamPayload):
+  from .vulnerability_ledger import process_dual_stream_batch
+
+  try:
+    import asyncio
+
+    data = payload.dict()
+
+    infra_batch = []
+    app_batch = []
+
+    if payload.stream_type == "infrastructure":
+      infra_batch.append(
+        {
+          "tenant_id": data["tenant_id"],
+          "url": data.get("url"),
+          "tech_name": data.get("tech_name"),
+          "version": data.get("version"),
+        }
+      )
+    elif payload.stream_type == "application_dependency":
+      app_batch.append(
+        {
+          "tenant_id": data["tenant_id"],
+          "url": data.get("url"),
+          "manifest_type": data.get("manifest_type"),
+          "manifest_content": data.get("manifest_content"),
+        }
+      )
+
+    task = asyncio.create_task(process_dual_stream_batch(infra_batch, app_batch))
+    background_tasks.add(task)
+    task.add_done_callback(background_tasks.discard)
+    return HttpResponse(status=202)
+  except Exception as e:
+    logger.error(f"Failed to queue telemetry for processing: {e}")
+    return HttpResponse("Vulnerability ledger unavailable", status=503)

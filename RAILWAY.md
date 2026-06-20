@@ -34,6 +34,7 @@ This service serves the user interface.
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/frontend`
 - **Builder**: Dockerfile (utilizes secure `nginxinc/nginx-unprivileged:alpine-slim` base image)
+- **Start Command**: `nginx -g "daemon off;"` (Default in Dockerfile)
 - **Public URL**: `https://dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `dataengineeringformachinelearnin.railway.internal`
@@ -57,6 +58,7 @@ This service runs the main Django web server.
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile (utilizes secure, minimal `gcr.io/distroless/python3-debian12` distroless runtime)
+- **Start Command**: `/opt/venv/bin/python start.py` (Default in Dockerfile)
 - **Public URL**: `https://backend.dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `deml-frontend.railway.internal`
@@ -103,6 +105,7 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/queue`
 - **Builder**: Dockerfile
+- **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `9092` (Kafka API)
 - **Private Internal DNS**: `deml-queue.railway.internal:9092`
 - **Public URL**: None (Strictly internal for security)
@@ -187,6 +190,7 @@ ClickHouse is used to securely store all high-volume OpenTelemetry data from the
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/clickhouse`
 - **Builder**: Dockerfile (utilizes `clickhouse/clickhouse-server:24.3`)
+- **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `8123` (HTTP) and `9000` (Native)
 - **Private Internal DNS**: `deml-clickhouse.railway.internal`
 - **Public URL**: None (Strictly an internal database)
@@ -208,6 +212,7 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/telemetry`
 - **Builder**: Dockerfile (utilizes secure `otel/opentelemetry-collector-contrib` distroless base)
+- **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `4318` (OTLP HTTP)
 - **Private Internal DNS**: `deml-telemetry.railway.internal`
 - **Public URL**: `https://telemetry.dataengineeringformachinelearning.com`
@@ -218,6 +223,41 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
   - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
   - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
   - **ALLOWED_CORS_ORIGINS**: Set this to the exact domain where your widget will be hosted (e.g., `https://dataengineeringformachinelearning.com`).
+
+### 9. Vulnerability Scanner Engine
+
+This microservice provides an offline, isolated environment for executing `osv-scanner` and `cpe-guesser` to enrich telemetry without bloating the main backend image.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/scanner`
+- **Builder**: Dockerfile (utilizes `python:3.11-slim` with the official Google `osv-scanner` binary)
+- **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 8000` (Default in Dockerfile)
+- **Target Port**: `8000` (FastAPI)
+- **Private Internal DNS**: `deml-scanner.railway.internal:8000`
+- **Public URL**: None (Strictly an internal service)
+- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/data/osv` so the OSV database dump does not have to be repeatedly downloaded.
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**:
+  - **OSV_DB_PATH**: `/data/osv` (The mounted volume path)
+  - **CPE_GUESSER_URL**: `http://deml-cpe-guesser.railway.internal:1323/unique`
+
+### 10. CPE Guesser Service
+
+This service converts raw technology strings into CPE 2.3 identifiers. It is required for the Vulnerability Scanner Engine to properly normalize infrastructure data.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/cpe-guesser`
+- **Builder**: Dockerfile (Builds from source using Golang, deployed on a secure `distroless/static` image)
+- **Start Command**: `/app/cpe-guesser server` (Default in Dockerfile)
+- **Target Port**: `1323`
+- **Private Internal DNS**: `deml-cpe-guesser.railway.internal`
+- **Public URL**: None (Strictly an internal service)
+- **Compute Limits**: 1 vCPU / 1 GB Memory
+- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Environment Variables**: None required by default.
+
+_(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vulnerability Scanner Engine** points to this internal DNS, e.g., `http://deml-cpe-guesser.railway.internal:1323/unique`)_
 
 ## Internal Networking
 

@@ -38,9 +38,15 @@ class Command(BaseCommand):
     error_rate_percent = (failed_requests / total_requests * 100) if total_requests > 0 else 0.0
 
     # 2. Security & Threats
-    threats_detected = ThreatIntelligence.objects.filter(
+    from monitor.models import Vulnerability
+
+    threat_intel_count = ThreatIntelligence.objects.filter(
       timestamp__gte=hour_start, timestamp__lt=hour_end
     ).count()
+    vulnerability_count = Vulnerability.objects.filter(
+      created_at__gte=hour_start, created_at__lt=hour_end
+    ).count()
+    threats_detected = threat_intel_count + vulnerability_count
     active_incidents = Incident.objects.filter(
       status__in=["Investigating", "Identified", "Monitoring"]
     ).count()

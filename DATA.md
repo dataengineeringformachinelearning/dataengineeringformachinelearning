@@ -33,6 +33,12 @@ To build a cyber-aware understanding of our traffic, raw data points (such as IP
 - **Fields Extracted:** `device_type` (Mobile, Desktop, Tablet, Bot), `os_name`, `browser_name`, `is_bot`.
 - **Purpose:** Allows us to aggregate performance metrics by device class (e.g., identifying if latency is worse on mobile) and cleanly separate human traffic from automated bot/crawler traffic.
 
+### 2.4 Vulnerability Scanner & Asset Inventory
+
+- **Source:** Internal `scanner` microservice (`osv-scanner` & `cpe-guesser`).
+- **Fields Extracted:** `cve_id`, `cvss_score`, `remediation`, `cpe_2_3`.
+- **Purpose:** Normalizes infrastructure signatures and application lockfiles into known Common Platform Enumerations (CPEs) to automatically cross-reference with localized CVE databases. Enriches our telemetry to proactively map known software vulnerabilities to specific tenants and infrastructure components.
+
 ## 3. Cybersecurity & Risk Context
 
 By joining the enriched general traffic with the Threat Intelligence models, we unlock several advanced analytical capabilities:
