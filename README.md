@@ -1,3 +1,7 @@
+---
+license: apache-2.0
+---
+
 # Data Engineering for Machine Learning: Developer Platform
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
@@ -6,6 +10,52 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 
 > **Looking for the Book/Whitepaper?**
 > The philosophical, educational, and narrative deep dives into data engineering, MLOps, and the architecture of this system can be found in our comprehensive whitepaper: **[Read the Whitepaper (BOOK.md)](BOOK.md)**
+
+> [!NOTE]
+> **arXiv Endorsement Request:** We are currently seeking an arXiv endorsement to formally publish the architectural whitepaper to `cs.CR` (Cryptography and Security). If you are a qualified arXiv author and find this work valuable, we would greatly appreciate your endorsement! You can endorse the author [here](https://arxiv.org/auth/endorse?x=ZISEYL) using code **ZISEYL**.
+
+---
+
+## Solution Architecture
+
+```mermaid
+flowchart TB
+    subgraph Frontend
+        A[Angular Client]
+    end
+
+    subgraph "API Gateway & Auth"
+        B[Django REST API]
+        C[Firebase Authentication]
+        B -.->|Verifies JWT| C
+    end
+
+    subgraph "Telemetry Ingestion"
+        D[Redpanda Kafka Broker]
+        E[Polars Batch Worker]
+        D -->|Consumes| E
+    end
+
+    subgraph "Machine Learning"
+        F[PyTorch SLA Models]
+        G[Scikit-learn Tuning]
+    end
+
+    subgraph "Data Storage & Observability"
+        H[(PostgreSQL)]
+        I[(ClickHouse)]
+        J[OpenTelemetry Collector]
+    end
+
+    A -->|REST / CORS| B
+    B -->|Produces Event| D
+    E -->|Writes Analytics| H
+    E -->|Triggers Training| F
+    F -->|Optimizes| G
+    B -->|OTLP Traces| J
+    E -->|OTLP Traces| J
+    J -->|Stores| I
+```
 
 ---
 
@@ -100,6 +150,20 @@ For custom integrations or direct programmatic access, generate a dedicated API 
 ```http
 Authorization: Bearer YOUR_API_KEY
 ```
+
+---
+
+## Hugging Face Integrations
+
+The DEML Platform natively integrates with Hugging Face to automate the sharing of PyTorch models and static assets.
+
+- **Model Hub**: Background workers automatically push trained PyTorch threat and SLA models to the Hugging Face Hub using the `huggingface_hub` API.
+- **Spaces Deployment**: GitHub Actions are configured to automatically sync the Whitepaper and UI to a Hugging Face Space upon commits to `main`.
+
+**Requirements:**
+
+- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway).
+- Add `HF_TOKEN` and `HF_SPACE_REPO` as GitHub Repository Secrets to enable the Spaces sync action.
 
 ---
 

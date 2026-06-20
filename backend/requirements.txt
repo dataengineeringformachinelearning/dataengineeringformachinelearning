@@ -38,3 +38,4 @@ aiohttp==3.9.5
 adbc-driver-postgresql
 connectorx
 liboqs-python==0.15.0
+huggingface-hub>=0.23.0

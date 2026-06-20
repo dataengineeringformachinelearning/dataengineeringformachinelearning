@@ -7,104 +7,77 @@
   overflow: hidden;
 }
 
+/* Base Container */
 .whitepaper-container {
   position: relative;
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 48px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border, #e0e0e0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* Ambient Lighting with Heavy Amber Accents */
-.ambient-glow {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(140px);
-  opacity: 0.3;
-  z-index: 0;
-  pointer-events: none;
+:host-context(html[data-theme='dark']) .whitepaper-container {
+  background: #121212;
+  border-color: #333333;
 }
 
-.primary-glow {
-  width: 700px;
-  height: 700px;
-  background: radial-gradient(circle, var(--color-primary-container) 0%, transparent 70%);
-  top: -150px;
-  left: -200px;
-}
 
-.amber-glow {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, var(--crayola-blue-glow, rgba(33, 118, 255, 0.4)) 0%, transparent 70%);
-  bottom: 10%;
-  right: -150px;
-  opacity: 0.25;
-}
-
-.ambient-ripple {
-  position: absolute;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(33, 118, 255, 0.05) 0px,
-    rgba(33, 118, 255, 0.05) 1px,
-    transparent 1px,
-    transparent 10px
-  );
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-:host-context(html[data-theme='light']) {
-  .amber-glow {
-    background: radial-gradient(circle, rgba(33, 118, 255, 0.15) 0%, transparent 70%);
-  }
-}
-
+/* Header Section */
 .whitepaper-header {
   position: relative;
   z-index: 1;
   text-align: center;
-  margin-bottom: 56px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 32px;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--border);
 
   .section-tag-row {
     justify-content: center;
+    margin-bottom: 16px;
   }
 
-  .meta-label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--status-accent, var(--color-primary-container));
-    margin-bottom: 16px;
+  .section-tag {
+    font-family: var(--font-family-base, sans-serif);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .title {
     font-size: 2.2rem;
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0 0 24px;
     color: var(--text-color);
-    margin: 0 0 16px;
   }
 
   .subtitle {
-    font-size: 1.2rem;
-    line-height: 1.5;
-    color: var(--text-muted);
-    max-width: 620px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 750px;
     margin: 0 auto 24px;
+    text-align: justify;
+    font-style: italic; /* Academic abstract style */
+    padding: 0 24px;
   }
 
   .author-meta {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
+    gap: 12px;
+    font-size: 1rem;
+    color: var(--text-color);
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
 
     .bullet {
       opacity: 0.5;
@@ -112,51 +85,50 @@
   }
 }
 
+/* Content Layout: 2 Columns for Desktop */
 .whitepaper-content {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
+  column-count: 1;
+  column-gap: 40px;
+
+  @media (min-width: 768px) {
+    column-count: 2;
+  }
 
   .paper-section {
-    background: var(--color-surface, var(--color-surface));
-    border: 1px solid var(--color-border-precision, rgba(255, 255, 255, 0.08));
-    border-radius: 24px;
-    padding: 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    box-shadow: var(--shadow-sm);
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-
-    &:hover {
-      transform: translateY(-4px);
-      border-color: var(--crayola-blue, rgba(33, 118, 255, 0.5));
-      box-shadow: var(--shadow-hover);
-    }
+    break-inside: avoid;
+    margin-bottom: 24px;
 
     h2 {
-      font-size: 1.8rem;
+      font-size: 1.25rem;
       font-weight: 700;
-      margin: 0;
+      margin: 0 0 12px;
       color: var(--text-color);
-      letter-spacing: -0.02em;
-      border-bottom: 1px solid rgba(33, 118, 255, 0.2);
-      padding-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      border-bottom: none;
+      padding-bottom: 0;
+      font-family: var(--font-family-base, sans-serif); /* Keep headers clean sans-serif like Hugging Face */
     }
 
     p {
       font-size: 1.05rem;
-      line-height: 1.7;
+      line-height: 1.6;
       color: var(--text-color);
-      opacity: 0.85;
-      margin: 0;
+      margin: 0 0 16px;
       text-align: justify;
+      text-indent: 1.5rem; /* Classic academic indentation */
+    }
+
+    /* Remove indent from first paragraph after header */
+    h2 + p {
+      text-indent: 0;
     }
   }
 }
 
+/* Diagrams */
 .diagram-placeholder {
   display: flex;
   flex-direction: column;
@@ -164,23 +136,22 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--color-surface);
   border: 1px solid var(--border);
-  padding: 24px;
-  border-radius: 12px;
+  padding: 16px;
   margin: 24px 0;
+  break-inside: avoid;
+  font-family: var(--font-family-base, sans-serif);
 
   .diagram-node {
     flex: 1;
-    min-width: 130px;
+    min-width: 120px;
     text-align: center;
-    padding: 8px;
+    padding: 6px;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    box-shadow: var(--shadow-sm);
 
     &.primary {
       border-color: var(--color-primary);
@@ -209,6 +180,73 @@
   }
 }
 
+@media (min-width: 601px) {
+  .diagram-placeholder {
+    flex-direction: row;
+    .diagram-arrow {
+      transform: none;
+    }
+  }
+}
+
+/* ORCID Link */
+.orcid-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-color);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+/* arXiv Banner */
+.arxiv-endorsement-banner {
+  margin-top: 1.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--color-primary-container);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-color);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+
+  .banner-icon {
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  strong {
+    color: var(--text-color);
+    font-weight: 700;
+  }
+
+  .endorsement-link {
+    color: var(--link-color);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  code {
+    background: var(--bg-color);
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--text-color);
+  }
+}
+
+/* Action Bar */
 .action-bar {
   margin-top: 24px;
   display: flex;
@@ -218,23 +256,19 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: var(--color-primary);
-    color: var(--color-on-primary);
-    border: none;
-    padding: 8px 24px;
-    border-radius: 100px;
-    font-size: 0.95rem;
-    font-weight: 600;
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    padding: 6px 16px;
+    font-family: var(--font-family-base, sans-serif);
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    transition:
-      background-color 0.2s ease,
-      box-shadow 0.2s ease;
+    transition: all 0.2s ease;
 
     &:hover {
-      background: var(--color-surface);
-      color: var(--color-on-surface);
-      box-shadow: var(--shadow-hover);
+      background: var(--color-primary);
+      color: var(--color-on-primary);
     }
 
     .btn-icon {
@@ -244,21 +278,22 @@
   }
 }
 
-/* Print CSS Media Queries to beautifully format the PDF output */
+/* Print CSS */
 @media print {
   body,
   :host {
     background: #ffffff !important;
-    color: #1a1a1a !important;
+    color: #000000 !important;
   }
 
   .whitepaper-container {
     max-width: 100% !important;
-    padding: 0  !important;
-    margin: 0  !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
-  /* Hide unnecessary UI elements like navigation, header, footer, background glows, and action buttons */
   .no-print,
   .action-bar,
   app-navbar,
@@ -269,122 +304,54 @@
   }
 
   .whitepaper-header {
-    border-bottom: 2px solid #eaeaea !important;
-    margin-bottom: 32px  !important;
-    padding-bottom: 24px  !important;
-
-    .meta-label {
-      color: #555555 !important;
-    }
+    border-bottom: 1px solid #000 !important;
+    margin-bottom: 24px !important;
+    padding-bottom: 16px !important;
 
     .title {
-      color: #000000 !important;
-      font-size: 2.5rem !important;
+      font-size: 24pt !important;
+      color: #000 !important;
     }
 
     .subtitle {
-      color: #444444 !important;
+      color: #000 !important;
     }
 
     .author-meta {
-      color: #666666 !important;
+      color: #000 !important;
+      a { color: #000 !important; text-decoration: underline; }
     }
   }
 
   .whitepaper-content {
-    gap: 32px  !important;
+    column-count: 2 !important;
+    column-gap: 32px !important;
 
     .paper-section {
-      page-break-inside: avoid;
-      break-inside: avoid;
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
-      padding: 0  !important;
-      margin-bottom: 32px  !important;
-
       h2 {
-        color: #000000 !important;
-        border-left: 4px solid var(--color-surface);
-        border-bottom: none !important;
-        padding-left: 8px;
-        margin-top: 24px;
+        color: #000 !important;
+        font-size: 12pt !important;
       }
-
       p {
-        color: #222222 !important;
-        font-size: 11pt !important;
-        line-height: 1.6 !important;
-        text-align: justify;
+        color: #000 !important;
+        font-size: 10pt !important;
       }
     }
   }
 
   .diagram-placeholder {
-    border: 1.5px solid #cccccc !important;
-    background: #fafafa !important;
-    page-break-inside: avoid;
-    break-inside: avoid;
-
+    border: 1px solid #000 !important;
+    background: #fff !important;
     .diagram-node {
-      border: 1px solid #999999 !important;
-      background: #ffffff !important;
-      color: #000000 !important;
-      box-shadow: none !important;
-
-      &.primary {
-        background: var(--color-surface) !important;
-        color: #ffffff !important;
-        border-color: var(--color-surface) !important;
-      }
-
-      &.secondary {
-        background: #e1e6e2 !important;
-        color: #1a2b22 !important;
-        border-color: #c8d3ce !important;
-      }
-
-      &.success {
-        background: var(--color-success) !important;
-        color: #ffffff !important;
-        border-color: var(--color-success) !important;
+      border: 1px solid #000 !important;
+      background: #fff !important;
+      color: #000 !important;
+      &.primary, &.secondary, &.success {
+        background: #fff !important;
+        color: #000 !important;
+        border-color: #000 !important;
       }
     }
-
-    .diagram-arrow {
-      color: #555555 !important;
-    }
-  }
-}
-
-:host-context(html[data-theme='light']) {
-  .paper-section {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: var(--shadow-sm);
-
-    &:hover {
-      border-color: var(--crayola-blue);
-      box-shadow: var(--shadow-hover);
-    }
-
-    h2 {
-      border-bottom-color: rgba(33, 118, 255, 0.2);
-    }
-  }
-}
-
-@media (min-width: 601px) {
-  .whitepaper-header {
-    .title {
-      font-size: 2.75rem;
-    }
-  }
-
-  .diagram-placeholder {
-    flex-direction: row;
-    .diagram-arrow {
-      transform: none;
-    }
+    .diagram-arrow { color: #000 !important; }
   }
 }

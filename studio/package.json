@@ -1,7 +1,7 @@
 {
   "name": "dataengineeringformachinelearning-studio",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "package.json",
   "devDependencies": {
     "typescript": "^5.3.3"

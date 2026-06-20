@@ -1,0 +1,37 @@
+name: Sync to Hugging Face Space
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'WHITEPAPER.md'
+      - 'frontend/**'
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          lfs: true
+
+      # We assume the user has a static HTML Hugging Face space for hosting the whitepaper/platform UI.
+      # If so, this pushes the repository to HF Spaces on every commit to main.
+      - name: Push to Hugging Face Hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+
+          # Replace <YOUR_HF_USERNAME> and <YOUR_SPACE_NAME> with the target space
+          # Example: https://huggingface.co/spaces/joealongi/deml-platform
+          if [ -n "$HF_TOKEN" ] && [ -n "${{ secrets.HF_SPACE_REPO }}" ]; then
+            git remote add hf "https://user:$HF_TOKEN@huggingface.co/spaces/${{ secrets.HF_SPACE_REPO }}"
+            git push --force hf main
+          else
+            echo "HF_TOKEN or HF_SPACE_REPO is not set. Skipping Hugging Face push."
+          fi

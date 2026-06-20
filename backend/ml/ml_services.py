@@ -72,6 +72,30 @@ def train_tenant_sla(status_page: Any) -> TrainingRun | None:
     preds = model(X)
     avg_predicted_sla = max(0.0, min(100.0, preds.mean().item() * 100.0))
 
+  import os
+
+  hf_token = os.environ.get("HF_TOKEN")
+  hf_repo = os.environ.get("HF_REPO_ID")
+  if hf_token and hf_repo:
+    try:
+      from huggingface_hub import HfApi
+
+      torch.save(model.state_dict(), "/tmp/sla_model.pt")
+      api = HfApi(token=hf_token)
+      model_name = (
+        f"{status_page.slug}_sla_model.pt"
+        if hasattr(status_page, "slug")
+        else "default_sla_model.pt"
+      )
+      api.upload_file(
+        path_or_fileobj="/tmp/sla_model.pt",
+        path_in_repo=f"sla_models/{model_name}",
+        repo_id=hf_repo,
+        repo_type="model",
+      )
+    except Exception as e:
+      print(f"Failed to push SLA model to Hugging Face: {e}")
+
   run = TrainingRun.objects.create(
     status_page=status_page, average_sla=avg_predicted_sla, loss=final_loss
   )
@@ -178,6 +202,30 @@ def train_threat_model(user: Any) -> ThreatReport:
       [[location_weight, suspicious_ratio, failure_rate]], dtype=torch.float32
     )
     prediction = model(current_x).item()
+
+  import os
+
+  hf_token = os.environ.get("HF_TOKEN")
+  hf_repo = os.environ.get("HF_REPO_ID")
+  if hf_token and hf_repo:
+    try:
+      from huggingface_hub import HfApi
+
+      torch.save(model.state_dict(), "/tmp/threat_model.pt")
+      api = HfApi(token=hf_token)
+      model_name = (
+        f"{user.username}_threat_model.pt"
+        if hasattr(user, "username")
+        else "default_threat_model.pt"
+      )
+      api.upload_file(
+        path_or_fileobj="/tmp/threat_model.pt",
+        path_in_repo=f"threat_models/{model_name}",
+        repo_id=hf_repo,
+        repo_type="model",
+      )
+    except Exception as e:
+      print(f"Failed to push Threat model to Hugging Face: {e}")
 
   report = ThreatReport.objects.create(
     user=user,

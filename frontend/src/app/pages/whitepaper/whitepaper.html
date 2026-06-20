@@ -9,7 +9,7 @@
 
         <div class="whitepaper-header">
           <div class="section-tag-row">
-            <span class="section-tag">Technical Whitepaper</span>
+            <span class="section-tag">The Whitepaper</span>
           </div>
           <h1 class="title">Scalable Telemetry, Predictive SLAs, & Automated Threat Mitigation</h1>
           <p class="subtitle">
@@ -17,7 +17,16 @@
             comprehensive guide to high-throughput event pipelines, ML-forecasted service levels,
             automated STIX 2.1 threat sharing, and integrated vulnerability management.
           </p>
-          <div class="author-meta">
+          <div
+            class="author-meta"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 0.5rem;
+              flex-wrap: wrap;
+            "
+          >
             <span>Published: June 2026</span>
             <span class="bullet">•</span>
             <span
@@ -28,6 +37,21 @@
                 >Joe Alongi</a
               ></span
             >
+            <span class="bullet">•</span>
+            <a
+              id="cy-effective-orcid-url"
+              href="https://orcid.org/0009-0007-2401-2603"
+              target="_blank"
+              rel="me noopener noreferrer"
+              class="orcid-link"
+            >
+              <img
+                src="https://orcid.org/sites/default/files/images/orcid_16x16.png"
+                style="width: 1em"
+                alt="ORCID iD icon"
+              />
+              0009-0007-2401-2603
+            </a>
           </div>
           <div class="action-bar no-print">
             <button class="download-pdf-btn" (click)="downloadPDF()">
@@ -47,6 +71,24 @@
               </svg>
               Download PDF
             </button>
+          </div>
+
+          <div class="arxiv-endorsement-banner no-print">
+            <span class="banner-icon">ℹ️</span>
+            <div class="banner-content">
+              <strong>arXiv Endorsement Request:</strong> We are currently seeking an arXiv
+              endorsement to formally publish this whitepaper to <code>cs.CR</code> (Cryptography
+              and Security). If you are a qualified arXiv author and find this architecture
+              valuable, we would greatly appreciate your endorsement! You can endorse the author
+              <a
+                href="https://arxiv.org/auth/endorse?x=ZISEYL"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="endorsement-link"
+                >here</a
+              >
+              using code <strong>ZISEYL</strong>.
+            </div>
           </div>
         </div>
 
@@ -151,10 +193,14 @@
               paradigm must be engineered.
             </p>
             <p>
-              To address this, the DEML Platform integrates a next-generation threat intelligence
-              sharing pipeline that automatically serializes PyTorch neural network anomaly
-              predictions into standard **STIX 2.1 JSON** payloads. These payloads define structural
-              `indicator`, `observed-data`, and `identity` objects to map out threat signatures.
+              Drawing architectural inspiration from established industry intelligence platforms
+              such as IBM X-Force, Google Cloud Mandiant, and GreyNoise, as well as advanced
+              analytical frameworks like the NSA's Ghidra, the DEML Platform was designed to push
+              the boundaries of automated intelligence. To address this, the platform integrates a
+              next-generation threat intelligence sharing pipeline that automatically serializes
+              PyTorch neural network anomaly predictions into standard **STIX 2.1 JSON** payloads.
+              These payloads define structural `indicator`, `observed-data`, and `identity` objects
+              to map out threat signatures.
             </p>
             <p>
               Using TAXII 2.1 and REST protocols, these indicators are routed natively to federal
@@ -238,6 +284,49 @@
               By combining asynchronous broker patterns, ultra-fast DataFrame engines, and
               predictive deep learning models, the platform establishes a robust data engineering
               framework that elevates the reliability of machine learning infrastructure.
+            </p>
+          </section>
+
+          <section class="paper-section">
+            <h2>10. References</h2>
+            <ol>
+              <li>Redpanda Data, Inc. (2026). <em>Redpanda: A streaming data platform</em>.</li>
+              <li>Apache Software Foundation. (2026). <em>Apache Kafka</em>.</li>
+              <li>Polars. (2026). <em>Polars: Fast multi-threaded DataFrame library</em>.</li>
+              <li>
+                Paszke, A., et al. (2019).
+                <em>PyTorch: An Imperative Style, High-Performance Deep Learning Library</em>.
+              </li>
+              <li>
+                Pedregosa, F., et al. (2011). <em>Scikit-learn: Machine Learning in Python</em>.
+              </li>
+              <li>OpenTelemetry Authors. (2026). <em>OpenTelemetry</em>.</li>
+              <li>ClickHouse, Inc. (2026). <em>ClickHouse</em>.</li>
+              <li>
+                OASIS Cyber Threat Intelligence (CTI) TC. (2021). <em>STIX 2.1 and TAXII 2.1</em>.
+              </li>
+              <li>IBM Security. (2026). <em>IBM X-Force Threat Intelligence</em>.</li>
+              <li>Google Cloud. (2026). <em>Mandiant Threat Intelligence</em>.</li>
+              <li>
+                GreyNoise Intelligence. (2026). <em>GreyNoise: Internet Background Noise</em>.
+              </li>
+              <li>
+                National Security Agency (NSA). (2026).
+                <em>Ghidra Software Reverse Engineering Framework</em>.
+              </li>
+            </ol>
+          </section>
+
+          <section class="paper-section">
+            <h2>11. License</h2>
+            <p>
+              This work is licensed under a
+              <a
+                href="https://creativecommons.org/licenses/by/4.0/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Creative Commons Attribution 4.0 International License (CC BY 4.0)</a
+              >.
             </p>
           </section>
         </div>
