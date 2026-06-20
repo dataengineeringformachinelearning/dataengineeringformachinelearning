@@ -47,7 +47,7 @@
   border-radius: var(--border-radius-sm);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  background-color: rgba(76, 175, 80, 0.1);
+  background-color: color-mix(in srgb, var(--color-success) 10%, transparent);
   color: var(--color-success);
   font-weight: 500;
   font-size: 0.9rem;
@@ -176,7 +176,7 @@
     &.btn-submit {
       background: var(--color-amber) !important;
       border: none !important;
-      color: #0f1814 !important; /* Deep forest green/black text on amber */
+      color: #000000 !important; /* Deep forest green/black text on amber */
       min-width: 100px;
       display: flex;
       align-items: center;

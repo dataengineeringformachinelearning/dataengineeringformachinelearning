@@ -255,7 +255,7 @@ def get_threat_report_stix(request: Any, status_page_id: str | None = None) -> A
       "type": "identity",
       "spec_version": "2.1",
       "id": identity_id,
-      "name": "Data Engineering for Machine Learning Platform",
+      "name": "Web Application Platform",
       "identity_class": "organization",
       "created": now_str,
       "modified": now_str,

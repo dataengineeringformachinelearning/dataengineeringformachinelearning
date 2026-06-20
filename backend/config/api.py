@@ -6,7 +6,7 @@ from ninja import NinjaAPI
 logger = logging.getLogger(__name__)
 
 api = NinjaAPI(
-  title="Data Engineering for Machine Learning API",
+  title="Web Application API",
   version=getattr(settings, "APP_VERSION", "1.0.0"),
   docs_url="/docs" if settings.DEBUG else None,
 )

@@ -6,16 +6,16 @@
   --sidebar-border: rgba(255, 255, 255, 0.06);
   --sidebar-bg: rgba(15, 24, 20, 0.45);
   --sidebar-hover-bg: rgba(255, 255, 255, 0.03);
-  --sidebar-active-bg: linear-gradient(90deg, rgba(45, 71, 57, 0.25) 0%, rgba(45, 71, 57, 0.04) 100%);
+  --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, color-mix(in srgb, var(--color-surface) 4%, transparent) 100%);
   --sidebar-active-border: var(--color-primary-container);
 }
 
 :host-context(html[data-theme='light']) {
   --sidebar-accent: var(--color-primary);
-  --sidebar-border: rgba(24, 40, 33, 0.08);
+  --sidebar-border: color-mix(in srgb, var(--color-surface) 8%, transparent);
   --sidebar-bg: rgba(244, 247, 245, 0.85);
   --sidebar-hover-bg: rgba(0, 0, 0, 0.03);
-  --sidebar-active-bg: linear-gradient(90deg, rgba(45, 71, 57, 0.08) 0%, rgba(45, 71, 57, 0.02) 100%);
+  --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 8%, transparent) 0%, color-mix(in srgb, var(--color-surface) 2%, transparent) 100%);
   --sidebar-active-border: var(--color-primary);
 }
 
@@ -412,13 +412,13 @@
 
 @keyframes pulse-glow {
   0% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-success) 40%, transparent);
   }
   70% {
-    box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 6px transparent;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 0 transparent;
   }
 }
 

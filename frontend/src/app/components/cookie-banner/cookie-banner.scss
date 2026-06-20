@@ -155,7 +155,7 @@
         font-weight: 600;
         text-transform: uppercase;
         color: var(--color-success);
-        background: rgba(76, 175, 80, 0.1);
+        background: color-mix(in srgb, var(--color-success) 10%, transparent);
         padding: 9px 9px;
         border-radius: 4px;
         letter-spacing: 0.5px;
@@ -213,15 +213,17 @@
       min-width: auto;
       height: auto;
       font-size: 0.9rem;
-      color: var(--text-muted);
-      border-bottom: 1px dashed var(--text-muted);
+      font-weight: 500;
+      color: var(--link-color);
+      border: none;
+      border-bottom: 1px solid var(--link-color);
       border-radius: 0 !important;
       align-self: flex-start;
 
       &:hover {
         background-color: transparent !important;
-        color: var(--text-color);
-        border-bottom-color: var(--text-color);
+        color: var(--link-hover-color);
+        border-bottom-color: var(--link-hover-color);
       }
     }
 
@@ -265,7 +267,7 @@
       .accept-btn {
         background-color: var(--color-primary) !important;
         color: #ffffff !important;
-        box-shadow: 0 2px 8px rgba(45, 71, 57, 0.3) !important;
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--color-surface) 30%, transparent) !important;
 
         &:hover {
           background-color: #ffffff !important;

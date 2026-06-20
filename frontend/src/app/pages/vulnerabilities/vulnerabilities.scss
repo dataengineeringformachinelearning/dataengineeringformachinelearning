@@ -198,7 +198,7 @@
 
   &.active {
     border-color: var(--color-primary);
-    background-color: rgba(45, 71, 57, 0.15);
+    background-color: color-mix(in srgb, var(--color-surface) 15%, transparent);
     box-shadow: inset 3px 0 0 var(--color-primary);
   }
 }
@@ -411,7 +411,7 @@
   &[data-level="low"] {
     background-color: var(--color-success-dim);
     color: var(--color-success);
-    &:hover { background-color: rgba(76, 175, 80, 0.3); }
+    &:hover { background-color: color-mix(in srgb, var(--color-success) 30%, transparent); }
   }
 
   &[data-level="medium"] {
@@ -617,7 +617,7 @@
   text-align: center;
   border: 1px dashed var(--color-border-precision);
   border-radius: 6px;
-  background-color: rgba(76, 175, 80, 0.02);
+  background-color: color-mix(in srgb, var(--color-success) 2%, transparent);
 
   mat-icon {
     font-size: 2.5rem;

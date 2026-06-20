@@ -28,7 +28,7 @@ def test_get_threat_report_stix(client: Client) -> None:
 
   # Check identity object
   identity = next(obj for obj in data["objects"] if obj["type"] == "identity")
-  assert identity["name"] == "Data Engineering for Machine Learning Platform"
+  assert identity["name"] == "Web Application Platform"
   assert identity["identity_class"] == "organization"
 
   # Check indicator object

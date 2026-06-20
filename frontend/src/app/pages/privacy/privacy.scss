@@ -94,7 +94,7 @@
 }
 
 .cookie-action-box {
-  background: rgba(76, 175, 80, 0.08);
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
   border: 1px dashed var(--color-success);
   border-radius: 12px;
   padding: 27px;
@@ -170,7 +170,7 @@
 
     &:focus {
       border-color: var(--color-success);
-      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 15%, transparent);
     }
   }
 

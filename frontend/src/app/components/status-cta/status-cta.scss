@@ -60,8 +60,8 @@
   align-items: center;
   gap: 9px;
   padding: 9px 18px;
-  background: rgba(45, 71, 57, 0.1);
-  border: 1px solid rgba(45, 71, 57, 0.3);
+  background: color-mix(in srgb, var(--color-surface) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-surface) 30%, transparent);
   border-radius: 30px;
   font-size: 0.75rem;
   font-weight: 600;
@@ -81,8 +81,8 @@
 
 :host-context(html[data-theme='light']) {
   .cta-badge {
-    background: rgba(45, 71, 57, 0.06);
-    border-color: rgba(45, 71, 57, 0.15);
+    background: color-mix(in srgb, var(--color-surface) 6%, transparent);
+    border-color: color-mix(in srgb, var(--color-surface) 15%, transparent);
     color: var(--color-primary);
 
     .badge-icon {
@@ -92,7 +92,7 @@
 
   .empty-state-premium {
     background: rgba(255, 255, 255, 0.7);
-    border-color: rgba(45, 71, 57, 0.15);
+    border-color: color-mix(in srgb, var(--color-surface) 15%, transparent);
   }
 }
 

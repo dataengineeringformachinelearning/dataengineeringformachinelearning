@@ -365,14 +365,36 @@ export class AnalyticsComponent implements OnInit {
   }
 
   private updateChartTheme(theme: 'light' | 'dark') {
-    const agTheme = theme === 'dark' ? 'ag-default-dark' : 'ag-default';
-    this.chartOptions = { ...this.chartOptions, theme: agTheme };
-    this.originChartOptions = { ...this.originChartOptions, theme: agTheme };
-    this.frequencyChartOptions = { ...this.frequencyChartOptions, theme: agTheme };
-    this.statusChartOptions = { ...this.statusChartOptions, theme: agTheme };
-    this.endpointChartOptions = { ...this.endpointChartOptions, theme: agTheme };
-    this.threatSeverityChartOptions = { ...this.threatSeverityChartOptions, theme: agTheme };
-    this.securityAlertsChartOptions = { ...this.securityAlertsChartOptions, theme: agTheme };
+    const baseTheme = theme === 'dark' ? 'ag-default-dark' : 'ag-default';
+    const customTheme = {
+      baseTheme,
+      palette: {
+        fills: [
+          'var(--color-primary)',
+          'var(--color-amber)',
+          'var(--color-primary-container)',
+          'var(--color-error)',
+          'var(--color-success)',
+          'var(--color-warning)',
+        ],
+        strokes: [
+          'var(--color-primary)',
+          'var(--color-amber)',
+          'var(--color-primary-container)',
+          'var(--color-error)',
+          'var(--color-success)',
+          'var(--color-warning)',
+        ],
+      },
+    };
+
+    this.chartOptions = { ...this.chartOptions, theme: customTheme };
+    this.originChartOptions = { ...this.originChartOptions, theme: customTheme };
+    this.frequencyChartOptions = { ...this.frequencyChartOptions, theme: customTheme };
+    this.statusChartOptions = { ...this.statusChartOptions, theme: customTheme };
+    this.endpointChartOptions = { ...this.endpointChartOptions, theme: customTheme };
+    this.threatSeverityChartOptions = { ...this.threatSeverityChartOptions, theme: customTheme };
+    this.securityAlertsChartOptions = { ...this.securityAlertsChartOptions, theme: customTheme };
   }
 
   ngOnInit() {}

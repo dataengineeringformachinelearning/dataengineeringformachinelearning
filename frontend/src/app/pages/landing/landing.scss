@@ -114,11 +114,9 @@
   line-height: 1.05;
   letter-spacing: -0.02em;
   margin: 0;
-  color: var(--text-color);
+  color: var(--hero-title-color, var(--text-color)) !important;
+  -webkit-text-fill-color: var(--hero-title-color, var(--text-color)) !important;
   text-transform: uppercase;
-  background: linear-gradient(135deg, var(--text-color) 40%, var(--color-amber) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
@@ -200,8 +198,8 @@
 }
 
 .bento-item {
-  background: var(--color-surface, #182821);
-  border: 1px solid var(--color-border-precision, rgba(255, 255, 255, 0.08));
+  background: var(--color-surface);
+  border: 1px solid var(--border);
   border-radius: 24px;
   padding: 36px;
   display: flex;
@@ -398,6 +396,14 @@
   @media (min-width: 900px) {
     grid-column: span 1;
   }
+
+  .cta-group {
+    width: 100%;
+
+    .cta-button {
+      width: 100%;
+    }
+  }
 }
 
 .subscribe-bento {
@@ -579,7 +585,7 @@
   }
 
   .step-code-visual {
-    background: #0f1814;
+    background: #000000;
     border-radius: 8px;
     border: 1px solid rgba(255, 183, 77, 0.3);
     overflow: hidden;
@@ -592,34 +598,4 @@
 
     pre { margin: 0; padding: 1rem; overflow-x: auto; code { color: #fff; font-family: monospace; } }
   }
-}
-
-/* Light Mode Overrides */
-:host-context(html[data-theme='light']) {
-  .bento-item {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  }
-
-  .amber-glow { background: radial-gradient(circle, rgba(176, 114, 25, 0.15) 0%, transparent 70%); }
-
-  .hero-badge { background: rgba(176, 114, 25, 0.1); border-color: rgba(176, 114, 25, 0.3); .badge-text { color: #b07219; } .badge-dot { background: #b07219; box-shadow: none; } }
-
-  .video-bento .telemetry-bar { background: #f4f7f5; border-bottom-color: rgba(0, 0, 0, 0.1); color: #b07219; .telemetry-dot { background: #b07219; box-shadow: none; } }
-
-  .subscribe-bento .subscribe-form input {
-    background: #ffffff;
-    border-color: rgba(0, 0, 0, 0.1);
-    color: #182821;
-    &:focus {
-      border-color: #b07219;
-      box-shadow: 0 0 10px rgba(176, 114, 25, 0.15);
-    }
-  }
-
-  .step-display-panel { background: #f4f7f5; border-color: rgba(0, 0, 0, 0.05); }
-  .step-code-visual { background: #ffffff; border-color: rgba(176, 114, 25, 0.3); .code-header { background: #f4f7f5; color: #b07219; border-bottom-color: rgba(176, 114, 25, 0.2); } pre code { color: #182821; } }
-
-  .steps-nav .step-nav-item { background: #f4f7f5; &.active { background: rgba(176, 114, 25, 0.1); border-color: #b07219; .step-nav-icon mat-icon { color: #b07219; } } }
 }

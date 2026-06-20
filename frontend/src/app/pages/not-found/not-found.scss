@@ -33,7 +33,7 @@
   -webkit-text-fill-color: transparent;
   margin-bottom: 18px;
   letter-spacing: -0.05em;
-  filter: drop-shadow(0 2px 8px rgba(76, 175, 80, 0.3));
+  filter: drop-shadow(0 2px 8px color-mix(in srgb, var(--color-success) 30%, transparent));
 }
 
 .error-title {
@@ -67,12 +67,12 @@
     text-decoration: none;
     border-radius: 8px;
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 14px rgba(76, 175, 80, 0.4);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-success) 40%, transparent);
 
     &:hover {
       background-color: #3d8b40;
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+      box-shadow: 0 6px 20px color-mix(in srgb, var(--color-success) 60%, transparent);
     }
 
     &:active {

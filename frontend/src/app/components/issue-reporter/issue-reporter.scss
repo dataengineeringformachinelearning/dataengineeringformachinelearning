@@ -5,12 +5,10 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-amber), #b07219);
-  color: #0f1814;
+  background: var(--color-amber);
+  color: var(--color-background);
   border: 1px solid var(--border);
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   z-index: 999;
   display: flex;
@@ -30,9 +28,7 @@
 
   &:hover {
     transform: scale(1.08);
-    box-shadow:
-      0 6px 16px rgba(0, 0, 0, 0.4),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-md);
     filter: brightness(1.1);
   }
 
@@ -47,7 +43,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(19, 42, 36, 0.5);
+  background-color: color-mix(in srgb, var(--color-background) 80%, transparent);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
@@ -59,12 +55,10 @@
 
 .modal-content {
   background: var(--bg-color);
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   width: 90%;
   max-width: 500px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -150,8 +144,8 @@
     &:focus {
       outline: none;
       border-color: var(--color-primary-container);
-      background: rgba(0, 0, 0, 0.3);
-      box-shadow: 0 0 0 2px rgba(192, 197, 193, 0.1);
+      background: color-mix(in srgb, var(--color-primary-container) 10%, transparent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-container) 20%, transparent);
     }
 
     &:disabled {
@@ -191,15 +185,15 @@
     }
 
     &.success {
-      background: rgba(76, 175, 80, 0.1);
-      color: #81c784;
-      border: 1px solid rgba(76, 175, 80, 0.2);
+      background: color-mix(in srgb, var(--color-success) 10%, transparent);
+      color: var(--color-success);
+      border: 1px solid color-mix(in srgb, var(--color-success) 20%, transparent);
     }
 
     &.error {
-      background: rgba(244, 67, 54, 0.1);
-      color: #e57373;
-      border: 1px solid rgba(244, 67, 54, 0.2);
+      background: color-mix(in srgb, var(--color-error) 10%, transparent);
+      color: var(--color-error);
+      border: 1px solid color-mix(in srgb, var(--color-error) 20%, transparent);
     }
   }
 }
@@ -245,7 +239,7 @@
     &.btn-submit {
       background: var(--color-amber) !important;
       border: none !important;
-      color: #0f1814 !important;
+      color: var(--color-background) !important;
       min-width: 100px;
       display: flex;
       align-items: center;

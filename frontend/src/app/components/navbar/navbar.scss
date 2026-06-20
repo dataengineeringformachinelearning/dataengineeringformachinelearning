@@ -18,6 +18,16 @@
   margin-right: 9px;
   display: flex;
   align-items: center;
+  gap: 9px;
+  text-decoration: none;
+}
+
+.navbar-title {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-color);
+  letter-spacing: -0.02em;
 }
 
 .navbar-logo {

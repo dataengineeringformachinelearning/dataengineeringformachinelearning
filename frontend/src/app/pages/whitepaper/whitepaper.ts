@@ -17,7 +17,7 @@ export class Whitepaper implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(
-      'Whitepaper: Scalable Telemetry & Deep Learning Predictions - Data Engineering for Machine Learning',
+      'Whitepaper: Scalable Telemetry & Deep Learning Predictions - Web Application',
     );
     this.metaService.updateTag({
       name: 'description',
@@ -39,8 +39,8 @@ export class Whitepaper implements OnInit {
     const contentWidth = pageWidth - margin * 2;
 
     // Color Palette matching THEME.md
-    const primaryColor = [45, 71, 57]; // #2d4739 (Deep Green)
-    const textColor = [24, 40, 33]; // #182821 (Deep Forest Green / Dark Text)
+    const primaryColor = [0, 117, 196]; // #0075c4 (Twitter Blue)
+    const textColor = [30, 30, 30]; // #1e1e1e (Dark Text)
     const grayColor = [85, 85, 85]; // Accent / Muted gray
 
     let y = margin;
@@ -114,7 +114,7 @@ export class Whitepaper implements OnInit {
       {
         title: '1. Executive Summary',
         paragraphs: [
-          'Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the Data Engineering for Machine Learning Platform (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics—with support for future expansion.',
+          'Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the Web Application Platform (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics—with support for future expansion.',
         ],
       },
       {
@@ -142,7 +142,7 @@ export class Whitepaper implements OnInit {
       {
         title: '5. ML-Powered 30-Day Threat Detection & Telemetry Ingestion',
         paragraphs: [
-          'Our integration within the Data Engineering for Machine Learning Platform (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.',
+          'Our integration within the Web Application Platform (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.',
         ],
       },
       {
@@ -167,7 +167,7 @@ export class Whitepaper implements OnInit {
         title: '8. Team Workflows and Integrated Vulnerability Management',
         paragraphs: [
           'To facilitate collaborative security workflows and structured issue tracking, the platform implements a self-contained, integrated vulnerability tracking and management component. This component features an interactive Kanban board layout to prioritize, assign, and track remediation efforts natively, allowing security teams to update vulnerability states based on customized impact and likelihood metrics.',
-          'Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. To maintain high visual quality, we implemented a custom skeleton loader for smooth page-loading transitions, and aligned the user interface with a premium, high-contrast Data Engineering Jet Green Metallic-inspired design system.',
+          'Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. To maintain high visual quality, we implemented a custom skeleton loader for smooth page-loading transitions, and aligned the user interface with a premium, high-contrast Scandinavian Ocean Deep-inspired design system.',
         ],
       },
       {

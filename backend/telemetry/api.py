@@ -68,8 +68,9 @@ class SubscribePayload(Schema):
 @router.post("/subscribe")
 async def subscribe_newsletter(request, payload: SubscribePayload):
   from asgiref.sync import sync_to_async
-  from config.email import send_resend_email
   from monitor.models import NewsletterSubscription
+
+  from config.email import send_resend_email
 
   if not payload.consent:
     return {
@@ -92,7 +93,7 @@ async def subscribe_newsletter(request, payload: SubscribePayload):
   subject = "Welcome to the DEML Platform Newsletter!"
   html_content = """
   <h1>Thank you for subscribing!</h1>
-  <p>You have successfully signed up for updates and insights from the Data Engineering for Machine Learning (DEML) Platform.</p>
+  <p>You have successfully signed up for updates and insights from the Web Application (DEML) Platform.</p>
   <p>If you did not request this, please ignore this email.</p>
   """
 

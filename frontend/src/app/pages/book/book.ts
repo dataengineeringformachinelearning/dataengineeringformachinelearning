@@ -29,13 +29,10 @@ export class Book implements OnInit {
   private metaService = inject(Meta);
 
   ngOnInit() {
-    this.titleService.setTitle(
-      'Documentation & Book Chapters - Data Engineering for Machine Learning',
-    );
+    this.titleService.setTitle('Documentation & Book Chapters - Web Application');
     this.metaService.updateTag({
       name: 'description',
-      content:
-        'Interactive guide, working notes, and reference chapters on Data Engineering for Machine Learning.',
+      content: 'Interactive guide, working notes, and reference chapters on Web Application.',
     });
   }
 

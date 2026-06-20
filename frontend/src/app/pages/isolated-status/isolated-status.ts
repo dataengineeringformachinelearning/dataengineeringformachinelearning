@@ -157,9 +157,7 @@ export class IsolatedStatus implements OnInit {
             800 + Math.random() * 700,
           );
 
-          this.titleService.setTitle(
-            `${page.title} Status - Data Engineering for Machine Learning`,
-          );
+          this.titleService.setTitle(`${page.title} Status - Web Application`);
           this.metaService.updateTag({
             name: 'description',
             content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`,

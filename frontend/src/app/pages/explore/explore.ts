@@ -56,9 +56,7 @@ export class Explore implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(
-      'Explore Public Status Pages - Data Engineering for Machine Learning',
-    );
+    this.titleService.setTitle('Explore Public Status Pages - Web Application');
     this.metaService.updateTag({
       name: 'description',
       content:

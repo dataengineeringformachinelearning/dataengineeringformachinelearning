@@ -113,46 +113,10 @@ code[class*='language-'] {
 // ====================== GOOGLE FONT ======================
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-$custom-primary: (
-  50: #f8f9fa,
-  100: #dadce0,
-  200: #9fb8ad,
-  300: #9fb8ad,
-  400: #9fb8ad,
-  500: #9fb8ad,
-  600: #183a37,
-  700: #183a37,
-  800: #132a24,
-  900: #132a24,
-  A100: #9fb8ad,
-  A200: #9fb8ad,
-  A400: #9fb8ad,
-  A700: #183a37,
-);
-
-$custom-tertiary: (
-  50: #f8f9fa,
-  100: #dadce0,
-  200: #5f6368,
-  300: #5f6368,
-  400: #3c4043,
-  500: #183a37,
-  600: #132a24,
-  700: #132a24,
-  800: #1f1f1f,
-  900: #1f1f1f,
-  A100: #5f6368,
-  A200: #5f6368,
-  A400: #3c4043,
-  A700: #132a24,
-);
-
 html {
   @include mat.theme(
     (
       color: (
-        primary: $custom-primary,
-        tertiary: $custom-tertiary,
         theme-type: light,
       ),
       typography: (
@@ -169,8 +133,6 @@ html {
     @include mat.theme(
       (
         color: (
-          primary: $custom-primary,
-          tertiary: $custom-tertiary,
           theme-type: dark,
         ),
       )
@@ -183,8 +145,6 @@ html.dark {
   @include mat.theme(
     (
       color: (
-        primary: $custom-primary,
-        tertiary: $custom-tertiary,
         theme-type: dark,
       ),
     )
@@ -292,12 +252,10 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-vi
 
 // ====================== MATERIAL CARDS ======================
 .mat-mdc-card {
-  background-color: rgba(24, 40, 33, 0.45) !important;
-  backdrop-filter: blur(20px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  background-color: var(--card-bg) !important;
   color: var(--text-color) !important;
-  box-shadow: var(--shadow-glow) !important;
-  border: 1px solid var(--color-border-precision) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--border) !important;
   transition:
     box-shadow 0.3s ease,
     transform 0.3s ease,
@@ -495,12 +453,10 @@ main.main {
   padding: 27px;
   margin: 0 auto;
   box-sizing: border-box;
-  background-color: rgba(24, 40, 33, 0.45);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--color-border-precision);
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-glow);
+  box-shadow: var(--shadow-sm);
 }
 
 @media (min-width: 769px) {
@@ -547,34 +503,30 @@ main.main {
   animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   /* Default Dark Theme variables */
-  --toast-bg: rgba(20, 5, 5, 0.95);
-  --toast-backdrop: blur(16px);
-  --toast-border: 1px solid rgba(239, 68, 68, 0.4);
+  --toast-bg: var(--color-surface);
+  --toast-border: 1px solid var(--color-error);
   --toast-text: var(--color-error);
   --toast-title: var(--color-on-surface);
   --toast-icon: var(--color-error);
   --toast-close: var(--text-muted);
   --toast-close-hover: var(--color-error);
-  --toast-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 8px 16px rgba(0, 0, 0, 0.3);
+  --toast-shadow: var(--shadow-hover);
 }
 
 html[data-theme='light'] #global-error-toast {
   /* Light Theme variables */
-  --toast-bg: rgba(254, 242, 242, 0.9);
-  --toast-backdrop: blur(16px);
-  --toast-border: 1px solid rgba(239, 68, 68, 0.3);
+  --toast-bg: var(--color-surface);
+  --toast-border: 1px solid var(--color-error);
   --toast-text: var(--color-error);
   --toast-title: var(--color-on-surface);
   --toast-icon: var(--color-error);
   --toast-close: var(--text-muted);
   --toast-close-hover: var(--color-error);
-  --toast-shadow: 0 12px 32px rgba(24, 40, 33, 0.08), 0 8px 16px rgba(24, 40, 33, 0.06);
+  --toast-shadow: var(--shadow-hover);
 }
 
 #global-error-toast .toast-container {
   background: var(--toast-bg);
-  backdrop-filter: var(--toast-backdrop);
-  -webkit-backdrop-filter: var(--toast-backdrop);
   border: var(--toast-border);
   color: var(--toast-text);
   padding: 18px 18px;
@@ -761,7 +713,7 @@ html[data-theme='light'] #global-error-toast {
   align-items: center;
   padding-top: 9px;
   padding-bottom: 18px;
-  border-bottom: 1px solid var(--color-border-precision);
+  border-bottom: 1px solid var(--border);
   margin-bottom: 27px;
   flex-wrap: wrap;
   gap: 18px;
@@ -854,7 +806,7 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 
 // ====================== DATA ENGINEERING GLASSMORPHISM PANELS ======================
 .glass-panel {
-  background: rgba(24, 40, 33, 0.45) !important;
+  background: color-mix(in srgb, var(--color-surface) 45%, transparent) !important;
   backdrop-filter: blur(20px) saturate(160%) !important;
   -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
   border: 1px solid var(--color-border-precision) !important;

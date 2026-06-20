@@ -13,11 +13,11 @@ export class Terms implements OnInit {
   private metaService = inject(Meta);
 
   ngOnInit() {
-    this.titleService.setTitle('Terms & Conditions - Data Engineering for Machine Learning');
+    this.titleService.setTitle('Terms & Conditions - Web Application');
     this.metaService.updateTag({
       name: 'description',
       content:
-        'Terms and conditions of service for using the Data Engineering for Machine Learning platform and website.',
+        'Terms and conditions of service for using the Web Application platform and website.',
     });
   }
 }

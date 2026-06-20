@@ -1,7 +1,7 @@
 .search-dialog-container {
   display: flex;
   flex-direction: column;
-  background: rgba(24, 40, 33, 0.85);
+  background: color-mix(in srgb, var(--color-surface) 85%, transparent);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -21,7 +21,7 @@
     background: rgba(255, 255, 255, 0.9);
     border: 1px solid var(--border);
     box-shadow:
-      0 20px 50px rgba(24, 40, 33, 0.15),
+      0 20px 50px color-mix(in srgb, var(--color-surface) 15%, transparent),
       var(--shadow-glow);
     color: var(--color-on-surface);
   }
@@ -109,7 +109,7 @@
     border-radius: 3px;
 
     :host-context(html[data-theme='light']) & {
-      background: rgba(24, 40, 33, 0.1);
+      background: color-mix(in srgb, var(--color-surface) 10%, transparent);
     }
   }
 }
@@ -139,7 +139,7 @@
     box-shadow: 0 0 10px rgba(255, 183, 77, 0.1);
 
     :host-context(html[data-theme='light']) & {
-      background: rgba(45, 71, 57, 0.06);
+      background: color-mix(in srgb, var(--color-surface) 6%, transparent);
       border-color: rgba(176, 114, 25, 0.3);
       box-shadow: 0 0 10px rgba(176, 114, 25, 0.05);
     }
@@ -150,7 +150,7 @@
   }
 
   :host-context(html[data-theme='light']) & {
-    background: rgba(24, 40, 33, 0.02);
+    background: color-mix(in srgb, var(--color-surface) 2%, transparent);
   }
 
   .result-icon-wrapper {
@@ -200,7 +200,7 @@
     letter-spacing: 0.05em;
 
     :host-context(html[data-theme='light']) & {
-      background: rgba(24, 40, 33, 0.08);
+      background: color-mix(in srgb, var(--color-surface) 8%, transparent);
     }
   }
 }
@@ -287,7 +287,7 @@
   transition: var(--transition-smooth);
 
   :host-context(html[data-theme='light']) & {
-    background: rgba(24, 40, 33, 0.02);
+    background: color-mix(in srgb, var(--color-surface) 2%, transparent);
     border: 1px solid var(--border);
   }
 
@@ -310,9 +310,9 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
     :host-context(html[data-theme='light']) & {
-      background: rgba(45, 71, 57, 0.04);
+      background: color-mix(in srgb, var(--color-surface) 4%, transparent);
       border-color: rgba(176, 114, 25, 0.3);
-      box-shadow: 0 4px 12px rgba(24, 40, 33, 0.05);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--color-surface) 5%, transparent);
     }
   }
 }

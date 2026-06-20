@@ -94,11 +94,11 @@ export class Status implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Service Status Dashboard - Data Engineering for Machine Learning');
+    this.titleService.setTitle('Service Status Dashboard - Web Application');
     this.metaService.updateTag({
       name: 'description',
       content:
-        'Real-time monitoring, service status checks, and uptime tracking for Data Engineering for Machine Learning services.',
+        'Real-time monitoring, service status checks, and uptime tracking for Web Application services.',
     });
   }
 

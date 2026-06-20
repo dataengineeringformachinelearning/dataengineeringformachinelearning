@@ -14,9 +14,9 @@
 
 :host-context(html[data-theme='light']) {
   --status-accent: var(--color-primary);
-  --status-badge-bg: rgba(45, 71, 57, 0.08);
+  --status-badge-bg: color-mix(in srgb, var(--color-surface) 8%, transparent);
   --status-badge-text: var(--color-primary);
-  --status-badge-border: rgba(45, 71, 57, 0.2);
+  --status-badge-border: color-mix(in srgb, var(--color-surface) 20%, transparent);
   --timeline-warning: #ffc107;
 
   .timeline-bar-outlined.bar-nodata {

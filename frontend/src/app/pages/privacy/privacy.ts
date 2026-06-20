@@ -16,13 +16,11 @@ export class Privacy implements OnInit {
   protected consentService = inject(CookieConsentService);
 
   ngOnInit() {
-    this.titleService.setTitle(
-      'Privacy Policy & GDPR Compliance - Data Engineering for Machine Learning',
-    );
+    this.titleService.setTitle('Privacy Policy & GDPR Compliance - Web Application');
     this.metaService.updateTag({
       name: 'description',
       content:
-        'Privacy policy, cookies preference details, and GDPR compliance documentation for Data Engineering for Machine Learning.',
+        'Privacy policy, cookies preference details, and GDPR compliance documentation for Web Application.',
     });
   }
 

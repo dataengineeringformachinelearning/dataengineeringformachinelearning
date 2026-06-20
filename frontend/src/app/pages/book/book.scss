@@ -9,15 +9,15 @@
   --book-badge-bg: rgba(192, 197, 193, 0.1);
   --book-badge-text: var(--color-primary-container);
   --book-badge-border: rgba(192, 197, 193, 0.3);
-  --book-active-gradient: linear-gradient(135deg, rgba(45, 71, 57, 0.25) 0%, rgba(192, 197, 193, 0.08) 100%);
+  --book-active-gradient: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, rgba(192, 197, 193, 0.08) 100%);
 }
 
 :host-context(html[data-theme='light']) {
   --book-accent: var(--color-primary);
-  --book-badge-bg: rgba(45, 71, 57, 0.08);
+  --book-badge-bg: color-mix(in srgb, var(--color-surface) 8%, transparent);
   --book-badge-text: var(--color-primary);
-  --book-badge-border: rgba(45, 71, 57, 0.2);
-  --book-active-gradient: linear-gradient(135deg, rgba(225, 230, 226, 0.8) 0%, rgba(45, 71, 57, 0.08) 100%);
+  --book-badge-border: color-mix(in srgb, var(--color-surface) 20%, transparent);
+  --book-active-gradient: linear-gradient(135deg, rgba(225, 230, 226, 0.8) 0%, color-mix(in srgb, var(--color-surface) 8%, transparent) 100%);
 }
 
 .book-container {

@@ -120,7 +120,7 @@
   gap: 36px;
 
   .paper-section {
-    background: var(--color-surface, #182821);
+    background: var(--color-surface, var(--color-surface));
     border: 1px solid var(--color-border-precision, rgba(255, 255, 255, 0.08));
     border-radius: 24px;
     padding: 36px;
@@ -306,7 +306,7 @@
 
       h2 {
         color: #000000 !important;
-        border-left: 4px solid #2d4739;
+        border-left: 4px solid var(--color-surface);
         border-bottom: none !important;
         padding-left: 9px;
         margin-top: 27px;
@@ -334,9 +334,9 @@
       box-shadow: none !important;
 
       &.primary {
-        background: #2d4739 !important;
+        background: var(--color-surface) !important;
         color: #ffffff !important;
-        border-color: #2d4739 !important;
+        border-color: var(--color-surface) !important;
       }
 
       &.secondary {
@@ -346,9 +346,9 @@
       }
 
       &.success {
-        background: #2e7d32 !important;
+        background: var(--color-success) !important;
         color: #ffffff !important;
-        border-color: #2e7d32 !important;
+        border-color: var(--color-success) !important;
       }
     }
 

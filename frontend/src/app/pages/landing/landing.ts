@@ -100,11 +100,10 @@ export class Landing implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
-    this.titleService.setTitle('Data Engineering for Machine Learning');
+    this.titleService.setTitle('Web Application');
     this.metaService.updateTag({
       name: 'description',
-      content:
-        'Interactive steps, working notes, and AI annotation on the Data Engineering for Machine Learning book.',
+      content: 'Interactive steps, working notes, and AI annotation on the Web Application book.',
     });
 
     this.sanityService.fetchPlatformVideo();

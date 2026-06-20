@@ -14,11 +14,10 @@ export class NotFound implements OnInit {
   private metaService = inject(Meta);
 
   ngOnInit() {
-    this.titleService.setTitle('Page Not Found - Data Engineering for Machine Learning');
+    this.titleService.setTitle('Page Not Found - Web Application');
     this.metaService.updateTag({
       name: 'description',
-      content:
-        'The page you are looking for does not exist on Data Engineering for Machine Learning.',
+      content: 'The page you are looking for does not exist on Web Application.',
     });
   }
 }

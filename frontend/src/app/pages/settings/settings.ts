@@ -196,9 +196,7 @@ export class Settings implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle(
-      'Manage Status Pages & Incidents - Data Engineering for Machine Learning',
-    );
+    this.titleService.setTitle('Manage Status Pages & Incidents - Web Application');
     this.metaService.updateTag({
       name: 'description',
       content:
