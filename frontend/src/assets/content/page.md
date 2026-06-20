@@ -929,7 +929,7 @@ This service serves the user interface.
 - **Public URL**: `https://dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `dataengineeringformachinelearnin.railway.internal`
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **FIREBASE_API_KEY**: Your Firebase web app API key.
@@ -953,7 +953,7 @@ This service runs the main Django web server.
 - **Public URL**: `https://backend.dataengineeringformachinelearning.com`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `deml-frontend.railway.internal`
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **SECRET_KEY**: `<your-production-secret-key>`
@@ -1000,7 +1000,7 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Target Port**: `9092` (Kafka API)
 - **Private Internal DNS**: `deml-queue.railway.internal:9092`
 - **Public URL**: None (Strictly internal for security)
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data`.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
@@ -1017,7 +1017,7 @@ Background worker process to consume telemetry/streaming data from Redpanda and 
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-telemetry.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
@@ -1039,7 +1039,7 @@ Background ML training process to consume training triggers from Redpanda, load 
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-ml.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
@@ -1058,7 +1058,7 @@ Periodic security worker to fetch threat intelligence data and manage 90-day com
 - **Target Port**: None (Background worker process)
 - **Private Internal DNS**: `deml-security.railway.internal`
 - **Public URL**: None (Strictly an internal background process)
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
@@ -1085,7 +1085,7 @@ ClickHouse is used to securely store all high-volume OpenTelemetry data from the
 - **Target Port**: `8123` (HTTP) and `9000` (Native)
 - **Private Internal DNS**: `deml-clickhouse.railway.internal`
 - **Public URL**: None (Strictly an internal database)
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/var/lib/clickhouse`.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
@@ -1107,7 +1107,7 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 - **Target Port**: `4318` (OTLP HTTP)
 - **Private Internal DNS**: `deml-telemetry.railway.internal`
 - **Public URL**: `https://telemetry.dataengineeringformachinelearning.com`
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g. `deml-clickhouse.railway.internal`).
@@ -1126,12 +1126,13 @@ This microservice provides an offline, isolated environment for executing `osv-s
 - **Target Port**: `8000` (FastAPI)
 - **Private Internal DNS**: `deml-scanner.railway.internal:8000`
 - **Public URL**: None (Strictly an internal service)
-- **Compute Limits**: 8 vCPU / 8 GB Memory
+- **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/data/osv` so the OSV database dump does not have to be repeatedly downloaded.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **OSV_DB_PATH**: `/data/osv` (The mounted volume path)
   - **CPE_GUESSER_URL**: `http://deml-cpe-guesser.railway.internal:1323/unique`
+  - **NVD_API_KEY**: Your National Vulnerability Database API Key (optional but highly recommended to bypass rate limits)
 
 ### 10. CPE Guesser Service
 
