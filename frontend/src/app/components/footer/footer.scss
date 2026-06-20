@@ -1,6 +1,6 @@
 .mega-footer {
   background-color: var(--color-surface); /* Keep it grounded */
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-layout);
   padding: 40px 24px;
   font-family: 'Inter', sans-serif;
   color: var(--text-muted);
@@ -17,7 +17,7 @@
   grid-template-columns: repeat(1, 1fr);
   gap: 32px;
   padding-bottom: 40px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-layout);
 
   @media (min-width: 600px) {
     grid-template-columns: repeat(2, 1fr);

@@ -3,7 +3,7 @@
 
   /* Set up theme-driven variables following THEME.md */
   --sidebar-accent: var(--color-primary-container);
-  --sidebar-border: rgba(255, 255, 255, 0.06);
+  --sidebar-border: var(--border-layout);
   --sidebar-bg: rgba(18, 18, 18, 0.45);
   --sidebar-hover-bg: rgba(255, 255, 255, 0.03);
   --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, color-mix(in srgb, var(--color-surface) 4%, transparent) 100%);
@@ -12,7 +12,7 @@
 
 :host-context(html[data-theme='light']) {
   --sidebar-accent: var(--color-primary);
-  --sidebar-border: color-mix(in srgb, var(--color-surface) 8%, transparent);
+  --sidebar-border: var(--border-layout);
   --sidebar-bg: rgba(255, 255, 255, 0.85);
   --sidebar-hover-bg: rgba(0, 0, 0, 0.03);
   --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 8%, transparent) 0%, color-mix(in srgb, var(--color-surface) 2%, transparent) 100%);

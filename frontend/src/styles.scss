@@ -118,6 +118,7 @@ html {
     (
       color: (
         theme-type: light,
+        primary: mat.$azure-palette,
       ),
       typography: (
         brand-family: '"Inter", sans-serif',
@@ -134,6 +135,7 @@ html {
       (
         color: (
           theme-type: dark,
+          primary: mat.$azure-palette,
         ),
       )
     );
@@ -146,6 +148,7 @@ html.dark {
     (
       color: (
         theme-type: dark,
+        primary: mat.$azure-palette,
       ),
     )
   );
@@ -708,7 +711,7 @@ html[data-theme='light'] #global-error-toast {
   align-items: center;
   padding-top: 8px;
   padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-layout);
   margin-bottom: 24px;
   flex-wrap: wrap;
   gap: 16px;
