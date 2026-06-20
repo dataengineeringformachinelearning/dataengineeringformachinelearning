@@ -8,6 +8,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc g++ python3-dev cmake ninja-build libssl-dev git \
     && rm -rf /var/lib/apt/lists/*
 
+# Build and install liboqs (C library) required by liboqs-python
+RUN git clone --branch 0.10.0 --depth 1 https://github.com/open-quantum-safe/liboqs.git /tmp/liboqs && \
+    cd /tmp/liboqs && \
+    mkdir build && cd build && \
+    cmake -GNinja -DOQS_USE_OPENSSL=ON -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=/opt/oqs .. && \
+    ninja && ninja install
+
+# Set environment variables for the compiler and runtime to find liboqs
+ENV LD_LIBRARY_PATH="/opt/oqs/lib:$LD_LIBRARY_PATH" \
+    C_INCLUDE_PATH="/opt/oqs/include:$C_INCLUDE_PATH" \
+    CPLUS_INCLUDE_PATH="/opt/oqs/include:$CPLUS_INCLUDE_PATH" \
+    LIBRARY_PATH="/opt/oqs/lib:$LIBRARY_PATH"
+
 # Create virtual environment
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -27,10 +40,14 @@ RUN ln -sf /usr/bin/python3 /opt/venv/bin/python && \
 # Runtime stage
 FROM gcr.io/distroless/python3-debian12
 
+# Copy the built liboqs shared libraries from the builder stage
+COPY --from=builder /opt/oqs /opt/oqs
+
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/opt/venv/lib/python3.11/site-packages" \
     PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
+    PYTHONDONTWRITEBYTECODE=1 \
+    LD_LIBRARY_PATH="/opt/oqs/lib:$LD_LIBRARY_PATH"
 
 WORKDIR /app
 
