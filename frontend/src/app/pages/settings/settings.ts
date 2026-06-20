@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
 import {
   MonitorService,
   StatusPageData,
@@ -64,6 +65,7 @@ export class Settings implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public settingsService = inject(SettingsService);
+  private http = inject(HttpClient);
 
   statusPages = this.settingsService.statusPages;
   selectedPage = this.settingsService.selectedPage;
@@ -109,6 +111,12 @@ export class Settings implements OnInit {
   isAddingIncident = signal<boolean>(false);
   isDeletingAccount = signal<boolean>(false);
 
+  apiKeys = signal<any[]>([]);
+  newApiKeyName = '';
+  isGeneratingApiKey = signal<boolean>(false);
+  newlyGeneratedKey = signal<string | null>(null);
+  copiedApiKey = signal<boolean>(false);
+
   mfaPhoneNumber = '';
   mfaVerificationCode = '';
   mfaVerificationId: string | null = null;
@@ -138,6 +146,7 @@ export class Settings implements OnInit {
           this.loadStatusPages();
           this.checkMfaStatus();
           this.checkLinkedProviders();
+          this.loadApiKeys();
         }
       }
     });
@@ -220,6 +229,74 @@ export class Settings implements OnInit {
         },
         error: err => console.error('Error fetching pages:', err),
       });
+    }
+  }
+
+  loadApiKeys() {
+    this.http.get<any[]>('/api/v1/auth/api-keys').subscribe({
+      next: keys => {
+        this.apiKeys.set(keys);
+        this.cdr.markForCheck();
+      },
+      error: err => console.error('Error fetching API keys:', err),
+    });
+  }
+
+  generateApiKey() {
+    if (!this.newApiKeyName) return;
+    this.isGeneratingApiKey.set(true);
+    this.http.post<any>('/api/v1/auth/api-keys/generate', { name: this.newApiKeyName }).subscribe({
+      next: res => {
+        this.newlyGeneratedKey.set(res.key);
+        this.newApiKeyName = '';
+        this.isGeneratingApiKey.set(false);
+        this.loadApiKeys();
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        console.error('Error generating API key:', err);
+        this.isGeneratingApiKey.set(false);
+      },
+    });
+  }
+
+  revokeApiKey(id: string) {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      width: '400px',
+      data: {
+        title: 'Revoke API Key',
+        message:
+          'Are you sure you want to revoke this API key? Systems using it will immediately lose access.',
+        type: 'confirm',
+        confirmBtnText: 'Revoke',
+        confirmBtnColor: 'warn',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.http.delete(`/api/v1/auth/api-keys/${id}`).subscribe({
+          next: () => this.loadApiKeys(),
+          error: err => console.error('Error revoking key:', err),
+        });
+      }
+    });
+  }
+
+  async copyApiKey() {
+    const key = this.newlyGeneratedKey();
+    if (key) {
+      try {
+        await navigator.clipboard.writeText(key);
+        this.copiedApiKey.set(true);
+        setTimeout(() => {
+          this.copiedApiKey.set(false);
+          this.cdr.markForCheck();
+        }, 2000);
+        this.cdr.markForCheck();
+      } catch (err) {
+        console.error('Failed to copy', err);
+      }
     }
   }
 

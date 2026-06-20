@@ -74,7 +74,7 @@
         </div>
         <div class="code-block-premium" style="margin-top: auto">
           <div class="code-header">cURL Request</div>
-          <pre><code>curl -X POST https://api.domain.com/v1/ingest \
+          <pre><code>curl -X POST https://backend.dataengineeringformachinelearning.com/api/v1/ingest \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{{ '{' }}"batch_id": "123", "records": [{{ '{' }}"feature1": 1.0{{ '}' }}]{{ '}' }}'</code></pre>
@@ -97,7 +97,7 @@
         </div>
         <div class="code-block-premium" style="margin-top: auto">
           <div class="code-header">cURL Request</div>
-          <pre><code>curl -X POST https://api.domain.com/v1/predict \
+          <pre><code>curl -X POST https://backend.dataengineeringformachinelearning.com/api/v1/predict \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{{ '{' }}"model_version": "v2", "inputs": [0.5, 0.2]{{ '}' }}'</code></pre>
@@ -138,9 +138,13 @@
           <h2>Enterprise Security</h2>
         </div>
         <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
-          All tenant data is cryptographically isolated using strict multi-tenancy rules. Our
-          infrastructure undergoes continuous vulnerability scanning to ensure your models are safe.
-          We enforce rate limits up to 1,000+ req/min for Pro tiers.
+          All tenant data is cryptographically isolated using strict multi-tenancy rules.
+          <strong>API Keys</strong> can only be managed exclusively through the user interface under
+          your Settings panel. For ultimate security, keys are displayed only once upon creation and
+          are immediately hashed in the database using SHA-256. <br /><br />
+          Additionally, any data sent to our ingestion endpoints feeds directly into the same Kafka
+          stream used by your widgets, ensuring your analytics dashboard displays a fully unified,
+          multi-tenant view of your infrastructure.
         </p>
       </div>
     </div>

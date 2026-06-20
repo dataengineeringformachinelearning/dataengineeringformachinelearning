@@ -324,3 +324,25 @@ class AggregatedAnalytics(models.Model):
 
   def __str__(self):
     return f"Analytics {self.bucket_size} bucket at {self.timestamp}"
+
+
+import hashlib
+
+
+class APIKey(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="api_keys")
+  name = models.CharField(max_length=255)
+  prefix = models.CharField(max_length=8, unique=True)
+  key_hash = models.CharField(max_length=128)
+  is_active = models.BooleanField(default=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  def set_key(self, raw_key):
+    self.key_hash = hashlib.sha256(raw_key.encode()).hexdigest()
+
+  def verify_key(self, raw_key):
+    return self.key_hash == hashlib.sha256(raw_key.encode()).hexdigest()
+
+  def __str__(self):
+    return f"{self.name} ({self.prefix}...)"

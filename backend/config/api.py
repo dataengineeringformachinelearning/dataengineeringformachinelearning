@@ -25,7 +25,6 @@ def handle_uncaught_exception(request, exc):
 # Import routers from apps
 from ml.ml_api import router as ml_router
 from monitor.api import router as monitor_router
-
 from telemetry.api import router as telemetry_router
 
 api.add_router("/system-status/", monitor_router)
@@ -44,3 +43,7 @@ api.add_router("/auth/", auth_router)
 from agent.api import router as agent_router
 
 api.add_router("/agent/", agent_router)
+
+from integrations.api import router as integrations_router
+
+api.add_router("/integrations/", integrations_router)
