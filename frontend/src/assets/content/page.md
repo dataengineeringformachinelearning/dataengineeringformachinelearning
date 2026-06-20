@@ -1139,8 +1139,8 @@ This service converts raw technology strings into CPE 2.3 identifiers. It is req
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/cpe-guesser`
-- **Builder**: Dockerfile (Builds from source using Golang, deployed on a secure `distroless/static` image)
-- **Start Command**: `/app/cpe-guesser server` (Default in Dockerfile)
+- **Builder**: Dockerfile (Builds from source using Python 3.11 with an internal Valkey/Redis cache)
+- **Start Command**: `/app/start.sh` (Default in Dockerfile)
 - **Target Port**: `1323`
 - **Private Internal DNS**: `deml-cpe-guesser.railway.internal`
 - **Public URL**: None (Strictly an internal service)
