@@ -154,5 +154,48 @@ services:
     read_only: true
     restart: unless-stopped
 
+  dependency-track-apiserver:
+    build:
+      context: ./dependency-track
+      dockerfile: Dockerfile
+    container_name: dependency-track-apiserver
+    environment:
+      - ALPINE_DATABASE_MODE=external
+      - ALPINE_DATABASE_URL=jdbc:postgresql://postgres:5432/machinelearning
+      - ALPINE_DATABASE_DRIVER=org.postgresql.Driver
+      - ALPINE_DATABASE_USERNAME=admin
+      - ALPINE_DATABASE_PASSWORD=password
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  dependency-track-frontend:
+    build:
+      context: ./dependency-track-frontend
+      dockerfile: Dockerfile
+    container_name: dependency-track-frontend
+    environment:
+      - API_BASE_URL=http://localhost:8081
+    ports:
+      - "8080:8080"
+    depends_on:
+      - dependency-track-apiserver
+    restart: unless-stopped
+
+  tor-proxy:
+    build:
+      context: ./tor-proxy
+      dockerfile: Dockerfile
+    container_name: tor-proxy
+    ports:
+      - "9050:9050"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+
 volumes:
   clickhouse-data:

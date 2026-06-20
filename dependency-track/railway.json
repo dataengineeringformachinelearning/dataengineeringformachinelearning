@@ -1,0 +1,10 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "DOCKERFILE",
+    "dockerfilePath": "Dockerfile"
+  },
+  "deploy": {
+    "startCommand": "java -XX:MaxRAMPercentage=75.0 -Dalpine.database.mode=external -Dalpine.database.url=$DATABASE_URL -Dalpine.database.username=$DATABASE_USERNAME -Dalpine.database.password=$DATABASE_PASSWORD -jar dependency-track-apiserver.jar"
+  }
+}

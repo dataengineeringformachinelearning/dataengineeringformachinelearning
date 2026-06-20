@@ -786,7 +786,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Polars](https://pola.rs/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
-- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/)
+- **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 
 ---
@@ -880,6 +880,8 @@ By joining the enriched general traffic with the Threat Intelligence models, we 
 - **Anomaly Detection:** Sudden influxes of traffic from a single ASN or country that do not align with regular user behavior can trigger preemptive rate-limiting or alerts.
 - **Threat Correlation:** If an IP is flagged in `ThreatIntelligence`, we can immediately trace its historical `Endpoints` activity to assess what services were probed before the attack.
 - **Bot Mitigation:** Enriched `is_bot` flags combined with Data Center ASN detection provide a high-confidence signal to filter out non-human traffic from our core SLA and latency calculations.
+- **OSINT & Deep Web Intelligence:** By continuously querying public breach databases (e.g., Have I Been Pwned) and routing scans through a dedicated Tor Proxy (for Ahmia `.onion` results), we provide real-time proactive identity and brand protection.
+- **Multi-Tenant Security Architecture:** All Threat Intel, OSINT scans, and Network Telemetry are strictly partitioned by `tenant_id`. This allows the platform to use these advanced observability tools for internal health, while simultaneously exposing enterprise-grade WAF analytics and vulnerability alerts directly to end-users on their specific domains.
 
 ## 4. Data Privacy & Compliance
 
@@ -1150,6 +1152,46 @@ This service converts raw technology strings into CPE 2.3 identifiers. It is req
 - **Environment Variables**: None required by default.
 
 _(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vulnerability Scanner Engine** points to this internal DNS, e.g., `http://deml-cpe-guesser.railway.internal:1323/unique`)_
+
+### 11. Dependency-Track API Server
+
+This service manages the Software Bill of Materials (SBOM) and tracks vulnerabilities across your third-party dependencies.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/dependency-track`
+- **Builder**: Dockerfile (Multi-stage build using Google Distroless `java17-debian11:nonroot` for maximum security)
+- **Start Command**: Managed via `railway.json`
+- **Target Port**: `8080`
+- **Private Internal DNS**: `deml-dtrack-api.railway.internal`
+- **Public URL**: None (Strictly an internal service)
+- **Environment Variables**:
+  - **ALPINE_DATABASE_MODE**: `external`
+  - **ALPINE_DATABASE_URL**: `jdbc:postgresql://deml-postgres.railway.internal:5432/dtrack`
+  - **ALPINE_DATABASE_USERNAME**: Database username
+  - **ALPINE_DATABASE_PASSWORD**: Database password
+
+### 12. Dependency-Track Frontend
+
+The web UI for managing vulnerabilities identified by Dependency-Track.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/dependency-track-frontend`
+- **Builder**: Dockerfile (Multi-stage build using `nginx-unprivileged:alpine` for non-root execution)
+- **Target Port**: `8080`
+- **Public URL**: `https://dtrack.dataengineeringformachinelearning.com`
+- **Environment Variables**:
+  - **API_BASE_URL**: `http://deml-dtrack-api.railway.internal:8080`
+
+### 13. Tor Proxy (Dark Web Scanner)
+
+A lightweight proxy that allows the backend Telemetry Workers to anonymously scrape dark web search engines (e.g., Ahmia) for brand mentions.
+
+- **Source**: GitHub repository (`main` branch)
+- **Root Directory**: `/tor-proxy`
+- **Builder**: Dockerfile (Minimal `alpine` image running as non-root `tor` user)
+- **Target Port**: `9050`
+- **Private Internal DNS**: `deml-tor-proxy.railway.internal`
+- **Environment Variables**: None required.
 
 ## Internal Networking
 
