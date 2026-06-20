@@ -172,19 +172,6 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  dependency-track-frontend:
-    build:
-      context: ./infrastructure/dependency-track-frontend
-      dockerfile: Dockerfile
-    container_name: dependency-track-frontend
-    environment:
-      - API_BASE_URL=http://localhost:8081
-    ports:
-      - "8080:8080"
-    depends_on:
-      - dependency-track-apiserver
-    restart: unless-stopped
-
   tor-proxy:
     build:
       context: ./infrastructure/tor-proxy

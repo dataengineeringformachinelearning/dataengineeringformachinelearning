@@ -1380,7 +1380,7 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 - **Builder**: Dockerfile (utilizes secure `otel/opentelemetry-collector-contrib` distroless base)
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `4318` (OTLP HTTP)
-- **Private Internal DNS**: `deml-telemetry.railway.internal`
+- **Private Internal DNS**: `deml-telemetry-collector.railway.internal`
 - **Public URL**: `https://telemetry.dataengineeringformachinelearning.com`
 - **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
@@ -1443,19 +1443,7 @@ This service manages the Software Bill of Materials (SBOM) and tracks vulnerabil
   - **ALPINE_DATABASE_USERNAME**: Database username
   - **ALPINE_DATABASE_PASSWORD**: Database password
 
-### 12. Dependency-Track Frontend
-
-The web UI for managing vulnerabilities identified by Dependency-Track.
-
-- **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/infrastructure/dependency-track-frontend`
-- **Builder**: Dockerfile (Multi-stage build using `nginx-unprivileged:alpine` for non-root execution)
-- **Target Port**: `8080`
-- **Public URL**: `https://dtrack.dataengineeringformachinelearning.com`
-- **Environment Variables**:
-  - **API_BASE_URL**: `http://deml-dtrack-api.railway.internal:8080`
-
-### 13. Tor Proxy (Dark Web Scanner)
+### 12. Tor Proxy (Dark Web Scanner)
 
 A lightweight proxy that allows the backend Telemetry Workers to anonymously scrape dark web search engines (e.g., Ahmia) for brand mentions.
 
