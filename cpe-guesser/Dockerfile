@@ -7,7 +7,7 @@ RUN apk add --no-cache git
 WORKDIR /src
 
 # Clone and build the cpe-guesser from source to ensure we have a verifiable build
-RUN git clone https://github.com/vulsio/cpe-guesser.git . && \
+RUN git clone https://github.com/vulnerability-lookup/cpe-guesser.git . && \
     CGO_ENABLED=0 go build -ldflags="-s -w" -o cpe-guesser .
 
 # Production stage (Secure distroless base)
