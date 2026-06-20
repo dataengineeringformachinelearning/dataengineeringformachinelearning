@@ -123,28 +123,97 @@ async def scan_application_dependencies(payload: AppDependencyPayload):
 @app.post("/scan/infrastructure")
 async def scan_infrastructure(payload: InfraPayload):
   """
-  Normalizes infrastructure string to CPE 2.3 using cpe-guesser.
+  Normalizes infrastructure string to CPE 2.3 using cpe-guesser,
+  then queries the NVD REST API and OSV REST API for known vulnerabilities.
   """
+  cpe_2_3 = None
   async with httpx.AsyncClient() as client:
+    # 1. Get CPE 2.3 from cpe-guesser
     try:
       query = f"{payload.tech_name} {payload.version}".strip()
       response = await client.post(CPE_GUESSER_URL, json={"query": query})
-
       if response.status_code == 200:
         data = response.json()
         cpe_2_3 = data.get("cpe_2_3", None) if data else None
-        return {
-          "tenant_id": payload.tenant_id,
-          "tech_name": payload.tech_name,
-          "version": payload.version,
-          "cpe_2_3": cpe_2_3,
-        }
     except Exception as e:
       logger.error(f"Failed to reach CPE guesser: {e}")
 
-  return {
-    "tenant_id": payload.tenant_id,
-    "tech_name": payload.tech_name,
-    "version": payload.version,
-    "cpe_2_3": None,
-  }
+    vulns = []
+
+    # 2. Query NVD API with the CPE 2.3
+    if cpe_2_3:
+      try:
+        nvd_url = f"https://services.nvd.nist.gov/rest/json/cves/2.0?cpeName={cpe_2_3}"
+        nvd_resp = await client.get(nvd_url, timeout=10.0)
+        if nvd_resp.status_code == 200:
+          nvd_data = nvd_resp.json()
+          for item in nvd_data.get("vulnerabilities", []):
+            cve = item.get("cve", {})
+            cve_id = cve.get("id")
+            descriptions = cve.get("descriptions", [])
+            desc = descriptions[0].get("value") if descriptions else ""
+
+            metrics = cve.get("metrics", {})
+            cvss_score = 0.0
+            if "cvssMetricV31" in metrics:
+              cvss_score = metrics["cvssMetricV31"][0].get("cvssData", {}).get("baseScore", 0.0)
+            elif "cvssMetricV30" in metrics:
+              cvss_score = metrics["cvssMetricV30"][0].get("cvssData", {}).get("baseScore", 0.0)
+            elif "cvssMetricV2" in metrics:
+              cvss_score = metrics["cvssMetricV2"][0].get("cvssData", {}).get("baseScore", 0.0)
+
+            vulns.append(
+              {
+                "tenant_id": payload.tenant_id,
+                "tech_name": payload.tech_name,
+                "version": payload.version,
+                "cpe_2_3": cpe_2_3,
+                "cve_id": cve_id,
+                "description": desc,
+                "cvss_score": cvss_score,
+                "remediation": "Check vendor advisories for patches",
+                "purl": "",
+              }
+            )
+      except Exception as e:
+        logger.error(f"NVD API Error for {cpe_2_3}: {e}")
+
+    # 3. Query OSV.dev API as an additional layer (Generic PURL fallback)
+    # OSV excels at open source packages, so we try a generic purl.
+    if payload.tech_name and payload.version:
+      try:
+        purl = f"pkg:generic/{payload.tech_name}@{payload.version}"
+        osv_resp = await client.post(
+          "https://api.osv.dev/v1/query", json={"package": {"purl": purl}}, timeout=10.0
+        )
+        if osv_resp.status_code == 200:
+          osv_data = osv_resp.json()
+          for vuln in osv_data.get("vulns", []):
+            aliases = vuln.get("aliases", [])
+            cve_id = next((a for a in aliases if a.startswith("CVE-")), vuln.get("id"))
+
+            # Avoid duplicates if NVD already found it
+            if any(v["cve_id"] == cve_id for v in vulns):
+              continue
+
+            vulns.append(
+              {
+                "tenant_id": payload.tenant_id,
+                "tech_name": payload.tech_name,
+                "version": payload.version,
+                "cpe_2_3": cpe_2_3,
+                "cve_id": cve_id,
+                "description": vuln.get("summary", vuln.get("details", "")),
+                "cvss_score": 0.0,  # OSV API doesn't always return CVSS natively in this endpoint
+                "remediation": "Update package",
+                "purl": purl,
+              }
+            )
+      except Exception as e:
+        logger.error(f"OSV API Error for {payload.tech_name}: {e}")
+
+  # If no vulnerabilities are found, we still return the base info
+  if not vulns:
+    return {"tenant_id": payload.tenant_id, "vulnerabilities": [], "cpe_2_3": cpe_2_3}
+
+  return {"tenant_id": payload.tenant_id, "vulnerabilities": vulns, "cpe_2_3": cpe_2_3}
