@@ -1005,7 +1005,7 @@ This service runs the main Django web server.
 This is the actual Redpanda message broker database that stores the streaming data.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/queue`
+- **Root Directory**: `/infrastructure/queue`
 - **Builder**: Dockerfile
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `9092` (Kafka API)
@@ -1090,7 +1090,7 @@ Periodic security worker to fetch threat intelligence data and manage 90-day com
 ClickHouse is used to securely store all high-volume OpenTelemetry data from the widget and backend services.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/clickhouse`
+- **Root Directory**: `/infrastructure/clickhouse`
 - **Builder**: Dockerfile (utilizes `clickhouse/clickhouse-server:24.3`)
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `8123` (HTTP) and `9000` (Native)
@@ -1112,7 +1112,7 @@ ClickHouse is used to securely store all high-volume OpenTelemetry data from the
 The OpenTelemetry Collector receives all spans and metrics from the frontend widget and backend, processing them securely before batch-inserting into ClickHouse.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/otel-collector`
+- **Root Directory**: `/infrastructure/otel-collector`
 - **Builder**: Dockerfile (utilizes secure `otel/opentelemetry-collector-contrib` distroless base)
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `4318` (OTLP HTTP)
@@ -1131,7 +1131,7 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 This microservice provides an offline, isolated environment for executing `osv-scanner` and `cpe-guesser` to enrich telemetry without bloating the main backend image.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/scanner`
+- **Root Directory**: `/infrastructure/scanner`
 - **Builder**: Dockerfile (utilizes `python:3.11-slim` with the official Google `osv-scanner` binary)
 - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 8000` (Default in Dockerfile)
 - **Target Port**: `8000` (FastAPI)
@@ -1150,7 +1150,7 @@ This microservice provides an offline, isolated environment for executing `osv-s
 This service converts raw technology strings into CPE 2.3 identifiers. It is required for the Vulnerability Scanner Engine to properly normalize infrastructure data.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/cpe-guesser`
+- **Root Directory**: `/infrastructure/cpe-guesser`
 - **Builder**: Dockerfile (Builds from source using Python 3.11 with an internal Valkey/Redis cache)
 - **Start Command**: `/app/start.sh` (Default in Dockerfile)
 - **Target Port**: `1323`
@@ -1167,7 +1167,7 @@ _(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vuln
 This service manages the Software Bill of Materials (SBOM) and tracks vulnerabilities across your third-party dependencies.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/dependency-track`
+- **Root Directory**: `/infrastructure/dependency-track`
 - **Builder**: Dockerfile (Multi-stage build using Google Distroless `java17-debian11:nonroot` for maximum security)
 - **Start Command**: Managed via `railway.json`
 - **Target Port**: `8080`
@@ -1184,7 +1184,7 @@ This service manages the Software Bill of Materials (SBOM) and tracks vulnerabil
 The web UI for managing vulnerabilities identified by Dependency-Track.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/dependency-track-frontend`
+- **Root Directory**: `/infrastructure/dependency-track-frontend`
 - **Builder**: Dockerfile (Multi-stage build using `nginx-unprivileged:alpine` for non-root execution)
 - **Target Port**: `8080`
 - **Public URL**: `https://dtrack.dataengineeringformachinelearning.com`
@@ -1196,7 +1196,7 @@ The web UI for managing vulnerabilities identified by Dependency-Track.
 A lightweight proxy that allows the backend Telemetry Workers to anonymously scrape dark web search engines (e.g., Ahmia) for brand mentions.
 
 - **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/tor-proxy`
+- **Root Directory**: `/infrastructure/tor-proxy`
 - **Builder**: Dockerfile (Minimal `alpine` image running as non-root `tor` user)
 - **Target Port**: `9050`
 - **Private Internal DNS**: `deml-tor-proxy.railway.internal`

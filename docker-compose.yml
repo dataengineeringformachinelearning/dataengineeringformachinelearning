@@ -99,7 +99,7 @@ services:
 
   clickhouse:
     build:
-      context: ./clickhouse
+      context: ./infrastructure/clickhouse
     container_name: clickhouse
     environment:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
@@ -123,7 +123,7 @@ services:
 
   otel-collector:
     build:
-      context: ./otel-collector
+      context: ./infrastructure/otel-collector
     container_name: otel-collector
     environment:
       - CLICKHOUSE_HOST=${CLICKHOUSE_HOST:-clickhouse}
@@ -145,7 +145,7 @@ services:
 
   cpe-guesser:
     build:
-      context: ./cpe-guesser
+      context: ./infrastructure/cpe-guesser
     container_name: cpe-guesser
     ports:
       - "1323:1323"
@@ -156,7 +156,7 @@ services:
 
   dependency-track-apiserver:
     build:
-      context: ./dependency-track
+      context: ./infrastructure/dependency-track
       dockerfile: Dockerfile
     container_name: dependency-track-apiserver
     environment:
@@ -174,7 +174,7 @@ services:
 
   dependency-track-frontend:
     build:
-      context: ./dependency-track-frontend
+      context: ./infrastructure/dependency-track-frontend
       dockerfile: Dockerfile
     container_name: dependency-track-frontend
     environment:
@@ -187,7 +187,7 @@ services:
 
   tor-proxy:
     build:
-      context: ./tor-proxy
+      context: ./infrastructure/tor-proxy
       dockerfile: Dockerfile
     container_name: tor-proxy
     ports:
