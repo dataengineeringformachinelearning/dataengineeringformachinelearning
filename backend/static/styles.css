@@ -2,22 +2,23 @@
 
 :root {
   /* Core Semantic Tokens from THEME.md */
-  --color-primary: #2176ff;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #33a1fd;
-  --color-on-primary-container: #1a1a1a;
-  --color-surface: #1e1e1e;
-  --color-on-surface: #ffffff;
-  --color-background: #121212;
-  --color-on-background: #ffffff;
+  --jet-black: #121212;
+  --crayola-blue: #2176ffff;
+  --blue-bell: #33a1fdff;
+  --golden-pollen: #fdca40ff;
+  --carrot-orange: #f79824ff;
+  --white: #ffffff;
+  --black: #000000;
 
-  /* Semantic Statuses */
-  --color-success: #33a1fd;
-  --color-warning: #fdca40;
-  --color-error: #f79824;
-  --color-info: #2176ff;
+  /* Typography */
+  --base-font-size: 16px;
+  --header-letter-spacing: -0.02em;
 
-  /* Shadows & Elevation */
+  /* Universal Borders & Shadows */
+  --border-radius-lg: 16px;
+  --border-radius-md: 8px;
+  --border-radius-sm: 8px;
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-md:
     0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -25,136 +26,114 @@
     0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
   --shadow-glow: 0 0 12px rgba(33, 118, 255, 0.3);
 
-  /* Cyber & Telemetry Tokens */
-  --color-amber: #fdca40;
-  --color-gauge-red: #f79824;
+  /* Colors from Theme */
+  --color-primary: var(--crayola-blue);
+  --color-on-primary: var(--white);
+  --color-primary-container: var(--blue-bell);
+  --color-on-primary-container: #1a1a1a;
 
-  /* Aliases for UI Components */
+  --color-surface: #1e1e1e;
+  --color-on-surface: var(--white);
+  --color-background: var(--jet-black);
+  --color-on-background: var(--white);
+
+  --color-success: var(--blue-bell);
+  --color-warning: var(--golden-pollen);
+  --color-error: var(--carrot-orange);
+  --color-info: var(--crayola-blue);
+
+  --color-amber: var(--golden-pollen);
+  --color-gauge-red: var(--carrot-orange);
+
+  --border: rgba(255, 255, 255, 0.08);
+
   --primary-color: var(--color-primary);
   --accent-color: var(--color-primary-container);
-  --hover-color: var(--color-surface);
+  --hover-color: var(--crayola-blue);
   --bg-color: var(--color-background);
   --text-color: var(--color-on-background);
-  --text-muted: var(--color-primary-container);
-  --border: rgba(255, 255, 255, 0.08);
+  --text-muted: rgba(255, 255, 255, 0.65);
   --card-bg: var(--color-surface);
 
-  /* Focus ring outline */
   --focus-ring: 2px solid #9fb8ad;
   --focus-offset: 4px;
 
-  /* Button Dark Grey Styling */
-  --color-dark-grey-btn-bg: rgba(255, 255, 255, 0.08);
-  --color-dark-grey-btn-text: #ffffff;
-
-  /* Transitions */
-  --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --color-dark-grey-btn-bg: var(--black);
+  --color-dark-grey-btn-text: var(--white);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    --color-primary: #2176ff;
-    --color-on-primary: #ffffff;
-    --color-primary-container: #33a1fd;
-    --color-on-primary-container: #121212;
-    --color-surface: #ffffff;
-    --color-on-surface: #000000;
-    --color-background: #ffffff;
-    --color-on-background: #000000;
+    --color-primary: var(--crayola-blue);
+    --color-on-primary: var(--white);
+    --color-primary-container: var(--blue-bell);
+    --color-on-primary-container: var(--jet-black);
+    --color-surface: var(--white);
+    --color-on-surface: var(--black);
+    --color-background: var(--white);
+    --color-on-background: var(--black);
 
-    --color-success: #33a1fd;
-    --color-warning: #fdca40;
-    --color-error: #f79824;
-    --color-info: #2176ff;
-
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-    --shadow-glow: 0 0 12px rgba(33, 118, 255, 0.15);
-
-    --color-amber: #fdca40;
-    --color-gauge-red: #f79824;
+    --border: rgba(0, 0, 0, 0.08);
 
     --primary-color: var(--color-primary);
     --accent-color: var(--color-primary-container);
-    --hover-color: var(--color-primary-container);
-    --text-muted: #4a5450;
-    --border: #c8d3ce;
+    --hover-color: var(--blue-bell);
+    --text-muted: rgba(0, 0, 0, 0.6);
+    --bg-color: var(--color-background);
+    --text-color: var(--color-on-background);
+    --card-bg: var(--color-surface);
     --focus-ring: 2px solid var(--color-primary);
-    --color-dark-grey-btn-bg: #202124;
-    --color-dark-grey-btn-text: #ffffff;
+    --color-dark-grey-btn-bg: var(--jet-black);
+    --color-dark-grey-btn-text: var(--white);
   }
 }
 
 html[data-theme="light"] {
-  --color-primary: #2176ff;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #33a1fd;
-  --color-on-primary-container: #121212;
-  --color-surface: #ffffff;
-  --color-on-surface: #000000;
-  --color-background: #ffffff;
-  --color-on-background: #000000;
+  --color-primary: var(--crayola-blue);
+  --color-on-primary: var(--white);
+  --color-primary-container: var(--blue-bell);
+  --color-on-primary-container: var(--jet-black);
+  --color-surface: var(--white);
+  --color-on-surface: var(--black);
+  --color-background: var(--white);
+  --color-on-background: var(--black);
 
-  --color-success: #33a1fd;
-  --color-warning: #fdca40;
-  --color-error: #f79824;
-  --color-info: #2176ff;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --shadow-glow: 0 0 12px rgba(33, 118, 255, 0.15);
-
-  --color-amber: #fdca40;
-  --color-gauge-red: #f79824;
+  --border: rgba(0, 0, 0, 0.08);
 
   --primary-color: var(--color-primary);
   --accent-color: var(--color-primary-container);
-  --hover-color: var(--color-primary-container);
-  --text-muted: #4a5450;
-  --border: #c8d3ce;
+  --hover-color: var(--blue-bell);
+  --text-muted: rgba(0, 0, 0, 0.6);
+  --bg-color: var(--color-background);
+  --text-color: var(--color-on-background);
+  --card-bg: var(--color-surface);
   --focus-ring: 2px solid var(--color-primary);
-  --color-dark-grey-btn-bg: #202124;
-  --color-dark-grey-btn-text: #ffffff;
+  --color-dark-grey-btn-bg: var(--jet-black);
+  --color-dark-grey-btn-text: var(--white);
 }
 
 html[data-theme="dark"] {
-  --color-primary: #2176ff;
-  --color-on-primary: #ffffff;
-  --color-primary-container: #33a1fd;
+  --color-primary: var(--crayola-blue);
+  --color-on-primary: var(--white);
+  --color-primary-container: var(--blue-bell);
   --color-on-primary-container: #1a1a1a;
   --color-surface: #1e1e1e;
-  --color-on-surface: #ffffff;
-  --color-background: #121212;
-  --color-on-background: #ffffff;
+  --color-on-surface: var(--white);
+  --color-background: var(--jet-black);
+  --color-on-background: var(--white);
 
-  --color-success: #33a1fd;
-  --color-warning: #fdca40;
-  --color-error: #f79824;
-  --color-info: #2176ff;
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
-  --shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-hover:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-glow: 0 0 12px rgba(33, 118, 255, 0.3);
-
-  --color-amber: #fdca40;
-  --color-gauge-red: #f79824;
+  --border: rgba(255, 255, 255, 0.08);
 
   --primary-color: var(--color-primary);
   --accent-color: var(--color-primary-container);
-  --hover-color: var(--color-surface);
+  --hover-color: var(--crayola-blue);
+  --text-muted: rgba(255, 255, 255, 0.65);
   --bg-color: var(--color-background);
   --text-color: var(--color-on-background);
-  --text-muted: var(--color-primary-container);
-  --border: rgba(255, 255, 255, 0.08);
   --card-bg: var(--color-surface);
   --focus-ring: 2px solid #9fb8ad;
-  --color-dark-grey-btn-bg: rgba(255, 255, 255, 0.08);
-  --color-dark-grey-btn-text: #ffffff;
+  --color-dark-grey-btn-bg: var(--black);
+  --color-dark-grey-btn-text: var(--white);
 }
 
 html,
@@ -325,20 +304,20 @@ main.main {
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
 }
 
-h1 {
-  font-weight: 700;
-  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+h1.title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
   margin: 0 0 0.5rem 0;
   color: var(--text-color);
   text-transform: uppercase;
-  letter-spacing: 0.15em;
-  line-height: 1.2;
 }
 
 .subtitle {
   font-size: clamp(1.1rem, 2vw, 1.35rem);
   font-weight: 500;
-  color: var(--accent-color);
+  color: var(--text-muted);
   margin: 0 0 1.5rem 0;
   letter-spacing: 0.05em;
   text-transform: uppercase;

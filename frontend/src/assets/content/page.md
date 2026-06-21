@@ -749,9 +749,9 @@ Crucially, the entire deployment lifecycle is governed by automated CI/CD trigge
 
 ---
 
-## Chapter 23: Enterprise Security (SOC 2 & CMMC 2.0)
+## Chapter 23: Enterprise Security (SOC 2, CMMC 2.0, and NIST SP 800-171 Rev. 3)
 
-As the platform matures and begins ingesting highly sensitive operational data for external organizations, the baseline security measures implemented during the initial development phases are no longer sufficient. To transition this platform toward true enterprise maturity and prepare for rigorous external audits—such as Service Organization Control 2 (SOC 2) Type II and the Cybersecurity Maturity Model Certification (CMMC) 2.0—I must architect an impenetrable, defense-in-depth security perimeter. This requires the implementation of strict, uncompromising cryptographic controls and an absolute adherence to the principle of least privilege across every layer of the technology stack.
+As the platform matures and begins ingesting highly sensitive operational data for external organizations, the baseline security measures implemented during the initial development phases are no longer sufficient. To transition this platform toward true enterprise maturity and prepare for rigorous external audits—such as Service Organization Control 2 (SOC 2) Type II, the Cybersecurity Maturity Model Certification (CMMC) 2.0, and NIST SP 800-171 Rev. 3—I must architect an impenetrable, defense-in-depth security perimeter. This requires the implementation of strict, uncompromising cryptographic controls and an absolute adherence to the principle of least privilege across every layer of the technology stack.
 
 1. **Google SSO (Firebase Auth) with WebAuthn Cryptographic Keys:** I eliminate the inherent vulnerabilities of password-based authentication by enforcing Google Single Sign-On (SSO) heavily augmented with WebAuthn. This mandates the use of physical, cryptographic hardware keys (such as YubiKeys) for all administrative access. By tying authentication to un-phishable hardware tokens, I categorically neutralize credential stuffing and social engineering attacks at the perimeter.
 
@@ -952,7 +952,7 @@ To deploy all these components under a single Railway project:
 
 ## Infisical Integration
 
-To satisfy strict secret management guidelines (SOC 2, CMMC 2.0 CC6.1/CC6.2), all secret keys, passwords, and API credentials are kept out of raw service settings and stored inside [Infisical](https://infisical.com/).
+To satisfy strict secret management guidelines (SOC 2, CMMC 2.0, NIST SP 800-171 Rev. 3 CC6.1/CC6.2), all secret keys, passwords, and API credentials are kept out of raw service settings and stored inside [Infisical](https://infisical.com/).
 
 1. Set up an Infisical organization and create a project for `dataengineeringformachinelearning`.
 2. Connect your Railway services to Infisical via the official Railway Infisical Integration.
