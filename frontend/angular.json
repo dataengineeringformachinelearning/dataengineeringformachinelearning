@@ -40,7 +40,11 @@
             "loader": {
               ".md": "text"
             },
-            "styles": ["src/styles.scss", "node_modules/prismjs/themes/prism-okaidia.css"],
+            "styles": [
+              "src/styles.scss",
+              "node_modules/prismjs/themes/prism-okaidia.css",
+              "node_modules/leaflet/dist/leaflet.css"
+            ],
             "scripts": [
               "node_modules/prismjs/prism.js",
               "node_modules/prismjs/components/prism-bash.min.js",

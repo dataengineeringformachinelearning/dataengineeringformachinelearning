@@ -13,6 +13,7 @@ import { NgApexchartsModule } from 'ng-apexcharts';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../../environments/environment';
+import * as L from 'leaflet';
 
 export type ChartOptions = {
   series: any;
@@ -73,12 +74,14 @@ export class AnalyticsComponent implements OnInit {
 
   // Chart configs
   public chartOptions: ChartOptions;
-  public originChartOptions: ChartOptions;
   public frequencyChartOptions: ChartOptions;
   public statusChartOptions: ChartOptions;
   public endpointChartOptions: ChartOptions;
   public threatSeverityChartOptions: ChartOptions;
   public securityAlertsChartOptions: ChartOptions;
+
+  public originMapData: any[] = [];
+  private map: L.Map | undefined;
 
   get isDarkMode(): boolean {
     return this.themeService.theme() === 'dark';
@@ -86,7 +89,6 @@ export class AnalyticsComponent implements OnInit {
 
   constructor() {
     this.chartOptions = this.getEmptyAreaChart('var(--crayola-blue)', 'Latency (ms)');
-    this.originChartOptions = this.getEmptyDonutChart();
     this.frequencyChartOptions = this.getEmptyAreaChart('var(--blue-bell)', 'Requests');
     this.statusChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Status Count');
     this.endpointChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Endpoint Calls');
@@ -241,6 +243,8 @@ export class AnalyticsComponent implements OnInit {
         chartOpts.tooltip.theme = tooltipTheme;
         chartOpts.tooltip.custom = undefined;
         chartOpts.tooltip.x = { show: true };
+        chartOpts.tooltip.shared = true;
+        chartOpts.tooltip.intersect = false;
       }
 
       if (chartOpts.chart && chartOpts.chart.dropShadow)
@@ -265,11 +269,24 @@ export class AnalyticsComponent implements OnInit {
       if (chartOpts.legend)
         chartOpts.legend.labels = { colors: textColor, fontFamily: 'Inter, sans-serif' };
 
+      if (chartOpts === this.endpointChartOptions && chartOpts.xaxis) {
+        chartOpts.xaxis.labels = { show: false };
+        chartOpts.xaxis.axisTicks = { show: false };
+      }
+
+      if (
+        (chartOpts === this.frequencyChartOptions ||
+          chartOpts === this.chartOptions ||
+          chartOpts === this.securityAlertsChartOptions) &&
+        chartOpts.xaxis
+      ) {
+        chartOpts.xaxis.tickAmount = 6;
+      }
+
       return { ...chartOpts };
     };
 
     this.chartOptions = updateAxis(this.chartOptions);
-    this.originChartOptions = updateAxis(this.originChartOptions);
     this.frequencyChartOptions = updateAxis(this.frequencyChartOptions);
     this.statusChartOptions = updateAxis(this.statusChartOptions);
     this.endpointChartOptions = updateAxis(this.endpointChartOptions);
@@ -331,8 +348,10 @@ export class AnalyticsComponent implements OnInit {
 
           // Parse Origin Distribution
           const origins = user_metrics?.origin_distribution || [];
-          this.originChartOptions.series = origins.map((d: any) => d.count);
-          this.originChartOptions.labels = origins.map((d: any) => d.origin);
+          this.originMapData = origins;
+          if (this.isBrowser) {
+            this.initMap();
+          }
 
           // Parse Request Frequency
           const reqFreq = user_metrics?.request_frequency || [];
@@ -415,5 +434,50 @@ export class AnalyticsComponent implements OnInit {
   public onTenantChange(event: any) {
     this.selectedTenantId = event.target.value;
     this.loadAnalyticsData();
+  }
+
+  private initMap() {
+    if (!this.isBrowser) return;
+
+    setTimeout(() => {
+      const mapContainer = document.getElementById('originMap');
+      if (mapContainer && !this.map) {
+        this.map = L.map('originMap', {
+          zoomControl: false,
+          attributionControl: false,
+        }).setView([20, 0], 2);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+        }).addTo(this.map);
+      }
+      this.updateMapMarkers();
+    }, 100);
+  }
+
+  private updateMapMarkers() {
+    if (!this.map) return;
+
+    this.map.eachLayer(layer => {
+      if (layer instanceof L.CircleMarker) {
+        this.map?.removeLayer(layer);
+      }
+    });
+
+    this.originMapData.forEach(loc => {
+      if (loc.lat && loc.lng) {
+        L.circleMarker([loc.lat, loc.lng], {
+          radius: Math.max(6, Math.min(24, loc.count / 2)),
+          color: 'var(--crayola-blue)',
+          fillColor: 'var(--crayola-blue)',
+          fillOpacity: 0.6,
+          weight: 2,
+        })
+          .bindTooltip(`${loc.origin}: ${loc.count} reqs`, {
+            direction: 'top',
+          })
+          .addTo(this.map!);
+      }
+    });
   }
 }

@@ -153,6 +153,17 @@ class Command(BaseCommand):
             "Periodic Scheduler: Successfully completed daily training & cleanup run."
           )
         )
+
+        # Send daily status report
+        from utils.discord import send_discord_alert
+        from utils.email import get_recent_stats_text, send_alert_email
+
+        subject = "Daily Platform Status Report"
+        message = await sync_to_async(get_recent_stats_text)()
+
+        await sync_to_async(send_alert_email)(subject, message)
+        await sync_to_async(send_discord_alert)(subject, message)
+
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Periodic Scheduler: Hourly run failed: {e}"))
 

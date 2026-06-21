@@ -243,9 +243,34 @@
               <span class="stat-title">ACTIVE PROVIDERS</span>
             </div>
           </div>
-          <span class="stat-value" style="font-size: 1.2rem">
-            @if (activeProviders.length > 0) { {{ activeProviders.join(', ') }} } @else { None }
-          </span>
+          <div
+            class="stat-value"
+            style="
+              font-size: 0.9rem;
+              display: flex;
+              gap: 0.4rem;
+              flex-wrap: wrap;
+              margin-top: 0.5rem;
+            "
+          >
+            @if (activeProviders.length > 0) { @for (provider of activeProviders; track provider) {
+            <span
+              style="
+                background: var(--color-surface);
+                border: 1px solid var(--border);
+                color: var(--text-color);
+                padding: 2px 8px;
+                border-radius: 12px;
+                text-transform: capitalize;
+                font-weight: 500;
+                display: inline-block;
+              "
+              >{{ provider }}</span
+            >
+            } } @else {
+            <span style="color: var(--text-muted)">None</span>
+            }
+          </div>
         </div>
       </div>
 
@@ -299,27 +324,16 @@
         <section class="status-card-outlined col-span-4 col-span-md-4">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Geographic Origins</div>
-            <div class="chart-custom-value">
-              {{ originChartOptions.series?.length || 0 }} Regions
-            </div>
+            <div class="chart-custom-value">{{ originMapData.length || 0 }} Regions</div>
             <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasData(originChartOptions)) {
-            <apx-chart
-              [series]="originChartOptions.series"
-              [chart]="originChartOptions.chart"
-              [labels]="originChartOptions.labels"
-              [plotOptions]="originChartOptions.plotOptions"
-              [dataLabels]="originChartOptions.dataLabels"
-              [stroke]="originChartOptions.stroke"
-              [colors]="originChartOptions.colors"
-              [legend]="originChartOptions.legend"
-              [tooltip]="originChartOptions.tooltip"
-              [noData]="originChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
-            } @else {
+          <div class="card-body-clean chart-container-medium" style="position: relative">
+            <div
+              id="originMap"
+              style="height: 100%; width: 100%; border-radius: 8px"
+              [style.display]="originMapData.length > 0 ? 'block' : 'none'"
+            ></div>
+            @if (originMapData.length === 0) {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
               <h3 class="empty-title">No Telemetry Signal</h3>
@@ -466,9 +480,11 @@
             ></apx-chart>
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+              <mat-icon class="empty-icon" style="color: var(--color-success)"
+                >verified_user</mat-icon
+              >
+              <h3 class="empty-title" style="color: var(--color-success)">No Active Threats</h3>
+              <p class="empty-subtitle">System is secure. No threat events detected.</p>
             </div>
             }
           </div>

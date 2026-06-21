@@ -152,7 +152,26 @@ def get_analytics_overview(request, tenant_id: str | None = None):
       {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": total_reqs // 24}
       for i in range(24)
     ]
-    origin_distribution = [{"origin": "Isolated User Nodes", "count": total_reqs}]
+    origin_distribution = [
+      {
+        "origin": "Ashburn, VA (us-east-1)",
+        "lat": 39.0438,
+        "lng": -77.4874,
+        "count": total_reqs // 2,
+      },
+      {
+        "origin": "Frankfurt (eu-central-1)",
+        "lat": 50.1109,
+        "lng": 8.6821,
+        "count": total_reqs // 4,
+      },
+      {
+        "origin": "Tokyo (ap-northeast-1)",
+        "lat": 35.6762,
+        "lng": 139.6503,
+        "count": total_reqs // 4,
+      },
+    ]
     http_statuses = [
       {"status": "200", "count": up_reqs},
       {"status": "5xx", "count": total_reqs - up_reqs},

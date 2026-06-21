@@ -78,12 +78,27 @@ async def report_issue(request: Any, payload: IssueReportPayload) -> Any:
 
 @router.post("/vulnerabilities", response=VulnerabilityOut)
 def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> Any:
-  from monitor.models import Vulnerability
+  import uuid
+
+  from monitor.models import TenantMembership, Vulnerability
 
   # Set default severity if not provided or valid
   severity = payload.severity
   if severity not in ["Low", "Medium", "High", "Critical"]:
     severity = "Medium"
+
+  tenant_id = None
+  try:
+    if payload.customer_id and payload.customer_id != "Internal":
+      tenant_uuid = uuid.UUID(payload.customer_id)
+      tenant_id = tenant_uuid
+  except ValueError:
+    pass
+
+  if not tenant_id and request.user.is_authenticated:
+    tm = TenantMembership.objects.filter(user=request.user).first()
+    if tm:
+      tenant_id = tm.tenant_id
 
   vuln = Vulnerability.objects.create(
     title=payload.title,
@@ -92,6 +107,7 @@ def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> A
     customer_id=payload.customer_id,
     cve_id=payload.cve_id,
     severity=severity,
+    tenant_id=tenant_id,
   )
 
   return {
@@ -112,12 +128,23 @@ def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> A
 
 @router.get("/vulnerabilities", response=list[VulnerabilityOut])
 def list_vulnerabilities(request: Any) -> Any:
-  from monitor.models import Vulnerability
+  from django.db.models import Q
+  from monitor.models import TenantMembership, Vulnerability
 
   if request.user.is_authenticated:
-    vulns = Vulnerability.objects.filter(customer_id=str(request.user.id)).order_by("-created_at")
+    memberships = TenantMembership.objects.filter(user=request.user).values_list(
+      "tenant_id", flat=True
+    )
+    tenant_ids_str = [str(t_id) for t_id in memberships]
+
+    vulns = Vulnerability.objects.filter(
+      Q(tenant_id__in=memberships)
+      | Q(customer_id__in=tenant_ids_str)
+      | Q(customer_id=str(request.user.id))
+    ).order_by("-created_at")
   else:
     vulns = Vulnerability.objects.filter(customer_id="Internal").order_by("-created_at")
+
   return [
     {
       "id": str(v.id),

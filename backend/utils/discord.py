@@ -8,14 +8,25 @@ logger = logging.getLogger(__name__)
 
 def send_discord_alert(subject: str, message: str):
   """
-  Sends an alert message to a Discord webhook.
+  Sends a rich embedded alert message to a Discord webhook,
+  matching the platform's theme.
   """
   webhook_url = os.environ.get("DISCORD_WEBHOOK_URL")
   if not webhook_url:
     logger.warning("DISCORD_WEBHOOK_URL is not set. Skipping Discord alert.")
     return
 
-  payload = {"content": f"**{subject}**\n```\n{message}\n```"}
+  import datetime
+
+  embed = {
+    "title": subject,
+    "description": f"```\n{message}\n```",
+    "color": 2193151,  # Crayola Blue: #2176ff
+    "footer": {"text": "DEML Platform"},
+    "timestamp": datetime.datetime.utcnow().isoformat(),
+  }
+
+  payload = {"embeds": [embed]}
 
   try:
     response = requests.post(webhook_url, json=payload, timeout=5)

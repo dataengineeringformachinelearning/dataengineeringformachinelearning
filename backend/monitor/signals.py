@@ -37,11 +37,13 @@ def cors_allow_monitored_domains(sender, request, **kwargs):
 
 @receiver(post_save, sender="monitor.Vulnerability")
 def notify_vulnerability_created(sender, instance, created, **kwargs):
-  if created:
+  if created and instance.tenant:
     from utils.discord import send_discord_alert
     from utils.email import get_recent_stats_text, send_alert_email
 
-    subject = f"Alert: New Vulnerability Detected - {instance.title}"
+    subject = (
+      f"Alert: New Vulnerability Detected for Tenant '{instance.tenant.name}' - {instance.title}"
+    )
     message = f"A new vulnerability was logged:\n\nTitle: {instance.title}\nSeverity: {instance.severity}\nDescription: {instance.description}\n\n"
     message += get_recent_stats_text()
     send_alert_email(subject, message)
@@ -50,24 +52,17 @@ def notify_vulnerability_created(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender="monitor.Incident")
 def notify_incident_created(sender, instance, created, **kwargs):
-  if created:
-    from utils.discord import send_discord_alert
-    from utils.email import get_recent_stats_text, send_alert_email
-
-    subject = f"Alert: New Incident/Outage Logged - {instance.title}"
-    message = f"An incident was created:\n\nTitle: {instance.title}\nStatus: {instance.status}\nMessage: {instance.message}\n\n"
-    message += get_recent_stats_text()
-    send_alert_email(subject, message)
-    send_discord_alert(subject, message)
+  # Routine incident logging alerts are deferred to the daily status report
+  pass
 
 
 @receiver(post_save, sender="monitor.ThreatIntelligence")
 def notify_threat_detected(sender, instance, created, **kwargs):
-  if created and instance.is_malicious:
+  if created and instance.is_malicious and instance.tenant:
     from utils.discord import send_discord_alert
     from utils.email import get_recent_stats_text, send_alert_email
 
-    subject = f"Alert: Malicious Threat Detected from {instance.ip_address or instance.location}"
+    subject = f"Alert: Malicious Threat Detected for Tenant '{instance.tenant.name}' from {instance.ip_address or instance.location}"
     message = f"A new malicious threat was detected:\n\nSource: {instance.source}\nIP: {instance.ip_address}\nLocation: {instance.location}\nAbuse Score: {instance.abuse_confidence_score}\n\n"
     message += get_recent_stats_text()
     send_alert_email(subject, message)
