@@ -6,18 +6,15 @@ import {
   signal,
   computed,
   ChangeDetectorRef,
-  effect,
   HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { BookService } from '../../services/book.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
-import { OramaSearchService, SearchItem } from '../../services/orama-search.service';
-import { SearchDialog } from '../search-dialog/search-dialog';
+import { OramaSearchService } from '../../services/orama-search.service';
 import { filter } from 'rxjs/operators';
 import {
   MonitorService,
@@ -29,20 +26,19 @@ import {
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatDialogModule],
+  imports: [CommonModule, RouterModule, MatIconModule],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar implements OnInit {
   public authService = inject(AuthService);
+  private searchService = inject(OramaSearchService);
   private monitorService = inject(MonitorService);
   private cdr = inject(ChangeDetectorRef);
   public bookService = inject(BookService);
   public settingsService = inject(SettingsService);
   private router = inject(Router);
-  private searchService = inject(OramaSearchService);
-  private dialog = inject(MatDialog);
 
   isCollapsed = signal<boolean>(false);
   isDocumentationActive = signal(false);
@@ -58,59 +54,6 @@ export class Sidebar implements OnInit {
   private startX = 0;
   private startWidth = 0;
 
-  constructor() {
-    effect(() => {
-      const chapters = this.bookService.chapters();
-      const pages = this.statusPages();
-      this.indexSidebarItems(chapters, pages);
-    });
-  }
-
-  private async indexSidebarItems(chapters: any[], pages: any[]) {
-    const items: SearchItem[] = [];
-
-    chapters.forEach((chapter, index) => {
-      items.push({
-        id: String(index),
-        title: chapter.title,
-        content: chapter.content || '',
-        type: 'chapter',
-        url: String(index),
-      });
-    });
-
-    pages.forEach(page => {
-      items.push({
-        id: page.id,
-        title: page.title,
-        content: page.description || '',
-        type: 'status-page',
-        url: page.id,
-      });
-    });
-
-    await this.searchService.clearAndIndex(items);
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-    const isModifier = event.metaKey || event.ctrlKey;
-    const isK = event.key.toLowerCase() === 'k';
-    const isSlash = event.key === '/';
-
-    const activeEl = document.activeElement;
-    const isTyping =
-      activeEl &&
-      (activeEl.tagName === 'INPUT' ||
-        activeEl.tagName === 'TEXTAREA' ||
-        activeEl.hasAttribute('contenteditable'));
-
-    if ((isModifier && isK) || (isSlash && !isTyping)) {
-      event.preventDefault();
-      this.openSearchDialog();
-    }
-  }
-
   startResize(event: MouseEvent) {
     if (this.isCollapsed()) return;
     this.isDragging.set(true);
@@ -118,6 +61,10 @@ export class Sidebar implements OnInit {
     this.startWidth = this.sidebarWidth();
     document.body.style.cursor = 'col-resize';
     event.preventDefault();
+  }
+
+  openSearchDialog() {
+    this.searchService.openSearchDialog();
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -139,19 +86,6 @@ export class Sidebar implements OnInit {
       document.body.style.cursor = '';
       localStorage.setItem('sidebarWidth', this.sidebarWidth().toString());
     }
-  }
-
-  openSearchDialog() {
-    // Check if dialog is already open
-    if (this.dialog.openDialogs.some(d => d.componentInstance instanceof SearchDialog)) {
-      return;
-    }
-
-    this.dialog.open(SearchDialog, {
-      width: '600px',
-      maxWidth: '95vw',
-      panelClass: 'command-palette-dialog',
-    });
   }
 
   toggleCollapse() {

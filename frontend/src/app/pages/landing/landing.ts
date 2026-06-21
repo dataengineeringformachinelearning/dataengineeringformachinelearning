@@ -65,7 +65,7 @@ export class Landing implements OnInit, OnDestroy {
       description:
         "The embedded status widget securely streams real-time, zero-dependency telemetry (visitor logs, anomalies) directly from the tenant's site into our ingestion pipeline.",
       codeSnippet:
-        '<script src="https://platform.demo/assets/widget.js" data-page-id="tenant-id"></script>',
+        '<script src="https://platform.demo/assets/widget.js" data-page-id="tenant-id" async defer></script>',
     },
     {
       id: 'clean',
@@ -114,6 +114,8 @@ export class Landing implements OnInit, OnDestroy {
       if (mount) {
         const script = document.createElement('script');
         script.src = 'assets/widget.js';
+        script.async = true;
+        script.defer = true;
         script.setAttribute('data-page-id', 'platform-status');
         script.setAttribute('data-backend-url', environment.backendUrl);
         mount.appendChild(script);

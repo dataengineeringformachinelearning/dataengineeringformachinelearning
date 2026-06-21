@@ -148,7 +148,7 @@ export class SearchDialog implements OnInit, AfterViewInit {
     if (result.type === 'chapter') {
       const pageIndex = parseInt(result.id, 10);
       this.bookService.goToPage(pageIndex);
-      this.router.navigate(['/documentation']);
+      this.router.navigate(['/book']);
     } else if (result.type === 'status-page') {
       const page = this.settingsService.statusPages().find(p => p.id === result.id);
       if (page) {

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { BookService } from '../../services/book.service';
+import { OramaSearchService } from '../../services/orama-search.service';
 
 @Component({
   selector: 'app-book',
@@ -27,6 +28,11 @@ export class Book implements OnInit {
   public bookService = inject(BookService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
+  private searchService = inject(OramaSearchService);
+
+  openSearchDialog() {
+    this.searchService.openSearchDialog();
+  }
 
   ngOnInit() {
     this.titleService.setTitle('The Book - Web Application');

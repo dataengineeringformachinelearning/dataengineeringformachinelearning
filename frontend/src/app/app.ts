@@ -15,6 +15,11 @@ import { IssueReporter } from './components/issue-reporter/issue-reporter';
 import { CookieBanner } from './components/cookie-banner/cookie-banner';
 import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
+import { BookService } from './services/book.service';
+import { SettingsService } from './services/settings.service';
+import { OramaSearchService, SearchItem } from './services/orama-search.service';
+import { MonitorService } from './services/monitor.service';
+import { effect, HostListener } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
 
@@ -30,9 +35,66 @@ export class App implements OnInit {
   public authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
+  public bookService = inject(BookService);
+  public settingsService = inject(SettingsService);
+  private searchService = inject(OramaSearchService);
+  private monitorService = inject(MonitorService);
 
   isStandaloneStatusPage = signal(false);
   isDashboardPage = signal(false);
+
+  constructor() {
+    effect(() => {
+      const chapters = this.bookService.chapters();
+      const pages = this.settingsService.statusPages();
+      this.indexSearchItems(chapters, pages);
+    });
+  }
+
+  private async indexSearchItems(chapters: any[], pages: any[]) {
+    const items: SearchItem[] = [];
+
+    chapters.forEach((chapter, index) => {
+      items.push({
+        id: String(index),
+        title: chapter.title,
+        content: chapter.content || '',
+        type: 'chapter',
+        url: String(index),
+      });
+    });
+
+    pages.forEach(page => {
+      items.push({
+        id: page.id,
+        title: page.title,
+        content: page.description || '',
+        type: 'status-page',
+        url: page.id,
+      });
+    });
+
+    await this.searchService.clearAndIndex(items);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    const isModifier = event.metaKey || event.ctrlKey;
+    const isK = event.key.toLowerCase() === 'k';
+    const isSlash = event.key === '/';
+
+    const activeEl = document.activeElement;
+    const isTyping =
+      activeEl &&
+      (activeEl.tagName === 'INPUT' ||
+        activeEl.tagName === 'TEXTAREA' ||
+        activeEl.hasAttribute('contenteditable'));
+
+    if ((isModifier && isK) || (isSlash && !isTyping)) {
+      event.preventDefault();
+      this.searchService.openSearchDialog();
+    }
+  }
 
   ngOnInit() {
     this.router.events
@@ -70,6 +132,13 @@ export class App implements OnInit {
       this.authService.checkAuth();
       this.checkResetToken();
       this.registerServiceWorker();
+
+      this.monitorService.getStatusPages().subscribe({
+        next: data => {
+          this.settingsService.statusPages.set(data);
+        },
+        error: err => console.error('Error fetching pages for global search:', err),
+      });
     }
   }
 

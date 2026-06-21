@@ -5,6 +5,23 @@
 >
   <!-- Floating Sidebar for Chapters -->
   <aside class="dashboard-sidebar no-print">
+    <div
+      class="sidebar-search sidebar-extracted-1"
+      (click)="openSearchDialog()"
+      tabindex="0"
+      role="button"
+      aria-label="Open search dialog"
+      (keydown.enter)="openSearchDialog()"
+      (keydown.space)="$event.preventDefault(); openSearchDialog()"
+      style="margin: 16px 16px 0"
+    >
+      <div class="search-wrapper">
+        <mat-icon>search</mat-icon>
+        <span class="sidebar-search-placeholder">Search...</span>
+        <kbd class="search-shortcut">⌘K</kbd>
+      </div>
+    </div>
+
     <div class="sidebar-section">
       <h3 class="section-title">Chapters</h3>
       <div class="page-list">

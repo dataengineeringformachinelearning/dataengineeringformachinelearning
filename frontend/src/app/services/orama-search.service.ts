@@ -1,5 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { create, insert, search } from '@orama/orama';
+import { MatDialog } from '@angular/material/dialog';
+import { SearchDialog } from '../components/search-dialog/search-dialog';
 
 export interface SearchItem {
   id: string; // page index or page slug
@@ -14,6 +16,7 @@ export interface SearchItem {
 })
 export class OramaSearchService {
   private db: any = null;
+  private dialog = inject(MatDialog);
 
   constructor() {
     this.initializeDb();
@@ -63,5 +66,17 @@ export class OramaSearchService {
       console.error('Orama search error:', e);
       return [];
     }
+  }
+
+  openSearchDialog() {
+    if (this.dialog.openDialogs.some(d => d.componentInstance instanceof SearchDialog)) {
+      return;
+    }
+
+    this.dialog.open(SearchDialog, {
+      width: '600px',
+      maxWidth: '95vw',
+      panelClass: 'command-palette-dialog',
+    });
   }
 }

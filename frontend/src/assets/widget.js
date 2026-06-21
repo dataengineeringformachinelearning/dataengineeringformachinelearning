@@ -43,6 +43,20 @@
     }
   };
 
+  const fetchWithTimeout = async (resource, options = {}) => {
+    const { timeout = 5000 } = options;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    try {
+      const response = await fetch(resource, { ...options, signal: controller.signal });
+      clearTimeout(id);
+      return response;
+    } catch (error) {
+      clearTimeout(id);
+      throw error;
+    }
+  };
+
   const globalAgentData = {
     clicks: 0,
     xss_events: [],
@@ -221,7 +235,7 @@
         // Resolve Client IP lazily during idle cycles
         runWhenIdle(async () => {
           try {
-            const ipRes = await fetch('https://api.ipify.org?format=json');
+            const ipRes = await fetchWithTimeout('https://api.ipify.org?format=json');
             if (ipRes.ok) {
               const ipData = await ipRes.json();
               this.clientIp = ipData.ip || '127.0.0.1';
@@ -498,10 +512,11 @@
           };
 
           try {
-            const res = await fetch(`${backendUrl}/api/v1/agent/vulnerabilities`, {
+            const res = await fetchWithTimeout(`${backendUrl}/api/v1/agent/vulnerabilities`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(payload),
+              timeout: 8000,
             });
             if (res.ok) {
               statusMsg.innerText = 'Threat reported successfully! Triage initiated.';
@@ -560,7 +575,7 @@
 
           try {
             // Send legacy payload to backend for threat analysis
-            await fetch(`${backendUrl}/api/v1/telemetry/endpoints`, {
+            await fetchWithTimeout(`${backendUrl}/api/v1/telemetry/endpoints`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(telemetryPayload),
@@ -635,7 +650,7 @@
             let page = null;
             const slugApiUrl = `${backendUrl}/api/v1/system-status/status_pages/slug/${pageId}`;
             try {
-              const res = await fetch(slugApiUrl);
+              const res = await fetchWithTimeout(slugApiUrl);
               if (res.ok) {
                 page = await res.json();
               }
@@ -646,7 +661,7 @@
             if (!page) {
               // Fallback to fetching the list
               const listApiUrl = `${backendUrl}/api/v1/system-status/status_pages`;
-              const res = await fetch(listApiUrl);
+              const res = await fetchWithTimeout(listApiUrl);
               if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data)) {
@@ -664,8 +679,12 @@
 
               try {
                 const [incidentsRes, servicesRes] = await Promise.all([
-                  fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`),
-                  fetch(`${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`),
+                  fetchWithTimeout(
+                    `${backendUrl}/api/v1/system-status/status_pages/${page.id}/incidents`,
+                  ),
+                  fetchWithTimeout(
+                    `${backendUrl}/api/v1/system-status/status_pages/${page.id}/services`,
+                  ),
                 ]);
 
                 if (incidentsRes.ok && servicesRes.ok) {

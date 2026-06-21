@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from aiokafka import AIOKafkaProducer
@@ -15,7 +16,11 @@ async def get_kafka_producer() -> AIOKafkaProducer:
   global _global_producer
   if _global_producer is None:
     _global_producer = AIOKafkaProducer(bootstrap_servers=get_kafka_brokers())
-    await _global_producer.start()
+    try:
+      await asyncio.wait_for(_global_producer.start(), timeout=5.0)
+    except asyncio.TimeoutError as err:
+      _global_producer = None
+      raise ConnectionError("Failed to connect to Kafka broker (timeout)") from err
   return _global_producer
 
 
