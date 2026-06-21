@@ -1162,7 +1162,6 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
   - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g. `deml-clickhouse.railway.internal`).
   - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
   - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
-  - **ALLOWED_CORS_ORIGINS**: Set this to the exact domain where your widget will be hosted (e.g., `https://dataengineeringformachinelearning.com`).
 
 ### 9. Vulnerability Scanner Engine
 

@@ -130,7 +130,6 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
-      - ALLOWED_CORS_ORIGINS=${ALLOWED_CORS_ORIGINS:-https://dataengineeringformachinelearning.com}
     ports:
       - "4317:4317" # OTLP gRPC
       - "4318:4318" # OTLP HTTP
