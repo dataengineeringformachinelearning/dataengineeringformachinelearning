@@ -50,5 +50,5 @@ class Migration(migrations.Migration):
   ]
 
   operations = [
-    migrations.RunPython(create_tenant_0),
+    migrations.RunPython(create_tenant_0, reverse_code=migrations.RunPython.noop),
   ]

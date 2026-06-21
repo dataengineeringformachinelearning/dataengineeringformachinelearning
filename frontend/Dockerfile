@@ -37,8 +37,20 @@ RUN npm run check:mobile-first
 # Build the application
 RUN npm run build --prod
 
-# Production stage
-FROM nginxinc/nginx-unprivileged:alpine-slim
+# Generate firebase config at build time so we don't need a shell in the distroless image
+RUN mkdir -p /app/dist/frontend/browser/assets && cat <<EOF > /app/dist/frontend/browser/assets/firebase-config.js
+window.FIREBASE_CONFIG = {
+  apiKey: "${FIREBASE_API_KEY:-PLACEHOLDER_API_KEY}",
+  authDomain: "${FIREBASE_AUTH_DOMAIN:-demldotcom.firebaseapp.com}",
+  projectId: "${FIREBASE_PROJECT_ID:-demldotcom}",
+  storageBucket: "${FIREBASE_STORAGE_BUCKET:-demldotcom.firebasestorage.app}",
+  messagingSenderId: "${FIREBASE_MESSAGING_SENDER_ID:-870072971206}",
+  appId: "${FIREBASE_APP_ID:-1:870072971206:web:5231fde2822d750abfccc7}"
+};
+EOF
+
+# Production stage (Google Distroless-like chainguard nginx)
+FROM cgr.dev/chainguard/nginx:latest
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
@@ -46,18 +58,9 @@ COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
 # Copy our custom nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-
-# Temporarily switch to root to set correct permissions
-USER root
-RUN chown -R nginx:nginx /usr/share/nginx/html && chmod +x /docker-entrypoint.sh
-
-# Switch back to non-root nginx user
-USER nginx
-
 # Expose port
 EXPOSE 8080
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+USER nginx
+
 CMD ["nginx", "-g", "daemon off;"]

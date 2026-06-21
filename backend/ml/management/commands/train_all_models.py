@@ -1,7 +1,6 @@
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from ml.ml_services import train_tenant_sla, train_threat_model
-from monitor.models import StatusPage
 
 
 class Command(BaseCommand):
@@ -14,12 +13,14 @@ class Command(BaseCommand):
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"Database cleanup failed: {e}"))
 
+    from monitor.models import Tenant
+
     self.stdout.write("Starting SLA and Threat forecast model training for all tenants...")
-    pages = StatusPage.objects.all()
-    for page in pages:
-      self.stdout.write(f"Training models for status page '{page.title}' (slug: {page.slug})...")
+    tenants = Tenant.objects.all()
+    for tenant in tenants:
+      self.stdout.write(f"Training models for tenant '{tenant.name}'...")
       try:
-        run = train_tenant_sla(page)
+        run = train_tenant_sla(tenant)
         if run:
           self.stdout.write(
             self.style.SUCCESS(
@@ -31,16 +32,15 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"  - SLA training failed: {e}"))
 
-      if page.user:
-        self.stdout.write(f"Training threat model for owner '{page.user.username}'...")
-        try:
-          report = train_threat_model(page.user)
-          self.stdout.write(
-            self.style.SUCCESS(
-              f"  - Threat model trained successfully: anomaly score = {report.anomaly_score * 100:.1f}%"
-            )
+      self.stdout.write(f"Training threat model for tenant '{tenant.name}'...")
+      try:
+        report = train_threat_model(tenant)
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"  - Threat model trained successfully: anomaly score = {report.anomaly_score * 100:.1f}%"
           )
-        except Exception as e:
-          self.stderr.write(self.style.ERROR(f"  - Threat training failed: {e}"))
+        )
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"  - Threat training failed: {e}"))
 
     self.stdout.write(self.style.SUCCESS("All models trained and database cleaned successfully."))

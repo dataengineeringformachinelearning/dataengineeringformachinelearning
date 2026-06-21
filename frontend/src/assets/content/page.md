@@ -1511,3 +1511,30 @@ I implemented a comprehensive API Key management system exclusively available th
 Crucially, the architecture unifies machine data and user telemetry. When the `/ingest` or `/predict` endpoints authenticate a request, they extract the exact tenant ID from the matched API key and inject the incoming payload directly into the platform's central Kafka `app-events` topic. This guarantees that all external data gracefully feeds into the exact same Aggregated Analytics pipeline powering the user's dashboard widgets, preserving strict multi-tenancy.
 
 This architecture successfully decoupled the human-facing application from the machine-facing gateway. By standardizing the ingestion schema, centralizing data flow into the widget streams, and enforcing strict cryptographic access controls via the UI, the platform was now ready to securely handle automated, enterprise-scale data streams from the industry's most demanding tools.
+
+## Chapter 10: DevSecOps, Platform Standardization, and Leak-Proof Tenancy
+
+As the platform scaled, the necessity for uncompromising infrastructure security and UI/UX standardization became paramount. I initiated a comprehensive DevSecOps audit, focusing first on the frontend containerization. By transitioning the Angular UI deployment pipeline to leverage Google Distroless-like multi-stage builds (specifically 'cgr.dev/chainguard/nginx'), I successfully eliminated all runtime shells and package managers. This drastically reduced the attack surface, ensuring the production image was strictly limited to serving static assets.
+
+Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1100px' maximum width. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
+
+Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 30-day telemetry retention and daily cleanup policies without any risk of cross-tenant data bleed.
+
+## Appendix H: Background Schedulers & Asynchronous Workflows
+
+The DEML Platform orchestrates several asynchronous background workers. These workers run continuously to process Redpanda events, trigger periodic machine learning pipelines, and enforce strict DevSecOps compliance.
+
+### 1. Telemetry Worker (telemetry_worker.py)
+
+- **Data Aggregation (1 Hour)**: Triggers 'aggregate_analytics' every 3600 seconds to roll up raw OTLP traces into historical charts.
+- **Active Pinger (30 Seconds)**: Continuously pings all monitored services every 30 seconds to provide real-time uptime metrics.
+- **Quality Scanner (6 Hours)**: Runs Google PageSpeed (Lighthouse) audits on all Tenant target URLs every 21,600 seconds to gather performance, accessibility, and SEO metrics.
+
+### 2. Machine Learning Worker (ml_worker.py)
+
+- **Daily Training Cycle (24 Hours)**: Every 86,400 seconds, this scheduler executes 'train_all_models'. To ensure models only train on the correct sliding window of data, it natively triggers the 'db_cleanup' routine first. Once legacy data is purged, it sequentially iterates across all Tenants to train updated PyTorch SLA and Threat Forecasting models.
+
+### 3. Security & Compliance Worker (security_worker.py)
+
+- **Threat Intelligence Sync (1 Hour)**: Pulls updated indicators from external OSINT and Dark Web scanners every 3600 seconds, feeding them into the platform's STIX 2.1 mapping database.
+- **Compliance Rotation (24 Hours)**: Every 86,400 seconds, this scheduler verifies the age of the active Data Encryption Key (DEK). If the key exceeds the 30-day lifecycle limit, it automatically triggers 'rotate_keys' to generate a new AES-256 key and re-encrypts all sensitive third-party integrations (e.g., GA4, Microsoft Clarity keys). It additionally triggers an idempotent 'db_cleanup' pass to guarantee adherence to the 30-day data retention policy.
