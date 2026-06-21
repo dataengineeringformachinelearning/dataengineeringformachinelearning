@@ -37,6 +37,9 @@ export class AnalyticsComponent {
   public activeProviders: string[] = [];
   public isLoading = true;
 
+  public tenants: any[] = [];
+  public selectedTenantId: string | null = null;
+
   // CES Meter Metrics
   public cesLevel = 0;
   public threatLevel = 0;
@@ -622,7 +625,13 @@ export class AnalyticsComponent {
   }
 
   private loadAnalyticsData() {
-    this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/overview`).subscribe({
+    this.isLoading = true;
+    let url = `${environment.backendUrl}/api/v1/analytics/overview`;
+    if (this.selectedTenantId) {
+      url += `?tenant_id=${this.selectedTenantId}`;
+    }
+
+    this.http.get<any>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const { ces, user_metrics } = response.data;
@@ -699,5 +708,39 @@ export class AnalyticsComponent {
         this.cdr.detectChanges();
       },
     });
+  }
+
+  private loadTenants() {
+    this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/tenants`).subscribe({
+      next: response => {
+        if (response.status === 'success' && response.data) {
+          this.tenants = response.data;
+          // Optionally set a default selected tenant if none is selected
+          if (!this.selectedTenantId && this.tenants.length > 0) {
+            // Find platform tenant if available, or just the first one
+            const platformTenant = this.tenants.find((t: any) => t.is_platform);
+            this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
+          }
+        }
+      },
+      error: err => console.error('Failed to load tenants', err),
+    });
+  }
+
+  ngOnInit() {
+    if (this.isBrowser) {
+      this.loadTenants();
+      this.loadAnalyticsData();
+
+      // Auto-refresh data every 60 seconds
+      setInterval(() => {
+        this.loadAnalyticsData();
+      }, 60000);
+    }
+  }
+
+  public onTenantChange(event: any) {
+    this.selectedTenantId = event.target.value;
+    this.loadAnalyticsData();
   }
 }

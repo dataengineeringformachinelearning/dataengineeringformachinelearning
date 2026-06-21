@@ -40,6 +40,11 @@ class Command(BaseCommand):
     self.background_tasks.add(pinger_task)
     pinger_task.add_done_callback(self.background_tasks.discard)
 
+    # Start quality/lighthouse task
+    lighthouse_task = asyncio.create_task(self.quality_scanner_scheduler())
+    self.background_tasks.add(lighthouse_task)
+    lighthouse_task.add_done_callback(self.background_tasks.discard)
+
     brokers = get_kafka_brokers()
     consumer = AIOKafkaConsumer(
       "app-events",
@@ -192,9 +197,11 @@ class Command(BaseCommand):
 
     from django.conf import settings
     from django.contrib.auth.models import User
-    from monitor.models import MonitoredService, StatusPage
+    from monitor.models import MonitoredService, StatusPage, Tenant
 
     frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200").rstrip("/")
+
+    tenant_0 = Tenant.objects.filter(is_platform_tenant=True).first()
 
     try:
       page = StatusPage.objects.get(slug="platform-status")
@@ -209,6 +216,7 @@ class Command(BaseCommand):
           password=get_random_string(32),
         )
       page = StatusPage.objects.create(
+        tenant=tenant_0,
         user=default_user,
         title="Platform Status",
         slug="platform-status",
@@ -304,6 +312,7 @@ class Command(BaseCommand):
 
       # Create instance (we don't save yet to do it in bulk)
       ep = Endpoints(
+        tenant=tenant_0,
         url=row["url"],
         status_code=row["status_code"],
         response_time=duration,
@@ -382,47 +391,99 @@ class Command(BaseCommand):
 
     close_old_connections()
     try:
-      services = MonitoredService.objects.all()
-      urls = {s.url for s in services if s.url}
+      services = MonitoredService.objects.select_related("status_page__tenant").all()
 
-      for url in urls:
-        start_time = time.time()
-        status_code = 503
-        is_active = False
-        try:
-          req = urllib.request.Request(url, headers={"User-Agent": "PlatformStatusAutoPinger/1.0"})
-          import ssl
+      tenant_urls = {}
+      for s in services:
+        tenant = s.status_page.tenant if s.status_page else None
+        if not tenant:
+          continue
+        if tenant not in tenant_urls:
+          tenant_urls[tenant] = set()
+        if s.url:
+          tenant_urls[tenant].add(s.url)
 
-          ctx = ssl.create_default_context()
-          ctx.check_hostname = False
-          ctx.verify_mode = ssl.CERT_NONE
-
-          # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
-          with urllib.request.urlopen(req, timeout=5, context=ctx) as response:
-            status_code = response.getcode()
-            is_active = 200 <= status_code < 500
-        except urllib.error.HTTPError as e:
-          status_code = e.code
-          is_active = 200 <= status_code < 500
-        except Exception:
+      for tenant, urls in tenant_urls.items():
+        for url in urls:
+          start_time = time.time()
           status_code = 503
           is_active = False
+          try:
+            req = urllib.request.Request(
+              url, headers={"User-Agent": "PlatformStatusAutoPinger/1.0"}
+            )
+            import ssl
 
-        duration = datetime.timedelta(seconds=(time.time() - start_time))
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
 
-        Endpoints.objects.create(
-          url=url,
-          status_code=status_code,
-          response_time=duration,
-          ip_address="127.0.0.1",
-          location="Localhost",
-          asn="N/A",
-          isp="Local Network",
-          device_type="Bot",
-          os_name="Unknown",
-          browser_name="Unknown",
-          is_bot=True,
-          is_active=is_active,
-        )
+            # nosemgrep: python.lang.security.audit.dynamic-urllib-use-detected.dynamic-urllib-use-detected
+            with urllib.request.urlopen(req, timeout=5, context=ctx) as response:
+              status_code = response.getcode()
+              is_active = 200 <= status_code < 500
+          except urllib.error.HTTPError as e:
+            status_code = e.code
+            is_active = 200 <= status_code < 500
+          except Exception:
+            status_code = 503
+            is_active = False
+
+          duration = datetime.timedelta(seconds=(time.time() - start_time))
+
+          Endpoints.objects.create(
+            tenant=tenant,
+            url=url,
+            status_code=status_code,
+            response_time=duration,
+            ip_address="127.0.0.1",
+            location="Localhost",
+            asn="N/A",
+            isp="Local Network",
+            device_type="Bot",
+            os_name="Unknown",
+            browser_name="Unknown",
+            is_bot=True,
+            is_active=is_active,
+          )
+    finally:
+      close_old_connections()
+
+  async def quality_scanner_scheduler(self):
+    self.stdout.write(self.style.SUCCESS("Starting quality (Lighthouse) scanner scheduler..."))
+    # Wait 60 seconds for system boot
+    await asyncio.sleep(60)
+    while True:
+      try:
+        await self.run_lighthouse_scans()
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Error in lighthouse scanner task: {e}"))
+      # Run every 6 hours
+      await asyncio.sleep(21600)
+
+  @sync_to_async
+  def run_lighthouse_scans(self):
+    from django.db import close_old_connections
+    from monitor.models import Tenant
+
+    from telemetry.tasks.lighthouse_scanner import LighthouseScanner
+
+    close_old_connections()
+    try:
+      tenants = Tenant.objects.filter(target_url__isnull=False)
+      for tenant in tenants:
+        # Avoid scanning if no URL
+        if not tenant.target_url:
+          continue
+
+        # Call the scanner
+        scores = LighthouseScanner.scan_url(tenant.target_url, tenant_id=tenant.id)
+        if scores:
+          # In a full implementation, you'd save these scores to a new model or AggregatedAnalytics.
+          # For now, we print them so we know it works.
+          self.stdout.write(
+            self.style.SUCCESS(f"[Tenant {tenant.name}] Lighthouse Scores: {scores}")
+          )
+
     finally:
       close_old_connections()

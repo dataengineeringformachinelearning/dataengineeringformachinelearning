@@ -8,8 +8,31 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
+@router.get("/tenants")
+def get_user_tenants(request):
+  if not request.user.is_authenticated:
+    from ninja.errors import HttpError
+
+    raise HttpError(401, "Not authenticated")
+
+  from monitor.models import TenantMembership
+
+  memberships = TenantMembership.objects.filter(user=request.user).select_related("tenant")
+  tenants = [
+    {
+      "id": str(m.tenant.id),
+      "name": m.tenant.name,
+      "slug": m.tenant.slug,
+      "is_platform": m.tenant.is_platform_tenant,
+      "role": m.role,
+    }
+    for m in memberships
+  ]
+  return {"status": "success", "data": tenants}
+
+
 @router.get("/overview")
-def get_analytics_overview(request):
+def get_analytics_overview(request, tenant_id: str | None = None):
   if not request.user.is_authenticated:
     from ninja.errors import HttpError
 
@@ -17,6 +40,28 @@ def get_analytics_overview(request):
 
   now = timezone.now()
   last_24h = now - timedelta(days=1)
+
+  from monitor.models import Tenant, TenantMembership
+
+  # Determine which tenant context to load
+  target_tenant = None
+  if tenant_id:
+    membership = (
+      TenantMembership.objects.filter(user=request.user, tenant_id=tenant_id)
+      .select_related("tenant")
+      .first()
+    )
+    if not membership:
+      from ninja.errors import HttpError
+
+      raise HttpError(403, "Access denied to this tenant")
+    target_tenant = membership.tenant
+  else:
+    membership = TenantMembership.objects.filter(user=request.user).select_related("tenant").first()
+    if membership:
+      target_tenant = membership.tenant
+    else:
+      target_tenant = Tenant.objects.filter(is_platform_tenant=True).first()
 
   # ==========================================
   # 1. GLOBAL CES (Anonymized & Aggregated)
@@ -60,7 +105,7 @@ def get_analytics_overview(request):
     Vulnerability,
   )
 
-  user_pages = StatusPage.objects.filter(user=request.user)
+  user_pages = StatusPage.objects.filter(tenant=target_tenant)
   user_urls = MonitoredService.objects.filter(status_page__in=user_pages).values_list(
     "url", flat=True
   )
@@ -73,7 +118,7 @@ def get_analytics_overview(request):
   uptime_percent = round((up_reqs / total_reqs) * 100.0, 2) if total_reqs > 0 else 100.0
 
   active_incidents = Incident.objects.filter(
-    status_page__user=request.user, status__in=["Investigating", "Identified"]
+    tenant=target_tenant, status__in=["Investigating", "Identified"]
   ).count()
 
   latencies = list(endpoints.values_list("response_time", flat=True))
@@ -84,7 +129,7 @@ def get_analytics_overview(request):
   else:
     p99_latency = 0.0
 
-  threats = ThreatIntelligence.objects.filter(user=request.user, timestamp__gte=last_24h)
+  threats = ThreatIntelligence.objects.filter(tenant=target_tenant, timestamp__gte=last_24h)
 
   # Basic safe fallbacks if no data exists
   if total_reqs == 0:
@@ -125,9 +170,11 @@ def get_analytics_overview(request):
 
   # Cookie Consents for the tenant (global or isolated to their nodes)
   cookies_analytical = CookieConsent.objects.filter(
-    analytical=True, created_at__gte=last_24h
+    tenant=target_tenant, analytical=True, created_at__gte=last_24h
   ).count()
-  cookies_marketing = CookieConsent.objects.filter(marketing=True, created_at__gte=last_24h).count()
+  cookies_marketing = CookieConsent.objects.filter(
+    tenant=target_tenant, marketing=True, created_at__gte=last_24h
+  ).count()
 
   # Unique Visitors
   unique_visitors = endpoints.values("ip_address").distinct().count()
@@ -143,7 +190,7 @@ def get_analytics_overview(request):
       pass
 
   # Incorporate vulnerabilities into security alerts
-  vulns = Vulnerability.objects.filter(customer_id=str(request.user.id), created_at__gte=last_24h)
+  vulns = Vulnerability.objects.filter(tenant=target_tenant, created_at__gte=last_24h)
   security_alerts = [
     {
       "time": (now - timedelta(hours=24 - i)).strftime("%H:00"),

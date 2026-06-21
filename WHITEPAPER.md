@@ -12,7 +12,9 @@
 
 ## 1. Executive Summary
 
-Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the Web Application Platform (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics—with support for future expansion.
+Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the Web Application Platform (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics.
+
+As a testament to the architecture's stability, the platform actively dogfoods its own infrastructure. The platform itself runs as **Tenant0**, serving as a living "Apex Sandbox" and "Public Sentinel" showcasing its real-time telemetry and threat analysis capabilities to the world.
 
 ## 2. High-Throughput Ingestion Architecture
 
@@ -95,7 +97,9 @@ Furthermore, to support SOC 2 Type II and CMMC 2.0 (Level 2) Readiness and compl
 
 ## 7. Data Tenancy, Retention, and Lifecycle Policy
 
-Observability systems must ensure strict isolation. The DEML Platform enforces absolute multi-tenancy boundaries at the database level and ensures all data is private-by-default. Direct cross-tenant fallbacks (such as global threat reports) are strictly eliminated; instead, threat models and predictions are trained exclusively on the target user's telemetry. If a tenant does not yet have enough collected telemetry, the model is trained on-demand using safe, zero-threat baselines instead of shared data.
+Observability systems must ensure strict isolation. The DEML Platform enforces absolute multi-tenancy boundaries at the database level and ensures all data is private-by-default. All data intake, status widgets, and telemetry records are strictly aligned to their host tenant, guaranteeing that raw data cannot bleed across workspaces.
+
+However, to provide world-class threat detection, we employ a dual-model strategy. The global `platform_threat_model.pt` continuously trains on **aggregate, anonymized Big Data** across the entire platform (extracting non-PII metrics like global failure rates and suspicious request ratios). This allows all users to benefit from collective "herd immunity" while maintaining perfect isolation. Direct cross-tenant raw fallbacks are strictly eliminated; instead, threat models evaluate and predict anomalies exclusively against the target user's isolated telemetry fed through the massive aggregate network. If a tenant does not yet have enough collected telemetry, the model leverages safe, zero-threat baselines instead of raw shared data.
 
 To protect sensitive credentials (such as Google Analytics 4 tokens, Microsoft Clarity API keys, and Cloudflare tokens) from unauthorized exposure, the platform utilizes transparent application-level AES-256 Fernet encryption at-rest. Furthermore, public access to status page details, services, incidents, and telemetry graphs is strictly restricted. Unless the status page owner explicitly approves by publishing the page, the system blocks all public traffic, preventing the exposure of private endpoints or telemetry.
 

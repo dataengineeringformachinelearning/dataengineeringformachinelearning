@@ -22,6 +22,22 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 
 ---
 
+## Core Features
+
+- **High-Throughput Ingestion**: Broker-based telemetry pipelines via Redpanda and Polars.
+- **Tenant Isolation**: Absolute database-level isolation ensuring data and widget intake align precisely with your tenant workspace.
+- **Big Data Aggregate Threat Modeling**: Models train on global anonymized data to leverage "herd immunity" for catching anomalies based on vast datasets.
+- **Tenant-Specific Evaluation**: Threat reports map and evaluate your specific telemetry against the massive platform model.
+- **Predictive SLAs**: Deep learning models dynamically forecasting service level agreements.
+- **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
+- **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
+
+### The Platform (Tenant0) as a Sentinel
+
+We actively dogfood our own product. The core infrastructure operates as **Tenant0**—a living "Apex Sandbox" and "Public Sentinel." This tenant continually runs its own telemetry, status widgets, and threat models. It acts as a continuous sandbox for trials and a public sentinel to showcase what the platform is capable of to the world.
+
+---
+
 ## Solution Architecture
 
 ```mermaid

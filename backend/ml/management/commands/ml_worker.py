@@ -5,7 +5,6 @@ from aiokafka import AIOKafkaConsumer
 from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
 from ml.ml_services import train_tenant_sla
-from monitor.models import StatusPage
 from utils.kafka import get_kafka_brokers
 
 
@@ -60,7 +59,7 @@ class Command(BaseCommand):
               if action == "train_all_tenants":
                 await self.train_all()
               elif action == "train_tenant":
-                tenant_id = payload.get("status_page_id")
+                tenant_id = payload.get("tenant_id")
                 if tenant_id:
                   await self.train_single(tenant_id)
             except Exception as e:
@@ -72,65 +71,67 @@ class Command(BaseCommand):
   @sync_to_async
   def train_all(self):
     from django.db import close_old_connections
+    from monitor.models import Tenant
 
     close_old_connections()
     try:
-      pages = StatusPage.objects.all()
-      for page in pages:
+      tenants = Tenant.objects.all()
+      for tenant in tenants:
         try:
-          run = train_tenant_sla(page)
+          run = train_tenant_sla(tenant)
           if run:
             self.stdout.write(
               self.style.SUCCESS(
-                f"Trained SLA forecast model for tenant '{page.title}' (SLA: {run.average_sla:.2f}%)"
+                f"Trained SLA forecast model for tenant '{tenant.name}' (SLA: {run.average_sla:.2f}%)"
               )
             )
           else:
-            self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
+            self.stdout.write(f"Skipped tenant '{tenant.name}' (no telemetry data)")
 
           # Automate Threat Model training along with the SLA model
-          if page.user:
-            from ml.ml_services import train_threat_model
+          from ml.ml_services import train_threat_model
 
-            report = train_threat_model(page.user)
+          report = train_threat_model(tenant)
+          if report:
             self.stdout.write(
               self.style.SUCCESS(
-                f"Trained threat forecast model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+                f"Trained threat forecast model for tenant '{tenant.name}' (Score: {report.anomaly_score * 100:.1f}%)"
               )
             )
         except Exception as e:
-          self.stderr.write(self.style.ERROR(f"Failed to train tenant '{page.title}': {e}"))
+          self.stderr.write(self.style.ERROR(f"Failed to train tenant '{tenant.name}': {e}"))
     finally:
       close_old_connections()
 
   @sync_to_async
   def train_single(self, tenant_id):
     from django.db import close_old_connections
+    from monitor.models import Tenant
 
     close_old_connections()
     try:
-      page = StatusPage.objects.get(id=tenant_id)
-      run = train_tenant_sla(page)
+      tenant = Tenant.objects.get(id=tenant_id)
+      run = train_tenant_sla(tenant)
       if run:
         self.stdout.write(
           self.style.SUCCESS(
-            f"Trained SLA forecast model for tenant '{page.title}' (SLA: {run.average_sla:.2f}%)"
+            f"Trained SLA forecast model for tenant '{tenant.name}' (SLA: {run.average_sla:.2f}%)"
           )
         )
       else:
-        self.stdout.write(f"Skipped tenant '{page.title}' (no telemetry data)")
+        self.stdout.write(f"Skipped tenant '{tenant.name}' (no telemetry data)")
 
       # Automate Threat Model training along with the SLA model
-      if page.user:
-        from ml.ml_services import train_threat_model
+      from ml.ml_services import train_threat_model
 
-        report = train_threat_model(page.user)
+      report = train_threat_model(tenant)
+      if report:
         self.stdout.write(
           self.style.SUCCESS(
-            f"Trained threat forecast model for user '{page.user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
+            f"Trained threat forecast model for tenant '{tenant.name}' (Score: {report.anomaly_score * 100:.1f}%)"
           )
         )
-    except StatusPage.DoesNotExist:
+    except Tenant.DoesNotExist:
       self.stderr.write(self.style.WARNING(f"Tenant ID {tenant_id} not found"))
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"Failed to train tenant: {e}"))

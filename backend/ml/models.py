@@ -8,8 +8,8 @@ User = get_user_model()
 
 class TrainingRun(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  status_page = models.ForeignKey(
-    "monitor.StatusPage",
+  tenant = models.ForeignKey(
+    "monitor.Tenant",
     on_delete=models.CASCADE,
     related_name="training_runs",
     null=True,
@@ -29,7 +29,9 @@ class TrainingRun(models.Model):
 
 class ThreatReport(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="threat_reports")
+  tenant = models.ForeignKey(
+    "monitor.Tenant", on_delete=models.CASCADE, related_name="threat_reports", null=True, blank=True
+  )
   anomaly_score = models.FloatField()  # overall traffic anomaly probability (0.0 to 1.0)
   top_location = models.CharField(max_length=255, default="Unknown")
   location_weight = models.FloatField(default=0.0)  # percentage of traffic from top location

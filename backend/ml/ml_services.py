@@ -4,7 +4,7 @@ from typing import Any
 import torch
 import torch.nn as nn
 from django.conf import settings
-from monitor.models import Endpoints, MonitoredService
+from monitor.models import Endpoints
 
 from ml.models import ThreatReport, TrainingRun
 
@@ -28,7 +28,7 @@ class ThreatModel(nn.Module):
     return x
 
 
-def train_tenant_sla(status_page: Any) -> TrainingRun | None:
+def train_tenant_sla(tenant: Any) -> TrainingRun | None:
   import torch
   import torch.nn as nn
   import torch.optim as optim
@@ -45,14 +45,7 @@ def train_tenant_sla(status_page: Any) -> TrainingRun | None:
       x = self.fc2(x)
       return x
 
-  # Get services for this status page
-  services = MonitoredService.objects.filter(status_page=status_page)
-  urls = [s.url for s in services]
-
-  if not urls:
-    return None
-
-  endpoints = Endpoints.objects.filter(url__in=urls)
+  endpoints = Endpoints.objects.filter(tenant=tenant)
   if not endpoints.exists():
     return None
 
@@ -107,8 +100,8 @@ def train_tenant_sla(status_page: Any) -> TrainingRun | None:
       api = HfApi(token=hf_token)
       import hashlib
 
-      if hasattr(status_page, "slug"):
-        safe_identifier = hashlib.sha256(status_page.slug.encode()).hexdigest()[:12]
+      if hasattr(tenant, "slug"):
+        safe_identifier = hashlib.sha256(tenant.slug.encode()).hexdigest()[:12]
         model_name = f"{safe_identifier}_sla_model.pt"
       else:
         model_name = "default_sla_model.pt"
@@ -121,9 +114,7 @@ def train_tenant_sla(status_page: Any) -> TrainingRun | None:
     except Exception as e:
       print(f"Failed to push SLA model to Hugging Face: {e}")
 
-  run = TrainingRun.objects.create(
-    status_page=status_page, average_sla=avg_predicted_sla, loss=final_loss
-  )
+  run = TrainingRun.objects.create(tenant=tenant, average_sla=avg_predicted_sla, loss=final_loss)
   return run
 
 
@@ -209,7 +200,7 @@ def train_platform_threat_model() -> dict:
   }
 
 
-def train_threat_model(user: Any) -> ThreatReport:
+def train_threat_model(tenant: Any) -> ThreatReport:
   import datetime as dt
 
   import torch
@@ -222,7 +213,7 @@ def train_threat_model(user: Any) -> ThreatReport:
   # ThreatModel is now defined globally
   # Query actual Endpoints telemetry from the last 90 days to derive baseline features
   cutoff = timezone.now() - dt.timedelta(days=90)
-  endpoints = Endpoints.objects.filter(last_tested__gte=cutoff)
+  endpoints = Endpoints.objects.filter(tenant=tenant, last_tested__gte=cutoff)
   total_requests = endpoints.count()
 
   if total_requests > 0:
@@ -235,7 +226,10 @@ def train_threat_model(user: Any) -> ThreatReport:
     suspicious_ratio = 0.05
 
   # Find connected integrations for feature extraction
-  integrations = AnalyticsIntegration.objects.filter(user=user, active=True)
+  from monitor.models import TenantMembership
+
+  members = TenantMembership.objects.filter(tenant=tenant).values_list("user", flat=True)
+  integrations = AnalyticsIntegration.objects.filter(user__in=members, active=True)
 
   # Default/Fallback metrics if user hasn't synced real integrations yet
   location_weight = 0.0
@@ -278,7 +272,7 @@ def train_threat_model(user: Any) -> ThreatReport:
     prediction = model(current_x).item()
 
   report = ThreatReport.objects.create(
-    user=user,
+    tenant=tenant,
     anomaly_score=prediction,
     top_location=top_location,
     location_weight=location_weight,

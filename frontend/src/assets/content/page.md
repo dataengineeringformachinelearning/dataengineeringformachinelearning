@@ -394,7 +394,9 @@ def train_model(request):
     return JsonResponse({'status': 'training_initiated'})
 ```
 
-By embedding this intelligence natively within the backend infrastructure, I create a continuous feedback loop. As new telemetry is ingested, the models can be dynamically retrained, adapting their weights and biases to shifting network topologies and evolving traffic patterns. This capability elevates my platform from a mere monitoring tool into a proactive, self-analyzing ecosystem.
+By embedding this intelligence natively within the backend infrastructure, I create a continuous feedback loop based on a dual-model strategy. First, to leverage the massive scale of Big Data without compromising privacy, the system continuously trains a global `platform_threat_model.pt`. This model aggregates anonymized, non-PII metrics across all platform endpoints (such as global failure rates over 90 days), granting every tenant the power of "herd immunity." Second, individual threat models are evaluated dynamically, matching a specific tenant's precise telemetry footprint against the massive aggregate model.
+
+Furthermore, we dogfood this entire intelligence layer continuously. The core infrastructure operates internally as **Tenant0**, serving as a living "Apex Sandbox" and "Public Sentinel." This means the platform itself continuously runs its own telemetry ingestion, status pages, and threat models. It acts as a resilient sandbox to test bleeding-edge anomaly detection and serves as a public sentinel to showcase the true, real-time capabilities of the ecosystem.
 
 ---
 

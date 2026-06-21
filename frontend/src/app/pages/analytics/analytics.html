@@ -12,6 +12,38 @@
             Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse.
           </p>
         </div>
+
+        @if (tenants.length > 0) {
+        <div
+          class="tenant-selector-group"
+          style="margin-left: auto; display: flex; align-items: center; gap: 1rem"
+        >
+          <label for="tenantSelect" style="color: var(--text-color); font-weight: 500"
+            >Environment:</label
+          >
+          <select
+            id="tenantSelect"
+            class="hud-select"
+            (change)="onTenantChange($event)"
+            [value]="selectedTenantId"
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              color: white;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              padding: 8px 12px;
+              border-radius: 6px;
+              outline: none;
+              font-family: 'Inter', sans-serif;
+            "
+          >
+            @for (tenant of tenants; track tenant.id) {
+            <option [value]="tenant.id" style="color: black">
+              {{ tenant.name }} {{ tenant.is_platform ? '(Platform)' : '' }}
+            </option>
+            }
+          </select>
+        </div>
+        }
       </header>
 
       <!-- GLOBAL METRICS SECTION -->
