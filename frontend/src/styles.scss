@@ -908,3 +908,77 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
   .col-span-md-11 { grid-column: span 11; }
   .col-span-md-12 { grid-column: span 12; }
 }
+
+// ====================== CUSTOM BRANDED SELECT STYLING ======================
+/* Enable customization for all select elements and their pickers */
+select,
+select::picker(select) {
+  appearance: base-select;
+}
+
+/* Style the visible trigger button */
+select {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--text-muted); /* WCAG 3:1 contrast for input borders */
+  border-radius: var(--border-radius-md, 8px);
+  padding: 12px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+select:hover {
+  border-color: var(--color-primary);
+}
+
+/* Style the dropdown options list */
+select::picker(select) {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--text-muted);
+  border-radius: var(--border-radius-md, 8px);
+  padding: 9px;
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+  margin: 0;
+  width: anchor-size(width);
+}
+
+/* Customize internal part colors to match text */
+select::picker-icon {
+  color: var(--text-color); /* WCAG compliance for icon */
+  margin-left: 12px; /* Spacing around the caret */
+  margin-right: 4px;
+}
+
+select option::checkmark {
+  color: var(--color-primary);
+}
+
+/* Style individual options and hover effects */
+select option {
+  padding: 9px 18px;
+  border-radius: var(--border-radius-sm, 4px);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+select option:hover,
+select option:focus {
+  background-color: var(--hover-color);
+  color: var(--color-on-primary); /* Ensure white text on primary hover background */
+}
+
+select option:checked {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+  font-weight: 600;
+}

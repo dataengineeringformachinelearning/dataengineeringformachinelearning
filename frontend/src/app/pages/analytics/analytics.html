@@ -147,9 +147,9 @@
             (change)="onSiteChange($event)"
             [value]="selectedSite || 'All'"
           >
-            <option value="All" style="color: black">All Sites</option>
+            <option value="All">All Sites</option>
             @for (site of availableSites; track site) {
-            <option [value]="site" style="color: black">{{ site }}</option>
+            <option [value]="site">{{ site }}</option>
             }
           </select>
         </div>
@@ -492,10 +492,8 @@
             ></apx-chart>
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon" style="color: var(--color-success)"
-                >verified_user</mat-icon
-              >
-              <h3 class="empty-title" style="color: var(--color-success)">No Active Threats</h3>
+              <mat-icon class="empty-icon">verified_user</mat-icon>
+              <h3 class="empty-title">No Active Threats</h3>
               <p class="empty-subtitle">System is secure. No threat events detected.</p>
             </div>
             }

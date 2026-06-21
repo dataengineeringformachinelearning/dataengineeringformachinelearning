@@ -40,10 +40,16 @@
   <div class="dashboard-main dashboard-content-area" style="overflow-y: auto">
     <div class="content-wrapper">
       <!-- Mobile Chapter Select -->
-      <div class="mobile-chapter-select no-print" style="margin-bottom: 27px">
+      <div class="mobile-chapter-select no-print">
         <label
           for="mobileChapterSelect"
-          style="color: var(--text-color); font-weight: 600; font-size: 16px"
+          style="
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 16px;
+            display: block;
+            width: 100%;
+          "
           >Navigate Chapters:</label
         >
         <select
@@ -51,23 +57,9 @@
           class="hud-select"
           (change)="bookService.goToPage($any($event.target).value)"
           [value]="bookService.activePageIndex()"
-          style="
-            background: rgba(255, 255, 255, 0.05);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 9px 12px;
-            border-radius: 6px;
-            width: 100%;
-            outline: none;
-            margin-top: 9px;
-            font-size: 16px;
-          "
+          style="width: 100%"
         >
-          <option
-            *ngFor="let chapter of bookService.chapters(); let i = index"
-            [value]="i"
-            style="color: black"
-          >
+          <option *ngFor="let chapter of bookService.chapters(); let i = index" [value]="i">
             {{ chapter.title }}
           </option>
         </select>

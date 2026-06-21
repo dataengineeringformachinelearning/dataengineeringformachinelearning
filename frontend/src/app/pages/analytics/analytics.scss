@@ -48,15 +48,17 @@
     width: 48px;
     height: 48px;
     margin-bottom: 16px;
-    color: var(--status-accent);
+    color: var(--color-primary);
     opacity: 0.8;
   }
 
   .empty-title {
-    font-size: 1.25rem;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     margin: 0 0 8px 0;
-    color: var(--text-color);
+    color: var(--color-primary);
   }
 
   .empty-subtitle {

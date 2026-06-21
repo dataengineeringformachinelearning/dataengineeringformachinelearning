@@ -61,7 +61,10 @@
 }
 
 .mobile-chapter-select {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 27px;
 }
 
 .sidebar-section {
