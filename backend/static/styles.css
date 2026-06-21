@@ -11,13 +11,13 @@
   --black: #000000;
 
   /* Typography */
-  --base-font-size: 16px;
+  --base-font-size: 18px;
   --header-letter-spacing: -0.02em;
 
   /* Universal Borders & Shadows */
-  --border-radius-lg: 16px;
-  --border-radius-md: 8px;
-  --border-radius-sm: 8px;
+  --border-radius-lg: 18px;
+  --border-radius-md: 9px;
+  --border-radius-sm: 9px;
   --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-md:
@@ -203,9 +203,9 @@ html[data-theme="light"] body {
   left: 20px;
   background-color: var(--color-primary);
   color: var(--color-on-primary);
-  padding: 8px 16px;
+  padding: 9px 18px;
   z-index: 10000;
-  border-radius: 8px;
+  border-radius: 9px;
   text-decoration: none;
   font-weight: 600;
   transition: top 0.2s ease;
@@ -277,7 +277,7 @@ main.main {
 .backend-card {
   background: var(--color-surface);
   border: 1px solid var(--border);
-  border-radius: 24px;
+  border-radius: 27px;
   padding: 3rem 2rem;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -344,8 +344,8 @@ p {
 }
 
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   background-color: var(--color-success);
   border-radius: 50%;
   position: relative;
@@ -357,7 +357,7 @@ p {
     box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 9px rgba(76, 175, 80, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
@@ -365,7 +365,7 @@ p {
 }
 
 .status-text {
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--color-success);
   letter-spacing: 0.5px;
@@ -438,7 +438,7 @@ footer {
   align-items: center;
   gap: 0.35rem;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 1rem;
   line-height: 1.8;
   letter-spacing: 0.4px;
 }
@@ -509,7 +509,7 @@ footer {
   align-items: center;
   gap: 0.35rem;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 1rem;
   line-height: 1.8;
   letter-spacing: 0.4px;
   margin-top: 0.75rem;
@@ -536,7 +536,7 @@ footer {
   background-color: rgba(45, 71, 57, 0.05);
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: var(--text-color);
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -550,7 +550,7 @@ footer {
 }
 
 .usa-badge .usa-badge-icon {
-  font-size: 0.85rem;
+  font-size: 1rem;
   line-height: 1;
 }
 

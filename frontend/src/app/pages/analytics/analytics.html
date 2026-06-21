@@ -12,66 +12,6 @@
             Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse.
           </p>
         </div>
-
-        @if (tenants.length > 0) {
-        <div
-          class="tenant-selector-group"
-          style="margin-left: auto; display: flex; align-items: center; gap: 1rem"
-        >
-          <label for="tenantSelect" style="color: var(--text-color); font-weight: 500"
-            >Environment:</label
-          >
-          <select
-            id="tenantSelect"
-            class="hud-select"
-            (change)="onTenantChange($event)"
-            [value]="selectedTenantId"
-            style="
-              background: rgba(255, 255, 255, 0.05);
-              color: white;
-              border: 1px solid rgba(255, 255, 255, 0.1);
-              padding: 8px 12px;
-              border-radius: 6px;
-              outline: none;
-              font-family: 'Inter', sans-serif;
-            "
-          >
-            @for (tenant of tenants; track tenant.id) {
-            <option [value]="tenant.id" style="color: black">
-              {{ tenant.name }} {{ tenant.is_platform ? '(Platform)' : '' }}
-            </option>
-            }
-          </select>
-
-          @if (availableSites.length > 0) {
-          <label
-            for="siteSelect"
-            style="color: var(--text-color); font-weight: 500; margin-left: 1rem"
-            >Site / Endpoint:</label
-          >
-          <select
-            id="siteSelect"
-            class="hud-select"
-            (change)="onSiteChange($event)"
-            [value]="selectedSite || 'All'"
-            style="
-              background: rgba(255, 255, 255, 0.05);
-              color: white;
-              border: 1px solid rgba(255, 255, 255, 0.1);
-              padding: 8px 12px;
-              border-radius: 6px;
-              outline: none;
-              font-family: 'Inter', sans-serif;
-            "
-          >
-            <option value="All" style="color: black">All Sites</option>
-            @for (site of availableSites; track site) {
-            <option [value]="site" style="color: black">{{ site }}</option>
-            }
-          </select>
-          }
-        </div>
-        }
       </header>
 
       <!-- GLOBAL METRICS SECTION -->
@@ -174,14 +114,46 @@
       </section>
 
       <!-- USER METRICS SECTION -->
-      <div class="metrics-overview-header metrics-section-spacing">
-        <h2 class="section-title-premium">
-          <mat-icon>person</mat-icon>
-          Your Analytics
-        </h2>
-        <p class="section-description-premium">
-          Performance data isolated to your active projects and workloads.
-        </p>
+      <div
+        class="metrics-overview-header metrics-section-spacing"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          flex-wrap: wrap;
+          gap: 18px;
+        "
+      >
+        <div>
+          <h2 class="section-title-premium">
+            <mat-icon>person</mat-icon>
+            Your Analytics
+          </h2>
+          <p class="section-description-premium">
+            Performance data isolated to your active projects and workloads.
+          </p>
+        </div>
+
+        @if (availableSites.length > 0) {
+        <div class="filter-group-mobile">
+          <label
+            for="siteSelect"
+            style="color: var(--text-color); font-weight: 500; font-size: 16px"
+            >Filter by Site:</label
+          >
+          <select
+            id="siteSelect"
+            class="hud-select"
+            (change)="onSiteChange($event)"
+            [value]="selectedSite || 'All'"
+          >
+            <option value="All" style="color: black">All Sites</option>
+            @for (site of availableSites; track site) {
+            <option [value]="site" style="color: black">{{ site }}</option>
+            }
+          </select>
+        </div>
+        }
       </div>
       <!-- REGULAR STATS -->
       <div class="ml-stat-panels-row stat-panels-grid">
@@ -231,10 +203,6 @@
             >{{ activeIncidents || 0 }}</span
           >
         </div>
-      </div>
-
-      <!-- EXTENDED STATS ROW -->
-      <div class="ml-stat-panels-row stat-panels-grid" style="margin-top: 16px">
         <div class="ml-stat-panel">
           <div class="stat-info">
             <div>
@@ -281,10 +249,10 @@
       @if (activeProviders.length > 0) {
       <div
         style="
-          margin-top: 16px;
-          margin-bottom: 8px;
+          margin-top: 18px;
+          margin-bottom: 9px;
           display: flex;
-          gap: 8px;
+          gap: 9px;
           flex-wrap: wrap;
           align-items: center;
         "
@@ -292,11 +260,11 @@
         <span
           style="
             color: var(--text-muted);
-            font-size: 0.85rem;
+            font-size: 1rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-right: 8px;
+            margin-right: 9px;
           "
           >Active Providers:</span
         >
@@ -309,7 +277,7 @@
             padding: 2px 10px;
             border-radius: 12px;
             text-transform: capitalize;
-            font-size: 0.8rem;
+            font-size: 1rem;
             font-weight: 500;
           "
           >{{ provider }}</span
@@ -319,7 +287,7 @@
       }
 
       <div class="dashboard-grid dashboard-grid-single">
-        <section class="status-card-outlined col-span-4 col-span-md-12">
+        <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">System Latency (Last 24h)</div>
             <div class="chart-custom-value">{{ p99Latency }} ms</div>
@@ -365,7 +333,7 @@
       </div>
       <div class="dashboard-grid dashboard-grid-responsive">
         <!-- Origin Chart -->
-        <section class="status-card-outlined col-span-4 col-span-md-4">
+        <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Geographic Origins</div>
             <div class="chart-custom-value">{{ originMapData.length || 0 }} Regions</div>
@@ -388,7 +356,7 @@
         </section>
 
         <!-- Frequency Chart -->
-        <section class="status-card-outlined col-span-4 col-span-md-4">
+        <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Frequency</div>
             <div class="chart-custom-value">{{ totalRequests | number }} Req</div>
@@ -421,7 +389,7 @@
         </section>
 
         <!-- Endpoint Chart -->
-        <section class="status-card-outlined col-span-4 col-span-md-4">
+        <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Counts per Endpoint</div>
             <div class="chart-custom-value">
@@ -468,7 +436,7 @@
       </div>
       <div class="dashboard-grid dashboard-grid-responsive">
         <!-- Status Chart -->
-        <section class="status-card-outlined col-span-4 col-span-md-4">
+        <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">HTTP Status Distribution</div>
             <div class="chart-custom-value">{{ uptimePercent }}%</div>
@@ -501,7 +469,7 @@
         </section>
 
         <!-- Threat Chart -->
-        <section class="status-card-outlined col-span-4 col-span-md-4">
+        <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Threat Events by Severity</div>
             <div class="chart-custom-value">{{ threatLevel | number:'1.0-0' }}%</div>
@@ -535,7 +503,7 @@
         </section>
 
         <!-- Anomalies Chart -->
-        <section class="status-card-outlined col-span-4 col-span-md-4">
+        <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Recent Security Anomalies</div>
             <div class="chart-custom-value">{{ activeIncidents }} Active</div>

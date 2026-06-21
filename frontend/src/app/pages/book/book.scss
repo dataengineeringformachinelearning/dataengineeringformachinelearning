@@ -56,9 +56,17 @@
   min-height: calc(100vh - 64px);
 }
 
+.dashboard-sidebar {
+  display: none;
+}
+
+.mobile-chapter-select {
+  display: block;
+}
+
 .sidebar-section {
   flex: 1;
-  padding: 24px 16px;
+  padding: 27px 18px;
   overflow-y: auto;
 
   .section-title {
@@ -386,9 +394,14 @@
   }
 
   .dashboard-sidebar {
+    display: block;
     width: 280px;
     border-right: 1px solid var(--border);
     border-bottom: none;
+  }
+
+  .mobile-chapter-select {
+    display: none;
   }
 
   .sidebar-section {

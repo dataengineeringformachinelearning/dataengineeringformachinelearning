@@ -18,10 +18,10 @@
 .skip-link {
   position: absolute;
   top: -100px;
-  left: 16px;
+  left: 18px;
   background-color: #000000 !important;
   color: #ffffff !important;
-  padding: 8px 16px;
+  padding: 9px 18px;
   z-index: 10000;
   border-radius: var(--border-radius-sm);
   text-decoration: none;
@@ -31,7 +31,7 @@
 }
 
 .skip-link:focus-visible {
-  top: 16px;
+  top: 18px;
   outline: 2px solid var(--color-primary-container);
   outline-offset: 2px;
 }
@@ -98,14 +98,14 @@ pre[class*='language-'] {
   background-color: #1a1a1a !important;
   border: 1px solid var(--border);
   border-radius: var(--border-radius-md);
-  padding: 24px 24px;
-  margin: 32px 0;
+  padding: 27px 27px;
+  margin: 36px 0;
   box-shadow: none;
   tab-size: 4;
 }
 
 code[class*='language-'] {
-  font-size: 0.925rem;
+  font-size: 1rem;
   line-height: 1.65;
   color: #f8f8f2 !important;
 }
@@ -202,7 +202,7 @@ html[data-theme='light'] body {
 
 // ====================== TYPOGRAPHY & READABILITY ======================
 p {
-  margin-bottom: 24px;
+  margin-bottom: 27px;
 }
 
 h1,
@@ -212,8 +212,8 @@ h4,
 h5,
 h6 {
   line-height: 1.25;
-  margin-top: 32px;
-  margin-bottom: 16px;
+  margin-top: 36px;
+  margin-bottom: 18px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
@@ -232,12 +232,12 @@ h3 {
 
 ul,
 ol {
-  margin-bottom: 24px;
-  padding-left: 24px;
+  margin-bottom: 27px;
+  padding-left: 27px;
 }
 
 li {
-  margin-bottom: 8px;
+  margin-bottom: 9px;
 }
 
 a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item) {
@@ -280,31 +280,31 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-vi
 // ====================== INLINE CODE ======================
 :not(pre) > code {
   background-color: var(--color-dark-grey-btn-bg);
-  padding: 8px 8px;
+  padding: 9px 9px;
   border-radius: var(--border-radius-sm);
-  font-size: 0.92rem;
+  font-size: 1rem;
   color: var(--text-muted);
 }
 
 // ====================== MARKDOWN COMPONENT ======================
 app-page {
   display: block;
-  margin-top: 24px;
+  margin-top: 27px;
 }
 
 main.main {
-  padding: 48px 16px;
+  padding: 54px 18px;
 }
 
 @media (min-width: 481px) {
   main.main {
-    padding: 56px 24px;
+    padding: 63px 27px;
   }
 }
 
 @media (min-width: 768px) {
   main.main {
-    padding: 90px 32px;
+    padding: 90px 36px;
   }
 }
 
@@ -314,7 +314,7 @@ main.main {
   border: 1px solid var(--border) !important;
   border-radius: var(--border-radius-lg) !important;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 9px 36px rgba(0, 0, 0, 0.4),
     inset 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
   overflow: hidden !important;
   padding: 0  !important;
@@ -340,8 +340,8 @@ main.main {
   text-transform: none !important;
   font-weight: 600 !important;
   letter-spacing: 0.25px !important;
-  padding: 0 24px  !important;
-  height: 48px !important;
+  padding: 0 27px  !important;
+  height: 54px !important;
 }
 
 .mdc-button--raised,
@@ -436,9 +436,9 @@ main.main {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px;
+  padding: 36px;
   margin-top: -64px;
-  padding-top: 64px;
+  padding-top: 72px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -448,8 +448,8 @@ main.main {
   flex-direction: column;
   flex: 1;
   justify-content: flex-start;
-  padding-top: 64px;
-  padding-bottom: 64px;
+  padding-top: 72px;
+  padding-bottom: 72px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -459,7 +459,7 @@ main.main {
   z-index: 10;
   width: 100%;
   max-width: var(--container-max-width);
-  padding: 24px;
+  padding: 27px;
   margin: 0 auto;
   box-sizing: border-box;
   background-color: var(--card-bg);
@@ -470,13 +470,13 @@ main.main {
 
 @media (min-width: 768px) {
   .page-content {
-    padding: 48px;
+    padding: 54px;
   }
 }
 
 .dashboard-content-area {
   flex: 1;
-  padding: 24px;
+  padding: 27px;
   position: relative;
   z-index: 1;
   box-sizing: border-box;
@@ -504,8 +504,8 @@ main.main {
 // ====================== GLOBAL ERROR TOAST ======================
 #global-error-toast {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
+  bottom: 27px;
+  right: 27px;
   z-index: 99999;
   font-family: 'Inter', sans-serif;
   max-width: 400px;
@@ -538,12 +538,12 @@ html[data-theme='light'] #global-error-toast {
   background: var(--toast-bg);
   border: var(--toast-border);
   color: var(--toast-text);
-  padding: 16px 16px;
+  padding: 18px 18px;
   border-radius: var(--border-radius-md);
   box-shadow: var(--toast-shadow);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
   transition: all 0.3s ease;
 }
 
@@ -560,14 +560,14 @@ html[data-theme='light'] #global-error-toast {
 
 #global-error-toast .toast-title {
   display: block;
-  font-size: 14px;
+  font-size: 18px;
   font-weight: 600;
   margin-bottom: 2px;
   color: var(--toast-title);
 }
 
 #global-error-toast .toast-message {
-  font-size: 13px;
+  font-size: 18px;
   opacity: 0.9;
   line-height: 1.4;
 }
@@ -579,8 +579,8 @@ html[data-theme='light'] #global-error-toast {
   cursor: pointer;
   font-size: 20px;
   line-height: 1;
-  padding: 0 8px;
-  margin-left: 8px;
+  padding: 0 9px;
+  margin-left: 9px;
   opacity: 0.7;
   transition:
     opacity 0.2s,
@@ -610,32 +610,32 @@ html[data-theme='light'] #global-error-toast {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 32px 24px;
+  padding: 36px 27px;
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
   position: relative;
   overflow: hidden;
   box-shadow: var(--shadow-sm);
-  margin-top: 32px;
+  margin-top: 36px;
 
   @media (min-width: 601px) {
-    padding: 64px 32px;
+    padding: 72px 36px;
   }
 
 
 
   .error-state-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
+    font-size: 72px;
+    width: 72px;
+    height: 72px;
     color: var(--text-muted);
-    margin-bottom: 24px;
+    margin-bottom: 27px;
     opacity: 0.6;
   }
 
   .error-title {
-    margin: 0 0 8px;
+    margin: 0 0 9px;
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--text-color);
@@ -643,8 +643,8 @@ html[data-theme='light'] #global-error-toast {
   }
 
   .error-subtitle {
-    margin: 0 0 32px;
-    font-size: 0.95rem;
+    margin: 0 0 36px;
+    font-size: 1rem;
     line-height: 1.6;
     color: var(--text-muted);
     max-width: 420px;
@@ -654,7 +654,7 @@ html[data-theme='light'] #global-error-toast {
     background: var(--color-dark-grey-btn-bg) !important;
     color: var(--color-dark-grey-btn-text) !important;
     font-weight: 700 !important;
-    padding: 8px 24px  !important;
+    padding: 9px 27px  !important;
     border-radius: var(--border-radius-sm) !important;
     box-shadow: var(--shadow-sm) !important;
     transition: all 0.2s ease !important;
@@ -673,14 +673,14 @@ html[data-theme='light'] #global-error-toast {
 
 .btn-spinner {
   display: inline-block;
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: currentColor;
   animation: spin 0.8s linear infinite;
   vertical-align: middle;
-  margin-right: 8px;
+  margin-right: 9px;
 }
 
 @keyframes spin {
@@ -709,18 +709,18 @@ html[data-theme='light'] #global-error-toast {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 8px;
-  padding-bottom: 16px;
+  padding-top: 9px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--border-layout);
-  margin-bottom: 24px;
+  margin-bottom: 27px;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 18px;
 }
 
 .hud-brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 
 .hud-title {
@@ -734,9 +734,9 @@ html[data-theme='light'] #global-error-toast {
 }
 
 .hud-subtitle {
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: var(--text-muted);
-  margin: 8px 0 0 0;
+  margin: 9px 0 0 0;
   font-family: 'Inter', monospace;
 }
 
@@ -768,13 +768,13 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 .section-tag-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 9px;
+  margin-bottom: 9px;
 }
 
 .section-tag {
   font-family: 'Inter', monospace;
-  font-size: 0.75rem;
+  font-size: 1rem;
   font-weight: 800;
   color: var(--color-primary);
   letter-spacing: 0.15em;
