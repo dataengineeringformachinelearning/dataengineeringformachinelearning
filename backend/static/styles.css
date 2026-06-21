@@ -336,8 +336,8 @@ p {
   display: inline-flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(76, 175, 80, 0.12);
-  border: 1px solid rgba(76, 175, 80, 0.25);
+  background: rgba(51, 161, 253, 0.12);
+  border: 1px solid rgba(51, 161, 253, 0.25);
   border-radius: 100px;
   padding: 0.5rem 1.25rem;
   margin-bottom: 2.5rem;
@@ -354,13 +354,13 @@ p {
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7);
+    box-shadow: 0 0 0 0 rgba(51, 161, 253, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 9px rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 9px rgba(51, 161, 253, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+    box-shadow: 0 0 0 0 rgba(51, 161, 253, 0);
   }
 }
 
