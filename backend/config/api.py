@@ -5,10 +5,21 @@ from ninja import NinjaAPI
 
 logger = logging.getLogger(__name__)
 
-api = NinjaAPI(
+
+class CustomAPI(NinjaAPI):
+  def get_openapi_schema(self, *args, **kwargs):
+    schema = super().get_openapi_schema(*args, **kwargs)
+    if not settings.DEBUG:
+      # Filter paths to only expose /ingest and /predict in production docs
+      paths = schema.get("paths", {})
+      schema["paths"] = {k: v for k, v in paths.items() if k in ["/ingest", "/predict"]}
+    return schema
+
+
+api = CustomAPI(
   title="Web Application API",
   version=getattr(settings, "APP_VERSION", "1.0.0"),
-  docs_url="/docs" if settings.DEBUG else None,
+  docs_url="/docs",
 )
 
 
@@ -44,6 +55,10 @@ from agent.api import router as agent_router
 
 api.add_router("/agent/", agent_router)
 
-from integrations.api import router as integrations_router
+from integrations.api import (
+  public_router,
+  router as integrations_router,
+)
 
 api.add_router("/integrations/", integrations_router)
+api.add_router("", public_router)

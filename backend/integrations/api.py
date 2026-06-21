@@ -1,6 +1,7 @@
 from ninja import Router, Schema
 
 router = Router()
+public_router = Router()
 
 
 class IntegrationStatus(Schema):
@@ -89,7 +90,7 @@ class IngestResponse(Schema):
   processed_records: int
 
 
-@router.post(
+@public_router.post(
   "/ingest",
   response=IngestResponse,
   auth=IntegrationAPIKeyAuth(),
@@ -133,7 +134,7 @@ class PredictResponse(Schema):
   latency_ms: float
 
 
-@router.post(
+@public_router.post(
   "/predict",
   response=PredictResponse,
   auth=IntegrationAPIKeyAuth(),
