@@ -43,6 +43,147 @@
     }
   };
 
+  const globalAgentData = {
+    clicks: 0,
+    xss_events: [],
+    dlp_events: [],
+    forms_protected: 0,
+    assets: [],
+    technologies: [],
+  };
+
+  const initGlobalAgent = () => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+
+    // 1. Behavioral Analytics (Click tracking)
+    document.addEventListener(
+      'click',
+      () => {
+        globalAgentData.clicks++;
+      },
+      { passive: true },
+    );
+
+    // 2. Asset Inventory (Wappalyzer style & third-party scripts)
+    runWhenIdle(() => {
+      try {
+        const now = new Date();
+        const lastScanStr = localStorage.getItem('deml_asset_scan_time');
+        const lastScanDate = lastScanStr ? new Date(parseInt(lastScanStr)) : null;
+
+        const isPast3AM = now.getHours() >= 3;
+        const isSameDay =
+          lastScanDate &&
+          lastScanDate.getDate() === now.getDate() &&
+          lastScanDate.getMonth() === now.getMonth() &&
+          lastScanDate.getFullYear() === now.getFullYear();
+
+        if (isPast3AM && !isSameDay) {
+          const techs = [];
+          if (window.React) techs.push('React');
+          if (window.angular) techs.push('Angular');
+          if (window.jQuery) techs.push('jQuery');
+          if (window.Vue) techs.push('Vue');
+
+          const generator = document.querySelector('meta[name="generator"]');
+          if (generator) techs.push(generator.content);
+
+          globalAgentData.technologies = techs;
+
+          if (window.performance && window.performance.getEntriesByType) {
+            const resources = window.performance.getEntriesByType('resource');
+            globalAgentData.assets = resources.map(r => r.name).slice(0, 50); // limit to save payload size
+          }
+
+          localStorage.setItem('deml_asset_scan_time', now.getTime().toString());
+        }
+      } catch {}
+    });
+
+    // 3. Global XSS Detection (Mutation Observer)
+    try {
+      const observer = new MutationObserver(mutations => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (node.tagName === 'SCRIPT') {
+              const src = node.src || 'inline';
+              if (!src.includes('dataengineeringformachinelearning.com')) {
+                globalAgentData.xss_events.push({
+                  type: 'script_injected',
+                  src: src.substring(0, 100),
+                });
+              }
+            } else if (node.tagName === 'IFRAME') {
+              globalAgentData.xss_events.push({
+                type: 'iframe_injected',
+                src: (node.src || 'unknown').substring(0, 100),
+              });
+            }
+          }
+        }
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    } catch {}
+
+    // CSP Violation Tracking
+    document.addEventListener('securitypolicyviolation', e => {
+      globalAgentData.xss_events.push({
+        type: 'csp_violation',
+        blockedURI: e.blockedURI,
+        violatedDirective: e.violatedDirective,
+      });
+    });
+
+    // 4. Site-Wide DLP & Honeypots (Form Interception)
+    runWhenIdle(() => {
+      try {
+        const forms = document.querySelectorAll('form.deml-protected-form');
+        globalAgentData.forms_protected = forms.length;
+
+        forms.forEach(form => {
+          if (form.classList.contains('deml-ignore')) return;
+
+          const honeypot = document.createElement('input');
+          honeypot.type = 'text';
+          honeypot.name = 'deml_site_bot_check';
+          honeypot.style.position = 'absolute';
+          honeypot.style.left = '-9999px';
+          honeypot.style.opacity = '0';
+          honeypot.tabIndex = -1;
+          honeypot.setAttribute('aria-hidden', 'true');
+          form.appendChild(honeypot);
+
+          form.addEventListener('submit', e => {
+            if (honeypot.value !== '') {
+              e.preventDefault(); // Trap bot
+              globalAgentData.dlp_events.push({ type: 'bot_trapped', formAction: form.action });
+              return;
+            }
+
+            const inputs = form.querySelectorAll('input[type="text"], textarea');
+            const dlpRegex = /(password|api[_-]?key|secret|sk-[a-zA-Z0-9]{20,})/i;
+
+            let foundSecret = false;
+            inputs.forEach(input => {
+              if (dlpRegex.test(input.value)) {
+                foundSecret = true;
+              }
+            });
+
+            if (foundSecret) {
+              globalAgentData.dlp_events.push({
+                type: 'secret_leak_attempt',
+                formAction: form.action,
+              });
+            }
+          });
+        });
+      } catch {}
+    });
+  };
+
+  initGlobalAgent();
+
   customElements.define(
     'platform-widget',
     class extends HTMLElement {
@@ -120,6 +261,16 @@
             <div class="modal-body">
               <p id="modal-desc" class="helper-text">Transmit vulnerabilities directly to triage. Technical telemetry will be attached automatically.</p>
 
+              <div class="security-banner">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <span><strong>Security Reminder:</strong> You are submitting a report from <strong><span id="domain-name">${window.location.hostname}</span></strong>. We will NEVER ask for passwords, API keys, or MFA codes.</span>
+              </div>
+
+              <div class="form-field honeypot-field" aria-hidden="true">
+                <label for="vuln-bot-check">Please leave this field empty</label>
+                <input type="text" id="vuln-bot-check" class="input-bot" tabindex="-1" autocomplete="off" />
+              </div>
+
               <div class="form-field">
                 <label for="vuln-title">Vulnerability Title</label>
                 <input type="text" id="vuln-title" class="input-title" placeholder="Summary of threat..." />
@@ -173,6 +324,8 @@
         const inputSeverity = this.shadowRoot.querySelector('.input-severity');
         const inputCve = this.shadowRoot.querySelector('.input-cve');
         const inputDesc = this.shadowRoot.querySelector('.input-desc');
+        const inputBot = this.shadowRoot.querySelector('.input-bot');
+        let dlpWarned = false;
 
         const toggleModal = () => {
           const visible = modalOverlay.style.display !== 'none';
@@ -181,8 +334,10 @@
             inputTitle.value = '';
             inputDesc.value = '';
             inputCve.value = '';
+            inputBot.value = '';
             statusMsg.style.display = 'none';
             btnSubmit.disabled = false;
+            dlpWarned = false;
             setTimeout(() => {
               inputTitle.focus();
             }, 50);
@@ -266,8 +421,34 @@
           const description = inputDesc.value.trim();
           if (!title || !description) return;
 
-          btnSubmit.disabled = true;
+          // Honeypot check
+          if (inputBot && inputBot.value !== '') {
+            // Fake success to fool bots
+            statusMsg.innerText = 'Threat reported successfully! Triage initiated.';
+            statusMsg.className = 'status-msg success';
+            statusMsg.style.display = 'block';
+            setTimeout(toggleModal, 2000);
+            return;
+          }
+
           statusMsg.style.display = 'none';
+
+          // Non-blocking DLP check
+          const dlpRegex = /(password|api[_-]?key|secret|sk-[a-zA-Z0-9]{20,})/i;
+          let flagged_dlp = false;
+          if (dlpRegex.test(description) || dlpRegex.test(title)) {
+            flagged_dlp = true;
+            if (!dlpWarned) {
+              statusMsg.innerText =
+                'Warning: Your report appears to contain sensitive credentials (e.g., password or API key). Please remove them. Click submit again to proceed anyway.';
+              statusMsg.className = 'status-msg warning';
+              statusMsg.style.display = 'block';
+              dlpWarned = true;
+              return;
+            }
+          }
+
+          btnSubmit.disabled = true;
 
           let pageLoadTime = 0;
           let domInteractive = 0;
@@ -297,6 +478,8 @@
             severity: inputSeverity.value,
             telemetry_context: {
               origin_url: window.location.href,
+              origin_hostname: window.location.hostname,
+              flagged_dlp: flagged_dlp,
               userAgent: navigator.userAgent,
               client_ip: this.clientIp,
               reported_at: new Date().toISOString(),
@@ -371,6 +554,7 @@
                 next_hop_protocol: protocol,
               },
               threat_indicators: getBrowserThreatIndicators(),
+              global_agent_data: globalAgentData,
             },
           };
 

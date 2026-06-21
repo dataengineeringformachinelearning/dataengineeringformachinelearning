@@ -54,6 +54,7 @@ class Endpoints(models.Model):
   browser_name = models.CharField(max_length=50, null=True, blank=True)
   is_bot = models.BooleanField(default=False, null=True, blank=True)
   is_active = models.BooleanField(default=True)
+  telemetry_context = models.JSONField(null=True, blank=True)
 
   class Meta:
     db_table = "endpoints"

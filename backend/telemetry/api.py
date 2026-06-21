@@ -17,6 +17,7 @@ class TelemetryPayload(Schema):
   response_time_ms: float
   ip_address: str
   is_active: bool
+  telemetry_context: dict | None = None
 
 
 @router.post("/endpoints")
@@ -69,9 +70,8 @@ class SubscribePayload(Schema):
 @router.post("/subscribe")
 async def subscribe_newsletter(request, payload: SubscribePayload):
   from asgiref.sync import sync_to_async
-  from monitor.models import NewsletterSubscription
-
   from config.email import send_resend_email
+  from monitor.models import NewsletterSubscription
 
   if not payload.consent:
     return {

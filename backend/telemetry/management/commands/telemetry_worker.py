@@ -316,6 +316,7 @@ class Command(BaseCommand):
         browser_name=ua_data["browser_name"],
         is_bot=ua_data["is_bot"],
         is_active=row["is_active"],
+        telemetry_context=row.get("telemetry_context"),
       )
       objects_to_create.append(ep)
 

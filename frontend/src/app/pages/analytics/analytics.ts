@@ -32,6 +32,10 @@ export class AnalyticsComponent implements OnInit {
   public uptimePercent = 0;
   public totalRequests = 0;
   public activeIncidents = 0;
+  public widgetInteractions = 0;
+  public uniqueVisitors = 0;
+  public cookieConsents = 0;
+  public activeProviders: string[] = [];
   public isLoading = true;
 
   // CES Meter Metrics
@@ -444,6 +448,13 @@ export class AnalyticsComponent implements OnInit {
           this.totalRequests = user_metrics?.total_requests_24h || 0;
           this.activeIncidents = user_metrics?.active_incidents || 0;
 
+          this.widgetInteractions = user_metrics?.widget_interactions || 0;
+          this.uniqueVisitors = user_metrics?.unique_visitors || 0;
+          this.cookieConsents =
+            (user_metrics?.cookie_consents?.analytical || 0) +
+            (user_metrics?.cookie_consents?.marketing || 0);
+          this.activeProviders = user_metrics?.active_providers || [];
+
           this.chartOptions = {
             ...this.chartOptions,
             data: user_metrics?.time_series || [],
@@ -482,6 +493,10 @@ export class AnalyticsComponent implements OnInit {
         this.uptimePercent = 0;
         this.totalRequests = 0;
         this.activeIncidents = 0;
+        this.widgetInteractions = 0;
+        this.uniqueVisitors = 0;
+        this.cookieConsents = 0;
+        this.activeProviders = [];
         this.calculateCESMetrics();
         this.chartOptions = { ...this.chartOptions, data: [] };
         this.originChartOptions = { ...this.originChartOptions, data: [] };

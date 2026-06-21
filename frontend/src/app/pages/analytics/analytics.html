@@ -164,6 +164,44 @@
         </div>
       </div>
 
+      <!-- EXTENDED STATS ROW -->
+      <div class="ml-stat-panels-row stat-panels-grid" style="margin-top: 16px">
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">WIDGET INTERACTIONS</span>
+            </div>
+          </div>
+          <span class="stat-value">{{ widgetInteractions | number }}</span>
+        </div>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">UNIQUE VISITORS</span>
+            </div>
+          </div>
+          <span class="stat-value">{{ uniqueVisitors | number }}</span>
+        </div>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">COOKIE CONSENTS</span>
+            </div>
+          </div>
+          <span class="stat-value">{{ cookieConsents | number }}</span>
+        </div>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
+              <span class="stat-title">ACTIVE PROVIDERS</span>
+            </div>
+          </div>
+          <span class="stat-value" style="font-size: 1.2rem">
+            @if (activeProviders.length > 0) { {{ activeProviders.join(', ') }} } @else { None }
+          </span>
+        </div>
+      </div>
+
       <div class="dashboard-grid dashboard-grid-single">
         <section class="status-card-outlined col-span-4 col-span-md-12">
           <div class="panel-header panel-header-padded">

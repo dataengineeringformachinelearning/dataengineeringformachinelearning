@@ -9,10 +9,12 @@
 // Explore-specific classes that are part of the status card block:
 .view-btn-container {
   display: flex;
-  justify-content: flex-end;
+  width: 100%;
 }
 
 .view-btn {
+  width: 100%;
+  justify-content: center;
   border-radius: 20px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;

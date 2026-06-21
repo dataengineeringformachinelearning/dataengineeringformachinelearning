@@ -49,7 +49,16 @@ def get_analytics_overview(request):
   # ==========================================
   # 2. STRICT USER TENANCY (Isolated Metrics)
   # ==========================================
-  from monitor.models import Endpoints, Incident, MonitoredService, StatusPage, ThreatIntelligence
+  from monitor.models import (
+    AnalyticsIntegration,
+    CookieConsent,
+    Endpoints,
+    Incident,
+    MonitoredService,
+    StatusPage,
+    ThreatIntelligence,
+    Vulnerability,
+  )
 
   user_pages = StatusPage.objects.filter(user=request.user)
   user_urls = MonitoredService.objects.filter(status_page__in=user_pages).values_list(
@@ -107,11 +116,49 @@ def get_analytics_overview(request):
       {"endpoint": url, "count": endpoints.filter(url=url).count()} for url in user_urls
     ]
 
+  # Retrieve provider integrations
+  active_providers = list(
+    AnalyticsIntegration.objects.filter(user=request.user, active=True).values_list(
+      "provider", flat=True
+    )
+  )
+
+  # Cookie Consents for the tenant (global or isolated to their nodes)
+  cookies_analytical = CookieConsent.objects.filter(
+    analytical=True, created_at__gte=last_24h
+  ).count()
+  cookies_marketing = CookieConsent.objects.filter(marketing=True, created_at__gte=last_24h).count()
+
+  # Unique Visitors
+  unique_visitors = endpoints.values("ip_address").distinct().count()
+
+  # Widget Interactions from telemetry_context
+  widget_interactions = 0
+  for ep in endpoints.exclude(telemetry_context__isnull=True):
+    try:
+      if isinstance(ep.telemetry_context, dict):
+        ga_data = ep.telemetry_context.get("global_agent_data", {})
+        widget_interactions += ga_data.get("clicks", 0)
+    except Exception:
+      pass
+
+  # Incorporate vulnerabilities into security alerts
+  vulns = Vulnerability.objects.filter(customer_id=str(request.user.id), created_at__gte=last_24h)
   security_alerts = [
-    {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "count": threats.count() // 24}
+    {
+      "time": (now - timedelta(hours=24 - i)).strftime("%H:00"),
+      "count": (threats.count() + vulns.count()) // 24,
+    }
     for i in range(24)
   ]
-  threat_severity = [{"severity": "Medium", "count": threats.count()}] if threats.exists() else []
+  threat_severity = []
+  if threats.exists() or vulns.exists():
+    # Summarize severities
+    severities = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
+    severities["Medium"] += threats.count()  # default threats to medium
+    for v in vulns:
+      severities[v.severity] = severities.get(v.severity, 0) + 1
+    threat_severity = [{"severity": k, "count": v} for k, v in severities.items() if v > 0]
 
   data = {
     "ces": {
@@ -132,9 +179,10 @@ def get_analytics_overview(request):
       "endpoint_counts": endpoint_counts,
       "threat_severity": threat_severity,
       "security_alerts": security_alerts,
-      "cookie_consents": {"analytical": 0, "marketing": 0},
-      "widget_interactions": 0,
-      "unique_visitors": 0,
+      "cookie_consents": {"analytical": cookies_analytical, "marketing": cookies_marketing},
+      "widget_interactions": widget_interactions,
+      "unique_visitors": unique_visitors,
+      "active_providers": active_providers,
     },
   }
 

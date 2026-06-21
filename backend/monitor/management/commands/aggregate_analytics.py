@@ -61,6 +61,14 @@ class Command(BaseCommand):
 
     # 4. Widget Signals
     widget_interactions = 0
+    for ep in endpoints_data.exclude(telemetry_context__isnull=True):
+      try:
+        if isinstance(ep.telemetry_context, dict):
+          global_agent_data = ep.telemetry_context.get("global_agent_data", {})
+          clicks = global_agent_data.get("clicks", 0)
+          widget_interactions += clicks
+      except Exception as e:
+        logger.warning(f"Failed to parse telemetry context for endpoint {ep.id}: {e}")
 
     # 5. Metadata Enrichment
     statuses_agg = list(endpoints_data.values("status_code").annotate(count=Count("id")))
