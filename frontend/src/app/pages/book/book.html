@@ -41,28 +41,14 @@
     <div class="content-wrapper">
       <!-- Mobile Chapter Select -->
       <div class="mobile-chapter-select no-print">
-        <label
-          for="mobileChapterSelect"
-          style="
-            color: var(--text-color);
-            font-weight: 600;
-            font-size: 16px;
-            display: block;
-            width: 100%;
-          "
-          >Navigate Chapters:</label
-        >
-        <select
+        <app-unified-select
           id="mobileChapterSelect"
-          class="hud-select"
-          (change)="bookService.goToPage($any($event.target).value)"
+          label="Navigate Chapters:"
+          [options]="chapterOptions"
           [value]="bookService.activePageIndex()"
+          (valueChange)="onChapterChange($event)"
           style="width: 100%"
-        >
-          <option *ngFor="let chapter of bookService.chapters(); let i = index" [value]="i">
-            {{ chapter.title }}
-          </option>
-        </select>
+        ></app-unified-select>
       </div>
 
       <div class="whitepaper-container">

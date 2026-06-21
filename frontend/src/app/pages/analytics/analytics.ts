@@ -12,6 +12,10 @@ import { HttpClient } from '@angular/common/http';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
+import {
+  UnifiedSelect,
+  SelectOption,
+} from '../../components/unified-select/unified-select.component';
 import { environment } from '../../../environments/environment';
 import * as L from 'leaflet';
 
@@ -36,7 +40,7 @@ export type ChartOptions = {
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule, MatIconModule],
+  imports: [CommonModule, NgApexchartsModule, MatIconModule, UnifiedSelect],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })
@@ -67,6 +71,7 @@ export class AnalyticsComponent implements OnInit {
   public tenants: any[] = [];
   public selectedTenantId: string | null = null;
   public availableSites: string[] = [];
+  public siteOptions: SelectOption[] = [{ value: 'All', label: 'All Sites' }];
   public selectedSite: string | null = null;
 
   public cesLevel = 0;
@@ -368,6 +373,10 @@ export class AnalyticsComponent implements OnInit {
 
           if (user_metrics?.available_sites) {
             this.availableSites = user_metrics.available_sites;
+            this.siteOptions = [
+              { value: 'All', label: 'All Sites' },
+              ...this.availableSites.map(site => ({ value: site, label: site })),
+            ];
           }
 
           this.cesLevel = ces?.level || 0;
@@ -485,8 +494,8 @@ export class AnalyticsComponent implements OnInit {
     this.loadAnalyticsData();
   }
 
-  public onSiteChange(event: any) {
-    this.selectedSite = event.target.value;
+  public onSiteChange(site: any) {
+    this.selectedSite = site;
     this.loadAnalyticsData();
   }
 

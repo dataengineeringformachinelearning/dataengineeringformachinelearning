@@ -12,6 +12,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import {
+  UnifiedSelect,
+  SelectOption,
+} from '../../components/unified-select/unified-select.component';
 import { FormsModule } from '@angular/forms';
 import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
@@ -22,7 +26,7 @@ import { VulnerabilityService, Vulnerability } from '../../services/vulnerabilit
 @Component({
   selector: 'app-vulnerabilities',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, FormsModule],
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, FormsModule, UnifiedSelect],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,8 +39,10 @@ export class Vulnerabilities implements OnInit {
   private http = inject(HttpClient);
 
   public tenants: any[] = [];
+  public tenantOptions: SelectOption[] = [];
   public selectedTenantId: string | null = null;
   public availableSites: string[] = [];
+  public siteOptions: SelectOption[] = [{ value: 'All', label: 'All Sites' }];
   public selectedSite: string | null = null;
 
   selectedVuln = signal<Vulnerability | null>(null);
@@ -44,8 +50,22 @@ export class Vulnerabilities implements OnInit {
   filterSeverity = signal<string>('All');
 
   // Statuses and Severities for filters/options
-  statuses = ['All', 'Triage', 'Open', 'In Progress', 'Resolved', 'False Positive'];
-  severities = ['All', 'Low', 'Medium', 'High', 'Critical'];
+  statusOptions: SelectOption[] = [
+    { value: 'All', label: 'All Statuses' },
+    { value: 'Triage', label: 'Triage' },
+    { value: 'Open', label: 'Open' },
+    { value: 'In Progress', label: 'In Progress' },
+    { value: 'Resolved', label: 'Resolved' },
+    { value: 'False Positive', label: 'False Positive' },
+  ];
+
+  severityOptions: SelectOption[] = [
+    { value: 'All', label: 'All Severities' },
+    { value: 'Low', label: 'Low' },
+    { value: 'Medium', label: 'Medium' },
+    { value: 'High', label: 'High' },
+    { value: 'Critical', label: 'Critical' },
+  ];
 
   // Matrix axes values (1 to 3 representation for 3x3)
   matrixAxes = [1, 2, 3];
@@ -97,6 +117,10 @@ export class Vulnerabilities implements OnInit {
       next: response => {
         if (response.status === 'success' && response.data) {
           this.tenants = response.data;
+          this.tenantOptions = this.tenants.map(t => ({
+            value: t.id,
+            label: `${t.name} ${t.is_platform ? '(Platform)' : ''}`.trim(),
+          }));
           if (!this.selectedTenantId && this.tenants.length > 0) {
             const platformTenant = this.tenants.find((t: any) => t.is_platform);
             this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
@@ -121,8 +145,13 @@ export class Vulnerabilities implements OnInit {
           const { user_metrics } = response.data;
           if (user_metrics?.available_sites) {
             this.availableSites = user_metrics.available_sites;
+            this.siteOptions = [
+              { value: 'All', label: 'All Sites' },
+              ...this.availableSites.map(site => ({ value: site, label: site })),
+            ];
           } else {
             this.availableSites = [];
+            this.siteOptions = [{ value: 'All', label: 'All Sites' }];
           }
           this.cdr.markForCheck();
         }
@@ -131,15 +160,15 @@ export class Vulnerabilities implements OnInit {
     });
   }
 
-  public onTenantChange(event: any) {
-    this.selectedTenantId = event.target.value;
+  public onTenantChange(tenantId: any) {
+    this.selectedTenantId = tenantId;
     this.selectedSite = 'All'; // reset site selection when tenant changes
     this.loadAvailableSites();
     this.loadVulnerabilities();
   }
 
-  public onSiteChange(event: any) {
-    this.selectedSite = event.target.value;
+  public onSiteChange(site: any) {
+    this.selectedSite = site;
     this.loadVulnerabilities();
   }
 

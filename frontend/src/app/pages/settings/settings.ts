@@ -34,6 +34,10 @@ import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
+import {
+  UnifiedSelect,
+  SelectOption,
+} from '../../components/unified-select/unified-select.component';
 
 @Component({
   selector: 'app-settings',
@@ -51,6 +55,7 @@ import { environment } from '../../../environments/environment';
     RouterModule,
     MatCheckboxModule,
     MatDialogModule,
+    UnifiedSelect,
   ],
   templateUrl: './settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -103,6 +108,12 @@ export class Settings implements OnInit {
   newIncidentTitle = '';
   newIncidentMessage = '';
   newIncidentStatus = 'Investigating';
+  public incidentStatusOptions: SelectOption[] = [
+    { value: 'Investigating', label: 'Investigating' },
+    { value: 'Identified', label: 'Identified' },
+    { value: 'Monitoring', label: 'Monitoring' },
+    { value: 'Resolved', label: 'Resolved' },
+  ];
 
   copied = signal(false);
 

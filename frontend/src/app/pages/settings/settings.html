@@ -300,17 +300,13 @@
                   </mat-form-field>
                   <div class="form-row-actions">
                     <div class="select-wrapper">
-                      <select
-                        [(ngModel)]="newIncidentStatus"
-                        class="native-select-custom"
-                        aria-label="Incident Status"
+                      <app-unified-select
+                        id="incident-status"
+                        [options]="incidentStatusOptions"
+                        [value]="newIncidentStatus"
+                        (valueChange)="newIncidentStatus = $event"
                         [disabled]="isViewer"
-                      >
-                        <option value="Investigating">Investigating</option>
-                        <option value="Identified">Identified</option>
-                        <option value="Monitoring">Monitoring</option>
-                        <option value="Resolved">Resolved</option>
-                      </select>
+                      ></app-unified-select>
                     </div>
                     <button
                       mat-flat-button

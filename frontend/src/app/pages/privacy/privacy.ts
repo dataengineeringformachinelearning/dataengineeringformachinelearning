@@ -2,10 +2,15 @@ import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/cor
 
 import { Title, Meta } from '@angular/platform-browser';
 import { CookieConsentService } from '../../services/cookie-consent.service';
+import {
+  UnifiedSelect,
+  SelectOption,
+} from '../../components/unified-select/unified-select.component';
 
 @Component({
   selector: 'app-privacy',
-  imports: [],
+  standalone: true,
+  imports: [UnifiedSelect],
   templateUrl: './privacy.html',
   styleUrl: './privacy.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +19,13 @@ export class Privacy implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   protected consentService = inject(CookieConsentService);
+
+  public gdprRequestType = 'export';
+  public gdprOptions: SelectOption[] = [
+    { value: 'export', label: 'Export My Data (Portability)' },
+    { value: 'delete', label: 'Delete My Data (Erasure)' },
+    { value: 'rectify', label: 'Rectify/Correct Incorrect Data' },
+  ];
 
   ngOnInit() {
     this.titleService.setTitle('Privacy Policy & GDPR Compliance - Web Application');

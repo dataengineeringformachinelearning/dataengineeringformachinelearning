@@ -8,6 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { BookService } from '../../services/book.service';
 import { OramaSearchService } from '../../services/orama-search.service';
+import {
+  UnifiedSelect,
+  SelectOption,
+} from '../../components/unified-select/unified-select.component';
 
 @Component({
   selector: 'app-book',
@@ -19,6 +23,7 @@ import { OramaSearchService } from '../../services/orama-search.service';
     MatButtonModule,
     MatIconModule,
     RouterModule,
+    UnifiedSelect,
   ],
   templateUrl: './book.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -29,6 +34,7 @@ export class Book implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   private searchService = inject(OramaSearchService);
+  public chapterOptions: SelectOption[] = [];
 
   openSearchDialog() {
     this.searchService.openSearchDialog();
@@ -40,6 +46,10 @@ export class Book implements OnInit {
       name: 'description',
       content: 'Interactive guide, working notes, and reference chapters on Web Application.',
     });
+    this.chapterOptions = this.bookService.chapters().map((c, i) => ({
+      value: i,
+      label: c.title,
+    }));
   }
 
   private touchStartX = 0;
@@ -56,6 +66,10 @@ export class Book implements OnInit {
     this.touchEndX = event.changedTouches[0].screenX;
     this.touchEndY = event.changedTouches[0].screenY;
     this.handleSwipe();
+  }
+
+  onChapterChange(index: number) {
+    this.bookService.goToPage(index);
   }
 
   private handleSwipe() {

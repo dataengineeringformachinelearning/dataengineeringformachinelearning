@@ -17,57 +17,24 @@
           class="tenant-selector-group"
           style="margin-left: auto; display: flex; align-items: center; gap: 1rem"
         >
-          <label for="tenantSelect" style="color: var(--text-color); font-weight: 500"
-            >Environment:</label
-          >
-          <select
+          <app-unified-select
             id="tenantSelect"
-            class="hud-select"
-            (change)="onTenantChange($event)"
+            label="Environment:"
+            [options]="tenantOptions"
             [value]="selectedTenantId"
-            style="
-              background: rgba(255, 255, 255, 0.05);
-              color: white;
-              border: 1px solid rgba(255, 255, 255, 0.1);
-              padding: 8px 12px;
-              border-radius: 6px;
-              outline: none;
-              font-family: 'Inter', sans-serif;
-            "
-          >
-            @for (tenant of tenants; track tenant.id) {
-            <option [value]="tenant.id" style="color: black">
-              {{ tenant.name }} {{ tenant.is_platform ? '(Platform)' : '' }}
-            </option>
-            }
-          </select>
+            (valueChange)="onTenantChange($event)"
+            style="width: 200px"
+          ></app-unified-select>
 
           @if (availableSites.length > 0) {
-          <label
-            for="siteSelect"
-            style="color: var(--text-color); font-weight: 500; margin-left: 1rem"
-            >Site / Endpoint:</label
-          >
-          <select
+          <app-unified-select
             id="siteSelect"
-            class="hud-select"
-            (change)="onSiteChange($event)"
+            label="Site / Endpoint:"
+            [options]="siteOptions"
             [value]="selectedSite || 'All'"
-            style="
-              background: rgba(255, 255, 255, 0.05);
-              color: white;
-              border: 1px solid rgba(255, 255, 255, 0.1);
-              padding: 8px 12px;
-              border-radius: 6px;
-              outline: none;
-              font-family: 'Inter', sans-serif;
-            "
-          >
-            <option value="All" style="color: black">All Sites</option>
-            @for (site of availableSites; track site) {
-            <option [value]="site" style="color: black">{{ site }}</option>
-            }
-          </select>
+            (valueChange)="onSiteChange($event)"
+            style="width: 200px; margin-left: 1rem"
+          ></app-unified-select>
           }
         </div>
         }
@@ -100,28 +67,22 @@
 
           <div class="filter-bar">
             <div class="filter-group">
-              <label for="status-filter">Status</label>
-              <select
+              <app-unified-select
                 id="status-filter"
-                [ngModel]="filterStatus()"
-                (ngModelChange)="filterStatus.set($event)"
-              >
-                @for (status of statuses; track status) {
-                <option [value]="status">{{ status }}</option>
-                }
-              </select>
+                label="Status"
+                [options]="statusOptions"
+                [value]="filterStatus()"
+                (valueChange)="filterStatus.set($event)"
+              ></app-unified-select>
             </div>
             <div class="filter-group">
-              <label for="severity-filter">Severity</label>
-              <select
+              <app-unified-select
                 id="severity-filter"
-                [ngModel]="filterSeverity()"
-                (ngModelChange)="filterSeverity.set($event)"
-              >
-                @for (severity of severities; track severity) {
-                <option [value]="severity">{{ severity }}</option>
-                }
-              </select>
+                label="Severity"
+                [options]="severityOptions"
+                [value]="filterSeverity()"
+                (valueChange)="filterSeverity.set($event)"
+              ></app-unified-select>
             </div>
           </div>
 

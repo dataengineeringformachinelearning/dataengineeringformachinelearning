@@ -113,17 +113,7 @@
         </div>
       </section>
 
-      <!-- USER METRICS SECTION -->
-      <div
-        class="metrics-overview-header metrics-section-spacing"
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
-          flex-wrap: wrap;
-          gap: 18px;
-        "
-      >
+      <div class="metrics-overview-header metrics-section-spacing">
         <div>
           <h2 class="section-title-premium">
             <mat-icon>person</mat-icon>
@@ -133,28 +123,19 @@
             Performance data isolated to your active projects and workloads.
           </p>
         </div>
-
-        @if (availableSites.length > 0) {
-        <div class="filter-group-mobile">
-          <label
-            for="siteSelect"
-            style="color: var(--text-color); font-weight: 500; font-size: 16px"
-            >Filter by Site:</label
-          >
-          <select
-            id="siteSelect"
-            class="hud-select"
-            (change)="onSiteChange($event)"
-            [value]="selectedSite || 'All'"
-          >
-            <option value="All">All Sites</option>
-            @for (site of availableSites; track site) {
-            <option [value]="site">{{ site }}</option>
-            }
-          </select>
-        </div>
-        }
       </div>
+
+      @if (availableSites.length > 0) {
+      <div class="filter-group-mobile" style="margin-bottom: 24px; max-width: 320px">
+        <app-unified-select
+          id="siteSelect"
+          label="Filter by Site:"
+          [options]="siteOptions"
+          [value]="selectedSite || 'All'"
+          (valueChange)="onSiteChange($event)"
+        ></app-unified-select>
+      </div>
+      }
       <!-- REGULAR STATS -->
       <div class="ml-stat-panels-row stat-panels-grid">
         <div class="ml-stat-panel">
