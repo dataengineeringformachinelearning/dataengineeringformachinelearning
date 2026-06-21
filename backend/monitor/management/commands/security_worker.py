@@ -36,6 +36,10 @@ class Command(BaseCommand):
     self.background_tasks.add(task2)
     task2.add_done_callback(self.background_tasks.discard)
 
+    task3 = asyncio.create_task(self.dark_web_scheduler())
+    self.background_tasks.add(task3)
+    task3.add_done_callback(self.background_tasks.discard)
+
     # Keep worker alive
     while True:
       await asyncio.sleep(3600)
@@ -94,6 +98,29 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Security Worker: Database cleanup completed."))
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Compliance task run failed: {e}"))
+
+      # Run once every 24 hours (86400 seconds)
+      await asyncio.sleep(86400)
+
+  async def dark_web_scheduler(self) -> None:
+    from django.db import close_old_connections
+
+    @sync_to_async
+    def run_sync_command(cmd_name):
+      close_old_connections()
+      try:
+        call_command(cmd_name)
+      finally:
+        close_old_connections()
+
+    self.stdout.write(self.style.SUCCESS("Starting Dark Web Scanner scheduler..."))
+    while True:
+      try:
+        self.stdout.write("Security Worker: Running Dark Web and OSINT scanner...")
+        await run_sync_command("scan_dark_web")
+        self.stdout.write(self.style.SUCCESS("Security Worker: Dark Web scan completed."))
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Security Worker: Dark Web scan failed: {e}"))
 
       # Run once every 24 hours (86400 seconds)
       await asyncio.sleep(86400)

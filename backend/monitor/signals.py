@@ -11,7 +11,7 @@ def cors_allow_monitored_domains(sender, request, **kwargs):
     return False
 
   try:
-    from monitor.models import Endpoints, MonitoredService
+    from monitor.models import Endpoints, MonitoredService, Tenant
 
     # Match exact origin (e.g., https://example.com) or subpaths (e.g., https://example.com/)
     q_exact = Q(url=origin)
@@ -21,6 +21,12 @@ def cors_allow_monitored_domains(sender, request, **kwargs):
       return True
 
     if MonitoredService.objects.filter(q_exact | q_slash).exists():
+      return True
+
+    q_target_exact = Q(target_url=origin)
+    q_target_slash = Q(target_url__startswith=origin + "/")
+
+    if Tenant.objects.filter(q_target_exact | q_target_slash).exists():
       return True
 
   except Exception:
@@ -66,3 +72,20 @@ def notify_threat_detected(sender, instance, created, **kwargs):
     message += get_recent_stats_text()
     send_alert_email(subject, message)
     send_discord_alert(subject, message)
+
+
+def ensure_tenant0_exists(sender, **kwargs):
+  """
+  A post_migrate signal receiver that guarantees the DEML Platform
+  (Tenant0) always exists in the database.
+  """
+  from monitor.models import Tenant
+
+  Tenant.objects.get_or_create(
+    is_platform_tenant=True,
+    defaults={
+      "name": "DEML Platform",
+      "slug": "platform",
+      "target_url": "https://dataengineeringformachinelearning.com",
+    },
+  )

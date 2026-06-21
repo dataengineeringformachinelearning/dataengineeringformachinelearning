@@ -13,8 +13,10 @@ class OSINTScanner:
   """
 
   @classmethod
-  def scan_domain(cls, domain, tenant_id="platform"):
+  def scan_domain(cls, domain, tenant_id=None):
     try:
+      import datetime
+
       logger.info(f"[Tenant: {tenant_id}] Running OSINT scan for domain: {domain}")
       # Example using crt.sh (Certificate Transparency logs)
       url = f"https://crt.sh/?q={domain}&output=json"
@@ -29,7 +31,21 @@ class OSINTScanner:
             subdomains.add(name.strip())
 
       logger.info(f"Discovered {len(subdomains)} subdomains for {domain}.")
-      # TODO: Push to ClickHouse `osint_assets` table
+
+      if tenant_id:
+        from monitor.models import Endpoints
+
+        for sub in subdomains:
+          Endpoints.objects.get_or_create(
+            tenant_id=tenant_id,
+            url=f"https://{sub}",
+            defaults={
+              "status_code": 0,
+              "response_time": datetime.timedelta(seconds=0),
+              "is_active": True,
+            },
+          )
+
       return list(subdomains)
 
     except Exception as e:
@@ -39,4 +55,4 @@ class OSINTScanner:
 
 if __name__ == "__main__":
   # Example usage
-  OSINTScanner.scan_domain("dataengineeringformachinelearning.com", tenant_id="platform")
+  OSINTScanner.scan_domain("dataengineeringformachinelearning.com", tenant_id=None)

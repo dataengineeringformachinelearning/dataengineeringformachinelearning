@@ -5,7 +5,7 @@ receivers:
         endpoint: "0.0.0.0:4318"
         cors:
           allowed_origins:
-            - "${env:ALLOWED_CORS_ORIGINS}" # Expects a specific domain like "https://dataengineeringformachinelearning.com"
+            - "*" # Allow all origins for telemetry ingestion
           allowed_headers:
             - "Content-Type"
       grpc:

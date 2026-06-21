@@ -145,3 +145,92 @@ def decrypt_data(ciphertext: str) -> dict[str, Any]:
     return json.loads(decrypted_bytes.decode())
   except Exception:
     return {}
+
+
+def hybrid_pq_encrypt(payload_bytes: bytes) -> tuple[str, str]:
+  """
+  Generates a post-quantum keypair, encapsulates a symmetric key,
+  and uses that symmetric key to AES-encrypt the payload.
+
+  Returns:
+    tuple: (pq_public_key_b64, encrypted_payload_b64)
+  """
+  import base64
+
+  from cryptography.fernet import Fernet
+
+  from utils.quantum import OQS_AVAILABLE, PostQuantumKEM
+
+  if not OQS_AVAILABLE:
+    # Graceful fallback to standard AES if liboqs is missing
+    symmetric_key = Fernet.generate_key()
+    cipher = Fernet(symmetric_key)
+    ciphertext = cipher.encrypt(payload_bytes)
+    return (
+      base64.b64encode(symmetric_key).decode("utf-8"),
+      base64.b64encode(ciphertext).decode("utf-8"),
+    )
+
+  # 1. Generate PQ Keypair
+  pq = PostQuantumKEM()
+  pub_key, _ = pq.generate_keypair()
+
+  # 2. Encapsulate a shared secret
+  ciphertext_enc, shared_secret = pq.encapsulate_secret(pub_key)
+
+  # 3. Derive a 32-byte Fernet key from the shared secret
+  derived_key = base64.urlsafe_b64encode(hashlib.sha256(shared_secret).digest())
+
+  # 4. Encrypt payload
+  cipher = Fernet(derived_key)
+  encrypted_payload = cipher.encrypt(payload_bytes)
+
+  # We return the public key + encapsulated ciphertext together as the 'key' material,
+  # and the encrypted payload. (For a real system, the client would have the pub_key and
+  # we would return the ciphertext_enc).
+  # Here we just bundle it.
+  pq_material = (
+    base64.b64encode(pub_key).decode("utf-8")
+    + ":"
+    + base64.b64encode(ciphertext_enc).decode("utf-8")
+  )
+
+  return (pq_material, base64.b64encode(encrypted_payload).decode("utf-8"))
+
+
+def hybrid_pq_decrypt(pq_material: str, encrypted_payload_b64: str) -> bytes:
+  """
+  Decapsulates the ephemeral symmetric key and decrypts the payload.
+  `pq_material` format: "key_id:ciphertext_enc_b64" or raw AES key for fallback.
+  """
+  import base64
+  import hashlib
+
+  from cryptography.fernet import Fernet
+  from django.core.cache import cache
+
+  from utils.quantum import PostQuantumKEM
+
+  if ":" not in pq_material:
+    # Fallback path
+    symmetric_key = base64.b64decode(pq_material)
+    cipher = Fernet(symmetric_key)
+    return cipher.decrypt(base64.b64decode(encrypted_payload_b64))
+
+  # Format expected: "key_id:ciphertext_enc_b64"
+  key_id, ciphertext_enc_b64 = pq_material.split(":", 1)
+
+  secret_key_b64 = cache.get(f"pq_secret_{key_id}")
+  if not secret_key_b64:
+    raise ValueError("PQ secret key expired, invalid, or already consumed.")
+
+  pq = PostQuantumKEM()
+  shared_secret_b64 = pq.decapsulate_secret(ciphertext_enc_b64, secret_key_b64)
+  shared_secret = base64.b64decode(shared_secret_b64)
+
+  # Forward secrecy: delete the secret key immediately after consumption
+  cache.delete(f"pq_secret_{key_id}")
+
+  derived_key = base64.urlsafe_b64encode(hashlib.sha256(shared_secret).digest())
+  cipher = Fernet(derived_key)
+  return cipher.decrypt(base64.b64decode(encrypted_payload_b64))

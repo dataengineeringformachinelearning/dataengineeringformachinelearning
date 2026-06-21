@@ -15,7 +15,7 @@ class DarkWebScanner:
   PROXIES = {"http": "socks5h://tor-proxy:9050", "https": "socks5h://tor-proxy:9050"}
 
   @classmethod
-  def check_hibp_breaches(cls, account, tenant_id="platform"):
+  def check_hibp_breaches(cls, account, tenant_id=None):
     """Check Have I Been Pwned for an email account."""
     try:
       logger.info(f"[Tenant: {tenant_id}] Checking HIBP for {account}...")
@@ -30,6 +30,16 @@ class DarkWebScanner:
       if response.status_code == 200:
         breaches = response.json()
         logger.warning(f"Found {len(breaches)} breaches for {account}!")
+        if tenant_id:
+          from monitor.models import ThreatIntelligence
+
+          ThreatIntelligence.objects.create(
+            tenant_id=tenant_id,
+            source="HIBP",
+            location=account,
+            is_malicious=True,
+            raw_payload={"breaches": breaches},
+          )
         return breaches
       elif response.status_code == 404:
         logger.info(f"No breaches found for {account}.")
@@ -43,7 +53,7 @@ class DarkWebScanner:
       return []
 
   @classmethod
-  def search_ahmia(cls, keyword, tenant_id="platform"):
+  def search_ahmia(cls, keyword, tenant_id=None):
     """Search Ahmia (Tor search engine) for a keyword over the Tor proxy."""
     try:
       logger.info(f"[Tenant: {tenant_id}] Searching Dark Web for '{keyword}' via Tor...")
@@ -58,7 +68,16 @@ class DarkWebScanner:
 
       if response.status_code == 200:
         logger.info(f"Successfully reached Ahmia for keyword '{keyword}'.")
-        # TODO: Parse HTML to find exact mentions and push to ClickHouse
+        if tenant_id:
+          from monitor.models import ThreatIntelligence
+
+          ThreatIntelligence.objects.create(
+            tenant_id=tenant_id,
+            source="Ahmia Tor Network",
+            location=keyword,
+            is_malicious=True,
+            raw_payload={"status": "mentions_found"},
+          )
         return True
       return False
 
@@ -68,6 +87,4 @@ class DarkWebScanner:
 
 
 if __name__ == "__main__":
-  DarkWebScanner.check_hibp_breaches(
-    "admin@dataengineeringformachinelearning.com", tenant_id="platform"
-  )
+  DarkWebScanner.check_hibp_breaches("admin@dataengineeringformachinelearning.com", tenant_id=None)

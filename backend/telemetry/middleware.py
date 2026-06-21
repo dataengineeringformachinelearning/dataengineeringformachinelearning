@@ -29,9 +29,32 @@ class NetworkTelemetryMiddleware:
 
     duration = time.time() - start_time
 
-    # Determine tenant_id (For the platform's own API/site traffic, we use "platform")
-    # In a multi-tenant widget scenario, this would be extracted from the request headers or URL
-    tenant_id = request.headers.get("X-Tenant-ID", "platform")
+    # Determine tenant_id
+    tenant_id = request.headers.get("X-Tenant-ID")
+
+    # Dynamic zero-latency fallback mapping based on Host domain
+    if not tenant_id or tenant_id == "platform":
+      from django.core.cache import cache
+
+      host = request.get_host().split(":")[0]
+      cache_key = f"tenant_host_map_{host}"
+      tenant_id = cache.get(cache_key)
+
+      if not tenant_id:
+        from monitor.models import Tenant
+
+        # 1. First attempt to map by target_url (for customer custom domains)
+        tenant = Tenant.objects.filter(target_url__icontains=host).first()
+
+        # 2. Fallback to Tenant0 (Platform) if no customer matches or it explicitly requested 'platform'
+        if not tenant:
+          tenant = Tenant.objects.filter(is_platform_tenant=True).first()
+
+        tenant_id = str(tenant.id) if tenant else None
+
+        if tenant_id:
+          # Cache for 1 hour to ensure zero database latency on subsequent requests
+          cache.set(cache_key, tenant_id, 3600)
 
     log_data = {
       "tenant_id": tenant_id,

@@ -157,3 +157,50 @@ async def ingest_technology_telemetry(request, payload: TelemetryDualStreamPaylo
   except Exception as e:
     logger.error(f"Failed to queue telemetry for processing: {e}")
     return HttpResponse("Vulnerability ledger unavailable", status=503)
+
+
+class PQKeyExchangeResponse(Schema):
+  status: str
+  key_id: str | None = None
+  public_key_b64: str | None = None
+  message: str
+
+
+@router.get("/pq-key-exchange", response=PQKeyExchangeResponse)
+def get_pq_key_exchange(request):
+  import base64
+  import uuid
+
+  from django.core.cache import cache
+  from utils.quantum import OQS_AVAILABLE, PostQuantumKEM
+
+  if not OQS_AVAILABLE:
+    return {
+      "status": "fallback",
+      "key_id": None,
+      "public_key_b64": None,
+      "message": "liboqs is not available. Please use standard AES for ephemeral telemetry payloads.",
+    }
+
+  try:
+    pq = PostQuantumKEM()
+    pub_key, secret_key = pq.generate_keypair()
+
+    key_id = str(uuid.uuid4())
+    # Cache the ephemeral secret key for 300 seconds (5 minutes)
+    cache.set(f"pq_secret_{key_id}", secret_key, timeout=300)
+
+    return {
+      "status": "success",
+      "key_id": key_id,
+      "public_key_b64": base64.b64encode(pub_key).decode("utf-8"),
+      "message": "Use this public key to encapsulate your symmetric key before transmission.",
+    }
+  except Exception as e:
+    logger.error(f"PQ Key Exchange failed: {e}")
+    return {
+      "status": "error",
+      "key_id": None,
+      "public_key_b64": None,
+      "message": "An error occurred during PQ key generation.",
+    }

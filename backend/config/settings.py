@@ -180,6 +180,7 @@ MIDDLEWARE = [
   "django.middleware.common.CommonMiddleware",
   "django.middleware.csrf.CsrfViewMiddleware",
   "config.middleware.FirebaseAuthenticationMiddleware",
+  "telemetry.middleware.NetworkTelemetryMiddleware",
   "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 

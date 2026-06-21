@@ -601,6 +601,8 @@ To further enrich this context, I also execute Active Network Reconnaissance dir
 
 By fusing global threat intelligence, behavioral biometrics, and active network reconnaissance into a centralized PyTorch inference engine, I transform my platform from a passive target into an actively defended fortress. The `ThreatModel` autonomously calculates the risk score in milliseconds, empowering my API gateways to instantly throttle, challenge, or entirely sever malicious connections, guaranteeing the zero-compromise security of my operational infrastructure.
 
+Furthermore, this active defense posture extends to daily Open Source Intelligence (OSINT) and Dark Web reconnaissance. Background Celery workers actively query the "Have I Been Pwned" (HIBP) APIs for compromised platform credentials and scan Tor hidden services (Ahmia) for brand mentions. Instead of passively logging these findings, the platform immediately serializes them as native `ThreatIntelligence` database records (flagged with `is_malicious=True`). This guarantees that compromised credentials or dark web leaks instantly populate the tenant's security dashboard, dramatically accelerating incident response times.
+
 ---
 
 ## Chapter 14: Scaling Reporting and Announcements with Sanity
@@ -719,6 +721,8 @@ Simultaneously, I leverage `ipwhois` and the `ipwho.is` API to perform deep reco
 
 By structurally integrating this rich metadata directly into my core `Endpoints` model, I unlock advanced anomaly detection capabilities. When combined with my Threat Intelligence feeds, this enriched context allows the platform to preemptively identify and rate-limit suspicious behavioral patterns long before they escalate into critical security incidents.
 
+To fully weaponize this metadata, I engineered an Application-Level Zeek-equivalent middleware. This middleware sits at the Django edge, passively intercepting and logging all incoming HTTP request headers, source IPs, and processing latencies. Crucially, the middleware utilizes zero-latency cached domain mappings to instantly associate incoming traffic with its target Tenant UUID without blocking the main thread for database lookups. The platform explicitly dogfoods this architecture: it utilizes a `post_migrate` signal to bootstrap itself dynamically as `Tenant0`, ensuring all internal monitoring and background pipelines homogenize entirely around UUIDs and completely eliminate the vulnerability of hardcoded string constraints.
+
 ---
 
 ## Chapter 21: Team Workflows and Vulnerability Management
@@ -811,7 +815,7 @@ As we secure our platform against contemporary threats, we must also gaze toward
 
 To ensure our zero-compromise security posture remains resilient against future quantum adversaries, we must proactively begin integrating Post-Quantum Cryptography (PQC). PQC refers to cryptographic algorithms—such as those based on lattice-based cryptography, hash-based signatures, or multivariate equations—that are designed to run on classical computers but are mathematically resistant to attacks from both classical and quantum machines.
 
-My initial preparations involve auditing our entire cryptographic stack. For our TLS 1.3 terminations and internal service-to-service communication, we are exploring the integration of the Open Quantum Safe (OQS) project and `liboqs`. By implementing hybrid key encapsulation mechanisms (KEMs), we can combine classical ECC (for proven security today) with lattice-based algorithms like Kyber (recently standardized as ML-KEM by NIST). This hybrid approach provides a safety net: even if the novel quantum algorithm is somehow compromised by classical means, the traditional ECC layer still provides robust protection.
+My initial preparations involve auditing our entire cryptographic stack. For our TLS 1.3 terminations and internal service-to-service communication, we have finalized the integration of the Open Quantum Safe (OQS) project and `liboqs`. By implementing hybrid key encapsulation mechanisms (KEMs), we combine classical AES encryption with lattice-based algorithms like Kyber. Our `/api/v1/telemetry/pq-key-exchange` endpoint allows external clients to securely negotiate an ephemeral PQ session key prior to transmitting transient, highly sensitive telemetry. The server guarantees absolute Forward Secrecy by strictly caching this ephemeral secret key for exactly 5 minutes using a unique UUID, permanently destroying it immediately upon decapsulating the client's payload. This ensures that even if our traffic is intercepted today, a quantum adversary cannot decrypt the payload tomorrow.
 
 Furthermore, our data-at-rest encryption (currently AES-256-GCM) is generally considered quantum-resistant, as Grover's algorithm only halves the effective key size (reducing 256-bit to an effective 128-bit security level, which remains highly secure). However, the key management infrastructure (KMS) and the digital signatures used for verifying JSON Web Tokens (JWTs) and software manifests will require transitioning to quantum-resistant signature schemes like Dilithium (ML-DSA) or SPHINCS+. By laying this groundwork now and maintaining cryptographic agility, we ensure that our platform's intelligence and our users' data remain imperviously locked, both today and in the post-quantum future.
 
@@ -1519,6 +1523,8 @@ As the platform scaled, the necessity for uncompromising infrastructure security
 Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1100px' maximum width. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
 
 Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 30-day telemetry retention and daily cleanup policies without any risk of cross-tenant data bleed.
+
+To completely eradicate architectural debt and hardcoded exceptions, I instituted the **Symmetrical Multi-Tenant Pipeline Rule**. Every background worker, ML training loop, and OSINT scanner is engineered to iterate natively over `Tenant.objects.all()`. Because the platform itself dynamically bootstraps as `Tenant0`, it traverses the exact same execution loop as customer environments. This absolute symmetry ensures that all threat intelligence capabilities and feature updates seamlessly apply to both the core infrastructure and individual client tenants simultaneously.
 
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 

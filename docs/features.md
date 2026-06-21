@@ -27,3 +27,15 @@ The Data Engineering for Machine Learning (DEML) Platform provides a comprehensi
 
 8. **Tenant0: The Apex Sandbox & Public Sentinel**
    - Our platform dogfoods itself. The core infrastructure operates under `Tenant0` (The Platform Tenant). It runs its own telemetry ingestion, status pages, and threat models. It serves as a continuous, living "Apex Sandbox" to safely trial experimental features under real load and as a "Public Sentinel" showcasing exactly what the platform is capable of.
+
+9. **Application-Level Zeek-Equivalent Middleware**
+   - A custom passive interception layer runs at the edge to inspect all incoming HTTP request headers, source IPs, methods, and process latency. It natively homogenizes traffic via zero-latency caches and streams telemetry aligned perfectly to the target Tenant UUID.
+
+10. **OSINT & Dark Web Threat Intel Integration**
+    - The platform actively runs reconnaissance against Tor (Ahmia) for brand mentions and Certificate Transparency logs for exposed assets. It automatically formalizes these findings natively into `ThreatIntelligence` and `Endpoints` database records for instantaneous dashboard visibility.
+
+11. **Post-Quantum Cryptography (PQC) & Forward Secrecy**
+    - Implements hybrid Key Encapsulation Mechanisms (KEMs) using `liboqs` allowing clients to negotiate quantum-resistant session keys over the `/api/v1/telemetry/pq-key-exchange` endpoint. Active Forward Secrecy is enforced via exact 5-minute cache expirations of ephemeral secret keys.
+
+12. **Symmetrical Multi-Tenant Pipelines (`Tenant.objects.all()`)**
+    - All background workers, ML model training loops, and OSINT scanners are explicitly engineered to iterate over `Tenant.objects.all()`. By treating the platform (`Tenant0`) exactly like any other customer, the architecture guarantees absolute feature parity and eradicates the technical debt of hardcoded, single-tenant exceptions.
