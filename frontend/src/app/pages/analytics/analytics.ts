@@ -1,6 +1,5 @@
 import {
   Component,
-  OnInit,
   inject,
   effect,
   afterNextRender,
@@ -22,7 +21,7 @@ import { environment } from '../../../environments/environment';
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })
-export class AnalyticsComponent implements OnInit {
+export class AnalyticsComponent {
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
@@ -371,6 +370,10 @@ export class AnalyticsComponent implements OnInit {
     background: { fill: 'transparent' },
   };
 
+  get isDarkMode(): boolean {
+    return this.themeService.theme() === 'dark';
+  }
+
   constructor() {
     if (this.isBrowser && !AnalyticsComponent.modulesRegistered) {
       ModuleRegistry.registerModules([AllCommunityModule]);
@@ -378,8 +381,8 @@ export class AnalyticsComponent implements OnInit {
     }
 
     effect(() => {
-      const activeTheme = this.themeService.theme();
-      this.updateChartTheme(activeTheme);
+      this.themeService.theme(); // depend on signal
+      this.updateChartTheme();
     });
 
     afterNextRender(() => {
@@ -387,40 +390,226 @@ export class AnalyticsComponent implements OnInit {
     });
   }
 
-  private updateChartTheme(theme: 'light' | 'dark') {
-    const baseTheme = theme === 'dark' ? 'ag-default-dark' : 'ag-default';
-    const customTheme = {
-      baseTheme,
-      palette: {
-        fills: [
-          'var(--color-primary)',
-          'var(--crayola-blue)',
-          'var(--color-primary-container)',
-          'var(--color-error)',
-          'var(--color-success)',
-          'var(--color-warning)',
-        ],
-        strokes: [
-          'var(--color-primary)',
-          'var(--crayola-blue)',
-          'var(--color-primary-container)',
-          'var(--color-error)',
-          'var(--color-success)',
-          'var(--color-warning)',
-        ],
-      },
+  private updateChartTheme() {
+    const themeColors = {
+      text: this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.5)',
+      grid: this.isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.06)',
+      barFill: this.isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.05)',
+      tooltipBg: this.isDarkMode ? '#16171D' : '#FFFFFF',
+      tooltipBorder: this.isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+      tooltipText: this.isDarkMode ? '#FFFFFF' : '#0F172A',
+      titleColor: this.isDarkMode ? '#FFFFFF' : '#0F172A',
+      donutStroke: this.isDarkMode ? '#16171D' : '#FFFFFF',
+      errorFill: 'var(--color-error)',
     };
 
-    this.chartOptions = { ...this.chartOptions, theme: customTheme };
-    this.originChartOptions = { ...this.originChartOptions, theme: customTheme };
-    this.frequencyChartOptions = { ...this.frequencyChartOptions, theme: customTheme };
-    this.statusChartOptions = { ...this.statusChartOptions, theme: customTheme };
-    this.endpointChartOptions = { ...this.endpointChartOptions, theme: customTheme };
-    this.threatSeverityChartOptions = { ...this.threatSeverityChartOptions, theme: customTheme };
-    this.securityAlertsChartOptions = { ...this.securityAlertsChartOptions, theme: customTheme };
-  }
+    const getBaseOptions = (title: string, data: any[]) => ({
+      data,
+      background: { fill: 'transparent' },
+      autoSize: true,
+      padding: { top: 20, right: 20, bottom: 20, left: 20 },
+      title: {
+        text: title,
+        color: themeColors.titleColor,
+        fontFamily: 'Inter, sans-serif',
+        fontSize: 16,
+        fontWeight: 600,
+      },
+      tooltip: {
+        enabled: true,
+        renderer: (params: any) => {
+          let xValue = params.xValue;
+          let yValue = params.yValue;
 
-  ngOnInit() {}
+          // Handle donut charts
+          if (xValue === undefined && params.datum) {
+            xValue = params.datum[params.calloutLabelKey] || '';
+            yValue = params.datum[params.angleKey] || 0;
+          }
+
+          const yFormatted = typeof yValue === 'number' ? yValue.toFixed(2) : yValue;
+          return {
+            backgroundColor: themeColors.tooltipBg,
+            content: `<div style="padding: 8px; border: 1px solid ${themeColors.tooltipBorder}; border-radius: 8px; color: ${themeColors.tooltipText}; font-family: Inter, sans-serif; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                        <span style="color: ${themeColors.text}; font-size: 10px;">${xValue}</span><br/>
+                        <strong>${yFormatted}</strong>
+                      </div>`,
+          };
+        },
+      },
+    });
+
+    const getAxes = (xRotation = 0) => [
+      {
+        type: 'category',
+        position: 'bottom',
+        line: { enabled: false },
+        tick: { enabled: false },
+        label: {
+          color: themeColors.text,
+          fontSize: 11,
+          fontFamily: 'Inter, sans-serif',
+          rotation: xRotation,
+        },
+        gridStyle: [{ stroke: 'transparent' }],
+      },
+      {
+        type: 'number',
+        position: 'left',
+        line: { enabled: false },
+        tick: { enabled: false },
+        label: {
+          color: themeColors.text,
+          fontSize: 11,
+          fontFamily: 'Inter, sans-serif',
+        },
+        gridStyle: [
+          {
+            stroke: themeColors.grid,
+            lineDash: [4, 4],
+          },
+        ],
+      },
+    ];
+
+    this.chartOptions = {
+      ...getBaseOptions('System Latency (Last 24h)', this.chartOptions.data),
+      axes: getAxes(0),
+      series: [
+        {
+          type: 'area',
+          xKey: 'time',
+          yKey: 'latency',
+          stroke: '#3b82f6',
+          strokeWidth: 2,
+          fillOpacity: this.isDarkMode ? 0.12 : 0.08,
+          marker: {
+            enabled: false,
+            activeShape: 'circle',
+            size: 5,
+            fill: '#3b82f6',
+            strokeWidth: 0,
+          },
+        },
+      ],
+    } as any;
+
+    this.originChartOptions = {
+      ...getBaseOptions('Geographic Origins', this.originChartOptions.data),
+      series: [
+        {
+          type: 'donut',
+          angleKey: 'count',
+          calloutLabelKey: 'origin',
+          sectorLabelKey: 'count',
+          innerRadiusRatio: 0.7,
+          calloutLabel: { color: themeColors.text, fontFamily: 'Inter, sans-serif', fontSize: 11 },
+          sectorLabel: { color: themeColors.donutStroke, fontWeight: 'bold' },
+          strokes: [themeColors.donutStroke],
+          strokeWidth: 2,
+          fills: [
+            'var(--color-info)',
+            'var(--color-primary)',
+            'var(--color-success)',
+            '#3b82f6',
+            'var(--color-warning)',
+          ],
+        },
+      ],
+    } as any;
+
+    this.frequencyChartOptions = {
+      ...getBaseOptions('Request Frequency', this.frequencyChartOptions.data),
+      axes: getAxes(45),
+      series: [
+        {
+          type: 'area',
+          xKey: 'time',
+          yKey: 'requests',
+          stroke: 'var(--color-info)',
+          strokeWidth: 2,
+          fillOpacity: this.isDarkMode ? 0.12 : 0.08,
+          marker: {
+            enabled: false,
+            activeShape: 'circle',
+            size: 5,
+            fill: 'var(--color-info)',
+            strokeWidth: 0,
+          },
+        },
+      ],
+    } as any;
+
+    this.statusChartOptions = {
+      ...getBaseOptions('HTTP Status Distribution', this.statusChartOptions.data),
+      axes: getAxes(0),
+      series: [
+        {
+          type: 'bar',
+          xKey: 'status',
+          yKey: 'count',
+          fill: themeColors.barFill,
+          strokeWidth: 0,
+          cornerRadius: 4,
+          maxBarWidth: 32,
+        },
+      ],
+    } as any;
+
+    this.endpointChartOptions = {
+      ...getBaseOptions('Request Counts per Endpoint', this.endpointChartOptions.data),
+      axes: getAxes(0),
+      series: [
+        {
+          type: 'bar',
+          xKey: 'endpoint',
+          yKey: 'count',
+          fill: themeColors.barFill,
+          strokeWidth: 0,
+          cornerRadius: 4,
+          maxBarWidth: 32,
+        },
+      ],
+    } as any;
+
+    this.threatSeverityChartOptions = {
+      ...getBaseOptions('Threat Events by Severity', this.threatSeverityChartOptions.data),
+      series: [
+        {
+          type: 'donut',
+          angleKey: 'count',
+          calloutLabelKey: 'severity',
+          innerRadiusRatio: 0.75,
+          calloutLabel: { color: themeColors.text, fontFamily: 'Inter, sans-serif', fontSize: 11 },
+          sectorLabel: { color: themeColors.donutStroke, fontWeight: 'bold' },
+          strokes: [themeColors.donutStroke],
+          strokeWidth: 2,
+          fills: [
+            'var(--color-error)',
+            'var(--color-gauge-red)',
+            'var(--color-warning)',
+            '#3b82f6',
+          ],
+        },
+      ],
+    } as any;
+
+    this.securityAlertsChartOptions = {
+      ...getBaseOptions('Recent Security Anomalies', this.securityAlertsChartOptions.data),
+      axes: getAxes(45),
+      series: [
+        {
+          type: 'bar',
+          xKey: 'time',
+          yKey: 'count',
+          fill: themeColors.errorFill,
+          strokeWidth: 0,
+          cornerRadius: 4,
+          maxBarWidth: 32,
+        },
+      ],
+    } as any;
+  }
 
   private calculateCESMetrics() {
     // Note: CES is now securely calculated on the backend to prevent cross-tenant data leakage.
