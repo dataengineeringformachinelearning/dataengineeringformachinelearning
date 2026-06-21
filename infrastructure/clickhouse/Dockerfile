@@ -1,4 +1,4 @@
-FROM clickhouse/clickhouse-server:24.3
+FROM clickhouse/clickhouse-server:26.5
 
 # Copy the custom XML configuration for ClickHouse
 COPY clickhouse-config.xml /etc/clickhouse-server/config.d/custom-config.xml
