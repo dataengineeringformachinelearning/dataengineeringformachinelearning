@@ -290,3 +290,37 @@
 .panel-header-padded {
   padding: 24px 24px 0;
 }
+
+/* Custom Metric Headers */
+.chart-custom-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px 24px 0;
+  width: 100%;
+}
+
+.chart-custom-title {
+  color: var(--text-muted);
+  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.chart-custom-value {
+  color: var(--text-color);
+  font-size: 28px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.chart-custom-trend {
+  color: var(--blue-bell);
+  font-size: 11px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+}

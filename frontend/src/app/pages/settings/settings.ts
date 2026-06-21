@@ -33,6 +33,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
 import { SettingsService } from '../../services/settings.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-settings',
@@ -233,7 +234,7 @@ export class Settings implements OnInit {
   }
 
   loadApiKeys() {
-    this.http.get<any[]>('/api/v1/auth/api-keys').subscribe({
+    this.http.get<any[]>(`${environment.backendUrl}/api/v1/auth/api-keys`).subscribe({
       next: keys => {
         this.apiKeys.set(keys);
         this.cdr.markForCheck();
@@ -245,19 +246,23 @@ export class Settings implements OnInit {
   generateApiKey() {
     if (!this.newApiKeyName) return;
     this.isGeneratingApiKey.set(true);
-    this.http.post<any>('/api/v1/auth/api-keys/generate', { name: this.newApiKeyName }).subscribe({
-      next: res => {
-        this.newlyGeneratedKey.set(res.key);
-        this.newApiKeyName = '';
-        this.isGeneratingApiKey.set(false);
-        this.loadApiKeys();
-        this.cdr.markForCheck();
-      },
-      error: err => {
-        console.error('Error generating API key:', err);
-        this.isGeneratingApiKey.set(false);
-      },
-    });
+    this.http
+      .post<any>(`${environment.backendUrl}/api/v1/auth/api-keys/generate`, {
+        name: this.newApiKeyName,
+      })
+      .subscribe({
+        next: res => {
+          this.newlyGeneratedKey.set(res.key);
+          this.newApiKeyName = '';
+          this.isGeneratingApiKey.set(false);
+          this.loadApiKeys();
+          this.cdr.markForCheck();
+        },
+        error: err => {
+          console.error('Error generating API key:', err);
+          this.isGeneratingApiKey.set(false);
+        },
+      });
   }
 
   revokeApiKey(id: string) {
@@ -275,7 +280,7 @@ export class Settings implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.http.delete(`/api/v1/auth/api-keys/${id}`).subscribe({
+        this.http.delete(`${environment.backendUrl}/api/v1/auth/api-keys/${id}`).subscribe({
           next: () => this.loadApiKeys(),
           error: err => console.error('Error revoking key:', err),
         });

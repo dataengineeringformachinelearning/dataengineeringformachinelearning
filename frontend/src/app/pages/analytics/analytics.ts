@@ -37,6 +37,14 @@ export class AnalyticsComponent {
   public activeProviders: string[] = [];
   public isLoading = true;
 
+  public latencyTrend = '';
+  public originTrend = '';
+  public frequencyTrend = '';
+  public endpointTrend = '';
+  public statusTrend = '';
+  public threatTrend = '';
+  public anomalyTrend = '';
+
   public tenants: any[] = [];
   public selectedTenantId: string | null = null;
 
@@ -407,16 +415,29 @@ export class AnalyticsComponent {
     };
 
     const getBaseOptions = (title: string, data: any[]) => ({
-      data,
+      data: data || [],
       background: { fill: 'transparent' },
       autoSize: true,
       padding: { top: 20, right: 20, bottom: 20, left: 20 },
+      overlays: {
+        noData: {
+          text: 'No Telemetry Signal Available',
+          style: {
+            fontFamily: 'Inter, sans-serif',
+            fontSize: 14,
+            fill: this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)',
+          },
+        },
+      },
       title: {
-        text: title,
-        color: themeColors.titleColor,
-        fontFamily: 'Inter, sans-serif',
-        fontSize: 16,
-        fontWeight: 600,
+        enabled: false,
+      },
+      legend: {
+        position: 'bottom',
+        item: {
+          marker: { shape: 'square', size: 8, cornerRadius: 2, strokeWidth: 0 },
+          label: { color: themeColors.text, fontFamily: 'Inter, sans-serif', fontSize: 11 },
+        },
       },
       tooltip: {
         enabled: true,
@@ -511,11 +532,11 @@ export class AnalyticsComponent {
           strokes: [themeColors.donutStroke],
           strokeWidth: 2,
           fills: [
-            'var(--color-info)',
-            'var(--color-primary)',
-            'var(--color-success)',
-            '#3b82f6',
-            'var(--color-warning)',
+            'var(--crayola-blue)',
+            'var(--blue-bell)',
+            'var(--golden-pollen)',
+            'var(--carrot-orange)',
+            'var(--jet-black)',
           ],
         },
       ],
@@ -529,14 +550,14 @@ export class AnalyticsComponent {
           type: 'area',
           xKey: 'time',
           yKey: 'requests',
-          stroke: 'var(--color-info)',
+          stroke: 'var(--blue-bell)',
           strokeWidth: 2,
           fillOpacity: this.isDarkMode ? 0.12 : 0.08,
           marker: {
             enabled: false,
             activeShape: 'circle',
             size: 5,
-            fill: 'var(--color-info)',
+            fill: 'var(--blue-bell)',
             strokeWidth: 0,
           },
         },
@@ -551,10 +572,10 @@ export class AnalyticsComponent {
           type: 'bar',
           xKey: 'status',
           yKey: 'count',
-          fill: themeColors.barFill,
+          fill: 'var(--crayola-blue)',
           strokeWidth: 0,
-          cornerRadius: 4,
-          maxBarWidth: 32,
+          cornerRadius: [3, 3, 0, 0],
+          maxBarWidth: 16,
         },
       ],
     } as any;
@@ -567,10 +588,10 @@ export class AnalyticsComponent {
           type: 'bar',
           xKey: 'endpoint',
           yKey: 'count',
-          fill: themeColors.barFill,
+          fill: 'var(--crayola-blue)',
           strokeWidth: 0,
-          cornerRadius: 4,
-          maxBarWidth: 32,
+          cornerRadius: [3, 3, 0, 0],
+          maxBarWidth: 16,
         },
       ],
     } as any;
@@ -588,10 +609,10 @@ export class AnalyticsComponent {
           strokes: [themeColors.donutStroke],
           strokeWidth: 2,
           fills: [
-            'var(--color-error)',
-            'var(--color-gauge-red)',
-            'var(--color-warning)',
-            '#3b82f6',
+            'var(--carrot-orange)',
+            'var(--golden-pollen)',
+            'var(--blue-bell)',
+            'var(--crayola-blue)',
           ],
         },
       ],
@@ -605,10 +626,10 @@ export class AnalyticsComponent {
           type: 'bar',
           xKey: 'time',
           yKey: 'count',
-          fill: themeColors.errorFill,
+          fill: 'var(--carrot-orange)',
           strokeWidth: 0,
-          cornerRadius: 4,
-          maxBarWidth: 32,
+          cornerRadius: [3, 3, 0, 0],
+          maxBarWidth: 16,
         },
       ],
     } as any;

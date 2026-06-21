@@ -163,7 +163,9 @@
               <span class="stat-title">P99 LATENCY</span>
             </div>
           </div>
-          <span class="stat-value">{{ p99Latency }} <span class="stat-unit">ms</span></span>
+          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
+            >{{ (p99Latency || 0) | number:'1.2-2' }} <span class="stat-unit">ms</span></span
+          >
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -171,7 +173,9 @@
               <span class="stat-title">SERVICE UPTIME</span>
             </div>
           </div>
-          <span class="stat-value">{{ uptimePercent }} <span class="stat-unit">%</span></span>
+          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
+            >{{ (uptimePercent || 0) | number:'1.2-2' }} <span class="stat-unit">%</span></span
+          >
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -179,7 +183,9 @@
               <span class="stat-title">TOTAL REQUESTS</span>
             </div>
           </div>
-          <span class="stat-value">{{ totalRequests | number }}</span>
+          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
+            >{{ (totalRequests || 0) | number }}</span
+          >
         </div>
         <div
           class="ml-stat-panel"
@@ -190,8 +196,11 @@
               <span class="stat-title">ACTIVE INCIDENTS</span>
             </div>
           </div>
-          <span class="stat-value" [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-            >{{ activeIncidents }}</span
+          <span
+            class="stat-value"
+            style="letter-spacing: -0.02em; font-weight: bold"
+            [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
+            >{{ activeIncidents || 0 }}</span
           >
         </div>
       </div>
@@ -204,7 +213,9 @@
               <span class="stat-title">WIDGET INTERACTIONS</span>
             </div>
           </div>
-          <span class="stat-value">{{ widgetInteractions | number }}</span>
+          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
+            >{{ (widgetInteractions || 0) | number }}</span
+          >
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -212,7 +223,9 @@
               <span class="stat-title">UNIQUE VISITORS</span>
             </div>
           </div>
-          <span class="stat-value">{{ uniqueVisitors | number }}</span>
+          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
+            >{{ (uniqueVisitors || 0) | number }}</span
+          >
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -220,7 +233,9 @@
               <span class="stat-title">COOKIE CONSENTS</span>
             </div>
           </div>
-          <span class="stat-value">{{ cookieConsents | number }}</span>
+          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
+            >{{ (cookieConsents || 0) | number }}</span
+          >
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -236,35 +251,19 @@
 
       <div class="dashboard-grid dashboard-grid-single">
         <section class="status-card-outlined col-span-4 col-span-md-12">
-          <div class="panel-header panel-header-padded">
-            <h3 class="panel-title panel-title-flex">
-              <mat-icon class="icon-small">insights</mat-icon>
-              Performance Telemetry
-            </h3>
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">System Latency (Last 24h)</div>
+            <div class="chart-custom-value">{{ p99Latency }} ms</div>
+            <div class="chart-custom-trend">{{ latencyTrend }}</div>
           </div>
 
           <div class="card-body-clean chart-container-large">
-            <!-- Empty state: visible only when not loading and data is empty -->
-            @if (!isLoading && (!chartOptions.data || chartOptions.data.length === 0)) {
-            <div class="empty-chart-state" role="alert" aria-live="polite">
-              <mat-icon class="empty-icon">analytics</mat-icon>
-              <h3 class="empty-title">No Telemetry Data Available</h3>
-              <p class="empty-subtitle">
-                We couldn't retrieve any latency metrics for this time period. Please verify your
-                systems are running and active.
-              </p>
-            </div>
-            }
-
-            <!-- Chart: visible when data is present -->
-            @if (chartOptions.data && chartOptions.data.length > 0) {
             <ag-charts
               [options]="chartOptions"
               role="img"
               aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
               class="ag-chart-large"
             ></ag-charts>
-            }
 
             <!-- Screen Reader Only Tabular Alternative for Section 508 Compliance -->
             @if (chartOptions.data && chartOptions.data.length > 0) {
@@ -305,81 +304,52 @@
       <div class="dashboard-grid dashboard-grid-responsive">
         <!-- Origin Chart -->
         <section class="status-card-outlined col-span-4 col-span-md-4">
-          <div class="panel-header panel-header-padded">
-            <h3 class="panel-title panel-title-flex">
-              <mat-icon class="icon-small">public</mat-icon>
-              Origins
-            </h3>
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">Geographic Origins</div>
+            <div class="chart-custom-value">{{ originChartOptions.data?.length || 0 }} Regions</div>
+            <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (!isLoading && (!originChartOptions.data || originChartOptions.data.length === 0)) {
-            <div class="empty-chart-state" role="alert" aria-live="polite">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">Waiting for Signal</h3>
-              <p class="empty-subtitle">No geographic data available.</p>
-            </div>
-            } @if (originChartOptions.data && originChartOptions.data.length > 0) {
             <ag-charts
               [options]="originChartOptions"
               role="img"
               aria-label="Line chart displaying geographic origins."
               class="ag-chart-medium"
             ></ag-charts>
-            }
           </div>
         </section>
 
         <!-- Frequency Chart -->
         <section class="status-card-outlined col-span-4 col-span-md-4">
-          <div class="panel-header panel-header-padded">
-            <h3 class="panel-title panel-title-flex">
-              <mat-icon class="icon-small">timeline</mat-icon>
-              Frequency
-            </h3>
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">Request Frequency</div>
+            <div class="chart-custom-value">{{ totalRequests | number }} Req</div>
+            <div class="chart-custom-trend">{{ frequencyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (!isLoading && (!frequencyChartOptions.data || frequencyChartOptions.data.length ===
-            0)) {
-            <div class="empty-chart-state" role="alert" aria-live="polite">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">Waiting for Signal</h3>
-              <p class="empty-subtitle">No frequency data available.</p>
-            </div>
-            } @if (frequencyChartOptions.data && frequencyChartOptions.data.length > 0) {
             <ag-charts
               [options]="frequencyChartOptions"
               role="img"
               aria-label="Line chart displaying request frequency."
               class="ag-chart-medium"
             ></ag-charts>
-            }
           </div>
         </section>
 
         <!-- Endpoint Chart -->
         <section class="status-card-outlined col-span-4 col-span-md-4">
-          <div class="panel-header panel-header-padded">
-            <h3 class="panel-title panel-title-flex">
-              <mat-icon class="icon-small">api</mat-icon>
-              Endpoint Usage
-            </h3>
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">Request Counts per Endpoint</div>
+            <div class="chart-custom-value">{{ endpointChartOptions.data?.length || 0 }} APIs</div>
+            <div class="chart-custom-trend">{{ endpointTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (!isLoading && (!endpointChartOptions.data || endpointChartOptions.data.length ===
-            0)) {
-            <div class="empty-chart-state" role="alert" aria-live="polite">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">Waiting for Signal</h3>
-              <p class="empty-subtitle">No endpoint data available.</p>
-            </div>
-            } @if (endpointChartOptions.data && endpointChartOptions.data.length > 0) {
             <ag-charts
               [options]="endpointChartOptions"
               role="img"
               aria-label="Line chart displaying endpoint usage."
               class="ag-chart-medium"
             ></ag-charts>
-            }
           </div>
         </section>
       </div>
@@ -397,81 +367,52 @@
       <div class="dashboard-grid dashboard-grid-responsive">
         <!-- Status Chart -->
         <section class="status-card-outlined col-span-4 col-span-md-4">
-          <div class="panel-header panel-header-padded">
-            <h3 class="panel-title panel-title-flex">
-              <mat-icon class="icon-small">http</mat-icon>
-              Status Distribution
-            </h3>
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">HTTP Status Distribution</div>
+            <div class="chart-custom-value">{{ uptimePercent }}%</div>
+            <div class="chart-custom-trend">{{ statusTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (!isLoading && (!statusChartOptions.data || statusChartOptions.data.length === 0)) {
-            <div class="empty-chart-state" role="alert" aria-live="polite">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">Waiting for Signal</h3>
-              <p class="empty-subtitle">No status data available.</p>
-            </div>
-            } @if (statusChartOptions.data && statusChartOptions.data.length > 0) {
             <ag-charts
               [options]="statusChartOptions"
               role="img"
               aria-label="Line chart displaying HTTP statuses."
               class="ag-chart-medium"
             ></ag-charts>
-            }
           </div>
         </section>
 
         <!-- Threat Chart -->
         <section class="status-card-outlined col-span-4 col-span-md-4">
-          <div class="panel-header panel-header-padded">
-            <h3 class="panel-title panel-title-flex">
-              <mat-icon class="icon-small">warning</mat-icon>
-              Threat Severity
-            </h3>
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">Threat Events by Severity</div>
+            <div class="chart-custom-value">{{ threatLevel | number:'1.0-0' }}%</div>
+            <div class="chart-custom-trend">{{ threatTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (!isLoading && (!threatSeverityChartOptions.data ||
-            threatSeverityChartOptions.data.length === 0)) {
-            <div class="empty-chart-state" role="alert" aria-live="polite">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">Waiting for Signal</h3>
-              <p class="empty-subtitle">No threat data available.</p>
-            </div>
-            } @if (threatSeverityChartOptions.data && threatSeverityChartOptions.data.length > 0) {
             <ag-charts
               [options]="threatSeverityChartOptions"
               role="img"
               aria-label="Line chart displaying threat severity."
               class="ag-chart-medium"
             ></ag-charts>
-            }
           </div>
         </section>
 
         <!-- Anomalies Chart -->
         <section class="status-card-outlined col-span-4 col-span-md-4">
-          <div class="panel-header panel-header-padded">
-            <h3 class="panel-title panel-title-flex">
-              <mat-icon class="icon-small">radar</mat-icon>
-              Security Anomalies
-            </h3>
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">Recent Security Anomalies</div>
+            <div class="chart-custom-value">{{ activeIncidents }} Active</div>
+            <div class="chart-custom-trend">{{ anomalyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (!isLoading && (!securityAlertsChartOptions.data ||
-            securityAlertsChartOptions.data.length === 0)) {
-            <div class="empty-chart-state" role="alert" aria-live="polite">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">Waiting for Signal</h3>
-              <p class="empty-subtitle">No anomaly data available.</p>
-            </div>
-            } @if (securityAlertsChartOptions.data && securityAlertsChartOptions.data.length > 0) {
             <ag-charts
               [options]="securityAlertsChartOptions"
               role="img"
               aria-label="Line chart displaying security anomalies."
               class="ag-chart-medium"
             ></ag-charts>
-            }
           </div>
         </section>
       </div>
