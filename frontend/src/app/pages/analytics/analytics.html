@@ -258,33 +258,26 @@
           </div>
 
           <div class="card-body-clean chart-container-large">
-            <ag-charts
-              [options]="chartOptions"
-              role="img"
-              aria-label="Line chart displaying system latency in milliseconds over the last 24 hours."
-              class="ag-chart-large"
-            ></ag-charts>
-
-            <!-- Screen Reader Only Tabular Alternative for Section 508 Compliance -->
-            @if (chartOptions.data && chartOptions.data.length > 0) {
-            <div class="sr-only">
-              <h3>Tabular Data: System Latency (Last 24h)</h3>
-              <table>
-                <thead>
-                  <tr>
-                    <th scope="col">Time</th>
-                    <th scope="col">Latency (ms)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (item of chartOptions.data; track item) {
-                  <tr>
-                    <td>{{ item.time }}</td>
-                    <td>{{ item.latency }} ms</td>
-                  </tr>
-                  }
-                </tbody>
-              </table>
+            @if (hasData(chartOptions)) {
+            <apx-chart
+              [series]="chartOptions.series"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              [yaxis]="chartOptions.yaxis"
+              [dataLabels]="chartOptions.dataLabels"
+              [grid]="chartOptions.grid"
+              [stroke]="chartOptions.stroke"
+              [colors]="chartOptions.colors"
+              [fill]="chartOptions.fill"
+              [tooltip]="chartOptions.tooltip"
+              [noData]="chartOptions.noData"
+              class="apx-chart-large"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
             }
           </div>
@@ -306,16 +299,33 @@
         <section class="status-card-outlined col-span-4 col-span-md-4">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Geographic Origins</div>
-            <div class="chart-custom-value">{{ originChartOptions.data?.length || 0 }} Regions</div>
+            <div class="chart-custom-value">
+              {{ originChartOptions.series?.length || 0 }} Regions
+            </div>
             <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            <ag-charts
-              [options]="originChartOptions"
-              role="img"
-              aria-label="Line chart displaying geographic origins."
-              class="ag-chart-medium"
-            ></ag-charts>
+            @if (hasData(originChartOptions)) {
+            <apx-chart
+              [series]="originChartOptions.series"
+              [chart]="originChartOptions.chart"
+              [labels]="originChartOptions.labels"
+              [plotOptions]="originChartOptions.plotOptions"
+              [dataLabels]="originChartOptions.dataLabels"
+              [stroke]="originChartOptions.stroke"
+              [colors]="originChartOptions.colors"
+              [legend]="originChartOptions.legend"
+              [tooltip]="originChartOptions.tooltip"
+              [noData]="originChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
           </div>
         </section>
 
@@ -327,12 +337,28 @@
             <div class="chart-custom-trend">{{ frequencyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            <ag-charts
-              [options]="frequencyChartOptions"
-              role="img"
-              aria-label="Line chart displaying request frequency."
-              class="ag-chart-medium"
-            ></ag-charts>
+            @if (hasData(frequencyChartOptions)) {
+            <apx-chart
+              [series]="frequencyChartOptions.series"
+              [chart]="frequencyChartOptions.chart"
+              [xaxis]="frequencyChartOptions.xaxis"
+              [yaxis]="frequencyChartOptions.yaxis"
+              [dataLabels]="frequencyChartOptions.dataLabels"
+              [grid]="frequencyChartOptions.grid"
+              [stroke]="frequencyChartOptions.stroke"
+              [colors]="frequencyChartOptions.colors"
+              [fill]="frequencyChartOptions.fill"
+              [tooltip]="frequencyChartOptions.tooltip"
+              [noData]="frequencyChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
           </div>
         </section>
 
@@ -340,16 +366,34 @@
         <section class="status-card-outlined col-span-4 col-span-md-4">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Counts per Endpoint</div>
-            <div class="chart-custom-value">{{ endpointChartOptions.data?.length || 0 }} APIs</div>
+            <div class="chart-custom-value">
+              {{ endpointChartOptions.series[0]?.data?.length || 0 }} APIs
+            </div>
             <div class="chart-custom-trend">{{ endpointTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            <ag-charts
-              [options]="endpointChartOptions"
-              role="img"
-              aria-label="Line chart displaying endpoint usage."
-              class="ag-chart-medium"
-            ></ag-charts>
+            @if (hasData(endpointChartOptions)) {
+            <apx-chart
+              [series]="endpointChartOptions.series"
+              [chart]="endpointChartOptions.chart"
+              [xaxis]="endpointChartOptions.xaxis"
+              [yaxis]="endpointChartOptions.yaxis"
+              [dataLabels]="endpointChartOptions.dataLabels"
+              [grid]="endpointChartOptions.grid"
+              [stroke]="endpointChartOptions.stroke"
+              [colors]="endpointChartOptions.colors"
+              [plotOptions]="endpointChartOptions.plotOptions"
+              [tooltip]="endpointChartOptions.tooltip"
+              [noData]="endpointChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
           </div>
         </section>
       </div>
@@ -373,12 +417,28 @@
             <div class="chart-custom-trend">{{ statusTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            <ag-charts
-              [options]="statusChartOptions"
-              role="img"
-              aria-label="Line chart displaying HTTP statuses."
-              class="ag-chart-medium"
-            ></ag-charts>
+            @if (hasData(statusChartOptions)) {
+            <apx-chart
+              [series]="statusChartOptions.series"
+              [chart]="statusChartOptions.chart"
+              [xaxis]="statusChartOptions.xaxis"
+              [yaxis]="statusChartOptions.yaxis"
+              [dataLabels]="statusChartOptions.dataLabels"
+              [grid]="statusChartOptions.grid"
+              [stroke]="statusChartOptions.stroke"
+              [colors]="statusChartOptions.colors"
+              [plotOptions]="statusChartOptions.plotOptions"
+              [tooltip]="statusChartOptions.tooltip"
+              [noData]="statusChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
           </div>
         </section>
 
@@ -390,12 +450,27 @@
             <div class="chart-custom-trend">{{ threatTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            <ag-charts
-              [options]="threatSeverityChartOptions"
-              role="img"
-              aria-label="Line chart displaying threat severity."
-              class="ag-chart-medium"
-            ></ag-charts>
+            @if (hasData(threatSeverityChartOptions)) {
+            <apx-chart
+              [series]="threatSeverityChartOptions.series"
+              [chart]="threatSeverityChartOptions.chart"
+              [labels]="threatSeverityChartOptions.labels"
+              [plotOptions]="threatSeverityChartOptions.plotOptions"
+              [dataLabels]="threatSeverityChartOptions.dataLabels"
+              [stroke]="threatSeverityChartOptions.stroke"
+              [colors]="threatSeverityChartOptions.colors"
+              [legend]="threatSeverityChartOptions.legend"
+              [tooltip]="threatSeverityChartOptions.tooltip"
+              [noData]="threatSeverityChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
           </div>
         </section>
 
@@ -407,12 +482,28 @@
             <div class="chart-custom-trend">{{ anomalyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            <ag-charts
-              [options]="securityAlertsChartOptions"
-              role="img"
-              aria-label="Line chart displaying security anomalies."
-              class="ag-chart-medium"
-            ></ag-charts>
+            @if (hasData(securityAlertsChartOptions)) {
+            <apx-chart
+              [series]="securityAlertsChartOptions.series"
+              [chart]="securityAlertsChartOptions.chart"
+              [xaxis]="securityAlertsChartOptions.xaxis"
+              [yaxis]="securityAlertsChartOptions.yaxis"
+              [dataLabels]="securityAlertsChartOptions.dataLabels"
+              [grid]="securityAlertsChartOptions.grid"
+              [stroke]="securityAlertsChartOptions.stroke"
+              [colors]="securityAlertsChartOptions.colors"
+              [plotOptions]="securityAlertsChartOptions.plotOptions"
+              [tooltip]="securityAlertsChartOptions.tooltip"
+              [noData]="securityAlertsChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
           </div>
         </section>
       </div>

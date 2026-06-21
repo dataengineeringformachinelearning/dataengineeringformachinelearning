@@ -5,23 +5,41 @@ import {
   afterNextRender,
   ChangeDetectorRef,
   PLATFORM_ID,
+  OnInit,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { AgCharts } from 'ag-charts-angular';
-import { AgChartOptions, ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
+import { NgApexchartsModule } from 'ng-apexcharts';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../../environments/environment';
 
+export type ChartOptions = {
+  series: any;
+  chart: any;
+  xaxis?: any;
+  yaxis?: any;
+  dataLabels?: any;
+  grid?: any;
+  stroke?: any;
+  plotOptions?: any;
+  labels?: any;
+  colors?: any;
+  legend?: any;
+  fill?: any;
+  tooltip?: any;
+  noData?: any;
+  markers?: any;
+};
+
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, AgCharts, MatIconModule],
+  imports: [CommonModule, NgApexchartsModule, MatIconModule],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })
-export class AnalyticsComponent {
+export class AnalyticsComponent implements OnInit {
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
@@ -48,351 +66,35 @@ export class AnalyticsComponent {
   public tenants: any[] = [];
   public selectedTenantId: string | null = null;
 
-  // CES Meter Metrics
   public cesLevel = 0;
   public threatLevel = 0;
   public slaLevel = 0;
   public stabilityLevel = 0;
 
-  private static modulesRegistered = false;
-
-  public chartOptions: any = {
-    title: {
-      text: 'System Latency (Last 24h)',
-      color: 'var(--text-color)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    data: [],
-    series: [
-      {
-        type: 'area',
-        xKey: 'time',
-        yKey: 'latency',
-        yName: 'Latency (ms)',
-        stroke: 'var(--crayola-blue)',
-        strokeWidth: 3,
-        fill: 'var(--crayola-blue)',
-        fillOpacity: 0.15,
-        interpolation: { type: 'smooth' },
-        marker: {
-          enabled: true,
-          size: 0, // hide by default
-        },
-        shadow: {
-          color: 'var(--crayola-blue)',
-          xOffset: 0,
-          yOffset: 0,
-          blur: 4,
-        },
-        tooltip: {
-          renderer: (params: any) => ({
-            content: `${params.yValue.toFixed(2)} ms`,
-          }),
-        },
-      },
-    ],
-    axes: [
-      {
-        type: 'category',
-        position: 'bottom',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-      },
-      {
-        type: 'number',
-        position: 'left',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-        gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.04)', lineDash: [4, 4] }] },
-      },
-    ],
-    background: { fill: 'transparent' },
-  };
-
-  public originChartOptions: any = {
-    data: [],
-    series: [
-      {
-        type: 'donut',
-        angleKey: 'count',
-        calloutLabelKey: 'origin',
-        sectorLabelKey: 'count',
-        innerRadiusRatio: 0.7,
-        calloutLabel: { color: 'var(--text-color)' },
-        sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
-        strokes: ['var(--color-surface)'],
-        strokeWidth: 2,
-        shadow: {
-          color: 'var(--color-primary-container)',
-          xOffset: 0,
-          yOffset: 0,
-          blur: 10,
-        },
-        fills: [
-          'var(--color-info)',
-          'var(--color-primary)',
-          'var(--color-success)',
-          'var(--crayola-blue)',
-          'var(--color-warning)',
-        ],
-      },
-    ],
-    title: {
-      text: 'Geographic Origins',
-      color: 'var(--text-color)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    background: { fill: 'transparent' },
-  };
-
-  public frequencyChartOptions: any = {
-    data: [],
-    series: [
-      {
-        type: 'area',
-        xKey: 'time',
-        yKey: 'requests',
-        stroke: 'var(--color-info)',
-        strokeWidth: 3,
-        fill: 'var(--color-info)',
-        fillOpacity: 0.15,
-        interpolation: { type: 'smooth' },
-        marker: {
-          enabled: true,
-          size: 0,
-        },
-        shadow: {
-          color: 'var(--color-info)',
-          xOffset: 0,
-          yOffset: 0,
-          blur: 4,
-        },
-        tooltip: {
-          renderer: (params: any) => ({
-            content: `${params.yValue} requests`,
-          }),
-        },
-      },
-    ],
-    title: {
-      text: 'Request Frequency',
-      color: 'var(--text-color)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    axes: [
-      {
-        type: 'category',
-        position: 'bottom',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600', rotation: 45 },
-        line: { width: 0 },
-        tick: { size: 0 },
-      },
-      {
-        type: 'number',
-        position: 'left',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-        gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.04)', lineDash: [4, 4] }] },
-      },
-    ],
-    background: { fill: 'transparent' },
-  };
-
-  public statusChartOptions: any = {
-    data: [],
-    series: [
-      {
-        type: 'bar',
-        xKey: 'status',
-        yKey: 'count',
-        fill: 'var(--crayola-blue)',
-        strokeWidth: 0,
-        cornerRadius: 4,
-        maxBarWidth: 32,
-        shadow: {
-          color: 'var(--crayola-blue)',
-          xOffset: 0,
-          yOffset: 0,
-          blur: 12,
-        },
-      },
-    ],
-    title: {
-      text: 'HTTP Status Distribution',
-      color: 'var(--text-color)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    axes: [
-      {
-        type: 'category',
-        position: 'bottom',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-      },
-      {
-        type: 'number',
-        position: 'left',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-        gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.04)', lineDash: [4, 4] }] },
-      },
-    ],
-    background: { fill: 'transparent' },
-  };
-
-  public endpointChartOptions: any = {
-    data: [],
-    series: [
-      {
-        type: 'bar',
-        xKey: 'endpoint',
-        yKey: 'count',
-        fill: 'var(--crayola-blue)',
-        strokeWidth: 0,
-        cornerRadius: 4,
-        maxBarWidth: 32,
-        shadow: {
-          color: 'var(--crayola-blue)',
-          xOffset: 0,
-          yOffset: 0,
-          blur: 12,
-        },
-      },
-    ],
-    title: {
-      text: 'Request Counts per Endpoint',
-      color: 'var(--text-color)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    axes: [
-      {
-        type: 'category',
-        position: 'bottom',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-      },
-      {
-        type: 'number',
-        position: 'left',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-        gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.04)', lineDash: [4, 4] }] },
-      },
-    ],
-    background: { fill: 'transparent' },
-  };
-
-  public threatSeverityChartOptions: any = {
-    data: [],
-    series: [
-      {
-        type: 'donut',
-        angleKey: 'count',
-        calloutLabelKey: 'severity',
-        innerRadiusRatio: 0.75,
-        calloutLabel: { color: 'var(--text-color)' },
-        sectorLabel: { color: 'var(--color-surface)', fontWeight: 'bold' },
-        strokes: ['var(--color-surface)'],
-        strokeWidth: 2,
-        shadow: {
-          color: 'var(--color-error)',
-          xOffset: 0,
-          yOffset: 0,
-          blur: 10,
-        },
-        fills: [
-          'var(--color-error)',
-          'var(--color-gauge-red)',
-          'var(--color-warning)',
-          'var(--crayola-blue)',
-        ],
-      },
-    ],
-    title: {
-      text: 'Threat Events by Severity',
-      color: 'var(--text-color)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    background: { fill: 'transparent' },
-  };
-
-  public securityAlertsChartOptions: any = {
-    data: [],
-    series: [
-      {
-        type: 'bar',
-        xKey: 'time',
-        yKey: 'count',
-        fill: 'var(--color-error)',
-        strokeWidth: 0,
-        cornerRadius: 4,
-        maxBarWidth: 32,
-        shadow: {
-          color: 'var(--color-error)',
-          xOffset: 0,
-          yOffset: 0,
-          blur: 12,
-        },
-      },
-    ],
-    title: {
-      text: 'Recent Security Anomalies',
-      color: 'var(--text-color)',
-      fontFamily: 'Inter, sans-serif',
-      fontSize: 16,
-      fontWeight: 600,
-    },
-    axes: [
-      {
-        type: 'category',
-        position: 'bottom',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600', rotation: 45 },
-        line: { width: 0 },
-        tick: { size: 0 },
-      },
-      {
-        type: 'number',
-        position: 'left',
-        label: { color: 'var(--text-muted)', fontSize: 11, fontWeight: '600' },
-        line: { width: 0 },
-        tick: { size: 0 },
-        gridLine: { style: [{ stroke: 'rgba(255, 255, 255, 0.04)', lineDash: [4, 4] }] },
-      },
-    ],
-    background: { fill: 'transparent' },
-  };
+  // Chart configs
+  public chartOptions: ChartOptions;
+  public originChartOptions: ChartOptions;
+  public frequencyChartOptions: ChartOptions;
+  public statusChartOptions: ChartOptions;
+  public endpointChartOptions: ChartOptions;
+  public threatSeverityChartOptions: ChartOptions;
+  public securityAlertsChartOptions: ChartOptions;
 
   get isDarkMode(): boolean {
     return this.themeService.theme() === 'dark';
   }
 
   constructor() {
-    if (this.isBrowser && !AnalyticsComponent.modulesRegistered) {
-      ModuleRegistry.registerModules([AllCommunityModule]);
-      AnalyticsComponent.modulesRegistered = true;
-    }
+    this.chartOptions = this.getEmptyAreaChart('var(--crayola-blue)', 'Latency (ms)');
+    this.originChartOptions = this.getEmptyDonutChart();
+    this.frequencyChartOptions = this.getEmptyAreaChart('var(--blue-bell)', 'Requests');
+    this.statusChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Status Count');
+    this.endpointChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Endpoint Calls');
+    this.threatSeverityChartOptions = this.getEmptyDonutChart();
+    this.securityAlertsChartOptions = this.getEmptyBarChart('var(--carrot-orange)', 'Anomalies');
 
     effect(() => {
-      this.themeService.theme(); // depend on signal
+      this.themeService.theme();
       this.updateChartTheme();
     });
 
@@ -401,248 +103,194 @@ export class AnalyticsComponent {
     });
   }
 
-  private updateChartTheme() {
-    const themeColors = {
-      text: this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.5)',
-      grid: this.isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.06)',
-      barFill: this.isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(15, 23, 42, 0.05)',
-      tooltipBg: this.isDarkMode ? '#16171D' : '#FFFFFF',
-      tooltipBorder: this.isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
-      tooltipText: this.isDarkMode ? '#FFFFFF' : '#0F172A',
-      titleColor: this.isDarkMode ? '#FFFFFF' : '#0F172A',
-      donutStroke: this.isDarkMode ? '#16171D' : '#FFFFFF',
-      errorFill: 'var(--color-error)',
-    };
-
-    const getBaseOptions = (title: string, data: any[]) => ({
-      data: data || [],
-      background: { fill: 'transparent' },
-      autoSize: true,
-      padding: { top: 20, right: 20, bottom: 20, left: 20 },
-      overlays: {
-        noData: {
-          text: 'No Telemetry Signal Available',
-          style: {
-            fontFamily: 'Inter, sans-serif',
-            fontSize: 14,
-            fill: this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)',
-          },
-        },
+  private getEmptyAreaChart(color: string, seriesName: string): ChartOptions {
+    return {
+      series: [{ name: seriesName, data: [] }],
+      chart: {
+        type: 'area',
+        sparkline: { enabled: false },
+        height: '100%',
+        width: '100%',
+        parentHeightOffset: 0,
+        toolbar: { show: false },
+        background: 'transparent',
+        animations: { enabled: true, easing: 'easeinout', speed: 800 },
+        dropShadow: { enabled: true, color: color, top: 4, left: 0, blur: 10, opacity: 0.2 },
       },
-      title: {
-        enabled: false,
-      },
-      legend: {
-        position: 'bottom',
-        item: {
-          marker: { shape: 'square', size: 8, cornerRadius: 2, strokeWidth: 0 },
-          label: { color: themeColors.text, fontFamily: 'Inter, sans-serif', fontSize: 11 },
-        },
-      },
-      tooltip: {
-        enabled: true,
-        renderer: (params: any) => {
-          let xValue = params.xValue;
-          let yValue = params.yValue;
-
-          // Handle donut charts
-          if (xValue === undefined && params.datum) {
-            xValue = params.datum[params.calloutLabelKey] || '';
-            yValue = params.datum[params.angleKey] || 0;
-          }
-
-          const yFormatted = typeof yValue === 'number' ? yValue.toFixed(2) : yValue;
-          return {
-            backgroundColor: themeColors.tooltipBg,
-            content: `<div style="padding: 8px; border: 1px solid ${themeColors.tooltipBorder}; border-radius: 8px; color: ${themeColors.tooltipText}; font-family: Inter, sans-serif; font-size: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-                        <span style="color: ${themeColors.text}; font-size: 10px;">${xValue}</span><br/>
-                        <strong>${yFormatted}</strong>
-                      </div>`,
-          };
-        },
-      },
-    });
-
-    const getAxes = (xRotation = 0) => [
-      {
+      colors: [color],
+      dataLabels: { enabled: false },
+      stroke: { curve: 'smooth', width: 2, colors: [color] },
+      fill: {},
+      markers: { size: 0, hover: { size: 5 } },
+      xaxis: {
         type: 'category',
-        position: 'bottom',
-        line: { enabled: false },
-        tick: { enabled: false },
-        label: {
-          color: themeColors.text,
-          fontSize: 11,
-          fontFamily: 'Inter, sans-serif',
-          rotation: xRotation,
-        },
-        gridStyle: [{ stroke: 'transparent' }],
+        categories: [],
+        axisBorder: { show: false },
+        axisTicks: { show: false },
       },
-      {
-        type: 'number',
-        position: 'left',
-        line: { enabled: false },
-        tick: { enabled: false },
-        label: {
-          color: themeColors.text,
-          fontSize: 11,
-          fontFamily: 'Inter, sans-serif',
-        },
-        gridStyle: [
-          {
-            stroke: themeColors.grid,
-            lineDash: [4, 4],
-          },
-        ],
+      yaxis: {},
+      grid: { show: true },
+      tooltip: {},
+      noData: {
+        text: 'No Telemetry Signal Available',
+        align: 'center',
+        verticalAlign: 'middle',
+        style: { color: 'var(--text-muted)', fontSize: '14px', fontFamily: 'Inter' },
       },
-    ];
-
-    this.chartOptions = {
-      ...getBaseOptions('System Latency (Last 24h)', this.chartOptions.data),
-      axes: getAxes(0),
-      series: [
-        {
-          type: 'area',
-          xKey: 'time',
-          yKey: 'latency',
-          stroke: '#3b82f6',
-          strokeWidth: 2,
-          fillOpacity: this.isDarkMode ? 0.12 : 0.08,
-          marker: {
-            enabled: false,
-            activeShape: 'circle',
-            size: 5,
-            fill: '#3b82f6',
-            strokeWidth: 0,
-          },
-        },
-      ],
-    } as any;
-
-    this.originChartOptions = {
-      ...getBaseOptions('Geographic Origins', this.originChartOptions.data),
-      series: [
-        {
-          type: 'donut',
-          angleKey: 'count',
-          calloutLabelKey: 'origin',
-          sectorLabelKey: 'count',
-          innerRadiusRatio: 0.7,
-          calloutLabel: { color: themeColors.text, fontFamily: 'Inter, sans-serif', fontSize: 11 },
-          sectorLabel: { color: themeColors.donutStroke, fontWeight: 'bold' },
-          strokes: [themeColors.donutStroke],
-          strokeWidth: 2,
-          fills: [
-            'var(--crayola-blue)',
-            'var(--blue-bell)',
-            'var(--golden-pollen)',
-            'var(--carrot-orange)',
-            'var(--jet-black)',
-          ],
-        },
-      ],
-    } as any;
-
-    this.frequencyChartOptions = {
-      ...getBaseOptions('Request Frequency', this.frequencyChartOptions.data),
-      axes: getAxes(45),
-      series: [
-        {
-          type: 'area',
-          xKey: 'time',
-          yKey: 'requests',
-          stroke: 'var(--blue-bell)',
-          strokeWidth: 2,
-          fillOpacity: this.isDarkMode ? 0.12 : 0.08,
-          marker: {
-            enabled: false,
-            activeShape: 'circle',
-            size: 5,
-            fill: 'var(--blue-bell)',
-            strokeWidth: 0,
-          },
-        },
-      ],
-    } as any;
-
-    this.statusChartOptions = {
-      ...getBaseOptions('HTTP Status Distribution', this.statusChartOptions.data),
-      axes: getAxes(0),
-      series: [
-        {
-          type: 'bar',
-          xKey: 'status',
-          yKey: 'count',
-          fill: 'var(--crayola-blue)',
-          strokeWidth: 0,
-          cornerRadius: [3, 3, 0, 0],
-          maxBarWidth: 16,
-        },
-      ],
-    } as any;
-
-    this.endpointChartOptions = {
-      ...getBaseOptions('Request Counts per Endpoint', this.endpointChartOptions.data),
-      axes: getAxes(0),
-      series: [
-        {
-          type: 'bar',
-          xKey: 'endpoint',
-          yKey: 'count',
-          fill: 'var(--crayola-blue)',
-          strokeWidth: 0,
-          cornerRadius: [3, 3, 0, 0],
-          maxBarWidth: 16,
-        },
-      ],
-    } as any;
-
-    this.threatSeverityChartOptions = {
-      ...getBaseOptions('Threat Events by Severity', this.threatSeverityChartOptions.data),
-      series: [
-        {
-          type: 'donut',
-          angleKey: 'count',
-          calloutLabelKey: 'severity',
-          innerRadiusRatio: 0.75,
-          calloutLabel: { color: themeColors.text, fontFamily: 'Inter, sans-serif', fontSize: 11 },
-          sectorLabel: { color: themeColors.donutStroke, fontWeight: 'bold' },
-          strokes: [themeColors.donutStroke],
-          strokeWidth: 2,
-          fills: [
-            'var(--carrot-orange)',
-            'var(--golden-pollen)',
-            'var(--blue-bell)',
-            'var(--crayola-blue)',
-          ],
-        },
-      ],
-    } as any;
-
-    this.securityAlertsChartOptions = {
-      ...getBaseOptions('Recent Security Anomalies', this.securityAlertsChartOptions.data),
-      axes: getAxes(45),
-      series: [
-        {
-          type: 'bar',
-          xKey: 'time',
-          yKey: 'count',
-          fill: 'var(--carrot-orange)',
-          strokeWidth: 0,
-          cornerRadius: [3, 3, 0, 0],
-          maxBarWidth: 16,
-        },
-      ],
-    } as any;
+    };
   }
 
-  private calculateCESMetrics() {
-    // Note: CES is now securely calculated on the backend to prevent cross-tenant data leakage.
-    // The frontend merely displays the pre-calculated global math aggregate values.
+  private getEmptyBarChart(color: string, seriesName: string): ChartOptions {
+    return {
+      series: [{ name: seriesName, data: [] }],
+      chart: {
+        type: 'bar',
+        height: '100%',
+        width: '100%',
+        parentHeightOffset: 0,
+        toolbar: { show: false },
+        background: 'transparent',
+        dropShadow: { enabled: true, color: color, top: 4, left: 0, blur: 10, opacity: 0.2 },
+      },
+      colors: [color],
+      plotOptions: { bar: { borderRadius: 4, borderRadiusApplication: 'end', columnWidth: '35%' } },
+      dataLabels: { enabled: false },
+      stroke: { width: 0 },
+      fill: {},
+      xaxis: {
+        type: 'category',
+        categories: [],
+        axisBorder: { show: false },
+        axisTicks: { show: false },
+      },
+      yaxis: {},
+      grid: { show: true },
+      tooltip: {},
+      noData: {
+        text: 'No Telemetry Signal Available',
+        align: 'center',
+        verticalAlign: 'middle',
+        style: { color: 'var(--text-muted)', fontSize: '14px', fontFamily: 'Inter' },
+      },
+    };
+  }
+
+  private getEmptyDonutChart(): ChartOptions {
+    return {
+      series: [],
+      chart: {
+        type: 'donut',
+        height: '100%',
+        width: '100%',
+        parentHeightOffset: 0,
+        background: 'transparent',
+        dropShadow: {
+          enabled: true,
+          color: 'var(--jet-black)',
+          top: 4,
+          left: 0,
+          blur: 10,
+          opacity: 0.2,
+        },
+      },
+      labels: [],
+      colors: [
+        'var(--crayola-blue)',
+        'var(--blue-bell)',
+        'var(--golden-pollen)',
+        'var(--carrot-orange)',
+        'var(--jet-black)',
+      ],
+      plotOptions: { pie: { donut: { size: '70%', labels: { show: false } } } },
+      dataLabels: { enabled: false },
+      stroke: { width: 2, colors: ['var(--color-surface)'] },
+      legend: { position: 'bottom', labels: { colors: 'var(--text-color)' } },
+      tooltip: { theme: 'dark' },
+      noData: {
+        text: 'No Telemetry Signal Available',
+        align: 'center',
+        verticalAlign: 'middle',
+        style: { color: 'var(--text-muted)', fontSize: '14px', fontFamily: 'Inter' },
+      },
+    };
+  }
+
+  private updateChartTheme() {
+    const tooltipTheme = this.isDarkMode ? 'dark' : 'light';
+    const textColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)';
+    const gridColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.06)';
+    const surfaceColor = this.isDarkMode ? '#1e1e1e' : '#ffffff';
+    const shadowOpacity = this.isDarkMode ? 0.3 : 0.15;
+    const fillAreaOpacityFrom = this.isDarkMode ? 0.2 : 0.12;
+    const fillBarOpacity = this.isDarkMode ? 0.15 : 0.08;
+
+    const updateAxis = (chartOpts: ChartOptions) => {
+      if (chartOpts.xaxis)
+        chartOpts.xaxis.labels = { style: { colors: textColor, fontFamily: 'Inter, sans-serif' } };
+      if (chartOpts.yaxis)
+        chartOpts.yaxis.labels = { style: { colors: textColor, fontFamily: 'Inter, sans-serif' } };
+
+      if (chartOpts.grid) {
+        chartOpts.grid.borderColor = gridColor;
+        chartOpts.grid.strokeDashArray = 4;
+        chartOpts.grid.xaxis = { lines: { show: false } };
+        chartOpts.grid.yaxis = { lines: { show: true } };
+      }
+
+      if (chartOpts.tooltip) {
+        chartOpts.tooltip.theme = tooltipTheme;
+        chartOpts.tooltip.custom = undefined;
+        chartOpts.tooltip.x = { show: true };
+      }
+
+      if (chartOpts.chart && chartOpts.chart.dropShadow)
+        chartOpts.chart.dropShadow.opacity = shadowOpacity;
+
+      if (chartOpts.chart?.type === 'area') {
+        chartOpts.fill = {
+          type: 'gradient',
+          gradient: {
+            shadeIntensity: 1,
+            opacityFrom: fillAreaOpacityFrom,
+            opacityTo: 0,
+            stops: [0, 100],
+          },
+        };
+      } else if (chartOpts.chart?.type === 'bar') {
+        chartOpts.fill = { type: 'solid', opacity: fillBarOpacity };
+      }
+
+      if (chartOpts.stroke && chartOpts.chart?.type === 'donut')
+        chartOpts.stroke.colors = [surfaceColor];
+      if (chartOpts.legend)
+        chartOpts.legend.labels = { colors: textColor, fontFamily: 'Inter, sans-serif' };
+
+      return { ...chartOpts };
+    };
+
+    this.chartOptions = updateAxis(this.chartOptions);
+    this.originChartOptions = updateAxis(this.originChartOptions);
+    this.frequencyChartOptions = updateAxis(this.frequencyChartOptions);
+    this.statusChartOptions = updateAxis(this.statusChartOptions);
+    this.endpointChartOptions = updateAxis(this.endpointChartOptions);
+    this.threatSeverityChartOptions = updateAxis(this.threatSeverityChartOptions);
+    this.securityAlertsChartOptions = updateAxis(this.securityAlertsChartOptions);
   }
 
   public getGaugeStroke(value: number, circumference: number): string {
     const dash = (value / 100) * circumference;
     return `${dash} ${circumference}`;
+  }
+
+  public hasData(options: ChartOptions): boolean {
+    if (!options || !options.series) return false;
+    if (options.chart?.type === 'donut') {
+      return options.series.length > 0;
+    }
+    if (options.series.length > 0 && options.series[0].data) {
+      return options.series[0].data.length > 0;
+    }
+    return false;
   }
 
   private loadAnalyticsData() {
@@ -674,57 +322,64 @@ export class AnalyticsComponent {
             (user_metrics?.cookie_consents?.marketing || 0);
           this.activeProviders = user_metrics?.active_providers || [];
 
-          this.chartOptions = {
-            ...this.chartOptions,
-            data: user_metrics?.time_series || [],
-          };
-          this.originChartOptions = {
-            ...this.originChartOptions,
-            data: user_metrics?.origin_distribution || [],
-          };
-          this.frequencyChartOptions = {
-            ...this.frequencyChartOptions,
-            data: user_metrics?.request_frequency || [],
-          };
-          this.statusChartOptions = {
-            ...this.statusChartOptions,
-            data: user_metrics?.http_statuses || [],
-          };
-          this.endpointChartOptions = {
-            ...this.endpointChartOptions,
-            data: user_metrics?.endpoint_counts || [],
-          };
-          this.threatSeverityChartOptions = {
-            ...this.threatSeverityChartOptions,
-            data: user_metrics?.threat_severity || [],
-          };
-          this.securityAlertsChartOptions = {
-            ...this.securityAlertsChartOptions,
-            data: user_metrics?.security_alerts || [],
-          };
+          // Parse Time Series for System Latency
+          const timeSeries = user_metrics?.time_series || [];
+          this.chartOptions.series = [
+            { name: 'Latency (ms)', data: timeSeries.map((d: any) => d.latency) },
+          ];
+          this.chartOptions.xaxis.categories = timeSeries.map((d: any) => d.time);
+
+          // Parse Origin Distribution
+          const origins = user_metrics?.origin_distribution || [];
+          this.originChartOptions.series = origins.map((d: any) => d.count);
+          this.originChartOptions.labels = origins.map((d: any) => d.origin);
+
+          // Parse Request Frequency
+          const reqFreq = user_metrics?.request_frequency || [];
+          this.frequencyChartOptions.series = [
+            { name: 'Requests', data: reqFreq.map((d: any) => d.requests) },
+          ];
+          this.frequencyChartOptions.xaxis.categories = reqFreq.map((d: any) => d.time);
+
+          // Parse HTTP Status
+          const statuses = user_metrics?.http_statuses || [];
+          this.statusChartOptions.series = [
+            { name: 'Count', data: statuses.map((d: any) => d.count) },
+          ];
+          this.statusChartOptions.xaxis.categories = statuses.map((d: any) => d.status);
+
+          // Parse Endpoints
+          const endpoints = user_metrics?.endpoint_counts || [];
+          this.endpointChartOptions.series = [
+            { name: 'Calls', data: endpoints.map((d: any) => d.count) },
+          ];
+          this.endpointChartOptions.xaxis.categories = endpoints.map((d: any) => d.endpoint);
+
+          // Parse Threat Severity
+          const threats = user_metrics?.threat_severity || [];
+          this.threatSeverityChartOptions.series = threats.map((d: any) => d.count);
+          this.threatSeverityChartOptions.labels = threats.map((d: any) => d.severity);
+          this.threatSeverityChartOptions.colors = [
+            'var(--carrot-orange)',
+            'var(--golden-pollen)',
+            'var(--blue-bell)',
+            'var(--crayola-blue)',
+          ];
+
+          // Parse Security Alerts
+          const alerts = user_metrics?.security_alerts || [];
+          this.securityAlertsChartOptions.series = [
+            { name: 'Anomalies', data: alerts.map((d: any) => d.count) },
+          ];
+          this.securityAlertsChartOptions.xaxis.categories = alerts.map((d: any) => d.time);
+
+          this.updateChartTheme(); // trigger update to apply objects
         }
         this.isLoading = false;
         this.cdr.detectChanges();
       },
       error: err => {
         console.error('Failed to load analytics data', err);
-        this.p99Latency = 0;
-        this.uptimePercent = 0;
-        this.totalRequests = 0;
-        this.activeIncidents = 0;
-        this.widgetInteractions = 0;
-        this.uniqueVisitors = 0;
-        this.cookieConsents = 0;
-        this.activeProviders = [];
-        this.calculateCESMetrics();
-        this.chartOptions = { ...this.chartOptions, data: [] };
-        this.originChartOptions = { ...this.originChartOptions, data: [] };
-        this.frequencyChartOptions = { ...this.frequencyChartOptions, data: [] };
-        this.statusChartOptions = { ...this.statusChartOptions, data: [] };
-        this.endpointChartOptions = { ...this.endpointChartOptions, data: [] };
-        this.threatSeverityChartOptions = { ...this.threatSeverityChartOptions, data: [] };
-        this.securityAlertsChartOptions = { ...this.securityAlertsChartOptions, data: [] };
-
         this.isLoading = false;
         this.cdr.detectChanges();
       },
@@ -736,9 +391,7 @@ export class AnalyticsComponent {
       next: response => {
         if (response.status === 'success' && response.data) {
           this.tenants = response.data;
-          // Optionally set a default selected tenant if none is selected
           if (!this.selectedTenantId && this.tenants.length > 0) {
-            // Find platform tenant if available, or just the first one
             const platformTenant = this.tenants.find((t: any) => t.is_platform);
             this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
           }
@@ -753,7 +406,6 @@ export class AnalyticsComponent {
       this.loadTenants();
       this.loadAnalyticsData();
 
-      // Auto-refresh data every 60 seconds
       setInterval(() => {
         this.loadAnalyticsData();
       }, 60000);

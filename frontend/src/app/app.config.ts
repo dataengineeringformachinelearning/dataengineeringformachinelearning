@@ -18,9 +18,6 @@ import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 import { cacheInterceptor } from './interceptors/cache.interceptor';
 import { telemetryInterceptor } from './core/interceptors/telemetry.interceptor';
 import { provideMarkdown } from 'ngx-markdown';
-import { ModuleRegistry, AllCommunityModule } from 'ag-charts-community';
-
-ModuleRegistry.registerModules([AllCommunityModule]);
 
 import { routes } from './app.routes';
 import { GlobalErrorHandler } from './core/handlers/global-error.handler';
