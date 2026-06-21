@@ -24,6 +24,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from a .env file located at the BASE_DIR (backend/)
 load_dotenv(BASE_DIR / ".env", override=False)
 
+
+# fmt: off
+def clean_private_key(key: str) -> str:
+  if not key:
+    return key
+  key = key.replace("\\n", "\n")
+  if "-----BEGIN PRIVATE KEY-----" in key and "-----END PRIVATE KEY-----" in key:  # pragma: allowlist secret # gitleaks:allow
+    start = key.find("-----BEGIN PRIVATE KEY-----") + 27  # pragma: allowlist secret # gitleaks:allow
+    end = key.find("-----END PRIVATE KEY-----")  # pragma: allowlist secret # gitleaks:allow
+    body = key[start:end]
+    body_clean = "".join(body.split())
+    lines = [body_clean[i : i + 64] for i in range(0, len(body_clean), 64)]
+    return "-----BEGIN PRIVATE KEY-----\n" + "\n".join(lines) + "\n-----END PRIVATE KEY-----\n"  # pragma: allowlist secret # gitleaks:allow
+  return key
+# fmt: on
+
+
 # Write GCP service account JSON from environment variable to a file if provided
 gcp_sa_json = os.getenv("GCP_SERVICE_ACCOUNT_JSON")
 if gcp_sa_json:
@@ -47,7 +64,7 @@ if gcp_sa_json:
     if isinstance(parsed, str):
       parsed = json.loads(parsed)
     if "private_key" in parsed:
-      parsed["private_key"] = parsed["private_key"].replace("\\n", "\n")
+      parsed["private_key"] = clean_private_key(parsed["private_key"])
     gcp_sa_json_clean = json.dumps(parsed)
   except Exception:
     pass
@@ -99,7 +116,7 @@ if not firebase_admin._apps:
 
       # Clean double-escaped backslashes in private_key if present
       if "private_key" in cred_dict:
-        cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
+        cred_dict["private_key"] = clean_private_key(cred_dict["private_key"])
 
       cred = credentials.Certificate(cred_dict)
       firebase_admin.initialize_app(cred)

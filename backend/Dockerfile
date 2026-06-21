@@ -52,8 +52,8 @@ ENV PATH="/opt/venv/bin:$PATH" \
 WORKDIR /app
 
 # Copy virtual env and code from builder
-COPY --from=builder /opt/venv /opt/venv
-COPY --from=builder /app /app
+COPY --chown=65532:65532 --from=builder /opt/venv /opt/venv
+COPY --chown=65532:65532 --from=builder /app /app
 
 EXPOSE 8000
 

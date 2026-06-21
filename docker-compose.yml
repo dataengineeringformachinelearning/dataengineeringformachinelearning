@@ -127,6 +127,7 @@ services:
     container_name: otel-collector
     environment:
       - CLICKHOUSE_HOST=${CLICKHOUSE_HOST:-clickhouse}
+      - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
       - ALLOWED_CORS_ORIGINS=${ALLOWED_CORS_ORIGINS:-https://dataengineeringformachinelearning.com}

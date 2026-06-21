@@ -8,7 +8,10 @@ _global_producer = None
 
 def get_kafka_brokers() -> str:
   """Returns the list of bootstrap servers from the environment."""
-  return os.environ.get("REDPANDA_BROKERS", "localhost:19092")
+  default_broker = (
+    "deml-queue.railway.internal:9092" if os.getenv("RAILWAY_ENVIRONMENT") else "localhost:19092"
+  )
+  return os.environ.get("REDPANDA_BROKERS", default_broker)
 
 
 async def get_kafka_producer() -> AIOKafkaProducer:

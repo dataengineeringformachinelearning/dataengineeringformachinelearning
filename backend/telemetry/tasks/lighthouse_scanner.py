@@ -23,10 +23,16 @@ class LighthouseScanner:
       # Categories we want Lighthouse to audit
       categories = ["performance", "accessibility", "best-practices", "seo"]
 
+      import os
+
       # Add categories to params manually since requests doesn't handle duplicate keys well
       req_url = cls.PAGESPEED_API_URL + "?url=" + requests.utils.quote(url) + "&strategy=mobile"
       for cat in categories:
         req_url += f"&category={cat}"
+
+      api_key = os.getenv("PAGESPEED_API_KEY")
+      if api_key:
+        req_url += f"&key={api_key}"
 
       response = requests.get(req_url, timeout=30)
 
