@@ -127,7 +127,9 @@ def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> A
 
 
 @router.get("/vulnerabilities", response=list[VulnerabilityOut])
-def list_vulnerabilities(request: Any) -> Any:
+def list_vulnerabilities(
+  request: Any, tenant_id: str | None = None, site_url: str | None = None
+) -> Any:
   from django.db.models import Q
   from monitor.models import TenantMembership, Vulnerability
 
@@ -137,13 +139,28 @@ def list_vulnerabilities(request: Any) -> Any:
     )
     tenant_ids_str = [str(t_id) for t_id in memberships]
 
-    vulns = Vulnerability.objects.filter(
-      Q(tenant_id__in=memberships)
-      | Q(customer_id__in=tenant_ids_str)
-      | Q(customer_id=str(request.user.id))
-    ).order_by("-created_at")
+    if tenant_id and str(tenant_id) not in tenant_ids_str:
+      tenant_id = None
+
+    if tenant_id:
+      vulns = Vulnerability.objects.filter(
+        Q(tenant_id=tenant_id) | Q(customer_id=str(tenant_id))
+      ).order_by("-created_at")
+    else:
+      vulns = Vulnerability.objects.filter(
+        Q(tenant_id__in=memberships)
+        | Q(customer_id__in=tenant_ids_str)
+        | Q(customer_id=str(request.user.id))
+      ).order_by("-created_at")
   else:
     vulns = Vulnerability.objects.filter(customer_id="Internal").order_by("-created_at")
+
+  if site_url and site_url != "All":
+    vulns = [
+      v
+      for v in vulns
+      if isinstance(v.telemetry_context, dict) and v.telemetry_context.get("url") == site_url
+    ]
 
   return [
     {

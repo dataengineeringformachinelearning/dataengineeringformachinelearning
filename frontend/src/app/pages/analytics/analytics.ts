@@ -66,6 +66,8 @@ export class AnalyticsComponent implements OnInit {
 
   public tenants: any[] = [];
   public selectedTenantId: string | null = null;
+  public availableSites: string[] = [];
+  public selectedSite: string | null = null;
 
   public cesLevel = 0;
   public threatLevel = 0;
@@ -203,7 +205,7 @@ export class AnalyticsComponent implements OnInit {
         'var(--carrot-orange)',
         'var(--jet-black)',
       ],
-      plotOptions: { pie: { donut: { size: '70%', labels: { show: false } } } },
+      plotOptions: { pie: { donut: { size: '70%', labels: { show: true } } } },
       dataLabels: { enabled: false },
       stroke: { width: 2, colors: ['var(--color-surface)'] },
       legend: { position: 'bottom', labels: { colors: 'var(--text-color)' } },
@@ -228,7 +230,11 @@ export class AnalyticsComponent implements OnInit {
 
     const updateAxis = (chartOpts: ChartOptions) => {
       if (chartOpts.xaxis)
-        chartOpts.xaxis.labels = { style: { colors: textColor, fontFamily: 'Inter, sans-serif' } };
+        chartOpts.xaxis.labels = {
+          rotate: 0,
+          rotateAlways: false,
+          style: { colors: textColor, fontFamily: 'Inter, sans-serif' },
+        };
       if (chartOpts.yaxis)
         chartOpts.yaxis.labels = { style: { colors: textColor, fontFamily: 'Inter, sans-serif' } };
 
@@ -264,8 +270,22 @@ export class AnalyticsComponent implements OnInit {
         chartOpts.fill = { type: 'solid', opacity: fillBarOpacity };
       }
 
-      if (chartOpts.stroke && chartOpts.chart?.type === 'donut')
+      if (chartOpts.stroke && chartOpts.chart?.type === 'donut') {
         chartOpts.stroke.colors = [surfaceColor];
+        if (chartOpts.plotOptions?.pie?.donut?.labels) {
+          chartOpts.plotOptions.pie.donut.labels.show = true;
+          chartOpts.plotOptions.pie.donut.labels.name = { color: textColor };
+          chartOpts.plotOptions.pie.donut.labels.value = {
+            color: this.isDarkMode ? '#ffffff' : '#000000',
+          };
+          chartOpts.plotOptions.pie.donut.labels.total = {
+            show: true,
+            showAlways: true,
+            label: 'Total',
+            color: textColor,
+          };
+        }
+      }
       if (chartOpts.legend)
         chartOpts.legend.labels = { colors: textColor, fontFamily: 'Inter, sans-serif' };
 
@@ -292,6 +312,23 @@ export class AnalyticsComponent implements OnInit {
     this.endpointChartOptions = updateAxis(this.endpointChartOptions);
     this.threatSeverityChartOptions = updateAxis(this.threatSeverityChartOptions);
     this.securityAlertsChartOptions = updateAxis(this.securityAlertsChartOptions);
+    if (this.map) {
+      this.map.eachLayer(layer => {
+        if (layer instanceof L.TileLayer) {
+          this.map?.removeLayer(layer);
+        }
+      });
+      const tileUrl = this.isDarkMode
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+      L.tileLayer(tileUrl, {
+        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }).addTo(this.map);
+
+      setTimeout(() => {
+        this.map?.invalidateSize();
+      }, 100);
+    }
   }
 
   public getGaugeStroke(value: number, circumference: number): string {
@@ -313,14 +350,25 @@ export class AnalyticsComponent implements OnInit {
   private loadAnalyticsData() {
     this.isLoading = true;
     let url = `${environment.backendUrl}/api/v1/analytics/overview`;
+    const params = [];
     if (this.selectedTenantId) {
-      url += `?tenant_id=${this.selectedTenantId}`;
+      params.push(`tenant_id=${this.selectedTenantId}`);
+    }
+    if (this.selectedSite && this.selectedSite !== 'All') {
+      params.push(`site_url=${encodeURIComponent(this.selectedSite)}`);
+    }
+    if (params.length > 0) {
+      url += '?' + params.join('&');
     }
 
     this.http.get<any>(url).subscribe({
       next: response => {
         if (response.status === 'success' && response.data) {
           const { ces, user_metrics } = response.data;
+
+          if (user_metrics?.available_sites) {
+            this.availableSites = user_metrics.available_sites;
+          }
 
           this.cesLevel = ces?.level || 0;
           this.threatLevel = ces?.threat || 0;
@@ -433,6 +481,12 @@ export class AnalyticsComponent implements OnInit {
 
   public onTenantChange(event: any) {
     this.selectedTenantId = event.target.value;
+    this.selectedSite = 'All'; // reset site selection when tenant changes
+    this.loadAnalyticsData();
+  }
+
+  public onSiteChange(event: any) {
+    this.selectedSite = event.target.value;
     this.loadAnalyticsData();
   }
 
@@ -447,11 +501,19 @@ export class AnalyticsComponent implements OnInit {
           attributionControl: false,
         }).setView([20, 0], 2);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        const tileUrl = this.isDarkMode
+          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+          : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+        L.tileLayer(tileUrl, {
           attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
         }).addTo(this.map);
       }
       this.updateMapMarkers();
+
+      setTimeout(() => {
+        this.map?.invalidateSize();
+      }, 100);
     }, 100);
   }
 

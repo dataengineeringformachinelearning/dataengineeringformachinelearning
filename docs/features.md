@@ -25,8 +25,8 @@ The Data Engineering for Machine Learning (DEML) Platform provides a comprehensi
 7. **Hugging Face Global Ecosystem Integration**
    - Native integration with Hugging Face automates the publication of PyTorch models to the Hub and continuously syncs public status pages and whitepapers via Spaces deployments.
 
-8. **Tenant0: The Apex Sandbox & Public Sentinel**
-   - Our platform dogfoods itself. The core infrastructure operates under `Tenant0` (The Platform Tenant). It runs its own telemetry ingestion, status pages, and threat models. It serves as a continuous, living "Apex Sandbox" to safely trial experimental features under real load and as a "Public Sentinel" showcasing exactly what the platform is capable of.
+8. **Tenant0, System Design, and Critical Path of the Application**
+   - Our platform dogfoods itself. The core infrastructure operates under `Tenant0` (The Platform Tenant). It runs its own telemetry ingestion, status pages, and threat models. It serves as a continuous, living "Apex Sandbox" to safely trial experimental features under real load and as a "Public Sentinel" showcasing exactly what the platform is capable of. Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
 
 9. **Application-Level Zeek-Equivalent Middleware**
    - A custom passive interception layer runs at the edge to inspect all incoming HTTP request headers, source IPs, methods, and process latency. It natively homogenizes traffic via zero-latency caches and streams telemetry aligned perfectly to the target Tenant UUID.

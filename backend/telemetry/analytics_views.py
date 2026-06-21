@@ -32,7 +32,7 @@ def get_user_tenants(request):
 
 
 @router.get("/overview")
-def get_analytics_overview(request, tenant_id: str | None = None):
+def get_analytics_overview(request, tenant_id: str | None = None, site_url: str | None = None):
   if not request.user.is_authenticated:
     from ninja.errors import HttpError
 
@@ -106,9 +106,13 @@ def get_analytics_overview(request, tenant_id: str | None = None):
   )
 
   user_pages = StatusPage.objects.filter(tenant=target_tenant)
-  user_urls = MonitoredService.objects.filter(status_page__in=user_pages).values_list(
-    "url", flat=True
+  user_urls = list(
+    MonitoredService.objects.filter(status_page__in=user_pages).values_list("url", flat=True)
   )
+  available_sites = user_urls.copy()
+
+  if site_url and site_url != "All":
+    user_urls = [u for u in user_urls if u == site_url]
 
   endpoints = Endpoints.objects.filter(url__in=user_urls, last_tested__gte=last_24h).exclude(
     status_code=0
@@ -249,6 +253,7 @@ def get_analytics_overview(request, tenant_id: str | None = None):
       "widget_interactions": widget_interactions,
       "unique_visitors": unique_visitors,
       "active_providers": active_providers,
+      "available_sites": available_sites,
     },
   }
 

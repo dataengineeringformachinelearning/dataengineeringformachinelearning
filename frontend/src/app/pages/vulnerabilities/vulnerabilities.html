@@ -11,6 +11,66 @@
           <h1 class="hud-title">Vulnerability Prioritization & Triage</h1>
           <p class="hud-subtitle">Active security threat monitoring and telemetry orchestration</p>
         </div>
+
+        @if (tenants.length > 0) {
+        <div
+          class="tenant-selector-group"
+          style="margin-left: auto; display: flex; align-items: center; gap: 1rem"
+        >
+          <label for="tenantSelect" style="color: var(--text-color); font-weight: 500"
+            >Environment:</label
+          >
+          <select
+            id="tenantSelect"
+            class="hud-select"
+            (change)="onTenantChange($event)"
+            [value]="selectedTenantId"
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              color: white;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              padding: 8px 12px;
+              border-radius: 6px;
+              outline: none;
+              font-family: 'Inter', sans-serif;
+            "
+          >
+            @for (tenant of tenants; track tenant.id) {
+            <option [value]="tenant.id" style="color: black">
+              {{ tenant.name }} {{ tenant.is_platform ? '(Platform)' : '' }}
+            </option>
+            }
+          </select>
+
+          @if (availableSites.length > 0) {
+          <label
+            for="siteSelect"
+            style="color: var(--text-color); font-weight: 500; margin-left: 1rem"
+            >Site / Endpoint:</label
+          >
+          <select
+            id="siteSelect"
+            class="hud-select"
+            (change)="onSiteChange($event)"
+            [value]="selectedSite || 'All'"
+            style="
+              background: rgba(255, 255, 255, 0.05);
+              color: white;
+              border: 1px solid rgba(255, 255, 255, 0.1);
+              padding: 8px 12px;
+              border-radius: 6px;
+              outline: none;
+              font-family: 'Inter', sans-serif;
+            "
+          >
+            <option value="All" style="color: black">All Sites</option>
+            @for (site of availableSites; track site) {
+            <option [value]="site" style="color: black">{{ site }}</option>
+            }
+          </select>
+          }
+        </div>
+        }
       </header>
 
       <div class="hud-metrics">

@@ -14,6 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FormsModule } from '@angular/forms';
 import { Title, Meta } from '@angular/platform-browser';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 
@@ -30,6 +32,12 @@ export class Vulnerabilities implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
   private cdr = inject(ChangeDetectorRef);
+  private http = inject(HttpClient);
+
+  public tenants: any[] = [];
+  public selectedTenantId: string | null = null;
+  public availableSites: string[] = [];
+  public selectedSite: string | null = null;
 
   selectedVuln = signal<Vulnerability | null>(null);
   filterStatus = signal<string>('All');
@@ -71,7 +79,7 @@ export class Vulnerabilities implements OnInit {
 
   constructor() {
     afterNextRender(() => {
-      this.loadVulnerabilities();
+      this.loadTenants();
     });
   }
 
@@ -84,8 +92,62 @@ export class Vulnerabilities implements OnInit {
     });
   }
 
+  loadTenants() {
+    this.http.get<any>(`${environment.backendUrl}/api/v1/analytics/tenants`).subscribe({
+      next: response => {
+        if (response.status === 'success' && response.data) {
+          this.tenants = response.data;
+          if (!this.selectedTenantId && this.tenants.length > 0) {
+            const platformTenant = this.tenants.find((t: any) => t.is_platform);
+            this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
+          }
+          this.loadAvailableSites();
+          this.loadVulnerabilities();
+          this.cdr.markForCheck();
+        }
+      },
+      error: err => console.error('Failed to load tenants', err),
+    });
+  }
+
+  loadAvailableSites() {
+    let url = `${environment.backendUrl}/api/v1/analytics/overview`;
+    if (this.selectedTenantId) {
+      url += `?tenant_id=${this.selectedTenantId}`;
+    }
+    this.http.get<any>(url).subscribe({
+      next: response => {
+        if (response.status === 'success' && response.data) {
+          const { user_metrics } = response.data;
+          if (user_metrics?.available_sites) {
+            this.availableSites = user_metrics.available_sites;
+          } else {
+            this.availableSites = [];
+          }
+          this.cdr.markForCheck();
+        }
+      },
+      error: err => console.error('Failed to load sites for tenant', err),
+    });
+  }
+
+  public onTenantChange(event: any) {
+    this.selectedTenantId = event.target.value;
+    this.selectedSite = 'All'; // reset site selection when tenant changes
+    this.loadAvailableSites();
+    this.loadVulnerabilities();
+  }
+
+  public onSiteChange(event: any) {
+    this.selectedSite = event.target.value;
+    this.loadVulnerabilities();
+  }
+
   loadVulnerabilities() {
-    this.vulnService.fetchVulnerabilities();
+    this.vulnService.fetchVulnerabilities(
+      this.selectedTenantId || undefined,
+      this.selectedSite || undefined,
+    );
     // Select first item by default if available after load
     setTimeout(() => {
       const list = this.vulnService.vulnerabilities();
