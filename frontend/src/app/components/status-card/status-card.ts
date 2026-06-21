@@ -51,14 +51,12 @@ export class StatusCard implements OnInit {
       () => {
         const baseSla = this.page.cumulative_sla ?? 99.9;
         // Simulate real-ish data based on SLA
-        this.p99Latency = Math.floor(
-          baseSla >= 99 ? 15 + Math.random() * 20 : 150 + Math.random() * 200,
-        );
-        this.totalRequests = Math.floor(1000 + Math.random() * 5000);
+        this.p99Latency = 0;
+        this.totalRequests = 0;
         this.uptimePercent = baseSla;
         this.simulatedThreatReport = {
-          suspicious_ratio: Math.random() * 0.4,
-          anomaly_score: Math.random() * 0.5,
+          suspicious_ratio: 0,
+          anomaly_score: 0,
         };
         this.cdr.markForCheck();
       },

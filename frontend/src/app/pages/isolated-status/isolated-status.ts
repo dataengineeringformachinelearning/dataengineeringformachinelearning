@@ -53,6 +53,14 @@ export class IsolatedStatus implements OnInit {
 
   p99LatencyMap = signal<{ [key: string]: number }>({});
   totalRequestsMap = signal<{ [key: string]: number }>({});
+  simulatedThreatReportMap = signal<{
+    [key: string]: {
+      suspicious_ratio: number;
+      anomaly_score: number;
+      top_location: string;
+      location_weight: number;
+    };
+  }>({});
 
   mockPage: StatusPageData = {
     id: 'mock-id',
@@ -146,12 +154,17 @@ export class IsolatedStatus implements OnInit {
           setTimeout(
             () => {
               const baseSla = page.cumulative_sla ?? 99.9;
-              const p99 = Math.floor(
-                baseSla >= 99 ? 15 + Math.random() * 20 : 150 + Math.random() * 200,
-              );
-              const totalReqs = Math.floor(1000 + Math.random() * 5000);
+              const p99 = 0;
+              const totalReqs = 0;
               this.p99LatencyMap.update(m => ({ ...m, [page.id]: p99 }));
               this.totalRequestsMap.update(m => ({ ...m, [page.id]: totalReqs }));
+              const simThreat = {
+                suspicious_ratio: 0,
+                anomaly_score: 0,
+                top_location: 'N/A',
+                location_weight: 0,
+              };
+              this.simulatedThreatReportMap.update(m => ({ ...m, [page.id]: simThreat }));
               this.cdr.markForCheck();
             },
             800 + Math.random() * 700,
@@ -183,6 +196,10 @@ export class IsolatedStatus implements OnInit {
       return active[0].status;
     }
     return 'Operational';
+  }
+
+  getThreatReport(pageId: string) {
+    return this.mlService.latestThreatReports()[pageId] || this.simulatedThreatReportMap()[pageId];
   }
 
   isRetrying = signal<boolean>(false);
