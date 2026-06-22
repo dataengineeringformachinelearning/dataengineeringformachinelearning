@@ -105,7 +105,10 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     Vulnerability,
   )
 
-  user_pages = StatusPage.objects.filter(tenant=target_tenant)
+  if target_tenant.is_platform_tenant:
+    user_pages = StatusPage.objects.filter(tenant=target_tenant, user=request.user)
+  else:
+    user_pages = StatusPage.objects.filter(tenant=target_tenant)
   user_urls = list(
     MonitoredService.objects.filter(status_page__in=user_pages).values_list("url", flat=True)
   )

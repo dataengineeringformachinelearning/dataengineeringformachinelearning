@@ -9,10 +9,16 @@ from ml.models import ThreatReport
 @pytest.mark.django_db
 def test_get_threat_report_stix(client: Client) -> None:
   # Set up status page and threat report
+  from monitor.models import Tenant, TenantMembership
+
   user = User.objects.create_user(username="compliance_user", password="password")
-  StatusPage.objects.create(user=user, title="Platform Status", slug="platform-status")
+  tenant = Tenant.objects.create(name="Test Tenant", slug="test-tenant")
+  TenantMembership.objects.create(user=user, tenant=tenant, role="Admin")
+  StatusPage.objects.create(
+    user=user, tenant=tenant, title="Platform Status", slug="platform-status"
+  )
   ThreatReport.objects.create(
-    user=user,
+    tenant=tenant,
     anomaly_score=0.15,
     top_location="United States",
     location_weight=0.8,
