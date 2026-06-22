@@ -98,6 +98,8 @@ class StatusPageOut(Schema):
   cumulative_sla: float | None = None
   overall_uptime: float | None = None
   uptime_history: list[UptimeDaySchema] | None = None
+  p99_latency: float | None = None
+  total_requests: int | None = None
 
 
 @router.get("/health")
@@ -195,6 +197,8 @@ def _build_status_page_out(p):
   cumulative_sla = 100.0
   overall_uptime = 100.0
   uptime_history = []
+  p99_latency = 0.0
+  total_requests = 0
 
   if urls:
     total_count = Endpoints.objects.filter(url__in=urls).exclude(status_code=0).count()
@@ -257,6 +261,22 @@ def _build_status_page_out(p):
       else 100.0
     )
     uptime_history = history_list
+
+    # Calculate P99 Latency and Total Requests for the last 24h
+    last_24h = timezone.now() - dt.timedelta(hours=24)
+    endpoints_24h = Endpoints.objects.filter(url__in=urls, last_tested__gte=last_24h).exclude(
+      status_code=0
+    )
+    total_requests = endpoints_24h.count()
+
+    latencies = list(endpoints_24h.values_list("response_time", flat=True))
+    if latencies and any(latencies):
+      ms_list = sorted([lat.total_seconds() * 1000 for lat in latencies if lat])
+      p99_idx = int(len(ms_list) * 0.99)
+      p99_latency = round(ms_list[p99_idx if p99_idx < len(ms_list) else -1], 2)
+    else:
+      p99_latency = 0.0
+
   else:
     for _ in range(30):
       uptime_history.append(UptimeDaySchema(status="no_data", uptime=100.0))
@@ -275,6 +295,8 @@ def _build_status_page_out(p):
     cumulative_sla=cumulative_sla,
     overall_uptime=overall_uptime,
     uptime_history=uptime_history,
+    p99_latency=p99_latency,
+    total_requests=total_requests,
   )
 
 
@@ -527,9 +549,8 @@ def create_incident(request, page_id: str, payload: IncidentIn):
 
   # Send email alert to the owner via Resend
   if page.user and page.user.email:
-    from django.conf import settings
-
     from config.email import send_resend_email
+    from django.conf import settings
 
     subject = f"[Status Alert] {page.title}: {payload.title} ({payload.status})"
     # nosemgrep: python.django.security.injection.raw-html-format.raw-html-format

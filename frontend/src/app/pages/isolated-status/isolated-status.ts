@@ -144,20 +144,34 @@ export class IsolatedStatus implements OnInit {
       .pipe(timeout(15000))
       .subscribe({
         next: page => {
-          const pages = [page];
-          this.statusPages.set(pages);
-          this.monitorService.fetchAllIncidents(pages);
-          this.monitorService.fetchAllServices(pages);
-          this.mlService.fetchLatestStat(page.id);
-          this.mlService.fetchThreatReport(page.id);
+          // Start with 0 values for animation effect
+          const initialPage = { ...page, cumulative_sla: 0, overall_uptime: 0 };
+          this.statusPages.set([initialPage]);
+
+          this.p99LatencyMap.update(m => ({ ...m, [page.id]: 0 }));
+          this.totalRequestsMap.update(m => ({ ...m, [page.id]: 0 }));
+          this.simulatedThreatReportMap.update(m => ({
+            ...m,
+            [page.id]: {
+              suspicious_ratio: 0,
+              anomaly_score: 0,
+              top_location: 'Loading...',
+              location_weight: 0,
+            },
+          }));
+
+          this.monitorService.fetchAllIncidents([page]);
+          this.monitorService.fetchAllServices([page]);
 
           setTimeout(
             () => {
-              const baseSla = page.cumulative_sla ?? 99.9;
-              const p99 = 0;
-              const totalReqs = 0;
+              this.statusPages.set([page]); // Populate real values
+
+              const p99 = page.p99_latency ?? 0;
+              const totalReqs = page.total_requests ?? 0;
               this.p99LatencyMap.update(m => ({ ...m, [page.id]: p99 }));
               this.totalRequestsMap.update(m => ({ ...m, [page.id]: totalReqs }));
+
               const simThreat = {
                 suspicious_ratio: 0,
                 anomaly_score: 0,
@@ -165,6 +179,10 @@ export class IsolatedStatus implements OnInit {
                 location_weight: 0,
               };
               this.simulatedThreatReportMap.update(m => ({ ...m, [page.id]: simThreat }));
+
+              this.mlService.fetchLatestStat(page.id);
+              this.mlService.fetchThreatReport(page.id);
+
               this.cdr.markForCheck();
             },
             800 + Math.random() * 700,

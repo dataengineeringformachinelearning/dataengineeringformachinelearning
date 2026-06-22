@@ -147,7 +147,7 @@
               <span class="sla-label">Cumulative SLA</span>
               <span class="sla-desc">Based on real telemetry</span>
               <span class="sla-val"
-                >{{ (page.cumulative_sla !== null ? page.cumulative_sla : 100.0) | number:'1.2-2'
+                >{{ (page.cumulative_sla !== null ? page.cumulative_sla : 0) | number:'1.2-2'
                 }}%</span
               >
             </div>
@@ -161,8 +161,8 @@
               <span class="sla-desc">30-day forecast via ML</span>
               <span class="sla-valHighlight"
                 >{{ (mlService.latestStats()[page.id] !== undefined &&
-                mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id] :
-                99.99) | number:'1.2-2' }}%</span
+                mlService.latestStats()[page.id] !== null ? mlService.latestStats()[page.id] : 0) |
+                number:'1.2-2' }}%</span
               >
             </div>
           </div>
@@ -289,7 +289,7 @@
           <div class="uptime-header">
             <h3>Uptime History (Last 30 Days)</h3>
             <span class="uptime-pct"
-              >{{ (page.overall_uptime !== null ? page.overall_uptime : 100.0) | number:'1.2-2' }}%
+              >{{ (page.overall_uptime !== null ? page.overall_uptime : 0) | number:'1.2-2' }}%
               operational</span
             >
           </div>

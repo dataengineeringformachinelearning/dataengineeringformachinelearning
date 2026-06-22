@@ -26,6 +26,8 @@ export interface StatusPageData {
   cumulative_sla?: number;
   overall_uptime?: number;
   uptime_history?: { status: string; uptime: number }[];
+  p99_latency?: number;
+  total_requests?: number;
 }
 
 export interface MonitoredServiceData {
