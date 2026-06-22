@@ -51,8 +51,8 @@ export class IsolatedStatus implements OnInit {
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
 
-  p99LatencyMap = signal<{ [key: string]: number }>({});
-  totalRequestsMap = signal<{ [key: string]: number }>({});
+  p99LatencyMap = signal<{ [key: string]: number }>({ 'mock-id': 0 });
+  totalRequestsMap = signal<{ [key: string]: number }>({ 'mock-id': 0 });
   simulatedThreatReportMap = signal<{
     [key: string]: {
       suspicious_ratio: number;
@@ -60,7 +60,14 @@ export class IsolatedStatus implements OnInit {
       top_location: string;
       location_weight: number;
     };
-  }>({});
+  }>({
+    'mock-id': {
+      suspicious_ratio: 0,
+      anomaly_score: 0,
+      top_location: 'Loading...',
+      location_weight: 0,
+    },
+  });
 
   mockPage: StatusPageData = {
     id: 'mock-id',

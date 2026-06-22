@@ -36,7 +36,7 @@
         <div class="stat-value-container">
           <span class="stat-value">
             {{ (page.cumulative_sla !== null && page.cumulative_sla !== undefined ?
-            page.cumulative_sla : 100.0) | number:'1.2-2' }}%
+            page.cumulative_sla : 0) | number:'1.2-2' }}%
           </span>
         </div>
       </div>
@@ -52,7 +52,7 @@
         </div>
         <div class="stat-value-container">
           <span class="stat-value">
-            {{ (predictedSla !== undefined && predictedSla !== null ? predictedSla : 99.99) |
+            {{ (predictedSla !== undefined && predictedSla !== null ? predictedSla : 0) |
             number:'1.2-2' }}%
           </span>
         </div>

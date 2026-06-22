@@ -18,7 +18,7 @@
         </div>
       </header>
       <div class="status-stack grid-layout">
-        @for (page of statusPages(); track page) {
+        @for (page of displayPages(); track page) {
         <app-status-card
           class="col-span-4 col-span-md-12"
           [page]="page"
@@ -52,7 +52,7 @@
             <span>Retry Connection</span>
           </button>
         </div>
-        } @if (!loadFailed() && statusPages().length === 0) {
+        } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
         <app-status-cta
           class="col-span-4 col-span-md-12"
           badgeIcon="explore"

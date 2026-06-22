@@ -6,6 +6,7 @@ import {
   signal,
   ChangeDetectorRef,
   effect,
+  computed,
   afterNextRender,
   Injector,
 } from '@angular/core';
@@ -39,8 +40,25 @@ export class Explore implements OnInit {
 
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
+  isLoading = signal<boolean>(true);
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
+
+  mockPage: StatusPageData = {
+    id: 'mock-id',
+    title: 'Loading Directory...',
+    slug: 'mock-slug',
+    description: 'Fetching status pages from the platform directory...',
+    created_at: new Date().toISOString(),
+    user_id: null,
+  };
+
+  displayPages = computed(() => {
+    if (this.isLoading() && !this.loadFailed()) {
+      return [this.mockPage, this.mockPage];
+    }
+    return this.statusPages();
+  });
 
   constructor() {
     afterNextRender(() => {
@@ -65,6 +83,7 @@ export class Explore implements OnInit {
   }
 
   loadData() {
+    this.isLoading.set(true);
     this.loadFailed.set(false);
     this.monitorService.getStatusPages().subscribe({
       next: data => {
@@ -77,12 +96,14 @@ export class Explore implements OnInit {
           this.mlService.fetchLatestStat(page.id);
           this.mlService.fetchThreatReport(page.id);
         });
+        this.isLoading.set(false);
         this.cdr.markForCheck();
       },
       error: err => {
         console.error('Error fetching pages for explore:', err);
         this.statusPages.set([]);
         this.loadFailed.set(true);
+        this.isLoading.set(false);
         this.cdr.markForCheck();
       },
     });

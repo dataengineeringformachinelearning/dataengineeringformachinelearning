@@ -50,7 +50,29 @@ export class Compliance implements OnInit {
 
   // Signals for page state
   socScore = signal<number>(0.0);
-  socCriteria = signal<SOCCriteria[]>([]);
+  socCriteria = signal<SOCCriteria[]>([
+    {
+      name: 'Security Control 1',
+      category: 'Security',
+      status: 'warning',
+      description: 'Loading...',
+      details: 'Waiting for telemetry...',
+    },
+    {
+      name: 'Availability Control 1',
+      category: 'Availability',
+      status: 'warning',
+      description: 'Loading...',
+      details: 'Waiting for telemetry...',
+    },
+    {
+      name: 'Confidentiality Control 1',
+      category: 'Confidentiality',
+      status: 'warning',
+      description: 'Loading...',
+      details: 'Waiting for telemetry...',
+    },
+  ]);
   stixPayload = signal<any>(null);
   selectedIsac = signal<string>('CISA');
   isSubmittingIsac = signal<boolean>(false);
