@@ -192,7 +192,7 @@ export class Landing implements OnInit, OnDestroy {
   }
 
   startFreeTier() {
-    alert('Standard Tier activated.');
+    console.info('Standard Tier activated.');
   }
 
   upgradeToPro() {
@@ -207,16 +207,14 @@ export class Landing implements OnInit, OnDestroy {
             window.location.href = res.checkout_url;
           } else {
             console.warn('No checkout URL returned, likely missing Stripe config.', res);
-            alert(
-              'Stripe configuration is missing. This is a mock success response for the Pro Tier.',
+            throw new Error(
+              'Stripe configuration is missing. Checkout session could not be created.',
             );
           }
         },
         error: err => {
           console.warn('Failed to create checkout session, handling gracefully.', err);
-          alert(
-            'Billing integration is not fully configured (missing Stripe keys). Pro Tier upgrade simulated.',
-          );
+          throw new Error('Billing integration is not fully configured (missing Stripe keys).');
         },
       });
   }
