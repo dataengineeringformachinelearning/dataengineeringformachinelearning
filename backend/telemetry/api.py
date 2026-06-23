@@ -12,6 +12,7 @@ background_tasks = set()
 
 
 class TelemetryPayload(Schema):
+  tenant_id: str | None = None
   url: str
   status_code: int
   response_time_ms: float
@@ -20,8 +21,69 @@ class TelemetryPayload(Schema):
   telemetry_context: dict | None = None
 
 
+async def _is_origin_validated(request, tenant_id: str | None) -> bool:
+  from asgiref.sync import sync_to_async
+  from django.db.models import Q
+  from monitor.models import StatusPage, ValidatedSite
+
+  origin = request.headers.get("origin") or request.headers.get("referer")
+  if not origin:
+    # If no origin, check if there's an API key
+    api_key = request.headers.get("X-API-Key") or request.headers.get("Authorization")
+    if api_key:
+      # We could validate the API key here
+      return True
+    return False
+
+  try:
+    from urllib.parse import urlparse
+
+    parsed = urlparse(origin)
+    domain = parsed.hostname if parsed.hostname else origin
+  except Exception:
+    return False
+
+  # If tenant_id is provided, it might actually be a StatusPage ID/slug from the widget
+  # Let's try to resolve the actual Tenant ID
+  actual_tenant_id = None
+  if tenant_id:
+    # Try as exact tenant ID first
+    try:
+      actual_tenant_id = tenant_id
+      # Optionally, verify tenant exists, but we'll just query ValidatedSite
+    except Exception:
+      pass
+
+    # Or try as StatusPage slug/ID
+    try:
+      page = await sync_to_async(
+        StatusPage.objects.filter(Q(id=tenant_id) | Q(slug=tenant_id)).first
+      )()
+      if page and page.tenant_id:
+        actual_tenant_id = page.tenant_id
+    except Exception:
+      pass
+
+  if actual_tenant_id:
+    return await sync_to_async(
+      ValidatedSite.objects.filter(
+        tenant_id=actual_tenant_id, domain=domain, is_verified=True
+      ).exists
+    )()
+  else:
+    # Fallback to checking if the domain is registered globally
+    return await sync_to_async(
+      ValidatedSite.objects.filter(domain=domain, is_verified=True).exists
+    )()
+
+
 @router.post("/endpoints")
 async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
+  is_valid = await _is_origin_validated(request, payload.tenant_id)
+  if not is_valid:
+    logger.warning(f"Rejected telemetry from unvalidated origin: {request.headers.get('origin')}")
+    return HttpResponse("Forbidden: Unvalidated Site", status=403)
+
   # Convert response_time_ms to seconds for standard processing down the line
   data = payload.dict()
   data["response_time"] = payload.response_time_ms / 1000.0
@@ -122,6 +184,13 @@ class TelemetryDualStreamPayload(Schema):
 @router.post("/technology")
 async def ingest_technology_telemetry(request, payload: TelemetryDualStreamPayload):
   from .vulnerability_ledger import process_dual_stream_batch
+
+  is_valid = await _is_origin_validated(request, payload.tenant_id)
+  if not is_valid:
+    logger.warning(
+      f"Rejected technology telemetry from unvalidated origin: {request.headers.get('origin')}"
+    )
+    return HttpResponse("Forbidden: Unvalidated Site", status=403)
 
   try:
     import asyncio

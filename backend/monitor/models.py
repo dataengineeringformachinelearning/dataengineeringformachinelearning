@@ -413,3 +413,18 @@ class APIKey(models.Model):
 
   def __str__(self):
     return f"{self.name} ({self.prefix}...)"
+
+
+class ValidatedSite(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="validated_sites")
+  domain = models.CharField(max_length=255)
+  is_verified = models.BooleanField(default=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "validated_sites"
+    unique_together = ("tenant", "domain")
+
+  def __str__(self):
+    return f"{self.domain} ({self.tenant.name})"

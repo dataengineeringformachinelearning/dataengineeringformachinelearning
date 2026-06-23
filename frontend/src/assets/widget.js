@@ -558,6 +558,7 @@
           } catch {}
 
           const telemetryPayload = {
+            tenant_id: pageId,
             url: window.location.href,
             status_code: 200,
             response_time_ms: responseTimeMs,
