@@ -8,7 +8,8 @@ import {
   PLATFORM_ID,
   ChangeDetectorRef,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { Title, Meta } from '@angular/platform-browser';
 import { environment } from '../../../environments/environment';
@@ -43,6 +44,9 @@ export class Landing implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private http = inject(HttpClient);
   public sanityService = inject(SanityService);
+
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
   version = environment.version || '1.0.0';
   emailVal = '';
@@ -192,10 +196,19 @@ export class Landing implements OnInit, OnDestroy {
   }
 
   startFreeTier() {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     console.info('Standard Tier activated.');
   }
 
   upgradeToPro() {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     // Note: For a real app, you would pass the user's active tenant ID, which would be retrieved from auth state
     const payload = { tenant_id: 'example-tenant-id' };
 
