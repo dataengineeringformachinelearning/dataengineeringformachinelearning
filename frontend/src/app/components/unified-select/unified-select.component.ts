@@ -22,11 +22,11 @@ export interface SelectOption {
   styleUrl: './unified-select.scss',
 })
 export class UnifiedSelect {
-  @Input() id: string = `unified-select-${Math.random().toString(36).substring(2, 9)}`;
+  @Input() id = `unified-select-${Math.random().toString(36).substring(2, 9)}`;
   @Input() label?: string;
   @Input() options: SelectOption[] = [];
   @Input() value: any;
-  @Input() disabled: boolean = false;
+  @Input() disabled = false;
   @Output() valueChange = new EventEmitter<any>();
 
   isOpen = false;

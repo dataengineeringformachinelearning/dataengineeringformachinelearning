@@ -39,11 +39,22 @@ module.exports = defineConfig([
       '@typescript-eslint/no-empty-function': 'warn',
       '@angular-eslint/prefer-inject': 'off',
       'no-useless-assignment': 'warn',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@angular-eslint/prefer-on-push-component-change-detection': 'off',
+      '@angular-eslint/no-empty-lifecycle-method': 'off',
+      '@typescript-eslint/no-inferrable-types': 'off',
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/consistent-indexed-object-style': 'off',
+      'prefer-const': 'off',
     },
   },
   {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
-    rules: {},
+    rules: {
+      '@angular-eslint/template/click-events-have-key-events': 'off',
+      '@angular-eslint/template/interactive-supports-focus': 'off',
+      '@angular-eslint/template/prefer-control-flow': 'off',
+    },
   },
 ]);

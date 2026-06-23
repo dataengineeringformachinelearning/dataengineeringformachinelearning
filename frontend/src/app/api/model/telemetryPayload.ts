@@ -14,5 +14,5 @@ export interface TelemetryPayload {
   response_time_ms: number;
   ip_address: string;
   is_active: boolean;
-  telemetry_context?: { [key: string]: any } | null;
+  telemetry_context?: Record<string, any> | null;
 }

@@ -10,5 +10,5 @@
 
 export interface IssueReportPayload {
   user_description: string;
-  telemetry_context: { [key: string]: any };
+  telemetry_context: Record<string, any>;
 }

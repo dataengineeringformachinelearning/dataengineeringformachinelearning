@@ -19,7 +19,7 @@ import {
 import { environment } from '../../../environments/environment';
 import * as L from 'leaflet';
 
-export type ChartOptions = {
+export interface ChartOptions {
   series: any;
   chart: any;
   xaxis?: any;
@@ -35,7 +35,7 @@ export type ChartOptions = {
   tooltip?: any;
   noData?: any;
   markers?: any;
-};
+}
 
 @Component({
   selector: 'app-analytics',
