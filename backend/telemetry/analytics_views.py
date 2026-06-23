@@ -85,13 +85,41 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     global_incidents = 0
     global_uptime = 99.9
 
-  # Calculate CES mathematically from global anonymous aggregates
+  # Calculate CES mathematically from global anonymous aggregates for sub-components
   ces_threat_level = min(100, global_incidents * 20 + (30 if global_p99 > 500 else 0))
   ces_sla_level = max(0, global_uptime - (5 if global_p99 > 800 else 0))
   ces_stability_level = max(0, 100 - global_incidents * 10 - (15 if global_p99 > 300 else 0))
-  ces_level = max(
-    0, min(100, ces_sla_level * 0.5 + ces_stability_level * 0.4 + (100 - ces_threat_level) * 0.1)
-  )
+
+  # ML-driven Countermeasure Effectiveness Score (CES)
+  import os
+
+  import torch
+  from ml.ml_services import CESModel, get_ces_model_path
+
+  # Approximate fr, sr for inference based on global uptime/incidents,
+  # or in a real app, query Endpoints similar to train_ces_model
+  fr = max(0.0, 1.0 - (global_uptime / 100.0))
+  sr = min(1.0, (global_incidents * 0.1) + (0.05 if global_p99 > 500 else 0.01))
+
+  try:
+    model_path = get_ces_model_path()
+    if os.path.exists(model_path):
+      model = CESModel()
+      model.load_state_dict(torch.load(model_path))
+      model.eval()
+      with torch.no_grad():
+        x = torch.tensor([[fr, sr, float(global_incidents)]], dtype=torch.float32)
+        ces_level = model(x).item()
+    else:
+      # Fallback math if model isn't trained yet
+      ces_level = max(
+        0,
+        min(100, ces_sla_level * 0.5 + ces_stability_level * 0.4 + (100 - ces_threat_level) * 0.1),
+      )
+  except Exception:
+    ces_level = max(
+      0, min(100, ces_sla_level * 0.5 + ces_stability_level * 0.4 + (100 - ces_threat_level) * 0.1)
+    )
 
   # ==========================================
   # 2. STRICT USER TENANCY (Isolated Metrics)

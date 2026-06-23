@@ -43,4 +43,15 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"  - Threat training failed: {e}"))
 
+    self.stdout.write("Training global CES model...")
+    try:
+      from ml.ml_services import train_ces_model
+
+      ces_run = train_ces_model()
+      self.stdout.write(
+        self.style.SUCCESS(f"  - CES model trained successfully: {ces_run['status']}")
+      )
+    except Exception as e:
+      self.stderr.write(self.style.ERROR(f"  - CES model training failed: {e}"))
+
     self.stdout.write(self.style.SUCCESS("All models trained and database cleaned successfully."))

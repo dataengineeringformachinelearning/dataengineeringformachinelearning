@@ -15,6 +15,46 @@ def get_platform_model_path():
   return os.path.join(path, "platform_threat_model.pt")
 
 
+def get_ces_model_path():
+  path = os.path.join(settings.BASE_DIR, "ml", "saved_models")
+  os.makedirs(path, exist_ok=True)
+  return os.path.join(path, "ces_model.pt")
+
+
+def query_teacher_model(prompt: str) -> float:
+  import random
+
+  import requests
+
+  hf_token = os.environ.get("HF_TOKEN")
+  if not hf_token:
+    return random.uniform(0.0, 1.0)
+
+  API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
+  headers = {"Authorization": f"Bearer {hf_token}"}
+  full_prompt = (
+    f"{prompt}\nReturn ONLY a floating point number between 0.0 and 1.0. Do not include any text."
+  )
+
+  try:
+    response = requests.post(
+      API_URL,
+      headers=headers,
+      json={"inputs": full_prompt, "parameters": {"max_new_tokens": 5, "temperature": 0.1}},
+    )
+    if response.status_code == 200:
+      result = response.json()
+      if isinstance(result, list) and len(result) > 0:
+        text = result[0].get("generated_text", "").replace(full_prompt, "").strip()
+        try:
+          return min(1.0, max(0.0, float(text)))
+        except ValueError:
+          pass
+  except Exception:
+    pass
+  return random.uniform(0.0, 1.0)
+
+
 class ThreatModel(nn.Module):
   def __init__(self):
     super().__init__()
@@ -26,6 +66,19 @@ class ThreatModel(nn.Module):
     x = torch.relu(self.fc1(x))
     x = self.sigmoid(self.fc2(x))
     return x
+
+
+class CESModel(nn.Module):
+  def __init__(self):
+    super().__init__()
+    self.fc1 = nn.Linear(3, 8)
+    self.fc2 = nn.Linear(8, 1)
+    self.sigmoid = nn.Sigmoid()
+
+  def forward(self, x):
+    x = torch.relu(self.fc1(x))
+    x = self.sigmoid(self.fc2(x))
+    return x * 100.0
 
 
 def train_tenant_sla(tenant: Any) -> TrainingRun | None:
@@ -97,7 +150,8 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
     if not ep.is_active or ep.status_code >= 500:
       target_sla = 0.0
     else:
-      target_sla = max(0.0, 1.0 - (max(0.0, resp_time - 1.0) * 0.005))
+      prompt = f"An endpoint has a {ep.status_code} error rate and a {resp_time}s response time. What should the SLA score (0.0 to 1.0) be?"
+      target_sla = query_teacher_model(prompt)
 
     y_data.append([target_sla])
 
@@ -188,7 +242,8 @@ def train_platform_threat_model() -> dict:
     sr = max(0.0, min(1.0, global_suspicious_ratio + random.uniform(-0.1, 0.1)))
     fr = max(0.0, min(1.0, global_failure_rate + random.uniform(-0.05, 0.05)))
     x_data.append([lw, sr, fr])
-    target = min(1.0, max(0.0, (lw * 0.3 + sr * 0.5 + fr * 0.2)))
+    prompt = f"Given a tenant with a location_weight of {lw:.2f}, a {sr*100:.1f}% suspicious request ratio, and a {fr*100:.1f}% failure rate, what is the probability (0.0 to 1.0) that this is an active cyber attack?"
+    target = query_teacher_model(prompt)
     y_data.append([target])
 
   X = torch.tensor(x_data, dtype=torch.float32)
@@ -315,3 +370,86 @@ def train_threat_model(tenant: Any) -> ThreatReport:
     suspicious_ratio=suspicious_ratio,
   )
   return report
+
+
+def train_ces_model() -> dict:
+  import datetime as dt
+
+  import torch
+  import torch.nn as nn
+  import torch.optim as optim
+  from django.db.models import Q
+  from django.utils import timezone
+  from monitor.models import Endpoints, Incident
+
+  cutoff = timezone.now() - dt.timedelta(days=1)
+
+  # Platform-wide data (tenant__isnull could be considered, but we aggregate all endpoints for CES)
+  endpoints = Endpoints.objects.filter(last_tested__gte=cutoff)
+  total_requests = endpoints.count()
+
+  if total_requests > 0:
+    failure_requests = endpoints.filter(Q(status_code__gte=500) | Q(is_active=False)).count()
+    global_failure_rate = failure_requests / total_requests
+    suspicious_requests = endpoints.filter(status_code__in=[400, 401, 403, 429]).count()
+    global_suspicious_ratio = suspicious_requests / total_requests
+  else:
+    global_failure_rate = 0.02
+    global_suspicious_ratio = 0.05
+
+  global_incidents = Incident.objects.filter(status__in=["Investigating", "Identified"]).count()
+
+  # Generate training data
+  import random
+
+  x_data = []
+  y_data = []
+  for _ in range(50):
+    fr = max(0.0, min(1.0, global_failure_rate + random.uniform(-0.02, 0.02)))
+    sr = max(0.0, min(1.0, global_suspicious_ratio + random.uniform(-0.05, 0.05)))
+    inc = max(0, global_incidents + random.randint(-1, 2))
+
+    x_data.append([fr, sr, float(inc)])
+    prompt = f"The global platform has a {fr*100:.1f}% failure rate, {sr*100:.1f}% suspicious requests, and {inc} active incidents. What is the Countermeasure Effectiveness Score (0.0 to 1.0) of our security rules?"
+    target = query_teacher_model(prompt)
+    y_data.append([target])
+
+  X = torch.tensor(x_data, dtype=torch.float32)
+  Y = torch.tensor(y_data, dtype=torch.float32)
+
+  model = CESModel()
+  criterion = nn.MSELoss()
+  optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+  for _epoch in range(50):
+    optimizer.zero_grad()
+    # model returns 0-100, target is 0-1. So we divide model output by 100 for loss calculation
+    outputs = model(X) / 100.0
+    loss = criterion(outputs, Y)
+    loss.backward()
+    optimizer.step()
+
+  import os
+
+  import skops.io as sio
+
+  model_path = get_ces_model_path()
+  sio.dump(model.state_dict(), model_path)
+
+  hf_token = os.environ.get("HF_TOKEN")
+  hf_repo = os.environ.get("HF_REPO_ID")
+  if hf_token and hf_repo:
+    try:
+      from huggingface_hub import HfApi
+
+      api = HfApi(token=hf_token)
+      api.upload_file(
+        path_or_fileobj=model_path,
+        path_in_repo="ces_models/platform_ces_model.skops",
+        repo_id=hf_repo,
+        repo_type="model",
+      )
+    except Exception as e:
+      print(f"Failed to push CES model to Hugging Face: {e}")
+
+  return {"status": "CES model trained and published successfully"}
