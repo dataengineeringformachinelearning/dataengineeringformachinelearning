@@ -191,6 +191,10 @@ export class Landing implements OnInit, OnDestroy {
       });
   }
 
+  startFreeTier() {
+    alert('Standard Tier activated.');
+  }
+
   upgradeToPro() {
     // Note: For a real app, you would pass the user's active tenant ID, which would be retrieved from auth state
     const payload = { tenant_id: 'example-tenant-id' };
@@ -202,11 +206,17 @@ export class Landing implements OnInit, OnDestroy {
           if (res.checkout_url) {
             window.location.href = res.checkout_url;
           } else {
-            console.error('No checkout URL returned', res);
+            console.warn('No checkout URL returned, likely missing Stripe config.', res);
+            alert(
+              'Stripe configuration is missing. This is a mock success response for the Pro Tier.',
+            );
           }
         },
         error: err => {
-          console.error('Failed to create checkout session', err);
+          console.warn('Failed to create checkout session, handling gracefully.', err);
+          alert(
+            'Billing integration is not fully configured (missing Stripe keys). Pro Tier upgrade simulated.',
+          );
         },
       });
   }

@@ -201,7 +201,7 @@
         </p>
       </div>
       <div class="cta-group" style="justify-content: flex-start; margin-top: 0">
-        <a routerLink="/whitepaper" class="cta-button primary-btn">
+        <a routerLink="/whitepaper" class="cta-button primary-btn whitepaper-btn">
           <mat-icon>description</mat-icon>
           <span>Read Whitepaper</span>
         </a>
@@ -215,141 +215,30 @@
         <h2 id="pricing-title">Simple, Transparent Pricing</h2>
         <p>Choose the tier that fits your telemetry throughput needs.</p>
       </div>
-      <div
-        class="pricing-cards-container"
-        style="display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap"
-      >
+      <div class="pricing-cards-container">
         <!-- Standard Tier -->
-        <div
-          class="pricing-card"
-          style="
-            flex: 1;
-            min-width: 280px;
-            padding: 2rem;
-            border-radius: 1rem;
-            background: var(--surface-card);
-            border: 1px solid var(--surface-border);
-          "
-        >
+        <div class="pricing-card standard-tier">
           <h3>Standard Tier</h3>
-          <div class="price" style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0">Free</div>
-          <ul
-            style="list-style: none; padding: 0; margin-bottom: 2rem; opacity: 0.8; line-height: 2"
-          >
-            <li>
-              <mat-icon
-                style="
-                  vertical-align: middle;
-                  font-size: 1.2rem;
-                  margin-right: 0.5rem;
-                  color: var(--primary-color);
-                "
-                >check</mat-icon
-              >
-              60 requests / minute
-            </li>
-            <li>
-              <mat-icon
-                style="
-                  vertical-align: middle;
-                  font-size: 1.2rem;
-                  margin-right: 0.5rem;
-                  color: var(--primary-color);
-                "
-                >check</mat-icon
-              >
-              Core Analytics
-            </li>
-            <li>
-              <mat-icon
-                style="
-                  vertical-align: middle;
-                  font-size: 1.2rem;
-                  margin-right: 0.5rem;
-                  color: var(--primary-color);
-                "
-                >check</mat-icon
-              >
-              Community Support
-            </li>
+          <div class="price">Free</div>
+          <ul class="features-list">
+            <li><mat-icon>check</mat-icon> 60 requests / minute</li>
+            <li><mat-icon>check</mat-icon> Core Analytics</li>
+            <li><mat-icon>check</mat-icon> Community Support</li>
           </ul>
-          <button class="cta-button secondary-btn" style="width: 100%">Get Started</button>
+          <button class="cta-button secondary-btn" (click)="startFreeTier()">Get Started</button>
         </div>
 
         <!-- Pro Tier -->
-        <div
-          class="pricing-card"
-          style="
-            flex: 1;
-            min-width: 280px;
-            padding: 2rem;
-            border-radius: 1rem;
-            background: var(--surface-card);
-            border: 2px solid var(--primary-color);
-            position: relative;
-          "
-        >
-          <div
-            style="
-              position: absolute;
-              top: -12px;
-              left: 50%;
-              transform: translateX(-50%);
-              background: var(--primary-color);
-              color: var(--primary-color-text);
-              padding: 4px 12px;
-              border-radius: 12px;
-              font-size: 0.8rem;
-              font-weight: bold;
-            "
-          >
-            RECOMMENDED
-          </div>
+        <div class="pricing-card pro-tier">
+          <div class="recommended-badge">RECOMMENDED</div>
           <h3>Pro Tier</h3>
-          <div class="price" style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0">
-            $49<span style="font-size: 1rem; font-weight: normal; opacity: 0.7">/mo</span>
-          </div>
-          <ul
-            style="list-style: none; padding: 0; margin-bottom: 2rem; opacity: 0.8; line-height: 2"
-          >
-            <li>
-              <mat-icon
-                style="
-                  vertical-align: middle;
-                  font-size: 1.2rem;
-                  margin-right: 0.5rem;
-                  color: var(--primary-color);
-                "
-                >check</mat-icon
-              >
-              1,000 requests / minute
-            </li>
-            <li>
-              <mat-icon
-                style="
-                  vertical-align: middle;
-                  font-size: 1.2rem;
-                  margin-right: 0.5rem;
-                  color: var(--primary-color);
-                "
-                >check</mat-icon
-              >
-              Advanced Threat Detection
-            </li>
-            <li>
-              <mat-icon
-                style="
-                  vertical-align: middle;
-                  font-size: 1.2rem;
-                  margin-right: 0.5rem;
-                  color: var(--primary-color);
-                "
-                >check</mat-icon
-              >
-              Priority Support
-            </li>
+          <div class="price">$49<span>/mo</span></div>
+          <ul class="features-list">
+            <li><mat-icon>check</mat-icon> 1,000 requests / minute</li>
+            <li><mat-icon>check</mat-icon> Advanced Threat Detection</li>
+            <li><mat-icon>check</mat-icon> Priority Support</li>
           </ul>
-          <button class="cta-button primary-btn" style="width: 100%" (click)="upgradeToPro()">
+          <button class="cta-button primary-btn pro-btn" (click)="upgradeToPro()">
             Upgrade to Pro
           </button>
         </div>
