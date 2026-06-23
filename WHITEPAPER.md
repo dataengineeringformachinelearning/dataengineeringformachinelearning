@@ -136,13 +136,12 @@ By combining asynchronous broker patterns, ultra-fast DataFrame engines, and pre
 15. The Angular Team (Google). (2026). _Angular: The modern web developer's platform_.
 16. Stripe. (2026). _Stripe: Financial Infrastructure Platform_.
 17. Mend.io. (2026). _Mend: Application Security Testing_.
-18. Chainguard. (2026). _Chainguard: Zero-Trust Container Images_.
-19. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
-20. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
+18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
+19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
 
 ## 12. DevSecOps and Platform Standardization Audit
 
-In our continuous pursuit of operational excellence, we have recently completed a comprehensive DevSecOps and UI/UX standardization audit. This effort guarantees an uncompromising mobile-first foundation across the platform, standardizing layout wrappers and enforcing identical maximum width containers (`1152px`) perfectly aligned to a strict `9px` grid system for zero layout shifting. On the infrastructure side, we have transitioned our deployment pipeline to leverage strict, Google Distroless-like multi-stage container builds (e.g., `cgr.dev/chainguard/nginx` and `gcr.io/distroless/python3`), fundamentally reducing the attack surface by eliminating unnecessary shells and package managers in production. Additionally, we have rigorously audited Django ORM queries and ML workers to ensure robust, leak-proof data tenancy and strict adherence to our aggressive 7-day telemetry retention policy.
+In our continuous pursuit of operational excellence, we have recently completed a comprehensive DevSecOps and UI/UX standardization audit. This effort guarantees an uncompromising mobile-first foundation across the platform, standardizing layout wrappers and enforcing identical maximum width containers (`1152px`) perfectly aligned to a strict `9px` grid system for zero layout shifting. On the infrastructure side, we have transitioned our deployment pipeline to leverage strict, Google Distroless and unprivileged multi-stage container builds (e.g., `nginxinc/nginx-unprivileged` and `gcr.io/distroless/python3`), fundamentally reducing the attack surface by eliminating unnecessary shells and package managers in production. Additionally, we have rigorously audited Django ORM queries and ML workers to ensure robust, leak-proof data tenancy and strict adherence to our aggressive 7-day telemetry retention policy.
 
 Most recently, we fully integrated Application-Level Zeek-equivalent middleware with zero-latency cached domain mappings for real-time passive telemetry ingestion. We also finalized our native OSINT and Dark Web scanners to actively serialize threat findings directly into native `ThreatIntelligence` database records instead of static logs. Finally, our Post-Quantum Cryptography (PQC) integration was fortified: the KEM architecture now enforces strict Forward Secrecy by caching ephemeral secret keys for exactly 5 minutes using UUIDs and destroying them immediately upon decapsulating payloads, neutralizing "Store Now, Decrypt Later" attacks natively at the ingestion gateway.
 

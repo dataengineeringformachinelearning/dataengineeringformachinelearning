@@ -49,8 +49,8 @@ window.FIREBASE_CONFIG = {
 };
 EOF
 
-# Production stage (Google Distroless-like chainguard nginx)
-FROM cgr.dev/chainguard/nginx:latest
+# Production stage (Unprivileged Nginx)
+FROM nginxinc/nginx-unprivileged:alpine
 
 # Copy built application from builder stage
 COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
@@ -60,5 +60,3 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 8080
-
-USER nginx
