@@ -201,7 +201,9 @@ class Command(BaseCommand):
 
     frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200").rstrip("/")
 
-    tenant_0 = Tenant.objects.filter(is_platform_tenant=True).first()
+    # Loop over all tenants to map endpoints dynamically
+    all_tenants = {str(t.id): t for t in Tenant.objects.all()}
+    tenant_0 = next((t for t in all_tenants.values() if t.is_platform_tenant), None)
 
     try:
       page = StatusPage.objects.get(slug="platform-status")
@@ -310,9 +312,12 @@ class Command(BaseCommand):
       ip_data = get_ip_enrichment(ip)
       ua_data = parse_user_agent(ua)
 
+      t_id = row.get("tenant_id")
+      tenant = all_tenants.get(str(t_id)) if t_id else tenant_0
+
       # Create instance (we don't save yet to do it in bulk)
       ep = Endpoints(
-        tenant=tenant_0,
+        tenant=tenant,
         url=row["url"],
         status_code=row["status_code"],
         response_time=duration,

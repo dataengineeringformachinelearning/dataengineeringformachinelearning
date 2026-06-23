@@ -318,6 +318,7 @@ def submit_to_isac(request: Any, payload: ISACSubmissionIn) -> Any:
   import os
   import uuid
 
+  import httpx
   from django.utils.html import escape
 
   # Fetch STIX data
@@ -337,7 +338,7 @@ def submit_to_isac(request: Any, payload: ISACSubmissionIn) -> Any:
   ]
 
   if cisa_endpoint or isac_key:
-    # Production route (simulated request to actual configured URL)
+    # Production route (request to actual configured URL)
     mode = "production"
     endpoint = (
       cisa_endpoint
@@ -345,14 +346,29 @@ def submit_to_isac(request: Any, payload: ISACSubmissionIn) -> Any:
       else "https://api.isac.org/v2/threat-indicators"
     )
     endpoint_escaped = escape(endpoint)
-    logs.extend(
-      [
-        f"Secure handshake completed with {dest_escaped} using TLS 1.3.",
-        f"POST payload transmitted to endpoint: {endpoint_escaped}",
-        f"Server responded 202 Accepted. Transaction ID: {submission_id}.",
-      ]
-    )
-    message = f"Successfully submitted STIX threat report to {dest_escaped} in Production Mode."
+
+    try:
+      headers = {
+        "Accept": "application/taxii+json;version=2.1",
+        "Content-Type": "application/taxii+json;version=2.1",
+      }
+      if isac_key and payload.destination != "CISA":
+        headers["Authorization"] = f"Bearer {isac_key}"
+
+      response = httpx.post(endpoint, json=stix_data, headers=headers, timeout=5.0)
+      response.raise_for_status()
+
+      logs.extend(
+        [
+          f"Secure handshake completed with {dest_escaped} using TLS 1.3.",
+          f"POST payload transmitted to endpoint: {endpoint_escaped}",
+          f"Server responded {response.status_code}. Transaction ID: {submission_id}.",
+        ]
+      )
+      message = f"Successfully submitted STIX threat report to {dest_escaped} in Production Mode."
+    except Exception as e:
+      logs.extend([f"Error transmitting to {dest_escaped}: {e!s}"])
+      message = f"Failed to submit STIX threat report to {dest_escaped}: {e!s}"
   else:
     # Sandbox/Simulated fallback
     mode = "sandbox"

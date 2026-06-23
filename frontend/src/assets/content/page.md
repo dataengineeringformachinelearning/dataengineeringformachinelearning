@@ -2,7 +2,7 @@
 
 _By Joe Alongi_
 
-Welcome to my working notebook and companion repository. As 2026 began, I found myself immersed in a project that felt like the culmination of a decade's work. Instead of simply building another app, I was architecting a production-grade, full-stack telemetry and machine learning platform. This `README.md` acts as **"The Book"**, documenting the entire journey. Each chapter provides comprehensive narrative deep dives (minimum 600 words), alongside code snippets and technology links.
+Welcome to my working notebook and companion repository. As 2026 began, I found myself immersed in a project that felt like the culmination of a decade's work. Instead of simply building another app, I was architecting a production-grade, full-stack telemetry and machine learning platform. This book acts as **"The Book"**, documenting the entire journey. Each chapter provides comprehensive narrative deep dives (minimum 600 words), alongside code snippets and technology links.
 
 Over the last ten years, my path has evolved from early web development, through the founding of startups, to deep software engineering and architecture. Those foundational years unlocked the paradigms I am now pouring into this platform. My goal here is simple: to champion the thoughtful coders. We're going to build this system together, starting from a completely fresh Mac install and working my way up to a deployed, secure, and observable ML-driven application. I will merge rigorous data engineering with the predictive power of machine learning, prioritizing quality and precision every step of the way.
 
@@ -601,7 +601,7 @@ To further enrich this context, I also execute Active Network Reconnaissance dir
 
 By fusing global threat intelligence, behavioral biometrics, and active network reconnaissance into a centralized PyTorch inference engine, I transform my platform from a passive target into an actively defended fortress. The `ThreatModel` autonomously calculates the risk score in milliseconds, empowering my API gateways to instantly throttle, challenge, or entirely sever malicious connections, guaranteeing the zero-compromise security of my operational infrastructure.
 
-Furthermore, this active defense posture extends to daily Open Source Intelligence (OSINT) and Dark Web reconnaissance. Background Celery workers actively query the "Have I Been Pwned" (HIBP) APIs for compromised platform credentials and scan Tor hidden services (Ahmia) for brand mentions. Instead of passively logging these findings, the platform immediately serializes them as native `ThreatIntelligence` database records (flagged with `is_malicious=True`). This guarantees that compromised credentials or dark web leaks instantly populate the tenant's security dashboard, dramatically accelerating incident response times.
+Furthermore, this active defense posture extends to daily Open Source Intelligence (OSINT) and Dark Web reconnaissance. Background cron workers actively query the "Have I Been Pwned" (HIBP) APIs for compromised platform credentials and scan Tor hidden services (Ahmia) for brand mentions. Instead of passively logging these findings, the platform immediately serializes them as native `ThreatIntelligence` database records (flagged with `is_malicious=True`). This guarantees that compromised credentials or dark web leaks instantly populate the tenant's security dashboard, dramatically accelerating incident response times.
 
 ---
 
@@ -825,12 +825,13 @@ Furthermore, our data-at-rest encryption (currently AES-256-GCM) is generally co
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
 
-- **Frontend**: [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/)
-- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/)), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
-- **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Polars](https://pola.rs/)
-- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
+- **Frontend**: [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), [Orama](https://askorama.com/), [Leaflet](https://leafletjs.com/), [ApexCharts](https://apexcharts.com/), [Firebase](https://firebase.google.com/)
+- **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
+- **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [LangChain](https://www.langchain.com/), [LangGraph](https://langchain-ai.github.io/langgraph/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 
 ---
 
@@ -1226,6 +1227,18 @@ A lightweight proxy that allows the backend Telemetry Workers to anonymously scr
 - **Target Port**: `9050`
 - **Private Internal DNS**: `deml-tor-proxy.railway.internal`
 - **Environment Variables**: None required.
+
+### 13. Dragonfly (Redis Replacement for WebSockets)
+
+This service provides the in-memory pub/sub message broker required by Django Channels to route real-time WebSocket traffic.
+
+- **Image**: `docker.dragonflydb.io/dragonflydb/dragonfly:latest` (or use the official Railway Dragonfly template)
+- **Target Port**: `6379`
+- **Private Internal DNS**: `deml-dragonfly.railway.internal`
+- **Public URL**: None (Strictly an internal service)
+- **Environment Variables**: None required by default.
+
+_(Once deployed, ensure the `REDIS_HOST` environment variable on the **Web Backend**, **Telemetry Worker**, and **ML Training Worker** points to this internal DNS, e.g., `deml-dragonfly.railway.internal`)_
 
 ## Internal Networking
 

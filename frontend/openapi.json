@@ -1,0 +1,1581 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Web Application API", "version": "2.0.0", "description": "" },
+  "paths": {
+    "/api/v1/system-status/endpoints": {
+      "get": {
+        "operationId": "monitor_api_get_all_endpoints",
+        "summary": "Get All Endpoints",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/EndpointOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system-status/health": {
+      "get": {
+        "operationId": "monitor_api_api_health",
+        "summary": "Api Health",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/system-status/status_pages": {
+      "get": {
+        "operationId": "monitor_api_list_status_pages",
+        "summary": "List Status Pages",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/StatusPageOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "monitor_api_create_status_page",
+        "summary": "Create Status Page",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/StatusPageOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/StatusPageIn" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/system-status/status_pages/slug/{slug}": {
+      "get": {
+        "operationId": "monitor_api_get_status_page_by_slug",
+        "summary": "Get Status Page By Slug",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "schema": { "title": "Slug", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/StatusPageOut" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system-status/status_pages/{page_id}": {
+      "put": {
+        "operationId": "monitor_api_update_status_page",
+        "summary": "Update Status Page",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "page_id",
+            "schema": { "title": "Page Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/StatusPageOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/StatusPageIn" } }
+          },
+          "required": true
+        }
+      },
+      "delete": {
+        "operationId": "monitor_api_delete_status_page",
+        "summary": "Delete Status Page",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "page_id",
+            "schema": { "title": "Page Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/system-status/status_pages/{page_id}/services": {
+      "get": {
+        "operationId": "monitor_api_list_services",
+        "summary": "List Services",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "page_id",
+            "schema": { "title": "Page Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/MonitoredServiceOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "monitor_api_add_service",
+        "summary": "Add Service",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "page_id",
+            "schema": { "title": "Page Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MonitoredServiceOut" }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/MonitoredServiceIn" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/system-status/services/{service_id}": {
+      "delete": {
+        "operationId": "monitor_api_delete_service",
+        "summary": "Delete Service",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "service_id",
+            "schema": { "title": "Service Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/system-status/status_pages/{page_id}/incidents": {
+      "get": {
+        "operationId": "monitor_api_list_incidents",
+        "summary": "List Incidents",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "page_id",
+            "schema": { "title": "Page Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/IncidentOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "monitor_api_create_incident",
+        "summary": "Create Incident",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "page_id",
+            "schema": { "title": "Page Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IncidentOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/IncidentIn" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/system-status/incidents/{incident_id}": {
+      "delete": {
+        "operationId": "monitor_api_delete_incident",
+        "summary": "Delete Incident",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "schema": { "title": "Incident Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/system-status/integrations": {
+      "get": {
+        "operationId": "monitor_api_list_integrations",
+        "summary": "List Integrations",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/IntegrationOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/system-status/integrations/google/auth-url": {
+      "get": {
+        "operationId": "monitor_api_google_auth_url",
+        "summary": "Google Auth Url",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/system-status/integrations/google/callback": {
+      "get": {
+        "operationId": "monitor_api_google_callback",
+        "summary": "Google Callback",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "code",
+            "schema": { "title": "Code", "type": "string" },
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "state",
+            "schema": { "title": "State", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/system-status/integrations/clarity": {
+      "post": {
+        "operationId": "monitor_api_save_clarity",
+        "summary": "Save Clarity",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ClarityIn" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/system-status/integrations/cloudflare": {
+      "post": {
+        "operationId": "monitor_api_save_cloudflare",
+        "summary": "Save Cloudflare",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/CloudflareIn" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/system-status/integrations/{integration_id}": {
+      "delete": {
+        "operationId": "monitor_api_delete_integration",
+        "summary": "Delete Integration",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "integration_id",
+            "schema": { "title": "Integration Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/ml/train": {
+      "get": {
+        "operationId": "ml_ml_api_train_model",
+        "summary": "Train Model",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status_page_id",
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Status Page Id"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TrainOut" } }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "ml_ml_api_train_model",
+        "summary": "Train Model",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status_page_id",
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Status Page Id"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TrainOut" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/latest": {
+      "get": {
+        "operationId": "ml_ml_api_get_latest_training",
+        "summary": "Get Latest Training",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status_page_id",
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Status Page Id"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/LatestRunOut" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/threat-intel/train": {
+      "post": {
+        "operationId": "ml_ml_api_train_threat_intel",
+        "summary": "Train Threat Intel",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ThreatReportOut" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/threat-intel/report": {
+      "get": {
+        "operationId": "ml_ml_api_get_threat_report",
+        "summary": "Get Threat Report",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status_page_id",
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Status Page Id"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ThreatReportOut" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/threat-intel/stix": {
+      "get": {
+        "operationId": "ml_ml_api_get_threat_report_stix",
+        "summary": "Get Threat Report Stix",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status_page_id",
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "title": "Status Page Id"
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/STIXBundleOut" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ml/threat-intel/submit-isac": {
+      "post": {
+        "operationId": "ml_ml_api_submit_to_isac",
+        "summary": "Submit To Isac",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ISACSubmissionOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ISACSubmissionIn" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/ml/compliance/soc-status": {
+      "get": {
+        "operationId": "ml_ml_api_get_soc_status",
+        "summary": "Get Soc Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SOCStatusOut" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/telemetry/endpoints": {
+      "post": {
+        "operationId": "telemetry_api_ingest_endpoint_telemetry",
+        "summary": "Ingest Endpoint Telemetry",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/TelemetryPayload" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/telemetry/cookie-consent": {
+      "post": {
+        "operationId": "telemetry_api_save_cookie_consent",
+        "summary": "Save Cookie Consent",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CookieConsentPayload" }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/telemetry/subscribe": {
+      "post": {
+        "operationId": "telemetry_api_subscribe_newsletter",
+        "summary": "Subscribe Newsletter",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/SubscribePayload" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/telemetry/technology": {
+      "post": {
+        "operationId": "telemetry_api_ingest_technology_telemetry",
+        "summary": "Ingest Technology Telemetry",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/TelemetryDualStreamPayload" }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/telemetry/pq-key-exchange": {
+      "get": {
+        "operationId": "telemetry_api_get_pq_key_exchange",
+        "summary": "Get Pq Key Exchange",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/PQKeyExchangeResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/analytics/tenants": {
+      "get": {
+        "operationId": "telemetry_analytics_views_get_user_tenants",
+        "summary": "Get User Tenants",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/analytics/overview": {
+      "get": {
+        "operationId": "telemetry_analytics_views_get_analytics_overview",
+        "summary": "Get Analytics Overview",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "tenant_id",
+            "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Tenant Id" },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "site_url",
+            "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Site Url" },
+            "required": false
+          }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/v1/auth/user": {
+      "get": {
+        "operationId": "config_api_auth_api_user",
+        "summary": "Api User",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SuccessSchema" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/delete-account": {
+      "delete": {
+        "operationId": "config_api_auth_api_delete_account",
+        "summary": "Api Delete Account",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SuccessSchema" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/api-keys/generate": {
+      "post": {
+        "operationId": "config_api_auth_generate_api_key",
+        "summary": "Generate API Key",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/APIKeyGenerateOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/APIKeyGenerateIn" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/auth/api-keys": {
+      "get": {
+        "operationId": "config_api_auth_list_api_keys",
+        "summary": "List API Keys",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/APIKeyOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/api-keys/{key_id}": {
+      "delete": {
+        "operationId": "config_api_auth_delete_api_key",
+        "summary": "Revoke API Key",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "key_id",
+            "schema": { "title": "Key Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/SuccessSchema" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agent/report-issue": {
+      "post": {
+        "operationId": "agent_api_report_issue",
+        "summary": "Report Issue",
+        "parameters": [],
+        "responses": { "200": { "description": "OK" } },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/IssueReportPayload" } }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/agent/vulnerabilities": {
+      "post": {
+        "operationId": "agent_api_report_vulnerability",
+        "summary": "Report Vulnerability",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/VulnerabilityOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VulnerabilityReportPayload" }
+            }
+          },
+          "required": true
+        }
+      },
+      "get": {
+        "operationId": "agent_api_list_vulnerabilities",
+        "summary": "List Vulnerabilities",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "tenant_id",
+            "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Tenant Id" },
+            "required": false
+          },
+          {
+            "in": "query",
+            "name": "site_url",
+            "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Site Url" },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/VulnerabilityOut" },
+                  "title": "Response",
+                  "type": "array"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agent/vulnerabilities/{vuln_id}": {
+      "patch": {
+        "operationId": "agent_api_update_vulnerability",
+        "summary": "Update Vulnerability",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "vuln_id",
+            "schema": { "title": "Vuln Id", "type": "string" },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/VulnerabilityOut" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/VulnerabilityUpdatePayload" }
+            }
+          },
+          "required": true
+        }
+      }
+    },
+    "/api/v1/integrations/kubernetes": {
+      "get": {
+        "operationId": "integrations_api_kubernetes_status",
+        "summary": "Kubernetes Integration Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationStatus" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/tensorflow": {
+      "get": {
+        "operationId": "integrations_api_tensorflow_status",
+        "summary": "TensorFlow Integration Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationStatus" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/pytorch": {
+      "get": {
+        "operationId": "integrations_api_pytorch_status",
+        "summary": "PyTorch Integration Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationStatus" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/apache-spark": {
+      "get": {
+        "operationId": "integrations_api_apache_spark_status",
+        "summary": "Apache Spark Integration Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationStatus" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/databricks": {
+      "get": {
+        "operationId": "integrations_api_databricks_status",
+        "summary": "Databricks Integration Status",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IntegrationStatus" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ingest": {
+      "post": {
+        "operationId": "integrations_api_ingest_data",
+        "summary": "High-Throughput Data Ingestion",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IngestResponse" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/IngestPayload" } }
+          },
+          "required": true
+        },
+        "security": [{ "IntegrationAPIKeyAuth": [] }]
+      }
+    },
+    "/api/v1/predict": {
+      "post": {
+        "operationId": "integrations_api_predict",
+        "summary": "Real-time Model Inference",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PredictResponse" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PredictPayload" } }
+          },
+          "required": true
+        },
+        "security": [{ "IntegrationAPIKeyAuth": [] }]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "EndpointOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "url": { "title": "Url", "type": "string" },
+          "last_tested": { "format": "date-time", "title": "Last Tested", "type": "string" },
+          "status_code": { "title": "Status Code", "type": "integer" },
+          "response_time": { "title": "Response Time", "type": "string" },
+          "ip_address": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Ip Address"
+          },
+          "is_active": { "title": "Is Active", "type": "boolean" }
+        },
+        "required": [
+          "id",
+          "url",
+          "last_tested",
+          "status_code",
+          "response_time",
+          "ip_address",
+          "is_active"
+        ],
+        "title": "EndpointOut",
+        "type": "object"
+      },
+      "StatusPageOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "title": { "title": "Title", "type": "string" },
+          "slug": { "title": "Slug", "type": "string" },
+          "description": { "title": "Description", "type": "string" },
+          "is_published": { "title": "Is Published", "type": "boolean" },
+          "google_analytics_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Google Analytics Id"
+          },
+          "microsoft_clarity_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Microsoft Clarity Id"
+          },
+          "cloudflare_analytics_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Cloudflare Analytics Id"
+          },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" },
+          "user_id": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "User Id" },
+          "cumulative_sla": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Cumulative Sla"
+          },
+          "overall_uptime": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Overall Uptime"
+          },
+          "uptime_history": {
+            "anyOf": [
+              { "items": { "$ref": "#/components/schemas/UptimeDaySchema" }, "type": "array" },
+              { "type": "null" }
+            ],
+            "title": "Uptime History"
+          },
+          "p99_latency": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "P99 Latency"
+          },
+          "total_requests": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Total Requests"
+          }
+        },
+        "required": ["id", "title", "slug", "description", "is_published", "created_at"],
+        "title": "StatusPageOut",
+        "type": "object"
+      },
+      "UptimeDaySchema": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "uptime": { "title": "Uptime", "type": "number" }
+        },
+        "required": ["status", "uptime"],
+        "title": "UptimeDaySchema",
+        "type": "object"
+      },
+      "StatusPageIn": {
+        "properties": {
+          "title": { "title": "Title", "type": "string" },
+          "slug": { "title": "Slug", "type": "string" },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "default": "",
+            "title": "Description"
+          },
+          "is_published": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "default": false,
+            "title": "Is Published"
+          },
+          "google_analytics_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Google Analytics Id"
+          },
+          "microsoft_clarity_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Microsoft Clarity Id"
+          },
+          "cloudflare_analytics_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Cloudflare Analytics Id"
+          }
+        },
+        "required": ["title", "slug"],
+        "title": "StatusPageIn",
+        "type": "object"
+      },
+      "MonitoredServiceOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "url": { "title": "Url", "type": "string" },
+          "status_page_id": { "title": "Status Page Id", "type": "string" },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" },
+          "status": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "default": "Operational",
+            "title": "Status"
+          },
+          "sla": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "default": 100.0,
+            "title": "Sla"
+          }
+        },
+        "required": ["id", "name", "url", "status_page_id", "created_at"],
+        "title": "MonitoredServiceOut",
+        "type": "object"
+      },
+      "MonitoredServiceIn": {
+        "properties": {
+          "name": { "title": "Name", "type": "string" },
+          "url": { "title": "Url", "type": "string" }
+        },
+        "required": ["name", "url"],
+        "title": "MonitoredServiceIn",
+        "type": "object"
+      },
+      "IncidentOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "title": { "title": "Title", "type": "string" },
+          "message": { "title": "Message", "type": "string" },
+          "status": { "title": "Status", "type": "string" },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" },
+          "updated_at": { "format": "date-time", "title": "Updated At", "type": "string" },
+          "status_page_id": { "title": "Status Page Id", "type": "string" }
+        },
+        "required": [
+          "id",
+          "title",
+          "message",
+          "status",
+          "created_at",
+          "updated_at",
+          "status_page_id"
+        ],
+        "title": "IncidentOut",
+        "type": "object"
+      },
+      "IncidentIn": {
+        "properties": {
+          "title": { "title": "Title", "type": "string" },
+          "message": { "title": "Message", "type": "string" },
+          "status": { "title": "Status", "type": "string" }
+        },
+        "required": ["title", "message", "status"],
+        "title": "IncidentIn",
+        "type": "object"
+      },
+      "IntegrationOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "provider": { "title": "Provider", "type": "string" },
+          "active": { "title": "Active", "type": "boolean" },
+          "last_sync": {
+            "anyOf": [{ "format": "date-time", "type": "string" }, { "type": "null" }],
+            "title": "Last Sync"
+          },
+          "created_at": { "format": "date-time", "title": "Created At", "type": "string" }
+        },
+        "required": ["id", "provider", "active", "created_at"],
+        "title": "IntegrationOut",
+        "type": "object"
+      },
+      "ClarityIn": {
+        "properties": {
+          "project_id": { "title": "Project Id", "type": "string" },
+          "api_key": { "title": "Api Key", "type": "string" }
+        },
+        "required": ["project_id", "api_key"],
+        "title": "ClarityIn",
+        "type": "object"
+      },
+      "CloudflareIn": {
+        "properties": {
+          "project_id": { "title": "Project Id", "type": "string" },
+          "api_key": { "title": "Api Key", "type": "string" }
+        },
+        "required": ["project_id", "api_key"],
+        "title": "CloudflareIn",
+        "type": "object"
+      },
+      "TrainOut": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "message": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message" },
+          "average_sla": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Average Sla"
+          },
+          "loss": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Loss" },
+          "run_id": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Run Id" }
+        },
+        "required": ["status"],
+        "title": "TrainOut",
+        "type": "object"
+      },
+      "LatestRunOut": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "message": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message" },
+          "average_sla": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Average Sla"
+          },
+          "loss": { "anyOf": [{ "type": "number" }, { "type": "null" }], "title": "Loss" },
+          "created_at": {
+            "anyOf": [{ "format": "date-time", "type": "string" }, { "type": "null" }],
+            "title": "Created At"
+          }
+        },
+        "required": ["status"],
+        "title": "LatestRunOut",
+        "type": "object"
+      },
+      "ThreatReportOut": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "anomaly_score": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Anomaly Score"
+          },
+          "top_location": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Top Location"
+          },
+          "location_weight": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Location Weight"
+          },
+          "suspicious_ratio": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Suspicious Ratio"
+          },
+          "created_at": {
+            "anyOf": [{ "format": "date-time", "type": "string" }, { "type": "null" }],
+            "title": "Created At"
+          },
+          "message": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message" }
+        },
+        "required": ["status"],
+        "title": "ThreatReportOut",
+        "type": "object"
+      },
+      "STIXBundleOut": {
+        "properties": {
+          "type": { "title": "Type", "type": "string" },
+          "id": { "title": "Id", "type": "string" },
+          "objects": {
+            "items": { "additionalProperties": true, "type": "object" },
+            "title": "Objects",
+            "type": "array"
+          }
+        },
+        "required": ["type", "id", "objects"],
+        "title": "STIXBundleOut",
+        "type": "object"
+      },
+      "ISACSubmissionOut": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "message": { "title": "Message", "type": "string" },
+          "submission_id": { "title": "Submission Id", "type": "string" },
+          "mode": { "title": "Mode", "type": "string" },
+          "sent_payload": {
+            "additionalProperties": true,
+            "title": "Sent Payload",
+            "type": "object"
+          },
+          "logs": { "items": { "type": "string" }, "title": "Logs", "type": "array" }
+        },
+        "required": ["status", "message", "submission_id", "mode", "sent_payload", "logs"],
+        "title": "ISACSubmissionOut",
+        "type": "object"
+      },
+      "ISACSubmissionIn": {
+        "properties": {
+          "destination": { "title": "Destination", "type": "string" },
+          "status_page_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Status Page Id"
+          }
+        },
+        "required": ["destination"],
+        "title": "ISACSubmissionIn",
+        "type": "object"
+      },
+      "E2EEncryptionOut": {
+        "properties": {
+          "transit": { "title": "Transit", "type": "string" },
+          "rest": { "title": "Rest", "type": "string" },
+          "clientPayload": { "title": "Clientpayload", "type": "string" },
+          "rotationDaysRemaining": { "title": "Rotationdaysremaining", "type": "integer" }
+        },
+        "required": ["transit", "rest", "clientPayload", "rotationDaysRemaining"],
+        "title": "E2EEncryptionOut",
+        "type": "object"
+      },
+      "SOCCriteria": {
+        "properties": {
+          "name": { "title": "Name", "type": "string" },
+          "category": { "title": "Category", "type": "string" },
+          "status": { "title": "Status", "type": "string" },
+          "description": { "title": "Description", "type": "string" },
+          "details": { "title": "Details", "type": "string" }
+        },
+        "required": ["name", "category", "status", "description", "details"],
+        "title": "SOCCriteria",
+        "type": "object"
+      },
+      "SOCStatusOut": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "overall_score": { "title": "Overall Score", "type": "number" },
+          "criteria": {
+            "items": { "$ref": "#/components/schemas/SOCCriteria" },
+            "title": "Criteria",
+            "type": "array"
+          },
+          "e2e_encryption": {
+            "anyOf": [{ "$ref": "#/components/schemas/E2EEncryptionOut" }, { "type": "null" }]
+          }
+        },
+        "required": ["status", "overall_score", "criteria"],
+        "title": "SOCStatusOut",
+        "type": "object"
+      },
+      "TelemetryPayload": {
+        "properties": {
+          "url": { "title": "Url", "type": "string" },
+          "status_code": { "title": "Status Code", "type": "integer" },
+          "response_time_ms": { "title": "Response Time Ms", "type": "number" },
+          "ip_address": { "title": "Ip Address", "type": "string" },
+          "is_active": { "title": "Is Active", "type": "boolean" },
+          "telemetry_context": {
+            "anyOf": [{ "additionalProperties": true, "type": "object" }, { "type": "null" }],
+            "title": "Telemetry Context"
+          }
+        },
+        "required": ["url", "status_code", "response_time_ms", "ip_address", "is_active"],
+        "title": "TelemetryPayload",
+        "type": "object"
+      },
+      "CookieConsentPayload": {
+        "properties": {
+          "necessary": { "title": "Necessary", "type": "boolean" },
+          "analytical": { "title": "Analytical", "type": "boolean" },
+          "marketing": { "title": "Marketing", "type": "boolean" }
+        },
+        "required": ["necessary", "analytical", "marketing"],
+        "title": "CookieConsentPayload",
+        "type": "object"
+      },
+      "SubscribePayload": {
+        "properties": {
+          "email": { "title": "Email", "type": "string" },
+          "consent": { "title": "Consent", "type": "boolean" }
+        },
+        "required": ["email", "consent"],
+        "title": "SubscribePayload",
+        "type": "object"
+      },
+      "TelemetryDualStreamPayload": {
+        "properties": {
+          "tenant_id": { "title": "Tenant Id", "type": "string" },
+          "url": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Url" },
+          "stream_type": { "title": "Stream Type", "type": "string" },
+          "tech_name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Tech Name"
+          },
+          "version": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Version" },
+          "manifest_type": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Manifest Type"
+          },
+          "manifest_content": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Manifest Content"
+          }
+        },
+        "required": ["tenant_id", "stream_type"],
+        "title": "TelemetryDualStreamPayload",
+        "type": "object"
+      },
+      "PQKeyExchangeResponse": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "key_id": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Key Id" },
+          "public_key_b64": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Public Key B64"
+          },
+          "message": { "title": "Message", "type": "string" }
+        },
+        "required": ["status", "message"],
+        "title": "PQKeyExchangeResponse",
+        "type": "object"
+      },
+      "SuccessSchema": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "user": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "User" },
+          "user_id": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "User Id" },
+          "role": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Role" }
+        },
+        "required": ["status"],
+        "title": "SuccessSchema",
+        "type": "object"
+      },
+      "APIKeyGenerateOut": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "key": { "title": "Key", "type": "string" },
+          "prefix": { "title": "Prefix", "type": "string" }
+        },
+        "required": ["status", "name", "key", "prefix"],
+        "title": "APIKeyGenerateOut",
+        "type": "object"
+      },
+      "APIKeyGenerateIn": {
+        "properties": {
+          "name": { "default": "Integration Key", "title": "Name", "type": "string" }
+        },
+        "title": "APIKeyGenerateIn",
+        "type": "object"
+      },
+      "APIKeyOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "name": { "title": "Name", "type": "string" },
+          "prefix": { "title": "Prefix", "type": "string" },
+          "created_at": { "title": "Created At", "type": "string" }
+        },
+        "required": ["id", "name", "prefix", "created_at"],
+        "title": "APIKeyOut",
+        "type": "object"
+      },
+      "IssueReportPayload": {
+        "properties": {
+          "user_description": { "title": "User Description", "type": "string" },
+          "telemetry_context": {
+            "additionalProperties": true,
+            "title": "Telemetry Context",
+            "type": "object"
+          }
+        },
+        "required": ["user_description", "telemetry_context"],
+        "title": "IssueReportPayload",
+        "type": "object"
+      },
+      "VulnerabilityOut": {
+        "properties": {
+          "id": { "title": "Id", "type": "string" },
+          "title": { "title": "Title", "type": "string" },
+          "description": { "title": "Description", "type": "string" },
+          "status": { "title": "Status", "type": "string" },
+          "severity": { "title": "Severity", "type": "string" },
+          "impact": { "title": "Impact", "type": "integer" },
+          "likelihood": { "title": "Likelihood", "type": "integer" },
+          "cve_id": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Cve Id" },
+          "customer_id": { "title": "Customer Id", "type": "string" },
+          "telemetry_context": {
+            "anyOf": [{ "additionalProperties": true, "type": "object" }, { "type": "null" }],
+            "title": "Telemetry Context"
+          },
+          "created_at": { "title": "Created At", "type": "string" },
+          "updated_at": { "title": "Updated At", "type": "string" }
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "status",
+          "severity",
+          "impact",
+          "likelihood",
+          "customer_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "VulnerabilityOut",
+        "type": "object"
+      },
+      "VulnerabilityReportPayload": {
+        "properties": {
+          "title": { "title": "Title", "type": "string" },
+          "description": { "title": "Description", "type": "string" },
+          "telemetry_context": {
+            "additionalProperties": true,
+            "title": "Telemetry Context",
+            "type": "object"
+          },
+          "customer_id": { "default": "Internal", "title": "Customer Id", "type": "string" },
+          "cve_id": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Cve Id" },
+          "severity": { "default": "Medium", "title": "Severity", "type": "string" }
+        },
+        "required": ["title", "description", "telemetry_context"],
+        "title": "VulnerabilityReportPayload",
+        "type": "object"
+      },
+      "VulnerabilityUpdatePayload": {
+        "properties": {
+          "status": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Status" },
+          "severity": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Severity" },
+          "impact": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Impact" },
+          "likelihood": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Likelihood"
+          }
+        },
+        "title": "VulnerabilityUpdatePayload",
+        "type": "object"
+      },
+      "IntegrationStatus": {
+        "properties": {
+          "integration": { "title": "Integration", "type": "string" },
+          "status": { "title": "Status", "type": "string" },
+          "enabled": { "title": "Enabled", "type": "boolean" },
+          "version": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Version" },
+          "message": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message" }
+        },
+        "required": ["integration", "status", "enabled"],
+        "title": "IntegrationStatus",
+        "type": "object"
+      },
+      "IngestResponse": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "message": { "title": "Message", "type": "string" },
+          "processed_records": { "title": "Processed Records", "type": "integer" }
+        },
+        "required": ["status", "message", "processed_records"],
+        "title": "IngestResponse",
+        "type": "object"
+      },
+      "IngestPayload": {
+        "properties": {
+          "batch_id": { "title": "Batch Id", "type": "string" },
+          "records": {
+            "items": { "additionalProperties": true, "type": "object" },
+            "title": "Records",
+            "type": "array"
+          }
+        },
+        "required": ["batch_id", "records"],
+        "title": "IngestPayload",
+        "type": "object"
+      },
+      "PredictResponse": {
+        "properties": {
+          "status": { "title": "Status", "type": "string" },
+          "predictions": { "items": { "type": "number" }, "title": "Predictions", "type": "array" },
+          "model_version": { "title": "Model Version", "type": "string" },
+          "latency_ms": { "title": "Latency Ms", "type": "number" }
+        },
+        "required": ["status", "predictions", "model_version", "latency_ms"],
+        "title": "PredictResponse",
+        "type": "object"
+      },
+      "PredictPayload": {
+        "properties": {
+          "model_version": { "title": "Model Version", "type": "string" },
+          "inputs": { "items": { "type": "number" }, "title": "Inputs", "type": "array" }
+        },
+        "required": ["model_version", "inputs"],
+        "title": "PredictPayload",
+        "type": "object"
+      }
+    },
+    "securitySchemes": { "IntegrationAPIKeyAuth": { "type": "http", "scheme": "bearer" } }
+  },
+  "servers": []
+}

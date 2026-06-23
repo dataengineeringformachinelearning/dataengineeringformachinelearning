@@ -131,6 +131,9 @@ By combining asynchronous broker patterns, ultra-fast DataFrame engines, and pre
 10. Google Cloud. (2026). _Mandiant Threat Intelligence_.
 11. GreyNoise Intelligence. (2026). _GreyNoise: Internet Background Noise_.
 12. National Security Agency (NSA). (2026). _Ghidra Software Reverse Engineering Framework_.
+13. National Institute of Standards and Technology (NIST). (2026). _NIST Cybersecurity Framework and Cryptographic Standards_.
+14. The Python Software Foundation. (2026). _The Python Language Reference_.
+15. The Angular Team (Google). (2026). _Angular: The modern web developer's platform_.
 
 ## 12. DevSecOps and Platform Standardization Audit
 

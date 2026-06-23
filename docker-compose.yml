@@ -15,6 +15,16 @@ services:
       timeout: 5s
       retries: 5
 
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   redpanda:
     image: docker.redpanda.com/redpandadata/redpanda:v23.2.14
     command:
@@ -51,6 +61,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
+      - REDIS_HOST=dragonfly
     depends_on:
       postgres:
         condition: service_healthy
@@ -72,6 +83,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
+      - REDIS_HOST=dragonfly
     depends_on:
       backend:
         condition: service_started
@@ -91,6 +103,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
+      - REDIS_HOST=dragonfly
     depends_on:
       backend:
         condition: service_started

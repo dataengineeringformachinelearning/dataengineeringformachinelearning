@@ -29,21 +29,55 @@ class ThreatModel(nn.Module):
 
 
 def train_tenant_sla(tenant: Any) -> TrainingRun | None:
+  import numpy as np
+  import skops.io as sio
   import torch
   import torch.nn as nn
   import torch.optim as optim
+  from sklearn.base import BaseEstimator, RegressorMixin
+  from sklearn.model_selection import GridSearchCV
 
-  class SLAModel(nn.Module):
-    def __init__(self):
-      super().__init__()
-      self.fc1 = nn.Linear(3, 16)
-      self.fc2 = nn.Linear(16, 1)
-      self.relu = nn.ReLU()
+  class PyTorchSLAEstimator(BaseEstimator, RegressorMixin):
+    def __init__(self, lr=0.01, hidden_size=16):
+      self.lr = lr
+      self.hidden_size = hidden_size
+      self.model = None
 
-    def forward(self, x):
-      x = self.relu(self.fc1(x))
-      x = self.fc2(x)
-      return x
+    def fit(self, X, y):
+      class SLAModel(nn.Module):
+        def __init__(self, hidden_size):
+          super().__init__()
+          self.fc1 = nn.Linear(3, hidden_size)
+          self.fc2 = nn.Linear(hidden_size, 1)
+          self.relu = nn.ReLU()
+
+        def forward(self, x):
+          x = self.relu(self.fc1(x))
+          x = self.fc2(x)
+          return x
+
+      self.model = SLAModel(self.hidden_size)
+      criterion = nn.MSELoss()
+      optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
+
+      X_tensor = torch.tensor(X, dtype=torch.float32)
+      y_tensor = torch.tensor(y, dtype=torch.float32)
+
+      for _epoch in range(50):
+        optimizer.zero_grad()
+        outputs = self.model(X_tensor)
+        loss = criterion(outputs, y_tensor)
+        loss.backward()
+        optimizer.step()
+
+      return self
+
+    def predict(self, X):
+      self.model.eval()
+      X_tensor = torch.tensor(X, dtype=torch.float32)
+      with torch.no_grad():
+        preds = self.model(X_tensor)
+      return preds.numpy()
 
   endpoints = Endpoints.objects.filter(tenant=tenant)
   if not endpoints.exists():
@@ -67,26 +101,24 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
 
     y_data.append([target_sla])
 
-  X = torch.tensor(x_data, dtype=torch.float32)
-  Y = torch.tensor(y_data, dtype=torch.float32)
+  X_np = np.array(x_data, dtype=np.float32)
+  Y_np = np.array(y_data, dtype=np.float32)
 
-  model = SLAModel()
-  criterion = nn.MSELoss()
-  optimizer = optim.Adam(model.parameters(), lr=0.01)
+  param_grid = {"lr": [0.01, 0.001], "hidden_size": [8, 16]}
 
-  final_loss = 0.0
-  for _epoch in range(50):
-    optimizer.zero_grad()
-    outputs = model(X)
-    loss = criterion(outputs, Y)
-    loss.backward()
-    optimizer.step()
-    final_loss = loss.item()
+  if len(x_data) >= 2:
+    grid = GridSearchCV(
+      PyTorchSLAEstimator(), param_grid, cv=min(2, len(x_data)), scoring="neg_mean_squared_error"
+    )
+    grid.fit(X_np, Y_np)
+    best_estimator = grid.best_estimator_
+    final_loss = float(-grid.best_score_)
+  else:
+    best_estimator = PyTorchSLAEstimator().fit(X_np, Y_np)
+    final_loss = 0.0
 
-  model.eval()
-  with torch.no_grad():
-    preds = model(X)
-    avg_predicted_sla = max(0.0, min(100.0, preds.mean().item() * 100.0))
+  preds = best_estimator.predict(X_np)
+  avg_predicted_sla = max(0.0, min(100.0, float(np.mean(preds)) * 100.0))
 
   import os
 
@@ -96,17 +128,18 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
     try:
       from huggingface_hub import HfApi
 
-      torch.save(model.state_dict(), "/tmp/sla_model.pt")
+      # Serialize securely using skops instead of torch.save
+      sio.dump(best_estimator.model.state_dict(), "/tmp/sla_model.skops")
       api = HfApi(token=hf_token)
       import hashlib
 
       if hasattr(tenant, "slug"):
         safe_identifier = hashlib.sha256(tenant.slug.encode()).hexdigest()[:12]
-        model_name = f"{safe_identifier}_sla_model.pt"
+        model_name = f"{safe_identifier}_sla_model.skops"
       else:
-        model_name = "default_sla_model.pt"
+        model_name = "default_sla_model.skops"
       api.upload_file(
-        path_or_fileobj="/tmp/sla_model.pt",
+        path_or_fileobj="/tmp/sla_model.skops",
         path_in_repo=f"sla_models/{model_name}",
         repo_id=hf_repo,
         repo_type="model",
@@ -174,8 +207,11 @@ def train_platform_threat_model() -> dict:
 
   import os
 
+  import skops.io as sio
+
   model_path = get_platform_model_path()
-  torch.save(model.state_dict(), model_path)
+  # Save securely using skops
+  sio.dump(model.state_dict(), model_path)
 
   hf_token = os.environ.get("HF_TOKEN")
   hf_repo = os.environ.get("HF_REPO_ID")
@@ -186,7 +222,7 @@ def train_platform_threat_model() -> dict:
       api = HfApi(token=hf_token)
       api.upload_file(
         path_or_fileobj=model_path,
-        path_in_repo="threat_models/platform_threat_model.pt",
+        path_in_repo="threat_models/platform_threat_model.skops",
         repo_id=hf_repo,
         repo_type="model",
       )

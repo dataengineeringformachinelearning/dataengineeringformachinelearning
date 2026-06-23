@@ -69,7 +69,7 @@ class NetworkTelemetryMiddleware:
     }
 
     # In a real setup, this would be pushed to Redpanda.
-    # For now, we log it so vector/otel or a Django Celery task can pick it up.
+    # For now, we log it so vector/otel or a Django cron worker can pick it up.
     logger.info(f"NETWORK_TELEMETRY: {json.dumps(log_data)}")
 
     return response
