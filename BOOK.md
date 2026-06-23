@@ -784,7 +784,7 @@ Deep within my Django backend architecture, I deploy a fleet of long-lived, asyn
 
 - **Hourly:** The threat landscape changes by the minute. My `security_worker` awakens every hour to continuously fetch, parse, and integrate the latest global Indicators of Compromise (IoCs) and threat intelligence feeds. This ensures my API gateways are always armed with the most recent definitions required to block emerging zero-day botnets and malicious scrapers.
 - **Daily:** Telemetry data is only valuable if the models trained upon it are accurate. The `ml_worker` executes daily, automatically securely aggregating the previous 24 hours of global operational data across all tenants. It uses this anonymized, platform-wide data to retrain my predictive SLA forecasting algorithms and a single, unified global PyTorch threat model (`platform_threat_model.pt`). This continuous recalibration creates a "herd immunity" effect, ensuring the intelligence layer never stagnates while strictly preserving tenant privacy.
-- **Every 30 Days:** To enforce strict compliance and data minimization policies, the `security_worker` executes a monthly purge, cleanly archiving and destroying stale, low-resolution telemetry data from PostgreSQL. Simultaneously, it autonomously interacts with Google Cloud KMS to trigger the rotation of all active Data Encryption Keys (DEKs), re-enveloping my encrypted payloads and maintaining my zero-compromise cryptographic posture without any human intervention.
+- **Every 7 Days:** To enforce strict compliance and data minimization policies, the `security_worker` executes a weekly purge, cleanly archiving and destroying stale, low-resolution telemetry data from PostgreSQL. Simultaneously, it autonomously interacts with Google Cloud KMS to trigger the rotation of all active Data Encryption Keys (DEKs), re-enveloping my encrypted payloads and maintaining my zero-compromise cryptographic posture without any human intervention.
 
 ### GitHub Actions Workflows
 
@@ -1297,7 +1297,7 @@ This document outlines the concrete, implemented automations that are actively r
 - **Automations:**
   - Execute `fetch_threat_intel.py`: Contacts Google, Microsoft Clarity, Cloudflare, AbuseIPDB, and AlienVault OTX APIs to fetch fresh threat data and IP blacklists.
   - Execute `train_all_models.py`: Retrains the predictive scaling and anomaly detection ML models for all active tenants.
-  - _Note: `train_all_models.py` natively triggers `db_cleanup.py` internally, which prunes stale telemetry and log records older than 30 days._
+  - _Note: `train_all_models.py` natively triggers `db_cleanup.py` internally, which prunes stale telemetry and log records older than 7 days._
 
 ## Weekly Cycle: Dependency Management
 
@@ -1541,9 +1541,9 @@ This architecture successfully decoupled the human-facing application from the m
 
 As the platform scaled, the necessity for uncompromising infrastructure security and UI/UX standardization became paramount. I initiated a comprehensive DevSecOps audit, focusing first on the frontend containerization. By transitioning the Angular UI deployment pipeline to leverage Google Distroless-like multi-stage builds (specifically 'cgr.dev/chainguard/nginx'), I successfully eliminated all runtime shells and package managers. This drastically reduced the attack surface, ensuring the production image was strictly limited to serving static assets.
 
-Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1100px' maximum width. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
+Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1152px' maximum width aligned to a strict '9px' grid system. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
 
-Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 30-day telemetry retention and daily cleanup policies without any risk of cross-tenant data bleed.
+Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 7-day telemetry retention and daily cleanup policies without any risk of cross-tenant data bleed.
 
 To completely eradicate architectural debt and hardcoded exceptions, I instituted the **Symmetrical Multi-Tenant Pipeline Rule**. Every background worker, ML training loop, and OSINT scanner is engineered to iterate natively over `Tenant.objects.all()`. Because the platform itself dynamically bootstraps as `Tenant0`, it traverses the exact same execution loop as customer environments. This absolute symmetry ensures that all threat intelligence capabilities and feature updates seamlessly apply to both the core infrastructure and individual client tenants simultaneously.
 
@@ -1564,7 +1564,7 @@ The DEML Platform orchestrates several asynchronous background workers. These wo
 ### 3. Security & Compliance Worker (security_worker.py)
 
 - **Threat Intelligence Sync (1 Hour)**: Pulls updated indicators from external OSINT and Dark Web scanners every 3600 seconds, feeding them into the platform's STIX 2.1 mapping database.
-- **Compliance Rotation (24 Hours)**: Every 86,400 seconds, this scheduler verifies the age of the active Data Encryption Key (DEK). If the key exceeds the 30-day lifecycle limit, it automatically triggers 'rotate_keys' to generate a new AES-256 key and re-encrypts all sensitive third-party integrations (e.g., GA4, Microsoft Clarity keys). It additionally triggers an idempotent 'db_cleanup' pass to guarantee adherence to the 30-day data retention policy.
+- **Compliance Rotation (24 Hours)**: Every 86,400 seconds, this scheduler verifies the age of the active Data Encryption Key (DEK). If the key exceeds the 30-day lifecycle limit, it automatically triggers 'rotate_keys' to generate a new AES-256 key and re-encrypts all sensitive third-party integrations (e.g., GA4, Microsoft Clarity keys). It additionally triggers an idempotent 'db_cleanup' pass to guarantee adherence to the 7-day data retention policy.
 
 ## Appendix I: API Rate Limiting, Tiered Pricing, and Usage Analytics
 

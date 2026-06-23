@@ -4,7 +4,7 @@ from ml.ml_services import train_tenant_sla, train_threat_model
 
 
 class Command(BaseCommand):
-  help = "Purges logs/telemetry older than 90 days and retrains SLA & Threat forecast models for all tenants."
+  help = "Purges logs/telemetry older than 7 days and retrains SLA & Threat forecast models for all tenants."
 
   def handle(self, *args, **options):
     self.stdout.write("Starting database telemetry/log cleanup...")

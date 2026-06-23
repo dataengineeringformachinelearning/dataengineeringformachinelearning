@@ -387,7 +387,7 @@ class AggregatedAnalytics(models.Model):
   class Meta:
     db_table = "aggregated_analytics"
     ordering = ["-timestamp"]
-    unique_together = ("timestamp", "bucket_size")
+    unique_together = ("tenant", "timestamp", "bucket_size")
 
   def __str__(self):
     return f"Analytics {self.bucket_size} bucket at {self.timestamp}"

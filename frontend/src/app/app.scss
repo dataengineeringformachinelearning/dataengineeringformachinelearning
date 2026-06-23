@@ -48,13 +48,13 @@
   }
 
   .premium-spinner {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border: 3px solid var(--border);
     border-top: 3px solid var(--color-primary);
     border-radius: 50%;
     animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
-    margin-bottom: 24px;
+    margin-bottom: 27px;
   }
 
   .loader-text {
@@ -134,8 +134,8 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 24px;
-    padding-bottom: 24px;
+    gap: 27px;
+    padding-bottom: 27px;
     border-bottom: 1px solid var(--border-layout);
     margin-bottom: var(--grid-gap);
 
@@ -146,10 +146,10 @@
 
     .title-group {
       .section-tag-row {
-        margin-bottom: 8px;
+        margin-bottom: 9px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 9px;
       }
 
       .section-tag {
@@ -171,7 +171,7 @@
       }
 
       .hud-subtitle {
-        margin: 8px 0 0;
+        margin: 9px 0 0;
         font-size: 0.95rem;
         color: var(--text-muted);
         line-height: 1.4;

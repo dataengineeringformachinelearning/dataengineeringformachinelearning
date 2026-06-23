@@ -69,7 +69,9 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
   from monitor.models import AggregatedAnalytics
 
   global_analytics = list(
-    AggregatedAnalytics.objects.filter(timestamp__gte=last_24h, bucket_size="1h")
+    AggregatedAnalytics.objects.filter(
+      tenant__isnull=True, timestamp__gte=last_24h, bucket_size="1h"
+    )
   )
   if global_analytics:
     global_buckets = len(global_analytics)
