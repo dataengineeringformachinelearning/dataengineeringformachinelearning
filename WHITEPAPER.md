@@ -134,6 +134,11 @@ By combining asynchronous broker patterns, ultra-fast DataFrame engines, and pre
 13. National Institute of Standards and Technology (NIST). (2026). _NIST Cybersecurity Framework and Cryptographic Standards_.
 14. The Python Software Foundation. (2026). _The Python Language Reference_.
 15. The Angular Team (Google). (2026). _Angular: The modern web developer's platform_.
+16. Stripe. (2026). _Stripe: Financial Infrastructure Platform_.
+17. Mend.io. (2026). _Mend: Application Security Testing_.
+18. Chainguard. (2026). _Chainguard: Zero-Trust Container Images_.
+19. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
+20. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
 
 ## 12. DevSecOps and Platform Standardization Audit
 
