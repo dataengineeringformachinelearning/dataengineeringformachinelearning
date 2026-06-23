@@ -90,12 +90,16 @@ class IngestResponse(Schema):
   processed_records: int
 
 
+from utils.rate_limit import rate_limit
+
+
 @public_router.post(
   "/ingest",
   response=IngestResponse,
   auth=IntegrationAPIKeyAuth(),
   summary="High-Throughput Data Ingestion",
 )
+@rate_limit()
 async def ingest_data(request, payload: IngestPayload):
   import json
   import logging
@@ -140,6 +144,7 @@ class PredictResponse(Schema):
   auth=IntegrationAPIKeyAuth(),
   summary="Real-time Model Inference",
 )
+@rate_limit()
 async def predict(request, payload: PredictPayload):
   import json
   import logging

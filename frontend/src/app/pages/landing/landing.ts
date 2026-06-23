@@ -190,4 +190,24 @@ export class Landing implements OnInit, OnDestroy {
         },
       });
   }
+
+  upgradeToPro() {
+    // Note: For a real app, you would pass the user's active tenant ID, which would be retrieved from auth state
+    const payload = { tenant_id: 'example-tenant-id' };
+
+    this.http
+      .post<any>(`${environment.backendUrl}/api/v1/billing/create-checkout-session`, payload)
+      .subscribe({
+        next: res => {
+          if (res.checkout_url) {
+            window.location.href = res.checkout_url;
+          } else {
+            console.error('No checkout URL returned', res);
+          }
+        },
+        error: err => {
+          console.error('Failed to create checkout session', err);
+        },
+      });
+  }
 }

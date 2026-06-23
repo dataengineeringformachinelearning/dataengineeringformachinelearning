@@ -60,6 +60,9 @@ export class AnalyticsComponent implements OnInit {
   public activeProviders: string[] = [];
   public isLoading = true;
 
+  public apiUsageCurrent = 0;
+  public apiUsageQuota = 60;
+
   public latencyTrend = '';
   public originTrend = '';
   public frequencyTrend = '';
@@ -395,6 +398,11 @@ export class AnalyticsComponent implements OnInit {
             (user_metrics?.cookie_consents?.analytical || 0) +
             (user_metrics?.cookie_consents?.marketing || 0);
           this.activeProviders = user_metrics?.active_providers || [];
+
+          if (user_metrics?.api_usage) {
+            this.apiUsageCurrent = user_metrics.api_usage.usage_current_minute || 0;
+            this.apiUsageQuota = user_metrics.api_usage.quota_per_minute || 60;
+          }
 
           // Parse Time Series for System Latency
           const timeSeries = user_metrics?.time_series || [];

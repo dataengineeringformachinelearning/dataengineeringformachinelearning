@@ -12,6 +12,14 @@ class Tenant(models.Model):
   slug = models.SlugField(unique=True, max_length=255)
   target_url = models.URLField(blank=True, null=True)
   is_platform_tenant = models.BooleanField(default=False)
+  tier = models.CharField(
+    max_length=50,
+    choices=[("Standard", "Standard"), ("Pro", "Pro")],
+    default="Standard",
+  )
+  stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
+  stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True)
+  subscription_active = models.BooleanField(default=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:

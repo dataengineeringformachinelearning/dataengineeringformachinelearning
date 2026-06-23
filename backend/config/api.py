@@ -61,4 +61,9 @@ from integrations.api import (
 )
 
 api.add_router("/integrations/", integrations_router)
+
+from billing.api import router as billing_router
+
+api.add_router("/billing/", billing_router)
+
 api.add_router("", public_router)

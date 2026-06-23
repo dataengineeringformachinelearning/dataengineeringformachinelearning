@@ -233,6 +233,27 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
       severities[v.severity] = severities.get(v.severity, 0) + 1
     threat_severity = [{"severity": k, "count": v} for k, v in severities.items() if v > 0]
 
+  # API Usage / Rate Limit logic
+  quota = 60
+  usage = 0
+  try:
+    import time
+
+    from utils.rate_limit import get_tenant_rate_limit, redis_client
+
+    quota = get_tenant_rate_limit(target_tenant)
+    if redis_client:
+      key = f"rate_limit:tenant:{target_tenant.id}"
+      current_time = int(time.time())
+      window_start = current_time - 60
+      pipe = redis_client.pipeline()
+      pipe.zremrangebyscore(key, 0, window_start)
+      pipe.zcard(key)
+      results = pipe.execute()
+      usage = results[1]
+  except Exception as e:
+    logger.warning(f"Could not fetch rate limit usage: {e}")
+
   data = {
     "ces": {
       "level": round(ces_level, 2),
@@ -257,6 +278,11 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
       "unique_visitors": unique_visitors,
       "active_providers": active_providers,
       "available_sites": available_sites,
+      "api_usage": {
+        "quota_per_minute": quota,
+        "usage_current_minute": usage,
+        "tier": getattr(target_tenant, "tier", "Standard"),
+      },
     },
   }
 

@@ -141,6 +141,17 @@
         <div class="ml-stat-panel">
           <div class="stat-info">
             <div>
+              <span class="stat-title">API USAGE (LAST MIN)</span>
+            </div>
+          </div>
+          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
+            >{{ (apiUsageCurrent || 0) | number }}
+            <span class="stat-unit">/ {{ (apiUsageQuota || 60) | number }}</span></span
+          >
+        </div>
+        <div class="ml-stat-panel">
+          <div class="stat-info">
+            <div>
               <span class="stat-title">P99 LATENCY</span>
             </div>
           </div>

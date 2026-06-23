@@ -301,6 +301,11 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
 
+# Stripe Settings
+STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.getenv("STRIPE_WEBHOOK_SECRET", "")
+
 # Security Headers & Cookie Settings
 if not DEBUG:
   SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

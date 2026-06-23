@@ -1565,3 +1565,24 @@ The DEML Platform orchestrates several asynchronous background workers. These wo
 
 - **Threat Intelligence Sync (1 Hour)**: Pulls updated indicators from external OSINT and Dark Web scanners every 3600 seconds, feeding them into the platform's STIX 2.1 mapping database.
 - **Compliance Rotation (24 Hours)**: Every 86,400 seconds, this scheduler verifies the age of the active Data Encryption Key (DEK). If the key exceeds the 30-day lifecycle limit, it automatically triggers 'rotate_keys' to generate a new AES-256 key and re-encrypts all sensitive third-party integrations (e.g., GA4, Microsoft Clarity keys). It additionally triggers an idempotent 'db_cleanup' pass to guarantee adherence to the 30-day data retention policy.
+
+## Appendix I: API Rate Limiting, Tiered Pricing, and Usage Analytics
+
+As the platform evolved to handle enterprise-scale ingestion across numerous active tenants, a structural requirement emerged to protect the core infrastructure from resource exhaustion and Denial of Service (DoS) attacks while simultaneously providing a path for scalable revenue generation. We needed a robust mechanism to throttle API requests on a per-tenant basis and transparently communicate that usage back to the end user.
+
+### Why We Did This
+
+1.  **Infrastructure Protection**: Unbounded API ingestion streams from high-velocity distributed systems (like Apache Spark or Kubernetes clusters) can overwhelm the database and the Kafka broker queue, degrading performance for all tenants.
+2.  **COGS Optimization**: Processing machine learning pipelines on telemetry is computationally expensive. By strictly limiting the free 'Standard' tier to 60 requests per minute, we ensure that Cost of Goods Sold (COGS) remains low and predictable for non-paying users.
+3.  **Monetization Strategy**: A scalable business model requires clear value differentiation. A 'Pro' tier (/month for 1,000+ requests per minute) provides an immediate upsell path for enterprise clients who require massive data ingestion capabilities.
+
+### How We Did This
+
+1.  **Redis-Backed Rate Limiting Middleware**:
+    We implemented a highly efficient sliding-window rate limiter utilizing our existing Dragonfly (Redis) cache. When a request hits the `/api/v1/ingest` or `/api/v1/predict` endpoint, the middleware identifies the tenant via their API key, retrieves their assigned tier limits, and uses a Redis `ZSET` to track requests within the last rolling 60 seconds. This decentralized approach ensures minimal latency and high availability across distributed workers.
+
+2.  **Stripe Billing Integration**:
+    The backend incorporates a dedicated `billing` router designed to interface securely with Stripe. The system handles checkout session creation and listens to asynchronous Stripe Webhooks to update the `Tenant` model's active subscription status securely in the background.
+
+3.  **Real-Time Usage Analytics**:
+    Transparency is critical for trust. To provide tenants with a clear view of their API consumption, the `get_analytics_overview` endpoint was extended. It natively queries the Redis pipeline to retrieve the exact count of requests executed in the current minute, bundling this alongside the quota. The Angular frontend dynamically renders this within a dedicated 'API USAGE' statistics panel on the main Analytics dashboard, updating seamlessly with the existing telemetry polling loop.

@@ -208,6 +208,154 @@
       </div>
     </section>
 
+    <!-- Pricing Cards Section -->
+    <section class="bento-item pricing-bento" aria-labelledby="pricing-title">
+      <div class="bento-header">
+        <span class="section-tag">API ACCESS</span>
+        <h2 id="pricing-title">Simple, Transparent Pricing</h2>
+        <p>Choose the tier that fits your telemetry throughput needs.</p>
+      </div>
+      <div
+        class="pricing-cards-container"
+        style="display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap"
+      >
+        <!-- Standard Tier -->
+        <div
+          class="pricing-card"
+          style="
+            flex: 1;
+            min-width: 280px;
+            padding: 2rem;
+            border-radius: 1rem;
+            background: var(--surface-card);
+            border: 1px solid var(--surface-border);
+          "
+        >
+          <h3>Standard Tier</h3>
+          <div class="price" style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0">Free</div>
+          <ul
+            style="list-style: none; padding: 0; margin-bottom: 2rem; opacity: 0.8; line-height: 2"
+          >
+            <li>
+              <mat-icon
+                style="
+                  vertical-align: middle;
+                  font-size: 1.2rem;
+                  margin-right: 0.5rem;
+                  color: var(--primary-color);
+                "
+                >check</mat-icon
+              >
+              60 requests / minute
+            </li>
+            <li>
+              <mat-icon
+                style="
+                  vertical-align: middle;
+                  font-size: 1.2rem;
+                  margin-right: 0.5rem;
+                  color: var(--primary-color);
+                "
+                >check</mat-icon
+              >
+              Core Analytics
+            </li>
+            <li>
+              <mat-icon
+                style="
+                  vertical-align: middle;
+                  font-size: 1.2rem;
+                  margin-right: 0.5rem;
+                  color: var(--primary-color);
+                "
+                >check</mat-icon
+              >
+              Community Support
+            </li>
+          </ul>
+          <button class="cta-button secondary-btn" style="width: 100%">Get Started</button>
+        </div>
+
+        <!-- Pro Tier -->
+        <div
+          class="pricing-card"
+          style="
+            flex: 1;
+            min-width: 280px;
+            padding: 2rem;
+            border-radius: 1rem;
+            background: var(--surface-card);
+            border: 2px solid var(--primary-color);
+            position: relative;
+          "
+        >
+          <div
+            style="
+              position: absolute;
+              top: -12px;
+              left: 50%;
+              transform: translateX(-50%);
+              background: var(--primary-color);
+              color: var(--primary-color-text);
+              padding: 4px 12px;
+              border-radius: 12px;
+              font-size: 0.8rem;
+              font-weight: bold;
+            "
+          >
+            RECOMMENDED
+          </div>
+          <h3>Pro Tier</h3>
+          <div class="price" style="font-size: 2.5rem; font-weight: 700; margin: 1rem 0">
+            $49<span style="font-size: 1rem; font-weight: normal; opacity: 0.7">/mo</span>
+          </div>
+          <ul
+            style="list-style: none; padding: 0; margin-bottom: 2rem; opacity: 0.8; line-height: 2"
+          >
+            <li>
+              <mat-icon
+                style="
+                  vertical-align: middle;
+                  font-size: 1.2rem;
+                  margin-right: 0.5rem;
+                  color: var(--primary-color);
+                "
+                >check</mat-icon
+              >
+              1,000 requests / minute
+            </li>
+            <li>
+              <mat-icon
+                style="
+                  vertical-align: middle;
+                  font-size: 1.2rem;
+                  margin-right: 0.5rem;
+                  color: var(--primary-color);
+                "
+                >check</mat-icon
+              >
+              Advanced Threat Detection
+            </li>
+            <li>
+              <mat-icon
+                style="
+                  vertical-align: middle;
+                  font-size: 1.2rem;
+                  margin-right: 0.5rem;
+                  color: var(--primary-color);
+                "
+                >check</mat-icon
+              >
+              Priority Support
+            </li>
+          </ul>
+          <button class="cta-button primary-btn" style="width: 100%" (click)="upgradeToPro()">
+            Upgrade to Pro
+          </button>
+        </div>
+      </div>
+    </section>
+
     <!-- Subscribe Section -->
     <section class="bento-item subscribe-bento" aria-labelledby="subscribe-title">
       <div class="bento-header">

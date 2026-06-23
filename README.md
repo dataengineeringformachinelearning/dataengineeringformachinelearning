@@ -122,8 +122,8 @@ To interact with the integration gateway, you must authenticate using API keys.
 
 To ensure platform stability, we enforce the following default rate limits:
 
-- **Standard Tier:** 100 requests / minute
-- **Pro Tier:** 1,000+ requests / minute
+- **Standard Tier (Free):** 60 requests / minute
+- **Pro Tier ($49/mo):** 1,000+ requests / minute
 
 ---
 
@@ -233,6 +233,15 @@ We take data security seriously. As a multi-tenant SaaS platform, we employ stri
 - **Post-Quantum Cryptography (PQC):** The platform features a Post-Quantum Key Encapsulation Mechanism (KEM) using `liboqs`. External services can invoke the `/api/v1/telemetry/pq-key-exchange` endpoint to securely negotiate a PQ session key before transmitting transient, highly sensitive telemetry payloads over standard TLS. The server enforces Forward Secrecy by strictly caching the ephemeral secret key for exactly 5 minutes using a unique UUID and permanently destroying it immediately upon decapsulation. This actively prevents "Store Now, Decrypt Later" (SNDL) attacks. (Fails over gracefully to AES if `liboqs` is absent).
 - **Tenant0 Bootstrapping:** The platform utilizes Django signals (`post_migrate`) to dynamically bootstrap itself as `Tenant0` on the first run, seamlessly homogenizing all background workers, ML models, and pipelines to utilize standard UUIDs, eliminating the risk of hardcoded string literal constraints.
 - **Compliance:** We are actively pursuing SOC 2 Type II, CMMC 2.0, NIST SP 800-171 Rev. 3, and GDPR compliance certifications. You can review our full security posture and architecture in our Whitepaper.
+
+## Disclaimer & Liability
+
+> [!WARNING]
+> **Liability Disclaimer:** The Data Engineering for Machine Learning (DEML) Platform, including all associated models, dashboards, and integrations, is provided "as-is" and without warranty of any kind.
+>
+> Our primary objective is to **highlight and support the identification of potential threats** and anomalies based on aggregated telemetry data. The platform should be used as a supplementary tool for threat intelligence and not as a guaranteed preventative measure or absolute security solution.
+>
+> We explicitly disclaim all liability for any security breaches, data loss, or system downtime experienced by users, including those on paid or enterprise tiers. While our machine learning models and OSINT scanners are designed to provide robust security insights, the ultimate responsibility for securing infrastructure and responding to identified threats remains with the individual user or organization.
 
 ## Support & SLA
 
