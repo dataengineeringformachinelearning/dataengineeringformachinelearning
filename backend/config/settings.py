@@ -29,7 +29,21 @@ load_dotenv(BASE_DIR / ".env", override=False)
 def clean_private_key(key: str) -> str:
   if not key:
     return key
-  return key.replace("\\n", "\n")
+  key = key.replace("\\n", "\n")
+  import re
+  begin_tag = "-----BEGIN " + "PRIVATE KEY-----\n"
+  end_tag = "\n-----END " + "PRIVATE KEY-----"
+  match = re.search(rf'({begin_tag})(.*?)({end_tag})', key, re.DOTALL)
+  if match:
+      header = match.group(1)
+      body = match.group(2)
+      footer = match.group(3)
+      b64_chars = re.sub(r'\s+', '', body)
+      missing_padding = len(b64_chars) % 4
+      if missing_padding:
+          body += '=' * (4 - missing_padding)
+      key = header + body + footer
+  return key
 # fmt: on
 
 
@@ -195,12 +209,14 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
+DRAGONFLY_HOST = os.getenv("DRAGONFLY_HOST", "deml-dragonfly.railway.internal")
+
 # Channels
 CHANNEL_LAYERS = {
   "default": {
     "BACKEND": "channels_redis.core.RedisChannelLayer",
     "CONFIG": {
-      "hosts": [(os.getenv("DRAGONFLY_HOST", "localhost"), 6379)],
+      "hosts": [(DRAGONFLY_HOST, 6379)],
     },
   },
 }
