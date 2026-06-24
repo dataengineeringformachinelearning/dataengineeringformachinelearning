@@ -33,8 +33,7 @@ def create_checkout_session(request):
 
     tenant = Tenant.objects.get(id=tenant_id)
 
-    # You'd replace this with the actual Price ID from your Stripe Dashboard
-    price_id = "price_mock_123"
+    price_id = "price_1TlgG2Er73F9pBqwItcWHIJf"
 
     session = stripe.checkout.Session.create(
       payment_method_types=["card"],
