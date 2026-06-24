@@ -51,6 +51,7 @@ export interface Candlestick {
   label: string;
   candleWidth: number;
   center: number;
+  value: number;
 }
 
 @Component({
@@ -219,6 +220,7 @@ export class AnalyticsComponent implements OnInit {
         label: d.time || '',
         candleWidth,
         center,
+        value: close,
       });
     });
 
