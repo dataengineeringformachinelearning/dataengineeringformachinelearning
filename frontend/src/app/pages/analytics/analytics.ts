@@ -165,7 +165,10 @@ export class AnalyticsComponent implements OnInit {
       if (i === 0) {
         path += `M ${x},${y} `;
       } else {
-        path += `L ${x},${y} `;
+        const prevX = (i - 1) * stepX;
+        const prevY = points[i - 1].y;
+        const cpX = (prevX + x) / 2;
+        path += `C ${cpX},${prevY} ${cpX},${y} ${x},${y} `;
       }
     });
 

@@ -193,14 +193,7 @@
               stroke="var(--color-border, rgba(255,255,255,0.2))"
               stroke-width="1"
             ></line>
-
-            <text x="0" y="-5" fill="var(--color-text-muted, #888)" font-size="12">
-              {{candlestickMax}}ms
-            </text>
-            <text x="0" y="145" fill="var(--color-text-muted, #888)" font-size="12">
-              {{candlestickMax / 2 | number:'1.0-0'}}ms
-            </text>
-
+            <!-- Labels converted to HTML overlays to prevent stretching -->
             @for (c of candlestickElements; track c.x) {
             <!-- Wick -->
             <line
@@ -220,9 +213,35 @@
               [attr.height]="c.hBody"
               [attr.fill]="c.color"
               rx="2"
-            ></rect>
+            >
+              <title>Value: {{ c.value | number:'1.0-0' }} ms</title>
+            </rect>
             }
           </svg>
+          <div
+            style="
+              position: absolute;
+              top: calc(3.125% - 15px);
+              left: 0;
+              color: var(--color-text-muted, #888);
+              font-size: 12px;
+              pointer-events: none;
+            "
+          >
+            {{candlestickMax}}ms
+          </div>
+          <div
+            style="
+              position: absolute;
+              top: calc(50% - 15px);
+              left: 0;
+              color: var(--color-text-muted, #888);
+              font-size: 12px;
+              pointer-events: none;
+            "
+          >
+            {{candlestickMax / 2 | number:'1.0-0'}}ms
+          </div>
         </div>
       </div>
 
@@ -437,7 +456,10 @@
                 [attr.d]="latencyPath"
                 fill="none"
                 stroke="var(--crayola-blue)"
-                stroke-width="2"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="premium-line"
               />
             </svg>
             } @else {
@@ -545,7 +567,10 @@
                 [attr.d]="frequencyPath"
                 fill="none"
                 stroke="var(--blue-bell)"
-                stroke-width="2"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="premium-line"
               />
             </svg>
             } @else {
