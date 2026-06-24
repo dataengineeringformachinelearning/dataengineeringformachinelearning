@@ -41,6 +41,17 @@ export interface MapMarker {
   r: number;
   label: string;
 }
+export interface Candlestick {
+  x: number;
+  yBody: number;
+  hBody: number;
+  highY: number;
+  lowY: number;
+  color: string;
+  label: string;
+  candleWidth: number;
+  center: number;
+}
 
 @Component({
   selector: 'app-analytics',
@@ -62,6 +73,9 @@ export class AnalyticsComponent implements OnInit {
   public widgetInteractions = 0;
   public uniqueVisitors = 0;
   public cookieConsents = 0;
+  public averageLatency = 0;
+  public errorRatePercent = 0;
+  public activeThreats = 0;
   public activeProviders: string[] = [];
   public isLoading = true;
 
@@ -102,6 +116,9 @@ export class AnalyticsComponent implements OnInit {
   public statusData: SvgBar[] = [];
   public securityAlertsData: SvgBar[] = [];
   public threatData: SvgArc[] = [];
+
+  public candlestickElements: Candlestick[] = [];
+  public candlestickMax = 0;
 
   public mapMarkers: MapMarker[] = [];
 
@@ -154,6 +171,55 @@ export class AnalyticsComponent implements OnInit {
 
     const area = `${path} L ${w},${h} L 0,${h} Z`;
     return { path, area, points, max: maxVal };
+  }
+
+  private generateCandlesticks(data: any[]): { elements: Candlestick[]; max: number } {
+    if (!data || data.length === 0) return { elements: [], max: 0 };
+    const maxVal = Math.max(...data.map((d: any) => Number(d.high) || 0), 1);
+    const elements: Candlestick[] = [];
+
+    const w = 1000;
+    const h = 300;
+    const stepX = data.length > 0 ? w / data.length : w;
+    const candleWidth = stepX * 0.6;
+
+    data.forEach((d: any, i: number) => {
+      const open = Number(d.open) || 0;
+      const close = Number(d.close) || 0;
+      const high = Number(d.high) || 0;
+      const low = Number(d.low) || 0;
+
+      const x = i * stepX + (stepX - candleWidth) / 2;
+      const center = i * stepX + stepX / 2;
+
+      const openY = h - (open / maxVal) * h;
+      const closeY = h - (close / maxVal) * h;
+      const highY = h - (high / maxVal) * h;
+      const lowY = h - (low / maxVal) * h;
+
+      const topY = Math.min(openY, closeY);
+      const bottomY = Math.max(openY, closeY);
+      let hBody = bottomY - topY;
+      if (hBody < 2) hBody = 2; // minimum height
+
+      // For latency, lower is better. Green if close < open (latency went down)
+      const color =
+        close <= open ? 'var(--emerald-green, #10b981)' : 'var(--carrot-orange, #f97316)';
+
+      elements.push({
+        x,
+        yBody: topY,
+        hBody,
+        highY,
+        lowY,
+        color,
+        label: d.time || '',
+        candleWidth,
+        center,
+      });
+    });
+
+    return { elements, max: maxVal };
   }
 
   private generateBars(data: any[], labelKey: string, valueKey: string): SvgBar[] {
@@ -271,6 +337,9 @@ export class AnalyticsComponent implements OnInit {
             (user_metrics?.cookie_consents?.analytical || 0) +
             (user_metrics?.cookie_consents?.marketing || 0);
           this.activeProviders = user_metrics?.active_providers || [];
+          this.averageLatency = user_metrics?.average_latency_ms || 0;
+          this.errorRatePercent = user_metrics?.error_rate_percent || 0;
+          this.activeThreats = user_metrics?.active_threats || 0;
 
           if (user_metrics?.api_usage) {
             this.apiUsageCurrent = user_metrics.api_usage.usage_current_minute || 0;
@@ -284,6 +353,12 @@ export class AnalyticsComponent implements OnInit {
           this.latencyArea = latencyRes.area;
           this.latencyData = latencyRes.points;
           this.latencyMax = latencyRes.max;
+
+          // Parse Candlesticks
+          const cdata = user_metrics?.candlestick_data || [];
+          const candleRes = this.generateCandlesticks(cdata);
+          this.candlestickElements = candleRes.elements;
+          this.candlestickMax = candleRes.max;
 
           // Parse Origin Distribution
           const origins = user_metrics?.origin_distribution || [];

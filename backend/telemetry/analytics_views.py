@@ -163,10 +163,17 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     ms_list = sorted([lat.total_seconds() * 1000 for lat in latencies if lat])
     p99_idx = int(len(ms_list) * 0.99)
     p99_latency = round(ms_list[p99_idx if p99_idx < len(ms_list) else -1], 2)
+    average_latency_ms = round(sum(ms_list) / len(ms_list), 2)
   else:
     p99_latency = 0.0
+    average_latency_ms = 0.0
+
+  error_rate_percent = (
+    round(((total_reqs - up_reqs) / total_reqs) * 100.0, 2) if total_reqs > 0 else 0.0
+  )
 
   threats = ThreatIntelligence.objects.filter(tenant=target_tenant, timestamp__gte=last_24h)
+  active_threat_count = threats.count()
 
   # Basic safe fallbacks if no data exists
   if total_reqs == 0:
@@ -175,6 +182,16 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     ]
     request_frequency = [
       {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": 0} for i in range(24)
+    ]
+    candlestick_data = [
+      {
+        "time": (now - timedelta(hours=24 - i)).strftime("%H:00"),
+        "open": 0,
+        "high": 0,
+        "low": 0,
+        "close": 0,
+      }
+      for i in range(24)
     ]
     origin_distribution = []
     http_statuses = []
@@ -189,6 +206,37 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
       {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": total_reqs // 24}
       for i in range(24)
     ]
+
+    # Build Candlestick Data (bucketed by hour)
+    eps = list(endpoints.values("last_tested", "response_time"))
+    candlestick_data = []
+    for i in range(24):
+      start = now - timedelta(hours=24 - i)
+      end = now - timedelta(hours=23 - i)
+      bucket = [
+        e["response_time"].total_seconds() * 1000
+        for e in eps
+        if e["last_tested"] >= start and e["last_tested"] < end and e["response_time"]
+      ]
+
+      if bucket:
+        bucket.sort()
+        low = round(bucket[0], 2)
+        high = round(bucket[-1], 2)
+        open_val = round(bucket[len(bucket) // 4], 2)  # pseudo-open (p25)
+        close_val = round(bucket[(len(bucket) * 3) // 4], 2)  # pseudo-close (p75)
+      else:
+        low = high = open_val = close_val = p99_latency
+
+      candlestick_data.append(
+        {
+          "time": start.strftime("%H:00"),
+          "open": open_val,
+          "high": high,
+          "low": low,
+          "close": close_val,
+        }
+      )
     origin_distribution = [
       {
         "origin": "Ashburn, VA (us-east-1)",
@@ -293,10 +341,14 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     },
     "user_metrics": {
       "p99_latency_ms": p99_latency,
+      "average_latency_ms": average_latency_ms,
       "uptime_percent": uptime_percent,
+      "error_rate_percent": error_rate_percent,
       "total_requests_24h": total_reqs,
       "active_incidents": active_incidents,
+      "active_threats": active_threat_count,
       "time_series": time_series,
+      "candlestick_data": candlestick_data,
       "origin_distribution": origin_distribution,
       "request_frequency": request_frequency,
       "http_statuses": http_statuses,
