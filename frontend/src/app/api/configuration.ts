@@ -6,7 +6,7 @@ export interface ConfigurationParameters {
   /**
    *  @deprecated Since 5.0. Use credentials instead
    */
-  apiKeys?: Record<string, string>;
+  apiKeys?: { [key: string]: string };
   username?: string;
   password?: string;
   /**
@@ -32,14 +32,14 @@ export interface ConfigurationParameters {
    * document. They should map to the value used for authentication
    * minus any standard prefixes such as 'Basic' or 'Bearer'.
    */
-  credentials?: Record<string, string | (() => string | undefined)>;
+  credentials?: { [key: string]: string | (() => string | undefined) };
 }
 
 export class Configuration {
   /**
    *  @deprecated Since 5.0. Use credentials instead
    */
-  apiKeys?: Record<string, string>;
+  apiKeys?: { [key: string]: string };
   username?: string;
   password?: string;
   /**
@@ -65,7 +65,7 @@ export class Configuration {
    * document. They should map to the value used for authentication
    * minus any standard prefixes such as 'Basic' or 'Bearer'.
    */
-  credentials: Record<string, string | (() => string | undefined)>;
+  credentials: { [key: string]: string | (() => string | undefined) };
 
   constructor({
     accessToken,
@@ -159,7 +159,7 @@ export class Configuration {
    * @return True if the given MIME is JSON, false otherwise.
    */
   public isJsonMime(mime: string): boolean {
-    const jsonMime = /^(application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(;.*)?$/i;
+    const jsonMime: RegExp = /^(application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(;.*)?$/i;
     return mime !== null && jsonMime.test(mime);
   }
 

@@ -13,6 +13,6 @@ import { SOCCriteria } from './sOCCriteria';
 export interface SOCStatusOut {
   status: string;
   overall_score: number;
-  criteria: SOCCriteria[];
+  criteria: Array<SOCCriteria>;
   e2e_encryption?: E2EEncryptionOut | null;
 }

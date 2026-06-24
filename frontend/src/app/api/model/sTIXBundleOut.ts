@@ -11,5 +11,5 @@
 export interface STIXBundleOut {
   type: string;
   id: string;
-  objects: Record<string, any>[];
+  objects: Array<{ [key: string]: any }>;
 }

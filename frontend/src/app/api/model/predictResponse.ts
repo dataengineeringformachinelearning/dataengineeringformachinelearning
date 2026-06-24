@@ -10,7 +10,7 @@
 
 export interface PredictResponse {
   status: string;
-  predictions: number[];
+  predictions: Array<number>;
   model_version: string;
   latency_ms: number;
 }

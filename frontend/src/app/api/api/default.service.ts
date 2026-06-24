@@ -7,6 +7,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+/* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
@@ -127,7 +128,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<VulnerabilityOut[]>;
+  ): Observable<Array<VulnerabilityOut>>;
   public agentApiListVulnerabilities(
     tenantId?: string,
     siteUrl?: string,
@@ -138,7 +139,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<VulnerabilityOut[]>>;
+  ): Observable<HttpResponse<Array<VulnerabilityOut>>>;
   public agentApiListVulnerabilities(
     tenantId?: string,
     siteUrl?: string,
@@ -149,12 +150,12 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<VulnerabilityOut[]>>;
+  ): Observable<HttpEvent<Array<VulnerabilityOut>>>;
   public agentApiListVulnerabilities(
     tenantId?: string,
     siteUrl?: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -166,7 +167,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'tenant_id',
-      tenantId as any,
+      <any>tenantId,
       QueryParamStyle.Form,
       true,
     );
@@ -174,7 +175,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'site_url',
-      siteUrl as any,
+      <any>siteUrl,
       QueryParamStyle.Form,
       true,
     );
@@ -202,12 +203,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/agent/vulnerabilities`;
+    let localVarPath = `/api/v1/agent/vulnerabilities`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<VulnerabilityOut[]>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<VulnerabilityOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -245,7 +246,7 @@ export class DefaultService extends BaseService {
   public agentApiReportIssue(
     issueReportPayload: IssueReportPayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (issueReportPayload === null || issueReportPayload === undefined) {
@@ -285,12 +286,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/agent/report-issue`;
+    let localVarPath = `/api/v1/agent/report-issue`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: issueReportPayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -340,7 +341,7 @@ export class DefaultService extends BaseService {
   public agentApiReportVulnerability(
     vulnerabilityReportPayload: VulnerabilityReportPayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -384,12 +385,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/agent/vulnerabilities`;
+    let localVarPath = `/api/v1/agent/vulnerabilities`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<VulnerabilityOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: vulnerabilityReportPayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -444,7 +445,7 @@ export class DefaultService extends BaseService {
     vulnId: string,
     vulnerabilityUpdatePayload: VulnerabilityUpdatePayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -493,12 +494,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/agent/vulnerabilities/${this.configuration.encodeParam({ name: 'vulnId', value: vulnId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/agent/vulnerabilities/${this.configuration.encodeParam({ name: 'vulnId', value: vulnId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<VulnerabilityOut>('patch', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: vulnerabilityUpdatePayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -543,7 +544,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<SuccessSchema>>;
   public configApiAuthApiDeleteAccount(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -573,11 +574,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/auth/delete-account`;
+    let localVarPath = `/api/v1/auth/delete-account`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -622,7 +623,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<SuccessSchema>>;
   public configApiAuthApiUser(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -652,11 +653,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/auth/user`;
+    let localVarPath = `/api/v1/auth/user`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -706,7 +707,7 @@ export class DefaultService extends BaseService {
   public configApiAuthDeleteApiKey(
     keyId: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -742,11 +743,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/auth/api-keys/${this.configuration.encodeParam({ name: 'keyId', value: keyId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/auth/api-keys/${this.configuration.encodeParam({ name: 'keyId', value: keyId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -796,7 +797,7 @@ export class DefaultService extends BaseService {
   public configApiAuthGenerateApiKey(
     aPIKeyGenerateIn: APIKeyGenerateIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -840,12 +841,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/auth/api-keys/generate`;
+    let localVarPath = `/api/v1/auth/api-keys/generate`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<APIKeyGenerateOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: aPIKeyGenerateIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -869,7 +870,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<APIKeyOut[]>;
+  ): Observable<Array<APIKeyOut>>;
   public configApiAuthListApiKeys(
     observe?: 'response',
     reportProgress?: boolean,
@@ -878,7 +879,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<APIKeyOut[]>>;
+  ): Observable<HttpResponse<Array<APIKeyOut>>>;
   public configApiAuthListApiKeys(
     observe?: 'events',
     reportProgress?: boolean,
@@ -887,10 +888,10 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<APIKeyOut[]>>;
+  ): Observable<HttpEvent<Array<APIKeyOut>>>;
   public configApiAuthListApiKeys(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -920,11 +921,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/auth/api-keys`;
+    let localVarPath = `/api/v1/auth/api-keys`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<APIKeyOut[]>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<APIKeyOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -969,7 +970,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<IntegrationStatus>>;
   public integrationsApiApacheSparkStatus(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -999,11 +1000,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/integrations/apache-spark`;
+    let localVarPath = `/api/v1/integrations/apache-spark`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1048,7 +1049,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<IntegrationStatus>>;
   public integrationsApiDatabricksStatus(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1078,11 +1079,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/integrations/databricks`;
+    let localVarPath = `/api/v1/integrations/databricks`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1132,7 +1133,7 @@ export class DefaultService extends BaseService {
   public integrationsApiIngestData(
     ingestPayload: IngestPayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1184,12 +1185,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ingest`;
+    let localVarPath = `/api/v1/ingest`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IngestResponse>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: ingestPayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1234,7 +1235,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<IntegrationStatus>>;
   public integrationsApiKubernetesStatus(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1264,11 +1265,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/integrations/kubernetes`;
+    let localVarPath = `/api/v1/integrations/kubernetes`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1318,7 +1319,7 @@ export class DefaultService extends BaseService {
   public integrationsApiPredict(
     predictPayload: PredictPayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1370,12 +1371,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/predict`;
+    let localVarPath = `/api/v1/predict`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<PredictResponse>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: predictPayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1420,7 +1421,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<IntegrationStatus>>;
   public integrationsApiPytorchStatus(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1450,11 +1451,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/integrations/pytorch`;
+    let localVarPath = `/api/v1/integrations/pytorch`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1499,7 +1500,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<IntegrationStatus>>;
   public integrationsApiTensorflowStatus(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1529,11 +1530,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/integrations/tensorflow`;
+    let localVarPath = `/api/v1/integrations/tensorflow`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1583,7 +1584,7 @@ export class DefaultService extends BaseService {
   public mlMlApiGetLatestTraining(
     statusPageId?: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1595,7 +1596,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      statusPageId as any,
+      <any>statusPageId,
       QueryParamStyle.Form,
       true,
     );
@@ -1623,12 +1624,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/latest`;
+    let localVarPath = `/api/v1/ml/latest`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<LatestRunOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1673,7 +1674,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<SOCStatusOut>>;
   public mlMlApiGetSocStatus(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1703,11 +1704,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/compliance/soc-status`;
+    let localVarPath = `/api/v1/ml/compliance/soc-status`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SOCStatusOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1757,7 +1758,7 @@ export class DefaultService extends BaseService {
   public mlMlApiGetThreatReport(
     statusPageId?: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1769,7 +1770,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      statusPageId as any,
+      <any>statusPageId,
       QueryParamStyle.Form,
       true,
     );
@@ -1797,12 +1798,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/threat-intel/report`;
+    let localVarPath = `/api/v1/ml/threat-intel/report`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<ThreatReportOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1852,7 +1853,7 @@ export class DefaultService extends BaseService {
   public mlMlApiGetThreatReportStix(
     statusPageId?: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1864,7 +1865,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      statusPageId as any,
+      <any>statusPageId,
       QueryParamStyle.Form,
       true,
     );
@@ -1892,12 +1893,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/threat-intel/stix`;
+    let localVarPath = `/api/v1/ml/threat-intel/stix`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<STIXBundleOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1947,7 +1948,7 @@ export class DefaultService extends BaseService {
   public mlMlApiSubmitToIsac(
     iSACSubmissionIn: ISACSubmissionIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -1991,12 +1992,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/threat-intel/submit-isac`;
+    let localVarPath = `/api/v1/ml/threat-intel/submit-isac`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<ISACSubmissionOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: iSACSubmissionIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2046,7 +2047,7 @@ export class DefaultService extends BaseService {
   public mlMlApiTrainModel(
     statusPageId?: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -2058,7 +2059,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      statusPageId as any,
+      <any>statusPageId,
       QueryParamStyle.Form,
       true,
     );
@@ -2086,12 +2087,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/train`;
+    let localVarPath = `/api/v1/ml/train`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<TrainOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2141,7 +2142,7 @@ export class DefaultService extends BaseService {
   public mlMlApiTrainModel_1(
     statusPageId?: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -2153,7 +2154,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      statusPageId as any,
+      <any>statusPageId,
       QueryParamStyle.Form,
       true,
     );
@@ -2181,12 +2182,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/train`;
+    let localVarPath = `/api/v1/ml/train`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<TrainOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2231,7 +2232,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<ThreatReportOut>>;
   public mlMlApiTrainThreatIntel(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -2261,11 +2262,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/ml/threat-intel/train`;
+    let localVarPath = `/api/v1/ml/threat-intel/train`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<ThreatReportOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2320,7 +2321,7 @@ export class DefaultService extends BaseService {
     pageId: string,
     monitoredServiceIn: MonitoredServiceIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -2369,12 +2370,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/services`;
+    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/services`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<MonitoredServiceOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: monitoredServiceIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2407,7 +2408,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<any>>;
   public monitorApiApiHealth(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
@@ -2433,11 +2434,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/health`;
+    let localVarPath = `/api/v1/system-status/health`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2492,7 +2493,7 @@ export class DefaultService extends BaseService {
     pageId: string,
     incidentIn: IncidentIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -2541,12 +2542,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/incidents`;
+    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/incidents`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IncidentOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: incidentIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2596,7 +2597,7 @@ export class DefaultService extends BaseService {
   public monitorApiCreateStatusPage(
     statusPageIn: StatusPageIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -2640,12 +2641,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages`;
+    let localVarPath = `/api/v1/system-status/status_pages`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<StatusPageOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: statusPageIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2683,7 +2684,7 @@ export class DefaultService extends BaseService {
   public monitorApiDeleteIncident(
     incidentId: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (incidentId === null || incidentId === undefined) {
@@ -2715,11 +2716,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/incidents/${this.configuration.encodeParam({ name: 'incidentId', value: incidentId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/system-status/incidents/${this.configuration.encodeParam({ name: 'incidentId', value: incidentId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2757,7 +2758,7 @@ export class DefaultService extends BaseService {
   public monitorApiDeleteIntegration(
     integrationId: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (integrationId === null || integrationId === undefined) {
@@ -2789,11 +2790,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/integrations/${this.configuration.encodeParam({ name: 'integrationId', value: integrationId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/system-status/integrations/${this.configuration.encodeParam({ name: 'integrationId', value: integrationId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2831,7 +2832,7 @@ export class DefaultService extends BaseService {
   public monitorApiDeleteService(
     serviceId: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (serviceId === null || serviceId === undefined) {
@@ -2863,11 +2864,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/services/${this.configuration.encodeParam({ name: 'serviceId', value: serviceId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/system-status/services/${this.configuration.encodeParam({ name: 'serviceId', value: serviceId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2905,7 +2906,7 @@ export class DefaultService extends BaseService {
   public monitorApiDeleteStatusPage(
     pageId: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (pageId === null || pageId === undefined) {
@@ -2937,11 +2938,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2965,7 +2966,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<EndpointOut[]>;
+  ): Observable<Array<EndpointOut>>;
   public monitorApiGetAllEndpoints(
     observe?: 'response',
     reportProgress?: boolean,
@@ -2974,7 +2975,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<EndpointOut[]>>;
+  ): Observable<HttpResponse<Array<EndpointOut>>>;
   public monitorApiGetAllEndpoints(
     observe?: 'events',
     reportProgress?: boolean,
@@ -2983,10 +2984,10 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<EndpointOut[]>>;
+  ): Observable<HttpEvent<Array<EndpointOut>>>;
   public monitorApiGetAllEndpoints(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3016,11 +3017,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/endpoints`;
+    let localVarPath = `/api/v1/system-status/endpoints`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<EndpointOut[]>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<EndpointOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3070,7 +3071,7 @@ export class DefaultService extends BaseService {
   public monitorApiGetStatusPageBySlug(
     slug: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3106,11 +3107,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages/slug/${this.configuration.encodeParam({ name: 'slug', value: slug, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/system-status/status_pages/slug/${this.configuration.encodeParam({ name: 'slug', value: slug, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<StatusPageOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3143,7 +3144,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<any>>;
   public monitorApiGoogleAuthUrl(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
@@ -3169,11 +3170,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/integrations/google/auth-url`;
+    let localVarPath = `/api/v1/system-status/integrations/google/auth-url`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3216,7 +3217,7 @@ export class DefaultService extends BaseService {
     code: string,
     state: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (code === null || code === undefined) {
@@ -3235,7 +3236,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'code',
-      code as any,
+      <any>code,
       QueryParamStyle.Form,
       true,
     );
@@ -3243,7 +3244,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'state',
-      state as any,
+      <any>state,
       QueryParamStyle.Form,
       true,
     );
@@ -3271,12 +3272,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/integrations/google/callback`;
+    let localVarPath = `/api/v1/system-status/integrations/google/callback`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3302,7 +3303,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<IncidentOut[]>;
+  ): Observable<Array<IncidentOut>>;
   public monitorApiListIncidents(
     pageId: string,
     observe?: 'response',
@@ -3312,7 +3313,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<IncidentOut[]>>;
+  ): Observable<HttpResponse<Array<IncidentOut>>>;
   public monitorApiListIncidents(
     pageId: string,
     observe?: 'events',
@@ -3322,11 +3323,11 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<IncidentOut[]>>;
+  ): Observable<HttpEvent<Array<IncidentOut>>>;
   public monitorApiListIncidents(
     pageId: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3362,11 +3363,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/incidents`;
+    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/incidents`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IncidentOut[]>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<IncidentOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3390,7 +3391,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<IntegrationOut[]>;
+  ): Observable<Array<IntegrationOut>>;
   public monitorApiListIntegrations(
     observe?: 'response',
     reportProgress?: boolean,
@@ -3399,7 +3400,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<IntegrationOut[]>>;
+  ): Observable<HttpResponse<Array<IntegrationOut>>>;
   public monitorApiListIntegrations(
     observe?: 'events',
     reportProgress?: boolean,
@@ -3408,10 +3409,10 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<IntegrationOut[]>>;
+  ): Observable<HttpEvent<Array<IntegrationOut>>>;
   public monitorApiListIntegrations(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3441,11 +3442,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/integrations`;
+    let localVarPath = `/api/v1/system-status/integrations`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<IntegrationOut[]>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<IntegrationOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3471,7 +3472,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<MonitoredServiceOut[]>;
+  ): Observable<Array<MonitoredServiceOut>>;
   public monitorApiListServices(
     pageId: string,
     observe?: 'response',
@@ -3481,7 +3482,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<MonitoredServiceOut[]>>;
+  ): Observable<HttpResponse<Array<MonitoredServiceOut>>>;
   public monitorApiListServices(
     pageId: string,
     observe?: 'events',
@@ -3491,11 +3492,11 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<MonitoredServiceOut[]>>;
+  ): Observable<HttpEvent<Array<MonitoredServiceOut>>>;
   public monitorApiListServices(
     pageId: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3531,17 +3532,21 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/services`;
+    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/services`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<MonitoredServiceOut[]>('get', `${basePath}${localVarPath}`, {
-      context: localVarHttpContext,
-      responseType: responseType_ as any,
-      ...(withCredentials ? { withCredentials } : {}),
-      headers: localVarHeaders,
-      observe: observe,
-      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-      reportProgress: reportProgress,
-    });
+    return this.httpClient.request<Array<MonitoredServiceOut>>(
+      'get',
+      `${basePath}${localVarPath}`,
+      {
+        context: localVarHttpContext,
+        responseType: <any>responseType_,
+        ...(withCredentials ? { withCredentials } : {}),
+        headers: localVarHeaders,
+        observe: observe,
+        ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+        reportProgress: reportProgress,
+      },
+    );
   }
 
   /**
@@ -3559,7 +3564,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<StatusPageOut[]>;
+  ): Observable<Array<StatusPageOut>>;
   public monitorApiListStatusPages(
     observe?: 'response',
     reportProgress?: boolean,
@@ -3568,7 +3573,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<StatusPageOut[]>>;
+  ): Observable<HttpResponse<Array<StatusPageOut>>>;
   public monitorApiListStatusPages(
     observe?: 'events',
     reportProgress?: boolean,
@@ -3577,10 +3582,10 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<StatusPageOut[]>>;
+  ): Observable<HttpEvent<Array<StatusPageOut>>>;
   public monitorApiListStatusPages(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3610,11 +3615,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages`;
+    let localVarPath = `/api/v1/system-status/status_pages`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<StatusPageOut[]>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<Array<StatusPageOut>>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3664,7 +3669,7 @@ export class DefaultService extends BaseService {
   public monitorApiSaveClarity(
     clarityIn: ClarityIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3708,12 +3713,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/integrations/clarity`;
+    let localVarPath = `/api/v1/system-status/integrations/clarity`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: clarityIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3763,7 +3768,7 @@ export class DefaultService extends BaseService {
   public monitorApiSaveCloudflare(
     cloudflareIn: CloudflareIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3807,12 +3812,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/integrations/cloudflare`;
+    let localVarPath = `/api/v1/system-status/integrations/cloudflare`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: cloudflareIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3867,7 +3872,7 @@ export class DefaultService extends BaseService {
     pageId: string,
     statusPageIn: StatusPageIn,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -3916,12 +3921,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
+    let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<StatusPageOut>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: statusPageIn,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3964,7 +3969,7 @@ export class DefaultService extends BaseService {
     tenantId?: string,
     siteUrl?: string,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     let localVarQueryParameters = new OpenApiHttpParams(this.encoder);
@@ -3972,7 +3977,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'tenant_id',
-      tenantId as any,
+      <any>tenantId,
       QueryParamStyle.Form,
       true,
     );
@@ -3980,7 +3985,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'site_url',
-      siteUrl as any,
+      <any>siteUrl,
       QueryParamStyle.Form,
       true,
     );
@@ -4008,12 +4013,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/analytics/overview`;
+    let localVarPath = `/api/v1/analytics/overview`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4046,7 +4051,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<any>>;
   public telemetryAnalyticsViewsGetUserTenants(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     let localVarHeaders = this.defaultHeaders;
@@ -4072,11 +4077,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/analytics/tenants`;
+    let localVarPath = `/api/v1/analytics/tenants`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4121,7 +4126,7 @@ export class DefaultService extends BaseService {
   ): Observable<HttpEvent<PQKeyExchangeResponse>>;
   public telemetryApiGetPqKeyExchange(
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: {
       httpHeaderAccept?: 'application/json';
       context?: HttpContext;
@@ -4151,11 +4156,11 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/telemetry/pq-key-exchange`;
+    let localVarPath = `/api/v1/telemetry/pq-key-exchange`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<PQKeyExchangeResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4193,7 +4198,7 @@ export class DefaultService extends BaseService {
   public telemetryApiIngestEndpointTelemetry(
     telemetryPayload: TelemetryPayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (telemetryPayload === null || telemetryPayload === undefined) {
@@ -4233,12 +4238,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/telemetry/endpoints`;
+    let localVarPath = `/api/v1/telemetry/endpoints`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: telemetryPayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4276,7 +4281,7 @@ export class DefaultService extends BaseService {
   public telemetryApiIngestTechnologyTelemetry(
     telemetryDualStreamPayload: TelemetryDualStreamPayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (telemetryDualStreamPayload === null || telemetryDualStreamPayload === undefined) {
@@ -4316,12 +4321,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/telemetry/technology`;
+    let localVarPath = `/api/v1/telemetry/technology`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: telemetryDualStreamPayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4359,7 +4364,7 @@ export class DefaultService extends BaseService {
   public telemetryApiSaveCookieConsent(
     cookieConsentPayload: CookieConsentPayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (cookieConsentPayload === null || cookieConsentPayload === undefined) {
@@ -4399,12 +4404,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/telemetry/cookie-consent`;
+    let localVarPath = `/api/v1/telemetry/cookie-consent`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: cookieConsentPayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4442,7 +4447,7 @@ export class DefaultService extends BaseService {
   public telemetryApiSubscribeNewsletter(
     subscribePayload: SubscribePayload,
     observe: any = 'body',
-    reportProgress = false,
+    reportProgress: boolean = false,
     options?: { httpHeaderAccept?: undefined; context?: HttpContext; transferCache?: boolean },
   ): Observable<any> {
     if (subscribePayload === null || subscribePayload === undefined) {
@@ -4482,12 +4487,12 @@ export class DefaultService extends BaseService {
       }
     }
 
-    const localVarPath = `/api/v1/telemetry/subscribe`;
+    let localVarPath = `/api/v1/telemetry/subscribe`;
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: subscribePayload,
-      responseType: responseType_ as any,
+      responseType: <any>responseType_,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,

@@ -1,9 +1,9 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.base.service.ts
 api.module.ts
 api/api.ts
+api/billing.service.ts
 api/default.service.ts
 configuration.ts
 encoder.ts

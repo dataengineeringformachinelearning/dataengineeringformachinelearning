@@ -10,5 +10,5 @@
 
 export interface IngestPayload {
   batch_id: string;
-  records: Record<string, any>[];
+  records: Array<{ [key: string]: any }>;
 }

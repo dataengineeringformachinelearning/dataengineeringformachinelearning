@@ -9,10 +9,11 @@
  */
 
 export interface TelemetryPayload {
+  tenant_id?: string | null;
   url: string;
   status_code: number;
   response_time_ms: number;
   ip_address: string;
   is_active: boolean;
-  telemetry_context?: Record<string, any> | null;
+  telemetry_context?: { [key: string]: any } | null;
 }

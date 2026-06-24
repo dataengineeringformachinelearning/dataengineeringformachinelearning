@@ -854,6 +854,50 @@
         }
       }
     },
+    "/api/v1/ingest": {
+      "post": {
+        "operationId": "integrations_api_ingest_data",
+        "summary": "High-Throughput Data Ingestion",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/IngestResponse" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/IngestPayload" } }
+          },
+          "required": true
+        },
+        "security": [{ "IntegrationAPIKeyAuth": [] }]
+      }
+    },
+    "/api/v1/predict": {
+      "post": {
+        "operationId": "integrations_api_predict",
+        "summary": "Real-time Model Inference",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/PredictResponse" } }
+            }
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/PredictPayload" } }
+          },
+          "required": true
+        },
+        "security": [{ "IntegrationAPIKeyAuth": [] }]
+      }
+    },
     "/api/v1/integrations/kubernetes": {
       "get": {
         "operationId": "integrations_api_kubernetes_status",
@@ -929,48 +973,22 @@
         }
       }
     },
-    "/api/v1/ingest": {
+    "/api/v1/billing/create-checkout-session": {
       "post": {
-        "operationId": "integrations_api_ingest_data",
-        "summary": "High-Throughput Data Ingestion",
+        "operationId": "billing_api_create_checkout_session",
+        "summary": "Create Checkout Session",
         "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/IngestResponse" } }
-            }
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/IngestPayload" } }
-          },
-          "required": true
-        },
-        "security": [{ "IntegrationAPIKeyAuth": [] }]
+        "responses": { "200": { "description": "OK" } },
+        "tags": ["Billing"]
       }
     },
-    "/api/v1/predict": {
+    "/api/v1/billing/webhook": {
       "post": {
-        "operationId": "integrations_api_predict",
-        "summary": "Real-time Model Inference",
+        "operationId": "billing_api_stripe_webhook",
+        "summary": "Stripe Webhook",
         "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": { "schema": { "$ref": "#/components/schemas/PredictResponse" } }
-            }
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": { "schema": { "$ref": "#/components/schemas/PredictPayload" } }
-          },
-          "required": true
-        },
-        "security": [{ "IntegrationAPIKeyAuth": [] }]
+        "responses": { "200": { "description": "OK" } },
+        "tags": ["Billing"]
       }
     }
   },
@@ -1333,6 +1351,10 @@
       },
       "TelemetryPayload": {
         "properties": {
+          "tenant_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Tenant Id"
+          },
           "url": { "title": "Url", "type": "string" },
           "status_code": { "title": "Status Code", "type": "integer" },
           "response_time_ms": { "title": "Response Time Ms", "type": "number" },
@@ -1519,18 +1541,6 @@
         "title": "VulnerabilityUpdatePayload",
         "type": "object"
       },
-      "IntegrationStatus": {
-        "properties": {
-          "integration": { "title": "Integration", "type": "string" },
-          "status": { "title": "Status", "type": "string" },
-          "enabled": { "title": "Enabled", "type": "boolean" },
-          "version": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Version" },
-          "message": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message" }
-        },
-        "required": ["integration", "status", "enabled"],
-        "title": "IntegrationStatus",
-        "type": "object"
-      },
       "IngestResponse": {
         "properties": {
           "status": { "title": "Status", "type": "string" },
@@ -1572,6 +1582,18 @@
         },
         "required": ["model_version", "inputs"],
         "title": "PredictPayload",
+        "type": "object"
+      },
+      "IntegrationStatus": {
+        "properties": {
+          "integration": { "title": "Integration", "type": "string" },
+          "status": { "title": "Status", "type": "string" },
+          "enabled": { "title": "Enabled", "type": "boolean" },
+          "version": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Version" },
+          "message": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Message" }
+        },
+        "required": ["integration", "status", "enabled"],
+        "title": "IntegrationStatus",
         "type": "object"
       }
     },

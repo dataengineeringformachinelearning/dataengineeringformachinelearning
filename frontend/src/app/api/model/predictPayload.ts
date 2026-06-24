@@ -10,5 +10,5 @@
 
 export interface PredictPayload {
   model_version: string;
-  inputs: number[];
+  inputs: Array<number>;
 }
