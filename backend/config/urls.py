@@ -24,3 +24,5 @@ urlpatterns = [
     "sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"
   ),
 ]
+
+handler404 = "config.views.custom_404"

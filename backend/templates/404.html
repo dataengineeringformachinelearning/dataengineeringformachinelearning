@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Data Engineering for Machine Learning - Backend</title>
+    <title>404 Not Found - Data Engineering for Machine Learning</title>
     <meta
       name="description"
       content="Backend API and services for Data Engineering for Machine Learning."
@@ -125,30 +125,19 @@
             src="{% static 'data-engineering-for-machine-learning.svg' %}"
             alt="Web Application Brand Icon"
           />
-          <h1 class="title">Data Engineering for Machine Learning</h1>
-          <h2 class="subtitle">Core REST API & Services</h2>
+          <h1 class="title">404 - Not Found</h1>
+          <h2 class="subtitle">
+            The requested resource was not found on this server.
+          </h2>
 
           <p>
-            Welcome to the backend orchestrator. This system manages user
-            accounts, handles real-time telemetry pipelines with Redpanda,
-            coordinates model training schedules, and computes SLA predictions.
+            It looks like you took a wrong turn. The page or endpoint you are
+            looking for does not exist.
           </p>
 
-          <div class="status-badge" role="status" aria-live="polite">
-            <span class="status-dot"></span>
-            <span class="status-text">Backend Systems Operational</span>
-            <span class="sr-only"
-              >Live telemetry shows backend systems are fully operational.</span
-            >
-          </div>
-
           <div class="cta-group">
-            <a
-              href="/api/v1/docs"
-              class="cta-button primary-btn"
-              id="explore-docs-btn"
-            >
-              <span>Swagger Docs</span>
+            <a href="/" class="cta-button primary-btn">
+              <span>Return to Home</span>
             </a>
           </div>
         </article>
@@ -255,69 +244,5 @@
         </div>
       </footer>
     </main>
-
-    <script>
-      (function () {
-        let currentTheme =
-          document.documentElement.getAttribute("data-theme") || "dark";
-
-        function updateIcons() {
-          const sunIcon = document.querySelector(".sun-icon");
-          const moonIcon = document.querySelector(".moon-icon");
-          if (sunIcon && moonIcon) {
-            if (currentTheme === "light") {
-              sunIcon.style.display = "none";
-              moonIcon.style.display = "block";
-            } else {
-              sunIcon.style.display = "block";
-              moonIcon.style.display = "none";
-            }
-          }
-        }
-
-        function setTheme(theme) {
-          document.documentElement.setAttribute("data-theme", theme);
-          localStorage.setItem("theme", theme);
-          currentTheme = theme;
-          updateIcons();
-        }
-
-        window.addEventListener("DOMContentLoaded", () => {
-          updateIcons();
-          const toggleBtn = document.getElementById("theme-toggle");
-          if (toggleBtn) {
-            toggleBtn.addEventListener("click", () => {
-              setTheme(currentTheme === "light" ? "dark" : "light");
-            });
-          }
-
-          // Confetti for USA Badge
-          const usaBadge = document.querySelector(".usa-badge");
-          if (usaBadge) {
-            usaBadge.addEventListener("mouseenter", (e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = (rect.left + rect.width / 2) / window.innerWidth;
-              const y = (rect.top + rect.height / 2) / window.innerHeight;
-
-              if (window.confetti) {
-                window.confetti({
-                  particleCount: 50,
-                  spread: 60,
-                  origin: { x, y },
-                  colors: ["#FF0000", "#FFFFFF", "#0000FF"],
-                  disableForReducedMotion: true,
-                  zIndex: 9999,
-                });
-              }
-            });
-          }
-        });
-      })();
-    </script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"
-      integrity="sha384-0esPaJH+F9evp2lsJYN36SW7XkRbaYviuyF+PpnbjDXBC9i1CWGiJyGrXCyiyGqZ"
-      crossorigin="anonymous"
-    ></script>
   </body>
 </html>
