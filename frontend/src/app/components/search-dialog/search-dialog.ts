@@ -1,6 +1,5 @@
 import {
   Component,
-  OnInit,
   inject,
   ChangeDetectionStrategy,
   signal,
@@ -26,7 +25,7 @@ import { SettingsService } from '../../services/settings.service';
   styleUrl: './search-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchDialog implements OnInit, AfterViewInit {
+export class SearchDialog implements AfterViewInit {
   private dialogRef = inject(MatDialogRef<SearchDialog>);
   private searchService = inject(OramaSearchService);
   private bookService = inject(BookService);
