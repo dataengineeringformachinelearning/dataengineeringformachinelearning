@@ -300,7 +300,18 @@ class Command(BaseCommand):
           status_page=page, name=url_mapping.get(u, "Django Web Server"), url=u
         )
 
+    from monitor.models import ThreatIntelligence
     from utils.enrichment import get_ip_enrichment, parse_user_agent
+
+    # Cross-reference incoming telemetry IPs against ThreatIntelligence
+    unique_ips = [ip for ip in df["ip_address"].to_list() if ip]
+    malicious_ips = set()
+    if unique_ips:
+      malicious_ips = set(
+        ThreatIntelligence.objects.filter(ip_address__in=unique_ips, is_malicious=True).values_list(
+          "ip_address", flat=True
+        )
+      )
 
     objects_to_create = []
     for row in df.iter_rows(named=True):
@@ -315,6 +326,11 @@ class Command(BaseCommand):
       t_id = row.get("tenant_id")
       tenant = all_tenants.get(str(t_id)) if t_id else tenant_0
 
+      telemetry_context = row.get("telemetry_context") or {}
+      if ip in malicious_ips:
+        telemetry_context["malicious_ip_detected"] = True
+        telemetry_context["threat_match"] = True
+
       # Create instance (we don't save yet to do it in bulk)
       ep = Endpoints(
         tenant=tenant,
@@ -328,9 +344,9 @@ class Command(BaseCommand):
         device_type=ua_data["device_type"],
         os_name=ua_data["os_name"],
         browser_name=ua_data["browser_name"],
-        is_bot=ua_data["is_bot"],
+        is_bot=ua_data["is_bot"] or (ip in malicious_ips),
         is_active=row["is_active"],
-        telemetry_context=row.get("telemetry_context"),
+        telemetry_context=telemetry_context,
       )
       objects_to_create.append(ep)
 

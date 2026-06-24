@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { NgApexchartsModule } from 'ng-apexcharts';
 import { MatIconModule } from '@angular/material/icon';
 import { ThemeService } from '../../services/theme.service';
 import {
@@ -17,30 +16,36 @@ import {
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
 import { environment } from '../../../environments/environment';
-import * as L from 'leaflet';
 
-export interface ChartOptions {
-  series: any;
-  chart: any;
-  xaxis?: any;
-  yaxis?: any;
-  dataLabels?: any;
-  grid?: any;
-  stroke?: any;
-  plotOptions?: any;
-  labels?: any;
-  colors?: any;
-  legend?: any;
-  fill?: any;
-  tooltip?: any;
-  noData?: any;
-  markers?: any;
+export interface SvgPoint {
+  x: number;
+  y: number;
+  label: string;
+  value: number;
+}
+export interface SvgBar {
+  label: string;
+  value: number;
+  heightPercent: number;
+}
+export interface SvgArc {
+  label: string;
+  value: number;
+  color: string;
+  dasharray: string;
+  dashoffset: number;
+}
+export interface MapMarker {
+  x: number;
+  y: number;
+  r: number;
+  label: string;
 }
 
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule, MatIconModule, UnifiedSelect],
+  imports: [CommonModule, MatIconModule, UnifiedSelect],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })
@@ -82,32 +87,31 @@ export class AnalyticsComponent implements OnInit {
   public slaLevel = 0;
   public stabilityLevel = 0;
 
-  // Chart configs
-  public chartOptions: ChartOptions;
-  public frequencyChartOptions: ChartOptions;
-  public statusChartOptions: ChartOptions;
-  public endpointChartOptions: ChartOptions;
-  public threatSeverityChartOptions: ChartOptions;
-  public securityAlertsChartOptions: ChartOptions;
+  // Native SVG Chart Data
+  public latencyData: SvgPoint[] = [];
+  public latencyPath = '';
+  public latencyArea = '';
+  public latencyMax = 0;
 
-  public originMapData: any[] = [];
-  private map: L.Map | undefined;
+  public frequencyData: SvgPoint[] = [];
+  public frequencyPath = '';
+  public frequencyArea = '';
+  public frequencyMax = 0;
+
+  public endpointData: SvgBar[] = [];
+  public statusData: SvgBar[] = [];
+  public securityAlertsData: SvgBar[] = [];
+  public threatData: SvgArc[] = [];
+
+  public mapMarkers: MapMarker[] = [];
 
   get isDarkMode(): boolean {
     return this.themeService.theme() === 'dark';
   }
 
   constructor() {
-    this.chartOptions = this.getEmptyAreaChart('var(--crayola-blue)', 'Latency (ms)');
-    this.frequencyChartOptions = this.getEmptyAreaChart('var(--blue-bell)', 'Requests');
-    this.statusChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Status Count');
-    this.endpointChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Endpoint Calls');
-    this.threatSeverityChartOptions = this.getEmptyDonutChart();
-    this.securityAlertsChartOptions = this.getEmptyBarChart('var(--carrot-orange)', 'Anomalies');
-
     effect(() => {
       this.themeService.theme();
-      this.updateChartTheme();
     });
 
     afterNextRender(() => {
@@ -115,228 +119,104 @@ export class AnalyticsComponent implements OnInit {
     });
   }
 
-  private getEmptyAreaChart(color: string, seriesName: string): ChartOptions {
-    return {
-      series: [{ name: seriesName, data: [] }],
-      chart: {
-        type: 'area',
-        sparkline: { enabled: false },
-        height: '100%',
-        width: '100%',
-        parentHeightOffset: 0,
-        toolbar: { show: false },
-        background: 'transparent',
-        animations: { enabled: true, easing: 'easeinout', speed: 800 },
-        dropShadow: { enabled: true, color: color, top: 4, left: 0, blur: 10, opacity: 0.2 },
-      },
-      colors: [color],
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2, colors: [color] },
-      fill: {},
-      markers: { size: 0, hover: { size: 5 } },
-      xaxis: {
-        type: 'category',
-        categories: [],
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-      },
-      yaxis: {},
-      grid: { show: true },
-      tooltip: {},
-      noData: {
-        text: 'No Telemetry Signal Available',
-        align: 'center',
-        verticalAlign: 'middle',
-        style: { color: 'var(--text-muted)', fontSize: '14px', fontFamily: 'Inter' },
-      },
-    };
+  private generateAreaPath(
+    data: any[],
+    valueKey: string,
+  ): { path: string; area: string; points: SvgPoint[]; max: number } {
+    if (!data || data.length === 0) return { path: '', area: '', points: [], max: 0 };
+
+    const values = data.map(d => Number(d[valueKey]) || 0);
+    const maxVal = Math.max(...values, 1);
+    const points: SvgPoint[] = [];
+
+    // SVG Coordinate System (0,0 is top left). Viewbox 1000 x 300
+    const w = 1000;
+    const h = 300;
+
+    const stepX = data.length > 1 ? w / (data.length - 1) : w;
+
+    let path = '';
+
+    data.forEach((d, i) => {
+      const val = Number(d[valueKey]) || 0;
+      const x = i * stepX;
+      // Invert Y so higher value is higher on screen
+      const y = h - (val / maxVal) * h;
+
+      points.push({ x, y, label: d.time || d.label, value: val });
+
+      if (i === 0) {
+        path += `M ${x},${y} `;
+      } else {
+        path += `L ${x},${y} `;
+      }
+    });
+
+    const area = `${path} L ${w},${h} L 0,${h} Z`;
+    return { path, area, points, max: maxVal };
   }
 
-  private getEmptyBarChart(color: string, seriesName: string): ChartOptions {
-    return {
-      series: [{ name: seriesName, data: [] }],
-      chart: {
-        type: 'bar',
-        height: '100%',
-        width: '100%',
-        parentHeightOffset: 0,
-        toolbar: { show: false },
-        background: 'transparent',
-        dropShadow: { enabled: true, color: color, top: 4, left: 0, blur: 10, opacity: 0.2 },
-      },
-      colors: [color],
-      plotOptions: { bar: { borderRadius: 4, borderRadiusApplication: 'end', columnWidth: '35%' } },
-      dataLabels: { enabled: false },
-      stroke: { width: 0 },
-      fill: {},
-      xaxis: {
-        type: 'category',
-        categories: [],
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-      },
-      yaxis: {},
-      grid: { show: true },
-      tooltip: {},
-      noData: {
-        text: 'No Telemetry Signal Available',
-        align: 'center',
-        verticalAlign: 'middle',
-        style: { color: 'var(--text-muted)', fontSize: '14px', fontFamily: 'Inter' },
-      },
-    };
+  private generateBars(data: any[], labelKey: string, valueKey: string): SvgBar[] {
+    if (!data || data.length === 0) return [];
+    const maxVal = Math.max(...data.map(d => Number(d[valueKey]) || 0), 1);
+    return data.map(d => ({
+      label: d[labelKey],
+      value: Number(d[valueKey]) || 0,
+      heightPercent: ((Number(d[valueKey]) || 0) / maxVal) * 100,
+    }));
   }
 
-  private getEmptyDonutChart(): ChartOptions {
-    return {
-      series: [],
-      chart: {
-        type: 'donut',
-        height: '100%',
-        width: '100%',
-        parentHeightOffset: 0,
-        background: 'transparent',
-        dropShadow: {
-          enabled: true,
-          color: 'var(--jet-black)',
-          top: 4,
-          left: 0,
-          blur: 10,
-          opacity: 0.2,
-        },
-      },
-      labels: [],
-      colors: [
-        'var(--crayola-blue)',
-        'var(--blue-bell)',
-        'var(--golden-pollen)',
-        'var(--carrot-orange)',
-        'var(--jet-black)',
-      ],
-      plotOptions: { pie: { donut: { size: '70%', labels: { show: true } } } },
-      dataLabels: { enabled: false },
-      stroke: { width: 2, colors: ['var(--color-surface)'] },
-      legend: { position: 'bottom', labels: { colors: 'var(--text-color)' } },
-      tooltip: { theme: 'dark' },
-      noData: {
-        text: 'No Telemetry Signal Available',
-        align: 'center',
-        verticalAlign: 'middle',
-        style: { color: 'var(--text-muted)', fontSize: '14px', fontFamily: 'Inter' },
-      },
-    };
+  private generateDonut(data: any[], labelKey: string, valueKey: string): SvgArc[] {
+    if (!data || data.length === 0) return [];
+    const total = data.reduce((sum, d) => sum + (Number(d[valueKey]) || 0), 0) || 1;
+    const colors = [
+      'var(--carrot-orange)',
+      'var(--golden-pollen)',
+      'var(--blue-bell)',
+      'var(--crayola-blue)',
+    ];
+
+    const radius = 40;
+    const circumference = 2 * Math.PI * radius;
+    let currentOffset = 0;
+
+    return data.map((d, i) => {
+      const val = Number(d[valueKey]) || 0;
+      const percent = val / total;
+      const dash = percent * circumference;
+
+      const arc: SvgArc = {
+        label: d[labelKey],
+        value: val,
+        color: colors[i % colors.length],
+        dasharray: `${dash} ${circumference}`,
+        dashoffset: -currentOffset,
+      };
+
+      currentOffset += dash;
+      return arc;
+    });
   }
 
-  private updateChartTheme() {
-    const tooltipTheme = this.isDarkMode ? 'dark' : 'light';
-    const textColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)';
-    const gridColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.06)';
-    const surfaceColor = this.isDarkMode ? '#1e1e1e' : '#ffffff';
-    const shadowOpacity = this.isDarkMode ? 0.3 : 0.15;
-    const fillAreaOpacityFrom = this.isDarkMode ? 0.2 : 0.12;
-    const fillBarOpacity = this.isDarkMode ? 0.15 : 0.08;
+  private generateMapMarkers(origins: any[]): MapMarker[] {
+    if (!origins || origins.length === 0) return [];
+    // Basic Mercator-ish mapping onto a 1000x500 viewBox SVG
+    // x: -180 to 180 -> 0 to 1000
+    // y: 90 to -90 -> 0 to 500
+    return origins.map(loc => {
+      const x = ((loc.lng + 180) / 360) * 1000;
+      // simplified y mapping
+      let latRad = (loc.lat * Math.PI) / 180;
+      let mercN = Math.log(Math.tan(Math.PI / 4 + latRad / 2));
+      let y = 250 - (250 * mercN) / Math.PI;
 
-    const updateAxis = (chartOpts: ChartOptions) => {
-      if (chartOpts.xaxis)
-        chartOpts.xaxis.labels = {
-          rotate: 0,
-          rotateAlways: false,
-          style: { colors: textColor, fontFamily: 'Inter, sans-serif' },
-        };
-      if (chartOpts.yaxis)
-        chartOpts.yaxis.labels = { style: { colors: textColor, fontFamily: 'Inter, sans-serif' } };
-
-      if (chartOpts.grid) {
-        chartOpts.grid.borderColor = gridColor;
-        chartOpts.grid.strokeDashArray = 4;
-        chartOpts.grid.xaxis = { lines: { show: false } };
-        chartOpts.grid.yaxis = { lines: { show: true } };
-      }
-
-      if (chartOpts.tooltip) {
-        chartOpts.tooltip.theme = tooltipTheme;
-        chartOpts.tooltip.custom = undefined;
-        chartOpts.tooltip.x = { show: true };
-        chartOpts.tooltip.shared = true;
-        chartOpts.tooltip.intersect = false;
-      }
-
-      if (chartOpts.chart && chartOpts.chart.dropShadow)
-        chartOpts.chart.dropShadow.opacity = shadowOpacity;
-
-      if (chartOpts.chart?.type === 'area') {
-        chartOpts.fill = {
-          type: 'gradient',
-          gradient: {
-            shadeIntensity: 1,
-            opacityFrom: fillAreaOpacityFrom,
-            opacityTo: 0,
-            stops: [0, 100],
-          },
-        };
-      } else if (chartOpts.chart?.type === 'bar') {
-        chartOpts.fill = { type: 'solid', opacity: fillBarOpacity };
-      }
-
-      if (chartOpts.stroke && chartOpts.chart?.type === 'donut') {
-        chartOpts.stroke.colors = [surfaceColor];
-        if (chartOpts.plotOptions?.pie?.donut?.labels) {
-          chartOpts.plotOptions.pie.donut.labels.show = true;
-          chartOpts.plotOptions.pie.donut.labels.name = { color: textColor };
-          chartOpts.plotOptions.pie.donut.labels.value = {
-            color: this.isDarkMode ? '#ffffff' : '#000000',
-          };
-          chartOpts.plotOptions.pie.donut.labels.total = {
-            show: true,
-            showAlways: true,
-            label: 'Total',
-            color: textColor,
-          };
-        }
-      }
-      if (chartOpts.legend)
-        chartOpts.legend.labels = { colors: textColor, fontFamily: 'Inter, sans-serif' };
-
-      if (chartOpts === this.endpointChartOptions && chartOpts.xaxis) {
-        chartOpts.xaxis.labels = { show: false };
-        chartOpts.xaxis.axisTicks = { show: false };
-      }
-
-      if (
-        (chartOpts === this.frequencyChartOptions ||
-          chartOpts === this.chartOptions ||
-          chartOpts === this.securityAlertsChartOptions) &&
-        chartOpts.xaxis
-      ) {
-        chartOpts.xaxis.tickAmount = 6;
-      }
-
-      return { ...chartOpts };
-    };
-
-    this.chartOptions = updateAxis(this.chartOptions);
-    this.frequencyChartOptions = updateAxis(this.frequencyChartOptions);
-    this.statusChartOptions = updateAxis(this.statusChartOptions);
-    this.endpointChartOptions = updateAxis(this.endpointChartOptions);
-    this.threatSeverityChartOptions = updateAxis(this.threatSeverityChartOptions);
-    this.securityAlertsChartOptions = updateAxis(this.securityAlertsChartOptions);
-    if (this.map) {
-      this.map.eachLayer(layer => {
-        if (layer instanceof L.TileLayer) {
-          this.map?.removeLayer(layer);
-        }
-      });
-      const tileUrl = this.isDarkMode
-        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-      L.tileLayer(tileUrl, {
-        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-      }).addTo(this.map);
-
-      setTimeout(() => {
-        this.map?.invalidateSize();
-      }, 100);
-    }
+      return {
+        x: Math.max(0, Math.min(1000, x)),
+        y: Math.max(0, Math.min(500, y)),
+        r: Math.max(4, Math.min(16, loc.count / 2)),
+        label: `${loc.origin}: ${loc.count} reqs`,
+      };
+    });
   }
 
   public getGaugeStroke(value: number, circumference: number): string {
@@ -344,15 +224,8 @@ export class AnalyticsComponent implements OnInit {
     return `${dash} ${circumference}`;
   }
 
-  public hasData(options: ChartOptions): boolean {
-    if (!options || !options.series) return false;
-    if (options.chart?.type === 'donut') {
-      return options.series.length > 0;
-    }
-    if (options.series.length > 0 && options.series[0].data) {
-      return options.series[0].data.length > 0;
-    }
-    return false;
+  public hasData(dataArray: any[]): boolean {
+    return dataArray && dataArray.length > 0;
   }
 
   private loadAnalyticsData() {
@@ -406,58 +279,39 @@ export class AnalyticsComponent implements OnInit {
 
           // Parse Time Series for System Latency
           const timeSeries = user_metrics?.time_series || [];
-          this.chartOptions.series = [
-            { name: 'Latency (ms)', data: timeSeries.map((d: any) => d.latency) },
-          ];
-          this.chartOptions.xaxis.categories = timeSeries.map((d: any) => d.time);
+          const latencyRes = this.generateAreaPath(timeSeries, 'latency');
+          this.latencyPath = latencyRes.path;
+          this.latencyArea = latencyRes.area;
+          this.latencyData = latencyRes.points;
+          this.latencyMax = latencyRes.max;
 
           // Parse Origin Distribution
           const origins = user_metrics?.origin_distribution || [];
-          this.originMapData = origins;
-          if (this.isBrowser) {
-            this.initMap();
-          }
+          this.mapMarkers = this.generateMapMarkers(origins);
 
           // Parse Request Frequency
           const reqFreq = user_metrics?.request_frequency || [];
-          this.frequencyChartOptions.series = [
-            { name: 'Requests', data: reqFreq.map((d: any) => d.requests) },
-          ];
-          this.frequencyChartOptions.xaxis.categories = reqFreq.map((d: any) => d.time);
+          const freqRes = this.generateAreaPath(reqFreq, 'requests');
+          this.frequencyPath = freqRes.path;
+          this.frequencyArea = freqRes.area;
+          this.frequencyData = freqRes.points;
+          this.frequencyMax = freqRes.max;
 
           // Parse HTTP Status
           const statuses = user_metrics?.http_statuses || [];
-          this.statusChartOptions.series = [
-            { name: 'Count', data: statuses.map((d: any) => d.count) },
-          ];
-          this.statusChartOptions.xaxis.categories = statuses.map((d: any) => d.status);
+          this.statusData = this.generateBars(statuses, 'status', 'count');
 
           // Parse Endpoints
           const endpoints = user_metrics?.endpoint_counts || [];
-          this.endpointChartOptions.series = [
-            { name: 'Calls', data: endpoints.map((d: any) => d.count) },
-          ];
-          this.endpointChartOptions.xaxis.categories = endpoints.map((d: any) => d.endpoint);
+          this.endpointData = this.generateBars(endpoints, 'endpoint', 'count');
 
           // Parse Threat Severity
           const threats = user_metrics?.threat_severity || [];
-          this.threatSeverityChartOptions.series = threats.map((d: any) => d.count);
-          this.threatSeverityChartOptions.labels = threats.map((d: any) => d.severity);
-          this.threatSeverityChartOptions.colors = [
-            'var(--carrot-orange)',
-            'var(--golden-pollen)',
-            'var(--blue-bell)',
-            'var(--crayola-blue)',
-          ];
+          this.threatData = this.generateDonut(threats, 'severity', 'count');
 
           // Parse Security Alerts
           const alerts = user_metrics?.security_alerts || [];
-          this.securityAlertsChartOptions.series = [
-            { name: 'Anomalies', data: alerts.map((d: any) => d.count) },
-          ];
-          this.securityAlertsChartOptions.xaxis.categories = alerts.map((d: any) => d.time);
-
-          this.updateChartTheme(); // trigger update to apply objects
+          this.securityAlertsData = this.generateBars(alerts, 'time', 'count');
         }
         this.isLoading = false;
         this.cdr.detectChanges();
@@ -505,58 +359,5 @@ export class AnalyticsComponent implements OnInit {
   public onSiteChange(site: any) {
     this.selectedSite = site;
     this.loadAnalyticsData();
-  }
-
-  private initMap() {
-    if (!this.isBrowser) return;
-
-    setTimeout(() => {
-      const mapContainer = document.getElementById('originMap');
-      if (mapContainer && !this.map) {
-        this.map = L.map('originMap', {
-          zoomControl: false,
-          attributionControl: false,
-        }).setView([20, 0], 2);
-
-        const tileUrl = this.isDarkMode
-          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-          : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-
-        L.tileLayer(tileUrl, {
-          attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-        }).addTo(this.map);
-      }
-      this.updateMapMarkers();
-
-      setTimeout(() => {
-        this.map?.invalidateSize();
-      }, 100);
-    }, 100);
-  }
-
-  private updateMapMarkers() {
-    if (!this.map) return;
-
-    this.map.eachLayer(layer => {
-      if (layer instanceof L.CircleMarker) {
-        this.map?.removeLayer(layer);
-      }
-    });
-
-    this.originMapData.forEach(loc => {
-      if (loc.lat && loc.lng) {
-        L.circleMarker([loc.lat, loc.lng], {
-          radius: Math.max(6, Math.min(24, loc.count / 2)),
-          color: 'var(--crayola-blue)',
-          fillColor: 'var(--crayola-blue)',
-          fillOpacity: 0.6,
-          weight: 2,
-        })
-          .bindTooltip(`${loc.origin}: ${loc.count} reqs`, {
-            direction: 'top',
-          })
-          .addTo(this.map!);
-      }
-    });
   }
 }

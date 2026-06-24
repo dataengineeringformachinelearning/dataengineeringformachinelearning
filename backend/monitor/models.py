@@ -84,6 +84,33 @@ class MonitoredService(models.Model):
     return self.name
 
 
+class Asset(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  tenant = models.ForeignKey(
+    Tenant, on_delete=models.CASCADE, related_name="assets", null=True, blank=True
+  )
+  hostname = models.CharField(max_length=255)
+  internal_ip = models.GenericIPAddressField(null=True, blank=True)
+  os_version = models.CharField(max_length=255, null=True, blank=True)
+  mac_address = models.CharField(max_length=50, null=True, blank=True)
+  environment = models.CharField(
+    max_length=50,
+    choices=[("Production", "Production"), ("Staging", "Staging"), ("Development", "Development")],
+    default="Production",
+  )
+  monitored_service = models.ForeignKey(
+    MonitoredService, on_delete=models.SET_NULL, null=True, blank=True, related_name="assets"
+  )
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "assets"
+
+  def __str__(self):
+    return f"{self.hostname} ({self.environment})"
+
+
 class Endpoints(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   tenant = models.ForeignKey(
@@ -265,6 +292,9 @@ class Vulnerability(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   tenant = models.ForeignKey(
     Tenant, on_delete=models.CASCADE, related_name="vulnerabilities", null=True, blank=True
+  )
+  asset = models.ForeignKey(
+    Asset, on_delete=models.CASCADE, related_name="vulnerabilities", null=True, blank=True
   )
   title = models.CharField(max_length=255)
   description = models.TextField()

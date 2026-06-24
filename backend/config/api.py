@@ -55,15 +55,10 @@ from agent.api import router as agent_router
 
 api.add_router("/agent/", agent_router)
 
-from integrations.api import (
-  public_router,
-  router as integrations_router,
-)
+from integrations.api import router as integrations_router
 
 api.add_router("/integrations/", integrations_router)
 
 from billing.api import router as billing_router
 
 api.add_router("/billing/", billing_router)
-
-api.add_router("", public_router)

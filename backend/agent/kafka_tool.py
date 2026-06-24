@@ -1,10 +1,8 @@
 import json
 
-from langchain_core.tools import tool
 from utils.kafka import create_kafka_producer
 
 
-@tool
 async def send_issue_to_redpanda(topic: str, issue_report: str, bug_report_id: str | None = None):
   """
   Sends a formatted issue report to a specific Redpanda topic.
