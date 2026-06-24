@@ -16,9 +16,14 @@ RUN wget -qO /tmp/dragonfly.tar.gz "https://github.com/dragonflydb/dragonfly/rel
     mv /usr/local/bin/dragonfly-x86_64 /usr/local/bin/dragonfly && \
     chmod +x /usr/local/bin/dragonfly
 
-# Stage 2: Final Distroless Image
-# Distroless cc contains libgcc1, libstdc++6, etc., needed for C++ binaries
-FROM gcr.io/distroless/cc-debian12:nonroot
+# Stage 2: Final Image
+FROM debian:bookworm-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends zlib1g && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -r nonroot && useradd -r -g nonroot nonroot
 
 # Copy the binary from the downloader stage
 COPY --from=downloader /usr/local/bin/dragonfly /usr/local/bin/dragonfly

@@ -27,7 +27,7 @@ sentry-sdk==2.62.0
 google-cloud-kms==3.13.0
 google-cloud-logging==3.16.0
 pytest-asyncio>=0.24.0
-requests
+requests[socks]
 resend==2.4.0
 aiohttp==3.9.5
 adbc-driver-postgresql

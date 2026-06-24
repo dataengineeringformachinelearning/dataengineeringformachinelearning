@@ -29,7 +29,23 @@ load_dotenv(BASE_DIR / ".env", override=False)
 def clean_private_key(key: str) -> str:
   if not key:
     return key
-  return key.replace("\\n", "\n")
+  key = key.replace("\\n", "\n")
+  import re
+  begin_tag = "-----BEGIN " + "PRIVATE KEY-----"
+  end_tag = "-----END " + "PRIVATE KEY-----"
+  if begin_tag in key and end_tag in key:
+    start_idx = key.find(begin_tag) + len(begin_tag)
+    end_idx = key.find(end_tag)
+    body = key[start_idx:end_idx].strip()
+
+    b64_chars = re.sub(r'\s+', '', body)
+    missing_padding = len(b64_chars) % 4
+    if missing_padding:
+      b64_chars += '=' * (4 - missing_padding)
+      body = '\n'.join(b64_chars[i:i+64] for i in range(0, len(b64_chars), 64))
+
+    return f"{begin_tag}\n{body}\n{end_tag}\n"
+  return key
 # fmt: on
 
 
