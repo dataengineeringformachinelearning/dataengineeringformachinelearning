@@ -1137,9 +1137,9 @@ When a tenant provisions a new deployment on my platform, the backend securely d
 
 In the modern threat landscape, simply logging raw IP addresses and standard HTTP metadata is insufficient for building a robust, cyber-aware platform. I must actively transform these opaque identifiers into actionable intelligence. To achieve this, I engineered a dedicated telemetry enrichment layer that intercepts all general traffic (Endpoints) and processes it through a series of specialized open-source tools before it reaches my database.
 
-First, I utilize the `user-agents` Python library to dissect incoming User-Agent strings, accurately classifying the `device_type` (Mobile, Desktop, Tablet, Bot), `os_name`, and `browser_name`. Crucially, this allows me to reliably filter automated bot and crawler traffic out of my core SLA metrics, ensuring my latency distributions represent true human experiences.
+First, I utilize native regular expression parsing to dissect incoming User-Agent strings, accurately classifying the `device_type` (Mobile, Desktop, Tablet, Bot), `os_name`, and `browser_name`. Crucially, this allows me to reliably filter automated bot and crawler traffic out of my core SLA metrics, ensuring my latency distributions represent true human experiences.
 
-Simultaneously, I leverage `ipwhois` and the `ipwho.is` API to perform deep reconnaissance on incoming IP addresses. This yields precise geographic `location` (City, Country), enabling me to correlate traffic spikes with regional events. More importantly, I extract the Autonomous System Number (`asn`) and Internet Service Provider (`isp`). This topological data is a game-changer for cybersecurity: it empowers my threat models to immediately distinguish between benign residential ISPs and data center ASNs (like AWS or DigitalOcean) which are frequently the source of volumetric attacks, scrapers, and malicious botnets.
+Simultaneously, I leverage the native `requests` library against the `ipwho.is` API to perform deep reconnaissance on incoming IP addresses. This yields precise geographic `location` (City, Country), enabling me to correlate traffic spikes with regional events. More importantly, I extract the Autonomous System Number (`asn`) and Internet Service Provider (`isp`). This topological data is a game-changer for cybersecurity: it empowers my threat models to immediately distinguish between benign residential ISPs and data center ASNs (like AWS or DigitalOcean) which are frequently the source of volumetric attacks, scrapers, and malicious botnets.
 
 By structurally integrating this rich metadata directly into my core `Endpoints` model, I unlock advanced anomaly detection capabilities. When combined with my Threat Intelligence feeds, this enriched context allows the platform to preemptively identify and rate-limit suspicious behavioral patterns long before they escalate into critical security incidents.
 
@@ -1324,13 +1324,13 @@ To build a cyber-aware understanding of our traffic, raw data points (such as IP
 
 ### 2.2 Network Topology (ASN & ISP)
 
-- **Source:** `ipwhois` (RDAP lookups).
+- **Source:** Direct API lookup (ipwho.is).
 - **Fields Extracted:** `asn` (Autonomous System Number), `isp` (Internet Service Provider or Org name).
 - **Purpose:** Crucial for cybersecurity. Helps differentiate between residential ISPs (normal users) and Data Center ASNs (e.g., AWS, DigitalOcean), which are common sources of botnets, scrapers, and volumetric attacks.
 
 ### 2.3 User-Agent Parsing
 
-- **Source:** `user-agents` Python library.
+- **Source:** Native Regex string parsing.
 - **Fields Extracted:** `device_type` (Mobile, Desktop, Tablet, Bot), `os_name`, `browser_name`, `is_bot`.
 - **Purpose:** Allows us to aggregate performance metrics by device class (e.g., identifying if latency is worse on mobile) and cleanly separate human traffic from automated bot/crawler traffic.
 
@@ -2032,10 +2032,8 @@ This document outlines the dependencies and libraries used in this project.
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `apexcharts`: ^5.15.2
-- `canvas-confetti`: ^1.9.4
 - `express`: ^5.1.0
 - `firebase`: ^12.14.0
-- `jspdf`: ^4.2.1
 - `leaflet`: ^1.9.4
 - `marked`: ^17.0.6
 - `ng-apexcharts`: ^2.4.0
@@ -2106,8 +2104,6 @@ This document outlines the dependencies and libraries used in this project.
 - `google-cloud-kms`==3.13.0
 - `google-cloud-logging`==3.16.0
 - `pytest-asyncio`>=0.24.0
-- `user-agents`
-- `ipwhois`
 - `requests`
 - `resend`==2.4.0
 - `aiohttp`==3.9.5

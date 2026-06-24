@@ -11,6 +11,7 @@ This document defines the core roles and collaboration rules for our development
 1.  **Collaboration**: The CTO proposes technical solutions, patterns, and architectures; the product lead provides feedback and approvals.
 2.  **Standards**: Adhere strictly to clean code, Section 508 accessibility compliance, robust unit testing, and Semgrep security standards.
 3.  **Modern Stack**: Focus on clean, modern, and beautiful designs following the guidelines set in `THEME.md` and standard framework patterns.
+4.  **Zero-Dependency & IP Ownership**: Maximize intellectual property and system stability by building independent, highly-cohesive implementations from scratch. Strictly minimize reliance on third-party libraries, external dependencies, or heavy abstraction layers. Our code is our IP.
 
 ## Critical Code Styling & Theming Law
 

@@ -3,7 +3,7 @@ FROM debian:bookworm-slim AS downloader
 
 # Install dependencies for downloading and extracting
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget tar && \
+    apt-get install -y --no-install-recommends wget tar ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 # Set Dragonfly version

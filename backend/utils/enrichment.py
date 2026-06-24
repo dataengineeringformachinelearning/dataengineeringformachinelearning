@@ -1,16 +1,15 @@
 import logging
+import re
 
 import requests
 from django.core.cache import cache
-from ipwhois import IPWhois
-from user_agents import parse
 
 logger = logging.getLogger(__name__)
 
 
 def parse_user_agent(ua_string):
   """
-  Parses a User-Agent string to extract device, OS, browser, and bot status.
+  Parses a User-Agent string to extract device, OS, browser, and bot status using native regex.
   """
   if not ua_string:
     return {
@@ -20,31 +19,52 @@ def parse_user_agent(ua_string):
       "is_bot": False,
     }
 
-  try:
-    user_agent = parse(ua_string)
+  ua_lower = ua_string.lower()
 
-    device_type = "Desktop"
-    if user_agent.is_mobile:
-      device_type = "Mobile"
-    elif user_agent.is_tablet:
-      device_type = "Tablet"
-    elif user_agent.is_bot:
-      device_type = "Bot"
+  # Bot detection
+  is_bot = bool(re.search(r"bot|spider|crawl|slurp|wget|curl", ua_lower))
 
-    return {
-      "device_type": device_type,
-      "os_name": user_agent.os.family,
-      "browser_name": user_agent.browser.family,
-      "is_bot": user_agent.is_bot,
-    }
-  except Exception as e:
-    logger.warning(f"Error parsing User-Agent '{ua_string}': {e}")
-    return {
-      "device_type": "Unknown",
-      "os_name": "Unknown",
-      "browser_name": "Unknown",
-      "is_bot": False,
-    }
+  # Device type detection
+  device_type = "Desktop"
+  if is_bot:
+    device_type = "Bot"
+  elif re.search(r"tablet|ipad|playbook|silk", ua_lower):
+    device_type = "Tablet"
+  elif re.search(r"mobile|android|iphone|ipod|windows phone", ua_lower):
+    device_type = "Mobile"
+
+  # Basic OS detection
+  os_name = "Unknown"
+  if "windows" in ua_lower:
+    os_name = "Windows"
+  elif "mac os x" in ua_lower or "macintosh" in ua_lower:
+    os_name = "Mac OS X"
+  elif "android" in ua_lower:
+    os_name = "Android"
+  elif "ios" in ua_lower or "iphone" in ua_lower or "ipad" in ua_lower:
+    os_name = "iOS"
+  elif "linux" in ua_lower:
+    os_name = "Linux"
+
+  # Basic Browser detection
+  browser_name = "Unknown"
+  if "chrome" in ua_lower and "edg" not in ua_lower and "opr" not in ua_lower:
+    browser_name = "Chrome"
+  elif "safari" in ua_lower and "chrome" not in ua_lower:
+    browser_name = "Safari"
+  elif "firefox" in ua_lower:
+    browser_name = "Firefox"
+  elif "edg" in ua_lower:
+    browser_name = "Edge"
+  elif "opr" in ua_lower or "opera" in ua_lower:
+    browser_name = "Opera"
+
+  return {
+    "device_type": device_type,
+    "os_name": os_name,
+    "browser_name": browser_name,
+    "is_bot": is_bot,
+  }
 
 
 def get_ip_enrichment(ip_address):
@@ -63,7 +83,7 @@ def get_ip_enrichment(ip_address):
 
   enrichment_data = {"location": "Unknown", "asn": "Unknown", "isp": "Unknown"}
 
-  # 1. GeoIP lookup using ipwho.is (Supports HTTPS for free tier)
+  # GeoIP lookup using ipwho.is (Supports HTTPS for free tier)
   try:
     response = requests.get(f"https://ipwho.is/{ip_address}", timeout=3)
     if response.status_code == 200:
@@ -79,20 +99,6 @@ def get_ip_enrichment(ip_address):
         enrichment_data["asn"] = f"AS{asn_num}" if asn_num else "Unknown"
   except Exception as e:
     logger.warning(f"GeoIP lookup failed for IP {ip_address}: {e}")
-
-  # 2. Fallback to IPWhois if ASN is missing
-  if enrichment_data["asn"] == "Unknown":
-    try:
-      obj = IPWhois(ip_address)
-      res = obj.lookup_rdap(depth=1)
-      enrichment_data["asn"] = f"AS{res.get('asn')}" if res.get("asn") else "Unknown"
-      # Get the first network's description as a fallback for ISP
-      network_desc = None
-      if res.get("network") and res["network"].get("name"):
-        network_desc = res["network"]["name"]
-      enrichment_data["isp"] = network_desc or "Unknown"
-    except Exception as e:
-      logger.warning(f"IPWhois lookup failed for IP {ip_address}: {e}")
 
   # Cache for 24 hours
   cache.set(cache_key, enrichment_data, 60 * 60 * 24)
