@@ -24,7 +24,7 @@ interface ParamEntry {
 }
 
 export class OpenApiHttpParams {
-  private params: Map<string, ParamEntry> = new Map();
+  private params = new Map<string, ParamEntry>();
   private defaults: Required<ParamOptions>;
   private encoder: HttpParameterCodec;
 
@@ -103,10 +103,10 @@ export class OpenApiHttpParams {
    * - If a parameter has exactly one value, returns that value directly.
    * - If a parameter has multiple values, returns a readonly array of values.
    */
-  toRecord(): Record<string, string | number | boolean | ReadonlyArray<string | number | boolean>> {
+  toRecord(): Record<string, string | number | boolean | readonly (string | number | boolean)[]> {
     const parts: Record<
       string,
-      string | number | boolean | ReadonlyArray<string | number | boolean>
+      string | number | boolean | readonly (string | number | boolean)[]
     > = {};
 
     for (const [key, entry] of this.params.entries()) {

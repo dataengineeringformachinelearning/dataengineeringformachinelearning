@@ -652,17 +652,11 @@ html[data-theme='light'] #global-error-toast {
   }
 
   .retry-btn {
-    background: var(--color-dark-grey-btn-bg) !important;
-    color: var(--color-dark-grey-btn-text) !important;
     font-weight: 700 !important;
     padding: 9px 27px !important;
     border-radius: var(--border-radius-sm) !important;
     box-shadow: var(--shadow-sm) !important;
     transition: all 0.2s ease !important;
-
-    mat-icon {
-      color: var(--color-dark-grey-btn-text) !important;
-    }
 
     &:hover {
       transform: translateY(-2px);

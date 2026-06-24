@@ -7,7 +7,6 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-/* tslint:disable:no-unused-variable member-ordering */
 
 import { Inject, Injectable, Optional } from '@angular/core';
 import {
@@ -128,7 +127,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<VulnerabilityOut>>;
+  ): Observable<VulnerabilityOut[]>;
   public agentApiListVulnerabilities(
     tenantId?: string,
     siteUrl?: string,
@@ -139,7 +138,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<VulnerabilityOut>>>;
+  ): Observable<HttpResponse<VulnerabilityOut[]>>;
   public agentApiListVulnerabilities(
     tenantId?: string,
     siteUrl?: string,
@@ -150,7 +149,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<VulnerabilityOut>>>;
+  ): Observable<HttpEvent<VulnerabilityOut[]>>;
   public agentApiListVulnerabilities(
     tenantId?: string,
     siteUrl?: string,
@@ -167,7 +166,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'tenant_id',
-      <any>tenantId,
+      tenantId as any,
       QueryParamStyle.Form,
       true,
     );
@@ -175,7 +174,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'site_url',
-      <any>siteUrl,
+      siteUrl as any,
       QueryParamStyle.Form,
       true,
     );
@@ -205,10 +204,10 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/agent/vulnerabilities`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<VulnerabilityOut>>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<VulnerabilityOut[]>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -291,7 +290,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: issueReportPayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -390,7 +389,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<VulnerabilityOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: vulnerabilityReportPayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -499,7 +498,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<VulnerabilityOut>('patch', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: vulnerabilityUpdatePayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -578,7 +577,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -657,7 +656,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -747,7 +746,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SuccessSchema>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -846,7 +845,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<APIKeyGenerateOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: aPIKeyGenerateIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -870,7 +869,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<APIKeyOut>>;
+  ): Observable<APIKeyOut[]>;
   public configApiAuthListApiKeys(
     observe?: 'response',
     reportProgress?: boolean,
@@ -879,7 +878,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<APIKeyOut>>>;
+  ): Observable<HttpResponse<APIKeyOut[]>>;
   public configApiAuthListApiKeys(
     observe?: 'events',
     reportProgress?: boolean,
@@ -888,7 +887,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<APIKeyOut>>>;
+  ): Observable<HttpEvent<APIKeyOut[]>>;
   public configApiAuthListApiKeys(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -923,9 +922,9 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/auth/api-keys`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<APIKeyOut>>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<APIKeyOut[]>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1004,7 +1003,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1083,7 +1082,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1190,7 +1189,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<IngestResponse>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: ingestPayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1269,7 +1268,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1376,7 +1375,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<PredictResponse>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: predictPayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1455,7 +1454,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1534,7 +1533,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<IntegrationStatus>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1596,7 +1595,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      <any>statusPageId,
+      statusPageId as any,
       QueryParamStyle.Form,
       true,
     );
@@ -1629,7 +1628,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<LatestRunOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1708,7 +1707,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<SOCStatusOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1770,7 +1769,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      <any>statusPageId,
+      statusPageId as any,
       QueryParamStyle.Form,
       true,
     );
@@ -1803,7 +1802,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<ThreatReportOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1865,7 +1864,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      <any>statusPageId,
+      statusPageId as any,
       QueryParamStyle.Form,
       true,
     );
@@ -1898,7 +1897,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<STIXBundleOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -1997,7 +1996,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<ISACSubmissionOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: iSACSubmissionIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2059,7 +2058,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      <any>statusPageId,
+      statusPageId as any,
       QueryParamStyle.Form,
       true,
     );
@@ -2092,7 +2091,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<TrainOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2154,7 +2153,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'status_page_id',
-      <any>statusPageId,
+      statusPageId as any,
       QueryParamStyle.Form,
       true,
     );
@@ -2187,7 +2186,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<TrainOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2266,7 +2265,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<ThreatReportOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2375,7 +2374,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<MonitoredServiceOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: monitoredServiceIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2438,7 +2437,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2547,7 +2546,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<IncidentOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: incidentIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2646,7 +2645,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<StatusPageOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: statusPageIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2720,7 +2719,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2794,7 +2793,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2868,7 +2867,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2942,7 +2941,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('delete', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -2966,7 +2965,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<EndpointOut>>;
+  ): Observable<EndpointOut[]>;
   public monitorApiGetAllEndpoints(
     observe?: 'response',
     reportProgress?: boolean,
@@ -2975,7 +2974,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<EndpointOut>>>;
+  ): Observable<HttpResponse<EndpointOut[]>>;
   public monitorApiGetAllEndpoints(
     observe?: 'events',
     reportProgress?: boolean,
@@ -2984,7 +2983,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<EndpointOut>>>;
+  ): Observable<HttpEvent<EndpointOut[]>>;
   public monitorApiGetAllEndpoints(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3019,9 +3018,9 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/system-status/endpoints`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<EndpointOut>>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<EndpointOut[]>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3111,7 +3110,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<StatusPageOut>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3174,7 +3173,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3236,7 +3235,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'code',
-      <any>code,
+      code as any,
       QueryParamStyle.Form,
       true,
     );
@@ -3244,7 +3243,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'state',
-      <any>state,
+      state as any,
       QueryParamStyle.Form,
       true,
     );
@@ -3277,7 +3276,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3303,7 +3302,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<IncidentOut>>;
+  ): Observable<IncidentOut[]>;
   public monitorApiListIncidents(
     pageId: string,
     observe?: 'response',
@@ -3313,7 +3312,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<IncidentOut>>>;
+  ): Observable<HttpResponse<IncidentOut[]>>;
   public monitorApiListIncidents(
     pageId: string,
     observe?: 'events',
@@ -3323,7 +3322,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<IncidentOut>>>;
+  ): Observable<HttpEvent<IncidentOut[]>>;
   public monitorApiListIncidents(
     pageId: string,
     observe: any = 'body',
@@ -3365,9 +3364,9 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/incidents`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<IncidentOut>>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<IncidentOut[]>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3391,7 +3390,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<IntegrationOut>>;
+  ): Observable<IntegrationOut[]>;
   public monitorApiListIntegrations(
     observe?: 'response',
     reportProgress?: boolean,
@@ -3400,7 +3399,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<IntegrationOut>>>;
+  ): Observable<HttpResponse<IntegrationOut[]>>;
   public monitorApiListIntegrations(
     observe?: 'events',
     reportProgress?: boolean,
@@ -3409,7 +3408,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<IntegrationOut>>>;
+  ): Observable<HttpEvent<IntegrationOut[]>>;
   public monitorApiListIntegrations(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3444,9 +3443,9 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/system-status/integrations`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<IntegrationOut>>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<IntegrationOut[]>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3472,7 +3471,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<MonitoredServiceOut>>;
+  ): Observable<MonitoredServiceOut[]>;
   public monitorApiListServices(
     pageId: string,
     observe?: 'response',
@@ -3482,7 +3481,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<MonitoredServiceOut>>>;
+  ): Observable<HttpResponse<MonitoredServiceOut[]>>;
   public monitorApiListServices(
     pageId: string,
     observe?: 'events',
@@ -3492,7 +3491,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<MonitoredServiceOut>>>;
+  ): Observable<HttpEvent<MonitoredServiceOut[]>>;
   public monitorApiListServices(
     pageId: string,
     observe: any = 'body',
@@ -3534,19 +3533,15 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/system-status/status_pages/${this.configuration.encodeParam({ name: 'pageId', value: pageId, in: 'path', style: 'simple', explode: false, dataType: 'string', dataFormat: undefined })}/services`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<MonitoredServiceOut>>(
-      'get',
-      `${basePath}${localVarPath}`,
-      {
-        context: localVarHttpContext,
-        responseType: <any>responseType_,
-        ...(withCredentials ? { withCredentials } : {}),
-        headers: localVarHeaders,
-        observe: observe,
-        ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
-        reportProgress: reportProgress,
-      },
-    );
+    return this.httpClient.request<MonitoredServiceOut[]>('get', `${basePath}${localVarPath}`, {
+      context: localVarHttpContext,
+      responseType: responseType_ as any,
+      ...(withCredentials ? { withCredentials } : {}),
+      headers: localVarHeaders,
+      observe: observe,
+      ...(localVarTransferCache !== undefined ? { transferCache: localVarTransferCache } : {}),
+      reportProgress: reportProgress,
+    });
   }
 
   /**
@@ -3564,7 +3559,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<Array<StatusPageOut>>;
+  ): Observable<StatusPageOut[]>;
   public monitorApiListStatusPages(
     observe?: 'response',
     reportProgress?: boolean,
@@ -3573,7 +3568,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpResponse<Array<StatusPageOut>>>;
+  ): Observable<HttpResponse<StatusPageOut[]>>;
   public monitorApiListStatusPages(
     observe?: 'events',
     reportProgress?: boolean,
@@ -3582,7 +3577,7 @@ export class DefaultService extends BaseService {
       context?: HttpContext;
       transferCache?: boolean;
     },
-  ): Observable<HttpEvent<Array<StatusPageOut>>>;
+  ): Observable<HttpEvent<StatusPageOut[]>>;
   public monitorApiListStatusPages(
     observe: any = 'body',
     reportProgress: boolean = false,
@@ -3617,9 +3612,9 @@ export class DefaultService extends BaseService {
 
     let localVarPath = `/api/v1/system-status/status_pages`;
     const { basePath, withCredentials } = this.configuration;
-    return this.httpClient.request<Array<StatusPageOut>>('get', `${basePath}${localVarPath}`, {
+    return this.httpClient.request<StatusPageOut[]>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3718,7 +3713,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<IntegrationOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: clarityIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3817,7 +3812,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<IntegrationOut>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: cloudflareIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3926,7 +3921,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<StatusPageOut>('put', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: statusPageIn,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -3977,7 +3972,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'tenant_id',
-      <any>tenantId,
+      tenantId as any,
       QueryParamStyle.Form,
       true,
     );
@@ -3985,7 +3980,7 @@ export class DefaultService extends BaseService {
     localVarQueryParameters = this.addToHttpParams(
       localVarQueryParameters,
       'site_url',
-      <any>siteUrl,
+      siteUrl as any,
       QueryParamStyle.Form,
       true,
     );
@@ -4018,7 +4013,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       params: localVarQueryParameters.toHttpParams(),
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4081,7 +4076,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<any>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4160,7 +4155,7 @@ export class DefaultService extends BaseService {
     const { basePath, withCredentials } = this.configuration;
     return this.httpClient.request<PQKeyExchangeResponse>('get', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4243,7 +4238,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: telemetryPayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4326,7 +4321,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: telemetryDualStreamPayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4409,7 +4404,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: cookieConsentPayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,
@@ -4492,7 +4487,7 @@ export class DefaultService extends BaseService {
     return this.httpClient.request<any>('post', `${basePath}${localVarPath}`, {
       context: localVarHttpContext,
       body: subscribePayload,
-      responseType: <any>responseType_,
+      responseType: responseType_ as any,
       ...(withCredentials ? { withCredentials } : {}),
       headers: localVarHeaders,
       observe: observe,

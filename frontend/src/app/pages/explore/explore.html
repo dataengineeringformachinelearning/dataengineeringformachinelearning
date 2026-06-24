@@ -31,7 +31,7 @@
         ></app-status-card>
         } @if (loadFailed()) {
         <div class="status-error-state col-span-4 col-span-md-12">
-          <mat-icon class="error-state-icon">cloud_off</mat-icon>
+          <mat-icon class="error-state-icon" aria-hidden="true">cloud_off</mat-icon>
           <h2 class="error-title">Unable to Connect</h2>
           <p class="error-subtitle">
             We couldn't connect to the status service. Please check that the backend is running and
@@ -45,7 +45,7 @@
             [disabled]="isRetrying()"
           >
             @if (!isRetrying()) {
-            <mat-icon>refresh</mat-icon>
+            <mat-icon aria-hidden="true">refresh</mat-icon>
             } @if (isRetrying()) {
             <span class="btn-spinner"></span>
             }

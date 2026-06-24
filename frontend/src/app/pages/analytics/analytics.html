@@ -136,115 +136,6 @@
         ></app-unified-select>
       </div>
       }
-      <!-- CANDLESTICK CHART -->
-      <div
-        class="card-body-clean chart-container-large"
-        style="
-          margin-bottom: 27px;
-          padding: 24px;
-          border-radius: 12px;
-          background: var(--color-bg-subtle, rgba(255, 255, 255, 0.02));
-          border: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
-        "
-      >
-        <h3
-          class="chart-title"
-          style="
-            margin-bottom: 16px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--color-text-secondary);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-          "
-        >
-          API Traffic & Latency Distribution
-        </h3>
-        <div style="position: relative; height: 300px">
-          <svg
-            viewBox="0 -10 1000 320"
-            preserveAspectRatio="none"
-            style="width: 100%; height: 100%; overflow: visible"
-          >
-            <!-- Grid lines -->
-            <line
-              x1="0"
-              y1="0"
-              x2="1000"
-              y2="0"
-              stroke="var(--color-border, rgba(255,255,255,0.1))"
-              stroke-width="1"
-              stroke-dasharray="4"
-            ></line>
-            <line
-              x1="0"
-              y1="150"
-              x2="1000"
-              y2="150"
-              stroke="var(--color-border, rgba(255,255,255,0.1))"
-              stroke-width="1"
-              stroke-dasharray="4"
-            ></line>
-            <line
-              x1="0"
-              y1="300"
-              x2="1000"
-              y2="300"
-              stroke="var(--color-border, rgba(255,255,255,0.2))"
-              stroke-width="1"
-            ></line>
-            <!-- Labels converted to HTML overlays to prevent stretching -->
-            @for (c of candlestickElements; track c.x) {
-            <!-- Wick -->
-            <line
-              [attr.x1]="c.center"
-              [attr.y1]="c.highY"
-              [attr.x2]="c.center"
-              [attr.y2]="c.lowY"
-              [attr.stroke]="c.color"
-              stroke-width="2"
-              opacity="0.8"
-            ></line>
-            <!-- Body -->
-            <rect
-              [attr.x]="c.x"
-              [attr.y]="c.yBody"
-              [attr.width]="c.candleWidth"
-              [attr.height]="c.hBody"
-              [attr.fill]="c.color"
-              rx="2"
-            >
-              <title>Value: {{ c.value | number:'1.0-0' }} ms</title>
-            </rect>
-            }
-          </svg>
-          <div
-            style="
-              position: absolute;
-              top: calc(3.125% - 15px);
-              left: 0;
-              color: var(--color-text-muted, #888);
-              font-size: 12px;
-              pointer-events: none;
-            "
-          >
-            {{candlestickMax}}ms
-          </div>
-          <div
-            style="
-              position: absolute;
-              top: calc(50% - 15px);
-              left: 0;
-              color: var(--color-text-muted, #888);
-              font-size: 12px;
-              pointer-events: none;
-            "
-          >
-            {{candlestickMax / 2 | number:'1.0-0'}}ms
-          </div>
-        </div>
-      </div>
-
       <!-- REGULAR STATS -->
       <div class="ml-stat-panels-row stat-panels-grid">
         <div class="ml-stat-panel">
@@ -344,48 +235,6 @@
             >{{ activeProviders.length }}</span
           >
         </div>
-        <div
-          class="ml-stat-panel"
-          [style.border-color]="errorRatePercent > 5 ? 'var(--color-error)' : ''"
-        >
-          <div class="stat-info">
-            <div>
-              <span class="stat-title">5XX ERROR RATE</span>
-            </div>
-          </div>
-          <span
-            class="stat-value"
-            style="letter-spacing: -0.02em; font-weight: bold"
-            [style.color]="errorRatePercent > 5 ? 'var(--color-error)' : ''"
-            >{{ (errorRatePercent || 0) | number:'1.2-2' }} <span class="stat-unit">%</span></span
-          >
-        </div>
-        <div class="ml-stat-panel">
-          <div class="stat-info">
-            <div>
-              <span class="stat-title">AVERAGE LATENCY</span>
-            </div>
-          </div>
-          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
-            >{{ (averageLatency || 0) | number:'1.2-2' }} <span class="stat-unit">ms</span></span
-          >
-        </div>
-        <div
-          class="ml-stat-panel"
-          [style.border-color]="activeThreats > 0 ? 'var(--color-error)' : ''"
-        >
-          <div class="stat-info">
-            <div>
-              <span class="stat-title">ACTIVE THREATS</span>
-            </div>
-          </div>
-          <span
-            class="stat-value"
-            style="letter-spacing: -0.02em; font-weight: bold"
-            [style.color]="activeThreats > 0 ? 'var(--color-error)' : ''"
-            >{{ activeThreats || 0 }}</span
-          >
-        </div>
       </div>
 
       <!-- ACTIVE PROVIDERS CHIPS -->
@@ -438,30 +287,21 @@
           </div>
 
           <div class="card-body-clean chart-container-large">
-            @if (hasData(latencyData)) {
-            <svg
-              class="native-svg-chart"
-              viewBox="0 0 1000 300"
-              preserveAspectRatio="none"
-              style="width: 100%; height: 100%; overflow: visible; display: block"
-            >
-              <defs>
-                <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--crayola-blue)" stop-opacity="0.2" />
-                  <stop offset="100%" stop-color="var(--crayola-blue)" stop-opacity="0" />
-                </linearGradient>
-              </defs>
-              <path [attr.d]="latencyArea" fill="url(#latencyGradient)" />
-              <path
-                [attr.d]="latencyPath"
-                fill="none"
-                stroke="var(--crayola-blue)"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="premium-line"
-              />
-            </svg>
+            @if (hasData(chartOptions)) {
+            <apx-chart
+              [series]="chartOptions.series"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              [yaxis]="chartOptions.yaxis"
+              [dataLabels]="chartOptions.dataLabels"
+              [grid]="chartOptions.grid"
+              [stroke]="chartOptions.stroke"
+              [colors]="chartOptions.colors"
+              [fill]="chartOptions.fill"
+              [tooltip]="chartOptions.tooltip"
+              [noData]="chartOptions.noData"
+              class="apx-chart-large"
+            ></apx-chart>
             } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
@@ -488,51 +328,16 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Geographic Origins</div>
-            <div class="chart-custom-value">{{ mapMarkers.length || 0 }} Regions</div>
+            <div class="chart-custom-value">{{ originMapData.length || 0 }} Regions</div>
             <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium" style="position: relative">
-            @if (hasData(mapMarkers)) {
-            <svg
-              viewBox="0 0 1000 500"
-              style="
-                width: 100%;
-                height: 240px;
-                display: block;
-                background: rgba(0, 0, 0, 0.1);
-                border-radius: 8px;
-              "
-            >
-              <!-- Stylized Grid Background -->
-              <g stroke="rgba(255,255,255,0.05)" stroke-width="1">
-                @for (i of [1,2,3,4,5,6,7,8,9]; track i) {
-                <line [attr.x1]="i*100" y1="0" [attr.x2]="i*100" y2="500" />
-                } @for (i of [1,2,3,4]; track i) {
-                <line x1="0" [attr.y1]="i*100" x2="1000" [attr.y2]="i*100" />
-                }
-              </g>
-              <!-- Traffic Markers -->
-              @for (marker of mapMarkers; track marker.label) {
-              <circle
-                [attr.cx]="marker.x"
-                [attr.y]="marker.y"
-                [attr.cy]="marker.y"
-                [attr.r]="marker.r"
-                fill="var(--crayola-blue)"
-                opacity="0.6"
-              >
-                <title>{{ marker.label }}</title>
-              </circle>
-              <circle
-                [attr.cx]="marker.x"
-                [attr.y]="marker.y"
-                [attr.cy]="marker.y"
-                [attr.r]="marker.r / 2"
-                fill="var(--crayola-blue)"
-              ></circle>
-              }
-            </svg>
-            } @else {
+            <div
+              id="originMap"
+              style="height: 240px !important; width: 100%; display: block; border-radius: 8px"
+              [style.display]="originMapData.length > 0 ? 'block' : 'none'"
+            ></div>
+            @if (originMapData.length === 0) {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
               <h3 class="empty-title">No Telemetry Signal</h3>
@@ -550,30 +355,21 @@
             <div class="chart-custom-trend">{{ frequencyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(frequencyData)) {
-            <svg
-              class="native-svg-chart"
-              viewBox="0 0 1000 300"
-              preserveAspectRatio="none"
-              style="width: 100%; height: 100%; overflow: visible; display: block"
-            >
-              <defs>
-                <linearGradient id="freqGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="var(--blue-bell)" stop-opacity="0.2" />
-                  <stop offset="100%" stop-color="var(--blue-bell)" stop-opacity="0" />
-                </linearGradient>
-              </defs>
-              <path [attr.d]="frequencyArea" fill="url(#freqGradient)" />
-              <path
-                [attr.d]="frequencyPath"
-                fill="none"
-                stroke="var(--blue-bell)"
-                stroke-width="3"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="premium-line"
-              />
-            </svg>
+            @if (hasData(frequencyChartOptions)) {
+            <apx-chart
+              [series]="frequencyChartOptions.series"
+              [chart]="frequencyChartOptions.chart"
+              [xaxis]="frequencyChartOptions.xaxis"
+              [yaxis]="frequencyChartOptions.yaxis"
+              [dataLabels]="frequencyChartOptions.dataLabels"
+              [grid]="frequencyChartOptions.grid"
+              [stroke]="frequencyChartOptions.stroke"
+              [colors]="frequencyChartOptions.colors"
+              [fill]="frequencyChartOptions.fill"
+              [tooltip]="frequencyChartOptions.tooltip"
+              [noData]="frequencyChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
             } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
@@ -588,45 +384,27 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Counts per Endpoint</div>
-            <div class="chart-custom-value">{{ endpointData.length || 0 }} Endpoints</div>
+            <div class="chart-custom-value">
+              {{ endpointChartOptions.series[0]?.data?.length || 0 }} APIs
+            </div>
             <div class="chart-custom-trend">{{ endpointTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(endpointData)) {
-            <div
-              style="
-                display: flex;
-                height: 100%;
-                align-items: flex-end;
-                gap: 8px;
-                padding-top: 20px;
-              "
-            >
-              @for (bar of endpointData; track bar.label) {
-              <div
-                style="
-                  flex: 1;
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: flex-end;
-                  height: 100%;
-                  position: relative;
-                "
-                [title]="bar.label + ': ' + bar.value"
-              >
-                <div
-                  [style.height.%]="bar.heightPercent"
-                  style="
-                    background: var(--crayola-blue);
-                    opacity: 0.8;
-                    border-radius: 4px 4px 0 0;
-                    width: 100%;
-                    transition: height 0.3s ease;
-                  "
-                ></div>
-              </div>
-              }
-            </div>
+            @if (hasData(endpointChartOptions)) {
+            <apx-chart
+              [series]="endpointChartOptions.series"
+              [chart]="endpointChartOptions.chart"
+              [xaxis]="endpointChartOptions.xaxis"
+              [yaxis]="endpointChartOptions.yaxis"
+              [dataLabels]="endpointChartOptions.dataLabels"
+              [grid]="endpointChartOptions.grid"
+              [stroke]="endpointChartOptions.stroke"
+              [colors]="endpointChartOptions.colors"
+              [plotOptions]="endpointChartOptions.plotOptions"
+              [tooltip]="endpointChartOptions.tooltip"
+              [noData]="endpointChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
             } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
@@ -657,54 +435,21 @@
             <div class="chart-custom-trend">{{ statusTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(statusData)) {
-            <div
-              style="
-                display: flex;
-                height: 100%;
-                align-items: flex-end;
-                gap: 12px;
-                padding-top: 20px;
-              "
-            >
-              @for (bar of statusData; track bar.label) {
-              <div
-                style="
-                  flex: 1;
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: flex-end;
-                  align-items: center;
-                  height: 100%;
-                  position: relative;
-                "
-                [title]="bar.label + ': ' + bar.value"
-              >
-                <span style="color: var(--text-muted); font-size: 10px; margin-bottom: 4px"
-                  >{{ bar.value }}</span
-                >
-                <div
-                  [style.height.%]="bar.heightPercent"
-                  style="
-                    background: var(--crayola-blue);
-                    opacity: 0.8;
-                    border-radius: 4px 4px 0 0;
-                    width: 100%;
-                    transition: height 0.3s ease;
-                  "
-                ></div>
-                <span
-                  style="
-                    color: var(--text-color);
-                    font-size: 11px;
-                    margin-top: 4px;
-                    font-weight: 500;
-                  "
-                  >{{ bar.label }}</span
-                >
-              </div>
-              }
-            </div>
+            @if (hasData(statusChartOptions)) {
+            <apx-chart
+              [series]="statusChartOptions.series"
+              [chart]="statusChartOptions.chart"
+              [xaxis]="statusChartOptions.xaxis"
+              [yaxis]="statusChartOptions.yaxis"
+              [dataLabels]="statusChartOptions.dataLabels"
+              [grid]="statusChartOptions.grid"
+              [stroke]="statusChartOptions.stroke"
+              [colors]="statusChartOptions.colors"
+              [plotOptions]="statusChartOptions.plotOptions"
+              [tooltip]="statusChartOptions.tooltip"
+              [noData]="statusChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
             } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
@@ -723,37 +468,20 @@
             <div class="chart-custom-trend">{{ threatTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(threatData)) {
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 100%;
-                padding: 10px;
-              "
-            >
-              <svg
-                viewBox="0 0 100 100"
-                style="height: 100%; max-height: 200px; transform: rotate(-90deg)"
-              >
-                @for (arc of threatData; track arc.label) {
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="40"
-                  fill="transparent"
-                  [attr.stroke]="arc.color"
-                  stroke-width="15"
-                  [attr.stroke-dasharray]="arc.dasharray"
-                  [attr.stroke-dashoffset]="arc.dashoffset"
-                  style="transition: stroke-dashoffset 1s ease-in-out"
-                >
-                  <title>{{ arc.label }}: {{ arc.value }}</title>
-                </circle>
-                }
-              </svg>
-            </div>
+            @if (hasData(threatSeverityChartOptions)) {
+            <apx-chart
+              [series]="threatSeverityChartOptions.series"
+              [chart]="threatSeverityChartOptions.chart"
+              [labels]="threatSeverityChartOptions.labels"
+              [plotOptions]="threatSeverityChartOptions.plotOptions"
+              [dataLabels]="threatSeverityChartOptions.dataLabels"
+              [stroke]="threatSeverityChartOptions.stroke"
+              [colors]="threatSeverityChartOptions.colors"
+              [legend]="threatSeverityChartOptions.legend"
+              [tooltip]="threatSeverityChartOptions.tooltip"
+              [noData]="threatSeverityChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
             } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">verified_user</mat-icon>
@@ -772,41 +500,21 @@
             <div class="chart-custom-trend">{{ anomalyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(securityAlertsData)) {
-            <div
-              style="
-                display: flex;
-                height: 100%;
-                align-items: flex-end;
-                gap: 8px;
-                padding-top: 20px;
-              "
-            >
-              @for (bar of securityAlertsData; track bar.label) {
-              <div
-                style="
-                  flex: 1;
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: flex-end;
-                  height: 100%;
-                  position: relative;
-                "
-                [title]="bar.label + ': ' + bar.value"
-              >
-                <div
-                  [style.height.%]="bar.heightPercent"
-                  style="
-                    background: var(--carrot-orange);
-                    opacity: 0.8;
-                    border-radius: 4px 4px 0 0;
-                    width: 100%;
-                    transition: height 0.3s ease;
-                  "
-                ></div>
-              </div>
-              }
-            </div>
+            @if (hasData(securityAlertsChartOptions)) {
+            <apx-chart
+              [series]="securityAlertsChartOptions.series"
+              [chart]="securityAlertsChartOptions.chart"
+              [xaxis]="securityAlertsChartOptions.xaxis"
+              [yaxis]="securityAlertsChartOptions.yaxis"
+              [dataLabels]="securityAlertsChartOptions.dataLabels"
+              [grid]="securityAlertsChartOptions.grid"
+              [stroke]="securityAlertsChartOptions.stroke"
+              [colors]="securityAlertsChartOptions.colors"
+              [plotOptions]="securityAlertsChartOptions.plotOptions"
+              [tooltip]="securityAlertsChartOptions.tooltip"
+              [noData]="securityAlertsChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
             } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>

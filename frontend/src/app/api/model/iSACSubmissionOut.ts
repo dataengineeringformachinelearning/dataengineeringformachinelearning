@@ -14,5 +14,5 @@ export interface ISACSubmissionOut {
   submission_id: string;
   mode: string;
   sent_payload: { [key: string]: any };
-  logs: Array<string>;
+  logs: string[];
 }

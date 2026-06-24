@@ -19,7 +19,7 @@
 
       <div class="cta-group">
         <a routerLink="/documentation" class="cta-button primary-btn">
-          <mat-icon>menu_book</mat-icon>
+          <mat-icon aria-hidden="true">menu_book</mat-icon>
           <span>Explore Documentation</span>
         </a>
         <a routerLink="/status/platform-status" class="cta-button secondary-btn">
@@ -66,7 +66,7 @@
             class="step-nav-item"
           >
             <div class="step-nav-icon">
-              <mat-icon>{{ step.icon }}</mat-icon>
+              <mat-icon aria-hidden="true">{{ step.icon }}</mat-icon>
             </div>
             <div class="step-nav-info">
               <span class="step-nav-name">{{ step.name }}</span>
@@ -142,7 +142,7 @@
           aria-label="Play video"
         >
           <div class="play-button-premium">
-            <mat-icon class="play-icon">play_arrow</mat-icon>
+            <mat-icon class="play-icon" aria-hidden="true">play_arrow</mat-icon>
           </div>
         </div>
         }
@@ -164,7 +164,7 @@
 
       <div class="bento-features-grid">
         <div class="feature-card">
-          <mat-icon class="primary-icon">explore</mat-icon>
+          <mat-icon class="primary-icon" aria-hidden="true">explore</mat-icon>
           <h3>Data Discovery</h3>
           <p>
             Traverse massive databanks and identify key metrics with surgical precision, fueled by
@@ -172,7 +172,7 @@
           </p>
         </div>
         <div class="feature-card">
-          <mat-icon class="primary-icon">analytics</mat-icon>
+          <mat-icon class="primary-icon" aria-hidden="true">analytics</mat-icon>
           <h3>Telemetry Analytics</h3>
           <p>
             Monitor real-time health and isolate anomalies before they compound, ensuring
@@ -180,7 +180,7 @@
           </p>
         </div>
         <div class="feature-card">
-          <mat-icon class="primary-icon">security</mat-icon>
+          <mat-icon class="primary-icon" aria-hidden="true">security</mat-icon>
           <h3>Threat Mitigation</h3>
           <p>
             Detect rogue models and scan for infrastructure flaws autonomously with mathematically
@@ -202,7 +202,7 @@
       </div>
       <div class="cta-group" style="justify-content: flex-start; margin-top: 0">
         <a routerLink="/whitepaper" class="cta-button primary-btn whitepaper-btn">
-          <mat-icon>description</mat-icon>
+          <mat-icon aria-hidden="true">description</mat-icon>
           <span>Read Whitepaper</span>
         </a>
       </div>
@@ -221,9 +221,9 @@
           <h3>Standard Tier</h3>
           <div class="price">Free</div>
           <ul class="features-list">
-            <li><mat-icon>check</mat-icon> 60 requests / minute</li>
-            <li><mat-icon>check</mat-icon> Core Analytics</li>
-            <li><mat-icon>check</mat-icon> Community Support</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> 60 requests / minute</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Core Analytics</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Community Support</li>
           </ul>
           <button class="cta-button secondary-btn" (click)="startFreeTier()">Get Started</button>
         </div>
@@ -234,9 +234,9 @@
           <h3>Pro Tier</h3>
           <div class="price">$49<span>/mo</span></div>
           <ul class="features-list">
-            <li><mat-icon>check</mat-icon> 1,000 requests / minute</li>
-            <li><mat-icon>check</mat-icon> Advanced Threat Detection</li>
-            <li><mat-icon>check</mat-icon> Priority Support</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> 1,000 requests / minute</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Advanced Threat Detection</li>
+            <li><mat-icon aria-hidden="true">check</mat-icon> Priority Support</li>
           </ul>
           <button class="cta-button primary-btn pro-btn" (click)="upgradeToPro()">
             Upgrade to Pro
@@ -277,14 +277,14 @@
     </div>
     <ul class="purpose-list">
       <li>
-        <mat-icon>shield</mat-icon>
+        <mat-icon aria-hidden="true">shield</mat-icon>
         <div class="purpose-text">
           <strong>System Telemetry</strong>
           Aggregates anonymized parameters.
         </div>
       </li>
       <li>
-        <mat-icon>vpn_key</mat-icon>
+        <mat-icon aria-hidden="true">vpn_key</mat-icon>
         <div class="purpose-text">
           <strong>Data Tenancy</strong>
           Enforces strict isolation across pipeline boundaries.

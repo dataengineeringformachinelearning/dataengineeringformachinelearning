@@ -22,7 +22,7 @@ export interface StatusPageOut {
   user_id?: number | null;
   cumulative_sla?: number | null;
   overall_uptime?: number | null;
-  uptime_history?: Array<UptimeDaySchema> | null;
+  uptime_history?: UptimeDaySchema[] | null;
   p99_latency?: number | null;
   total_requests?: number | null;
 }
