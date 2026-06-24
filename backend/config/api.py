@@ -12,7 +12,7 @@ class CustomAPI(NinjaAPI):
     if not settings.DEBUG:
       # Filter paths to only expose public APIs in production docs
       paths = schema.get("paths", {})
-      public_prefixes = ("/api/v1/telemetry/", "/api/v1/ml/")
+      public_prefixes = ("/api/v1/telemetry/", "/api/v1/ml/", "/api/v1/ingest", "/api/v1/predict")
       schema["paths"] = {k: v for k, v in paths.items() if k.startswith(public_prefixes)}
     return schema
 
@@ -56,7 +56,12 @@ from agent.api import router as agent_router
 
 api.add_router("/agent/", agent_router)
 
-from integrations.api import router as integrations_router
+from integrations.api import (
+  public_router as integrations_public_router,
+  router as integrations_router,
+)
+
+api.add_router("", integrations_public_router)
 
 api.add_router("/integrations/", integrations_router)
 
