@@ -604,11 +604,6 @@
   padding: 64px 32px;
   text-align: center;
   flex: 1;
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--color-primary-container) 10%, transparent) 0%,
-    transparent 60%
-  );
 
   .radar-scan {
     position: relative;

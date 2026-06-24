@@ -313,7 +313,9 @@
           Geographic origins, frequency trends, and endpoint usage patterns.
         </p>
       </div>
-      <div class="dashboard-grid dashboard-grid-responsive">
+
+      <!-- Full Width Origin Map -->
+      <div class="dashboard-grid dashboard-grid-single">
         <!-- Origin Chart -->
         <section class="status-card-outlined">
           <div class="chart-custom-header">
@@ -324,11 +326,46 @@
           <div class="card-body-clean chart-container-medium" style="position: relative">
             <div
               id="originMap"
-              style="height: 240px !important; width: 100%; display: block; border-radius: 8px"
+              style="height: 360px !important; width: 100%; display: block; border-radius: 8px"
               [style.position]="originMapData.length > 0 ? 'relative' : 'absolute'"
               [style.visibility]="originMapData.length > 0 ? 'visible' : 'hidden'"
             ></div>
             @if (originMapData.length === 0) {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
+          </div>
+        </section>
+      </div>
+
+      <div class="dashboard-grid dashboard-grid-responsive">
+        <!-- Status Chart (Moved from SIEM) -->
+        <section class="status-card-outlined">
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">HTTP Status Distribution</div>
+            <div class="chart-custom-value">{{ uptimePercent }}%</div>
+            <div class="chart-custom-trend">{{ statusTrend }}</div>
+          </div>
+          <div class="card-body-clean chart-container-medium">
+            @if (hasData(statusChartOptions)) {
+            <apx-chart
+              [series]="statusChartOptions.series"
+              [chart]="statusChartOptions.chart"
+              [xaxis]="statusChartOptions.xaxis"
+              [yaxis]="statusChartOptions.yaxis"
+              [dataLabels]="statusChartOptions.dataLabels"
+              [grid]="statusChartOptions.grid"
+              [stroke]="statusChartOptions.stroke"
+              [colors]="statusChartOptions.colors"
+              [plotOptions]="statusChartOptions.plotOptions"
+              [tooltip]="statusChartOptions.tooltip"
+              [noData]="statusChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
               <h3 class="empty-title">No Telemetry Signal</h3>
@@ -417,40 +454,8 @@
           Threat events, anomalies, and HTTP status distribution.
         </p>
       </div>
+      <!-- Changed from dashboard-grid-responsive to dashboard-grid with 2 columns if needed, but dashboard-grid-responsive is likely display: grid with flex basis. Let's just keep dashboard-grid-responsive -->
       <div class="dashboard-grid dashboard-grid-responsive">
-        <!-- Status Chart -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">HTTP Status Distribution</div>
-            <div class="chart-custom-value">{{ uptimePercent }}%</div>
-            <div class="chart-custom-trend">{{ statusTrend }}</div>
-          </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasData(statusChartOptions)) {
-            <apx-chart
-              [series]="statusChartOptions.series"
-              [chart]="statusChartOptions.chart"
-              [xaxis]="statusChartOptions.xaxis"
-              [yaxis]="statusChartOptions.yaxis"
-              [dataLabels]="statusChartOptions.dataLabels"
-              [grid]="statusChartOptions.grid"
-              [stroke]="statusChartOptions.stroke"
-              [colors]="statusChartOptions.colors"
-              [plotOptions]="statusChartOptions.plotOptions"
-              [tooltip]="statusChartOptions.tooltip"
-              [noData]="statusChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
-            } @else {
-            <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
-            </div>
-            }
-          </div>
-        </section>
-
         <!-- Threat Chart -->
         <section class="status-card-outlined">
           <div class="chart-custom-header">

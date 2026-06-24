@@ -23,15 +23,22 @@ router = Router(tags=["Billing"])
 
 @router.post("/create-checkout-session")
 def create_checkout_session(request):
-  # Retrieve tenant. In a real scenario, this is from request.user's active tenant
-  # For now, let's assume we pass tenant_id in payload or get it from auth
-  try:
-    data = json.loads(request.body)
-    tenant_id = data.get("tenant_id")
-    if not tenant_id:
-      return {"error": "tenant_id required"}, 400
+  if not request.user.is_authenticated:
+    return {"error": "Authentication required"}, 401
 
-    tenant = Tenant.objects.get(id=tenant_id)
+  try:
+    data = json.loads(request.body) if request.body else {}
+    tenant_id = data.get("tenant_id")
+
+    if tenant_id:
+      tenant = Tenant.objects.get(id=tenant_id)
+    else:
+      from monitor.models import TenantMembership
+
+      membership = TenantMembership.objects.filter(user=request.user).first()
+      if not membership:
+        return {"error": "User does not belong to any tenant"}, 400
+      tenant = membership.tenant
 
     price_id = "price_1TlgG2Er73F9pBqwItcWHIJf"
 

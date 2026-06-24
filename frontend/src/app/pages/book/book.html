@@ -30,6 +30,10 @@
           class="page-item"
           [class.active]="i === bookService.activePageIndex()"
           (click)="bookService.goToPage(i)"
+          tabindex="0"
+          role="button"
+          (keydown.enter)="bookService.goToPage(i)"
+          (keydown.space)="$event.preventDefault(); bookService.goToPage(i)"
         >
           <span class="page-title">{{ chapter.title }}</span>
         </div>
@@ -52,9 +56,6 @@
       </div>
 
       <div class="whitepaper-container">
-        <!-- Glow Spheres -->
-        <div class="ambient-glow primary-glow"></div>
-        <div class="ambient-glow amber-glow"></div>
         <!-- Standard Header for Content Pages (Always Visible) -->
         <div class="whitepaper-header">
           <div class="section-tag-row" style="justify-content: center">

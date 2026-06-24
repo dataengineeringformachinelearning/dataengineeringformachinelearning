@@ -203,17 +203,27 @@ export class Landing implements OnInit, OnDestroy {
     console.info('Standard Tier activated.');
   }
 
-  upgradeToPro() {
+  async upgradeToPro() {
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;
     }
 
-    // Note: For a real app, you would pass the user's active tenant ID, which would be retrieved from auth state
-    const payload = { tenant_id: 'example-tenant-id' };
+    let token = '';
+    try {
+      if (this.authService.auth?.currentUser) {
+        token = await this.authService.auth.currentUser.getIdToken();
+      }
+    } catch (e) {
+      console.error('Failed to get auth token', e);
+    }
+
+    const payload = {};
 
     this.http
-      .post<any>(`${environment.backendUrl}/api/v1/billing/create-checkout-session`, payload)
+      .post<any>(`${environment.backendUrl}/api/v1/billing/create-checkout-session`, payload, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
       .subscribe({
         next: res => {
           if (res.checkout_url) {
