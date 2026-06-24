@@ -175,10 +175,18 @@
     transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &.theme-amber .gauge-fill { stroke: var(--crayola-blue); }
-  &.theme-red .gauge-fill { stroke: var(--color-gauge-red); }
-  &.theme-primary .gauge-fill { stroke: var(--color-primary); }
-  &.theme-success .gauge-fill { stroke: var(--color-success); }
+  &.theme-amber .gauge-fill {
+    stroke: var(--crayola-blue);
+  }
+  &.theme-red .gauge-fill {
+    stroke: var(--color-gauge-red);
+  }
+  &.theme-primary .gauge-fill {
+    stroke: var(--color-primary);
+  }
+  &.theme-success .gauge-fill {
+    stroke: var(--color-success);
+  }
 }
 
 .gauge-center-text {
@@ -191,9 +199,15 @@
   align-items: center;
   width: 100%;
 
-  &.threat-text { color: var(--crayola-blue); }
-  &.main-text { color: var(--color-gauge-red); }
-  &.stability-text { color: var(--color-primary); }
+  &.threat-text {
+    color: var(--crayola-blue);
+  }
+  &.main-text {
+    color: var(--color-gauge-red);
+  }
+  &.stability-text {
+    color: var(--color-primary);
+  }
 
   .gauge-inner-icon {
     font-size: 24px;

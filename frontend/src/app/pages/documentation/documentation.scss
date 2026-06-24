@@ -45,7 +45,10 @@
   flex-direction: column;
   gap: 24px;
   box-shadow: var(--shadow-sm);
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
   overflow: hidden;
   position: relative;
 
@@ -137,7 +140,7 @@
   width: fit-content;
 
   .method {
-    color: var(--success-color, #4CAF50);
+    color: var(--success-color, #4caf50);
     font-weight: 800;
     font-family: monospace;
     font-size: 0.95rem;

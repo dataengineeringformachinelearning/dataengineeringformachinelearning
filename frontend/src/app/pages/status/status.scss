@@ -25,7 +25,8 @@
     background-color: rgba(0, 0, 0, 0.08) !important;
   }
 
-  .status-card-outlined, .ml-stat-panel {
+  .status-card-outlined,
+  .ml-stat-panel {
     background-color: rgba(255, 255, 255, 0.65);
   }
 }
@@ -38,7 +39,6 @@
 }
 
 /* Glow Spheres for Homepage Unity */
-
 
 .sphere-1 {
   width: 500px;
@@ -138,8 +138,6 @@
     opacity: 0.9;
   }
 }
-
-
 
 .status-stack {
   display: flex;
@@ -570,7 +568,6 @@
     }
   }
 
-
   .card-header-clean {
     padding: var(--card-padding);
     flex-direction: row;
@@ -699,8 +696,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .announcements-error {
@@ -830,10 +831,10 @@
 }
 .status-extracted-2 {
   margin-bottom: 24px;
-              display: flex;
-              justify-content: space-between;
-              align-items: center;
-              padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px;
 }
 .status-extracted-3 {
   margin-bottom: 8px;

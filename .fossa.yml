@@ -2,8 +2,8 @@ version: 1
 
 analyze:
   modules:
-    - name: '.'
-      target: '.'
+    - name: "."
+      target: "."
       type: autodetect
 
 policies:

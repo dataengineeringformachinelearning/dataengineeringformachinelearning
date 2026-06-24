@@ -1,5 +1,3 @@
-
-
 /* Flat page layout specific adjustments to center the login container */
 .dashboard-page-container {
   min-height: calc(100vh - 64px);
@@ -18,29 +16,29 @@
 }
 
 .modal-footer {
-  padding: 24px 0  !important;
+  padding: 24px 0 !important;
   border: none !important;
   background: transparent !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 8px  !important;
+  gap: 8px !important;
   width: 100% !important;
 
   .btn-submit {
     width: 100% !important;
     height: 48px !important;
-    margin: 0  !important;
+    margin: 0 !important;
     box-sizing: border-box !important;
   }
 
   .btn-cancel {
     width: 100% !important;
     height: 48px !important;
-    margin: 0  !important;
+    margin: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 8px  !important;
+    gap: 8px !important;
     box-sizing: border-box !important;
   }
 
@@ -49,7 +47,7 @@
     height: 1px !important;
     background-color: var(--border) !important;
     opacity: 0.35 !important;
-    margin: 24px 0  !important;
+    margin: 24px 0 !important;
   }
 }
 
@@ -58,7 +56,9 @@
   padding: 0;
 }
 .login-extracted-2 {
-  max-width: 480px; margin: 0 auto; gap: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+  gap: 1rem;
 }
 .login-extracted-3 {
   margin-bottom: 24px;

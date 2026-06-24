@@ -2,41 +2,26 @@ from datetime import timedelta
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from ml.models import ThreatReport, TrainingRun
 
-from monitor.models import BugReport, Endpoints
+from monitor.models import Endpoints
 
 
 class Command(BaseCommand):
-  help = "Cleans up old telemetry records and error logs older than 7 days"
+  help = "Cleans up old raw telemetry records older than 30 days"
 
   def handle(self, *args, **options):
-    cutoff = timezone.now() - timedelta(days=7)
+    cutoff = timezone.now() - timedelta(days=30)
 
-    # 1. Clean up telemetry endpoints older than 7 days
+    # 1. Clean up telemetry endpoints older than 30 days
     deleted_endpoints, _ = Endpoints.objects.filter(last_tested__lt=cutoff).delete()
     self.stdout.write(
       self.style.SUCCESS(
-        f"Deleted {deleted_endpoints} telemetry endpoint records older than 7 days."
+        f"Deleted {deleted_endpoints} raw telemetry endpoint records older than 30 days."
       )
     )
 
-    # 2. Clean up bug reports older than 7 days
-    deleted_bugs, _ = BugReport.objects.filter(created_at__lt=cutoff).delete()
-    self.stdout.write(self.style.SUCCESS(f"Deleted {deleted_bugs} bug reports older than 7 days."))
+    # Note: BugReport, ThreatReport, and TrainingRun are high-value business objects
+    # and are kept indefinitely as the system of record. Long-term raw metrics
+    # are routed to ClickHouse for OLAP.
 
-    # 3. Clean up threat reports older than 7 days
-    deleted_threats, _ = ThreatReport.objects.filter(created_at__lt=cutoff).delete()
-    self.stdout.write(
-      self.style.SUCCESS(f"Deleted {deleted_threats} threat reports older than 7 days.")
-    )
-
-    # 4. Clean up model training runs older than 7 days
-    deleted_runs, _ = TrainingRun.objects.filter(created_at__lt=cutoff).delete()
-    self.stdout.write(
-      self.style.SUCCESS(f"Deleted {deleted_runs} training run records older than 7 days.")
-    )
-
-    self.stdout.write(
-      self.style.SUCCESS("Database telemetry and error logs cleanup completed successfully.")
-    )
+    self.stdout.write(self.style.SUCCESS("Database raw telemetry cleanup completed successfully."))

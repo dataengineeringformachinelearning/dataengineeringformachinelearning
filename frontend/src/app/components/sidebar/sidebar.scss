@@ -6,7 +6,11 @@
   --sidebar-border: var(--border-layout);
   --sidebar-bg: rgba(18, 18, 18, 0.45);
   --sidebar-hover-bg: rgba(255, 255, 255, 0.03);
-  --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, color-mix(in srgb, var(--color-surface) 4%, transparent) 100%);
+  --sidebar-active-bg: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-surface) 25%, transparent) 0%,
+    color-mix(in srgb, var(--color-surface) 4%, transparent) 100%
+  );
   --sidebar-active-border: var(--color-primary-container);
 }
 
@@ -15,7 +19,11 @@
   --sidebar-border: var(--border-layout);
   --sidebar-bg: rgba(255, 255, 255, 0.85);
   --sidebar-hover-bg: rgba(0, 0, 0, 0.03);
-  --sidebar-active-bg: linear-gradient(90deg, color-mix(in srgb, var(--color-surface) 8%, transparent) 0%, color-mix(in srgb, var(--color-surface) 2%, transparent) 100%);
+  --sidebar-active-bg: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-surface) 8%, transparent) 0%,
+    color-mix(in srgb, var(--color-surface) 2%, transparent) 100%
+  );
   --sidebar-active-border: var(--color-primary);
 }
 
@@ -61,10 +69,13 @@
     border-right: 1px solid var(--text-muted);
     opacity: 0.3;
     border-radius: 1px;
-    transition: opacity 0.2s, border-color 0.2s;
+    transition:
+      opacity 0.2s,
+      border-color 0.2s;
   }
 
-  &:hover::after, &:active::after {
+  &:hover::after,
+  &:active::after {
     opacity: 1;
     border-left-color: var(--sidebar-accent);
     border-right-color: var(--sidebar-accent);

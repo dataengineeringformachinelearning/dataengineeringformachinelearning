@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'WHITEPAPER.md'
-      - 'frontend/**'
+      - "WHITEPAPER.md"
+      - "frontend/**"
   workflow_dispatch:
 
 jobs:

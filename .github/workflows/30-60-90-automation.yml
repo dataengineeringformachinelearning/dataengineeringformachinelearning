@@ -4,15 +4,15 @@ on:
   schedule:
     # 30-Day Automation: Security & Dependency Review
     # Runs on the 1st of every month
-    - cron: '0 0 1 * *'
+    - cron: "0 0 1 * *"
 
     # 60-Day Automation: Infrastructure & Telemetry Health Check
     # Runs on the 1st of every even month (Feb, Apr, Jun, etc.)
-    - cron: '0 0 1 */2 *'
+    - cron: "0 0 1 */2 *"
 
     # 90-Day Automation: Full System Audit & Performance Review
     # Runs on the 1st of every quarter (Jan, Apr, Jul, Oct)
-    - cron: '0 0 1 1,4,7,10 *'
+    - cron: "0 0 1 1,4,7,10 *"
 
   workflow_dispatch:
 
@@ -31,8 +31,6 @@ jobs:
         run: |
           npm audit
           cd backend && pip install uv && uv lock
-
-
 
   automation-90-day:
     name: 90-Day Performance & Audit Cycle

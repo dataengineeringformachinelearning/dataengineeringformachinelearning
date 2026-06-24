@@ -9,7 +9,11 @@
   --book-badge-bg: rgba(192, 197, 193, 0.1);
   --book-badge-text: var(--color-primary-container);
   --book-badge-border: rgba(192, 197, 193, 0.3);
-  --book-active-gradient: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, rgba(192, 197, 193, 0.08) 100%);
+  --book-active-gradient: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-surface) 25%, transparent) 0%,
+    rgba(192, 197, 193, 0.08) 100%
+  );
 }
 
 :host-context(html[data-theme='light']) {
@@ -17,7 +21,11 @@
   --book-badge-bg: color-mix(in srgb, var(--color-surface) 8%, transparent);
   --book-badge-text: var(--color-primary);
   --book-badge-border: color-mix(in srgb, var(--color-surface) 20%, transparent);
-  --book-active-gradient: linear-gradient(135deg, rgba(225, 230, 226, 0.8) 0%, color-mix(in srgb, var(--color-surface) 8%, transparent) 100%);
+  --book-active-gradient: linear-gradient(
+    135deg,
+    rgba(225, 230, 226, 0.8) 0%,
+    color-mix(in srgb, var(--color-surface) 8%, transparent) 100%
+  );
 }
 
 .book-container {
@@ -28,7 +36,6 @@
 }
 
 /* Glow Spheres */
-
 
 .sphere-1 {
   width: 500px;
@@ -195,7 +202,9 @@
     font-size: 0.9rem;
     color: var(--text-color);
     line-height: 1.4;
-    transition: color 0.2s ease, padding 0.2s ease;
+    transition:
+      color 0.2s ease,
+      padding 0.2s ease;
   }
 }
 
@@ -232,8 +241,6 @@
   font-size: 0.9rem;
   color: var(--text-muted);
 }
-
-
 
 /* Progress Bar */
 .progress-bar-header {
@@ -368,7 +375,6 @@
     gap: 0;
   }
 
-
   .card-body-clean.book-body {
     padding: 32px;
   }
@@ -412,7 +418,6 @@
   }
 }
 
-
 /* Whitepaper aesthetic additions */
 .whitepaper-container {
   position: relative;
@@ -441,7 +446,11 @@
 .amber-glow {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, var(--crayola-blue-glow, rgba(33, 118, 255, 0.4)) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    var(--crayola-blue-glow, rgba(33, 118, 255, 0.4)) 0%,
+    transparent 70%
+  );
   bottom: 10%;
   right: -150px;
   opacity: 0.25;
@@ -514,7 +523,10 @@
     flex-direction: column;
     gap: 24px;
     box-shadow: var(--shadow-sm);
-    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      transform 0.3s ease,
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
 
     &:hover {
       transform: translateY(-4px);

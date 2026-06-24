@@ -23,7 +23,6 @@
   border-color: #333333;
 }
 
-
 /* Header Section */
 .whitepaper-header {
   position: relative;
@@ -115,7 +114,10 @@
       letter-spacing: 0.02em;
       border-bottom: none;
       padding-bottom: 0;
-      font-family: var(--font-family-base, sans-serif); /* Keep headers clean sans-serif like Hugging Face */
+      font-family: var(
+        --font-family-base,
+        sans-serif
+      ); /* Keep headers clean sans-serif like Hugging Face */
     }
 
     p {
@@ -326,7 +328,10 @@
 
     .author-meta {
       color: #000 !important;
-      a { color: #000 !important; text-decoration: underline; }
+      a {
+        color: #000 !important;
+        text-decoration: underline;
+      }
     }
   }
 
@@ -353,12 +358,16 @@
       border: 1px solid #000 !important;
       background: #fff !important;
       color: #000 !important;
-      &.primary, &.secondary, &.success {
+      &.primary,
+      &.secondary,
+      &.success {
         background: #fff !important;
         color: #000 !important;
         border-color: #000 !important;
       }
     }
-    .diagram-arrow { color: #000 !important; }
+    .diagram-arrow {
+      color: #000 !important;
+    }
   }
 }

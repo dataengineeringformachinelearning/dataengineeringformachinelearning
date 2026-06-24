@@ -11,7 +11,11 @@
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
   --new-page-hover-border: var(--color-primary-container);
   --new-page-border: rgba(255, 255, 255, 0.25);
-  --settings-active-gradient: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, rgba(192, 197, 193, 0.08) 100%);
+  --settings-active-gradient: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-surface) 25%, transparent) 0%,
+    rgba(192, 197, 193, 0.08) 100%
+  );
 }
 
 /* Light theme overrides matching THEME.md */
@@ -21,7 +25,11 @@
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
   --new-page-hover-border: var(--color-primary);
   --new-page-border: color-mix(in srgb, var(--color-surface) 15%, transparent);
-  --settings-active-gradient: linear-gradient(135deg, rgba(225, 230, 226, 0.8) 0%, color-mix(in srgb, var(--color-surface) 8%, transparent) 100%);
+  --settings-active-gradient: linear-gradient(
+    135deg,
+    rgba(225, 230, 226, 0.8) 0%,
+    color-mix(in srgb, var(--color-surface) 8%, transparent) 100%
+  );
 }
 
 .settings-container {
@@ -32,7 +40,6 @@
 }
 
 /* Glow Spheres for Homepage Unity */
-
 
 .sphere-1 {
   width: 500px;
@@ -49,7 +56,6 @@
   bottom: -150px;
   right: -100px;
 }
-
 
 .dashboard-layout {
   position: relative;
@@ -149,7 +155,9 @@
   font-size: 0.8rem;
   color: var(--text-color);
   word-break: break-word;
-  transition: color 0.2s ease, padding 0.2s ease;
+  transition:
+    color 0.2s ease,
+    padding 0.2s ease;
 }
 
 .page-slug {
@@ -217,7 +225,6 @@
   font-size: 0.9rem;
   color: var(--text-muted);
 }
-
 
 .settings-stack,
 .manage-stack {
@@ -401,11 +408,11 @@
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 48px !important;
-  padding: 0 24px  !important;
+  padding: 0 24px !important;
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px  !important;
+  gap: 8px !important;
 
   mat-icon {
     margin: 0;
@@ -551,13 +558,13 @@
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 48px !important;
-  padding: 0 32px  !important;
+  padding: 0 32px !important;
   border: none !important;
   box-shadow: 0 4px 10px rgba(255, 193, 7, 0.15) !important;
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px  !important;
+  gap: 8px !important;
 
   mat-icon {
     margin: 0;
@@ -587,16 +594,16 @@
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 48px !important;
-  padding: 0 24px  !important;
+  padding: 0 24px !important;
   border: none !important;
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 8px  !important;
+  gap: 8px !important;
   min-width: 110px !important;
   flex-shrink: 0 !important;
-  margin: 0  !important;
+  margin: 0 !important;
 
   mat-icon {
     margin: 0;
@@ -717,8 +724,6 @@
   .dashboard-topbar {
     padding: 24px 32px;
   }
-
-
 
   .card-header-clean {
     padding: var(--card-padding);
@@ -879,11 +884,11 @@
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 48px !important;
-  padding: 0 24px  !important;
+  padding: 0 24px !important;
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px  !important;
+  gap: 8px !important;
   width: 100% !important;
 
   mat-icon {
@@ -913,13 +918,13 @@
   font-weight: 600 !important;
   border-radius: var(--border-radius-sm) !important;
   height: 48px !important;
-  padding: 0 24px  !important;
+  padding: 0 24px !important;
   border: 1px solid var(--border) !important;
   transition: var(--transition-smooth) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 8px  !important;
+  gap: 8px !important;
   width: 100% !important;
 
   mat-icon {

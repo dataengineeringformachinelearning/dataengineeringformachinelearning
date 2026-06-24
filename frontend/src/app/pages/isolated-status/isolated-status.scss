@@ -24,10 +24,6 @@
   }
 }
 
-
-
-
-
 .sphere-1 {
   width: 500px;
   height: 500px;
@@ -47,8 +43,6 @@
 .single-page-mode {
   padding-bottom: 81px;
 }
-
-
 
 .standalone-nav {
   padding: 24px 0;
@@ -509,7 +503,9 @@
     border-radius: 8px;
     border: 1px solid var(--border);
     box-shadow: var(--shadow-sm);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
 
     &:hover {
       border-color: var(--status-accent);
@@ -795,7 +791,7 @@
     background: var(--color-dark-grey-btn-bg) !important;
     color: var(--color-dark-grey-btn-text) !important;
     font-weight: 700 !important;
-    padding: 8px 24px  !important;
+    padding: 8px 24px !important;
     border-radius: 24px !important;
     box-shadow: var(--shadow-sm) !important;
     transition: all 0.2s ease !important;
@@ -906,8 +902,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .announcements-error {

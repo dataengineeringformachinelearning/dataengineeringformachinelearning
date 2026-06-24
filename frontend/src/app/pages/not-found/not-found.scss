@@ -16,7 +16,9 @@
   width: 100%;
   box-shadow: var(--shadow-lg);
   backdrop-filter: blur(8px);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 
   &:hover {
     transform: translateY(-4px);
@@ -66,7 +68,10 @@
     font-weight: 600;
     text-decoration: none;
     border-radius: 8px;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
     box-shadow: 0 4px 14px color-mix(in srgb, var(--color-success) 40%, transparent);
 
     &:hover {
