@@ -15,7 +15,7 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 # Initialize redis connection
-redis_host = getattr(settings, "REDIS_HOST", "dragonfly")
+redis_host = getattr(settings, "DRAGONFLY_HOST", "dragonfly")
 redis_port = getattr(settings, "REDIS_PORT", 6379)
 
 if HAS_REDIS:

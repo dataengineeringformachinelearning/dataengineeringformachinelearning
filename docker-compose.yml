@@ -61,7 +61,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
-      - REDIS_HOST=dragonfly
+      - DRAGONFLY_HOST=dragonfly
     depends_on:
       postgres:
         condition: service_healthy
@@ -83,7 +83,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
-      - REDIS_HOST=dragonfly
+      - DRAGONFLY_HOST=dragonfly
     depends_on:
       backend:
         condition: service_started
@@ -103,7 +103,7 @@ services:
       - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
-      - REDIS_HOST=dragonfly
+      - DRAGONFLY_HOST=dragonfly
     depends_on:
       backend:
         condition: service_started
