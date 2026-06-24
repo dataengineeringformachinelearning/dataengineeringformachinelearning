@@ -96,6 +96,9 @@ html[data-theme='light']
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';
 
+// ====================== LEAFLET ======================
+@import 'leaflet/dist/leaflet.css';
+
 pre[class*='language-'] {
   background-color: #1a1a1a !important;
   border: 1px solid var(--border);

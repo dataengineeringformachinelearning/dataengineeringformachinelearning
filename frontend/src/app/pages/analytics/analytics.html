@@ -225,16 +225,6 @@
             >{{ (cookieConsents || 0) | number }}</span
           >
         </div>
-        <div class="ml-stat-panel">
-          <div class="stat-info">
-            <div>
-              <span class="stat-title">ACTIVE PROVIDERS</span>
-            </div>
-          </div>
-          <span class="stat-value" style="letter-spacing: -0.02em; font-weight: bold"
-            >{{ activeProviders.length }}</span
-          >
-        </div>
       </div>
 
       <!-- ACTIVE PROVIDERS CHIPS -->
@@ -335,7 +325,8 @@
             <div
               id="originMap"
               style="height: 240px !important; width: 100%; display: block; border-radius: 8px"
-              [style.display]="originMapData.length > 0 ? 'block' : 'none'"
+              [style.position]="originMapData.length > 0 ? 'relative' : 'absolute'"
+              [style.visibility]="originMapData.length > 0 ? 'visible' : 'hidden'"
             ></div>
             @if (originMapData.length === 0) {
             <div class="empty-chart-state">
