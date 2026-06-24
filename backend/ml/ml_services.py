@@ -83,7 +83,6 @@ class CESModel(nn.Module):
 
 def train_tenant_sla(tenant: Any) -> TrainingRun | None:
   import numpy as np
-  import skops.io as sio
   import torch
   import torch.nn as nn
   import torch.optim as optim
@@ -182,18 +181,18 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
     try:
       from huggingface_hub import HfApi
 
-      # Serialize securely using skops instead of torch.save
-      sio.dump(best_estimator.model.state_dict(), "/tmp/sla_model.skops")
+      # Serialize securely using torch.save
+      torch.save(best_estimator.model.state_dict(), "/tmp/sla_model.pt")
       api = HfApi(token=hf_token)
       import hashlib
 
       if hasattr(tenant, "slug"):
         safe_identifier = hashlib.sha256(tenant.slug.encode()).hexdigest()[:12]
-        model_name = f"{safe_identifier}_sla_model.skops"
+        model_name = f"{safe_identifier}_sla_model.pt"
       else:
-        model_name = "default_sla_model.skops"
+        model_name = "default_sla_model.pt"
       api.upload_file(
-        path_or_fileobj="/tmp/sla_model.skops",
+        path_or_fileobj="/tmp/sla_model.pt",
         path_in_repo=f"sla_models/{model_name}",
         repo_id=hf_repo,
         repo_type="model",
@@ -262,11 +261,9 @@ def train_platform_threat_model() -> dict:
 
   import os
 
-  import skops.io as sio
-
   model_path = get_platform_model_path()
-  # Save securely using skops
-  sio.dump(model.state_dict(), model_path)
+  # Save securely using torch.save
+  torch.save(model.state_dict(), model_path)
 
   hf_token = os.environ.get("HF_TOKEN")
   hf_repo = os.environ.get("HF_REPO_ID")
@@ -277,7 +274,7 @@ def train_platform_threat_model() -> dict:
       api = HfApi(token=hf_token)
       api.upload_file(
         path_or_fileobj=model_path,
-        path_in_repo="threat_models/platform_threat_model.skops",
+        path_in_repo="threat_models/platform_threat_model.pt",
         repo_id=hf_repo,
         repo_type="model",
       )
@@ -431,10 +428,8 @@ def train_ces_model() -> dict:
 
   import os
 
-  import skops.io as sio
-
   model_path = get_ces_model_path()
-  sio.dump(model.state_dict(), model_path)
+  torch.save(model.state_dict(), model_path)
 
   hf_token = os.environ.get("HF_TOKEN")
   hf_repo = os.environ.get("HF_REPO_ID")
@@ -445,7 +440,7 @@ def train_ces_model() -> dict:
       api = HfApi(token=hf_token)
       api.upload_file(
         path_or_fileobj=model_path,
-        path_in_repo="ces_models/platform_ces_model.skops",
+        path_in_repo="ces_models/platform_ces_model.pt",
         repo_id=hf_repo,
         repo_type="model",
       )

@@ -14,13 +14,9 @@ import {
   onAuthStateChanged,
   User as FirebaseUser,
   deleteUser,
-  RecaptchaVerifier,
-  signInWithPhoneNumber,
   PhoneAuthProvider,
   PhoneMultiFactorGenerator,
   getMultiFactorResolver,
-  MultiFactorResolver,
-  MultiFactorAssertion,
   multiFactor,
   OAuthProvider,
   signInWithPopup,
@@ -93,7 +89,7 @@ export class AuthService {
                 this.currentUserId.set(null);
                 this.currentUserRole.set(null);
               }
-            } catch (e) {
+            } catch {
               console.error('Failed to sync auth with backend', e);
               this.isAuthenticated.set(false);
               this.currentUserId.set(null);
@@ -132,7 +128,7 @@ export class AuthService {
             this.currentUserId.set(res.user_id);
             this.currentUserRole.set(res.role);
           }
-        } catch (e) {
+        } catch {
           this.isAuthenticated.set(true);
           this.currentUserId.set(user.id || 1);
           this.currentUserRole.set(user.role || 'Operator');
@@ -170,7 +166,7 @@ export class AuthService {
           this.currentUserId.set(null);
           this.currentUserRole.set(null);
         }
-      } catch (e) {
+      } catch {
         this.isAuthenticated.set(false);
         this.currentUserId.set(null);
         this.currentUserRole.set(null);
@@ -211,7 +207,7 @@ export class AuthService {
           this.currentUserId.set(res.user_id);
           this.currentUserRole.set(res.role);
         }
-      } catch (e) {
+      } catch {
         this.isAuthenticated.set(true);
         this.currentUserId.set(1);
         this.currentUserRole.set(role);
@@ -225,7 +221,7 @@ export class AuthService {
       await signInWithEmailAndPassword(this.auth, credentials.username, credentials.password);
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch {
       this.isProcessing.set(false);
       console.error(e);
       if (e?.code === 'auth/multi-factor-auth-required') {
@@ -278,7 +274,7 @@ export class AuthService {
       }
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch {
       this.isProcessing.set(false);
       console.error(e);
       let errorMsg = 'Registration failed.';
@@ -318,7 +314,7 @@ export class AuthService {
       this.currentUserId.set(null);
       this.currentUserRole.set(null);
       this.isProcessing.set(false);
-    } catch (e) {
+    } catch {
       console.error(e);
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
@@ -344,7 +340,7 @@ export class AuthService {
       this.currentUserRole.set(null);
       this.isProcessing.set(false);
       return true;
-    } catch (e) {
+    } catch {
       console.error(e);
       this.isProcessing.set(false);
       return false;
@@ -356,7 +352,7 @@ export class AuthService {
       if (!this.auth) return false;
       await sendPasswordResetEmail(this.auth, email);
       return true;
-    } catch (e) {
+    } catch {
       console.error(e);
       return false;
     }
@@ -367,7 +363,7 @@ export class AuthService {
       if (!this.auth) return false;
       await confirmPasswordReset(this.auth, payload.token, payload.new_password);
       return true;
-    } catch (e) {
+    } catch {
       console.error(e);
       return false;
     }
@@ -451,7 +447,7 @@ export class AuthService {
 
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch {
       this.isProcessing.set(false);
       console.error(e);
       if (e?.code === 'auth/multi-factor-auth-required') {
@@ -489,7 +485,7 @@ export class AuthService {
 
       this.isProcessing.set(false);
       return { success: true };
-    } catch (e: any) {
+    } catch {
       this.isProcessing.set(false);
       console.error(e);
       if (e?.code === 'auth/multi-factor-auth-required') {
@@ -509,7 +505,7 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       await linkWithPopup(this.auth.currentUser, provider);
       return { success: true };
-    } catch (e: any) {
+    } catch {
       console.error(e);
       if (e?.code === 'auth/credential-already-in-use') {
         return {
@@ -528,7 +524,7 @@ export class AuthService {
       const provider = new OAuthProvider('apple.com');
       await linkWithPopup(this.auth.currentUser, provider);
       return { success: true };
-    } catch (e: any) {
+    } catch {
       console.error(e);
       if (e?.code === 'auth/credential-already-in-use') {
         return {
@@ -546,7 +542,7 @@ export class AuthService {
       if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
       await unlink(this.auth.currentUser, providerId);
       return { success: true };
-    } catch (e: any) {
+    } catch {
       console.error(e);
       return { success: false, error: `Failed to unlink ${providerId}. Please try again.` };
     }

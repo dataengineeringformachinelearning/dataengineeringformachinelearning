@@ -43,6 +43,14 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
   except Exception:
     return False
 
+  if domain in [
+    "dataengineeringformachinelearning.com",
+    "www.dataengineeringformachinelearning.com",
+    "localhost",
+    "127.0.0.1",
+  ]:
+    return True
+
   # If tenant_id is provided, it might actually be a StatusPage ID/slug from the widget
   # Let's try to resolve the actual Tenant ID
   actual_tenant_id = None

@@ -14,13 +14,19 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
+import os
+
 # Initialize redis connection
-redis_host = getattr(settings, "DRAGONFLY_HOST", "dragonfly")
-redis_port = getattr(settings, "REDIS_PORT", 6379)
+redis_host = os.environ.get("REDISHOST", getattr(settings, "DRAGONFLY_HOST", "dragonfly"))
+redis_port = int(os.environ.get("REDISPORT", getattr(settings, "REDIS_PORT", 6379)))
 
 if HAS_REDIS:
   try:
-    redis_client = redis.Redis(host=redis_host, port=redis_port, db=0, decode_responses=True)
+    redis_url = os.environ.get("REDIS_URL")
+    if redis_url:
+      redis_client = redis.from_url(redis_url, decode_responses=True)
+    else:
+      redis_client = redis.Redis(host=redis_host, port=redis_port, db=0, decode_responses=True)
   except Exception as e:
     logger.error(f"Failed to connect to redis: {e}")
     redis_client = None

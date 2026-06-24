@@ -16,12 +16,7 @@ import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OramaSearchService } from '../../services/orama-search.service';
 import { filter } from 'rxjs/operators';
-import {
-  MonitorService,
-  StatusPageData,
-  IncidentData,
-  MonitoredServiceData,
-} from '../../services/monitor.service';
+import { MonitorService, StatusPageData } from '../../services/monitor.service';
 
 @Component({
   selector: 'app-sidebar',

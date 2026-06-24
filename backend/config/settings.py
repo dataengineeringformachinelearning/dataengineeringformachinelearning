@@ -29,15 +29,7 @@ load_dotenv(BASE_DIR / ".env", override=False)
 def clean_private_key(key: str) -> str:
   if not key:
     return key
-  key = key.replace("\\n", "\n")
-  if "-----BEGIN PRIVATE KEY-----" in key and "-----END PRIVATE KEY-----" in key:  # pragma: allowlist secret # gitleaks:allow
-    start = key.find("-----BEGIN PRIVATE KEY-----") + 27  # pragma: allowlist secret # gitleaks:allow
-    end = key.find("-----END PRIVATE KEY-----")  # pragma: allowlist secret # gitleaks:allow
-    body = key[start:end]
-    body_clean = "".join(body.split())
-    lines = [body_clean[i : i + 64] for i in range(0, len(body_clean), 64)]
-    return "-----BEGIN PRIVATE KEY-----\n" + "\n".join(lines) + "\n-----END PRIVATE KEY-----\n"  # pragma: allowlist secret # gitleaks:allow
-  return key
+  return key.replace("\\n", "\n")
 # fmt: on
 
 

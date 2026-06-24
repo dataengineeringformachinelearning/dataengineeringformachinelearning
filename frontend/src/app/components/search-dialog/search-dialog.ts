@@ -40,8 +40,6 @@ export class SearchDialog implements OnInit, AfterViewInit {
 
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
-  ngOnInit() {}
-
   ngAfterViewInit() {
     // Focus search input on load
     setTimeout(() => {

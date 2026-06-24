@@ -41,7 +41,7 @@ export class CookieConsentService {
           });
           this.hasDecidedSignal.set(true);
           this.showBannerSignal.set(forceCookieSettings ? true : false);
-        } catch (e) {
+        } catch {
           this.showBannerSignal.set(true);
         }
       } else {
