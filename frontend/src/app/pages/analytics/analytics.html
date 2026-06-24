@@ -492,6 +492,7 @@
             <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium" style="position: relative">
+            @if (hasData(mapMarkers)) {
             <svg
               viewBox="0 0 1000 500"
               style="
@@ -531,7 +532,7 @@
               ></circle>
               }
             </svg>
-            @if (mapMarkers.length === 0) {
+            } @else {
             <div class="empty-chart-state">
               <mat-icon class="empty-icon">satellite_alt</mat-icon>
               <h3 class="empty-title">No Telemetry Signal</h3>

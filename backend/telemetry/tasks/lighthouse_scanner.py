@@ -50,6 +50,9 @@ class LighthouseScanner:
 
         logger.info(f"Scan complete for {url}: {scores}")
         return scores
+      elif response.status_code == 429:
+        logger.warning(f"Lighthouse API quota exceeded (429) for {url}. Skipping scan.")
+        return None
       else:
         logger.error(f"Lighthouse API error: {response.status_code} - {response.text}")
         return None
