@@ -4,6 +4,8 @@ emoji: 🚀
 colorFrom: blue
 colorTo: indigo
 sdk: static
+app_file: frontend/dist/frontend/browser/index.html
+app_build_command: cd frontend && npm ci && npm run build
 pinned: false
 license: apache-2.0
 ---
