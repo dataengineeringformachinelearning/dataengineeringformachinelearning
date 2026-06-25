@@ -13,9 +13,9 @@ def main():
   print("Running migrations...", flush=True)
   subprocess.run([python_bin, "manage.py", "migrate"], check=True)
 
-  # Train initial ML models
-  print("Training models...", flush=True)
-  subprocess.run([python_bin, "manage.py", "train_all_models"], check=True)
+  # Train initial ML models in the background to avoid blocking server startup
+  print("Training models in background...", flush=True)
+  subprocess.Popen([python_bin, "manage.py", "train_all_models"])
 
   # Start Gunicorn server
   print("Starting Gunicorn...", flush=True)
