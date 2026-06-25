@@ -31,7 +31,7 @@ export class BaseService {
       if (typeof basePath !== 'string') {
         basePath = this.basePath;
       }
-      this.configuration.basePath = basePath;
+      this.configuration.basePath = basePath as string;
     }
     this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
   }

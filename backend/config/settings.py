@@ -294,6 +294,8 @@ CORS_ALLOWED_ORIGINS = (
 )
 if "https://dataengineeringformachinelearning.com" not in CORS_ALLOWED_ORIGINS:
   CORS_ALLOWED_ORIGINS.append("https://dataengineeringformachinelearning.com")
+if "https://www.dataengineeringformachinelearning.com" not in CORS_ALLOWED_ORIGINS:
+  CORS_ALLOWED_ORIGINS.append("https://www.dataengineeringformachinelearning.com")
 
 from corsheaders.defaults import default_headers
 
