@@ -30,6 +30,8 @@ def main():
       "config.wsgi:application",
       "--workers",
       os.getenv("WEB_CONCURRENCY", "1"),
+      "--threads",
+      "4",
       "--timeout",
       "120",
     ],
