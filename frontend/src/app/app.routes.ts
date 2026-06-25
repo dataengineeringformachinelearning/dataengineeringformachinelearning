@@ -39,5 +39,6 @@ export const routes: Routes = [
   },
 
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },
+  { path: 'success', loadComponent: () => import('./pages/success/success').then(m => m.Success) },
   { path: '**', loadComponent: () => import('./pages/not-found/not-found').then(m => m.NotFound) },
 ];
