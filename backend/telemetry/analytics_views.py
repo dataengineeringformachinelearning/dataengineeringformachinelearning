@@ -283,8 +283,9 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     tenant=target_tenant, marketing=True, created_at__gte=last_24h
   ).count()
 
-  # Unique Visitors
-  unique_visitors = endpoints.values("ip_address").distinct().count()
+  # Unique Visitors (Optimized for speed by scanning recent endpoints)
+  recent_ips = endpoints.values_list("ip_address", flat=True).order_by("-last_tested")[:5000]
+  unique_visitors = len(set(ip for ip in recent_ips if ip))
 
   # Widget Interactions from telemetry_context
   widget_interactions = 0

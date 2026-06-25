@@ -216,10 +216,12 @@ def _build_status_page_out(p):
     from django.utils import timezone
 
     cutoff = timezone.now() - dt.timedelta(days=30)
+    # OPTIMIZATION: Only fetch required fields to prevent massive memory usage, and limit to recent 15,000 logs
     logs = (
       Endpoints.objects.filter(url__in=urls, last_tested__gte=cutoff)
       .exclude(status_code=0)
-      .order_by("last_tested")
+      .values_list("last_tested", "is_active", "status_code")
+      .order_by("-last_tested")[:15000]
     )
 
     today = timezone.now().date()
@@ -227,8 +229,8 @@ def _build_status_page_out(p):
     days_list.reverse()  # past to present
 
     daily_logs = defaultdict(list)
-    for log in logs:
-      daily_logs[log.last_tested.date()].append(log)
+    for last_tested, is_active, status_code in logs:
+      daily_logs[last_tested.date()].append((is_active, status_code))
 
     history_list = []
     total_history_up = 0
@@ -240,7 +242,7 @@ def _build_status_page_out(p):
         history_list.append(UptimeDaySchema(status="no_data", uptime=100.0))
       else:
         tot = len(day_logs)
-        up = sum(1 for log in day_logs if log.is_active and log.status_code < 500)
+        up = sum(1 for is_active, status_code in day_logs if is_active and status_code < 500)
         ratio = (up / tot) if tot > 0 else 1.0
         uptime_pct = round(ratio * 100.0, 2)
 
@@ -269,7 +271,10 @@ def _build_status_page_out(p):
     )
     total_requests = endpoints_24h.count()
 
-    latencies = list(endpoints_24h.values_list("response_time", flat=True))
+    # OPTIMIZATION: Limit to the most recent 5,000 latencies to prevent memory exhaustion
+    latencies = list(
+      endpoints_24h.values_list("response_time", flat=True).order_by("-last_tested")[:5000]
+    )
     if latencies and any(latencies):
       ms_list = sorted([lat.total_seconds() * 1000 for lat in latencies if lat])
       p99_idx = int(len(ms_list) * 0.99)

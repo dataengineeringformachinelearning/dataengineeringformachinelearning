@@ -92,10 +92,8 @@ export class Explore implements OnInit {
         this.statusPages.set(publicPages);
         this.monitorService.fetchAllIncidents(publicPages);
         this.monitorService.fetchAllServices(publicPages);
-        publicPages.forEach(page => {
-          this.mlService.fetchLatestStat(page.id);
-          this.mlService.fetchThreatReport(page.id);
-        });
+        // Removed N+1 ML fetches (fetchLatestStat, fetchThreatReport) to vastly improve
+        // Explore page load times. These will be fetched individually on the dedicated status page.
         this.isLoading.set(false);
         this.cdr.markForCheck();
       },
