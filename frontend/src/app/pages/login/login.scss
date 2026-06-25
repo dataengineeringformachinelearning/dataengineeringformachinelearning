@@ -18,7 +18,7 @@
 }
 
 .modal-footer {
-  padding: 24px 0 !important;
+  padding: 16px 0 0 0 !important;
   border: none !important;
   background: transparent !important;
   display: flex !important;
@@ -49,7 +49,7 @@
     height: 1px !important;
     background-color: var(--border) !important;
     opacity: 0.35 !important;
-    margin: 24px 0 !important;
+    margin: 0 0 8px 0 !important;
   }
 }
 
@@ -58,6 +58,7 @@
   padding: 0;
 }
 .login-extracted-2 {
+  width: 100%;
   max-width: 480px;
   margin: 0 auto;
   gap: 1rem;
@@ -69,8 +70,9 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
   min-width: 320px;
-  padding: 8px 0;
+  padding: 0;
 
   mat-icon[matPrefix] {
     margin-right: 8px;
@@ -273,8 +275,6 @@
 
 .toggle-link {
   text-align: center;
-  margin-top: 16px;
-  margin-bottom: 8px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -336,7 +336,7 @@
   display: flex;
   align-items: center;
   text-align: center;
-  margin: 24px 0;
+  margin: 0;
   color: var(--text-muted);
   font-size: 0.8rem;
   text-transform: uppercase;
@@ -374,7 +374,6 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
-  max-width: 320px;
   margin: 0 auto;
   height: 48px;
   border-radius: var(--border-radius-sm);

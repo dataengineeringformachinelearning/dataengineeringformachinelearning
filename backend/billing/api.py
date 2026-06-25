@@ -52,7 +52,7 @@ def create_checkout_session(request):
       ],
       mode="subscription",
       success_url=settings.FRONTEND_URL + "/success?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url=settings.FRONTEND_URL + "/canceled",
+      cancel_url=settings.FRONTEND_URL + "/",
       client_reference_id=str(tenant.id),
     )
     return {"checkout_url": session.url}

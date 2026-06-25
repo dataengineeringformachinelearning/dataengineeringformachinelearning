@@ -8,7 +8,7 @@ import {
   PLATFORM_ID,
   ChangeDetectorRef,
 } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { MatIconModule } from '@angular/material/icon';
 import { Title, Meta } from '@angular/platform-browser';
@@ -16,7 +16,7 @@ import { environment } from '../../../environments/environment';
 import { isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { signal } from '@angular/core';
+import { signal, effect } from '@angular/core';
 import { SanityService } from '../../services/sanity.service';
 
 export interface PipelineStep {
@@ -46,7 +46,24 @@ export class Landing implements OnInit, OnDestroy {
   public sanityService = inject(SanityService);
 
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+
+  constructor() {
+    effect(() => {
+      if (this.authService.isAuthenticated()) {
+        if (this.route.snapshot.queryParams['action'] === 'checkout') {
+          this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { action: null },
+            queryParamsHandling: 'merge',
+            replaceUrl: true,
+          });
+          this.upgradeToPro();
+        }
+      }
+    });
+  }
 
   version = environment.version || '1.0.0';
   emailVal = '';
@@ -205,7 +222,7 @@ export class Landing implements OnInit, OnDestroy {
 
   async upgradeToPro() {
     if (!this.authService.isAuthenticated()) {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login'], { queryParams: { returnUrl: '/?action=checkout' } });
       return;
     }
 
