@@ -342,27 +342,29 @@
       </div>
 
       <div class="dashboard-grid dashboard-grid-responsive">
-        <!-- Status Chart (Moved from SIEM) -->
+        <!-- Top Regions Chart -->
         <section class="status-card-outlined">
           <div class="chart-custom-header">
-            <div class="chart-custom-title">HTTP Status Distribution</div>
-            <div class="chart-custom-value">{{ uptimePercent }}%</div>
-            <div class="chart-custom-trend">{{ statusTrend }}</div>
+            <div class="chart-custom-title">Top Regions</div>
+            <div class="chart-custom-value">
+              {{ topRegionsChartOptions.series[0]?.data?.length || 0 }} Regions
+            </div>
+            <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(statusChartOptions)) {
+            @if (hasData(topRegionsChartOptions)) {
             <apx-chart
-              [series]="statusChartOptions.series"
-              [chart]="statusChartOptions.chart"
-              [xaxis]="statusChartOptions.xaxis"
-              [yaxis]="statusChartOptions.yaxis"
-              [dataLabels]="statusChartOptions.dataLabels"
-              [grid]="statusChartOptions.grid"
-              [stroke]="statusChartOptions.stroke"
-              [colors]="statusChartOptions.colors"
-              [plotOptions]="statusChartOptions.plotOptions"
-              [tooltip]="statusChartOptions.tooltip"
-              [noData]="statusChartOptions.noData"
+              [series]="topRegionsChartOptions.series"
+              [chart]="topRegionsChartOptions.chart"
+              [xaxis]="topRegionsChartOptions.xaxis"
+              [yaxis]="topRegionsChartOptions.yaxis"
+              [dataLabels]="topRegionsChartOptions.dataLabels"
+              [grid]="topRegionsChartOptions.grid"
+              [stroke]="topRegionsChartOptions.stroke"
+              [colors]="topRegionsChartOptions.colors"
+              [plotOptions]="topRegionsChartOptions.plotOptions"
+              [tooltip]="topRegionsChartOptions.tooltip"
+              [noData]="topRegionsChartOptions.noData"
               class="apx-chart-medium"
             ></apx-chart>
             } @else {
@@ -509,6 +511,39 @@
               [plotOptions]="securityAlertsChartOptions.plotOptions"
               [tooltip]="securityAlertsChartOptions.tooltip"
               [noData]="securityAlertsChartOptions.noData"
+              class="apx-chart-medium"
+            ></apx-chart>
+            } @else {
+            <div class="empty-chart-state">
+              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <h3 class="empty-title">No Telemetry Signal</h3>
+              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            </div>
+            }
+          </div>
+        </section>
+
+        <!-- Status Chart (Moved back to SIEM) -->
+        <section class="status-card-outlined">
+          <div class="chart-custom-header">
+            <div class="chart-custom-title">HTTP Status Distribution</div>
+            <div class="chart-custom-value">{{ uptimePercent }}%</div>
+            <div class="chart-custom-trend">{{ statusTrend }}</div>
+          </div>
+          <div class="card-body-clean chart-container-medium">
+            @if (hasData(statusChartOptions)) {
+            <apx-chart
+              [series]="statusChartOptions.series"
+              [chart]="statusChartOptions.chart"
+              [xaxis]="statusChartOptions.xaxis"
+              [yaxis]="statusChartOptions.yaxis"
+              [dataLabels]="statusChartOptions.dataLabels"
+              [grid]="statusChartOptions.grid"
+              [stroke]="statusChartOptions.stroke"
+              [colors]="statusChartOptions.colors"
+              [plotOptions]="statusChartOptions.plotOptions"
+              [tooltip]="statusChartOptions.tooltip"
+              [noData]="statusChartOptions.noData"
               class="apx-chart-medium"
             ></apx-chart>
             } @else {

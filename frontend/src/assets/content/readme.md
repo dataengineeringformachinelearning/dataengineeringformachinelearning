@@ -99,7 +99,7 @@ To interact with the integration gateway, you must authenticate using API keys.
 To ensure platform stability, we enforce the following default rate limits:
 
 - **Standard Tier (Free):** 60 requests / minute
-- **Pro Tier ($49/mo):** 1,000+ requests / minute
+- **Pro Tier ($39/mo):** 1,000+ requests / minute
 
 ---
 

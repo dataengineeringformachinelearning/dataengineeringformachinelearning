@@ -87,6 +87,7 @@ export class AnalyticsComponent implements OnInit {
   public frequencyChartOptions: ChartOptions;
   public statusChartOptions: ChartOptions;
   public endpointChartOptions: ChartOptions;
+  public topRegionsChartOptions: ChartOptions;
   public threatSeverityChartOptions: ChartOptions;
   public securityAlertsChartOptions: ChartOptions;
 
@@ -102,6 +103,7 @@ export class AnalyticsComponent implements OnInit {
     this.frequencyChartOptions = this.getEmptyAreaChart('var(--blue-bell)', 'Requests');
     this.statusChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Status Count');
     this.endpointChartOptions = this.getEmptyBarChart('var(--crayola-blue)', 'Endpoint Calls');
+    this.topRegionsChartOptions = this.getEmptyBarChart('var(--golden-pollen)', 'Requests');
     this.threatSeverityChartOptions = this.getEmptyDonutChart();
     this.securityAlertsChartOptions = this.getEmptyBarChart('var(--carrot-orange)', 'Anomalies');
 
@@ -318,6 +320,7 @@ export class AnalyticsComponent implements OnInit {
     this.frequencyChartOptions = updateAxis(this.frequencyChartOptions);
     this.statusChartOptions = updateAxis(this.statusChartOptions);
     this.endpointChartOptions = updateAxis(this.endpointChartOptions);
+    this.topRegionsChartOptions = updateAxis(this.topRegionsChartOptions);
     this.threatSeverityChartOptions = updateAxis(this.threatSeverityChartOptions);
     this.securityAlertsChartOptions = updateAxis(this.securityAlertsChartOptions);
     if (this.map) {
@@ -414,6 +417,13 @@ export class AnalyticsComponent implements OnInit {
           // Parse Origin Distribution
           const origins = user_metrics?.origin_distribution || [];
           this.originMapData = origins;
+
+          const topOrigins = [...origins].sort((a: any, b: any) => b.count - a.count).slice(0, 5);
+          this.topRegionsChartOptions.series = [
+            { name: 'Requests', data: topOrigins.map((d: any) => d.count) },
+          ];
+          this.topRegionsChartOptions.xaxis.categories = topOrigins.map((d: any) => d.origin);
+
           if (this.isBrowser) {
             this.initMap();
           }
