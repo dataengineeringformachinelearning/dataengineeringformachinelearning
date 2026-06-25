@@ -158,7 +158,9 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     tenant=target_tenant, status__in=["Investigating", "Identified"]
   ).count()
 
-  latencies = list(endpoints.values_list("response_time", flat=True))
+  latencies = list(
+    endpoints.values_list("response_time", flat=True).order_by("-last_tested")[:5000]
+  )
   if latencies and any(latencies):
     ms_list = sorted([lat.total_seconds() * 1000 for lat in latencies if lat])
     p99_idx = int(len(ms_list) * 0.99)
@@ -208,7 +210,7 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     ]
 
     # Build Candlestick Data (bucketed by hour)
-    eps = list(endpoints.values("last_tested", "response_time"))
+    eps = list(endpoints.values("last_tested", "response_time").order_by("-last_tested")[:5000])
     candlestick_data = []
     for i in range(24):
       start = now - timedelta(hours=24 - i)
@@ -261,9 +263,10 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
       {"status": "200", "count": up_reqs},
       {"status": "5xx", "count": total_reqs - up_reqs},
     ]
-    endpoint_counts = [
-      {"endpoint": url, "count": endpoints.filter(url=url).count()} for url in user_urls
-    ]
+    from django.db.models import Count
+
+    ep_counts_qs = endpoints.values("url").annotate(count=Count("id"))
+    endpoint_counts = [{"endpoint": item["url"], "count": item["count"]} for item in ep_counts_qs]
 
   # Retrieve provider integrations
   active_providers = list(
@@ -285,10 +288,15 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
 
   # Widget Interactions from telemetry_context
   widget_interactions = 0
-  for ep in endpoints.exclude(telemetry_context__isnull=True):
+  telemetry_data = (
+    endpoints.exclude(telemetry_context__isnull=True)
+    .values_list("telemetry_context", flat=True)
+    .order_by("-last_tested")[:5000]
+  )
+  for context in telemetry_data:
     try:
-      if isinstance(ep.telemetry_context, dict):
-        ga_data = ep.telemetry_context.get("global_agent_data", {})
+      if isinstance(context, dict):
+        ga_data = context.get("global_agent_data", {})
         widget_interactions += ga_data.get("clicks", 0)
     except Exception:
       pass

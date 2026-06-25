@@ -759,22 +759,33 @@ The recommended replica limits for a production-grade deployment are:
 
 | Service                       | CPU Limit | RAM Limit | Justification                                   |
 | ----------------------------- | --------- | --------- | ----------------------------------------------- |
-| **deml-backend** (Django API) | 3 vCPU    | 3 GB      | Scaled to prevent SIGKILL / OOM during spikes.  |
-| **deml-frontend** (Angular)   | 3 vCPU    | 3 GB      | Scaled for reliable production builds and SSR.  |
-| **deml-postgres**             | 1 vCPU    | 1 GB      | Highly efficient transactional store.           |
-| **deml-clickhouse**           | 2 vCPU    | 4 GB      | Memory-intensive OLAP analytical queries.       |
-| **deml-queue** (Redpanda)     | 2 vCPU    | 3 GB      | Pre-allocates memory for the Seastar framework. |
-| **deml-dragonfly**            | 1 vCPU    | 1 GB      | In-memory cache operations.                     |
-| **deml-telemetry-worker**     | 2 vCPU    | 2 GB      | Polars batch processing.                        |
-| **deml-ml-worker**            | 2 vCPU    | 2 GB      | PyTorch and Scikit-learn model training.        |
-| **deml-security-worker**      | 2 vCPU    | 2 GB      | OSINT scanning and intelligence gathering.      |
-| **deml-scanner**              | 2 vCPU    | 2 GB      | Heavy vulnerability database parsing.           |
-| **deml-dtrack-api**           | 1 vCPU    | 2 GB      | JVM memory baseline for Spring Boot.            |
-| **deml-otel-collector**       | 1 vCPU    | 1 GB      | Efficient Go-based trace ingestion.             |
-| **deml-cpe-guesser**          | 1 vCPU    | 1 GB      | Lightweight NLP heuristics.                     |
-| **deml-tor-proxy**            | 1 vCPU    | 1 GB      | Minimal network routing overhead.               |
+| **deml-backend** (Django API) | 4 vCPU    | 4 GB      | Maximum concurrent worker capacity.             |
+| **deml-frontend** (Angular)   | 4 vCPU    | 4 GB      | Rapid SSR and robust production build capacity. |
+| **deml-postgres**             | 4 vCPU    | 4 GB      | High-throughput transactional data store.       |
+| **deml-clickhouse**           | 4 vCPU    | 4 GB      | Memory-intensive OLAP analytical queries.       |
+| **deml-queue** (Redpanda)     | 4 vCPU    | 4 GB      | Pre-allocates memory for the Seastar framework. |
+| **deml-dragonfly**            | 4 vCPU    | 4 GB      | Ultra-fast in-memory cache operations.          |
+| **deml-telemetry-worker**     | 4 vCPU    | 4 GB      | High-speed Polars batch processing.             |
+| **deml-ml-worker**            | 4 vCPU    | 4 GB      | Unconstrained PyTorch / ML inference.           |
+| **deml-security-worker**      | 4 vCPU    | 4 GB      | Concurrent OSINT intelligence gathering.        |
+| **deml-scanner**              | 4 vCPU    | 4 GB      | Heavy vulnerability database parsing.           |
+| **deml-dtrack-api**           | 4 vCPU    | 4 GB      | Deep JVM memory headroom for Spring Boot.       |
+| **deml-otel-collector**       | 4 vCPU    | 4 GB      | Massive scale Go-based trace ingestion.         |
+| **deml-cpe-guesser**          | 4 vCPU    | 4 GB      | CPU-intensive NLP heuristics at scale.          |
+| **deml-tor-proxy**            | 4 vCPU    | 4 GB      | High-bandwidth, encrypted network routing.      |
 
-This complete 14-service architecture peaks at a combined maximum footprint of roughly **24 vCPU and 27 GB RAM**, ensuring predictable and heavily contained cloud spend.
+This complete 14-service architecture peaks at a combined maximum footprint of **56 vCPU and 56 GB RAM**.
+
+### Estimated Monthly Infrastructure Costs
+
+Assuming 24/7 continuous utilization on Railway Pro:
+
+- **CPU Compute:** 56 vCPUs × $20/vCPU = **$1,120 / month**
+- **RAM Compute:** 56 GB × $10/GB = **$560 / month**
+- **Total Compute:** **~$1,680 / month**
+
+**Note on Persistent Volumes:**
+In addition to standard compute, this architecture provisions persistent disk volumes for **deml-postgres**, **deml-clickhouse**, and **deml-scanner**. Storage on Railway is billed at **$0.15 per GB / month**. For example, outfitting each of these three stateful services with 100 GB of persistent SSD storage adds roughly **$45 / month** (300 GB total × $0.15) to the baseline infrastructure cost.
 
 ---
 
