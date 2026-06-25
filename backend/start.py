@@ -29,7 +29,7 @@ def main():
       f"0.0.0.0:{port}",
       "config.wsgi:application",
       "--workers",
-      "3",
+      os.getenv("WEB_CONCURRENCY", "1"),
       "--timeout",
       "120",
     ],
