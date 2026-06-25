@@ -11,21 +11,21 @@
   --black: #000000;
 
   /* Typography */
-  --base-font-size: 14px;
+  --base-font-size: 18px;
   --header-letter-spacing: -0.02em;
 
   /* Universal Borders & Shadows */
-  --border-radius-lg: 16px;
-  --border-radius-md: 8px;
-  --border-radius-sm: 8px;
+  --border-radius-lg: 18px;
+  --border-radius-md: 9px;
+  --border-radius-sm: 9px;
   --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Faster, sharper */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
   /* SaaS Grid & Modular Spacing layout tokens */
-  --grid-gap: 18px;
+  --grid-gap: 27px;
   --card-padding: 27px;
-  --container-max-width: 1152px;
+  --container-max-width: 1440px;
 }
 
 html[data-theme='dark'] {

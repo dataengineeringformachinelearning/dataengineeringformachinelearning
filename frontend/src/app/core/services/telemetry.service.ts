@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { isPlatformBrowser } from '@angular/common';
 import { firstValueFrom } from 'rxjs';
@@ -15,18 +15,26 @@ export interface TelemetryPayload {
 @Injectable({
   providedIn: 'root',
 })
-export class TelemetryService {
+export class TelemetryService implements OnDestroy {
   private readonly STORAGE_KEY = 'offline_telemetry_queue';
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
   private http = inject(HttpClient);
 
+  private onlineListener = () => {
+    this.syncOfflineQueue();
+  };
+
   constructor() {
     // Listen for network becoming online to sync any queued offline telemetry
     if (this.isBrowser) {
-      window.addEventListener('online', () => {
-        this.syncOfflineQueue();
-      });
+      window.addEventListener('online', this.onlineListener);
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.isBrowser) {
+      window.removeEventListener('online', this.onlineListener);
     }
   }
 

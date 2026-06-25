@@ -37,17 +37,17 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 48px 24px;
+  padding: 54px 27px;
   border-radius: var(--border-radius-md);
   background: var(--card-bg);
   border: 1px dashed var(--border);
   min-height: 380px;
 
   .empty-icon {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
-    margin-bottom: 16px;
+    font-size: 54px;
+    width: 54px;
+    height: 54px;
+    margin-bottom: 18px;
     color: var(--color-primary);
     opacity: 0.8;
   }
@@ -57,7 +57,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    margin: 0 0 8px 0;
+    margin: 0 0 9px 0;
     color: var(--color-primary);
   }
 
@@ -75,13 +75,13 @@
 /* ------------------------------------- */
 
 .ces-meter-section {
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 .ces-gauge-cluster {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--grid-gap, 24px);
+  gap: var(--grid-gap, 27px);
   width: 100%;
 
   @media (min-width: 768px) {
@@ -111,7 +111,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 27px;
 
     h3 {
       font-size: 1.1rem;
@@ -130,20 +130,20 @@
 
   .gauge-card-footer {
     width: 100%;
-    margin-top: 24px;
-    padding-top: 16px;
+    margin-top: 27px;
+    padding-top: 18px;
     border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
     font-size: 0.85rem;
     color: var(--text-muted);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 9px;
 
     mat-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
       color: var(--color-warning);
     }
   }
@@ -236,7 +236,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
-  margin-bottom: var(--grid-gap, 24px);
+  margin-bottom: var(--grid-gap, 27px);
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -281,7 +281,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
-  margin-bottom: var(--grid-gap, 24px);
+  margin-bottom: var(--grid-gap, 27px);
 }
 
 .apx-chart-medium {
@@ -297,17 +297,17 @@
 }
 
 .metrics-section-spacing {
-  margin-top: 48px;
+  margin-top: 54px;
 }
 
 .icon-small {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .panel-header-padded {
-  padding: 24px 24px 0;
+  padding: 27px 27px 0;
 }
 
 /* Custom Metric Headers */
@@ -315,7 +315,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 24px 24px 0;
+  padding: 27px 27px 0;
   width: 100%;
 }
 

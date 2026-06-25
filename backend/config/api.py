@@ -9,11 +9,10 @@ logger = logging.getLogger(__name__)
 class CustomAPI(NinjaAPI):
   def get_openapi_schema(self, *args, **kwargs):
     schema = super().get_openapi_schema(*args, **kwargs)
-    if not settings.DEBUG:
-      # Filter paths to only expose public APIs in production docs
-      paths = schema.get("paths", {})
-      public_prefixes = ("/api/v1/telemetry/", "/api/v1/ml/", "/api/v1/ingest", "/api/v1/predict")
-      schema["paths"] = {k: v for k, v in paths.items() if k.startswith(public_prefixes)}
+    # Filter paths to only expose public APIs in docs
+    paths = schema.get("paths", {})
+    public_prefixes = ("/api/v1/ingest", "/api/v1/predict")
+    schema["paths"] = {k: v for k, v in paths.items() if k.startswith(public_prefixes)}
     return schema
 
 

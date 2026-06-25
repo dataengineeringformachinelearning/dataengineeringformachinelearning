@@ -18,6 +18,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { signal, effect } from '@angular/core';
 import { SanityService } from '../../services/sanity.service';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 export interface PipelineStep {
   id: string;
@@ -48,19 +49,20 @@ export class Landing implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private queryParams = toSignal(this.route.queryParams);
 
   constructor() {
     effect(() => {
-      if (this.authService.isAuthenticated()) {
-        if (this.route.snapshot.queryParams['action'] === 'checkout') {
-          this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: { action: null },
-            queryParamsHandling: 'merge',
-            replaceUrl: true,
-          });
-          this.upgradeToPro();
-        }
+      const isAuth = this.authService.isAuthenticated();
+      const params = this.queryParams();
+      if (isAuth && params && params['action'] === 'checkout') {
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { action: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+        this.upgradeToPro();
       }
     });
   }

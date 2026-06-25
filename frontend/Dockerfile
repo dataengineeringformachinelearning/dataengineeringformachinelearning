@@ -49,14 +49,19 @@ window.FIREBASE_CONFIG = {
 };
 EOF
 
-# Production stage (Unprivileged Nginx)
-FROM nginxinc/nginx-unprivileged:alpine
+# Production stage (Secure Distroless Node.js)
+FROM gcr.io/distroless/nodejs22-debian12
+
+WORKDIR /app
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist/frontend/browser /usr/share/nginx/html
+COPY --chown=nonroot:nonroot --from=builder /app/dist/frontend /app/dist/frontend
 
-# Copy our custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Expose port (Angular SSR default is 4000)
+EXPOSE 4000
+ENV PORT=4000
 
-# Expose port
-EXPOSE 8080
+USER nonroot
+
+# Run the Angular SSR server
+CMD ["dist/frontend/server/server.mjs"]

@@ -39,7 +39,11 @@ describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
 
+  let originalApiKey: string;
+
   beforeEach(() => {
+    originalApiKey = environment.firebase.apiKey;
+    environment.firebase.apiKey = 'test-key'; // pragma: allowlist secret
     TestBed.configureTestingModule({
       providers: [
         AuthService,
@@ -52,6 +56,7 @@ describe('AuthService', () => {
   });
 
   afterEach(() => {
+    environment.firebase.apiKey = originalApiKey;
     httpMock.verify();
   });
 

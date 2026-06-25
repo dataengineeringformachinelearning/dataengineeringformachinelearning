@@ -20,7 +20,10 @@ async def test_ingest_endpoint_telemetry(async_client: AsyncClient) -> None:
 
   with patch("telemetry.api.get_kafka_producer", AsyncMock(return_value=mock_producer)):
     response = await async_client.post(
-      "/api/v1/telemetry/endpoints", data=payload, content_type="application/json"
+      "/api/v1/telemetry/endpoints",
+      data=payload,
+      content_type="application/json",
+      headers={"origin": "http://localhost"},
     )
     assert response.status_code == 202
     mock_producer.send.assert_called_once()
