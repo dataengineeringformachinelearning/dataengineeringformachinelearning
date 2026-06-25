@@ -787,14 +787,24 @@ This complete 14-service architecture peaks at a combined maximum footprint of *
 
 ### Estimated Monthly Infrastructure Costs
 
-Assuming 24/7 continuous utilization on Railway Pro:
+Assuming 24/7 continuous utilization at the maximum 4 vCPU / 4 GB limits across all services:
 
 - **CPU Compute:** 56 vCPUs × $20/vCPU = **$1,120 / month**
 - **RAM Compute:** 56 GB × $10/GB = **$560 / month**
-- **Total Compute:** **~$1,680 / month**
+- **Total Compute (Theoretical Maximum):** **~$1,680 / month**
+
+**Actual Baseline Usage (Estimated):**
+Because Railway bills strictly on _consumed_ resources per minute rather than _provisioned_ limits, the actual monthly operational cost is drastically lower than the theoretical maximum. Extrapolating from current active development and testing telemetry (roughly $27 over 24 days), a realistic baseline full-month estimate is approximately **$35.00 per month**.
+
+The primary drivers of this ~$35 baseline cost are the heavily utilized core services:
+
+- **deml-backend:** ~$11.50/mo (High memory utilization)
+- **deml-clickhouse:** ~$8.00/mo (Heavy memory and volume I/O)
+- **deml-ml-worker:** ~$4.50/mo (CPU/RAM spikes during inference)
+- **deml-telemetry-worker:** ~$3.00/mo (Intermittent Polars processing)
 
 **Note on Persistent Volumes:**
-In addition to standard compute, this architecture provisions persistent disk volumes for **deml-postgres**, **deml-clickhouse**, and **deml-scanner**. Storage on Railway is billed at **$0.15 per GB / month**. For example, outfitting each of these three stateful services with 100 GB of persistent SSD storage adds roughly **$45 / month** (300 GB total × $0.15) to the baseline infrastructure cost.
+In addition to standard compute, this architecture provisions persistent disk volumes for **deml-postgres**, **deml-clickhouse**, and **deml-scanner**. Storage on Railway is billed at **$0.15 per GB / month**. However, because these volumes dynamically scale with data ingestion, their baseline cost footprint remains highly efficient—averaging only pennies during standard baseline operations, but capable of scaling to hundreds of gigabytes (e.g., ~$45/month for 300GB) if required.
 
 ---
 
