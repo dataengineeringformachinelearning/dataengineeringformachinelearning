@@ -236,6 +236,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
+  margin-bottom: var(--grid-gap, 24px);
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -280,6 +281,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
+  margin-bottom: var(--grid-gap, 24px);
 }
 
 .apx-chart-medium {

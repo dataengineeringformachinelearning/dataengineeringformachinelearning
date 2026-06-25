@@ -36,30 +36,6 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
 
-### The Platform (Tenant0), System Design, and Critical Path of the Application
-
-We actively dogfood our own product. The core infrastructure operates as **Tenant0**—a living "Apex Sandbox" and "Public Sentinel." Because _everything is a tenant_, the platform itself is subjected to the exact same rigorous processing pipelines:
-
-- It continually runs its own network telemetry middleware, profiling its own incoming traffic.
-- It actively scans the dark web for breaches or mentions of its own platform domains.
-- It feeds this self-telemetry into the global threat models.
-
-By running as a continuous sandbox for trials and a public sentinel, it showcases the platform's capabilities to the world and guarantees the pipelines are robust.
-
-> [!WARNING]
-> **Developer Invariant 1 (Tenant0 UUID Normalization):**
-> Never use string literals like `"platform"` as foreign keys in background workers or telemetry payloads. The `NetworkTelemetryMiddleware` explicitly intercepts legacy `"platform"` requests and dynamically maps them to the native UUID of Tenant0 (`is_platform_tenant=True`). This guarantees that Redpanda/Kafka streams and Polars aggregations operate on a homogenous stream of valid UUIDs end-to-end, preventing database foreign key constraint errors downstream.
-
-> [!WARNING]
-> **Developer Invariant 2 (Symmetrical Multi-Tenant Pipelines):**
-> When authoring background workers, cron workers, or OSINT scanners, NEVER hardcode execution exclusively for the platform. You must ALWAYS structure the pipeline to iterate dynamically over `Tenant.objects.all()`. Because the platform itself is cleanly bootstrapped as Tenant0, this guarantees that both the core infrastructure and individual customer environments are processed symmetrically within the exact same loop, eliminating architectural debt and hardcoded exceptions.
-
-> [!WARNING]
-> **Developer Invariant 3 (Data Enrichments & Critical Path):**
-> Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
-
----
-
 ## Solution Architecture
 
 ```mermaid
@@ -1173,6 +1149,31 @@ This topology allows me to scale my infrastructure surgically. If a massive infl
 
 Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Railway intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. Detailed scaling configurations, environment variable mappings, and specific deployment hooks are meticulously logged and version-controlled within the `RAILWAY.md` file. This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
 
+### Infrastructure & Compute Resource Allocation
+
+To maintain a highly efficient, cost-optimized deployment footprint (particularly on platforms like Railway Pro or Kubernetes), the platform is designed to run extremely lean. By intentionally constraining CPU and memory limits, we force aggressive garbage collection and prevent unbounded caching.
+
+The recommended replica limits for a production-grade deployment are:
+
+| Service                       | CPU Limit | RAM Limit | Justification                                   |
+| ----------------------------- | --------- | --------- | ----------------------------------------------- |
+| **deml-backend** (Django API) | 1 vCPU    | 1 GB      | Python request cycles are lightweight.          |
+| **deml-frontend** (Angular)   | 1 vCPU    | 1 GB      | Low overhead for static/SSR serving.            |
+| **deml-postgres**             | 1 vCPU    | 1 GB      | Highly efficient transactional store.           |
+| **deml-clickhouse**           | 2 vCPU    | 4 GB      | Memory-intensive OLAP analytical queries.       |
+| **deml-queue** (Redpanda)     | 2 vCPU    | 3 GB      | Pre-allocates memory for the Seastar framework. |
+| **deml-dragonfly**            | 1 vCPU    | 1 GB      | In-memory cache operations.                     |
+| **deml-telemetry-worker**     | 2 vCPU    | 2 GB      | Polars batch processing.                        |
+| **deml-ml-worker**            | 2 vCPU    | 2 GB      | PyTorch and Scikit-learn model training.        |
+| **deml-security-worker**      | 2 vCPU    | 2 GB      | OSINT scanning and intelligence gathering.      |
+| **deml-scanner**              | 2 vCPU    | 2 GB      | Heavy vulnerability database parsing.           |
+| **deml-dtrack-api**           | 1 vCPU    | 2 GB      | JVM memory baseline for Spring Boot.            |
+| **deml-otel-collector**       | 1 vCPU    | 1 GB      | Efficient Go-based trace ingestion.             |
+| **deml-cpe-guesser**          | 1 vCPU    | 1 GB      | Lightweight NLP heuristics.                     |
+| **deml-tor-proxy**            | 1 vCPU    | 1 GB      | Minimal network routing overhead.               |
+
+This complete 14-service architecture peaks at a combined maximum footprint of roughly **20 vCPU and 23 GB RAM**, ensuring predictable and heavily contained cloud spend.
+
 ---
 
 ## Chapter 23: Enterprise Security (SOC 2, CMMC 2.0, and NIST SP 800-171 Rev. 3)
@@ -1969,6 +1970,28 @@ Simultaneously, the frontend layout architecture required unification. I standar
 Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 30-day telemetry retention and daily cleanup policies without any risk of cross-tenant data bleed.
 
 To completely eradicate architectural debt and hardcoded exceptions, I instituted the **Symmetrical Multi-Tenant Pipeline Rule**. Every background worker, ML training loop, and OSINT scanner is engineered to iterate natively over `Tenant.objects.all()`. Because the platform itself dynamically bootstraps as `Tenant0`, it traverses the exact same execution loop as customer environments. This absolute symmetry ensures that all threat intelligence capabilities and feature updates seamlessly apply to both the core infrastructure and individual client tenants simultaneously.
+
+### The Platform (Tenant0), System Design, and Critical Path of the Application
+
+We actively dogfood our own product. The core infrastructure operates as **Tenant0**—a living "Apex Sandbox" and "Public Sentinel." Because _everything is a tenant_, the platform itself is subjected to the exact same rigorous processing pipelines:
+
+- It continually runs its own network telemetry middleware, profiling its own incoming traffic.
+- It actively scans the dark web for breaches or mentions of its own platform domains.
+- It feeds this self-telemetry into the global threat models.
+
+By running as a continuous sandbox for trials and a public sentinel, it showcases the platform's capabilities to the world and guarantees the pipelines are robust.
+
+> [!WARNING]
+> **Developer Invariant 1 (Tenant0 UUID Normalization):**
+> Never use string literals like `"platform"` as foreign keys in background workers or telemetry payloads. The `NetworkTelemetryMiddleware` explicitly intercepts legacy `"platform"` requests and dynamically maps them to the native UUID of Tenant0 (`is_platform_tenant=True`). This guarantees that Redpanda/Kafka streams and Polars aggregations operate on a homogenous stream of valid UUIDs end-to-end, preventing database foreign key constraint errors downstream.
+
+> [!WARNING]
+> **Developer Invariant 2 (Symmetrical Multi-Tenant Pipelines):**
+> When authoring background workers, cron workers, or OSINT scanners, NEVER hardcode execution exclusively for the platform. You must ALWAYS structure the pipeline to iterate dynamically over `Tenant.objects.all()`. Because the platform itself is cleanly bootstrapped as Tenant0, this guarantees that both the core infrastructure and individual customer environments are processed symmetrically within the exact same loop, eliminating architectural debt and hardcoded exceptions.
+
+> [!WARNING]
+> **Developer Invariant 3 (Data Enrichments & Critical Path):**
+> Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
 
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 

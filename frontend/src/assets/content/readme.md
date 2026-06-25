@@ -36,30 +36,6 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
 
-### The Platform (Tenant0), System Design, and Critical Path of the Application
-
-We actively dogfood our own product. The core infrastructure operates as **Tenant0**—a living "Apex Sandbox" and "Public Sentinel." Because _everything is a tenant_, the platform itself is subjected to the exact same rigorous processing pipelines:
-
-- It continually runs its own network telemetry middleware, profiling its own incoming traffic.
-- It actively scans the dark web for breaches or mentions of its own platform domains.
-- It feeds this self-telemetry into the global threat models.
-
-By running as a continuous sandbox for trials and a public sentinel, it showcases the platform's capabilities to the world and guarantees the pipelines are robust.
-
-> [!WARNING]
-> **Developer Invariant 1 (Tenant0 UUID Normalization):**
-> Never use string literals like `"platform"` as foreign keys in background workers or telemetry payloads. The `NetworkTelemetryMiddleware` explicitly intercepts legacy `"platform"` requests and dynamically maps them to the native UUID of Tenant0 (`is_platform_tenant=True`). This guarantees that Redpanda/Kafka streams and Polars aggregations operate on a homogenous stream of valid UUIDs end-to-end, preventing database foreign key constraint errors downstream.
-
-> [!WARNING]
-> **Developer Invariant 2 (Symmetrical Multi-Tenant Pipelines):**
-> When authoring background workers, cron workers, or OSINT scanners, NEVER hardcode execution exclusively for the platform. You must ALWAYS structure the pipeline to iterate dynamically over `Tenant.objects.all()`. Because the platform itself is cleanly bootstrapped as Tenant0, this guarantees that both the core infrastructure and individual customer environments are processed symmetrically within the exact same loop, eliminating architectural debt and hardcoded exceptions.
-
-> [!WARNING]
-> **Developer Invariant 3 (Data Enrichments & Critical Path):**
-> Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
-
----
-
 ## Solution Architecture
 
 ```mermaid
