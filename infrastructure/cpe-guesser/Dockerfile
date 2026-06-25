@@ -48,7 +48,18 @@ redis-server --daemonize yes\n\
 echo "Waiting for Redis to be ready..."\n\
 sleep 2\n\
 echo "Importing CPE dictionary to Redis (this may take a few minutes)..."\n\
-python3 -u /app/bin/import.py\n\
+max_retries=10\n\
+retry_count=0\n\
+until python3 -u /app/bin/import.py; do\n\
+    exit_code=$?\n\
+    retry_count=$((retry_count+1))\n\
+    if [ $retry_count -ge $max_retries ]; then\n\
+        echo "Failed to import after $max_retries attempts. Exiting."\n\
+        exit $exit_code\n\
+    fi\n\
+    echo "Import failed with exit code $exit_code. Retrying ($retry_count/$max_retries) in 10 seconds..."\n\
+    sleep 10\n\
+done\n\
 echo "Starting CPE Guesser server on port 1323..."\n\
 exec python3 -u /app/bin/server.py\n\
 ' > /app/start.sh && chmod +x /app/start.sh

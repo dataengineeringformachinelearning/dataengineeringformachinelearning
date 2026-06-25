@@ -567,7 +567,12 @@ def create_incident(request, page_id: str, payload: IncidentIn):
         <hr>
         <p>Manage your status page details at <a href="{settings.FRONTEND_URL}/manage">Management Console</a>.</p>
         """
-    send_resend_email(page.user.email, subject, html_content)
+    try:
+      send_resend_email(page.user.email, subject, html_content)
+    except Exception as e:
+      import logging
+
+      logging.getLogger(__name__).error(f"Failed to send email via Resend: {e}")
 
   return IncidentOut(
     id=str(incident.id),

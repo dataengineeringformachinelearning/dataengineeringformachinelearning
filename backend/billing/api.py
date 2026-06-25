@@ -54,6 +54,7 @@ def create_checkout_session(request):
       success_url=settings.FRONTEND_URL + "/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url=settings.FRONTEND_URL + "/",
       client_reference_id=str(tenant.id),
+      allow_promotion_codes=True,
     )
     return {"checkout_url": session.url}
   except Exception as e:

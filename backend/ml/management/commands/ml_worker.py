@@ -40,30 +40,34 @@ class Command(BaseCommand):
     try:
       while True:
         try:
-          result = await consumer.getmany(timeout_ms=1000, max_records=10)
-        except Exception as e:
-          self.stderr.write(self.style.ERROR(f"Kafka connection error: {e}. Retrying in 5s..."))
+          try:
+            result = await consumer.getmany(timeout_ms=1000, max_records=10)
+          except Exception as e:
+            self.stderr.write(self.style.ERROR(f"Kafka connection error: {e}. Retrying in 5s..."))
+            await asyncio.sleep(5)
+            continue
+
+          if not result:
+            continue
+
+          for _tp, messages in result.items():
+            for msg in messages:
+              try:
+                payload = json.loads(msg.value.decode("utf-8"))
+                self.stdout.write(f"Received event: {payload}")
+                action = payload.get("action")
+
+                if action == "train_all_tenants":
+                  await self.train_all()
+                elif action == "train_tenant":
+                  tenant_id = payload.get("tenant_id")
+                  if tenant_id:
+                    await self.train_single(tenant_id)
+              except Exception as e:
+                self.stderr.write(self.style.ERROR(f"Error processing message: {e}"))
+        except Exception as loop_e:
+          self.stderr.write(self.style.ERROR(f"Unhandled exception in ml_worker loop: {loop_e}"))
           await asyncio.sleep(5)
-          continue
-
-        if not result:
-          continue
-
-        for _tp, messages in result.items():
-          for msg in messages:
-            try:
-              payload = json.loads(msg.value.decode("utf-8"))
-              self.stdout.write(f"Received event: {payload}")
-              action = payload.get("action")
-
-              if action == "train_all_tenants":
-                await self.train_all()
-              elif action == "train_tenant":
-                tenant_id = payload.get("tenant_id")
-                if tenant_id:
-                  await self.train_single(tenant_id)
-            except Exception as e:
-              self.stderr.write(self.style.ERROR(f"Error processing message: {e}"))
     finally:
       await consumer.stop()
       self.stdout.write(self.style.WARNING("ML Engine Worker stopped."))

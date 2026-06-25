@@ -17,6 +17,7 @@ import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@ang
 import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 import { cacheInterceptor } from './interceptors/cache.interceptor';
 import { telemetryInterceptor } from './core/interceptors/telemetry.interceptor';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { provideMarkdown } from 'ngx-markdown';
 
 import { routes } from './app.routes';
@@ -29,7 +30,12 @@ export const appConfig: ApplicationConfig = {
     provideClientHydration(withEventReplay(), withNoIncrementalHydration()),
     provideHttpClient(
       withFetch(),
-      withInterceptors([credentialsInterceptor, cacheInterceptor, telemetryInterceptor]),
+      withInterceptors([
+        credentialsInterceptor,
+        cacheInterceptor,
+        telemetryInterceptor,
+        errorInterceptor,
+      ]),
     ),
     provideMarkdown({ loader: HttpClient }),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
