@@ -759,8 +759,8 @@ The recommended replica limits for a production-grade deployment are:
 
 | Service                       | CPU Limit | RAM Limit | Justification                                   |
 | ----------------------------- | --------- | --------- | ----------------------------------------------- |
-| **deml-backend** (Django API) | 1 vCPU    | 1 GB      | Python request cycles are lightweight.          |
-| **deml-frontend** (Angular)   | 1 vCPU    | 1 GB      | Low overhead for static/SSR serving.            |
+| **deml-backend** (Django API) | 3 vCPU    | 3 GB      | Scaled to prevent SIGKILL / OOM during spikes.  |
+| **deml-frontend** (Angular)   | 3 vCPU    | 3 GB      | Scaled for reliable production builds and SSR.  |
 | **deml-postgres**             | 1 vCPU    | 1 GB      | Highly efficient transactional store.           |
 | **deml-clickhouse**           | 2 vCPU    | 4 GB      | Memory-intensive OLAP analytical queries.       |
 | **deml-queue** (Redpanda)     | 2 vCPU    | 3 GB      | Pre-allocates memory for the Seastar framework. |
@@ -774,7 +774,7 @@ The recommended replica limits for a production-grade deployment are:
 | **deml-cpe-guesser**          | 1 vCPU    | 1 GB      | Lightweight NLP heuristics.                     |
 | **deml-tor-proxy**            | 1 vCPU    | 1 GB      | Minimal network routing overhead.               |
 
-This complete 14-service architecture peaks at a combined maximum footprint of roughly **20 vCPU and 23 GB RAM**, ensuring predictable and heavily contained cloud spend.
+This complete 14-service architecture peaks at a combined maximum footprint of roughly **24 vCPU and 27 GB RAM**, ensuring predictable and heavily contained cloud spend.
 
 ---
 
