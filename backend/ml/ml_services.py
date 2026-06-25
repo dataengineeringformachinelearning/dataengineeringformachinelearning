@@ -41,6 +41,7 @@ def query_teacher_model(prompt: str) -> float:
       API_URL,
       headers=headers,
       json={"inputs": full_prompt, "parameters": {"max_new_tokens": 5, "temperature": 0.1}},
+      timeout=5,
     )
     if response.status_code == 200:
       result = response.json()
