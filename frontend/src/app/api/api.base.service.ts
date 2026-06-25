@@ -12,8 +12,10 @@ import { CustomHttpParameterCodec } from './encoder';
 import { Configuration } from './configuration';
 import { OpenApiHttpParams, QueryParamStyle, concatHttpParamsObject } from './query.params';
 
+import { environment } from '../../environments/environment';
+
 export class BaseService {
-  protected basePath = 'http://localhost';
+  protected basePath = environment.backendUrl;
   public defaultHeaders = new HttpHeaders();
   public configuration: Configuration;
   public encoder: HttpParameterCodec;

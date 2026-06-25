@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,8 @@ export class TelemetryService {
       this.ws.close();
     }
     this.connectionStatus.set('connecting');
-    this.ws = new WebSocket(`ws://localhost:8000/ws/telemetry/${tenantSlug}/`);
+    const wsUrl = environment.backendUrl.replace(/^http/, 'ws');
+    this.ws = new WebSocket(`${wsUrl}/ws/telemetry/${tenantSlug}/`);
 
     this.ws.onopen = () => {
       this.connectionStatus.set('connected');
