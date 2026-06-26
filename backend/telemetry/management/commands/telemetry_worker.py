@@ -49,6 +49,7 @@ class Command(BaseCommand):
     consumer = AIOKafkaConsumer(
       "app-events",
       "user-issues",
+      "frontend-events",
       bootstrap_servers=brokers,
       group_id="telemetry-group",
       auto_offset_reset="earliest",
@@ -134,9 +135,57 @@ class Command(BaseCommand):
             await consumer.commit()
             self.stdout.write(self.style.SUCCESS("Processed and committed user-issues batch"))
 
+          elif tp.topic == "frontend-events":
+            for msg in messages:
+              try:
+                payload = json.loads(msg.value.decode("utf-8"))
+                uid = payload.get("uid")
+                event_payload = payload.get("payload", {})
+                action = event_payload.get("action")
+
+                if uid and action:
+                  await self.process_frontend_event(uid, action, event_payload)
+              except Exception as e:
+                self.stderr.write(self.style.ERROR(f"Failed to parse frontend-event msg: {e}"))
+
+            await consumer.commit()
+            self.stdout.write(self.style.SUCCESS("Processed and committed frontend-events batch"))
+
     finally:
       await consumer.stop()
       self.stdout.write(self.style.WARNING("Worker stopped."))
+
+  @sync_to_async
+  def process_frontend_event(self, uid: str, action: str, event_payload: dict):
+    from firebase_admin import firestore
+
+    db = firestore.client()
+
+    try:
+      # Simple mock logic for different actions.
+      # In production, this would query Postgres/Clickhouse
+      result_data = {
+        "last_updated": firestore.SERVER_TIMESTAMP,
+        "action_processed": action,
+        "status": "success",
+      }
+
+      if action == "get_stats":
+        from monitor.models import Endpoints
+
+        active_count = Endpoints.objects.filter(is_active=True).count()
+        result_data["active_endpoints"] = active_count
+        result_data["message"] = "Real-time stats updated from Django worker."
+
+      # Write results to Firestore (Layer 4)
+      doc_ref = db.collection("users").document(uid).collection("data").document("stats")
+      doc_ref.set(result_data, merge=True)
+
+      self.stdout.write(
+        self.style.SUCCESS(f"Successfully processed {action} for user {uid} and updated Firestore.")
+      )
+    except Exception as e:
+      self.stderr.write(self.style.ERROR(f"Error processing frontend event for user {uid}: {e}"))
 
   @sync_to_async
   def update_bug_report(self, bug_report_id: str, report_text: str):

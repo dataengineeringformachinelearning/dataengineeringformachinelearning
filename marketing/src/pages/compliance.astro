@@ -1,0 +1,636 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Compliance - DEML Platform">
+  <div class="dashboard-page-container">
+    <div class="dashboard-content-area">
+      <div class="content-wrapper compliance-container-inner">
+        <header class="hud-header">
+          <div class="title-group">
+            <div class="section-tag-row">
+              <span class="badge-dot" style="display: inline-block; width: 9px; height: 9px; background: var(--color-success); border-radius: 50%; margin-right: 9px;"></span>
+              <span class="section-tag">SOC 2 & Threat Sharing Dashboard</span>
+            </div>
+            <h1 class="hud-title" id="compliance-title">Compliance, Threat Reporting & Encryption</h1>
+            <p class="hud-subtitle">
+              Automated cybersecurity auditing, CISA-compliant threat indicator exports, and
+              encryption status telemetry.
+            </p>
+          </div>
+        </header>
+
+        <div class="compliance-grid">
+          <section class="compliance-card" aria-labelledby="e2e-section-title">
+            <div class="card-header">
+              <span class="material-icons icon-primary" aria-hidden="true">lock</span>
+              <h2 id="e2e-section-title">End-to-End Encryption Telemetry</h2>
+            </div>
+            <p class="card-description">
+              Real-time status of cryptographic assets and secure communications across ingestion
+              networks.
+            </p>
+
+            <ul class="telemetry-list">
+              <li>
+                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <div class="item-details">
+                  <strong>Data in Transit</strong>
+                  <p>TLS 1.3 Active (RSA 2048-bit)</p>
+                </div>
+              </li>
+              <li>
+                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <div class="item-details">
+                  <strong>Data at Rest</strong>
+                  <p>AES-256 (Google Cloud KMS)</p>
+                </div>
+              </li>
+              <li>
+                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <div class="item-details">
+                  <strong>Ingestion Integrity</strong>
+                  <p>SHA-256 Checksums Verified</p>
+                </div>
+              </li>
+              <li>
+                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <div class="item-details">
+                  <strong>Client Encryption Key Rotation</strong>
+                  <p>
+                    Automated 30-day cryptographic key rotation active (next rotation in 14 days).
+                  </p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <section class="compliance-card" aria-labelledby="soc-section-title">
+            <div class="card-header">
+              <span class="material-icons icon-primary" aria-hidden="true">verified_user</span>
+              <h2 id="soc-section-title">SOC 2 Readiness Score</h2>
+            </div>
+            <div class="score-display">
+              <div class="score-bar-bg" aria-hidden="true">
+                <div class="score-bar-fill" style="width: 100%;"></div>
+              </div>
+              <div class="score-labels">
+                <span class="percentage">100% Complete</span>
+                <span class="status-indicator">Audit Grade: Ready</span>
+              </div>
+            </div>
+
+            <div class="criteria-list" role="list">
+              <div class="criteria-item" role="listitem">
+                <div class="criteria-top">
+                  <span class="criteria-name">Security (CC1-CC9)</span>
+                  <span class="criteria-badge success">Compliant</span>
+                </div>
+                <p class="criteria-desc">Systems and data are protected against unauthorized access.</p>
+                <p class="criteria-details"><strong>Current status:</strong> All controls validated via automated scanning.</p>
+              </div>
+
+              <div class="criteria-item" role="listitem">
+                <div class="criteria-top">
+                  <span class="criteria-name">Availability (A1)</span>
+                  <span class="criteria-badge success">Compliant</span>
+                </div>
+                <p class="criteria-desc">The system is available for operation and use as committed or agreed.</p>
+                <p class="criteria-details"><strong>Current status:</strong> 99.99% uptime maintained over 30 days.</p>
+              </div>
+
+              <div class="criteria-item" role="listitem">
+                <div class="criteria-top">
+                  <span class="criteria-name">Confidentiality (C1)</span>
+                  <span class="criteria-badge success">Compliant</span>
+                </div>
+                <p class="criteria-desc">Information designated as confidential is protected.</p>
+                <p class="criteria-details"><strong>Current status:</strong> Strict RBAC and zero-trust policies enforced.</p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <section class="sharing-section" aria-labelledby="sharing-section-title">
+          <div class="section-intro">
+            <div class="section-tag-row compliance-extracted-1">
+              <span class="section-tag">AUTOMATED REPORTING BENEFIT</span>
+            </div>
+            <h2 id="sharing-section-title">Automated Threat Sharing Pipeline</h2>
+            <p>
+              Automatically format and transmit PyTorch neural network anomaly predictions to
+              Information Sharing and Analysis Centers (ISACs) and CISA using standard STIX 2.1
+              schemas.
+            </p>
+          </div>
+
+          <div class="safety-warning-box" role="alert" id="safety-warning">
+            <span class="material-icons warning-icon" aria-hidden="true">warning</span>
+            <div class="warning-content">
+              <strong>Important Safety & Integrity Rail:</strong>
+              <p>
+                By default, automated sharing operates in a secure
+                <strong>Sandbox / Simulation Mode</strong>. Submitting unverified or faulty indicators
+                to production feeds (CISA AIS / ISAC databases) can result in account suspension and
+                false positives for security analysts. Verify indicators before enabling live routing.
+              </p>
+            </div>
+            <button class="icon-button" id="dismiss-warning-btn" aria-label="Dismiss safety warning">
+              <span class="material-icons" aria-hidden="true">close</span>
+            </button>
+          </div>
+
+          <div class="sharing-grid">
+            <div class="sharing-controls">
+              <h3>1. Select Submission Target</h3>
+              <p class="desc-text">Choose the federal agency or industry ISAC to route this report to.</p>
+
+              <div class="target-selector" role="radiogroup" aria-label="Ingestion ISAC Target">
+                <button type="button" class="selector-btn active" data-isac="CISA" role="radio" aria-checked="true">
+                  <span class="material-icons" aria-hidden="true">account_balance</span>
+                  <span>CISA AIS (TAXII)</span>
+                </button>
+                <button type="button" class="selector-btn" data-isac="MS-ISAC" role="radio" aria-checked="false">
+                  <span class="material-icons" aria-hidden="true">security</span>
+                  <span>MS-ISAC</span>
+                </button>
+                <button type="button" class="selector-btn" data-isac="IT-ISAC" role="radio" aria-checked="false">
+                  <span class="material-icons" aria-hidden="true">lan</span>
+                  <span>IT-ISAC</span>
+                </button>
+              </div>
+
+              <div class="submit-action-box">
+                <button class="submit-report-btn" id="submit-threat-btn">
+                  <span class="material-icons" aria-hidden="true" style="vertical-align: middle; margin-right: 4px;">send</span>
+                  <span id="submit-btn-text">Submit Threat Indicator</span>
+                </button>
+                <span class="mode-tag">Currently Active: Sandbox Ingestion Mode</span>
+              </div>
+
+              <div class="submission-response" role="status" id="submission-result" style="display: none;">
+                <div class="response-header success">
+                  <span class="material-icons" aria-hidden="true">check_circle</span>
+                  <span>Threat indicator successfully validated and transmitted to Sandbox.</span>
+                </div>
+                <div class="transmission-logs">
+                  <span class="logs-title">Pipeline Handshake Logs:</span>
+                  <div class="transmission-logs-list" role="list">
+                    <div class="transmission-log-item" role="listitem">
+                      <span class="log-dot"></span>
+                      <span class="log-text">Connecting to Sandbox TAXII Server...</span>
+                    </div>
+                    <div class="transmission-log-item" role="listitem">
+                      <span class="log-dot"></span>
+                      <span class="log-text">Validating STIX 2.1 JSON Schema...</span>
+                    </div>
+                    <div class="transmission-log-item" role="listitem">
+                      <span class="log-dot"></span>
+                      <span class="log-text">Transmission Complete (201 Created).</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="sharing-payload">
+              <div class="code-header">
+                <span class="dot red" aria-hidden="true"></span>
+                <span class="dot yellow" aria-hidden="true"></span>
+                <span class="dot green" aria-hidden="true"></span>
+                <span class="file-name">cisa_threat_indicator.stix.json</span>
+              </div>
+              <pre><code id="stix-payload-view">{
+  "type": "indicator",
+  "spec_version": "2.1",
+  "id": "indicator--8e2e2d2b-17d4-4cbf-938f-98ee46b3cd3f",
+  "created": "2026-06-25T14:32:00.000Z",
+  "modified": "2026-06-25T14:32:00.000Z",
+  "name": "Malicious IP Anomaly",
+  "description": "High frequency requests detected from suspicious subnet. ThreatModel Confidence: 94%",
+  "pattern": "[ipv4-addr:value = '198.51.100.14']",
+  "pattern_type": "stix",
+  "valid_from": "2026-06-25T14:32:00.000Z"
+}</code></pre>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style lang="scss">
+.dashboard-page-container {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.content-wrapper {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.hud-header {
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.section-tag-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.section-tag {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary-text-color);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hud-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  margin: 0 0 16px 0;
+  color: var(--text-color);
+}
+
+.hud-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.compliance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.compliance-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s, box-shadow 0.3s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+
+    .material-icons {
+      font-size: 1.75rem;
+      width: 2rem;
+      height: 2rem;
+      &.icon-primary { color: var(--color-primary); }
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-color);
+    }
+  }
+
+  .card-description {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+  }
+}
+
+.telemetry-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+
+    .material-icons {
+      font-size: 1.35rem;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin-top: 4px;
+      flex-shrink: 0;
+      &.icon-success { color: var(--color-success); }
+    }
+
+    .item-details {
+      strong { display: block; font-size: 1rem; color: var(--text-color); margin-bottom: 4px; }
+      p { font-size: 1rem; color: var(--text-muted); margin: 0; line-height: 1.4; }
+    }
+  }
+}
+
+.score-display {
+  margin-bottom: 24px;
+
+  .score-bar-bg {
+    height: 8px;
+    background: var(--color-primary-container);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .score-bar-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: 8px;
+    transition: width 0.8s ease-out;
+  }
+
+  .score-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    font-weight: 600;
+
+    .percentage { color: var(--color-primary); }
+    .status-indicator { color: var(--color-success); }
+  }
+}
+
+.criteria-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.criteria-item {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+
+  &:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .criteria-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+
+    .criteria-name { font-size: 1rem; font-weight: 600; color: var(--text-color); }
+    .criteria-badge {
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      &.success { background: var(--color-success-dim, rgba(76, 175, 80, 0.15)); color: var(--color-success); }
+    }
+  }
+
+  .criteria-desc { font-size: 1rem; color: var(--text-muted); margin: 0 0 8px 0; line-height: 1.4; }
+  .criteria-details { font-size: 0.95rem; color: var(--text-color); margin: 0; strong { color: var(--text-muted); } }
+}
+
+.sharing-section {
+  position: relative;
+  z-index: 1;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+
+  .section-intro {
+    text-align: center;
+    margin-bottom: 24px;
+
+    h2 { font-size: 1.75rem; font-weight: 800; margin: 8px 0; color: var(--text-color); }
+    p { font-size: 1rem; color: var(--text-muted); max-width: 752px; margin: 0 auto; line-height: 1.6; }
+  }
+}
+
+.safety-warning-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: rgba(33, 118, 255, 0.15);
+  border: 1px solid var(--color-warning);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 32px;
+
+  .warning-icon { color: var(--color-warning); font-size: 1.5rem; width: 1.5rem; height: 1.5rem; flex-shrink: 0; }
+  .warning-content {
+    flex-grow: 1;
+    strong { display: block; font-size: 1rem; color: var(--text-color); margin-bottom: 8px; }
+    p { font-size: 1rem; color: var(--text-muted); margin: 0; line-height: 1.4; }
+  }
+  .icon-button {
+    background: none; border: none; cursor: pointer; color: var(--text-muted); margin-top: -4px; margin-right: -4px;
+    &:hover { color: var(--text-color); }
+  }
+}
+
+.sharing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  @media (min-width: 901px) { grid-template-columns: 1.2fr 1fr; }
+}
+
+.sharing-controls {
+  h3 { font-size: 1.15rem; font-weight: 700; margin: 0 0 8px 0; color: var(--text-color); }
+  .desc-text { font-size: 1rem; color: var(--text-muted); margin: 0 0 16px 0; }
+}
+
+.target-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+
+  .selector-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-color);
+    border: 1px solid var(--border);
+    color: var(--text-color);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    .material-icons { font-size: 1.25rem; width: 1.25rem; height: 1.25rem; color: var(--text-muted); }
+
+    &:hover { border-color: var(--color-primary); background: rgba(33, 118, 255, 0.05); }
+    &.active {
+      border-color: var(--color-primary); background: rgba(33, 118, 255, 0.1); color: var(--color-primary);
+      .material-icons { color: var(--color-primary); }
+    }
+  }
+}
+
+.submit-action-box {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  .submit-report-btn {
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: 96px;
+    padding: 10px 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    &:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+  }
+
+  .mode-tag {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-success);
+    background: var(--color-success-dim, rgba(76, 175, 80, 0.15));
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+}
+
+.submission-response {
+  background: var(--bg-color);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+
+  .response-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 8px;
+    &.success { color: var(--color-success); }
+    .material-icons { font-size: 1.25rem; margin-top: 2px; }
+  }
+
+  .transmission-logs {
+    border-top: 1px dashed var(--border);
+    padding-top: 8px;
+    .logs-title { display: block; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+    .transmission-logs-list {
+      display: flex; flex-direction: column; gap: 8px;
+      .transmission-log-item {
+        display: flex; align-items: center; gap: 8px;
+        .log-dot { width: 6px; height: 6px; background: var(--color-primary); border-radius: 50%; }
+        .log-text { font-family: 'Inter', monospace; font-size: 0.9rem; color: var(--text-color); }
+      }
+    }
+  }
+}
+
+.sharing-payload {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+
+  .code-header {
+    background: var(--card-bg);
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; &.red { background: var(--color-error); } &.yellow { background: var(--color-warning); } &.green { background: var(--color-success); } }
+    .file-name { color: var(--text-color); font-size: 0.9rem; font-family: 'Inter', monospace; margin-left: 8px; font-weight: 500;}
+  }
+
+  pre {
+    margin: 0;
+    background: #1e1e1e;
+    padding: 16px;
+    overflow-x: auto;
+    max-height: 416px;
+
+    code { font-family: 'Inter', monospace; font-size: 0.9rem; color: #d4d4d4; line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
+  }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Dismiss Safety Warning
+    const dismissBtn = document.getElementById('dismiss-warning-btn');
+    const warningBox = document.getElementById('safety-warning');
+    if (dismissBtn && warningBox) {
+      dismissBtn.addEventListener('click', () => {
+        warningBox.style.display = 'none';
+      });
+    }
+
+    // Handle ISAC selection
+    const isacButtons = document.querySelectorAll('.selector-btn');
+    isacButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        isacButtons.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-checked', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-checked', 'true');
+      });
+    });
+
+    // Handle Submit simulation
+    const submitBtn = document.getElementById('submit-threat-btn');
+    const submitBtnText = document.getElementById('submit-btn-text');
+    const resultBox = document.getElementById('submission-result');
+
+    if (submitBtn && resultBox && submitBtnText) {
+      submitBtn.addEventListener('click', () => {
+        submitBtn.setAttribute('disabled', 'true');
+        submitBtnText.textContent = 'Transmitting...';
+        resultBox.style.display = 'none';
+
+        setTimeout(() => {
+          submitBtn.removeAttribute('disabled');
+          submitBtnText.textContent = 'Submit Threat Indicator';
+          resultBox.style.display = 'block';
+        }, 1200);
+      });
+    }
+  });
+</script>

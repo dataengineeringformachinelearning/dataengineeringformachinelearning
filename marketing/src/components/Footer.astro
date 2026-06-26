@@ -1,0 +1,242 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="mega-footer">
+  <div class="footer-content">
+    <nav class="footer-directory" aria-label="Footer Directory">
+      <div class="footer-column">
+        <h3 class="footer-column-title">Platform</h3>
+        <ul class="footer-list">
+          <li><a href="https://app.dataengineeringformachinelearning.com/explore">Explore Metrics</a></li>
+          <li><a href="https://app.dataengineeringformachinelearning.com/analytics">Analytics</a></li>
+          <li><a href="https://app.dataengineeringformachinelearning.com/vulnerabilities">Vulnerabilities</a></li>
+          <li><a href="https://app.dataengineeringformachinelearning.com/settings">Settings</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3 class="footer-column-title">Resources</h3>
+        <ul class="footer-list">
+          <li><a href="/documentation">Documentation</a></li>
+          <li><a href="/whitepaper">The Whitepaper</a></li>
+          <li><a href="/book">The Book</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3 class="footer-column-title">Support</h3>
+        <ul class="footer-list">
+          <li><a href="https://app.dataengineeringformachinelearning.com/status/platform-status">Platform Status</a></li>
+          <li><a href="mailto:support@dataengineeringformachinelearning.com">Report a Bug</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h3 class="footer-column-title">Legal & Compliance</h3>
+        <ul class="footer-list">
+          <li><a href="/privacy">Privacy Policy</a></li>
+          <li><a href="/terms">Terms of Service</a></li>
+          <li><a href="/compliance">SOC2 Compliance</a></li>
+          <li><a href="/privacy#gdpr">GDPR Compliance</a></li>
+          <li><a href="#cookie-settings">Cookie Settings</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="footer-bottom">
+      <div class="footer-badges-top">
+        <span class="usa-badge" id="usa-badge">
+          <span class="usa-badge-icon" aria-hidden="true">🇺🇸</span>
+          <span>Made in the U.S.A</span>
+        </span>
+      </div>
+
+      <div class="footer-compliance-row">
+        <div class="copyright-info">
+          <span class="material-icons brand-icon footer-logo glowing-icon-sm" aria-hidden="true">analytics</span>
+          <span class="copyright-text">
+            Copyright © {currentYear} Data Engineering for Machine Learning by
+            <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>. All rights reserved.
+          </span>
+          <span class="footer-separator" aria-hidden="true">|</span>
+          <span class="footer-powered">
+            Powered by
+            <a href="https://railway.com?referralCode=BpTk0g" target="_blank" rel="noopener noreferrer">Railway</a>
+          </span>
+        </div>
+      </div>
+    </section>
+  </div>
+</footer>
+
+<style lang="scss">
+.mega-footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--border-layout);
+  padding: 40px 24px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text-muted);
+}
+
+.footer-content {
+  max-width: var(--container-max-width, 1152px);
+  margin: 0 auto;
+}
+
+.footer-directory {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 32px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border-layout);
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.footer-column-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 16px 0;
+  letter-spacing: 0.05em;
+}
+
+.footer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  li a {
+    font-size: 1rem;
+    color: var(--text-muted);
+    text-decoration: none !important;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--text-color);
+      border-bottom-color: var(--text-color);
+    }
+  }
+}
+
+.footer-bottom {
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.footer-badges-top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.footer-compliance-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.copyright-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  font-size: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+
+  .footer-logo {
+    color: var(--color-primary);
+    width: 16px;
+    height: 16px;
+    font-size: 20px;
+  }
+
+  .copyright-text {
+    line-height: 1.6;
+  }
+
+  .footer-separator {
+    color: var(--border);
+  }
+
+  a {
+    color: var(--text-muted);
+    text-decoration: none !important;
+    border-bottom: 1px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--text-color);
+      border-bottom-color: var(--text-color);
+    }
+  }
+}
+
+.usa-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 10000px;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  cursor: default;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-muted);
+
+  .usa-badge-icon {
+    font-size: 1.1em;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    .usa-badge-icon {
+      transform: scale(1.15) rotate(-5deg);
+    }
+  }
+}
+</style>
+
+<script>
+  import confetti from 'canvas-confetti';
+  document.addEventListener('DOMContentLoaded', () => {
+    const usaBadge = document.getElementById('usa-badge');
+    if (usaBadge) {
+      usaBadge.addEventListener('mouseenter', (e) => {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: {
+            x: e.clientX / window.innerWidth,
+            y: e.clientY / window.innerHeight
+          }
+        });
+      });
+    }
+  });
+</script>
