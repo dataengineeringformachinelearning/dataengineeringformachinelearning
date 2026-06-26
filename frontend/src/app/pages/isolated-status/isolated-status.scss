@@ -25,23 +25,23 @@
 }
 
 .sphere-1 {
-  width: 500px;
-  height: 500px;
+  width: 496px;
+  height: 496px;
   background: var(--primary-color);
   top: -150px;
   left: -150px;
 }
 
 .sphere-2 {
-  width: 450px;
-  height: 450px;
+  width: 448px;
+  height: 448px;
   background: var(--status-accent);
   bottom: -150px;
   right: -100px;
 }
 
 .single-page-mode {
-  padding-bottom: 81px;
+  padding-bottom: 80px;
 }
 
 .standalone-nav {
@@ -85,7 +85,7 @@
     background: var(--color-dark-grey-btn-bg) !important;
     color: var(--color-dark-grey-btn-text) !important;
     font-weight: 600 !important;
-    border-radius: 20px !important;
+    border-radius: 16px !important;
     border: none !important;
     transition: all 0.2s ease !important;
 
@@ -98,7 +98,7 @@
 
 /* Global Status Banner */
 .global-status-banner {
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px 32px;
   margin-bottom: 32px;
   transition: all 0.3s ease;
@@ -144,18 +144,18 @@
 
     p {
       margin: 8px 0 0;
-      font-size: 0.95rem;
+      font-size: 1rem;
       opacity: 0.9;
     }
   }
 
   .last-updated-time {
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 500;
     opacity: 0.7;
     background: rgba(255, 255, 255, 0.1);
     padding: 8px 8px;
-    border-radius: 12px;
+    border-radius: 16px;
   }
 
   /* Status Colors */
@@ -235,7 +235,7 @@
   .sla-icon-box {
     width: 48px;
     height: 48px;
-    border-radius: 10px;
+    border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
     display: flex;
     align-items: center;
@@ -256,16 +256,16 @@
   }
 
   .sla-label {
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: var(--text-muted);
     font-weight: 500;
   }
 
   .sla-desc {
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--text-muted);
     opacity: 0.8;
-    margin-top: 2px;
+    margin-top: 0px;
   }
 
   .sla-val {
@@ -390,14 +390,14 @@
 
   .service-name-text {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .service-url-text {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--text-muted);
     font-family: 'Inter', monospace;
-    margin-top: 2px;
+    margin-top: 0px;
   }
 
   .service-metrics {
@@ -407,15 +407,15 @@
   }
 
   .service-sla-percentage {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--text-muted);
   }
 
   .service-status-pill {
     padding: 8px 8px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    border-radius: 16px;
+    font-size: 1rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
@@ -446,7 +446,7 @@
     color: var(--text-muted);
     border: 1px dashed var(--border);
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 }
 
@@ -485,7 +485,7 @@
   }
 
   .threat-status-text {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--text-muted);
     font-weight: 500;
   }
@@ -514,7 +514,7 @@
   }
 
   .threat-metric-label {
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--text-muted);
     font-weight: 500;
     display: block;
@@ -568,7 +568,7 @@
   .timeline-bars-wrapper-standalone {
     background: var(--bg-color);
     padding: 8px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid var(--border);
   }
 
@@ -576,14 +576,14 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    height: 34px;
+    height: 32px;
     gap: 8px;
   }
 
   .timeline-bar-outlined {
     flex: 1;
     background-color: var(--color-success);
-    border-radius: 1px;
+    border-radius: 0px;
     transition: all 0.2s;
     cursor: pointer;
     height: 100%;
@@ -610,7 +610,7 @@
     display: flex;
     justify-content: space-between;
     color: var(--text-muted);
-    font-size: 0.8rem;
+    font-size: 1rem;
     margin-top: 8px;
   }
 
@@ -667,7 +667,7 @@
       top: 0;
       left: 0;
       bottom: 0;
-      width: 4px;
+      width: 0px;
       background-color: var(--color-warning);
     }
 
@@ -687,11 +687,11 @@
   }
 
   .incident-badge-standalone {
-    font-size: 0.7rem;
+    font-size: 1rem;
     font-weight: 700;
     text-transform: uppercase;
     padding: 8px 8px;
-    border-radius: 4px;
+    border-radius: 0px;
     background: rgba(245, 158, 11, 0.1);
     color: #f59e0b;
     border: 1px solid rgba(245, 158, 11, 0.2);
@@ -708,17 +708,17 @@
     font-size: 1rem;
     font-weight: 600;
     flex: 1;
-    min-width: 150px;
+    min-width: 152px;
   }
 
   .incident-date-text {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--text-muted);
   }
 
   .incident-message-text {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1.5;
     color: var(--text-color);
     opacity: 0.85;
@@ -728,7 +728,7 @@
 /* North Star Promo Banner */
 .northstar-promo-banner {
   margin-top: 56px;
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid rgba(var(--color-primary-container), 0.25);
   background: linear-gradient(
     135deg,
@@ -766,8 +766,8 @@
     .promo-icon {
       color: var(--status-accent);
       font-size: 26px;
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
     }
 
     h4 {
@@ -781,7 +781,7 @@
 
   .promo-desc {
     margin: 0 0 24px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.6;
     color: var(--text-muted);
     max-width: 680px;
@@ -815,21 +815,21 @@
   cursor: pointer;
   font-weight: 500;
   color: var(--text-color);
-  font-size: 14px;
+  font-size: 16px;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 
   mat-icon {
-    font-size: 14px;
-    width: 14px;
-    height: 14px;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
     color: var(--text-muted);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-top: 2px;
+    margin-top: 0px;
   }
 
   &:hover {
@@ -870,13 +870,13 @@
   mat-icon {
     color: var(--status-accent);
     font-size: 22px;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
   }
 }
 
 .section-description-premium {
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.5;
   color: var(--text-muted);
   margin-top: -0.75rem;
@@ -888,7 +888,7 @@
   align-items: center;
   gap: 8px;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 16px 0;
 
   .btn-spinner {
@@ -915,7 +915,7 @@
   align-items: center;
   gap: 8px;
   color: var(--color-error);
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 16px 0;
 
   mat-icon {
@@ -934,7 +934,7 @@
 .announcement-card-premium {
   position: relative;
   padding: 16px 16px 16px 24px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.02);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -946,7 +946,7 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 4px;
+    width: 0px;
     background-color: var(--status-accent);
   }
 
@@ -986,11 +986,11 @@
 }
 
 .ann-severity-badge {
-  font-size: 0.65rem;
+  font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   padding: 8px 8px;
-  border-radius: 4px;
+  border-radius: 0px;
   letter-spacing: 0.05em;
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-muted);
@@ -1012,7 +1012,7 @@
 }
 
 .ann-date {
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: var(--text-muted);
 }
 
@@ -1025,7 +1025,7 @@
 
 .ann-body {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.5;
   color: var(--text-color);
   opacity: 0.85;

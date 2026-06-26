@@ -28,8 +28,8 @@
 
     mat-icon {
       font-size: 1.75rem;
-      width: 1.75rem;
-      height: 1.75rem;
+      width: 2rem;
+      height: 2rem;
 
       &.icon-primary {
         color: var(--primary-text-color);
@@ -45,7 +45,7 @@
   }
 
   .card-description {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin: 0 0 24px 0;
     line-height: 1.5;
@@ -67,8 +67,8 @@
 
     mat-icon {
       font-size: 1.35rem;
-      width: 1.35rem;
-      height: 1.35rem;
+      width: 1.5rem;
+      height: 1.5rem;
       margin-top: 8px;
       flex-shrink: 0;
 
@@ -83,13 +83,13 @@
     .item-details {
       strong {
         display: block;
-        font-size: 0.95rem;
+        font-size: 1rem;
         color: var(--text-color);
         margin-bottom: 8px;
       }
 
       p {
-        font-size: 0.85rem;
+        font-size: 1rem;
         color: var(--text-muted);
         margin: 0;
         line-height: 1.4;
@@ -102,9 +102,9 @@
   margin-bottom: 24px;
 
   .score-bar-bg {
-    height: 10px;
+    height: 8px;
     background: var(--color-primary-container);
-    border-radius: 5px;
+    border-radius: 8px;
     overflow: hidden;
     margin-bottom: 8px;
   }
@@ -112,14 +112,14 @@
   .score-bar-fill {
     height: 100%;
     background: var(--primary-color);
-    border-radius: 5px;
+    border-radius: 8px;
     transition: width 0.8s ease-out;
   }
 
   .score-labels {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
 
     .percentage {
@@ -154,16 +154,16 @@
     margin-bottom: 8px;
 
     .criteria-name {
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 600;
       color: var(--text-color);
     }
 
     .criteria-badge {
-      font-size: 0.75rem;
+      font-size: 1rem;
       font-weight: 600;
       padding: 8px 8px;
-      border-radius: 4px;
+      border-radius: 0px;
       text-transform: uppercase;
 
       &.success {
@@ -179,14 +179,14 @@
   }
 
   .criteria-desc {
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin: 0 0 8px 0;
     line-height: 1.4;
   }
 
   .criteria-details {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--text-color);
     margin: 0;
 
@@ -210,7 +210,7 @@
     margin-bottom: 24px;
 
     .section-tag {
-      font-size: 0.75rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--primary-text-color);
       letter-spacing: 0.1em;
@@ -227,7 +227,7 @@
     p {
       font-size: 1rem;
       color: var(--text-muted);
-      max-width: 750px;
+      max-width: 752px;
       margin: 0 auto;
       line-height: 1.6;
     }
@@ -257,13 +257,13 @@
 
     strong {
       display: block;
-      font-size: 0.95rem;
+      font-size: 1rem;
       color: var(--text-color);
       margin-bottom: 8px;
     }
 
     p {
-      font-size: 0.85rem;
+      font-size: 1rem;
       color: var(--text-muted);
       margin: 0;
       line-height: 1.4;
@@ -297,7 +297,7 @@
   }
 
   .desc-text {
-    font-size: 0.85rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin: 0 0 16px 0;
   }
@@ -319,15 +319,15 @@
     padding: 8px 16px;
     border-radius: var(--border-radius-sm);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     text-align: left;
     cursor: pointer;
     transition: var(--transition-smooth);
 
     mat-icon {
       font-size: 1.25rem;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1rem;
+      height: 1rem;
       color: var(--text-muted);
       flex-shrink: 0;
       display: inline-flex;
@@ -362,7 +362,7 @@
   .submit-report-btn {
     background: var(--primary-color) !important;
     color: var(--color-on-primary) !important;
-    border-radius: 100px;
+    border-radius: 96px;
     padding: 8px 24px;
     font-weight: 600;
     box-shadow: var(--shadow-sm);
@@ -379,12 +379,12 @@
   }
 
   .mode-tag {
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--color-success);
     background: var(--color-success-dim);
     padding: 8px 8px;
-    border-radius: 4px;
+    border-radius: 0px;
   }
 }
 
@@ -399,7 +399,7 @@
     align-items: flex-start;
     gap: 8px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     margin-bottom: 8px;
 
     &.success {
@@ -408,10 +408,10 @@
 
     mat-icon {
       font-size: 1.25rem;
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1rem;
+      height: 1rem;
       flex-shrink: 0;
-      margin-top: 0.1rem;
+      margin-top: 0rem;
     }
   }
 
@@ -421,7 +421,7 @@
 
     .logs-title {
       display: block;
-      font-size: 0.8rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--text-muted);
       margin-bottom: 8px;
@@ -441,15 +441,15 @@
         gap: 8px;
 
         .log-dot {
-          width: 4px;
-          height: 4px;
+          width: 0px;
+          height: 0px;
           background: var(--primary-color);
           border-radius: 50%;
         }
 
         .log-text {
           font-family: 'Inter', monospace;
-          font-size: 0.75rem;
+          font-size: 1rem;
           color: var(--text-color);
         }
       }
@@ -474,8 +474,8 @@
     border-bottom: 1px solid var(--border);
 
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
 
       &.red {
@@ -491,7 +491,7 @@
 
     .file-name {
       color: var(--primary-text-color);
-      font-size: 0.75rem;
+      font-size: 1rem;
       font-family: 'Inter', monospace;
       margin-left: 8px;
     }
@@ -502,11 +502,11 @@
     background: var(--bg-color);
     padding: 16px;
     overflow-x: auto;
-    max-height: 420px;
+    max-height: 416px;
 
     code {
       font-family: 'Inter', monospace;
-      font-size: 0.8rem;
+      font-size: 1rem;
       color: var(--text-color);
       line-height: 1.4;
       white-space: pre-wrap;

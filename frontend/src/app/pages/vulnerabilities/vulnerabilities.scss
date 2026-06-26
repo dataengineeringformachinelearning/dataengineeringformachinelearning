@@ -9,8 +9,8 @@
 .hud-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 18px;
-  margin-bottom: 27px;
+  gap: 16px;
+  margin-bottom: 24px;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(12, 1fr);
@@ -22,14 +22,14 @@
   flex-direction: column;
   background-color: var(--card-bg);
   border: 1px solid var(--border);
-  padding: 18px 27px;
-  border-radius: 9px;
+  padding: 16px 24px;
+  border-radius: 8px;
   min-width: 160px;
   align-items: flex-end;
   box-shadow: var(--shadow-sm);
 
   .metric-label {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-family: 'Inter', monospace;
     color: var(--text-muted);
     letter-spacing: 0.05em;
@@ -99,8 +99,8 @@
 .panel-header {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 18px;
+  gap: 8px;
+  padding: 16px;
   background-color: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid var(--border);
 
@@ -110,7 +110,7 @@
   }
 
   h2 {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: bold;
     text-transform: uppercase;
     margin: 0;
@@ -121,9 +121,9 @@
   .count-badge {
     background-color: var(--color-primary);
     color: var(--color-on-primary);
-    font-size: 0.75rem;
-    padding: 0.1rem 8px;
-    border-radius: 20px;
+    font-size: 1rem;
+    padding: 0rem 8px;
+    border-radius: 16px;
     font-weight: bold;
     font-family: 'Inter', monospace;
   }
@@ -131,11 +131,11 @@
 
 /* Filters */
 .filter-bar {
-  padding: 18px;
+  padding: 16px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
   background-color: rgba(0, 0, 0, 0.15);
 }
 
@@ -145,11 +145,11 @@
   flex: 1;
 
   label {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 600;
     font-family: 'Inter', monospace;
     color: var(--text-muted);
-    margin-bottom: 9px;
+    margin-bottom: 8px;
     text-transform: uppercase;
   }
 
@@ -164,8 +164,8 @@
     border: 1px solid var(--border);
     color: var(--color-on-background);
     font-size: 1.05rem;
-    padding: 9px 54px 9px 18px;
-    border-radius: 9px;
+    padding: 8px 56px 8px 16px;
+    border-radius: 8px;
     outline: none;
     font-family: inherit;
     cursor: pointer;
@@ -181,17 +181,17 @@
 .queue-list {
   flex: 1;
   overflow-y: auto;
-  padding: 9px;
+  padding: 8px;
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 8px;
 }
 
 .queue-item {
   background-color: var(--color-background);
   border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 9px;
+  border-radius: 8px;
+  padding: 8px;
   cursor: pointer;
   transition: var(--transition-smooth);
 
@@ -211,20 +211,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 
   .item-id {
-    font-size: 0.65rem;
+    font-size: 1rem;
     font-family: 'Inter', monospace;
     color: var(--text-muted);
   }
 
   .item-badge {
-    font-size: 0.6rem;
+    font-size: 1rem;
     font-weight: bold;
     text-transform: uppercase;
-    padding: 0.1rem 9px;
-    border-radius: 3px;
+    padding: 0rem 8px;
+    border-radius: 0px;
     font-family: 'Inter', monospace;
 
     &[data-severity='low'] {
@@ -248,7 +248,7 @@
 }
 
 .item-title {
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 600;
   margin: 0 0 8px 0;
   line-height: 1.2;
@@ -258,7 +258,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.65rem;
+  font-size: 1rem;
   color: var(--text-muted);
   font-family: 'Inter', monospace;
 
@@ -267,9 +267,9 @@
     align-items: center;
     gap: 8px;
     mat-icon {
-      font-size: 0.8rem;
-      width: 0.8rem;
-      height: 0.8rem;
+      font-size: 1rem;
+      width: 1rem;
+      height: 1rem;
     }
   }
 
@@ -297,41 +297,41 @@
 .detail-scrollable {
   flex: 1;
   overflow-y: auto;
-  padding: 27px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 27px;
+  gap: 24px;
 }
 
 .vuln-profile-header {
   border-bottom: 1px solid var(--border);
-  padding-bottom: 18px;
+  padding-bottom: 16px;
 }
 
 .profile-title-row {
   display: flex;
-  gap: 9px;
-  margin-bottom: 9px;
+  gap: 8px;
+  margin-bottom: 8px;
   align-items: center;
 }
 
 .vuln-id-tag {
   font-family: 'Inter', monospace;
-  font-size: 0.7rem;
+  font-size: 1rem;
   background-color: var(--color-background);
-  padding: 9px 9px;
-  border-radius: 4px;
+  padding: 8px 8px;
+  border-radius: 0px;
   color: var(--text-muted);
 }
 
 .cve-tag {
   font-family: 'Inter', monospace;
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: bold;
   background-color: rgba(213, 0, 28, 0.15);
   color: #ff5252;
   padding: 8px 8px;
-  border-radius: 4px;
+  border-radius: 0px;
 }
 
 .profile-title {
@@ -342,7 +342,7 @@
 }
 
 .profile-desc {
-  font-size: 0.85rem;
+  font-size: 1rem;
   line-height: 1.5;
   color: var(--color-on-surface);
   margin: 0;
@@ -368,7 +368,7 @@
   }
 
   h3 {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: bold;
     text-transform: uppercase;
     margin: 0;
@@ -377,7 +377,7 @@
 }
 
 .section-subtitle {
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: var(--text-muted);
   margin: 0 0 16px 0;
 }
@@ -393,7 +393,7 @@
 
 .y-axis-label {
   font-family: 'Inter', monospace;
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: bold;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
@@ -414,19 +414,19 @@
   gap: 8px;
 
   .row-label {
-    width: 20px;
+    width: 16px;
     text-align: right;
     font-family: 'Inter', monospace;
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin-right: 8px;
   }
 }
 
 .matrix-cell {
-  width: 60px;
-  height: 60px;
-  border-radius: 4px;
+  width: 64px;
+  height: 64px;
+  border-radius: 0px;
   border: 2px solid transparent;
   cursor: pointer;
   display: flex;
@@ -434,7 +434,7 @@
   justify-content: center;
   font-family: 'Inter', monospace;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 1rem;
   transition: var(--transition-smooth);
   position: relative;
   outline: none;
@@ -481,9 +481,9 @@
     &::after {
       content: '✓';
       position: absolute;
-      top: 2px;
+      top: 0px;
       right: 8px;
-      font-size: 0.6rem;
+      font-size: 1rem;
       color: var(--color-on-background);
     }
   }
@@ -492,14 +492,14 @@
 .labels-row {
   margin-top: 8px;
   .col-label {
-    width: 60px;
+    width: 64px;
     text-align: center;
     font-family: 'Inter', monospace;
-    font-size: 0.65rem;
+    font-size: 1rem;
     color: var(--text-muted);
   }
   .row-label-placeholder {
-    width: 20px;
+    width: 16px;
     margin-right: 8px;
   }
 }
@@ -507,7 +507,7 @@
 .x-axis-label {
   text-align: center;
   font-family: 'Inter', monospace;
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-top: 8px;
   margin-left: 24px;
@@ -537,7 +537,7 @@
     color: var(--color-primary);
   }
   h3 {
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: bold;
     text-transform: uppercase;
     margin: 0;
@@ -555,8 +555,8 @@
   border: 1px solid var(--border);
   color: var(--text-muted);
   padding: 8px 8px;
-  border-radius: 4px;
-  font-size: 0.75rem;
+  border-radius: 0px;
+  font-size: 1rem;
   cursor: pointer;
   transition: var(--transition-smooth);
   font-family: 'Inter', monospace;
@@ -584,14 +584,14 @@
 .telemetry-code {
   background-color: #0b0d10;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 16px;
   overflow-x: auto;
   margin: 0;
 
   code {
     font-family: 'Inter', monospace;
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--color-success);
   }
 }
@@ -601,20 +601,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 72px 36px;
+  padding: 72px 32px;
   text-align: center;
   flex: 1;
 
   .radar-scan {
     position: relative;
-    width: 81px;
-    height: 81px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     border: 1px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 27px;
+    margin-bottom: 24px;
     box-shadow: 0 0 20px color-mix(in srgb, var(--color-primary-container) 15%, transparent);
 
     &::before {
@@ -646,9 +646,9 @@
   }
 
   p {
-    font-size: 0.8rem;
+    font-size: 1rem;
     color: var(--text-muted);
-    max-width: 350px;
+    max-width: 352px;
     margin: 0;
     line-height: 1.5;
   }
@@ -663,7 +663,7 @@
   color: var(--text-muted);
   text-align: center;
   border: 1px dashed var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: color-mix(in srgb, var(--color-success) 2%, transparent);
 
   mat-icon {
@@ -676,7 +676,7 @@
   }
 
   .empty-title {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-family: 'Inter', monospace;
     font-weight: bold;
     color: var(--color-success);
@@ -685,7 +685,7 @@
   }
 
   p {
-    font-size: 0.75rem;
+    font-size: 1rem;
     margin: 0;
     max-width: 200px;
     line-height: 1.4;
@@ -702,7 +702,7 @@
   text-align: center;
 
   p {
-    font-size: 0.8rem;
+    font-size: 1rem;
     margin: 0;
     font-family: 'Inter', monospace;
   }

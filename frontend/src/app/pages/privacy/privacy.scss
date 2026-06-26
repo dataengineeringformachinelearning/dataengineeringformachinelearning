@@ -13,7 +13,7 @@
   }
 
   .last-updated {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin: 0;
   }
@@ -67,7 +67,7 @@
 .cookie-card {
   background: rgba(128, 128, 128, 0.05);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 16px;
   box-shadow: var(--shadow-sm);
   transition:
@@ -87,7 +87,7 @@
   }
 
   p {
-    font-size: 0.9rem;
+    font-size: 1rem;
     line-height: 1.45;
     margin: 0;
     color: var(--text-muted);
@@ -97,7 +97,7 @@
 .cookie-action-box {
   background: color-mix(in srgb, var(--color-success) 8%, transparent);
   border: 1px dashed var(--color-success);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 24px;
   text-align: center;
   margin-top: 24px;
@@ -120,7 +120,7 @@
 .compliance-form-card {
   background: rgba(128, 128, 128, 0.03);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 16px;
   margin-top: 32px;
   box-shadow: var(--shadow-sm);
@@ -133,7 +133,7 @@
   }
 
   .form-instruction {
-    font-size: 0.925rem;
+    font-size: 1rem;
     color: var(--text-muted);
     margin: 0 0 24px 0;
   }
@@ -151,7 +151,7 @@
   gap: 8px;
 
   label {
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 500;
     color: var(--text-color);
   }
@@ -163,7 +163,7 @@
     padding: 8px 16px;
     color: var(--text-color);
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 1rem;
     transition:
       border-color 0.2s,
       box-shadow 0.2s;
@@ -193,14 +193,14 @@
 .contact-card {
   background: rgba(128, 128, 128, 0.05);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 16px;
   margin-top: 16px;
   box-shadow: var(--shadow-sm);
 
   p {
     margin: 0 0 8px 0;
-    font-size: 0.95rem;
+    font-size: 1rem;
 
     &:last-child {
       margin: 0;

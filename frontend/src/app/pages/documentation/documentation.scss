@@ -1,8 +1,8 @@
 .docs-hero {
   position: relative;
-  margin: 0 auto 54px auto;
+  margin: 0 auto 56px auto;
   text-align: center;
-  padding: 36px 0;
+  padding: 32px 0;
 
   .docs-title {
     font-size: clamp(2.5rem, 5vw, 4rem);
@@ -11,13 +11,13 @@
     letter-spacing: -0.02em;
     color: var(--hero-title-color, var(--text-color));
     text-transform: uppercase;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
 
   .docs-subtitle {
     font-size: 1.25rem;
     color: var(--text-muted);
-    max-width: 700px;
+    max-width: 704px;
     margin: 0 auto;
     line-height: 1.6;
   }
@@ -26,9 +26,9 @@
 .docs-bento-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 27px;
+  gap: 24px;
   max-width: var(--container-max-width, 1152px);
-  margin: 0 auto 54px auto;
+  margin: 0 auto 56px auto;
 
   @media (min-width: 900px) {
     grid-template-columns: repeat(2, 1fr);
@@ -38,11 +38,11 @@
 .docs-bento-card {
   background: var(--color-surface);
   border: 1px solid var(--border);
-  border-radius: 27px;
-  padding: 36px;
+  border-radius: 24px;
+  padding: 32px;
   display: flex;
   flex-direction: column;
-  gap: 27px;
+  gap: 24px;
   box-shadow: var(--shadow-sm);
   transition:
     transform 0.3s ease,
@@ -60,7 +60,7 @@
   .bento-header {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
 
     mat-icon {
       font-size: 32px;
@@ -85,27 +85,27 @@
 
 .code-block-premium {
   background: var(--jet-black, #121212);
-  border-radius: 12px;
+  border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
 
   .code-header {
     background: rgba(255, 255, 255, 0.05);
-    padding: 9px 18px;
-    font-size: 0.85rem;
+    padding: 8px 16px;
+    font-size: 1rem;
     color: var(--carrot-orange, #ff9100);
     font-family: monospace;
     font-weight: 600;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
 
     &::before {
       content: '';
       display: inline-block;
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: var(--carrot-orange, #ff9100);
       box-shadow: 0 0 9px var(--carrot-orange, #ff9100);
@@ -120,7 +120,7 @@
     code {
       color: #e0e0e0;
       font-family: monospace;
-      font-size: 0.95rem;
+      font-size: 1rem;
       line-height: 1.6;
       white-space: pre-wrap !important;
       word-wrap: break-word !important;
@@ -131,23 +131,23 @@
 .endpoint-badge {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 8px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 9px 18px;
-  border-radius: 9px;
+  padding: 8px 16px;
+  border-radius: 8px;
   width: fit-content;
 
   .method {
     color: var(--success-color, #4caf50);
     font-weight: 800;
     font-family: monospace;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 
   .path {
     color: var(--text-color);
     font-family: monospace;
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
 }

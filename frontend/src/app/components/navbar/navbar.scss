@@ -23,7 +23,7 @@
 }
 
 .navbar-title {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
   line-height: 1.2;
   color: var(--text-color);
@@ -79,7 +79,7 @@
 }
 
 .nav-btn {
-  font-size: 0.825rem !important;
+  font-size: 1rem !important;
   color: var(--text-muted) !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
@@ -136,7 +136,7 @@
 
 .divider {
   height: 24px;
-  width: 1px;
+  width: 0px;
   background-color: var(--border);
   margin: 0 8px;
 }
@@ -213,7 +213,7 @@
 .mobile-nav-btn {
   width: 100% !important;
   justify-content: flex-start !important;
-  font-size: 0.95rem !important;
+  font-size: 1rem !important;
   color: var(--text-muted) !important;
   height: 40px !important;
   line-height: 40px !important;
@@ -226,8 +226,8 @@
   mat-icon {
     margin: 0;
     font-size: 20px;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
@@ -243,7 +243,7 @@
 }
 
 .mobile-divider {
-  height: 1px;
+  height: 0px;
   background-color: var(--border);
   margin: 8px 0;
 }

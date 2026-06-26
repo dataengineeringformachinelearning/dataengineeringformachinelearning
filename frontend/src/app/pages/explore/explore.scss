@@ -19,10 +19,10 @@
 }
 
 .services-status-panel {
-  margin-bottom: 27px;
+  margin-bottom: 24px;
 
   .panel-title {
-    margin-bottom: 9px;
+    margin-bottom: 8px;
     font-size: 18px;
     font-weight: 600;
   }
@@ -30,14 +30,14 @@
   .services-status-list {
     display: flex;
     flex-direction: column;
-    gap: 9px;
+    gap: 8px;
   }
 
   .service-status-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 9px 18px;
+    padding: 8px 16px;
     border: 1px solid var(--border);
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.02);
@@ -48,7 +48,7 @@
   .service-meta {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0px;
   }
 
   .service-name-link {
@@ -58,24 +58,24 @@
     text-decoration: none;
     display: inline-flex;
     align-items: center;
-    gap: 9px;
+    gap: 8px;
 
     mat-icon {
       font-size: 18px;
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       color: var(--text-muted);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-top: 2px;
+      margin-top: 0px;
     }
   }
 
   .service-stats {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 16px;
   }
 
   .service-sla {
@@ -86,8 +86,8 @@
   }
 
   .status-badge-premium {
-    padding: 9px 9px;
-    font-size: 14px;
+    padding: 8px 8px;
+    font-size: 16px;
     height: auto;
   }
 
@@ -95,7 +95,7 @@
     color: var(--text-muted);
     font-size: 18px;
     text-align: center;
-    padding: 9px;
+    padding: 8px;
   }
 }
 
@@ -105,20 +105,20 @@
 }
 
 .view-btn {
-  border-radius: 20px !important;
+  border-radius: 16px !important;
   font-weight: 600 !important;
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 9px !important;
+  gap: 8px !important;
   background: var(--button-primary) !important;
   color: var(--button-primary-text) !important;
 
   mat-icon {
     margin: 0;
     font-size: 18px;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {

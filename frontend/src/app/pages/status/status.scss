@@ -41,16 +41,16 @@
 /* Glow Spheres for Homepage Unity */
 
 .sphere-1 {
-  width: 500px;
-  height: 500px;
+  width: 496px;
+  height: 496px;
   background: var(--crayola-blue);
   top: -150px;
   left: -150px;
 }
 
 .sphere-2 {
-  width: 450px;
-  height: 450px;
+  width: 448px;
+  height: 448px;
   background: var(--color-primary);
   bottom: -150px;
   right: -100px;
@@ -115,7 +115,7 @@
 
 .page-description {
   margin: 8px 0 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--text-muted);
 }
 
@@ -123,7 +123,7 @@
   background: var(--color-dark-grey-btn-bg) !important;
   color: var(--color-dark-grey-btn-text) !important;
   font-weight: 600 !important;
-  border-radius: 20px !important;
+  border-radius: 16px !important;
   border: none !important;
   box-shadow: var(--shadow-sm) !important;
   transition: all 0.2s ease !important;
@@ -183,7 +183,7 @@
 .card-subtitle {
   margin: 8px 0 0;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 1rem;
 }
 
 .status-badge-premium {
@@ -191,17 +191,17 @@
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  border-radius: 20px;
+  border-radius: 16px;
   font-weight: 600;
-  font-size: 0.75rem;
+  font-size: 1rem;
   background: var(--status-badge-bg);
   color: var(--status-badge-text);
   border: 1px solid var(--status-badge-border);
 }
 
 .status-dot-greenblue {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background-color: var(--status-accent);
   box-shadow: 0 0 8px var(--status-accent);
@@ -239,8 +239,8 @@
 
   .stat-icon {
     font-size: 28px;
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     color: var(--status-accent);
   }
 }
@@ -253,7 +253,7 @@
 }
 
 .stat-subtitle {
-  font-size: 0.8rem;
+  font-size: 1rem;
   color: var(--text-muted);
   display: block;
   margin-top: 8px;
@@ -284,7 +284,7 @@
 }
 
 .panel-title {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -293,7 +293,7 @@
 }
 
 .uptime-percentage {
-  font-size: 0.85rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--status-accent);
 }
@@ -301,7 +301,7 @@
 .timeline-bars-wrapper {
   background: var(--bg-color);
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid var(--border);
 }
 
@@ -309,14 +309,14 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  height: 28px;
-  gap: 2px;
+  height: 32px;
+  gap: 0px;
 }
 
 .timeline-bar-outlined {
   flex: 1;
   background-color: var(--color-success);
-  border-radius: 1px;
+  border-radius: 0px;
   transition: all 0.2s;
   cursor: pointer;
   height: 100%;
@@ -343,7 +343,7 @@
   display: flex;
   justify-content: space-between;
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 1rem;
   margin-top: 8px;
 }
 
@@ -382,7 +382,7 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 4px;
+    width: 0px;
     background-color: var(--color-warning);
   }
 
@@ -407,11 +407,11 @@
 }
 
 .incident-badge {
-  font-size: 0.7rem;
+  font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   padding: 8px 8px;
-  border-radius: 4px;
+  border-radius: 0px;
   letter-spacing: 0.05em;
   background-color: rgba(255, 193, 7, 0.1);
   color: var(--color-warning);
@@ -426,20 +426,20 @@
 
 .incident-item-title {
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1rem;
   color: var(--text-color);
   flex: 1;
 }
 
 .incident-date {
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: var(--text-muted);
   margin-top: 8px;
 }
 
 .incident-body-text {
   color: var(--text-color);
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.5;
   opacity: 0.85;
 }
@@ -491,27 +491,27 @@
   .service-meta {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 0px;
   }
 
   .service-name-link {
     font-weight: 500;
     color: var(--text-color);
-    font-size: 14px;
+    font-size: 16px;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 8px;
 
     mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
       color: var(--text-muted);
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-top: 2px;
+      margin-top: 0px;
     }
   }
 
@@ -526,20 +526,20 @@
 
   .service-sla {
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     color: var(--status-accent);
     white-space: nowrap;
   }
 
   .status-badge-premium {
     padding: 8px 8px;
-    font-size: 12px;
+    font-size: 16px;
     height: auto;
   }
 
   .no-services-msg {
     color: var(--text-muted);
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
     padding: 8px;
   }
@@ -596,12 +596,12 @@
   }
 
   .timeline-bars {
-    height: 34px;
+    height: 32px;
     gap: 8px;
   }
 
   .timeline-labels {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
 
   .services-status-panel {
@@ -672,8 +672,8 @@
   mat-icon {
     color: var(--status-accent);
     font-size: 22px;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
   }
 }
 
@@ -682,7 +682,7 @@
   align-items: center;
   gap: 8px;
   color: var(--text-muted);
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 16px 0;
 
   .btn-spinner {
@@ -709,7 +709,7 @@
   align-items: center;
   gap: 8px;
   color: var(--color-error);
-  font-size: 0.9rem;
+  font-size: 1rem;
   padding: 16px 0;
 
   mat-icon {
@@ -728,7 +728,7 @@
 .announcement-card-premium {
   position: relative;
   padding: 16px 16px 16px 24px;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.02);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -740,7 +740,7 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 4px;
+    width: 0px;
     background-color: var(--status-accent);
   }
 
@@ -780,11 +780,11 @@
 }
 
 .ann-severity-badge {
-  font-size: 0.65rem;
+  font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
   padding: 8px 8px;
-  border-radius: 4px;
+  border-radius: 0px;
   letter-spacing: 0.05em;
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-muted);
@@ -806,7 +806,7 @@
 }
 
 .ann-date {
-  font-size: 0.75rem;
+  font-size: 1rem;
   color: var(--text-muted);
 }
 
@@ -819,7 +819,7 @@
 
 .ann-body {
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
   line-height: 1.5;
   color: var(--text-color);
   opacity: 0.85;
