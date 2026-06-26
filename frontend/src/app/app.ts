@@ -54,25 +54,29 @@ export class App implements OnInit {
   private async indexSearchItems(chapters: any[], pages: any[]) {
     const items: SearchItem[] = [];
 
-    chapters.forEach((chapter, index) => {
-      items.push({
-        id: String(index),
-        title: chapter.title,
-        content: chapter.content || '',
-        type: 'chapter',
-        url: String(index),
+    if (Array.isArray(chapters)) {
+      chapters.forEach((chapter, index) => {
+        items.push({
+          id: String(index),
+          title: chapter.title,
+          content: chapter.content || '',
+          type: 'chapter',
+          url: String(index),
+        });
       });
-    });
+    }
 
-    pages.forEach(page => {
-      items.push({
-        id: page.id,
-        title: page.title,
-        content: page.description || '',
-        type: 'status-page',
-        url: page.id,
+    if (Array.isArray(pages)) {
+      pages.forEach(page => {
+        items.push({
+          id: page.id,
+          title: page.title,
+          content: page.description || '',
+          type: 'status-page',
+          url: page.id,
+        });
       });
-    });
+    }
 
     await this.searchService.clearAndIndex(items);
   }
