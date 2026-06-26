@@ -117,7 +117,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     });
 
     afterNextRender(() => {
-      this.loadAnalyticsData();
+      // Data is loaded in ngOnInit to prevent duplicate requests
     });
   }
 

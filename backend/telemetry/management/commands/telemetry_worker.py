@@ -57,8 +57,16 @@ class Command(BaseCommand):
       max_poll_records=100,
     )
 
-    await consumer.start()
-    self.stdout.write(self.style.SUCCESS(f"Connected to Redpanda at {brokers}"))
+    while True:
+      try:
+        await consumer.start()
+        self.stdout.write(self.style.SUCCESS(f"Connected to Redpanda at {brokers}"))
+        break
+      except Exception as e:
+        self.stderr.write(
+          self.style.ERROR(f"Failed to start Kafka consumer: {e}. Retrying in 5s...")
+        )
+        await asyncio.sleep(5)
 
     try:
       while True:

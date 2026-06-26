@@ -25,20 +25,30 @@ router = Router(tags=["Billing"])
 @router.post("/create-checkout-session")
 def create_checkout_session(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    return 401, {"error": "Authentication required"}
 
   try:
     data = json.loads(request.body) if request.body else {}
     tenant_id = data.get("tenant_id")
 
     if tenant_id:
-      tenant = Tenant.objects.get(id=tenant_id)
+      try:
+        import uuid
+
+        valid_id = uuid.UUID(tenant_id)
+        tenant = Tenant.objects.get(id=valid_id)
+      except (ValueError, TypeError, Tenant.DoesNotExist):
+        return 400, {"error": "Invalid tenant ID"}
     else:
       from monitor.models import TenantMembership
 
       membership = TenantMembership.objects.filter(user=request.user).first()
       if not membership:
-        return {"error": "User does not belong to any tenant"}, 400
+        return 400, {"error": "User does not belong to any tenant"}
+
+      if membership.role == "Viewer":
+        return 403, {"error": "Viewers cannot manage subscriptions"}
+
       tenant = membership.tenant
 
     price_id = "price_1TlgG2Er73F9pBqwItcWHIJf"
@@ -60,7 +70,7 @@ def create_checkout_session(request):
     return {"checkout_url": session.url}
   except Exception as e:
     logger.error(f"Error creating checkout session: {e}")
-    return {"error": str(e)}, 500
+    return 500, {"error": str(e)}
 
 
 @router.post("/webhook", auth=None)
@@ -81,9 +91,19 @@ def stripe_webhook(request):
   # Handle the checkout.session.completed event
   if event["type"] == "checkout.session.completed":
     session = event["data"]["object"]
-    client_reference_id = session.get("client_reference_id")
-    customer_id = session.get("customer")
-    subscription_id = session.get("subscription")
+    client_reference_id = (
+      session.get("client_reference_id")
+      if isinstance(session, dict)
+      else getattr(session, "client_reference_id", None)
+    )
+    customer_id = (
+      session.get("customer") if isinstance(session, dict) else getattr(session, "customer", None)
+    )
+    subscription_id = (
+      session.get("subscription")
+      if isinstance(session, dict)
+      else getattr(session, "subscription", None)
+    )
 
     if client_reference_id:
       try:
@@ -106,7 +126,11 @@ def stripe_webhook(request):
 
   elif event["type"] == "customer.subscription.deleted":
     subscription = event["data"]["object"]
-    sub_id = subscription.get("id")
+    sub_id = (
+      subscription.get("id")
+      if isinstance(subscription, dict)
+      else getattr(subscription, "id", None)
+    )
     tenants = Tenant.objects.filter(stripe_subscription_id=sub_id)
     for tenant in tenants:
       tenant.tier = "Standard"
@@ -119,13 +143,13 @@ def stripe_webhook(request):
 @router.post("/sync")
 def sync_subscription(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    return 401, {"error": "Authentication required"}
 
   from monitor.models import TenantMembership
 
   membership = TenantMembership.objects.filter(user=request.user).first()
   if not membership:
-    return {"error": "User does not belong to any tenant"}, 400
+    return 400, {"error": "User does not belong to any tenant"}
 
   tenant = membership.tenant
   email = request.user.email
@@ -157,50 +181,56 @@ def sync_subscription(request):
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
   except Exception as e:
     logger.error(f"Error syncing subscription: {e}")
-    return {"error": str(e)}, 500
+    return 500, {"error": str(e)}
 
 
 @router.post("/cancel-subscription")
 def cancel_subscription(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    return 401, {"error": "Authentication required"}
 
   from monitor.models import TenantMembership
 
   membership = TenantMembership.objects.filter(user=request.user).first()
   if not membership:
-    return {"error": "User does not belong to any tenant"}, 400
+    return 400, {"error": "User does not belong to any tenant"}
+
+  if membership.role == "Viewer":
+    return 403, {"error": "Viewers cannot manage subscriptions"}
 
   tenant = membership.tenant
   if not tenant.stripe_subscription_id:
-    return {"error": "No active subscription found"}, 400
+    return 400, {"error": "No active subscription found"}
 
   try:
     sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=True)
     return {"status": "cancelled", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
     logger.error(f"Error cancelling subscription: {e}")
-    return {"error": str(e)}, 500
+    return 500, {"error": str(e)}
 
 
 @router.post("/resume-subscription")
 def resume_subscription(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    return 401, {"error": "Authentication required"}
 
   from monitor.models import TenantMembership
 
   membership = TenantMembership.objects.filter(user=request.user).first()
   if not membership:
-    return {"error": "User does not belong to any tenant"}, 400
+    return 400, {"error": "User does not belong to any tenant"}
+
+  if membership.role == "Viewer":
+    return 403, {"error": "Viewers cannot manage subscriptions"}
 
   tenant = membership.tenant
   if not tenant.stripe_subscription_id:
-    return {"error": "No active subscription found"}, 400
+    return 400, {"error": "No active subscription found"}
 
   try:
     sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=False)
     return {"status": "resumed", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
     logger.error(f"Error resuming subscription: {e}")
-    return {"error": str(e)}, 500
+    return 500, {"error": str(e)}

@@ -41,3 +41,6 @@ channels-redis>=4.2.0
 stripe>=9.0.0
 redis>=5.0.0
 wappalyzer==2.0.1
+clickhouse-connect
+django-migration-linter
+pysocks

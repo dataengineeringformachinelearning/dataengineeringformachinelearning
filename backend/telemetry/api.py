@@ -67,9 +67,9 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
       import uuid
 
       try:
-        uuid.UUID(tenant_id)
-        query = Q(id=tenant_id) | Q(slug=tenant_id)
-      except ValueError:
+        valid_uuid = uuid.UUID(str(tenant_id))
+        query = Q(id=valid_uuid) | Q(slug=tenant_id)
+      except (ValueError, TypeError):
         query = Q(slug=tenant_id)
 
       page = await sync_to_async(StatusPage.objects.filter(query).first)()
@@ -82,13 +82,11 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
     try:
       import uuid
 
-      uuid.UUID(actual_tenant_id)
+      valid_id = uuid.UUID(str(actual_tenant_id))
       return await sync_to_async(
-        ValidatedSite.objects.filter(
-          tenant_id=actual_tenant_id, domain=domain, is_verified=True
-        ).exists
+        ValidatedSite.objects.filter(tenant_id=valid_id, domain=domain, is_verified=True).exists
       )()
-    except ValueError:
+    except (ValueError, TypeError):
       pass
 
   # Fallback to checking if the domain is registered globally

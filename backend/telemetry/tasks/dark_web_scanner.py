@@ -48,6 +48,9 @@ class DarkWebScanner:
         logger.error(f"HIBP API error: {response.status_code}")
         return []
 
+    except requests.exceptions.RequestException as e:
+      logger.warning(f"Failed to check HIBP due to network error: {e}")
+      return []
     except Exception as e:
       logger.error(f"Failed to check HIBP: {e}")
       return []
@@ -81,6 +84,9 @@ class DarkWebScanner:
         return True
       return False
 
+    except requests.exceptions.RequestException as e:
+      logger.warning(f"Failed to search Dark Web due to network error: {e}")
+      return False
     except Exception as e:
       logger.error(f"Failed to search Dark Web: {e}")
       return False

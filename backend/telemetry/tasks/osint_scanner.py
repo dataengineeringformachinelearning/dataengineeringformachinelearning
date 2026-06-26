@@ -48,6 +48,9 @@ class OSINTScanner:
 
       return list(subdomains)
 
+    except requests.exceptions.RequestException as e:
+      logger.warning(f"OSINT scan failed for {domain} due to network error: {e}")
+      return []
     except Exception as e:
       logger.error(f"OSINT scan failed for {domain}: {e}")
       return []
