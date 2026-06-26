@@ -114,8 +114,6 @@
   padding: 8px;
   margin-bottom: 16px;
   border-radius: var(--border-radius-sm);
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
   background-color: color-mix(in srgb, var(--color-success) 10%, transparent);
   color: var(--color-success);
   font-weight: 500;
@@ -127,8 +125,6 @@
   padding: 8px;
   margin-bottom: 16px;
   border-radius: var(--border-radius-sm);
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
   background-color: rgba(33, 118, 255, 0.05);
   color: var(--crayola-blue);
   font-weight: 500;
@@ -144,8 +140,6 @@
   background: rgba(211, 47, 47, 0.1);
   padding: 8px;
   border-radius: var(--border-radius-sm);
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
   border: 1px solid rgba(211, 47, 47, 0.2);
   border-left: 3px solid var(--color-error);
   text-align: center;

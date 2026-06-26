@@ -36,6 +36,9 @@
             role="option"
             [attr.aria-selected]="option.value === value"
             (click)="selectOption(option)"
+            (keydown.enter)="selectOption(option)"
+            (keydown.space)="selectOption(option); $event.preventDefault()"
+            tabindex="0"
           >
             <span class="unified-select-option-text">{{ option.label }}</span>
             @if (option.value === value) {

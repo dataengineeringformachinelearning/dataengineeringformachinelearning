@@ -4,6 +4,27 @@ from django.conf import settings
 from django.db import migrations, models
 
 
+def remove_duplicates(apps, schema_editor):
+  ThreatIntelligence = apps.get_model("monitor", "ThreatIntelligence")
+  from django.db.models import Count
+
+  duplicates = (
+    ThreatIntelligence.objects.values("user", "source", "ip_address", "location")
+    .annotate(count=Count("id"))
+    .filter(count__gt=1)
+  )
+
+  for duplicate in duplicates:
+    records = ThreatIntelligence.objects.filter(
+      user_id=duplicate["user"],
+      source=duplicate["source"],
+      ip_address=duplicate["ip_address"],
+      location=duplicate["location"],
+    ).order_by("id")
+    for record in records[1:]:
+      record.delete()
+
+
 class Migration(migrations.Migration):
   dependencies = [
     ("monitor", "0028_remove_platform_tenant_memberships"),
@@ -19,6 +40,7 @@ class Migration(migrations.Migration):
       model_name="threatintelligence",
       index=models.Index(fields=["source"], name="threat_inte_source_0387cf_idx"),
     ),
+    migrations.RunPython(remove_duplicates, migrations.RunPython.noop),
     migrations.AddConstraint(
       model_name="threatintelligence",
       constraint=models.UniqueConstraint(

@@ -44,8 +44,6 @@
 
   &.warning {
     border-left: 3px solid var(--color-warning);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     .metric-value {
       color: var(--color-warning);
     }
@@ -53,8 +51,6 @@
 
   &.critical {
     border-left: 3px solid var(--crayola-blue);
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
     .metric-value {
       color: var(--crayola-blue);
     }

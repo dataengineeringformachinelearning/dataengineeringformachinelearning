@@ -435,7 +435,7 @@ footer {
   top: 1.5rem;
   right: 1.5rem;
   background: var(--color-dark-grey-btn-bg);
-  color: var(--text-color);
+  color: var(--color-dark-grey-btn-text, #fff);
   border: 1px solid var(--border);
   border-radius: 50%;
   width: 44px;
