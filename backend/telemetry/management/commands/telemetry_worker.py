@@ -188,7 +188,7 @@ class Command(BaseCommand):
       objects_to_create.append(ti)
 
     if objects_to_create:
-      ThreatIntelligence.objects.bulk_create(objects_to_create)
+      ThreatIntelligence.objects.bulk_create(objects_to_create, ignore_conflicts=True)
 
   @sync_to_async
   def save_to_db(self, df: pl.DataFrame):
@@ -351,7 +351,7 @@ class Command(BaseCommand):
       objects_to_create.append(ep)
 
     if objects_to_create:
-      Endpoints.objects.bulk_create(objects_to_create)
+      Endpoints.objects.bulk_create(objects_to_create, ignore_conflicts=True)
 
   async def periodic_scheduler(self):
     self.stdout.write(self.style.SUCCESS("Starting periodic telemetry health scheduler..."))

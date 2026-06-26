@@ -12,6 +12,32 @@ class Command(BaseCommand):
   def handle(self, *args, **options):
     cutoff = timezone.now() - timedelta(days=30)
 
+    # Deduplicate ThreatIntelligence records before time-based cleanup
+    from django.db.models import Count, Min
+
+    from monitor.models import ThreatIntelligence
+
+    self.stdout.write("Security Worker: Removing duplicate ThreatIntelligence records...")
+    duplicates = (
+      ThreatIntelligence.objects.values("user", "source", "ip_address", "location")
+      .annotate(count=Count("id"), min_id=Min("id"))
+      .filter(count__gt=1)
+    )
+
+    threat_dupes_deleted = 0
+    for duplicate in duplicates:
+      dupes = ThreatIntelligence.objects.filter(
+        user=duplicate["user"],
+        source=duplicate["source"],
+        ip_address=duplicate["ip_address"],
+        location=duplicate["location"],
+      ).exclude(id=duplicate["min_id"])
+      deleted, _ = dupes.delete()
+      threat_dupes_deleted += deleted
+
+    self.stdout.write(
+      self.style.SUCCESS(f"Deleted {threat_dupes_deleted} duplicate ThreatIntelligence records.")
+    )
     # Delete records older than 30 days
     endpoints_deleted, _ = Endpoints.objects.filter(last_tested__lt=cutoff).delete()
     audit_logs_deleted, _ = AuditLog.objects.filter(timestamp__lt=cutoff).delete()

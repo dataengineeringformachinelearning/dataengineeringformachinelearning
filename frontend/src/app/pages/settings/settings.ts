@@ -365,7 +365,7 @@ export class Settings implements OnInit {
       });
   }
 
-  private loadIntegrations() {
+  loadIntegrations() {
     if (this.authService.isAuthenticated()) {
       this.monitorService.getIntegrations().subscribe({
         next: data => {
@@ -743,16 +743,6 @@ export class Settings implements OnInit {
         if (page) this.loadIncidents(page.id);
       },
       error: err => console.error('Error deleting incident:', err),
-    });
-  }
-
-  loadIntegrations() {
-    this.monitorService.getIntegrations().subscribe({
-      next: data => {
-        this.integrations.set(data);
-        this.cdr.markForCheck();
-      },
-      error: err => console.error('Error loading integrations:', err),
     });
   }
 

@@ -22,6 +22,9 @@ class TrainingRun(models.Model):
   class Meta:
     db_table = "training_runs"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["created_at"]),
+    ]
 
   def __str__(self):
     return f"TrainingRun {self.id} (SLA: {self.average_sla:.2f})"
@@ -41,6 +44,9 @@ class ThreatReport(models.Model):
   class Meta:
     db_table = "threat_reports"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["created_at"]),
+    ]
 
   def __str__(self):
     return f"ThreatReport {self.id} (Anomaly: {self.anomaly_score:.2%})"

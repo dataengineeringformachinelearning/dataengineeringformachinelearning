@@ -1641,7 +1641,10 @@ The DEML Platform orchestrates several asynchronous background workers. These wo
 
 ### 3. Security & Compliance Worker (security_worker.py)
 
+- **Database Optimization (24 Hours)**: Every 86,400 seconds, this scheduler triggers a `VACUUM ANALYZE` operation on the core PostgreSQL database. This ensures that the query planner maintains highly accurate table statistics and automatically reclaims any storage space from aggressively scrubbed rows or deleted duplicate records, keeping API response times consistently fast.
+
 - **Threat Intelligence Sync (1 Hour)**: Pulls updated indicators from external OSINT and Dark Web scanners every 3600 seconds, feeding them into the platform's STIX 2.1 mapping database.
+
 - **Compliance Rotation (24 Hours)**: Every 86,400 seconds, this scheduler verifies the age of the active Data Encryption Key (DEK). If the key exceeds the 30-day lifecycle limit, it automatically triggers 'rotate_keys' to generate a new AES-256 key and re-encrypts all sensitive third-party integrations (e.g., GA4, Microsoft Clarity keys). It additionally triggers an idempotent 'db_cleanup' pass to guarantee adherence to the 30-day data retention policy.
 
 ## Appendix I: API Rate Limiting, Tiered Pricing, and Usage Analytics

@@ -44,6 +44,10 @@ class Command(BaseCommand):
     self.background_tasks.add(task4)
     task4.add_done_callback(self.background_tasks.discard)
 
+    task5 = asyncio.create_task(self.optimize_scheduler())
+    self.background_tasks.add(task5)
+    task5.add_done_callback(self.background_tasks.discard)
+
     # Keep worker alive
     while True:
       await asyncio.sleep(3600)
@@ -184,5 +188,47 @@ class Command(BaseCommand):
             f"Active Data Encryption Key ({active_key.id}) is compliant ({age.days} days old)."
           )
         )
+    finally:
+      close_old_connections()
+
+  async def optimize_scheduler(self) -> None:
+    self.stdout.write(self.style.SUCCESS("Starting Database Optimizer scheduler..."))
+    while True:
+      try:
+        await self.optimize_database()
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Security Worker: Database optimization failed: {e}"))
+
+      # Run once every 24 hours (86400 seconds)
+      await asyncio.sleep(86400)
+
+  @sync_to_async
+  def optimize_database(self) -> None:
+    from django.db import close_old_connections, connection
+
+    close_old_connections()
+    try:
+      self.stdout.write(
+        "Security Worker: Running VACUUM ANALYZE to optimize queries and free space..."
+      )
+      if connection.vendor == "postgresql":
+        with connection.cursor() as cursor:
+          # VACUUM cannot run in a transaction block
+          connection.autocommit = True
+          cursor.execute("VACUUM ANALYZE;")
+          connection.autocommit = False
+        self.stdout.write(self.style.SUCCESS("Security Worker: VACUUM ANALYZE completed."))
+      elif connection.vendor == "sqlite":
+        with connection.cursor() as cursor:
+          cursor.execute("VACUUM;")
+        self.stdout.write(self.style.SUCCESS("Security Worker: VACUUM completed (SQLite)."))
+      else:
+        self.stdout.write(
+          self.style.WARNING(
+            f"Security Worker: Skipping VACUUM on unsupported vendor {connection.vendor}"
+          )
+        )
+    except Exception as e:
+      self.stderr.write(self.style.ERROR(f"Security Worker: Database optimization failed: {e}"))
     finally:
       close_old_connections()

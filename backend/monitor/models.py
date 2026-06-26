@@ -376,6 +376,16 @@ class ThreatIntelligence(models.Model):
   class Meta:
     db_table = "threat_intelligence"
     ordering = ["-timestamp"]
+    indexes = [
+      models.Index(fields=["ip_address"]),
+      models.Index(fields=["source"]),
+    ]
+    constraints = [
+      models.UniqueConstraint(
+        fields=["user", "source", "ip_address", "location"],
+        name="unique_threat_intel_per_user_source_ip_location",
+      )
+    ]
 
   def __str__(self):
     return f"{self.source} - {self.ip_address or self.location} ({self.timestamp})"
