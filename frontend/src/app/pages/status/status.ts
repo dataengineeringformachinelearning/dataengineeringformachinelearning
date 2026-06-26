@@ -119,6 +119,7 @@ export class Status implements OnInit {
         .pipe(timeout(15000))
         .subscribe({
           next: data => {
+            if (!Array.isArray(data)) return;
             // Include user's own pages AND the platform status page
             const myPages = data.filter(
               p => p.user_id === this.authService.currentUserId() || p.slug === 'platform-status',

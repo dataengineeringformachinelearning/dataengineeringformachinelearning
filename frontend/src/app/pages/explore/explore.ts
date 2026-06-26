@@ -88,6 +88,7 @@ export class Explore implements OnInit {
     this.monitorService.getStatusPages().subscribe({
       next: data => {
         // Under /explore we show all public status pages, including the main 'platform-status' system page
+        if (!Array.isArray(data)) return;
         const publicPages = data.filter(p => p.is_published || p.slug === 'platform-status');
         this.statusPages.set(publicPages);
         this.monitorService.fetchAllIncidents(publicPages);
