@@ -96,13 +96,19 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
   data = payload.dict()
   data["response_time"] = payload.response_time_ms / 1000.0
 
-  try:
-    producer = await get_kafka_producer()
-    value = json.dumps(data).encode("utf-8")
-    await producer.send("app-events", value)
-  except Exception as e:
-    logger.error(f"Failed to send telemetry to Kafka: {e}")
-    return HttpResponse("Telemetry ingestion queue unavailable", status=503)
+  async def _send_to_kafka():
+    try:
+      producer = await get_kafka_producer()
+      value = json.dumps(data).encode("utf-8")
+      await producer.send("app-events", value)
+    except Exception as e:
+      logger.error(f"Failed to send telemetry to Kafka: {e}")
+
+  import asyncio
+
+  task = asyncio.create_task(_send_to_kafka())
+  background_tasks.add(task)
+  task.add_done_callback(background_tasks.discard)
 
   return HttpResponse(status=202)
 
