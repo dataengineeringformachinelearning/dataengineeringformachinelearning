@@ -1,3 +1,4 @@
+import datetime
 import json
 import logging
 
@@ -91,6 +92,14 @@ def stripe_webhook(request):
         tenant.stripe_customer_id = customer_id
         tenant.stripe_subscription_id = subscription_id
         tenant.subscription_active = True
+
+        # Fetch subscription to get current_period_end
+        if subscription_id:
+          sub = stripe.Subscription.retrieve(subscription_id)
+          tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
+            sub.current_period_end, tz=datetime.timezone.utc
+          )
+
         tenant.save()
       except Tenant.DoesNotExist:
         logger.error(f"Tenant {client_reference_id} not found for checkout.")
@@ -105,3 +114,43 @@ def stripe_webhook(request):
       tenant.save()
 
   return HttpResponse(status=200)
+
+
+@router.post("/sync")
+def sync_subscription(request):
+  if not request.user.is_authenticated:
+    return {"error": "Authentication required"}, 401
+
+  from monitor.models import TenantMembership
+
+  membership = TenantMembership.objects.filter(user=request.user).first()
+  if not membership:
+    return {"error": "User does not belong to any tenant"}, 400
+
+  tenant = membership.tenant
+  email = request.user.email
+
+  try:
+    customers = stripe.Customer.list(email=email).data
+    if customers:
+      for customer in customers:
+        subscriptions = stripe.Subscription.list(customer=customer.id, status="active").data
+        if subscriptions:
+          sub = subscriptions[0]
+          tenant.tier = "Pro"
+          tenant.stripe_customer_id = customer.id
+          tenant.stripe_subscription_id = sub.id
+          tenant.subscription_active = True
+          tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
+            sub.current_period_end, tz=datetime.timezone.utc
+          )
+          tenant.save()
+          return {"status": "synced", "active": True}
+
+    tenant.tier = "Standard"
+    tenant.subscription_active = False
+    tenant.save()
+    return {"status": "synced", "active": False}
+  except Exception as e:
+    logger.error(f"Error syncing subscription: {e}")
+    return {"error": str(e)}, 500

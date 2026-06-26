@@ -20,6 +20,7 @@ class Tenant(models.Model):
   stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
   stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True)
   subscription_active = models.BooleanField(default=True)
+  subscription_current_period_end = models.DateTimeField(null=True, blank=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:

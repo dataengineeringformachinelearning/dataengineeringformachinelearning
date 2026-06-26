@@ -1,14 +1,45 @@
 <div class="dashboard-container success-container">
   <div class="success-card" id="success-card">
-    <div class="success-icon">✓</div>
-    <h1 class="success-title">Subscription Successful!</h1>
-    <p class="success-message">
-      Thank you for subscribing. Your account has been upgraded successfully.
-    </p>
-    <div class="action-box">
-      <a routerLink="/" class="mat-mdc-raised-button mat-primary home-btn" id="success-home-btn">
-        Return to Dashboard
-      </a>
+    <div *ngIf="isSyncing" class="syncing-state">
+      <div class="spinner"></div>
+      <h1 class="success-title">Verifying Subscription...</h1>
+      <p class="success-message">Please wait while we confirm your subscription details.</p>
+    </div>
+
+    <div *ngIf="!isSyncing && syncSuccess" class="success-state">
+      <div class="success-icon">✓</div>
+      <h1 class="success-title">Subscription Successful!</h1>
+      <p class="success-message">
+        Thank you for subscribing. Your account has been upgraded successfully.
+      </p>
+      <div class="action-box">
+        <a routerLink="/" class="mat-mdc-raised-button mat-primary home-btn" id="success-home-btn">
+          Return to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <div *ngIf="!isSyncing && !syncSuccess" class="error-state">
+      <div
+        class="success-icon"
+        style="
+          background: var(--color-error);
+          -webkit-text-fill-color: transparent;
+          -webkit-background-clip: text;
+        "
+      >
+        !
+      </div>
+      <h1 class="success-title">Verification Delayed</h1>
+      <p class="success-message">
+        Your payment may still be processing. Your account will be upgraded automatically once it
+        clears.
+      </p>
+      <div class="action-box">
+        <a routerLink="/" class="mat-mdc-raised-button mat-primary home-btn" id="success-home-btn">
+          Return to Dashboard
+        </a>
+      </div>
     </div>
   </div>
 </div>

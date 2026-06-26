@@ -40,6 +40,10 @@ class Command(BaseCommand):
     self.background_tasks.add(task3)
     task3.add_done_callback(self.background_tasks.discard)
 
+    task4 = asyncio.create_task(self.subscription_sweep_scheduler())
+    self.background_tasks.add(task4)
+    task4.add_done_callback(self.background_tasks.discard)
+
     # Keep worker alive
     while True:
       await asyncio.sleep(3600)
@@ -121,6 +125,29 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Security Worker: Dark Web scan completed."))
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Dark Web scan failed: {e}"))
+
+      # Run once every 24 hours (86400 seconds)
+      await asyncio.sleep(86400)
+
+  async def subscription_sweep_scheduler(self) -> None:
+    from django.db import close_old_connections
+
+    @sync_to_async
+    def run_sync_command(cmd_name):
+      close_old_connections()
+      try:
+        call_command(cmd_name)
+      finally:
+        close_old_connections()
+
+    self.stdout.write(self.style.SUCCESS("Starting Subscription Sweep scheduler..."))
+    while True:
+      try:
+        self.stdout.write("Security Worker: Running subscription sync sweep...")
+        await run_sync_command("sync_subscriptions")
+        self.stdout.write(self.style.SUCCESS("Security Worker: Subscription sweep completed."))
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"Security Worker: Subscription sweep failed: {e}"))
 
       # Run once every 24 hours (86400 seconds)
       await asyncio.sleep(86400)
