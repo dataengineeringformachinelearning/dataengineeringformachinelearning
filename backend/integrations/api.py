@@ -101,6 +101,7 @@ from utils.rate_limit import rate_limit
 )
 @rate_limit()
 async def ingest_data(request, payload: IngestPayload):
+  import hashlib
   import json
   import logging
 
@@ -110,6 +111,11 @@ async def ingest_data(request, payload: IngestPayload):
   data = payload.dict()
   data["tenant_id"] = str(tenant.id)
   data["event_type"] = "ingestion"
+
+  # Cyber Forensics: Chain of Custody Hashing
+  raw_payload_str = json.dumps(data, sort_keys=True)
+  chain_of_custody_hash = hashlib.sha256(raw_payload_str.encode("utf-8")).hexdigest()
+  data["chain_of_custody_hash"] = chain_of_custody_hash
 
   try:
     producer = await get_kafka_producer()
@@ -149,7 +155,15 @@ async def predict(request, payload: PredictPayload):
   import json
   import logging
 
+  from ninja.errors import HttpError
   from utils.kafka import get_kafka_producer
+
+  # AI Threat Detection: Data Poisoning / Out of Distribution check
+  for val in payload.inputs:
+    if val > 1000.0 or val < -1000.0:
+      raise HttpError(
+        400, "Potential Data Poisoning Detected: Input values out of accepted bounds."
+      )
 
   tenant = request.auth
   data = payload.dict()
@@ -171,5 +185,64 @@ async def predict(request, payload: PredictPayload):
     "status": "success",
     "predictions": [0.95, 0.05],  # Mocked output
     "model_version": payload.model_version,
+    "latency_ms": latency_ms,
+  }
+
+
+class LLMPredictPayload(Schema):
+  prompt: str
+  model_name: str = "default-llm"
+
+
+class LLMPredictResponse(Schema):
+  status: str
+  response: str
+  latency_ms: float
+
+
+@public_router.post(
+  "/predict/llm",
+  response=LLMPredictResponse,
+  auth=IntegrationAPIKeyAuth(),
+  summary="LLM Inference with Prompt Injection Detection",
+)
+@rate_limit()
+async def predict_llm(request, payload: LLMPredictPayload):
+  import json
+  import logging
+  import re
+
+  from ninja.errors import HttpError
+  from utils.kafka import get_kafka_producer
+
+  tenant = request.auth
+  prompt = payload.prompt.lower()
+
+  # AI Threat Detection: Basic Prompt Injection Heuristics
+  suspicious_keywords = ["ignore previous instructions", "system prompt", "bypass", "you are now"]
+  if any(keyword in prompt for keyword in suspicious_keywords) or re.search(
+    r"(select|drop|insert|delete)\s+.*", prompt
+  ):
+    raise HttpError(
+      400, "Adversarial AI Attack Detected: Potential Prompt Injection or SQLi in prompt."
+    )
+
+  data = payload.dict()
+  data["tenant_id"] = str(tenant.id)
+  data["event_type"] = "llm_prediction"
+
+  latency_ms = 450.2
+  data["latency_ms"] = latency_ms
+
+  try:
+    producer = await get_kafka_producer()
+    value = json.dumps(data).encode("utf-8")
+    await producer.send("app-events", value)
+  except Exception as e:
+    logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
+
+  return {
+    "status": "success",
+    "response": f"Processed prompt safely: {payload.prompt[:20]}...",
     "latency_ms": latency_ms,
   }

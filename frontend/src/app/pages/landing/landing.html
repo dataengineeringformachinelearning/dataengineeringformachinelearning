@@ -256,7 +256,9 @@
         </p>
       </div>
       <form class="subscribe-form" (submit)="$event.preventDefault()">
+        <label for="subscribe-email" class="sr-only">Email Address</label>
         <input
+          id="subscribe-email"
           type="email"
           placeholder="Enter your email address"
           aria-label="Email Address"

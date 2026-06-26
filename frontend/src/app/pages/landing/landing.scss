@@ -114,7 +114,7 @@
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--text-muted);
-  opacity: 0.6;
+  opacity: 0.8;
   text-transform: uppercase;
   letter-spacing: -0.02em;
   filter: grayscale(100%);
@@ -627,6 +627,11 @@
       outline: none;
       transition: all 0.2s ease;
 
+      &::placeholder {
+        color: var(--text-muted);
+        opacity: 1;
+      }
+
       &:focus {
         border-color: var(--crayola-blue);
         box-shadow: 0 0 10px rgba(33, 118, 255, 0.2);
@@ -764,7 +769,7 @@
     background: transparent;
     border: none;
     border-left: 4px solid transparent;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.75);
     cursor: pointer;
     text-align: left;
     transition: all 0.2s ease;
@@ -783,7 +788,7 @@
 
     &:hover {
       background: rgba(255, 255, 255, 0.03);
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.9);
     }
 
     &.active {

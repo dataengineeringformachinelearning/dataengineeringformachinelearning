@@ -469,3 +469,83 @@ class ValidatedSite(models.Model):
 
   def __str__(self):
     return f"{self.domain} ({self.tenant.name})"
+
+
+class IncidentCase(models.Model):
+  STATUS_CHOICES = [
+    ("Open", "Open"),
+    ("Investigating", "Investigating"),
+    ("Mitigated", "Mitigated"),
+    ("Resolved", "Resolved"),
+    ("False Positive", "False Positive"),
+  ]
+  SEVERITY_CHOICES = [
+    ("Low", "Low"),
+    ("Medium", "Medium"),
+    ("High", "High"),
+    ("Critical", "Critical"),
+  ]
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="incident_cases")
+  title = models.CharField(max_length=255)
+  description = models.TextField(blank=True, null=True)
+  status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="Open")
+  severity = models.CharField(max_length=50, choices=SEVERITY_CHOICES, default="Medium")
+  related_threats = models.ManyToManyField(
+    ThreatIntelligence, related_name="incident_cases", blank=True
+  )
+  assigned_to = models.ForeignKey(
+    User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_cases"
+  )
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "incident_cases"
+    ordering = ["-created_at"]
+
+  def __str__(self):
+    return f"{self.title} ({self.status})"
+
+
+class Playbook(models.Model):
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="playbooks")
+  name = models.CharField(max_length=255)
+  description = models.TextField(blank=True, null=True)
+  is_active = models.BooleanField(default=True)
+  trigger_conditions = models.JSONField(
+    default=dict, help_text="JSON representation of conditions to trigger this playbook"
+  )
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "playbooks"
+
+  def __str__(self):
+    return self.name
+
+
+class PlaybookAction(models.Model):
+  ACTION_TYPES = [
+    ("Webhook", "Webhook"),
+    ("EmailAlert", "Email Alert"),
+    ("BlockIP", "Block IP"),
+    ("RevokeAPIKey", "Revoke API Key"),
+  ]
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  playbook = models.ForeignKey(Playbook, on_delete=models.CASCADE, related_name="actions")
+  action_type = models.CharField(max_length=50, choices=ACTION_TYPES)
+  configuration = models.JSONField(
+    default=dict, help_text="Configuration for the action (e.g., URL for webhook)"
+  )
+  order = models.IntegerField(default=0, help_text="Order of execution")
+  created_at = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+    db_table = "playbook_actions"
+    ordering = ["order"]
+
+  def __str__(self):
+    return f"{self.playbook.name} - {self.action_type}"

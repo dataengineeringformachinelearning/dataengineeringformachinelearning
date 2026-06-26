@@ -1,0 +1,66 @@
+<div class="siem-dashboard">
+  <header class="siem-header">
+    <div class="header-content">
+      <h1>SIEM & Threat Response</h1>
+      <p>Monitor aggregated anomalies and orchestrate automated response playbooks.</p>
+    </div>
+  </header>
+
+  <main class="dashboard-content">
+    <section class="incidents-section">
+      <div class="section-header">
+        <h2>Active Incident Cases</h2>
+        <button class="btn btn-primary">Run Threat Hunt Query</button>
+      </div>
+
+      <div class="incident-grid">
+        <div
+          class="incident-card"
+          *ngFor="let incident of incidents"
+          [ngClass]="incident.severity.toLowerCase()"
+        >
+          <div class="card-header">
+            <span class="incident-id">{{ incident.id }}</span>
+            <span class="badge" [ngClass]="'badge-' + incident.severity.toLowerCase()"
+              >{{ incident.severity }}</span
+            >
+          </div>
+          <h3>{{ incident.title }}</h3>
+          <p class="description">{{ incident.description }}</p>
+          <div class="card-footer">
+            <span class="status"><i class="icon-status"></i> {{ incident.status }}</span>
+            <span class="timestamp">{{ incident.created_at | date:'short' }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="playbooks-section">
+      <div class="section-header">
+        <h2>Response Playbooks (SOAR)</h2>
+        <button class="btn btn-secondary">Create Playbook</button>
+      </div>
+
+      <div class="playbook-list">
+        <div class="playbook-item" *ngFor="let playbook of playbooks">
+          <div class="playbook-info">
+            <h3>{{ playbook.name }}</h3>
+            <p>{{ playbook.description }}</p>
+          </div>
+          <div class="playbook-actions">
+            <label class="switch">
+              <span class="sr-only">Toggle {{ playbook.name }} playbook</span>
+              <input
+                type="checkbox"
+                [checked]="playbook.is_active"
+                [attr.aria-label]="'Toggle ' + playbook.name"
+              />
+              <span class="slider round"></span>
+            </label>
+            <button class="btn btn-outline">Edit</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
