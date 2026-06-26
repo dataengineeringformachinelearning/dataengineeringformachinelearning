@@ -1034,14 +1034,61 @@
 }
 
 .mfa-info-inline {
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 24px;
+  display: flex;
+  flex-direction: column;
 }
 
 .mfa-icon-inline {
-  margin-right: 8px;
   vertical-align: middle;
+}
+
+.mfa-info-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mfa-status-enrolled {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
+
+  @media (min-width: 601px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    button {
+      width: auto !important;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.simple-inline-form {
+  @media (min-width: 601px) {
+    flex-direction: row;
+    align-items: flex-start;
+
+    mat-form-field {
+      flex: 1;
+      margin-bottom: -1.25em;
+    }
+
+    .settings-actions {
+      flex-direction: row;
+      align-items: center;
+      margin-top: 0;
+      width: auto;
+
+      button {
+        width: auto !important;
+        padding: 0 24px !important;
+      }
+    }
+  }
 }
 
 .justify-end {

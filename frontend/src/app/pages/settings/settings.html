@@ -544,10 +544,12 @@
 
               @if (isMfaEnrolled()) {
               <div class="mfa-status-enrolled panel-clean">
-                <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
-                <div class="mfa-info mfa-info-inline">
-                  <strong>MFA Enrolled & Enforced</strong>
-                  <div class="mfa-status-desc">SMS verification is active for your account.</div>
+                <div class="mfa-info-group">
+                  <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
+                  <div class="mfa-info mfa-info-inline">
+                    <strong>MFA Enrolled & Enforced</strong>
+                    <div class="mfa-status-desc">SMS verification is active for your account.</div>
+                  </div>
                 </div>
                 <button mat-stroked-button color="warn" (click)="disableMfa()">Disable MFA</button>
               </div>
@@ -828,7 +830,7 @@
 
             <div class="panel-section mt-3">
               <h3 class="section-heading"><mat-icon>email</mat-icon> Update Email</h3>
-              <div class="settings-form-panel panel-clean">
+              <div class="settings-form-panel panel-clean simple-inline-form">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>New Email Address</mat-label>
                   <input matInput [(ngModel)]="updateEmailInput" placeholder="Enter new email..." />
@@ -849,7 +851,7 @@
 
             <div class="panel-section mt-3">
               <h3 class="section-heading"><mat-icon>lock</mat-icon> Update Password</h3>
-              <div class="settings-form-panel panel-clean">
+              <div class="settings-form-panel panel-clean simple-inline-form">
                 <mat-form-field appearance="outline" class="full-width">
                   <mat-label>New Password</mat-label>
                   <input
@@ -892,12 +894,14 @@
                   class="mfa-status-enrolled panel-clean"
                   style="border-color: #3f51b5; background-color: rgba(63, 81, 181, 0.05)"
                 >
-                  <mat-icon class="status-icon info mfa-icon-inline" style="color: #3f51b5"
-                    >info</mat-icon
-                  >
-                  <div class="mfa-info mfa-info-inline">
-                    <strong>Standard Plan</strong>
-                    <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
+                  <div class="mfa-info-group">
+                    <mat-icon class="status-icon info mfa-icon-inline" style="color: #3f51b5"
+                      >info</mat-icon
+                    >
+                    <div class="mfa-info mfa-info-inline">
+                      <strong>Standard Plan</strong>
+                      <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
+                    </div>
                   </div>
                   <button mat-flat-button color="primary" (click)="subscribeToPro()">
                     Subscribe to Pro
@@ -905,13 +909,15 @@
                 </div>
                 } @else {
                 <div class="mfa-status-enrolled panel-clean">
-                  <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
-                  <div class="mfa-info mfa-info-inline">
-                    <strong>Pro Plan Active</strong>
-                    <div class="mfa-status-desc">
-                      {{ subscriptionCancelAtPeriodEnd() ? 'Your subscription will cancel at the end
-                      of the current billing cycle.' : 'Your subscription is active and will
-                      auto-renew.' }}
+                  <div class="mfa-info-group">
+                    <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
+                    <div class="mfa-info mfa-info-inline">
+                      <strong>Pro Plan Active</strong>
+                      <div class="mfa-status-desc">
+                        {{ subscriptionCancelAtPeriodEnd() ? 'Your subscription will cancel at the
+                        end of the current billing cycle.' : 'Your subscription is active and will
+                        auto-renew.' }}
+                      </div>
                     </div>
                   </div>
                   @if (subscriptionCancelAtPeriodEnd()) {
