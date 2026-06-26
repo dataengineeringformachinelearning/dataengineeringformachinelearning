@@ -145,12 +145,62 @@ def sync_subscription(request):
             sub.current_period_end, tz=datetime.timezone.utc
           )
           tenant.save()
-          return {"status": "synced", "active": True}
+          return {
+            "status": "synced",
+            "active": True,
+            "cancel_at_period_end": sub.cancel_at_period_end,
+          }
 
     tenant.tier = "Standard"
     tenant.subscription_active = False
     tenant.save()
-    return {"status": "synced", "active": False}
+    return {"status": "synced", "active": False, "cancel_at_period_end": False}
   except Exception as e:
     logger.error(f"Error syncing subscription: {e}")
+    return {"error": str(e)}, 500
+
+
+@router.post("/cancel-subscription")
+def cancel_subscription(request):
+  if not request.user.is_authenticated:
+    return {"error": "Authentication required"}, 401
+
+  from monitor.models import TenantMembership
+
+  membership = TenantMembership.objects.filter(user=request.user).first()
+  if not membership:
+    return {"error": "User does not belong to any tenant"}, 400
+
+  tenant = membership.tenant
+  if not tenant.stripe_subscription_id:
+    return {"error": "No active subscription found"}, 400
+
+  try:
+    sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=True)
+    return {"status": "cancelled", "cancel_at_period_end": sub.cancel_at_period_end}
+  except Exception as e:
+    logger.error(f"Error cancelling subscription: {e}")
+    return {"error": str(e)}, 500
+
+
+@router.post("/resume-subscription")
+def resume_subscription(request):
+  if not request.user.is_authenticated:
+    return {"error": "Authentication required"}, 401
+
+  from monitor.models import TenantMembership
+
+  membership = TenantMembership.objects.filter(user=request.user).first()
+  if not membership:
+    return {"error": "User does not belong to any tenant"}, 400
+
+  tenant = membership.tenant
+  if not tenant.stripe_subscription_id:
+    return {"error": "No active subscription found"}, 400
+
+  try:
+    sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=False)
+    return {"status": "resumed", "cancel_at_period_end": sub.cancel_at_period_end}
+  except Exception as e:
+    logger.error(f"Error resuming subscription: {e}")
     return {"error": str(e)}, 500

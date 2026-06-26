@@ -145,6 +145,20 @@ export class Settings implements OnInit {
   providerError = signal<string | null>(null);
   providerSuccess = signal<string | null>(null);
 
+  // Account & Billing
+  updateEmailInput = '';
+  updatePasswordInput = '';
+  isUpdatingEmail = signal<boolean>(false);
+  isUpdatingPassword = signal<boolean>(false);
+  accountSuccess = signal<string | null>(null);
+  accountError = signal<string | null>(null);
+
+  isBillingLoading = signal<boolean>(false);
+  subscriptionActive = signal<boolean>(false);
+  subscriptionCancelAtPeriodEnd = signal<boolean>(false);
+  billingSuccess = signal<string | null>(null);
+  billingError = signal<string | null>(null);
+
   constructor() {
     afterNextRender(() => {
       this.loadIntegrations();
@@ -216,13 +230,151 @@ export class Settings implements OnInit {
     }
   }
 
-  ngOnInit() {
-    this.titleService.setTitle('Manage Status Pages & Incidents - Web Application');
+  ngOnInit(): void {
+    this.titleService.setTitle('Settings Console - Data Engineering for Machine Learning');
     this.metaService.updateTag({
       name: 'description',
-      content:
-        'Configure your custom status pages, add monitored services, post incident updates, or manage account settings.',
+      content: 'Configure your telemetry pages and settings.',
     });
+
+    if (this.authService.isAuthenticated()) {
+      this.fetchSubscriptionStatus();
+    }
+  }
+
+  async fetchSubscriptionStatus() {
+    this.isBillingLoading.set(true);
+    this.http.post<any>(`${environment.backendUrl}/api/v1/billing/sync`, {}).subscribe({
+      next: res => {
+        this.subscriptionActive.set(res.active);
+        this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end || false);
+        this.isBillingLoading.set(false);
+      },
+      error: () => {
+        this.isBillingLoading.set(false);
+      },
+    });
+  }
+
+  async updateEmail() {
+    if (!this.updateEmailInput) return;
+    this.isUpdatingEmail.set(true);
+    this.accountError.set(null);
+    this.accountSuccess.set(null);
+    const res = await this.authService.updateUserEmail(this.updateEmailInput);
+    if (res.status === 'success') {
+      this.accountSuccess.set('Email updated successfully.');
+      this.updateEmailInput = '';
+    } else {
+      this.accountError.set(res.message || 'Failed to update email.');
+    }
+    this.isUpdatingEmail.set(false);
+    this.cdr.markForCheck();
+  }
+
+  async updatePassword() {
+    if (!this.updatePasswordInput) return;
+    this.isUpdatingPassword.set(true);
+    this.accountError.set(null);
+    this.accountSuccess.set(null);
+    const res = await this.authService.updateUserPassword(this.updatePasswordInput);
+    if (res.status === 'success') {
+      this.accountSuccess.set('Password updated successfully.');
+      this.updatePasswordInput = '';
+    } else {
+      this.accountError.set(res.message || 'Failed to update password.');
+    }
+    this.isUpdatingPassword.set(false);
+    this.cdr.markForCheck();
+  }
+
+  subscribeToPro() {
+    this.isBillingLoading.set(true);
+    this.billingError.set(null);
+    this.http
+      .post<any>(`${environment.backendUrl}/api/v1/billing/create-checkout-session`, {})
+      .subscribe({
+        next: res => {
+          if (res.checkout_url) {
+            window.location.href = res.checkout_url;
+          } else {
+            this.billingError.set('Failed to initialize checkout.');
+            this.isBillingLoading.set(false);
+          }
+        },
+        error: err => {
+          this.billingError.set(err.error?.error || 'Failed to initialize checkout.');
+          this.isBillingLoading.set(false);
+        },
+      });
+  }
+
+  cancelSubscription() {
+    const dialogRef = this.dialog.open(ConfirmDialog, {
+      data: {
+        title: 'Cancel Subscription',
+        message:
+          'Are you sure you want to cancel your Pro subscription? It will remain active until the end of your billing cycle.',
+        confirmText: 'Cancel Subscription',
+        isDestructive: true,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.isBillingLoading.set(true);
+        this.billingError.set(null);
+        this.http
+          .post<any>(`${environment.backendUrl}/api/v1/billing/cancel-subscription`, {})
+          .subscribe({
+            next: res => {
+              this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end);
+              this.billingSuccess.set(
+                'Subscription cancelled. It will remain active until the end of the billing period.',
+              );
+              this.isBillingLoading.set(false);
+              this.cdr.markForCheck();
+            },
+            error: err => {
+              this.billingError.set(err.error?.error || 'Failed to cancel subscription.');
+              this.isBillingLoading.set(false);
+              this.cdr.markForCheck();
+            },
+          });
+      }
+    });
+  }
+
+  resumeSubscription() {
+    this.isBillingLoading.set(true);
+    this.billingError.set(null);
+    this.http
+      .post<any>(`${environment.backendUrl}/api/v1/billing/resume-subscription`, {})
+      .subscribe({
+        next: res => {
+          this.subscriptionCancelAtPeriodEnd.set(res.cancel_at_period_end);
+          this.billingSuccess.set('Subscription resumed successfully.');
+          this.isBillingLoading.set(false);
+          this.cdr.markForCheck();
+        },
+        error: err => {
+          this.billingError.set(err.error?.error || 'Failed to resume subscription.');
+          this.isBillingLoading.set(false);
+          this.cdr.markForCheck();
+        },
+      });
+  }
+
+  private loadIntegrations() {
+    if (this.authService.isAuthenticated()) {
+      this.monitorService.getIntegrations().subscribe({
+        next: data => {
+          this.integrations.set(data);
+          this.cdr.markForCheck();
+        },
+        error: err => console.error('Error fetching integrations:', err),
+      });
+    }
   }
 
   loadStatusPages() {

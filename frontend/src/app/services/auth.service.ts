@@ -23,6 +23,8 @@ import {
   GoogleAuthProvider,
   linkWithPopup,
   unlink,
+  updateEmail,
+  updatePassword,
 } from 'firebase/auth';
 
 @Injectable({
@@ -366,6 +368,44 @@ export class AuthService {
     } catch (e: any) {
       console.error(e);
       return false;
+    }
+  }
+
+  async updateUserEmail(newEmail: string) {
+    if (!this.auth.currentUser) throw new Error('No user logged in');
+    try {
+      await updateEmail(this.auth.currentUser, newEmail);
+      return { status: 'success' };
+    } catch (e: any) {
+      console.error(e);
+      let errorMsg = 'Failed to update email.';
+      if (e.code === 'auth/requires-recent-login') {
+        errorMsg =
+          'This operation is sensitive and requires recent authentication. Please log out and log back in before retrying.';
+      } else if (e.code === 'auth/email-already-in-use') {
+        errorMsg = 'This email is already in use by another account.';
+      } else if (e.code === 'auth/invalid-email') {
+        errorMsg = 'Invalid email address.';
+      }
+      return { status: 'error', message: errorMsg };
+    }
+  }
+
+  async updateUserPassword(newPassword: string) {
+    if (!this.auth.currentUser) throw new Error('No user logged in');
+    try {
+      await updatePassword(this.auth.currentUser, newPassword);
+      return { status: 'success' };
+    } catch (e: any) {
+      console.error(e);
+      let errorMsg = 'Failed to update password.';
+      if (e.code === 'auth/requires-recent-login') {
+        errorMsg =
+          'This operation is sensitive and requires recent authentication. Please log out and log back in before retrying.';
+      } else if (e.code === 'auth/weak-password') {
+        errorMsg = 'Password should be at least 6 characters.';
+      }
+      return { status: 'error', message: errorMsg };
     }
   }
 
