@@ -64,25 +64,35 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
 
     # Or try as StatusPage slug/ID
     try:
-      page = await sync_to_async(
-        StatusPage.objects.filter(Q(id=tenant_id) | Q(slug=tenant_id)).first
-      )()
+      import uuid
+
+      try:
+        uuid.UUID(tenant_id)
+        query = Q(id=tenant_id) | Q(slug=tenant_id)
+      except ValueError:
+        query = Q(slug=tenant_id)
+
+      page = await sync_to_async(StatusPage.objects.filter(query).first)()
       if page and page.tenant_id:
-        actual_tenant_id = page.tenant_id
+        actual_tenant_id = str(page.tenant_id)
     except Exception:
       pass
 
   if actual_tenant_id:
-    return await sync_to_async(
-      ValidatedSite.objects.filter(
-        tenant_id=actual_tenant_id, domain=domain, is_verified=True
-      ).exists
-    )()
-  else:
-    # Fallback to checking if the domain is registered globally
-    return await sync_to_async(
-      ValidatedSite.objects.filter(domain=domain, is_verified=True).exists
-    )()
+    try:
+      import uuid
+
+      uuid.UUID(actual_tenant_id)
+      return await sync_to_async(
+        ValidatedSite.objects.filter(
+          tenant_id=actual_tenant_id, domain=domain, is_verified=True
+        ).exists
+      )()
+    except ValueError:
+      pass
+
+  # Fallback to checking if the domain is registered globally
+  return await sync_to_async(ValidatedSite.objects.filter(domain=domain, is_verified=True).exists)()
 
 
 @router.post("/endpoints")

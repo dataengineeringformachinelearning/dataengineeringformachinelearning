@@ -6,6 +6,7 @@ import {
   ChangeDetectorRef,
   PLATFORM_ID,
   OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
@@ -44,7 +45,7 @@ export interface ChartOptions {
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })
-export class AnalyticsComponent implements OnInit {
+export class AnalyticsComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
@@ -92,7 +93,10 @@ export class AnalyticsComponent implements OnInit {
   public securityAlertsChartOptions: ChartOptions;
 
   public originMapData: any[] = [];
-  private map: L.Map | undefined;
+  public map: L.Map | undefined;
+  private intervalId: any;
+
+  public tenantOptions: SelectOption[] = [];
 
   get isDarkMode(): boolean {
     return this.themeService.theme() === 'dark';
@@ -500,9 +504,19 @@ export class AnalyticsComponent implements OnInit {
       this.loadTenants();
       this.loadAnalyticsData();
 
-      setInterval(() => {
+      this.intervalId = setInterval(() => {
         this.loadAnalyticsData();
       }, 60000);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+    }
+    if (this.map) {
+      this.map.remove();
+      this.map = undefined;
     }
   }
 
