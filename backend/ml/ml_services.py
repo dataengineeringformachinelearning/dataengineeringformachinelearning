@@ -308,6 +308,15 @@ def train_threat_model(tenant: Any) -> ThreatReport:
   endpoints = Endpoints.objects.filter(tenant=tenant, last_tested__gte=cutoff)
   total_requests = endpoints.count()
 
+  if total_requests == 0:
+    return ThreatReport.objects.create(
+      tenant=tenant,
+      anomaly_score=0.0,
+      top_location="No Connected Integration",
+      location_weight=0.0,
+      suspicious_ratio=0.0,
+    )
+
   if total_requests > 0:
     failure_requests = endpoints.filter(Q(status_code__gte=500) | Q(is_active=False)).count()
     failure_rate = failure_requests / total_requests
@@ -329,19 +338,35 @@ def train_threat_model(tenant: Any) -> ThreatReport:
 
   # If integrations exist, pull real details (or simulate based on them)
   if integrations.exists():
-    location_weight = 0.35
-    top_location = "United States"
-    failure_rate = 0.02
-    suspicious_ratio = 0.05
+    if tenant and getattr(tenant, "is_platform_tenant", False):
+      location_weight = 0.35
+      top_location = "United States"
+      failure_rate = 0.02
+      suspicious_ratio = 0.05
 
-    for integ in integrations:
-      if integ.provider == "google":
-        location_weight = 0.62
-        top_location = "China"
-      elif integ.provider == "microsoft":
-        failure_rate = max(failure_rate, 0.08)
-        suspicious_ratio = max(suspicious_ratio, 0.22)
-        top_location = "Russia"
+      for integ in integrations:
+        if integ.provider == "google":
+          location_weight = 0.62
+          top_location = "China"
+        elif integ.provider == "microsoft":
+          failure_rate = max(failure_rate, 0.08)
+          suspicious_ratio = max(suspicious_ratio, 0.22)
+          top_location = "Russia"
+    else:
+      from monitor.models import ThreatIntelligence
+
+      latest_threat = (
+        ThreatIntelligence.objects.filter(tenant=tenant).order_by("-timestamp").first()
+      )
+      if latest_threat:
+        top_location = latest_threat.location or latest_threat.ip_address or latest_threat.source
+        location_weight = 0.1
+      else:
+        top_location = "No Connected Integration"
+        location_weight = 0.0
+  else:
+    top_location = "No Connected Integration"
+    location_weight = 0.0
 
   # Load the global platform model
   import os
