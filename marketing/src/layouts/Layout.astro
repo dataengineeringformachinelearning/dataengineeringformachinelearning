@@ -10,6 +10,9 @@ export interface Props {
 }
 
 const { title, description = "Interactive steps, working notes, and AI annotation on the Web Application book." } = Astro.props;
+
+// Determine App URL based on environment
+const APP_URL = import.meta.env.PUBLIC_APP_URL || (import.meta.env.DEV ? 'http://localhost:4200' : 'https://deml.app');
 ---
 
 <!doctype html>
@@ -27,6 +30,31 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<meta name="author" content="Joe Alongi" />
+		<meta name="robots" content="index, follow" />
+		<meta name="format-detection" content="telephone=no" />
+		<meta name="referrer" content="strict-origin-when-cross-origin" />
+
+		<!-- Canonical URL -->
+		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={new URL('/data-engineering-for-machine-learning-preview.png', Astro.site)} />
+		<meta property="og:site_name" content="Data Engineering for Machine Learning" />
+		<meta property="og:locale" content="en_US" />
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content={Astro.url} />
+		<meta property="twitter:title" content={title} />
+		<meta property="twitter:description" content={description} />
+		<meta property="twitter:image" content={new URL('/data-engineering-for-machine-learning-preview.png', Astro.site)} />
+		<meta name="twitter:site" content="@joealongi" />
+		<meta name="twitter:creator" content="@joealongi" />
 
 		<!-- Theme Colors -->
 		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
@@ -58,6 +86,10 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 				}
 			})();
 		</script>
+
+		<!-- DEML Widgets Hosted by App -->
+		<script src={APP_URL + "/assets/widgets/cookie-consent.js"} defer></script>
+		<script type="module" src={APP_URL + "/assets/widgets/search-dialog.js"} defer></script>
 	</head>
 	<body class="mat-typography">
 		<a href="#main-content" class="skip-link" style="color: #ffffff; background-color: #000000">Skip to main content</a>

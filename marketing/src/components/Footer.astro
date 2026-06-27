@@ -39,7 +39,7 @@ const currentYear = new Date().getFullYear();
           <li><a href="/terms">Terms of Service</a></li>
           <li><a href="/compliance">SOC2 Compliance</a></li>
           <li><a href="/privacy#gdpr">GDPR Compliance</a></li>
-          <li><a href="#cookie-settings">Cookie Settings</a></li>
+          <li><a href="#" onclick="event.preventDefault(); if(window.DemlWidgets) window.DemlWidgets.openCookieSettings();">Cookie Settings</a></li>
         </ul>
       </div>
     </nav>
@@ -53,16 +53,13 @@ const currentYear = new Date().getFullYear();
       </div>
 
       <div class="footer-compliance-row">
-        <div class="copyright-info">
-          <span class="material-icons brand-icon footer-logo glowing-icon-sm" aria-hidden="true">analytics</span>
+        <div class="copyright-info" style="display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: center; flex-wrap: wrap;">
           <span class="copyright-text">
-            Copyright © {currentYear} Data Engineering for Machine Learning by
-            <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>. All rights reserved.
+            Copyright © {currentYear} Data Engineering for Machine Learning by <a href="https://joealongi.dev/">Joe Alongi</a>. All rights reserved.
           </span>
           <span class="footer-separator" aria-hidden="true">|</span>
           <span class="footer-powered">
-            Powered by
-            <a href="https://railway.com?referralCode=BpTk0g" target="_blank" rel="noopener noreferrer">Railway</a>
+            Powered by <a href="https://railway.com/?referralCode=BpTk0g">Railway</a>
           </span>
         </div>
       </div>
@@ -228,9 +225,10 @@ const currentYear = new Date().getFullYear();
     const usaBadge = document.getElementById('usa-badge');
     if (usaBadge) {
       usaBadge.addEventListener('mouseenter', (e) => {
-        confetti({
+          confetti({
           particleCount: 100,
           spread: 70,
+          colors: ['#ff0000', '#ffffff', '#0000ff'],
           origin: {
             x: e.clientX / window.innerWidth,
             y: e.clientY / window.innerHeight

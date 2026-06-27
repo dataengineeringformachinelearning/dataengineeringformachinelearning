@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout title="Privacy Policy - DEML Platform">
   <div class="dashboard-page-container">
+    <div class="ambient-background"></div>
     <div class="dashboard-content-area">
       <div class="content-wrapper">
         <article class="page-content" id="privacy-policy-document">
@@ -61,7 +62,7 @@ import Layout from '../layouts/Layout.astro';
 
             <div class="cookie-action-box">
               <p>You can adjust, enable, or revoke your cookie choices at any time.</p>
-              <button class="mat-mdc-raised-button mat-primary" id="privacy-open-cookie-settings">
+              <button class="mat-mdc-raised-button mat-primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
                 Manage Cookie Preferences
               </button>
             </div>
@@ -177,7 +178,7 @@ import Layout from '../layouts/Layout.astro';
 }
 
 .content-wrapper {
-  max-width: 800px;
+  max-width: 1152px;
   margin: 0 auto;
   padding: 40px 24px;
 }

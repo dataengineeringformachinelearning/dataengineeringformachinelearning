@@ -1,0 +1,312 @@
+---
+import Layout from '../layouts/Layout.astro';
+import fs from 'node:fs';
+import { marked } from 'marked';
+
+// Read the markdown file
+const pageMarkdownPath = process.cwd() + '/src/assets/content/page.md';
+const rawMarkdown = fs.readFileSync(pageMarkdownPath, 'utf-8');
+
+// Parse logic matching the original bookService
+const rawChunks = rawMarkdown.split(
+  /(?=^## (?:Chapter \d+:|Appendix|My Notes on Deployment & Release|Acknowledgements|Introduction))/m
+);
+
+const chapters = [
+  {
+    title: 'Cover',
+    content: '',
+  },
+];
+
+rawChunks.forEach(chunk => {
+  const trimmed = chunk.trim();
+  if (!trimmed) return;
+
+  const lines = trimmed.split('\n');
+  const firstLine = lines[0];
+  const title = firstLine.startsWith('## ')
+    ? firstLine.replace('## ', '').trim()
+    : 'Introduction';
+
+  chapters.push({
+    title,
+    content: marked.parse(trimmed),
+  });
+});
+
+if (chapters.length === 1 && chapters[0].title === 'Cover') {
+  chapters.push({
+    title: 'Book Content',
+    content: marked.parse(rawMarkdown),
+  });
+}
+---
+
+<Layout title="The Book - DEML Platform">
+  <div class="dashboard-page-container dashboard-layout" id="book-app">
+    <div class="ambient-background"></div>
+
+    <aside class="dashboard-sidebar no-print">
+      <div class="sidebar-search sidebar-extracted-1" tabindex="0" role="button" aria-label="Open search dialog" style="margin: 18px 18px 0" onclick="if(window.DemlWidgets) window.DemlWidgets.openSearch()">
+        <div class="search-wrapper">
+          <span class="material-icons" style="font-size: 16px; width: 16px; height: 16px; color: var(--text-muted);">search</span>
+          <span class="sidebar-search-placeholder">Search...</span>
+          <kbd class="search-shortcut">⌘K</kbd>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3 class="section-title">Chapters</h3>
+        <div class="page-list" id="chapter-list">
+          {chapters.map((chapter, index) => (
+            <div
+              class={`page-item ${index === 0 ? 'active' : ''}`}
+              data-index={index}
+              tabindex="0"
+              role="button"
+            >
+              <span class="page-title">{chapter.title}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </aside>
+
+    <div class="dashboard-main dashboard-content-area" style="overflow-y: auto" id="main-content">
+      <div class="content-wrapper">
+        <div class="mobile-chapter-select no-print">
+          <select id="mobile-chapter-dropdown" style="width: 100%; padding: 8px; border-radius: 4px; background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border);">
+            {chapters.map((chapter, index) => (
+              <option value={index}>{chapter.title}</option>
+            ))}
+          </select>
+        </div>
+
+        <div class="whitepaper-container">
+          <div class="whitepaper-header">
+            <div class="section-tag-row" style="justify-content: center">
+              <span class="section-tag">The Book</span>
+            </div>
+            <h1 class="title">Data Engineering for Machine Learning</h1>
+            <p class="subtitle">
+              Building High-Throughput Event Platforms for Real-Time Detection and Response
+            </p>
+
+            <div class="author-meta" style="display: flex; justify-content: center; gap: 9px; font-size: 1rem; color: var(--text-muted); margin-bottom: 27px;">
+              <span>Interactive Guides, Working Notes, & Reference Material for Security Engineers</span>
+            </div>
+
+            <div style="max-width: 500px; margin-left: auto; margin-right: auto">
+              <div class="progress-bar-header" style="display: flex; justify-content: space-between; font-size: 1rem; font-weight: 600; color: var(--text-muted); margin-bottom: 9px;">
+                <span>Reading Progress</span>
+                <span class="progress-percentage" id="progress-text" style="color: var(--color-primary-container)">0%</span>
+              </div>
+              <div class="progress-bar-container" style="width: 100%; height: 9px; background-color: var(--hover-color); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; position: relative;">
+                <div class="progress-bar-fill" id="progress-bar" style="width: 0%; position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-container) 100%); transition: width 0.3s ease-out;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div id="chapter-contents">
+            {chapters.map((chapter, index) => (
+              <div class="chapter-content-view" id={`chapter-content-${index}`} style={index === 0 ? "display: block;" : "display: none;"}>
+                {chapter.title === 'Cover' ? (
+                  <div class="book-cover-page" style="display: flex; justify-content: center; align-items: center; padding: 45px 0; animation: fade-in 0.8s ease-out;">
+                    <div style="width: 100%; max-width: 460px; aspect-ratio: 3 / 4.2; background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 6px 18px 18px 6px; box-shadow: -6px 0 18px rgba(0, 0, 0, 0.1), 18px 18px 54px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.3s ease;">
+                      <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 28px; background: linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(255, 255, 255, 0.1) 15%, rgba(0, 0, 0, 0.2) 100%); z-index: 10; border-right: 1px solid rgba(0, 0, 0, 0.2);"></div>
+                      <div style="position: absolute; left: 28px; top: 0; bottom: 0; width: 4px; background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0%, transparent 100%); z-index: 9;"></div>
+                      <div style="display: flex; flex-direction: column; align-items: center; padding: 54px 36px 45px 54px; height: 100%; width: 100%; text-align: center; background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);">
+                        <div style="margin-bottom: auto; letter-spacing: 0.15em; font-size: 1rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Interactive Guide</div>
+                        <span class="material-icons" style="font-size: 160px; height: 160px; width: 160px; color: var(--color-primary); filter: drop-shadow(0 9px 18px rgba(0, 0, 0, 0.2)); margin: 36px 0;">rocket_launch</span>
+                        <h1 style="font-size: 2.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 12px; letter-spacing: -0.02em;">Data Engineering<br />for Machine Learning</h1>
+                        <p style="font-size: 1rem; color: var(--text-muted); font-weight: 500; font-style: italic;">Building High-Throughput Event Platforms</p>
+                        <div style="margin-top: auto; padding-top: 36px; border-top: 1px solid var(--border); width: 100%; display: flex; justify-content: space-between; align-items: center;">
+                          <span style="font-size: 1rem; font-weight: 600; color: var(--text-color)">Joe Alongi</span>
+                          <span style="font-size: 1rem; font-weight: 700; color: var(--color-primary); letter-spacing: 0.1em;">VOL. I</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div class="whitepaper-content">
+                    <section class="paper-section">
+                      <div class="page-transition-container" set:html={chapter.content}></div>
+                    </section>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div class="pagination-controls-outlined" style="margin-top: 48px">
+            <button class="pagination-btn" id="prev-btn" disabled>
+              <span class="material-icons">chevron_left</span> Previous
+            </button>
+            <span class="page-counter" id="page-counter-text">
+              Chapter 1 of {chapters.length}
+            </span>
+            <button class="pagination-btn" id="next-btn">
+              Next <span class="material-icons">chevron_right</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style lang="scss">
+:global(:root) {
+  --book-accent: var(--color-primary-container, #3b82f6);
+  --book-active-gradient: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, rgba(192, 197, 193, 0.08) 100%);
+}
+
+.dashboard-page-container {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.dashboard-layout {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+}
+
+.dashboard-sidebar {
+  display: none;
+}
+
+@media (min-width: 901px) {
+  .dashboard-layout { flex-direction: row; }
+  .dashboard-sidebar { display: block; width: 280px; border-right: 1px solid var(--border); }
+  .mobile-chapter-select { display: none; }
+}
+
+.sidebar-section {
+  padding: 24px 16px;
+  overflow-y: auto;
+  .section-title { font-size: 1rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin: 0 0 8px 8px; font-weight: 600; }
+}
+
+.sidebar-search {
+  padding: 16px;
+  display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border);
+  .search-wrapper {
+    width: 100%; display: flex; align-items: center; gap: 8px; background: rgba(0, 0, 0, 0.15); border: 1px solid var(--border); padding: 8px; border-radius: 16px;
+  }
+}
+
+.page-list { display: flex; flex-direction: column; gap: 8px; }
+.page-item {
+  padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s ease; border: 1px solid transparent;
+  &:hover { background-color: var(--hover-color); border-color: var(--border); }
+  &.active {
+    background: var(--book-active-gradient); border-color: var(--book-accent); color: var(--book-accent);
+    .page-title { color: var(--book-accent); font-weight: 600; }
+  }
+}
+
+.dashboard-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; }
+.content-wrapper { padding: 40px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
+
+.whitepaper-header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 32px; margin-bottom: 48px; }
+.title { font-size: 2.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 12px; }
+.subtitle { font-size: 1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 24px; }
+
+.whitepaper-content .paper-section {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-sm);
+  :global(h2) { font-size: 1.5rem; font-weight: 800; margin: 0 0 16px; color: var(--text-color); }
+  :global(h3) { font-size: 1.25rem; font-weight: 700; margin: 24px 0 16px; color: var(--text-color); }
+  :global(p) { font-size: 1.05rem; line-height: 1.6; margin: 0 0 16px; }
+  :global(pre) { background: rgba(0,0,0,0.2); padding: 16px; border-radius: 8px; overflow-x: auto; margin-bottom: 16px; }
+}
+
+.pagination-controls-outlined {
+  display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 24px; padding: 16px 32px; border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg);
+}
+.pagination-btn {
+  background: var(--color-primary) !important; color: white !important; font-weight: 600; border-radius: 16px; border: none; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s;
+  &[disabled] { opacity: 0.5; cursor: not-allowed; }
+  &:not([disabled]):hover { opacity: 0.9; }
+}
+</style>
+
+<script define:vars={{ totalChapters: chapters.length }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    let currentIndex = 0;
+    const pageItems = document.querySelectorAll('.page-item');
+    const contentViews = document.querySelectorAll('.chapter-content-view');
+    const mobileSelect = document.getElementById('mobile-chapter-dropdown');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const pageCounter = document.getElementById('page-counter-text');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const mainContent = document.getElementById('main-content');
+
+    function updateView() {
+      // Sidebar
+      pageItems.forEach((item, idx) => {
+        if (idx === currentIndex) item.classList.add('active');
+        else item.classList.remove('active');
+      });
+
+      // Dropdown
+      if (mobileSelect) mobileSelect.value = currentIndex;
+
+      // Contents
+      contentViews.forEach((view, idx) => {
+        if (idx === currentIndex) view.style.display = 'block';
+        else view.style.display = 'none';
+      });
+
+      // Pagination
+      if (prevBtn) prevBtn.disabled = currentIndex === 0;
+      if (nextBtn) nextBtn.disabled = currentIndex === totalChapters - 1;
+      if (pageCounter) pageCounter.textContent = `Chapter ${currentIndex + 1} of ${totalChapters}`;
+
+      // Progress bar
+      const pct = Math.round(((currentIndex + 1) / totalChapters) * 100);
+      if (progressBar) progressBar.style.width = pct + '%';
+      if (progressText) progressText.textContent = pct + '%';
+
+      if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    pageItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        currentIndex = parseInt(e.currentTarget.getAttribute('data-index'));
+        updateView();
+      });
+    });
+
+    if (mobileSelect) {
+      mobileSelect.addEventListener('change', (e) => {
+        currentIndex = parseInt(e.target.value);
+        updateView();
+      });
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) { currentIndex--; updateView(); }
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        if (currentIndex < totalChapters - 1) { currentIndex++; updateView(); }
+      });
+    }
+
+    updateView(); // init
+  });
+</script>
