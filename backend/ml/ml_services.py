@@ -1,5 +1,8 @@
+import logging
 import os
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 import torch
 import torch.nn as nn
@@ -199,7 +202,7 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
         repo_type="model",
       )
     except Exception as e:
-      print(f"Failed to push SLA model to Hugging Face: {e}")
+      logger.error("Failed to push SLA model to Hugging Face: %s", e)
 
   run = TrainingRun.objects.create(tenant=tenant, average_sla=avg_predicted_sla, loss=final_loss)
   return run
@@ -280,7 +283,7 @@ def train_platform_threat_model() -> dict:
         repo_type="model",
       )
     except Exception as e:
-      print(f"Failed to push Platform Threat model to Hugging Face: {e}")
+      logger.error("Failed to push Platform Threat model to Hugging Face: %s", e)
 
   return {
     "global_failure_rate": global_failure_rate,
@@ -444,6 +447,6 @@ def train_ces_model() -> dict:
         repo_type="model",
       )
     except Exception as e:
-      print(f"Failed to push CES model to Hugging Face: {e}")
+      logger.error("Failed to push CES model to Hugging Face: %s", e)
 
   return {"status": "CES model trained and published successfully"}

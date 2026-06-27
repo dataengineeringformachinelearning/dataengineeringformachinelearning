@@ -157,7 +157,7 @@ Welcome to the platform! Getting your infrastructure connected and streaming dat
 
 - **Registration**: Sign up for a secure account via the web dashboard.
 - **Organizations**: Create an Organization for your team to enable Role-Based Access Control (RBAC) and shared dashboards.
-- **Billing**: Select your tier. The free tier provides up to 100 API requests per minute for sandbox testing and development.
+- **Billing**: Select your tier. The free tier provides up to 60 API requests per minute for sandbox testing and development.
 
 ### 2. Connect Your Services
 

@@ -43,8 +43,17 @@ class Command(BaseCommand):
       # But let's process it to be safe
 
       avg_resp = endpoints_data.aggregate(Avg("response_time"))["response_time__avg"]
-      avg_latency_ms = int(avg_resp.total_seconds() * 1000) if avg_resp else 0.0
-      p99_latency_ms = avg_latency_ms * 1.5 if avg_latency_ms else 0.0
+      avg_latency_ms = float(avg_resp.total_seconds() * 1000) if avg_resp else 0.0
+
+      # Compute real P99 from actual response time values (capped at 5,000 for performance)
+      raw_latencies = list(
+        endpoints_data.values_list("response_time", flat=True).order_by("response_time")[:5000]
+      )
+      if raw_latencies:
+        p99_idx = max(0, int(len(raw_latencies) * 0.99) - 1)
+        p99_latency_ms = round(raw_latencies[p99_idx].total_seconds() * 1000, 2)
+      else:
+        p99_latency_ms = 0.0
 
       failed_requests = endpoints_data.filter(status_code__gte=400).count()
       error_rate_percent = (failed_requests / total_requests * 100) if total_requests > 0 else 0.0

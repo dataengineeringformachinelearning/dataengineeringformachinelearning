@@ -322,7 +322,7 @@ class Command(BaseCommand):
           else "Marketing Web Server"
         )
       elif "auth/user" in path:
-        norm_url = f"{base_domain}/manage"
+        norm_url = f"{base_domain}/settings"
         name = "Auth User"
       elif "auth/register" in path:
         norm_url = f"{base_domain}/"
@@ -344,7 +344,7 @@ class Command(BaseCommand):
           norm_url = f"{base_domain}/status"
           name = "Status Pages Slug Platform Status"
         else:
-          norm_url = f"{base_domain}/manage"
+          norm_url = f"{base_domain}/settings"
           name = "Status Pages"
 
       return norm_url, name

@@ -154,9 +154,9 @@ def rate_limit():
 
       return func(request, *args, **kwargs)
 
-    import asyncio
+    import inspect
 
-    if asyncio.iscoroutinefunction(func):
+    if inspect.iscoroutinefunction(func):
       return async_wrapper
     return sync_wrapper
 

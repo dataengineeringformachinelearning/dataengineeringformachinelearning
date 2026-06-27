@@ -1,5 +1,8 @@
 import datetime
+import logging
 import re
+
+logger = logging.getLogger(__name__)
 
 from django.shortcuts import get_object_or_404
 from ninja import Router, Schema
@@ -565,14 +568,12 @@ def create_incident(request, page_id: str, payload: IncidentIn):
         <p><strong>Status:</strong> {payload.status}</p>
         <p><strong>Details:</strong> {payload.message}</p>
         <hr>
-        <p>Manage your status page details at <a href="{settings.FRONTEND_URL}/manage">Management Console</a>.</p>
+        <p>Manage your status page details at <a href="{settings.FRONTEND_URL}/settings">Settings Console</a>.</p>
         """
     try:
       send_resend_email(page.user.email, subject, html_content)
     except Exception as e:
-      import logging
-
-      logging.getLogger(__name__).error(f"Failed to send email via Resend: {e}")
+      logger.error("Failed to send email via Resend: %s", e)
 
   return IncidentOut(
     id=str(incident.id),
@@ -714,7 +715,7 @@ def google_callback(request, code: str, state: str):
       )
       return redirect(f"{frontend_url}/manage?integration=google&status=success")
   except Exception as e:
-    print(f"OAuth exchange failed: {e}")
+    logger.error("OAuth exchange failed: %s", e)
 
   return redirect(f"{frontend_url}/manage?integration=google&status=failed")
 
