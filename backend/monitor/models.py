@@ -481,6 +481,35 @@ class APIKey(models.Model):
     return f"{self.name} ({self.prefix}...)"
 
 
+class OutboxEvent(models.Model):
+  """
+  Transactional Outbox for reliable event publishing to Redpanda.
+  Events are written atomically with business state changes.
+  A relay (management command or separate process) publishes them.
+  """
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  topic = models.CharField(max_length=100)
+  key = models.CharField(max_length=255, blank=True, null=True)  # for partitioning, e.g. uid
+  payload = models.JSONField()
+  headers = models.JSONField(default=dict, blank=True)
+  created_at = models.DateTimeField(auto_now_add=True)
+  published_at = models.DateTimeField(null=True, blank=True)
+  attempts = models.IntegerField(default=0)
+  last_error = models.TextField(blank=True, null=True)
+  is_published = models.BooleanField(default=False)
+
+  class Meta:
+    indexes = [
+      models.Index(fields=["is_published", "created_at"]),
+      models.Index(fields=["topic"]),
+    ]
+    ordering = ["created_at"]
+
+  def __str__(self):
+    return f"Outbox {self.topic} @ {self.created_at}"
+
+
 class ValidatedSite(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="validated_sites")

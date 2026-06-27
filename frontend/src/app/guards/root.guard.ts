@@ -6,8 +6,8 @@ import { filter, map, take } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export const rootGuard: CanActivateFn = (
-  route,
-  state,
+  _route,
+  _state,
 ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree => {
   const authService = inject(AuthService);
   const router = inject(Router);

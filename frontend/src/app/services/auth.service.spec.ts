@@ -30,7 +30,7 @@ vi.mock('firebase/auth', () => {
     onAuthStateChanged: (auth: any, callback: any) => {
       // Initial call triggers callback
       callback(null);
-      return () => {};
+      return () => undefined;
     },
     deleteUser: () => Promise.resolve({}),
   };

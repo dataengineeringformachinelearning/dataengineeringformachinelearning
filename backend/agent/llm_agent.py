@@ -1,8 +1,11 @@
+import logging
 import os
 
 import aiohttp
 
 from agent.kafka_tool import send_issue_to_redpanda
+
+logger = logging.getLogger(__name__)
 
 
 async def process_user_issue(
@@ -61,29 +64,39 @@ Respond with a brief summary of what you did.
     # Initial call
     async with session.post(url, json=payload) as resp:
       if resp.status != 200:
-        raise Exception(f"Gemini API Error: {await resp.text()}")
+        error_text = await resp.text()
+        logger.error("Gemini API error %s: %s", resp.status, error_text[:500])
+        raise Exception(f"Gemini API Error: {error_text}")
+
       data = await resp.json()
 
-    # Process response
+    # Process response defensively (Gemini may block or change shape)
+    candidates = data.get("candidates") or []
+    if not candidates:
+      finish_reason = (data.get("promptFeedback") or {}).get("blockReason")
+      if finish_reason:
+        logger.warning("Gemini blocked the response: %s", finish_reason)
+      return "Agent failed to generate a response (no candidates)."
+
     try:
-      parts = data["candidates"][0]["content"]["parts"]
-    except KeyError:
-      return "Agent failed to generate a response."
+      parts = candidates[0].get("content", {}).get("parts") or []
+    except Exception:
+      parts = []
 
     for part in parts:
-      if "functionCall" in part:
-        fc = part["functionCall"]
-        if fc["name"] == "send_issue_to_redpanda":
-          args = fc.get("args", {})
-          await send_issue_to_redpanda(
-            topic=args.get("topic", "user-issues"),
-            issue_report=args.get("issue_report", ""),
-            bug_report_id=args.get("bug_report_id") or bug_report_id,
-          )
-          return f"Analyzed issue and successfully dispatched report to Redpanda topic '{args.get('topic', 'user-issues')}'."
+      fc = part.get("functionCall") or {}
+      if fc.get("name") == "send_issue_to_redpanda":
+        args = fc.get("args", {}) or {}
+        await send_issue_to_redpanda(
+          topic=args.get("topic", "user-issues"),
+          issue_report=args.get("issue_report", ""),
+          bug_report_id=args.get("bug_report_id") or bug_report_id,
+        )
+        return f"Analyzed issue and successfully dispatched report to Redpanda topic '{args.get('topic', 'user-issues')}'."
 
     # Fallback if no tool was called
-    if parts and "text" in parts[0]:
+    if parts and isinstance(parts[0], dict) and "text" in parts[0]:
       return parts[0]["text"]
 
+    logger.info("Agent did not invoke the Redpanda tool; returning text fallback if any.")
     return "Agent processed the issue but did not dispatch to Redpanda."

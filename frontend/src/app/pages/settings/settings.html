@@ -679,39 +679,41 @@
           </div>
         </div>
 
-        <!-- CQRS Architecture Verification -->
+        <!-- Event Projections Verification -->
         <div class="status-card-outlined mfa-settings-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
               <mat-icon>speed</mat-icon>
-              Architecture Verification (CQRS)
+              Event Projections Verification
             </h2>
           </div>
           <div class="card-body-clean">
             <div>
               <p class="embed-desc">
-                Test the end-to-end event loop: Angular -> Firebase Function -> Redpanda -> Django
-                Worker -> Firestore -> Angular UI.
+                Test the end-to-end Event Projections flow: Angular -> Firebase Function
+                (ingestEvent) -> Redpanda (or Firestore fallback) -> Django Worker -> Firestore
+                (deml DB) -> Angular UI via onSnapshot. Requires functions deployed and Firestore
+                "deml" DB + rules.
               </p>
 
               <div class="mfa-enrollment-form panel-clean">
                 <button
                   mat-flat-button
                   color="accent"
-                  (click)="testArchitectureLoop()"
+                  (click)="verifyEventProjections()"
                   [disabled]="isTestingArchitecture()"
                   class="mfa-btn"
                 >
                   @if (isTestingArchitecture()) {
                   <span class="btn-spinner"></span>
-                  } @else { Test Event Loop }
+                  } @else { Test Event Projections }
                 </button>
               </div>
 
-              @if (architectureTestResult()) {
+              @if (projectionResult()) {
               <div class="alert alert-success mt-3 u-style-c5a969">
-                <strong>Event Loop Success! Data from Firestore:</strong>
-                <pre>{{ architectureTestResult() | json }}</pre>
+                <strong>Event Projections Success! Data from Firestore:</strong>
+                <pre>{{ projectionResult() | json }}</pre>
               </div>
               }
             </div>

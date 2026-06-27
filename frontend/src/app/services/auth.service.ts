@@ -130,7 +130,7 @@ export class AuthService {
             this.currentUserId.set(res.user_id);
             this.currentUserRole.set(res.role);
           }
-        } catch (e: any) {
+        } catch (_e: any) {
           this.isAuthenticated.set(true);
           this.currentUserId.set(user.id || 1);
           this.currentUserRole.set(user.role || 'Operator');
@@ -168,7 +168,7 @@ export class AuthService {
           this.currentUserId.set(null);
           this.currentUserRole.set(null);
         }
-      } catch (e: any) {
+      } catch (_e: any) {
         this.isAuthenticated.set(false);
         this.currentUserId.set(null);
         this.currentUserRole.set(null);
@@ -209,7 +209,7 @@ export class AuthService {
           this.currentUserId.set(res.user_id);
           this.currentUserRole.set(res.role);
         }
-      } catch (e: any) {
+      } catch (_e: any) {
         this.isAuthenticated.set(true);
         this.currentUserId.set(1);
         this.currentUserRole.set(role);
@@ -233,7 +233,7 @@ export class AuthService {
           resolver: getMultiFactorResolver(this.auth, e),
         };
       }
-      let errorMsg = 'Invalid credentials or user does not exist.';
+      let errorMsg: string;
       if (e?.code) {
         if (e.code === 'auth/invalid-email' || e.code === 'auth/invalid-credential') {
           errorMsg = 'Invalid email or password.';
@@ -279,7 +279,7 @@ export class AuthService {
     } catch (e: any) {
       this.isProcessing.set(false);
       console.error(e);
-      let errorMsg = 'Registration failed.';
+      let errorMsg: string;
       if (e?.code) {
         if (e.code === 'auth/email-already-in-use') {
           errorMsg = 'Email already in use.';

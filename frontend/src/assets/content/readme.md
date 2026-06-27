@@ -26,10 +26,13 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 
 > **[Jump to Acknowledgements & Technologies](#acknowledgements--technologies)**
 
+> **Recent Architectural Evolution**: The platform has adopted an **Event Projections** model with Firebase Cloud Functions as the client command gateway, Redpanda for reliable event streaming, Django workers for processing, and Firestore (named `deml` database) for real-time queries. See the updated architecture diagram and the Settings → "Event Projections Verification" panel for the end-to-end test loop. Firebase Functions and rules are deployed via a dedicated GitHub workflow.
+
 ---
 
 ## Core Features
 
+- **Event Projections Architecture**: Commands via Firebase Cloud Functions (`ingestEvent`) to Redpanda (with Firestore fallback); Projections materialized into Firestore (named `deml` DB); Queries via direct real-time subscriptions. Django workers act as the projection layer.
 - **High-Throughput Ingestion**: Broker-based telemetry pipelines via Redpanda and Polars.
 - **Tenant Isolation**: Absolute database-level isolation ensuring data and widget intake align precisely with your tenant workspace.
 - **Big Data Aggregate Threat Modeling**: Models train on global anonymized data to leverage "herd immunity" for catching anomalies based on vast datasets.
@@ -41,6 +44,13 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 
 ## Solution Architecture
 
+The platform implements an **Event Projections** architecture for client-driven events with strong reliability guarantees:
+
+- **Commands** (writes): Angular Client → Firebase Cloud Functions (`ingestEvent`) → Redpanda (topic: `frontend-events`) with Firestore fallback. Django API paths use a **Transactional Outbox** pattern (events written atomically to Postgres `OutboxEvent` table before returning).
+- **Projections**: Django `telemetry_worker` consumes from Redpanda, enriches data (e.g. active endpoint counts from Postgres), and writes to Firestore (named `deml` DB). Projections are **idempotent** (using stable message keys) and support a dead-letter queue (`frontend-events-dlq`) for failed messages.
+- **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/{uid}/data/stats`).
+- Events include a `version` field for schema governance. A dedicated `outbox_relay` management command ensures reliable publishing from the Outbox.
+
 ```mermaid
 flowchart TB
     subgraph Frontend
@@ -48,19 +58,29 @@ flowchart TB
         A[Angular Client]
     end
 
-    subgraph "API Gateway & Auth"
-        B[Django REST API]
+    subgraph "Client Event Gateway (Commands)"
+        FCF[Firebase Cloud Functions<br/>ingestEvent callable]
         C[Firebase Authentication]
-        B -.->|Verifies JWT| C
+        FCF -.->|Auth Context| C
     end
 
-    subgraph "Telemetry Ingestion"
-        D[Redpanda Kafka Broker]
+    subgraph "Event Broker & Processing"
+        D[Redpanda Kafka Broker<br/>frontend-events topic]
+        TW[Django Telemetry Worker<br/>(Polars + ORM enrichment)]
+    end
+
+    subgraph "Event Projections (Read Models)"
+        FS[(Firestore<br/>named DB: deml)]
+    end
+
+    subgraph "API Gateway & Auth (Legacy/Integrations)"
+        B[Django REST API]
+        C2[Firebase Authentication]
+        B -.->|Verifies JWT| C2
+    end
+
+    subgraph "Analytics & ML"
         E[Polars Batch Worker]
-        D -->|Consumes| E
-    end
-
-    subgraph "Machine Learning"
         F[PyTorch SLA Models]
         G[Scikit-learn Tuning]
     end
@@ -71,15 +91,31 @@ flowchart TB
         J[OpenTelemetry Collector]
     end
 
+    A -->|Client Events / get_stats| FCF
+    FCF -->|Try publish| D
+    FCF -->|Fallback write| FS
+    D -->|Consume| TW
+    TW -->|Enriched write| FS
+    FS -.->|onSnapshot (users/{uid}/data/stats)| A
     A -->|REST / CORS| B
     B -->|Produces Event| D
-    E -->|Writes Analytics| H
+    E -->|Consumes & Writes| H
     E -->|Triggers Training| F
     F -->|Optimizes| G
     B -->|OTLP Traces| J
     E -->|OTLP Traces| J
     J -->|Stores| I
 ```
+
+**Key Recent Architectural Additions (Reliability & Event Projections):**
+
+- **Transactional Outbox Pattern**: Events are durably recorded in Postgres `OutboxEvent` model (written atomically with business state changes) and published reliably via the new `outbox_relay` management command (avoids lost events on crashes/restarts).
+- **Idempotent Projections + DLQ**: The `telemetry_worker` now uses stable message keys (`idempotency_key`) for deduplication of projections into Firestore; failed messages are routed to a `frontend-events-dlq` topic.
+- Firebase Cloud Functions (`ingestEvent`) as the primary client command gateway (includes `version` and `idempotency_key` for governance).
+- Event Projections using Firestore (named "deml" database) for low-latency materialized read models, with the worker as the authoritative projection layer.
+- Event schema versioning ("1.0") and dedicated GitHub Actions workflow (`.github/workflows/firebase-backend-deploy.yml`) for Functions + Firestore rules.
+- Dedicated Firestore security rules for user-owned data isolation.
+- Simplified projection flow: worker is now the single source for stats/projections (removed direct writes from the function).
 
 ---
 

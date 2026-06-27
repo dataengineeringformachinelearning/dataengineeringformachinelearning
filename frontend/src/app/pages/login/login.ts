@@ -247,7 +247,7 @@ export class Login implements OnInit, OnDestroy {
       }
       this.recaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
         size: 'invisible',
-        callback: () => {},
+        callback: () => undefined,
       });
     } catch (e) {
       console.error('Recaptcha init error', e);

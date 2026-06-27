@@ -25,12 +25,14 @@ def get_ces_model_path():
 
 
 def query_teacher_model(prompt: str) -> float:
+  """Query an external teacher model; falls back to random on any error (with logging)."""
   import random
 
   import requests
 
   hf_token = os.environ.get("HF_TOKEN")
   if not hf_token:
+    logger.warning("HF_TOKEN not set; using random fallback for teacher model")
     return random.uniform(0.0, 1.0)
 
   API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
@@ -53,9 +55,11 @@ def query_teacher_model(prompt: str) -> float:
         try:
           return min(1.0, max(0.0, float(text)))
         except ValueError:
-          pass
-  except Exception:
-    pass
+          logger.warning("Teacher model returned non-numeric output; using random fallback")
+    else:
+      logger.warning("Teacher model HTTP %s: %s", response.status_code, response.text[:200])
+  except Exception as exc:
+    logger.warning("Teacher model query failed: %s; using random fallback", exc)
   return random.uniform(0.0, 1.0)
 
 

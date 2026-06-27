@@ -1,9 +1,9 @@
-import json
 import logging
 
+from asgiref.sync import sync_to_async
 from django.http import HttpResponse
+from monitor.models import OutboxEvent
 from ninja import Router, Schema
-from utils.kafka import get_kafka_producer
 from utils.request import anonymize_ip, get_client_ip, get_user_agent
 
 logger = logging.getLogger(__name__)
@@ -67,19 +67,18 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
   data = payload.dict()
   data["response_time"] = payload.response_time_ms / 1000.0
 
-  async def _send_to_kafka():
-    try:
-      producer = await get_kafka_producer()
-      value = json.dumps(data).encode("utf-8")
-      await producer.send("app-events", value)
-    except Exception as e:
-      logger.error(f"Failed to send telemetry to Kafka: {e}")
-
-  import asyncio
-
-  task = asyncio.create_task(_send_to_kafka())
-  background_tasks.add(task)
-  task.add_done_callback(background_tasks.discard)
+  # Use Transactional Outbox: write to Outbox atomically (via sync_to_async for now)
+  # A relay will publish to Redpanda reliably.
+  try:
+    await sync_to_async(OutboxEvent.objects.create)(
+      topic="app-events",
+      key=str(data.get("tenant_id") or data.get("url", "unknown"))[:255],
+      payload=data,
+      headers={"source": "django-api", "ip": data.get("ip_address")},
+    )
+  except Exception as e:
+    logger.error(f"Failed to create OutboxEvent: {e}")
+    return HttpResponse("Failed to queue event", status=500)
 
   return HttpResponse(status=202)
 

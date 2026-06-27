@@ -4,8 +4,11 @@ The Data Engineering for Machine Learning (DEML) Platform provides a comprehensi
 
 ## Core Features Outline
 
-1. **High-Throughput Asynchronous Telemetry Ingestion**
-   - Utilizes a Redpanda (Kafka-compatible) message broker alongside Polars batch workers to parse high volumes of streaming data. This architecture decouples telemetry ingestion from the primary transactional database, eliminating bottlenecks and allowing for massive scale.
+1. **High-Throughput Asynchronous Telemetry Ingestion + Event Projections (Reliable)**
+   - Client events: Firebase Cloud Functions (`ingestEvent` with `version` + `idempotency_key`) → Redpanda or Firestore fallback.
+   - Django paths use **Transactional Outbox** (`OutboxEvent` model) + `outbox_relay` command for reliable publishing.
+   - `telemetry_worker` performs idempotent projections (with DLQ to `frontend-events-dlq`) and builds materialized read models in Firestore (`deml` DB).
+   - Queries use direct Firestore real-time subscriptions. Redpanda + Polars for heavy batch work. Decouples from transactional DB while providing at-least-once + dedup semantics.
 
 2. **Data Tenancy & Absolute Isolation**
    - All ingested telemetry data and dashboard widgets strictly map to the specific Tenant executing the ingestion. Privacy is guaranteed by default with strict tenant isolation enforced at the database and application levels. Data cannot bleed across tenant boundaries.

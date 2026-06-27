@@ -7,7 +7,7 @@ import polars as pl
 from aiokafka import AIOKafkaConsumer
 from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
-from utils.kafka import get_kafka_brokers
+from utils.kafka import get_kafka_brokers, get_kafka_producer
 from utils.request import anonymize_ip
 
 # Needed to interact with Django ORM asynchronously
@@ -149,13 +149,32 @@ class Command(BaseCommand):
               try:
                 payload = json.loads(msg.value.decode("utf-8"))
                 uid = payload.get("uid")
+                event_version = payload.get("version", "1.0")
+                if event_version != "1.0":
+                  self.stderr.write(
+                    self.style.WARNING(
+                      f"Unknown event version {event_version}, skipping or handling compat"
+                    )
+                  )
                 event_payload = payload.get("payload", {})
                 action = event_payload.get("action")
 
+                # Idempotency: use stable message key (uid + timestamp + action) or Kafka key
+                msg_key = (
+                  msg.key.decode() if msg.key else f"{uid}:{payload.get('timestamp', '')}:{action}"
+                )
                 if uid and action:
-                  await self.process_frontend_event(uid, action, event_payload)
+                  await self.process_frontend_event(
+                    uid, action, event_payload, idempotency_key=msg_key
+                  )
               except Exception as e:
                 self.stderr.write(self.style.ERROR(f"Failed to parse frontend-event msg: {e}"))
+                # Simple DLQ: publish to dead-letter topic for manual replay
+                try:
+                  dlq_producer = await get_kafka_producer()  # reuse or separate
+                  await dlq_producer.send("frontend-events-dlq", msg.value, key=msg.key)
+                except Exception as dlq_e:
+                  self.stderr.write(self.style.ERROR(f"Failed to DLQ: {dlq_e}"))
 
             await consumer.commit()
             self.stdout.write(self.style.SUCCESS("Processed and committed frontend-events batch"))
@@ -165,12 +184,29 @@ class Command(BaseCommand):
       self.stdout.write(self.style.WARNING("Worker stopped."))
 
   @sync_to_async
-  def process_frontend_event(self, uid: str, action: str, event_payload: dict):
+  def process_frontend_event(
+    self, uid: str, action: str, event_payload: dict, idempotency_key: str | None = None
+  ):
     from firebase_admin import firestore
 
     db = firestore.client(database_id="deml")
 
     try:
+      # Idempotency: use a unique doc or check for existing with the key
+      # For simplicity, use a separate 'processed_events' collection or embed key.
+      # Here we use merge with a processed flag keyed by idempotency_key.
+      dedup_doc_id = f"dedup_{idempotency_key}" if idempotency_key else None
+
+      if dedup_doc_id:
+        dedup_ref = (
+          db.collection("users").document(uid).collection("processed_events").document(dedup_doc_id)
+        )
+        if dedup_ref.get().exists:
+          self.stdout.write(
+            self.style.WARNING(f"Skipping duplicate frontend-event {idempotency_key} for {uid}")
+          )
+          return
+
       # Simple mock logic for different actions.
       # In production, this would query Postgres/Clickhouse
       result_data = {
@@ -190,8 +226,17 @@ class Command(BaseCommand):
       doc_ref = db.collection("users").document(uid).collection("data").document("stats")
       doc_ref.set(result_data, merge=True)
 
+      # Record the dedup key
+      if dedup_doc_id:
+        dedup_ref.set(
+          {"processed_at": firestore.SERVER_TIMESTAMP, "idempotency_key": idempotency_key},
+          merge=True,
+        )
+
       self.stdout.write(
-        self.style.SUCCESS(f"Successfully processed {action} for user {uid} and updated Firestore.")
+        self.style.SUCCESS(
+          f"Successfully processed {action} for user {uid} and updated Firestore. (key={idempotency_key})"
+        )
       )
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"Error processing frontend event for user {uid}: {e}"))

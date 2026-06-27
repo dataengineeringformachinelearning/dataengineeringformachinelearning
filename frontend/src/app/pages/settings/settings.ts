@@ -32,6 +32,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
+import { getApp } from 'firebase/app';
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
 import {
@@ -162,9 +164,9 @@ export class Settings implements OnInit {
   billingSuccess = signal<string | null>(null);
   billingError = signal<string | null>(null);
 
-  // CQRS Test
+  // Event Projections Test
   isTestingArchitecture = signal<boolean>(false);
-  architectureTestResult = signal<any>(null);
+  projectionResult = signal<any>(null);
   firestoreSubscription: any = null;
 
   constructor() {
@@ -373,12 +375,12 @@ export class Settings implements OnInit {
       });
   }
 
-  async testArchitectureLoop() {
+  async verifyEventProjections() {
     const uid = this.authService.currentUserId();
     if (!uid) return;
 
     this.isTestingArchitecture.set(true);
-    this.architectureTestResult.set(null);
+    this.projectionResult.set(null);
     this.cdr.markForCheck();
 
     // 1. Subscribe to Firestore for updates
@@ -389,14 +391,14 @@ export class Settings implements OnInit {
     this.firestoreSubscription = this.firestoreService.getRealtimeStats().subscribe({
       next: data => {
         if (data) {
-          this.architectureTestResult.set(data);
+          this.projectionResult.set(data);
           this.isTestingArchitecture.set(false);
           this.cdr.markForCheck();
         }
       },
       error: err => {
         console.error('Firestore subscription error:', err);
-        this.architectureTestResult.set({
+        this.projectionResult.set({
           error: err.message || 'Permission denied connecting to Firestore.',
         });
         this.isTestingArchitecture.set(false);
@@ -404,29 +406,27 @@ export class Settings implements OnInit {
       },
     });
 
-    // 2. Trigger the ingestEvent Cloud Function
+    // 2. Trigger the ingestEvent Cloud Function using the official SDK (reliable auth context in prod)
     try {
-      const user = this.authService.auth?.currentUser;
-      const token = user ? await user.getIdToken() : '';
-      const projectId = environment.firebase.projectId || 'demldotcom';
+      const app = getApp();
+      const functions = getFunctions(app, 'us-central1');
       const isLocal =
         typeof window !== 'undefined' &&
         (window.location.hostname.includes('localhost') ||
           window.location.hostname.includes('127.0.0.1'));
-      const functionsUrl = isLocal
-        ? `http://127.0.0.1:5001/${projectId}/us-central1/ingestEvent`
-        : `https://us-central1-${projectId}.cloudfunctions.net/ingestEvent`;
+      if (isLocal) {
+        connectFunctionsEmulator(functions, '127.0.0.1', 5001);
+      }
 
-      await this.http
-        .post(
-          functionsUrl,
-          { data: { action: 'get_stats', uid, payload: {} } },
-          { headers: { Authorization: `Bearer ${token}` } },
-        )
-        .toPromise();
+      const ingestEvent = httpsCallable(functions, 'ingestEvent');
+      await ingestEvent({ action: 'get_stats', uid, payload: {} });
+      // On success the Firestore subscription above will receive the update via function fallback or worker
     } catch (e) {
       console.error('Failed to trigger ingestEvent:', e);
-      this.architectureTestResult.set({ error: 'Failed to trigger Gateway' });
+      this.projectionResult.set({
+        error: 'Failed to trigger Gateway',
+        details: (e as any)?.message,
+      });
       this.isTestingArchitecture.set(false);
       this.cdr.markForCheck();
     }
@@ -923,7 +923,7 @@ export class Settings implements OnInit {
       }
       this.mfaRecaptchaVerifier = new RecaptchaVerifier(this.authService.auth, element, {
         size: 'invisible',
-        callback: () => {},
+        callback: () => undefined,
       });
     } catch (e) {
       console.error('MFA Recaptcha init error', e);

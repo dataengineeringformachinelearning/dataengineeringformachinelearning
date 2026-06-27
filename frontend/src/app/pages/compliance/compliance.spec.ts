@@ -32,7 +32,7 @@ describe('Compliance', () => {
           id: 'bundle--123',
           objects: [],
         }),
-      submitToIsac: (destination: string) =>
+      submitToIsac: (_destination: string) =>
         of({
           status: 'success',
           message: 'Successfully submitted in sandbox mode.',

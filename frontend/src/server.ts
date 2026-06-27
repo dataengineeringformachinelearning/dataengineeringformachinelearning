@@ -50,7 +50,7 @@ app.use(
     maxAge: '1y',
     index: false,
     redirect: false,
-    setHeaders: (res, path, stat) => {
+    setHeaders: (res, _path, _stat) => {
       res.set('Access-Control-Allow-Origin', '*');
       res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
       res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');

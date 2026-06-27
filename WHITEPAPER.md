@@ -18,7 +18,11 @@ As a testament to the architecture's stability, the platform actively dogfoods i
 
 ## 2. High-Throughput Ingestion Architecture
 
-To decouple telemetry parsing from main application databases, we implement an asynchronous broker-based pipeline. User-facing client events and microservice health pings are ingested via non-blocking API endpoints and immediately dispatched to a Redpanda message broker.
+The platform uses an **Event Projections** architecture for client telemetry with production-grade reliability:
+
+- **Commands** (event ingestion): Client events flow through a Firebase Cloud Functions gateway (`ingestEvent` callable). The function attempts to publish to Redpanda (`frontend-events` topic, with `version` and `idempotency_key`) and falls back to Firestore. Django ingestion paths use a **Transactional Outbox** (events written atomically to a Postgres `OutboxEvent` table).
+- **Projections**: A dedicated `outbox_relay` command publishes from the Outbox. The Django `telemetry_worker` consumes from Redpanda (idempotent processing using stable keys, with DLQ to `frontend-events-dlq`), performs enrichment, and persists results to Firestore (named `deml` DB).
+- **Queries** (real-time views): The Angular frontend subscribes directly (via `onSnapshot`) to the projected state in Firestore for materialized, query-optimized views such as `users/{uid}/data/stats`.
 
 ```mermaid
 flowchart TB
@@ -27,19 +31,29 @@ flowchart TB
         A[Angular Client]
     end
 
-    subgraph "API Gateway & Auth"
-        B[Django REST API]
+    subgraph "Client Event Gateway (Commands)"
+        FCF[Firebase Cloud Functions<br/>ingestEvent callable]
         C[Firebase Authentication]
-        B -.->|Verifies JWT| C
+        FCF -.->|Auth Context| C
     end
 
-    subgraph "Telemetry Ingestion"
-        D[Redpanda Kafka Broker]
+    subgraph "Event Broker & Processing"
+        D[Redpanda Kafka Broker<br/>frontend-events topic]
+        TW[Django Telemetry Worker<br/>(Polars + ORM enrichment)]
+    end
+
+    subgraph "Event Projections (Read Models)"
+        FS[(Firestore<br/>named DB: deml)]
+    end
+
+    subgraph "API Gateway & Auth (Legacy/Integrations)"
+        B[Django REST API]
+        C2[Firebase Authentication]
+        B -.->|Verifies JWT| C2
+    end
+
+    subgraph "Analytics & ML"
         E[Polars Batch Worker]
-        D -->|Consumes| E
-    end
-
-    subgraph "Machine Learning"
         F[PyTorch SLA Models]
         G[Scikit-learn Tuning]
     end
@@ -50,15 +64,23 @@ flowchart TB
         J[OpenTelemetry Collector]
     end
 
+    A -->|Client Events (e.g. get_stats)| FCF
+    FCF -->|Try publish| D
+    FCF -->|Fallback write| FS
+    D -->|Consume| TW
+    TW -->|Enriched write| FS
+    FS -.->|onSnapshot (users/{uid}/data/stats)| A
     A -->|REST / CORS| B
     B -->|Produces Event| D
-    E -->|Writes Analytics| H
+    E -->|Consumes & Writes| H
     E -->|Triggers Training| F
     F -->|Optimizes| G
     B -->|OTLP Traces| J
     E -->|OTLP Traces| J
     J -->|Stores| I
 ```
+
+This hybrid approach (Outbox + idempotent projections + DLQ) provides strong reliability and "at-least-once + deduplication" semantics while preserving low-latency client feedback via Firestore and the high-throughput Redpanda + Polars pipeline. Dedicated GitHub Actions handle deployment of Firebase Functions, Firestore rules, and related components. A separate `outbox_relay` ensures reliable event delivery from Django.
 
 By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), we achieve sub-millisecond dispatch latencies and avoid JVM resource overhead.
 
