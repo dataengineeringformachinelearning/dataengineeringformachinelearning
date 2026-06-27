@@ -5,18 +5,7 @@ export const serverRoutes: ServerRoute[] = [
     path: '',
     renderMode: RenderMode.Prerender,
   },
-  {
-    path: 'privacy',
-    renderMode: RenderMode.Prerender,
-  },
-  {
-    path: 'terms',
-    renderMode: RenderMode.Prerender,
-  },
-  {
-    path: 'whitepaper',
-    renderMode: RenderMode.Prerender,
-  },
+
   {
     path: 'status',
     renderMode: RenderMode.Client,
@@ -37,18 +26,7 @@ export const serverRoutes: ServerRoute[] = [
     path: 'vulnerabilities',
     renderMode: RenderMode.Client,
   },
-  {
-    path: 'documentation',
-    renderMode: RenderMode.Client,
-  },
-  {
-    path: 'book',
-    renderMode: RenderMode.Client,
-  },
-  {
-    path: 'compliance',
-    renderMode: RenderMode.Client,
-  },
+
   {
     path: 'login',
     renderMode: RenderMode.Client,
