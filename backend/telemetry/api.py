@@ -46,6 +46,8 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
   if domain in [
     "dataengineeringformachinelearning.com",
     "www.dataengineeringformachinelearning.com",
+    "deml.app",
+    "www.deml.app",
     "localhost",
     "127.0.0.1",
   ]:

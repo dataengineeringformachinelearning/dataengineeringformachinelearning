@@ -56,17 +56,24 @@
     <!-- Bottom section: Copyright and Badges -->
     <section class="footer-bottom">
       <div class="footer-badges-top">
-        <span class="usa-badge" (mouseenter)="fireConfetti($event)">
+        <span class="usa-badge" id="usa-badge" (mouseenter)="fireConfetti($event)">
           <span class="usa-badge-icon" aria-hidden="true">🇺🇸</span>
           <span>Made in the U.S.A</span>
         </span>
       </div>
 
       <div class="footer-compliance-row">
-        <div class="copyright-info">
-          <mat-icon class="brand-icon footer-logo glowing-icon-sm" aria-hidden="true"
-            >analytics</mat-icon
-          >
+        <div
+          class="copyright-info"
+          style="
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+          "
+        >
           <span class="copyright-text"
             >Copyright © {{ getCurrentYear() }} Data Engineering for Machine Learning by
             <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a
@@ -76,7 +83,7 @@
           <span class="footer-powered">
             Powered by
             <a
-              href="https://railway.com?referralCode=BpTk0g"
+              href="https://railway.com/?referralCode=BpTk0g"
               target="_blank"
               rel="noopener noreferrer"
               >Railway</a

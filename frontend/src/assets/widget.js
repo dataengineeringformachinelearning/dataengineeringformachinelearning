@@ -121,7 +121,7 @@
           for (const node of mutation.addedNodes) {
             if (node.tagName === 'SCRIPT') {
               const src = node.src || 'inline';
-              if (!src.includes('dataengineeringformachinelearning.com')) {
+              if (!src.includes('deml.app')) {
                 globalAgentData.xss_events.push({
                   type: 'script_injected',
                   src: src.substring(0, 100),
@@ -223,7 +223,7 @@
 
         const frontendHost =
           !scriptOrigin.includes('localhost') && !scriptOrigin.includes('127.0.0.1')
-            ? 'https://dataengineeringformachinelearning.com'
+            ? 'https://deml.app'
             : scriptOrigin;
 
         const backendUrl =

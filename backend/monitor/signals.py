@@ -81,6 +81,6 @@ def ensure_tenant0_exists(sender, **kwargs):
     defaults={
       "name": "DEML Platform",
       "slug": "platform",
-      "target_url": "https://dataengineeringformachinelearning.com",
+      "target_url": "https://deml.app",
     },
   )

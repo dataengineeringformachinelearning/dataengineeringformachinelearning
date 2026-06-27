@@ -37,6 +37,7 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 - **Predictive SLAs**: Deep learning models dynamically forecasting service level agreements.
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
+- **SaaS Reliability & Stability**: Comprehensive automated testing, static analysis (Ruff/ESLint/Axe), and clean-code architecture ensuring production-grade robustness.
 
 ## Solution Architecture
 
@@ -2035,9 +2036,14 @@ By running as a continuous sandbox for trials and a public sentinel, it showcase
 > **Developer Invariant 2 (Symmetrical Multi-Tenant Pipelines):**
 > When authoring background workers, cron workers, or OSINT scanners, NEVER hardcode execution exclusively for the platform. You must ALWAYS structure the pipeline to iterate dynamically over `Tenant.objects.all()`. Because the platform itself is cleanly bootstrapped as Tenant0, this guarantees that both the core infrastructure and individual customer environments are processed symmetrically within the exact same loop, eliminating architectural debt and hardcoded exceptions.
 
-> [!WARNING]
 > **Developer Invariant 3 (Data Enrichments & Critical Path):**
 > Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
+
+### Codebase Stabilization & Automated SaaS Quality
+
+To ensure long-term maintainability, the platform is strictly governed by automated code quality checks and static analysis tools. A rigorous pre-commit pipeline validates all code before it merges into the `main` branch. This includes `ruff` for Python formatting and linting, `eslint` and `prettier` for frontend assets, `detect-secrets` for preventing hardcoded credentials, and `axe-core` for accessibility testing.
+
+Furthermore, critical business logic—such as billing, telemetry, and background workers—is protected by a comprehensive test suite using `pytest`. Database interactions are mocked or verified via test databases (`@pytest.mark.django_db`) to guarantee functional parity with production. By codifying these invariants and test cases, the platform ensures SaaS-level reliability while moving at the velocity of a startup.
 
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 

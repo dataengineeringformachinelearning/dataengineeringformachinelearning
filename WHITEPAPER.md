@@ -146,6 +146,8 @@ In our continuous pursuit of operational excellence, we have recently completed 
 
 Most recently, we fully integrated Application-Level Zeek-equivalent middleware with zero-latency cached domain mappings for real-time passive telemetry ingestion. We also finalized our native OSINT and Dark Web scanners to actively serialize threat findings directly into native `ThreatIntelligence` database records instead of static logs. Finally, our Post-Quantum Cryptography (PQC) integration was fortified: the KEM architecture now enforces strict Forward Secrecy by caching ephemeral secret keys for exactly 5 minutes using UUIDs and destroying them immediately upon decapsulating payloads, neutralizing "Store Now, Decrypt Later" attacks natively at the ingestion gateway.
 
+To ensure long-term, scalable SaaS reliability, we enforce an uncompromising CI/CD and pre-commit stabilization pipeline. The entire Python backend is continuously formatted and linted via `ruff`, while the frontend strictly adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including the telemetry ingestion endpoints, background threat modeling workers, and billing integration—are fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. The core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations that align perfectly with the production cluster.
+
 ## 13. License
 
 This work is licensed under a [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).

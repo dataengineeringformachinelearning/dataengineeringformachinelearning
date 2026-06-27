@@ -4,10 +4,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DEML BACKEND APP</title>
+    <title>DEML TELEMETRY APP</title>
     <meta
       name="description"
-      content="Backend API and services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+      content="Telemetry ingestion and streaming services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
     />
     <meta
       name="keywords"
@@ -34,10 +34,10 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:title" content="DEML BACKEND APP" />
+    <meta property="og:title" content="DEML TELEMETRY APP" />
     <meta
       property="og:description"
-      content="Backend API and services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+      content="Telemetry ingestion and streaming services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
     />
     <meta
       property="og:image"
@@ -47,10 +47,10 @@
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="twitter:title" content="DEML BACKEND APP" />
+    <meta property="twitter:title" content="DEML TELEMETRY APP" />
     <meta
       property="twitter:description"
-      content="Backend API and services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+      content="Telemetry ingestion and streaming services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
     />
     <meta
       property="twitter:image"
@@ -145,19 +145,20 @@
             alt="DEML APP Brand Icon"
           />
           <h1 class="title">Data Engineering for Machine Learning</h1>
-          <h2 class="subtitle">Core REST API & Services</h2>
+          <h2 class="subtitle">Telemetry API & Streaming</h2>
 
           <p>
-            Welcome to the backend orchestrator. This system manages user
-            accounts, handles real-time telemetry pipelines with Redpanda,
-            coordinates model training schedules, and computes SLA predictions.
+            Welcome to the telemetry ingestion node. This system handles
+            real-time telemetry pipelines with Redpanda, Polars batch
+            processing, and continuous threat analysis.
           </p>
 
           <div class="status-badge" role="status" aria-live="polite">
             <span class="status-dot"></span>
-            <span class="status-text">Backend Systems Operational</span>
+            <span class="status-text">Telemetry Stream Operational</span>
             <span class="sr-only"
-              >Live telemetry shows backend systems are fully operational.</span
+              >Live telemetry shows telemetry streams are fully
+              operational.</span
             >
           </div>
 

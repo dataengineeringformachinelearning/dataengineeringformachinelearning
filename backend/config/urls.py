@@ -1,5 +1,6 @@
 from django.contrib.sitemaps.views import sitemap
 from django.urls import converters, path
+from telemetry import views as telemetry_views
 
 from . import views
 from .sitemaps import StaticViewSitemap
@@ -19,6 +20,7 @@ sitemaps = {
 
 urlpatterns = [
   path("", views.home, name="home"),
+  path("telemetry/", telemetry_views.telemetry_home, name="telemetry_home"),
   path("api/v1/", api.urls),  # Using /api/v1/ for the ninja router
   path(
     "sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"
