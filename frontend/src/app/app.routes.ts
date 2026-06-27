@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -11,11 +12,13 @@ export const routes: Routes = [
   { path: 'explore', loadComponent: () => import('./pages/explore/explore').then(m => m.Explore) },
   {
     path: 'vulnerabilities',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/vulnerabilities/vulnerabilities').then(m => m.Vulnerabilities),
   },
   {
     path: 'analytics',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/analytics/analytics').then(m => m.AnalyticsComponent),
   },
   {

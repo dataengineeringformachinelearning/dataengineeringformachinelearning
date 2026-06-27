@@ -90,6 +90,16 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL || (import.meta.env.DEV ? 'http:/
 		<!-- DEML Widgets Hosted by App -->
 		<script src={APP_URL + "/assets/widgets/cookie-consent.js"} defer></script>
 		<script type="module" src={APP_URL + "/assets/widgets/search-dialog.js"} defer></script>
+
+		<!-- Google tag (gtag.js) -->
+		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-MH3M99CQ80"></script>
+		<script is:inline>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+
+		  gtag('config', 'G-MH3M99CQ80');
+		</script>
 	</head>
 	<body class="mat-typography">
 		<a href="#main-content" class="skip-link" style="color: #ffffff; background-color: #000000">Skip to main content</a>
