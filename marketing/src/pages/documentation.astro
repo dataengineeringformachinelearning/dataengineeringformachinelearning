@@ -51,7 +51,7 @@ import Layout from '../layouts/Layout.astro';
             </div>
             <div class="code-block-premium" style="margin-top: auto">
               <div class="code-header">cURL Request</div>
-              <pre><code>curl -X POST https://backend.dataengineeringformachinelearning.com/api/v1/ingest \
+              <pre><code>curl -X POST https://backend.deml.app/api/v1/ingest \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '&#123; "batch_id": "123", "records": [&#123;"feature1": 1.0&#125;] &#125;'</code></pre>
@@ -73,7 +73,7 @@ import Layout from '../layouts/Layout.astro';
             </div>
             <div class="code-block-premium" style="margin-top: auto">
               <div class="code-header">cURL Request</div>
-              <pre><code>curl -X POST https://backend.dataengineeringformachinelearning.com/api/v1/predict \
+              <pre><code>curl -X POST https://backend.deml.app/api/v1/predict \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '&#123; "model_version": "v2", "inputs": [0.5, 0.2] &#125;'</code></pre>

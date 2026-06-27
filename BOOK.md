@@ -1046,7 +1046,7 @@ This service serves the user interface.
   - **FIREBASE_MESSAGING_SENDER_ID**: Your Firebase messaging sender ID.
   - **SANITY_PROJECT_ID**: Your Sanity.io project ID.
   - **SANITY_DATASET**: Your Sanity.io dataset name (e.g., `production`).
-  - **BACKEND_URL**: `https://backend.dataengineeringformachinelearning.com`
+  - **BACKEND_URL**: `https://backend.deml.app`
 
 ### 2. Web Backend (API)
 
@@ -1056,7 +1056,7 @@ This service runs the main Django web server.
 - **Root Directory**: `/backend`
 - **Builder**: Dockerfile (utilizes secure, minimal `gcr.io/distroless/python3-debian12` distroless runtime)
 - **Start Command**: `/opt/venv/bin/python start.py` (Default in Dockerfile)
-- **Public URL**: `https://backend.dataengineeringformachinelearning.com`
+- **Public URL**: `https://backend.deml.app`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `deml-frontend.railway.internal`
 - **Compute Limits**: 24 vCPU / 24 GB Memory
@@ -1064,7 +1064,7 @@ This service runs the main Django web server.
 - **Environment Variables**:
   - **SECRET_KEY**: `<your-production-secret-key>`
   - **DEBUG**: `False`
-  - **ALLOWED_HOSTS**: `backend.dataengineeringformachinelearning.com`
+  - **ALLOWED_HOSTS**: `backend.deml.app`
   - **FRONTEND_URL**: `https://dataengineeringformachinelearning.com`
   - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
   - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g., `deml-clickhouse.railway.internal`).
@@ -1072,15 +1072,15 @@ This service runs the main Django web server.
   - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
   - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
   - **CORS_ALLOW_CREDENTIALS**: `True`
-  - **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
-  - **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.dataengineeringformachinelearning.com`
+  - **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.deml.app`
+  - **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.deml.app`
   - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
   - **DRAGONFLY_HOST**: `deml-dragonfly.railway.internal`
   - **FIREBASE_SERVICE_ACCOUNT_JSON**: Raw JSON string of your Firebase service account credentials.
   - **GOOGLE_API_KEY**: `<your-google-api-key>`
   - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>`
   - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
-  - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.dataengineeringformachinelearning.com/api/v1/system-status/integrations/google/callback`
+  - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.deml.app/api/v1/system-status/integrations/google/callback`
   - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>`
   - **IPINFO_API_KEY**: `<your-ipinfo-api-key>`
   - **CISA_TAXII_ENDPOINT**: `<your-cisa-taxii-endpoint>`
@@ -1219,7 +1219,7 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `4318` (OTLP HTTP)
 - **Private Internal DNS**: `deml-telemetry-collector.railway.internal`
-- **Public URL**: `https://telemetry.dataengineeringformachinelearning.com`
+- **Public URL**: `https://telemetry.deml.app`
 - **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:

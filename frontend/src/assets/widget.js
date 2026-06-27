@@ -230,7 +230,7 @@
           this.getAttribute('data-backend-url') ||
           (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')
             ? 'http://localhost:8000'
-            : 'https://backend.dataengineeringformachinelearning.com');
+            : 'https://backend.deml.app');
 
         // Resolve Client IP lazily during idle cycles
         runWhenIdle(async () => {
@@ -597,8 +597,7 @@
               const scriptTag =
                 document.currentScript || document.querySelector('script[src*="widget.js"]');
               const otelUrl =
-                scriptTag?.getAttribute('data-otel-url') ||
-                'https://telemetry.dataengineeringformachinelearning.com/v1/traces';
+                scriptTag?.getAttribute('data-otel-url') || 'https://telemetry.deml.app/v1/traces';
 
               const exporter = new OTLPTraceExporter({
                 url: otelUrl,

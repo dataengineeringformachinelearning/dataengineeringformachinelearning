@@ -84,4 +84,4 @@ repos:
     hooks:
       - id: detect-secrets
         args: ["--baseline", ".secrets.baseline"]
-        exclude: 'package-lock\.json|frontend/src/app/bones/.*\.bones\.json|backend/templates/home\.html'
+        exclude: 'package-lock\.json|frontend/src/app/bones/.*\.bones\.json|backend/templates/home\.html|skills-lock\.json|\.agents/skills/.*'

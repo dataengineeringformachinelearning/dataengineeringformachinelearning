@@ -2,11 +2,6 @@ import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'book', loadComponent: () => import('./pages/book/book').then(m => m.Book) },
-  {
-    path: 'documentation',
-    loadComponent: () => import('./pages/documentation/documentation').then(m => m.Documentation),
-  },
   { path: 'status', loadComponent: () => import('./pages/status/status').then(m => m.Status) },
   {
     path: 'status/:slug',
@@ -26,16 +21,6 @@ export const routes: Routes = [
   {
     path: 'settings',
     loadComponent: () => import('./pages/settings/settings').then(m => m.Settings),
-  },
-  {
-    path: 'compliance',
-    loadComponent: () => import('./pages/compliance/compliance').then(m => m.Compliance),
-  },
-  { path: 'privacy', loadComponent: () => import('./pages/privacy/privacy').then(m => m.Privacy) },
-  { path: 'terms', loadComponent: () => import('./pages/terms/terms').then(m => m.Terms) },
-  {
-    path: 'whitepaper',
-    loadComponent: () => import('./pages/whitepaper/whitepaper').then(m => m.Whitepaper),
   },
 
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },

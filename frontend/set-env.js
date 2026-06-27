@@ -51,7 +51,7 @@ const getBackendUrlCode = `const getBackendUrl = () => {
     if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['BACKEND_URL']) {
       return globalProcess.env['BACKEND_URL'];
     }
-    return 'https://backend.dataengineeringformachinelearning.com';
+    return 'https://backend.deml.app';
   }
   const host = window.location.hostname;
   if (host.includes('localhost') || host.includes('127.0.0.1')) {

@@ -23,6 +23,7 @@ To decouple telemetry parsing from main application databases, we implement an a
 ```mermaid
 flowchart TB
     subgraph Frontend
+        L[Astro Landing Page]
         A[Angular Client]
     end
 

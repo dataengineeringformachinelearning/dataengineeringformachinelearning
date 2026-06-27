@@ -1,0 +1,98 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="404: Page Not Found" description="The requested page could not be found.">
+  <div class="not-found-container">
+    <span class="material-icons error-icon">error_outline</span>
+    <h1 class="error-code">404</h1>
+    <h2 class="error-title">Page Not Found</h2>
+    <p class="error-message">
+      The page you are looking for does not exist, has been moved, or you might have mistyped the URL.
+    </p>
+    <a href="/" class="home-button">
+      <span class="material-icons">home</span>
+      Return Home
+    </a>
+  </div>
+</Layout>
+
+<style lang="scss">
+.not-found-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+  text-align: center;
+  padding: 24px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.error-icon {
+  font-size: 64px;
+  color: var(--color-primary);
+  opacity: 0.5;
+  margin-bottom: 16px;
+}
+
+.error-code {
+  font-size: 6rem;
+  font-weight: 800;
+  margin: 0;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--color-primary), var(--crayola-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.error-title {
+  font-size: 2rem;
+  margin: 16px 0;
+  color: var(--text-color);
+}
+
+.error-message {
+  color: var(--text-muted);
+  max-width: 500px;
+  margin-bottom: 32px;
+  font-size: 1.125rem;
+  line-height: 1.6;
+}
+
+.home-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  padding: 12px 24px;
+  border-radius: 96px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(33, 118, 255, 0.2);
+
+  .material-icons {
+    font-size: 20px;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    background-color: var(--hover-color);
+    box-shadow: 0 6px 16px rgba(33, 118, 255, 0.3);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
