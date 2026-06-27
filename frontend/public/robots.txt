@@ -3,4 +3,4 @@ Allow: /
 Disallow: /dashboard
 Disallow: /api/
 
-Sitemap: https://dataengineeringformachinelearning.com/sitemap.xml
+Sitemap: https://deml.app/sitemap.xml

@@ -96,7 +96,15 @@ Using TAXII 2.1 and REST protocols, these indicators are routed natively to fede
 
 Furthermore, to support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 Readiness and compliance audits, the platform implements an end-to-end security architecture. This includes real-time E2E encryption telemetry (TLS 1.3 in-transit, and GCP KMS-backed envelope encryption at-rest with 30-day rotation), immutable audit logging streamed directly to centralized Google Cloud Logging buckets for SIEM ingestion, granular Role-Based Access Control (RBAC) supporting Viewer, Operator, and Security Admin configurations, hardened Google distroless container images executing under least-privilege non-root policies (USER nginx), strict Content-Security-Policy (CSP) and HSTS security headers, and continuous vulnerability guarding via Semgrep (for continuous code and dependency scanning), Renovate (for automated dependency upgrades), local Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets (with custom baseline filters), and Django Migration Linter checks.
 
-## 7. Data Tenancy, Retention, and Lifecycle Policy
+## 7. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
+
+Access control on the platform is implemented as a defense-in-depth framework combining Role-Based Access Control (RBAC) with dynamic Attribute-Based Access Control (ABAC). Because individual tenants are mapped strictly to their own organizations and do not feature multiple sub-tier user logins per organization, the access control matrix focuses on distinguishing administrative control tiers from public and context-specific attributes:
+
+- **RBAC Enforcement:** The system maps users to one of three roles stored in `UserProfile.role`: `Viewer`, `Operator`, or `Security Admin`. For write operations (such as creating or modifying status pages, services, or incidents), the backend intercepts requests via the `@role_required(["Operator", "Security Admin"])` decorator, verifying that the authenticated user possesses the correct operational role. Rejection is handled atomically via `403 Forbidden` errors.
+- **ABAC Invariants (Public vs. Private Contexts):** Rather than flat organizational hierarchies, the platform uses resource attributes to evaluate access. Public (logged-out) users can view status pages and telemetry metrics only if `is_published=True` or if the page is the default `platform-status` (Tenant0). Logged-in users can also access status pages they explicitly own (`status_page.user == request.user`). Programmatic API requests target the `/api/v1/ingest` and `/api/v1/predict` gateways and validate access using cryptographic API keys that dynamically resolve tenant mappings rather than hardcoding client domains.
+- **Contextual MFA Validation:** Beyond standard roles, all write actions on monitored infrastructure require multi-factor authentication (MFA) to be satisfied, which is validated programmatically by inspecting the Firebase identity token's authentication method reference (`amr`) attributes.
+
+## 8. Data Tenancy, Retention, and Lifecycle Policy
 
 Observability systems must ensure strict isolation. The DEML Platform enforces absolute multi-tenancy boundaries at the database level and ensures all data is private-by-default. All data intake, status widgets, and telemetry records are strictly aligned to their host tenant, guaranteeing that raw data cannot bleed across workspaces.
 
@@ -108,17 +116,17 @@ Additionally, the platform implements a strict 30-day retention and lifecycle po
 
 Furthermore, our engineering roadmap includes integrations with monetization systems like Stripe. This will enable paid tiers where models and forecasts are refreshed at a high-frequency interval (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.
 
-## 8. Team Workflows and Integrated Vulnerability Management
+## 9. Team Workflows and Integrated Vulnerability Management
 
 To facilitate collaborative security workflows and structured issue tracking, the platform implements a self-contained, integrated vulnerability tracking and management component. This component features an interactive Kanban board layout to prioritize, assign, and track remediation efforts natively, allowing security teams to update vulnerability states based on customized impact and likelihood metrics.
 
 Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. To maintain high visual quality, we implemented a custom skeleton loader for smooth page-loading transitions, and aligned the user interface with a premium, high-contrast Scandinavian Ocean Deep-inspired design system.
 
-## 9. Conclusion
+## 10. Conclusion
 
 By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.
 
-## 10. References
+## 11. References
 
 1. Redpanda Data, Inc. (2026). _Redpanda: A streaming data platform_.
 2. Apache Software Foundation. (2026). _Apache Kafka_.

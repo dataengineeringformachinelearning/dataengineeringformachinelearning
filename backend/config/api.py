@@ -6,12 +6,63 @@ from ninja import NinjaAPI
 logger = logging.getLogger(__name__)
 
 
+from typing import Any, Final
+
+from django.http import HttpRequest, HttpResponse
+from django.middleware.csrf import get_token
+from ninja.openapi.docs import Swagger
+
+
+class CustomSwagger(Swagger):
+  def render_page(self, request: HttpRequest, api: NinjaAPI, **kwargs: Any) -> HttpResponse:
+    openapi_url: Final[str] = self.get_openapi_url(api, kwargs)
+    csrf_token: Final[str] = get_token(request) or ""
+
+    html: Final[str] = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{api.title}</title>
+    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+    <link rel="shortcut icon" href="https://deml.app/favicon.ico">
+    <style>
+        .swagger-ui .topbar {{
+            background-color: #111827;
+            border-bottom: 1px solid #1f2937;
+        }}
+    </style>
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script>
+        const ui = SwaggerUIBundle({{
+            url: "{openapi_url}",
+            dom_id: '#swagger-ui',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIBundle.SwaggerUIStandalonePreset
+            ],
+            layout: "BaseLayout",
+            deepLinking: true,
+            requestInterceptor: (req) => {{
+                req.headers['X-CSRFToken'] = "{csrf_token}";
+                return req;
+            }}
+        }});
+    </script>
+</body>
+</html>"""
+    # nosemgrep: python.django.security.audit.xss.direct-use-of-httpresponse.direct-use-of-httpresponse
+    return HttpResponse(html, content_type="text/html")
+
+
 class CustomAPI(NinjaAPI):
-  def get_openapi_schema(self, *args, **kwargs):
-    schema = super().get_openapi_schema(*args, **kwargs)
+  def get_openapi_schema(self, *args: Any, **kwargs: Any) -> dict[str, Any]:
+    schema: dict[str, Any] = super().get_openapi_schema(*args, **kwargs)
     # Filter paths to only expose public APIs in docs
-    paths = schema.get("paths", {})
-    public_prefixes = ("/api/v1/ingest", "/api/v1/predict")
+    paths: dict[str, Any] = schema.get("paths", {})
+    public_prefixes: Final[tuple[str, str]] = ("/api/v1/ingest", "/api/v1/predict")
     schema["paths"] = {k: v for k, v in paths.items() if k.startswith(public_prefixes)}
     return schema
 
@@ -20,6 +71,7 @@ api = CustomAPI(
   title="DEML BACKEND APP API",
   version=getattr(settings, "APP_VERSION", "1.0.0"),
   docs_url="/docs",
+  docs=CustomSwagger(),
 )
 
 

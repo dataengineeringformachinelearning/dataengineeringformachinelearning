@@ -22,6 +22,7 @@ urlpatterns = [
   path("", views.home, name="home"),
   path("telemetry/", telemetry_views.telemetry_home, name="telemetry_home"),
   path("api/v1/", api.urls),  # Using /api/v1/ for the ninja router
+  path("robots.txt", views.robots_txt, name="robots_txt"),
   path(
     "sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="django.contrib.sitemaps.views.sitemap"
   ),

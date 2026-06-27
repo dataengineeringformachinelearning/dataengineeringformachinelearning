@@ -6,14 +6,13 @@
   <!-- Floating Sidebar for Chapters -->
   <aside class="dashboard-sidebar no-print">
     <div
-      class="sidebar-search sidebar-extracted-1"
+      class="sidebar-search sidebar-extracted-1 u-style-328aaa"
       (click)="openSearchDialog()"
       tabindex="0"
       role="button"
       aria-label="Open search dialog"
       (keydown.enter)="openSearchDialog()"
       (keydown.space)="$event.preventDefault(); openSearchDialog()"
-      style="margin: 18px 18px 0"
     >
       <div class="search-wrapper">
         <mat-icon>search</mat-icon>
@@ -41,7 +40,7 @@
     </div>
   </aside>
 
-  <div class="dashboard-main dashboard-content-area" style="overflow-y: auto">
+  <div class="dashboard-main dashboard-content-area u-style-ef4080">
     <div class="content-wrapper">
       <!-- Mobile Chapter Select -->
       <div class="mobile-chapter-select no-print">
@@ -51,14 +50,14 @@
           [options]="chapterOptions"
           [value]="bookService.activePageIndex()"
           (valueChange)="onChapterChange($event)"
-          style="width: 100%"
+          class="u-style-be70d9"
         ></app-unified-select>
       </div>
 
       <div class="whitepaper-container">
         <!-- Standard Header for Content Pages (Always Visible) -->
         <div class="whitepaper-header">
-          <div class="section-tag-row" style="justify-content: center">
+          <div class="section-tag-row u-style-541ffc">
             <span class="section-tag">The Book</span>
           </div>
           <h1 class="title">Data Engineering for Machine Learning</h1>
@@ -66,67 +65,24 @@
             Building High-Throughput Event Platforms for Real-Time Detection and Response
           </p>
 
-          <div
-            class="author-meta"
-            style="
-              display: flex;
-              justify-content: center;
-              gap: 9px;
-              font-size: 1rem;
-              color: var(--text-muted);
-              margin-bottom: 27px;
-            "
-          >
+          <div class="author-meta u-style-ab0dc9">
             <span
               >Interactive Guides, Working Notes, & Reference Material for Security Engineers</span
             >
           </div>
 
           <!-- Reading Progress Bar -->
-          <div style="max-width: 500px; margin-left: auto; margin-right: auto">
-            <div
-              class="progress-bar-header"
-              style="
-                display: flex;
-                justify-content: space-between;
-                font-size: 1rem;
-                font-weight: 600;
-                color: var(--text-muted);
-                margin-bottom: 9px;
-              "
-            >
+          <div class="u-style-87f7f1">
+            <div class="progress-bar-header u-style-318da3">
               <span>Reading Progress</span>
-              <span class="progress-percentage" style="color: var(--color-primary-container)"
+              <span class="progress-percentage u-style-c3f737"
                 >{{ bookService.progress() | number:'1.0-0' }}%</span
               >
             </div>
-            <div
-              class="progress-bar-container"
-              style="
-                width: 100%;
-                height: 9px;
-                background-color: var(--hover-color);
-                border: 1px solid var(--border);
-                border-radius: 4px;
-                overflow: hidden;
-                position: relative;
-              "
-            >
+            <div class="progress-bar-container u-style-f48aaf">
               <div
-                class="progress-bar-fill"
+                class="progress-bar-fill u-style-43b1d2"
                 [style.width.%]="bookService.progress()"
-                style="
-                  position: absolute;
-                  left: 0;
-                  top: 0;
-                  bottom: 0;
-                  background: linear-gradient(
-                    90deg,
-                    var(--color-primary) 0%,
-                    var(--color-primary-container) 100%
-                  );
-                  transition: width 0.3s ease-out;
-                "
               ></div>
             </div>
           </div>
@@ -135,154 +91,30 @@
         <!-- Structural Book Cover (Only visible on Cover chapter) -->
         <div
           *ngIf="bookService.activeChapter()?.title === 'Cover'"
-          class="book-cover-page"
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 45px 0;
-            animation: fade-in 0.8s ease-out;
-          "
+          class="book-cover-page u-style-a1eb91"
         >
-          <div
-            style="
-              width: 100%;
-              max-width: 460px;
-              aspect-ratio: 3 / 4.2;
-              background-color: var(--surface-card);
-              border: 1px solid var(--border);
-              border-radius: 6px 18px 18px 6px;
-              box-shadow:
-                -6px 0 18px rgba(0, 0, 0, 0.1),
-                18px 18px 54px rgba(0, 0, 0, 0.15);
-              position: relative;
-              overflow: hidden;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              transition: transform 0.3s ease;
-            "
-          >
+          <div class="u-style-5e9329">
             <!-- Book Spine -->
-            <div
-              style="
-                position: absolute;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: 28px;
-                background: linear-gradient(
-                  90deg,
-                  rgba(0, 0, 0, 0.5) 0%,
-                  rgba(255, 255, 255, 0.1) 15%,
-                  rgba(0, 0, 0, 0.2) 100%
-                );
-                z-index: 10;
-                border-right: 1px solid rgba(0, 0, 0, 0.2);
-              "
-            ></div>
+            <div class="u-style-5f0fbc"></div>
             <!-- Spine crease -->
-            <div
-              style="
-                position: absolute;
-                left: 28px;
-                top: 0;
-                bottom: 0;
-                width: 4px;
-                background: linear-gradient(90deg, rgba(0, 0, 0, 0.1) 0%, transparent 100%);
-                z-index: 9;
-              "
-            ></div>
+            <div class="u-style-604391"></div>
 
             <!-- Cover Content -->
-            <div
-              style="
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                padding: 54px 36px 45px 54px;
-                height: 100%;
-                width: 100%;
-                text-align: center;
-                background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, transparent 100%);
-              "
-            >
+            <div class="u-style-81c40e">
               <!-- Top Tag -->
-              <div
-                style="
-                  margin-bottom: auto;
-                  letter-spacing: 0.15em;
-                  font-size: 1rem;
-                  font-weight: 700;
-                  color: var(--text-muted);
-                  text-transform: uppercase;
-                "
-              >
-                Interactive Guide
-              </div>
+              <div class="u-style-ea280e">Interactive Guide</div>
 
               <!-- Icon -->
-              <span
-                class="material-symbols-outlined"
-                style="
-                  font-size: 160px;
-                  height: 160px;
-                  width: 160px;
-                  color: var(--color-primary);
-                  filter: drop-shadow(0 9px 18px rgba(0, 0, 0, 0.2));
-                  margin: 36px 0;
-                "
-                >arming_countdown</span
-              >
+              <span class="material-symbols-outlined u-style-b166d9">arming_countdown</span>
 
               <!-- Title Block -->
-              <h1
-                style="
-                  font-size: 2.25rem;
-                  font-weight: 800;
-                  line-height: 1.15;
-                  margin-bottom: 12px;
-                  letter-spacing: -0.02em;
-                "
-              >
-                Data Engineering<br />for Machine Learning
-              </h1>
-              <p
-                style="
-                  font-size: 1rem;
-                  color: var(--text-muted);
-                  font-weight: 500;
-                  font-style: italic;
-                "
-              >
-                Building High-Throughput Event Platforms
-              </p>
+              <h1 class="u-style-59eab0">Data Engineering<br />for Machine Learning</h1>
+              <p class="u-style-547d55">Building High-Throughput Event Platforms</p>
 
               <!-- Footer Meta -->
-              <div
-                style="
-                  margin-top: auto;
-                  padding-top: 36px;
-                  border-top: 1px solid var(--border);
-                  width: 100%;
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                "
-              >
-                <span style="font-size: 1rem; font-weight: 600; color: var(--text-color)"
-                  >Joe Alongi</span
-                >
-                <span
-                  style="
-                    font-size: 1rem;
-                    font-weight: 700;
-                    color: var(--color-primary);
-                    letter-spacing: 0.1em;
-                  "
-                  >VOL. I</span
-                >
+              <div class="u-style-5440df">
+                <span class="u-style-018404">Joe Alongi</span>
+                <span class="u-style-29066b">VOL. I</span>
               </div>
             </div>
           </div>
@@ -298,8 +130,7 @@
 
         <!-- Pagination Controls -->
         <div
-          class="pagination-controls-outlined"
-          style="margin-top: 48px"
+          class="pagination-controls-outlined u-style-fef210"
           tabindex="0"
           (keydown.enter)="bookService.scrollToTop()"
         >

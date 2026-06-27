@@ -46,17 +46,6 @@
       @if (authService.isAuthenticated()) {
       <a
         class="nav-item"
-        routerLink="/documentation"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Documentation"
-      >
-        <mat-icon aria-hidden="true">description</mat-icon>
-        <span class="nav-text">Documentation</span>
-      </a>
-
-      <a
-        class="nav-item"
         routerLink="/explore"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact: true}"
@@ -148,17 +137,6 @@
       >
         <mat-icon aria-hidden="true">explore</mat-icon>
         <span class="nav-text">Explore</span>
-      </a>
-
-      <a
-        class="nav-item"
-        routerLink="/documentation"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Documentation"
-      >
-        <mat-icon aria-hidden="true">description</mat-icon>
-        <span class="nav-text">Documentation</span>
       </a>
 
       }

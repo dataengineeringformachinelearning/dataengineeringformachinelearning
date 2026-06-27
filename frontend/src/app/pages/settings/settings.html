@@ -656,7 +656,7 @@
               </div>
 
               @if (architectureTestResult()) {
-              <div class="alert alert-success mt-3" style="word-break: break-all">
+              <div class="alert alert-success mt-3 u-style-c5a969">
                 <strong>Event Loop Success! Data from Firestore:</strong>
                 <pre>{{ architectureTestResult() | json }}</pre>
               </div>
@@ -698,7 +698,7 @@
 
               <div class="service-form-panel panel-clean mt-3">
                 <div class="service-inputs-row">
-                  <mat-form-field appearance="outline" style="width: 100%">
+                  <mat-form-field appearance="outline" class="u-style-be70d9">
                     <mat-label>New Key Name</mat-label>
                     <input
                       matInput
@@ -934,12 +934,9 @@
                   <mat-spinner diameter="30"></mat-spinner>
                 </div>
                 } @else { @if (!subscriptionActive()) {
-                <div
-                  class="mfa-status-enrolled panel-clean"
-                  style="border-color: #3f51b5; background-color: rgba(63, 81, 181, 0.05)"
-                >
+                <div class="mfa-status-enrolled panel-clean u-style-ab4518">
                   <div class="mfa-info-group">
-                    <mat-icon class="status-icon info mfa-icon-inline" style="color: #3f51b5"
+                    <mat-icon class="status-icon info mfa-icon-inline u-style-fa919b"
                       >info</mat-icon
                     >
                     <div class="mfa-info mfa-info-inline">

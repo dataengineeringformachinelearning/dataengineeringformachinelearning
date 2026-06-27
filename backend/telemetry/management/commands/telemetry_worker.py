@@ -8,6 +8,7 @@ from aiokafka import AIOKafkaConsumer
 from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
 from utils.kafka import get_kafka_brokers
+from utils.request import anonymize_ip
 
 # Needed to interact with Django ORM asynchronously
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
@@ -212,25 +213,33 @@ class Command(BaseCommand):
   @sync_to_async
   def save_threat_intel_to_db(self, threat_data_list: list):
     from django.contrib.auth import get_user_model
-    from monitor.models import ThreatIntelligence
+    from monitor.models import TenantMembership, ThreatIntelligence
 
     User = get_user_model()
 
     objects_to_create = []
     users_cache = {}
+    tenants_cache = {}
 
     for payload in threat_data_list:
       user_id = payload.get("user_id")
       user_obj = None
+      tenant_obj = None
       if user_id:
         if user_id not in users_cache:
           try:
-            users_cache[user_id] = User.objects.get(id=user_id)
+            u = User.objects.get(id=user_id)
+            users_cache[user_id] = u
+            membership = TenantMembership.objects.filter(user=u).first()
+            tenants_cache[user_id] = membership.tenant if membership else None
           except User.DoesNotExist:
             users_cache[user_id] = None
+            tenants_cache[user_id] = None
         user_obj = users_cache[user_id]
+        tenant_obj = tenants_cache[user_id]
 
       ti = ThreatIntelligence(
+        tenant=tenant_obj,
         user=user_obj,
         source=payload.get("source"),
         ip_address=payload.get("ip"),
@@ -282,46 +291,60 @@ class Command(BaseCommand):
         description="Monitoring system health and telemetry pipelines for the DEML (DATA ENGINEERING FOR MACHINE LEARNING).",
       )
 
-    def get_normalized_info(url_str):
+    def get_normalized_info(url_str: str) -> tuple[str, str]:
       if not url_str:
         return f"{frontend_url}/", "Django Web Server"
       if "9092" in url_str:
         return url_str, "Redpanda Broker"
 
       parsed = urlparse(url_str)
-      path = parsed.path.strip("/")
+      domain: str = f"{parsed.scheme}://{parsed.netloc}" if parsed.netloc else frontend_url
+
+      base_domain: str = frontend_url
+      if "dataengineeringformachinelearning.com" in domain:
+        base_domain = "https://dataengineeringformachinelearning.com"
+      elif "deml.app" in domain:
+        base_domain = "https://deml.app"
+
+      path: str = parsed.path.strip("/")
 
       # Default fallback mappings
-      norm_url = f"{frontend_url}/"
-      name = "Django Web Server"
+      norm_url: str = f"{base_domain}/"
+      name: str = "Django Web Server"
+      if "dataengineeringformachinelearning.com" in base_domain:
+        name = "Marketing Web Server"
 
       if "system-status/health" in path:
-        norm_url = f"{frontend_url}/"
-        name = "Django Web Server"
+        norm_url = f"{base_domain}/"
+        name = (
+          "Django Web Server"
+          if "dataengineeringformachinelearning.com" not in base_domain
+          else "Marketing Web Server"
+        )
       elif "auth/user" in path:
-        norm_url = f"{frontend_url}/manage"
+        norm_url = f"{base_domain}/manage"
         name = "Auth User"
       elif "auth/register" in path:
-        norm_url = f"{frontend_url}/"
+        norm_url = f"{base_domain}/"
         name = "Auth Register"
       elif "ml/latest" in path:
-        norm_url = f"{frontend_url}/status"
+        norm_url = f"{base_domain}/status"
         name = "ML Engine Latest"
       elif "telemetry/cookie-consent" in path:
-        norm_url = f"{frontend_url}/privacy"
+        norm_url = f"{base_domain}/privacy"
         name = "Telemetry Cookie Consent"
       elif "status_pages" in path:
         if "services" in path:
-          norm_url = f"{frontend_url}/status"
+          norm_url = f"{base_domain}/status"
           name = "Status Pages Services"
         elif "incidents" in path:
-          norm_url = f"{frontend_url}/status"
+          norm_url = f"{base_domain}/status"
           name = "Status Pages Incidents"
         elif "slug" in path:
-          norm_url = f"{frontend_url}/status"
+          norm_url = f"{base_domain}/status"
           name = "Status Pages Slug Platform Status"
         else:
-          norm_url = f"{frontend_url}/manage"
+          norm_url = f"{base_domain}/manage"
           name = "Status Pages"
 
       return norm_url, name
@@ -394,7 +417,7 @@ class Command(BaseCommand):
         url=row["url"],
         status_code=row["status_code"],
         response_time=duration,
-        ip_address=ip,
+        ip_address=anonymize_ip(ip),
         location=ip_data["location"],
         asn=ip_data["asn"],
         isp=ip_data["isp"],
@@ -557,8 +580,22 @@ class Command(BaseCommand):
         # Call the scanner
         scores = LighthouseScanner.scan_url(tenant.target_url, tenant_id=tenant.id)
         if scores:
-          # In a full implementation, you'd save these scores to a new model or AggregatedAnalytics.
-          # For now, we print them so we know it works.
+          from django.utils import timezone
+          from monitor.models import AggregatedAnalytics
+
+          current_hour = timezone.now().replace(minute=0, second=0, microsecond=0)
+          latest_agg, created = AggregatedAnalytics.objects.get_or_create(
+            tenant=tenant,
+            timestamp=current_hour,
+            bucket_size="1h",
+            defaults={"metadata": {"lighthouse_scores": scores}},
+          )
+          if not created:
+            if not isinstance(latest_agg.metadata, dict):
+              latest_agg.metadata = {}
+            latest_agg.metadata["lighthouse_scores"] = scores
+            latest_agg.save()
+
           self.stdout.write(
             self.style.SUCCESS(f"[Tenant {tenant.name}] Lighthouse Scores: {scores}")
           )

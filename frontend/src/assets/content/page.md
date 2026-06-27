@@ -869,6 +869,65 @@ My initial preparations involve auditing our entire cryptographic stack. For our
 
 Furthermore, our data-at-rest encryption (currently AES-256-GCM) is generally considered quantum-resistant, as Grover's algorithm only halves the effective key size (reducing 256-bit to an effective 128-bit security level, which remains highly secure). However, the key management infrastructure (KMS) and the digital signatures used for verifying JSON Web Tokens (JWTs) and software manifests will require transitioning to quantum-resistant signature schemes like Dilithium (ML-DSA) or SPHINCS+. By laying this groundwork now and maintaining cryptographic agility, we ensure that our platform's intelligence and our users' data remain imperviously locked, both today and in the post-quantum future.
 
+## Chapter 28: Access Control Matrix: Role-Based (RBAC) & Attribute-Based (ABAC) Paradigms
+
+Architecting a scalable, multi-tenant software-as-a-service application requires a rigid and robust authorization model. In our platform, the access control perimeter is structured as an overlapping layer of Role-Based Access Control (RBAC) and Attribute-Based Access Control (ABAC). Unlike larger enterprise installations where tenants contain complex internal hierarchies and deep org-charts, our system operates on the invariant of a singular workspace context per tenant. While this simplifies the database constraints, it increases the necessity of dynamic, context-aware validation. RBAC assigns static roles—specifically `Viewer`, `Operator`, and `Security Admin`—to user profiles, establishing a baseline of operational capability. These roles are codified inside [Django](https://www.djangoproject.com/) REST API models via custom field selections and verified programmatically. This ensures that static privileges, such as editing integrations or modifying status pages, are restricted at the API boundary, protecting endpoints from unauthorized write operations. By using decorators, the backend acts as an uncompromising gateway. A user belonging to the `Viewer` tier is strictly limited to HTTP `GET` requests for monitoring dashboards, while write actions are completely gated. Conversely, an `Operator` or `Security Admin` is granted access to the state changes. However, this is only the initial layer of security. To prevent privilege escalation and secure sensitive operations, this static model is dynamically augmented by attribute evaluations at runtime.
+
+The second line of defense is governed by Attribute-Based Access Control (ABAC), which evaluates contextual properties of the resource and request. The primary use-case is distinguishing between public (logged-out) traffic and private (authenticated) access. For example, status pages can be publicly accessed only if the page's status is explicitly set to `is_published=True` or if it represents the default `platform-status` page of Tenant0. If a page is unpublished, the system dynamically checks the resource's owner attribute against the request's authenticated user object (`status_page.user == request.user`). Additionally, the integrations gateway uses ABAC invariants to authorize machine-to-machine streaming. The gateway processes incoming telemetry on `/api/v1/ingest` and `/api/v1/predict` by matching client-provided bearer tokens to unique SHA-256 hashes in the database. Instead of hardcoding domains in configuration files, this lookup dynamically resolves the target tenant context and applies the correct isolation rules. Furthermore, write operations require the presence of a verified multi-factor authentication (MFA) attribute in the client's [Firebase Authentication](https://firebase.google.com/products/auth) JSON Web Token (JWT) metadata. If the MFA flag is absent, the system rejects the operation, ensuring that even administrative accounts are protected by multi-factor checks during state modifications.
+
+To implement these authorization patterns cleanly without polluting our business logic, we leverage Django middleware, signals, and python decorators. The backend relies on custom decorator utilities like `@role_required` to intercept request execution blocks, inspect the active session context, and execute security assertions before routing control to standard [Django Ninja](https://django-ninja.dev/) controllers. On the client side, the [Angular](https://angular.dev/) framework mirrors these security states using route guards (`authGuard` and `rootGuard`) that consume local authentication signals. These guards verify state conditions and handle client-side routing, redirecting unauthenticated traffic to the login interface while ensuring authenticated sessions land directly in their respective dashboards. By combining static RBAC hierarchies with dynamic ABAC attribute assertions, the platform achieves a zero-trust model. It guarantees that raw telemetry, security alerts, and threat models remain strictly partitioned. This ensures compliance with modern security frameworks (SOC 2, CMMC 2.0, NIST SP 800-171 Rev. 3) and guarantees that our multi-tenant [PostgreSQL](https://www.postgresql.org/) database operates securely at scale without sacrificing usability.
+
+### Generic Access Control Examples
+
+```python
+# Sample backend RBAC and ABAC checking decorator
+from functools import wraps
+from django.http import Http404
+from ninja.errors import HttpError
+
+def enforce_security_context(allowed_roles=None):
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            # ABAC Check 1: Multi-Factor Authentication
+            token_meta = getattr(request, "auth_token_claims", {})
+            if "mfa" not in token_meta.get("amr", []):
+                raise HttpError(403, "MFA Verification Required")
+
+            # RBAC Check: Role validation
+            user_profile = getattr(request.user, "profile", None)
+            user_role = user_profile.role if user_profile else "Viewer"
+            if allowed_roles and user_role not in allowed_roles:
+                raise HttpError(403, "Role unauthorized for this action")
+
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+```
+
+```typescript
+// Sample frontend route guard mirroring security context
+import { inject } from "@angular/core";
+import { CanActivateFn, Router } from "@angular/router";
+import { AuthService } from "../services/auth.service";
+
+export const genericSecurityGuard: CanActivateFn = (route, state) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  if (authService.isAuthenticated()) {
+    // ABAC Check: User must hold Operator or Admin capabilities to view settings
+    const role = authService.getUserRole();
+    if (role === "Operator" || role === "Security Admin") {
+      return true;
+    }
+    return router.parseUrl("/unauthorized");
+  }
+
+  return router.parseUrl("/login");
+};
+```
+
 ---
 
 ## Acknowledgements & Technologies

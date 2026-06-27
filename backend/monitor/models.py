@@ -7,6 +7,10 @@ User = get_user_model()
 
 
 class Tenant(models.Model):
+  """
+  Core boundary for isolation (CIA Triad: Confidentiality).
+  """
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   name = models.CharField(max_length=255)
   slug = models.SlugField(unique=True, max_length=255)
@@ -113,6 +117,10 @@ class Asset(models.Model):
 
 
 class Endpoints(models.Model):
+  """
+  Real-time telemetry and health logs (CIA Triad: Availability).
+  """
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   tenant = models.ForeignKey(
     Tenant, on_delete=models.CASCADE, related_name="endpoints", null=True, blank=True
@@ -263,6 +271,10 @@ class NewsletterSubscription(models.Model):
 
 
 class DataEncryptionKey(models.Model):
+  """
+  Manages tenant-specific encryption keys for DEK/KEK architecture.
+  """
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   encrypted_dek = models.TextField()  # The DEK encrypted with KEK
   created_at = models.DateTimeField(auto_now_add=True)
@@ -318,6 +330,10 @@ class Vulnerability(models.Model):
 
 
 class AuditLog(models.Model):
+  """
+  Immutable ledger of user actions (CIA Triad: Integrity).
+  """
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   user = models.ForeignKey(
     User, on_delete=models.SET_NULL, null=True, blank=True, related_name="audit_logs"
@@ -356,6 +372,10 @@ class UserProfile(models.Model):
 
 
 class ThreatIntelligence(models.Model):
+  """
+  Security monitoring signals (CIA Triad: Integrity & Confidentiality).
+  """
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   tenant = models.ForeignKey(
     Tenant, on_delete=models.CASCADE, related_name="threat_intel", null=True, blank=True
@@ -393,6 +413,10 @@ class ThreatIntelligence(models.Model):
 
 
 class AggregatedAnalytics(models.Model):
+  """
+  Rollups of telemetry for scalable dashboard reads.
+  """
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   tenant = models.ForeignKey(
     Tenant, on_delete=models.CASCADE, related_name="aggregated_analytics", null=True, blank=True

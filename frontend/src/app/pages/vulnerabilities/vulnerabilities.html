@@ -285,7 +285,7 @@
             <button mat-button class="header-action-btn">Run Query</button>
           </div>
           <div class="incident-list">
-            @for (incident of incidents; track incident.id) {
+            @for (incident of incidents(); track incident.id) {
             <div class="queue-item siem-item">
               <div class="item-header">
                 <span class="item-id">{{ incident.id }}</span>
@@ -316,7 +316,7 @@
             <button mat-button class="header-action-btn">Create</button>
           </div>
           <div class="playbook-list">
-            @for (playbook of playbooks; track playbook.id) {
+            @for (playbook of playbooks(); track playbook.id) {
             <div class="queue-item playbook-item">
               <div class="playbook-info">
                 <h3 class="item-title playbook-title">{{ playbook.name }}</h3>
@@ -328,6 +328,7 @@
                     type="checkbox"
                     aria-label="Toggle playbook"
                     [checked]="playbook.is_active"
+                    (change)="togglePlaybook(playbook)"
                     [attr.aria-label]="'Toggle playbook ' + playbook.name"
                   />
                   <span class="slider"></span>

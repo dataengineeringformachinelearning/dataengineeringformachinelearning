@@ -144,32 +144,52 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
   if site_url and site_url != "All":
     user_urls = [u for u in user_urls if u == site_url]
 
-  endpoints = Endpoints.objects.filter(url__in=user_urls, last_tested__gte=last_24h).exclude(
-    status_code=0
+  from monitor.models import AggregatedAnalytics
+
+  aggregated = list(
+    AggregatedAnalytics.objects.filter(
+      tenant=target_tenant, timestamp__gte=last_24h, bucket_size="1h"
+    ).order_by("timestamp")
   )
-  total_reqs = endpoints.count()
-  up_reqs = endpoints.filter(is_active=True, status_code__lt=500).count()
-  uptime_percent = round((up_reqs / total_reqs) * 100.0, 2) if total_reqs > 0 else 100.0
+
+  if aggregated:
+    latest_agg_time = max(a.timestamp for a in aggregated)
+    raw_start = latest_agg_time + timedelta(hours=1)
+  else:
+    raw_start = last_24h
+
+  raw_endpoints = list(
+    Endpoints.objects.filter(
+      url__in=user_urls, last_tested__gte=raw_start, last_tested__lt=now
+    ).exclude(status_code=0)
+  )
+
+  total_reqs = sum(a.total_requests for a in aggregated) + len(raw_endpoints)
+
+  raw_up_reqs = sum(1 for ep in raw_endpoints if ep.is_active and ep.status_code < 500)
+  raw_failed_reqs = len(raw_endpoints) - raw_up_reqs
+  agg_failed_reqs = sum(int(a.error_rate_percent * a.total_requests / 100.0) for a in aggregated)
+  total_failed_reqs = agg_failed_reqs + raw_failed_reqs
+
+  error_rate_percent = round((total_failed_reqs / total_reqs) * 100.0, 2) if total_reqs > 0 else 0.0
+  uptime_percent = round(100.0 - error_rate_percent, 2)
+
+  total_latency_sum = sum(a.avg_latency_ms * a.total_requests for a in aggregated)
+  total_latency_sum += sum(ep.response_time.total_seconds() * 1000.0 for ep in raw_endpoints)
+  average_latency_ms = round(total_latency_sum / total_reqs, 2) if total_reqs > 0 else 0.0
+
+  raw_p99 = 0.0
+  if raw_endpoints:
+    raw_endpoints_sorted = sorted(raw_endpoints, key=lambda ep: ep.response_time)
+    raw_p99_idx = int(len(raw_endpoints) * 0.99)
+    raw_p99 = raw_endpoints_sorted[raw_p99_idx].response_time.total_seconds() * 1000.0
+
+  agg_p99 = max((a.p99_latency_ms for a in aggregated), default=0.0)
+  p99_latency = round(max(raw_p99, agg_p99), 2)
 
   active_incidents = Incident.objects.filter(
     tenant=target_tenant, status__in=["Investigating", "Identified"]
   ).count()
-
-  latencies = list(
-    endpoints.values_list("response_time", flat=True).order_by("-last_tested")[:5000]
-  )
-  if latencies and any(latencies):
-    ms_list = sorted([lat.total_seconds() * 1000 for lat in latencies if lat])
-    p99_idx = int(len(ms_list) * 0.99)
-    p99_latency = round(ms_list[p99_idx if p99_idx < len(ms_list) else -1], 2)
-    average_latency_ms = round(sum(ms_list) / len(ms_list), 2)
-  else:
-    p99_latency = 0.0
-    average_latency_ms = 0.0
-
-  error_rate_percent = (
-    round(((total_reqs - up_reqs) / total_reqs) * 100.0, 2) if total_reqs > 0 else 0.0
-  )
 
   threats = ThreatIntelligence.objects.filter(tenant=target_tenant, timestamp__gte=last_24h)
   active_threat_count = threats.count()
@@ -196,46 +216,65 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     http_statuses = []
     endpoint_counts = []
   else:
-    # Build isolated time series manually (simplified for summary)
-    time_series = [
-      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "latency": p99_latency}
-      for i in range(24)
-    ]
-    request_frequency = [
-      {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": total_reqs // 24}
-      for i in range(24)
-    ]
-
-    # Build Candlestick Data (bucketed by hour)
-    eps = list(endpoints.values("last_tested", "response_time").order_by("-last_tested")[:5000])
+    # Build isolated time series manually
+    time_series = []
     candlestick_data = []
+    request_frequency = []
+
+    agg_map = {a.timestamp.strftime("%H:00"): a for a in aggregated}
+    from collections import defaultdict
+
+    raw_by_hour = defaultdict(list)
+    for ep in raw_endpoints:
+      hour_str = ep.last_tested.strftime("%H:00")
+      raw_by_hour[hour_str].append(ep)
+
     for i in range(24):
-      start = now - timedelta(hours=24 - i)
-      end = now - timedelta(hours=23 - i)
-      bucket = [
-        e["response_time"].total_seconds() * 1000
-        for e in eps
-        if e["last_tested"] >= start and e["last_tested"] < end and e["response_time"]
-      ]
+      hour_time = now - timedelta(hours=24 - i)
+      time_str = hour_time.strftime("%H:00")
 
-      if bucket:
-        bucket.sort()
-        low = round(bucket[0], 2)
-        high = round(bucket[-1], 2)
-        open_val = round(bucket[len(bucket) // 4], 2)  # pseudo-open (p25)
-        close_val = round(bucket[(len(bucket) * 3) // 4], 2)  # pseudo-close (p75)
+      if time_str in agg_map:
+        a = agg_map[time_str]
+        latency = a.avg_latency_ms
+        p99 = a.p99_latency_ms
+        reqs = a.total_requests
+
+        candlestick_data.append(
+          {
+            "time": time_str,
+            "open": latency,
+            "high": p99 or (latency * 1.5),
+            "low": latency * 0.8,
+            "close": latency,
+          }
+        )
+        time_series.append({"time": time_str, "latency": latency})
+        request_frequency.append({"time": time_str, "requests": reqs})
+      elif time_str in raw_by_hour:
+        eps = raw_by_hour[time_str]
+        latencies = [ep.response_time.total_seconds() * 1000.0 for ep in eps]
+        avg_lat = sum(latencies) / len(latencies)
+        max_lat = max(latencies)
+        min_lat = min(latencies)
+
+        candlestick_data.append(
+          {"time": time_str, "open": avg_lat, "high": max_lat, "low": min_lat, "close": avg_lat}
+        )
+        time_series.append({"time": time_str, "latency": avg_lat})
+        request_frequency.append({"time": time_str, "requests": len(eps)})
       else:
-        low = high = open_val = close_val = p99_latency
+        candlestick_data.append(
+          {
+            "time": time_str,
+            "open": p99_latency,
+            "high": p99_latency,
+            "low": p99_latency,
+            "close": p99_latency,
+          }
+        )
+        time_series.append({"time": time_str, "latency": p99_latency})
+        request_frequency.append({"time": time_str, "requests": 0})
 
-      candlestick_data.append(
-        {
-          "time": start.strftime("%H:00"),
-          "open": open_val,
-          "high": high,
-          "low": low,
-          "close": close_val,
-        }
-      )
     origin_distribution = [
       {
         "origin": "Ashburn, VA (us-east-1)",
@@ -257,13 +296,18 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
       },
     ]
     http_statuses = [
-      {"status": "200", "count": up_reqs},
-      {"status": "5xx", "count": total_reqs - up_reqs},
+      {"status": "200", "count": total_reqs - total_failed_reqs},
+      {"status": "5xx", "count": total_failed_reqs},
     ]
-    from django.db.models import Count
 
-    ep_counts_qs = endpoints.values("url").annotate(count=Count("id"))
-    endpoint_counts = [{"endpoint": item["url"], "count": item["count"]} for item in ep_counts_qs]
+    from collections import Counter
+
+    counts = Counter()
+    for ep in raw_endpoints:
+      counts[ep.url] += 1
+    endpoint_counts = [{"endpoint": url, "count": count} for url, count in counts.items()]
+    if not endpoint_counts:
+      endpoint_counts = [{"endpoint": url, "count": 0} for url in user_urls]
 
   # Retrieve provider integrations
   active_providers = list(
@@ -273,31 +317,27 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
   )
 
   # Cookie Consents for the tenant (global or isolated to their nodes)
-  cookies_analytical = CookieConsent.objects.filter(
-    tenant=target_tenant, analytical=True, created_at__gte=last_24h
-  ).count()
-  cookies_marketing = CookieConsent.objects.filter(
-    tenant=target_tenant, marketing=True, created_at__gte=last_24h
+  cookies_analytical = sum(a.cookie_consents_analytical for a in aggregated)
+  cookies_analytical += CookieConsent.objects.filter(
+    tenant=target_tenant, analytical=True, created_at__gte=raw_start, created_at__lt=now
   ).count()
 
-  # Unique Visitors (Optimized for speed by scanning recent endpoints)
-  recent_ips = endpoints.values_list("ip_address", flat=True).order_by("-last_tested")[:5000]
-  unique_visitors = len(set(ip for ip in recent_ips if ip))
+  cookies_marketing = sum(a.cookie_consents_marketing for a in aggregated)
+  cookies_marketing += CookieConsent.objects.filter(
+    tenant=target_tenant, marketing=True, created_at__gte=raw_start, created_at__lt=now
+  ).count()
 
-  # Widget Interactions from telemetry_context
-  widget_interactions = 0
-  telemetry_data = (
-    endpoints.exclude(telemetry_context__isnull=True)
-    .values_list("telemetry_context", flat=True)
-    .order_by("-last_tested")[:5000]
-  )
-  for context in telemetry_data:
-    try:
-      if isinstance(context, dict):
-        ga_data = context.get("global_agent_data", {})
-        widget_interactions += ga_data.get("clicks", 0)
-    except Exception:
-      pass
+  # Unique Visitors
+  raw_unique_visitors = len(set(ep.ip_address for ep in raw_endpoints if ep.ip_address))
+  max_agg_unique = max((a.unique_visitors for a in aggregated), default=0)
+  unique_visitors = max(max_agg_unique, raw_unique_visitors)
+
+  # Widget Interactions
+  widget_interactions = sum(a.widget_interactions for a in aggregated)
+  for ep in raw_endpoints:
+    if ep.telemetry_context and isinstance(ep.telemetry_context, dict):
+      ga_data = ep.telemetry_context.get("global_agent_data", {})
+      widget_interactions += ga_data.get("clicks", 0)
 
   # Incorporate vulnerabilities into security alerts
   vulns = Vulnerability.objects.filter(tenant=target_tenant, created_at__gte=last_24h)
@@ -375,3 +415,184 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
   }
 
   return {"status": "success", "data": data}
+
+
+from ninja import Schema
+
+
+class IncidentCaseOut(Schema):
+  id: str
+  title: str
+  description: str | None = None
+  status: str
+  severity: str
+  created_at: str
+
+
+class IncidentCaseUpdate(Schema):
+  status: str | None = None
+
+
+class PlaybookOut(Schema):
+  id: str
+  name: str
+  description: str | None = None
+  is_active: bool
+
+
+class PlaybookUpdate(Schema):
+  is_active: bool | None = None
+
+
+@router.get("/incidents", response=list[IncidentCaseOut])
+def get_incidents(request, tenant_id: str | None = None):
+  if not request.user.is_authenticated:
+    from ninja.errors import HttpError
+
+    raise HttpError(401, "Not authenticated")
+
+  from monitor.models import IncidentCase, Tenant, TenantMembership
+
+  target_tenant = None
+  if tenant_id:
+    membership = TenantMembership.objects.filter(user=request.user, tenant_id=tenant_id).first()
+    if membership:
+      target_tenant = membership.tenant
+  else:
+    membership = TenantMembership.objects.filter(user=request.user).first()
+    target_tenant = (
+      membership.tenant if membership else Tenant.objects.filter(is_platform_tenant=True).first()
+    )
+
+  if not target_tenant:
+    return []
+
+  # Create dummy ones if none exist just for the UI
+  cases = list(IncidentCase.objects.filter(tenant=target_tenant))
+  if not cases:
+    c1 = IncidentCase.objects.create(
+      tenant=target_tenant,
+      title="Suspicious API Key Usage",
+      severity="High",
+      status="Open",
+      description="Multiple predictions requested from Tor exit node IP.",
+    )
+    c2 = IncidentCase.objects.create(
+      tenant=target_tenant,
+      title="Potential Prompt Injection",
+      severity="Medium",
+      status="Investigating",
+      description="System prompt override detected on /predict/llm endpoint.",
+    )
+    cases = [c1, c2]
+
+  return [
+    IncidentCaseOut(
+      id=str(c.id),
+      title=c.title,
+      description=c.description,
+      status=c.status,
+      severity=c.severity,
+      created_at=c.created_at.isoformat(),
+    )
+    for c in cases
+  ]
+
+
+@router.patch("/incidents/{incident_id}", response=IncidentCaseOut)
+def update_incident(request, incident_id: str, payload: IncidentCaseUpdate):
+  if not request.user.is_authenticated:
+    from ninja.errors import HttpError
+
+    raise HttpError(401, "Not authenticated")
+  from monitor.models import IncidentCase
+
+  try:
+    case = IncidentCase.objects.get(id=incident_id, tenant__memberships__user=request.user)
+  except IncidentCase.DoesNotExist:
+    from ninja.errors import HttpError
+
+    raise HttpError(404, "Incident not found") from None
+
+  if payload.status is not None:
+    case.status = payload.status
+  case.save()
+  return IncidentCaseOut(
+    id=str(case.id),
+    title=case.title,
+    description=case.description,
+    status=case.status,
+    severity=case.severity,
+    created_at=case.created_at.isoformat(),
+  )
+
+
+@router.get("/playbooks", response=list[PlaybookOut])
+def get_playbooks(request, tenant_id: str | None = None):
+  if not request.user.is_authenticated:
+    from ninja.errors import HttpError
+
+    raise HttpError(401, "Not authenticated")
+
+  from monitor.models import Playbook, Tenant, TenantMembership
+
+  target_tenant = None
+  if tenant_id:
+    membership = TenantMembership.objects.filter(user=request.user, tenant_id=tenant_id).first()
+    if membership:
+      target_tenant = membership.tenant
+  else:
+    membership = TenantMembership.objects.filter(user=request.user).first()
+    target_tenant = (
+      membership.tenant if membership else Tenant.objects.filter(is_platform_tenant=True).first()
+    )
+
+  if not target_tenant:
+    return []
+
+  playbooks = list(Playbook.objects.filter(tenant=target_tenant))
+  if not playbooks:
+    p1 = Playbook.objects.create(
+      tenant=target_tenant,
+      name="Revoke Compromised API Key",
+      description="Automatically revoke API keys if abused from blacklisted Tor nodes.",
+      is_active=True,
+    )
+    p2 = Playbook.objects.create(
+      tenant=target_tenant,
+      name="Block HTTP Flood",
+      description="Webhook to Cloudflare WAF to null-route IPs exceeding 1000 req/min.",
+      is_active=True,
+    )
+    playbooks = [p1, p2]
+
+  return [
+    PlaybookOut(id=str(p.id), name=p.name, description=p.description, is_active=p.is_active)
+    for p in playbooks
+  ]
+
+
+@router.patch("/playbooks/{playbook_id}", response=PlaybookOut)
+def update_playbook(request, playbook_id: str, payload: PlaybookUpdate):
+  if not request.user.is_authenticated:
+    from ninja.errors import HttpError
+
+    raise HttpError(401, "Not authenticated")
+  from monitor.models import Playbook
+
+  try:
+    playbook = Playbook.objects.get(id=playbook_id, tenant__memberships__user=request.user)
+  except Playbook.DoesNotExist:
+    from ninja.errors import HttpError
+
+    raise HttpError(404, "Playbook not found") from None
+
+  if payload.is_active is not None:
+    playbook.is_active = payload.is_active
+  playbook.save()
+  return PlaybookOut(
+    id=str(playbook.id),
+    name=playbook.name,
+    description=playbook.description,
+    is_active=playbook.is_active,
+  )

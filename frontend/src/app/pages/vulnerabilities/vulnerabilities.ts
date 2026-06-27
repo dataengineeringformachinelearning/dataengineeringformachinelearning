@@ -45,39 +45,8 @@ export class Vulnerabilities implements OnInit {
   public siteOptions: SelectOption[] = [{ value: 'All', label: 'All Sites' }];
   public selectedSite: string | null = null;
 
-  incidents = [
-    {
-      id: 'INC-9482',
-      title: 'Suspicious API Key Usage',
-      severity: 'High',
-      status: 'Open',
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-      description: 'Multiple predictions requested from Tor exit node IP.',
-    },
-    {
-      id: 'INC-9481',
-      title: 'Potential Prompt Injection',
-      severity: 'Medium',
-      status: 'Investigating',
-      created_at: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-      description: 'System prompt override detected on /predict/llm endpoint.',
-    },
-  ];
-
-  playbooks = [
-    {
-      id: 'PB-001',
-      name: 'Revoke Compromised API Key',
-      is_active: true,
-      description: 'Automatically revoke API keys if abused from blacklisted Tor nodes.',
-    },
-    {
-      id: 'PB-002',
-      name: 'Block HTTP Flood',
-      is_active: true,
-      description: 'Webhook to Cloudflare WAF to null-route IPs exceeding 1000 req/min.',
-    },
-  ];
+  incidents = this.vulnService.incidents;
+  playbooks = this.vulnService.playbooks;
 
   selectedVuln = signal<Vulnerability | null>(null);
   filterStatus = signal<string>('All');
@@ -161,6 +130,8 @@ export class Vulnerabilities implements OnInit {
           }
           this.loadAvailableSites();
           this.loadVulnerabilities();
+          this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+          this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
           this.cdr.markForCheck();
         }
       },
@@ -199,6 +170,8 @@ export class Vulnerabilities implements OnInit {
     this.selectedSite = 'All'; // reset site selection when tenant changes
     this.loadAvailableSites();
     this.loadVulnerabilities();
+    this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+    this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
   }
 
   public onSiteChange(site: any) {
@@ -268,10 +241,21 @@ export class Vulnerabilities implements OnInit {
     this.vulnService.updateVulnerability(current.id, { status }).subscribe({
       next: updated => {
         this.selectedVuln.set(updated);
-        this.vulnService.fetchVulnerabilities();
+        this.vulnService.fetchVulnerabilities(
+          this.selectedTenantId || undefined,
+          this.selectedSite || undefined,
+        );
         this.cdr.markForCheck();
       },
       error: err => console.error('Failed to update status:', err),
+    });
+  }
+
+  togglePlaybook(playbook: any) {
+    this.vulnService.updatePlaybook(playbook.id, { is_active: !playbook.is_active }).subscribe({
+      next: () => {
+        this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
+      },
     });
   }
 

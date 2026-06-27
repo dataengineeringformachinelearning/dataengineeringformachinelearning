@@ -9,6 +9,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 // Mock Firebase SDKs
 vi.mock('firebase/app', () => ({
   initializeApp: vi.fn(() => ({})),
+  getApps: vi.fn(() => []),
 }));
 
 vi.mock('firebase/auth', () => {

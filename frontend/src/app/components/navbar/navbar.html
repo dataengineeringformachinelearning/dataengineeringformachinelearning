@@ -19,15 +19,6 @@
       @if (authService.isAuthenticated()) {
       <a
         mat-button
-        href="https://dataengineeringformachinelearning.com/documentation"
-        class="nav-btn"
-      >
-        <mat-icon aria-hidden="true">description</mat-icon>
-        <span>Documentation</span>
-      </a>
-
-      <a
-        mat-button
         routerLink="/explore"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact: true}"
@@ -81,14 +72,6 @@
         <span>Explore</span>
       </a>
 
-      <a
-        mat-button
-        href="https://dataengineeringformachinelearning.com/documentation"
-        class="nav-btn"
-      >
-        <mat-icon aria-hidden="true">description</mat-icon>
-        <span>Documentation</span>
-      </a>
       }
     </div>
 
@@ -135,16 +118,6 @@
   <!-- Mobile Collapsible Menu Dropdown -->
   <div class="mobile-menu" [class.open]="isMobileMenuOpen()">
     @if (authService.isAuthenticated()) {
-    <a
-      mat-button
-      href="https://dataengineeringformachinelearning.com/documentation"
-      class="mobile-nav-btn"
-      (click)="closeMobileMenu()"
-    >
-      <mat-icon aria-hidden="true">description</mat-icon>
-      <span>Documentation</span>
-    </a>
-
     <a
       mat-button
       routerLink="/explore"
@@ -205,15 +178,6 @@
       <span>Explore</span>
     </a>
 
-    <a
-      mat-button
-      href="https://dataengineeringformachinelearning.com/documentation"
-      class="mobile-nav-btn"
-      (click)="closeMobileMenu()"
-    >
-      <mat-icon aria-hidden="true">description</mat-icon>
-      <span>Documentation</span>
-    </a>
     }
 
     <div class="mobile-divider"></div>

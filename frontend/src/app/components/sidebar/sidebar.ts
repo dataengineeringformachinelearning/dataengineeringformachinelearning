@@ -36,7 +36,6 @@ export class Sidebar implements OnInit {
   private router = inject(Router);
 
   isCollapsed = signal<boolean>(false);
-  isDocumentationActive = signal(false);
   isSettingsActive = signal(false);
 
   // Tree view expansion states
@@ -125,11 +124,9 @@ export class Sidebar implements OnInit {
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.isDocumentationActive.set(this.router.url.startsWith('/documentation'));
         this.isSettingsActive.set(this.router.url.startsWith('/settings'));
         this.cdr.markForCheck();
       });
-    this.isDocumentationActive.set(this.router.url.startsWith('/documentation'));
     this.isSettingsActive.set(this.router.url.startsWith('/settings'));
 
     this.monitorService.getStatusPages().subscribe({

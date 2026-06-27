@@ -4,6 +4,20 @@
   display: block;
   width: 100%;
   min-height: unset !important;
+
+  --status-accent: var(--color-primary-container);
+  --status-badge-bg: rgba(192, 197, 193, 0.1);
+  --status-badge-text: var(--color-primary-container);
+  --status-badge-border: rgba(192, 197, 193, 0.3);
+  --timeline-warning: var(--color-warning);
+}
+
+:host-context(html[data-theme='light']) {
+  --status-accent: var(--color-primary);
+  --status-badge-bg: color-mix(in srgb, var(--color-surface) 8%, transparent);
+  --status-badge-text: var(--color-primary);
+  --status-badge-border: color-mix(in srgb, var(--color-surface) 20%, transparent);
+  --timeline-warning: #ffc107;
 }
 
 // Explore-specific classes that are part of the status card block:

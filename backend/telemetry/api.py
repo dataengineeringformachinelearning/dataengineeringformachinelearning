@@ -4,7 +4,7 @@ import logging
 from django.http import HttpResponse
 from ninja import Router, Schema
 from utils.kafka import get_kafka_producer
-from utils.request import get_client_ip, get_user_agent
+from utils.request import anonymize_ip, get_client_ip, get_user_agent
 
 logger = logging.getLogger(__name__)
 router = Router()
@@ -98,12 +98,13 @@ async def save_cookie_consent(request, payload: CookieConsentPayload):
   # Extract IP address and User-Agent using utilities
   ip = get_client_ip(request)
   user_agent = get_user_agent(request)
+  anon_ip = anonymize_ip(ip)
 
   consent = await sync_to_async(CookieConsent.objects.create)(
     necessary=payload.necessary,
     analytical=payload.analytical,
     marketing=payload.marketing,
-    ip_address=ip or None,
+    ip_address=anon_ip or None,
     user_agent=user_agent,
   )
   return {"status": "success", "id": str(consent.id)}

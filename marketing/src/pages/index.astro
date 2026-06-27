@@ -152,10 +152,12 @@ const pipelineSteps = [
           <div class="bento-header">
             <span class="showcase-tag">LIVE TELEMETRY WIDGET</span>
             <div class="embed-code">
-              <code>&lt;script src=".../widget.js"&gt;&lt;/script&gt;</code>
+              <code>&lt;script src="https://deml.app/assets/widget.js" data-page-id="platform-status"&gt;&lt;/script&gt;</code>
             </div>
           </div>
-          <div class="widget-mount-point" id="hero-widget-mount"></div>
+          <div class="widget-mount-point" id="hero-widget-mount">
+            <script src="https://deml.app/assets/widget.js" data-page-id="platform-status" async defer></script>
+          </div>
         </div>
       </div>
 
@@ -202,7 +204,7 @@ const pipelineSteps = [
             mitigation strategies powering the platform.
           </p>
         </div>
-        <div class="cta-group" style="justify-content: flex-start">
+        <div class="cta-group u-style-9150aa" >
           <a href="/whitepaper" class="cta-button primary-btn whitepaper-btn">
             <span class="material-icons" aria-hidden="true">description</span>
             <span>Read Whitepaper</span>

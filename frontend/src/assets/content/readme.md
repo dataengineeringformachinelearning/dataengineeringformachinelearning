@@ -198,7 +198,7 @@ The platform supports automated email alerts for system events and model trainin
 
 - Set `RESEND_API_KEY` to your Resend API Key in your backend environment variables.
 - Set `ALERT_EMAIL_TARGET` to the destination email address for system alerts.
-- (Optional) Set `ALERT_EMAIL_FROM` to customize the sender address (defaults to `notifications@dataengineeringformachinelearning.com`).
+- (Optional) Set `ALERT_EMAIL_FROM` to customize the sender address (defaults to `notifications@deml.app`).
 
 ---
 
@@ -212,6 +212,9 @@ We take data security seriously. As a multi-tenant SaaS platform, we employ stri
 - **OSINT & Dark Web Scanning:** Daily background cron workers leverage the "Have I Been Pwned" (HIBP) API and query the Tor network via Ahmia to automatically hunt for compromised tenant emails and brand mentions on dark web forums. Additionally, Certificate Transparency logs are scanned for exposed subdomains. All findings are natively serialized as `ThreatIntelligence` and `Endpoints` records in the database to instantly populate the tenant's security dashboard.
 - **Post-Quantum Cryptography (PQC):** The platform features a Post-Quantum Key Encapsulation Mechanism (KEM) using `liboqs`. External services can invoke the `/api/v1/telemetry/pq-key-exchange` endpoint to securely negotiate a PQ session key before transmitting transient, highly sensitive telemetry payloads over standard TLS. The server enforces Forward Secrecy by strictly caching the ephemeral secret key for exactly 5 minutes using a unique UUID and permanently destroying it immediately upon decapsulation. This actively prevents "Store Now, Decrypt Later" (SNDL) attacks. (Fails over gracefully to AES if `liboqs` is absent).
 - **Tenant0 Bootstrapping:** The platform utilizes Django signals (`post_migrate`) to dynamically bootstrap itself as `Tenant0` on the first run, seamlessly homogenizing all background workers, ML models, and pipelines to utilize standard UUIDs, eliminating the risk of hardcoded string literal constraints.
+- **Access Control Architecture (RBAC & ABAC):**
+  - **Role-Based Access Control (RBAC):** Users hold one of three distinct roles: `Viewer` (read-only access to status and analytics), `Operator` (standard write access to status pages, endpoints, and services), or `Security Admin` (full administrative rights and configuration overrides).
+  - **Attribute-Based Access Control (ABAC):** Visibility policies adapt dynamically. Logged-out public users can only access published status pages (`is_published=True`) and the default `platform-status` (Tenant0). Logged-in users can also access status pages they explicitly own (`user=request.user`). Programmatic API ingestion maps to isolated tenant spaces dynamically via secure API tokens rather than hardcoded domains. Write actions dynamically require multi-factor authentication (MFA) verification via client JWT attributes.
 - **Compliance:** We are actively pursuing SOC 2 Type II, CMMC 2.0, NIST SP 800-171 Rev. 3, and GDPR compliance certifications. You can review our full security posture and architecture in our Whitepaper.
 
 ## Disclaimer & Liability

@@ -104,34 +104,39 @@ class Command(BaseCommand):
         f"  - {row['city']}, {row['country']}: {row['active_users']} active users ({row['suspicious_requests']} suspicious requests)"
       )
 
-      # Ingest to telemetry pipeline (e.g. Redpanda/Kafka) if brokers are set
-      try:
-        import asyncio
+    # Ingest to telemetry pipeline (e.g. Redpanda/Kafka) if brokers are set
+    try:
+      import asyncio
 
-        from aiokafka import AIOKafkaProducer
+      from aiokafka import AIOKafkaProducer
+      from monitor.models import TenantMembership
 
-        async def produce_telemetry(row):
-          brokers = get_kafka_brokers()
-          producer = AIOKafkaProducer(bootstrap_servers=brokers)
-          await producer.start()
-          try:
-            payload = {
-              "source": "google_analytics_threat_intel",
-              "user_id": integration.user.id,
-              "location": f"{row['city']}, {row['country']}",
-              "active_users": row["active_users"],
-              "suspicious_requests": row["suspicious_requests"],
-              "raw_payload": row,
-              "timestamp": timezone.now().isoformat(),
-            }
-            await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
-          finally:
-            await producer.stop()
+      membership = TenantMembership.objects.filter(user=integration.user).first()
+      tenant_id = str(membership.tenant.id) if membership else None
 
-        asyncio.run(produce_telemetry(row))
-      except Exception:
-        # If brokers aren't available locally, proceed normally
-        pass
+      async def produce_telemetry(row):
+        brokers = get_kafka_brokers()
+        producer = AIOKafkaProducer(bootstrap_servers=brokers)
+        await producer.start()
+        try:
+          payload = {
+            "source": "google_analytics_threat_intel",
+            "tenant_id": tenant_id,
+            "user_id": integration.user.id,
+            "location": f"{row['city']}, {row['country']}",
+            "active_users": row["active_users"],
+            "suspicious_requests": row["suspicious_requests"],
+            "raw_payload": row,
+            "timestamp": timezone.now().isoformat(),
+          }
+          await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
+        finally:
+          await producer.stop()
+
+      asyncio.run(produce_telemetry(row))
+    except Exception:
+      # If brokers aren't available locally, proceed normally
+      pass
 
   def check_ip_reputation(self, ip):
     import os
@@ -282,6 +287,11 @@ class Command(BaseCommand):
     self.stdout.write(
       self.style.SUCCESS("Successfully fetched Microsoft Clarity sessions. Geolocation breakdown:")
     )
+    from monitor.models import TenantMembership
+
+    membership = TenantMembership.objects.filter(user=integration.user).first()
+    tenant_id = str(membership.tenant.id) if membership else None
+
     for sess in mock_clarity_sessions:
       rep = self.check_ip_reputation(sess["ip"])
       malicious_str = " [MALICIOUS]" if rep["is_malicious"] else ""
@@ -296,13 +306,14 @@ class Command(BaseCommand):
 
         from aiokafka import AIOKafkaProducer
 
-        async def produce_telemetry(sess, rep):
+        async def produce_telemetry(sess, rep, tenant_id=tenant_id):
           brokers = get_kafka_brokers()
           producer = AIOKafkaProducer(bootstrap_servers=brokers)
           await producer.start()
           try:
             payload = {
               "source": "microsoft_clarity_threat_intel",
+              "tenant_id": tenant_id,
               "user_id": integration.user.id,
               "location": sess["location"],
               "ip": sess["ip"],
@@ -347,6 +358,11 @@ class Command(BaseCommand):
       },
     ]
 
+    from monitor.models import TenantMembership
+
+    membership = TenantMembership.objects.filter(user=integration.user).first()
+    tenant_id = str(membership.tenant.id) if membership else None
+
     self.stdout.write(
       self.style.SUCCESS("Successfully fetched Cloudflare sessions. Geolocation breakdown:")
     )
@@ -364,13 +380,14 @@ class Command(BaseCommand):
 
         from aiokafka import AIOKafkaProducer
 
-        async def produce_telemetry(sess, rep):
+        async def produce_telemetry(sess, rep, tenant_id=tenant_id):
           brokers = get_kafka_brokers()
           producer = AIOKafkaProducer(bootstrap_servers=brokers)
           await producer.start()
           try:
             payload = {
               "source": "cloudflare_threat_intel",
+              "tenant_id": tenant_id,
               "user_id": integration.user.id,
               "location": sess["location"],
               "ip": sess["ip"],

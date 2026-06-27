@@ -1,8 +1,14 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 
+import { rootGuard } from './guards/root.guard';
+
 export const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  {
+    path: '',
+    canActivate: [rootGuard],
+    loadComponent: () => import('./pages/login/login').then(m => m.Login),
+  },
   { path: 'status', loadComponent: () => import('./pages/status/status').then(m => m.Status) },
   {
     path: 'status/:slug',

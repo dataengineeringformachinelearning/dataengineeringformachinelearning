@@ -91,13 +91,12 @@ if gcp_sa_json:
 
 import sentry_sdk
 
-sentry_sdk.init(
-  dsn=os.getenv(
-    "SENTRY_DSN",
-    "https://4b412fe87313bb20e0a4785e4404ad34@o4511437520044032.ingest.us.sentry.io/4511556294541312",
-  ),
-  send_default_pii=True,
-)
+sentry_dsn = os.getenv("SENTRY_DSN", "")
+if sentry_dsn:
+  sentry_sdk.init(
+    dsn=sentry_dsn,
+    send_default_pii=True,
+  )
 
 # Initialize Firebase Admin
 if not firebase_admin._apps:
@@ -292,15 +291,6 @@ cors_allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
 CORS_ALLOWED_ORIGINS = (
   [origin.strip() for origin in cors_allowed_origins.split(",")] if cors_allowed_origins else []
 )
-if "https://dataengineeringformachinelearning.com" not in CORS_ALLOWED_ORIGINS:
-  CORS_ALLOWED_ORIGINS.append("https://dataengineeringformachinelearning.com")
-if "https://www.dataengineeringformachinelearning.com" not in CORS_ALLOWED_ORIGINS:
-  CORS_ALLOWED_ORIGINS.append("https://www.dataengineeringformachinelearning.com")
-if "https://deml.app" not in CORS_ALLOWED_ORIGINS:
-  CORS_ALLOWED_ORIGINS.append("https://deml.app")
-if "https://backend.deml.app" not in CORS_ALLOWED_ORIGINS:
-  CORS_ALLOWED_ORIGINS.append("https://backend.deml.app")
-
 
 from corsheaders.defaults import default_headers
 
@@ -316,7 +306,12 @@ CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+from typing import Final
+
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
+MARKETING_URL: Final[str] = os.getenv(
+  "MARKETING_URL", "https://dataengineeringformachinelearning.com"
+)
 
 # Stripe Settings
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")

@@ -19,7 +19,7 @@
   --status-badge-bg: color-mix(in srgb, var(--color-surface) 8%, transparent);
   --status-badge-text: var(--color-primary);
   --status-badge-border: color-mix(in srgb, var(--color-surface) 20%, transparent);
-  --timeline-warning: #ffc107;
+  --timeline-warning: var(--color-warning);
 
   .timeline-bar-outlined.bar-nodata {
     background-color: rgba(0, 0, 0, 0.08) !important;
@@ -746,23 +746,23 @@
 
   &.info {
     &::before {
-      background-color: #2196f3;
+      background-color: var(--color-info);
     }
   }
 
   &.warning {
     &::before {
-      background-color: #ff9800;
+      background-color: var(--color-warning);
     }
-    background: rgba(255, 152, 0, 0.02);
+    background: color-mix(in srgb, var(--color-warning) 2%, transparent);
   }
 
   &.critical {
     &::before {
-      background-color: #f44336;
+      background-color: var(--color-error);
     }
-    background: rgba(244, 67, 54, 0.03);
-    border-color: rgba(244, 67, 54, 0.15);
+    background: color-mix(in srgb, var(--color-error) 3%, transparent);
+    border-color: color-mix(in srgb, var(--color-error) 15%, transparent);
   }
 
   &:hover {
@@ -790,18 +790,18 @@
   color: var(--text-muted);
 
   &.info {
-    background: rgba(33, 150, 243, 0.1);
-    color: #2196f3;
+    background: color-mix(in srgb, var(--color-info) 10%, transparent);
+    color: var(--color-info);
   }
 
   &.warning {
-    background: rgba(255, 152, 0, 0.15);
-    color: #ffb74d;
+    background: color-mix(in srgb, var(--color-warning) 15%, transparent);
+    color: var(--color-warning);
   }
 
   &.critical {
-    background: rgba(244, 67, 54, 0.15);
-    color: #e57373;
+    background: color-mix(in srgb, var(--color-error) 15%, transparent);
+    color: var(--color-error);
   }
 }
 

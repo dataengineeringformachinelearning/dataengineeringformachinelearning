@@ -2,7 +2,7 @@
 
 :root {
   /* Colors - Hex (Base Palette) */
-  --jet-black: #121212; /* Deep modern dark grey */
+  --jet-black: #31393c; /* Exact hex from THEME.md */
   --white: #ffffff;
   --black: #000000;
 
@@ -29,20 +29,19 @@
 }
 
 html[data-theme='dark'] {
-  /* Adjusted for >= 4.5:1 contrast against #121212 */
-  --crayola-blue: #4a90e2; /* Lighter blue for dark mode */
-  --blue-bell: #6db3fd;
-  --golden-pollen: #fddb60; /* Lighter yellow */
-  --carrot-orange: #f9a84d; /* Lighter orange for dark mode */
+  --crayola-blue: #2176ff;
+  --blue-bell: #33a1fd;
+  --golden-pollen: #fdca40;
+  --carrot-orange: #f79824;
 
   --color-primary: var(--crayola-blue);
-  --color-on-primary: var(--jet-black);
+  --color-on-primary: var(--white);
   --color-primary-container: var(--blue-bell);
-  --color-on-primary-container: var(--jet-black);
+  --color-on-primary-container: var(--black);
 
-  --color-surface: #1e1e1e;
+  --color-surface: var(--jet-black); /* Slightly elevated from background */
   --color-on-surface: var(--white);
-  --color-background: var(--jet-black);
+  --color-background: #121212; /* Pure black/dark background to focus on data */
   --color-on-background: var(--white);
 
   --color-success: var(--blue-bell);
@@ -52,8 +51,8 @@ html[data-theme='dark'] {
 
   --color-gauge-red: var(--color-error);
 
-  --border: rgba(255, 255, 255, 0.15); /* Slightly increased contrast */
-  --border-layout: rgba(255, 255, 255, 0.25);
+  --border: rgba(255, 255, 255, 0.12); /* Extremely subtle border for cards */
+  --border-layout: rgba(255, 255, 255, 0.2);
 
   --hover-color: var(--blue-bell);
   --bg-color: var(--color-background);
@@ -62,24 +61,43 @@ html[data-theme='dark'] {
   --card-bg: var(--color-surface);
   --navbar-bg: rgba(18, 18, 18, 0.95);
   --link-color: var(--blue-bell);
-  --link-hover-color: #8cc3ff;
+  --link-hover-color: var(--crayola-blue);
   --hero-title-color: var(--white);
   --primary-text-color: var(--crayola-blue);
 
   --button-primary: var(--color-primary);
-  --button-primary-text: var(--jet-black); /* Dark text on light blue button */
+  --button-primary-text: var(--white); /* White text on blue button */
 
-  --color-dark-grey-btn-bg: #333333;
+  --color-dark-grey-btn-bg: var(--jet-black);
   --color-dark-grey-btn-text: var(--white);
+
+  /* Angular Material M3 Overwrites */
+  --mat-sys-primary: var(--blue-bell); /* Sky blue is highly accessible (6.39:1) for primary text/icons in dark mode */
+  --mat-sys-on-primary: var(--black);
+  --mat-sys-primary-container: var(--crayola-blue);
+  --mat-sys-on-primary-container: var(--white);
+  --mat-sys-secondary: var(--blue-bell);
+  --mat-sys-on-secondary: var(--black);
+  --mat-sys-tertiary: var(--golden-pollen);
+  --mat-sys-on-tertiary: var(--black);
+  --mat-sys-surface: var(--color-surface);
+  --mat-sys-on-surface: var(--white);
+  --mat-sys-surface-variant: #1a1a1a;
+  --mat-sys-on-surface-variant: var(--text-muted);
+  --mat-sys-background: var(--bg-color);
+  --mat-sys-on-background: var(--white);
+  --mat-sys-outline: var(--border);
+  --mat-sys-outline-variant: var(--border);
+  --mat-sys-error: var(--carrot-orange);
+  --mat-sys-on-error: var(--white);
 }
 
 html[data-theme='light'],
 :root {
-  /* Adjusted for >= 4.5:1 contrast against #ffffff */
-  --crayola-blue: #0056b3; /* Darker blue for light mode */
-  --blue-bell: #0077cc;
-  --golden-pollen: #997000; /* Darker yellow/gold for WCAG AA */
-  --carrot-orange: #d86900; /* Darker orange for light mode */
+  --crayola-blue: #2176ff;
+  --blue-bell: #33a1fd;
+  --golden-pollen: #fdca40;
+  --carrot-orange: #f79824;
 
   --color-primary: var(--crayola-blue);
   --color-on-primary: var(--white);
@@ -98,17 +116,17 @@ html[data-theme='light'],
 
   --color-gauge-red: var(--color-error);
 
-  --border: rgba(0, 0, 0, 0.15); /* Increased contrast */
-  --border-layout: rgba(0, 0, 0, 0.25);
+  --border: rgba(49, 57, 60, 0.15); /* Jet-black opacity for subtle dividers */
+  --border-layout: rgba(49, 57, 60, 0.25);
 
-  --hover-color: var(--crayola-blue);
+  --hover-color: var(--golden-pollen);
   --bg-color: var(--color-background);
   --text-color: var(--color-on-background);
-  --text-muted: rgba(0, 0, 0, 0.65); /* Improved contrast for muted text */
+  --text-muted: rgba(49, 57, 60, 0.7); /* Improved contrast for muted text */
   --card-bg: var(--color-surface);
   --navbar-bg: rgba(255, 255, 255, 0.95);
   --link-color: var(--crayola-blue);
-  --link-hover-color: #004494;
+  --link-hover-color: var(--blue-bell);
   --hero-title-color: var(--jet-black);
   --primary-text-color: var(--crayola-blue);
 
@@ -117,6 +135,26 @@ html[data-theme='light'],
 
   --color-dark-grey-btn-bg: var(--jet-black);
   --color-dark-grey-btn-text: var(--white);
+
+  /* Angular Material M3 Overwrites */
+  --mat-sys-primary: var(--crayola-blue);
+  --mat-sys-on-primary: var(--white);
+  --mat-sys-primary-container: var(--blue-bell);
+  --mat-sys-on-primary-container: var(--white);
+  --mat-sys-secondary: var(--crayola-blue);
+  --mat-sys-on-secondary: var(--white);
+  --mat-sys-tertiary: var(--golden-pollen);
+  --mat-sys-on-tertiary: var(--jet-black);
+  --mat-sys-surface: var(--color-surface);
+  --mat-sys-on-surface: var(--jet-black);
+  --mat-sys-surface-variant: #f5f5f5;
+  --mat-sys-on-surface-variant: var(--text-muted);
+  --mat-sys-background: var(--white);
+  --mat-sys-on-background: var(--jet-black);
+  --mat-sys-outline: var(--border);
+  --mat-sys-outline-variant: var(--border);
+  --mat-sys-error: var(--carrot-orange);
+  --mat-sys-on-error: var(--white);
 }
 
 body {

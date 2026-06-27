@@ -324,8 +324,8 @@
   font-family: 'Inter', monospace;
   font-size: 1rem;
   font-weight: bold;
-  background-color: rgba(213, 0, 28, 0.15);
-  color: #ff5252;
+  background-color: color-mix(in srgb, var(--color-error) 15%, transparent);
+  color: var(--color-error);
   padding: 8px 8px;
   border-radius: 0px;
 }
@@ -578,7 +578,7 @@
 }
 
 .telemetry-code {
-  background-color: #0b0d10;
+  background-color: var(--color-surface);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
@@ -794,7 +794,7 @@
       width: 16px;
       left: 4px;
       bottom: 3px;
-      background-color: var(--text-muted, #ccc);
+      background-color: var(--text-muted);
       transition: .3s;
       border-radius: 50%;
     }
@@ -807,7 +807,7 @@
 
   input:checked + .slider:before {
     transform: translateX(24px);
-    background-color: #fff;
+    background-color: var(--white);
   }
 }
 
@@ -837,13 +837,13 @@
 /* SIEM & Playbook Typographic & Grid adjustments */
 .siem-desc {
   margin: 8px 0 16px;
-  color: #a1a1aa;
+  color: var(--text-muted);
   font-size: 1rem;
 }
 
 .siem-client-id {
   font-size: 1rem;
-  color: #71717a;
+  color: var(--text-muted);
 }
 
 .playbook-list {
@@ -872,7 +872,7 @@
 
 .playbook-desc {
   margin: 0;
-  color: #a1a1aa;
+  color: var(--text-muted);
   font-size: 1rem;
 }
 

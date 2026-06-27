@@ -239,7 +239,7 @@
     &.btn-submit {
       background: var(--crayola-blue) !important;
       border: none !important;
-      color: #000000 !important; /* Deep forest green/black text on amber */
+      color: var(--color-on-primary) !important; /* Unified contrast text */
       min-width: 96px;
       display: flex;
       align-items: center;

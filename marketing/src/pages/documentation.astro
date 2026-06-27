@@ -8,9 +8,9 @@ import Layout from '../layouts/Layout.astro';
     <div class="dashboard-content-area">
       <div class="page-inner-wrapper">
         <header class="docs-hero">
-          <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--card-bg); border: 1px solid var(--border); padding: 8px 16px; border-radius: 999px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+          <div  class="u-style-58adc5">
             <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--color-primary);"></span>
-            <span style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text-color); text-transform: uppercase;">Developer Portal</span>
+            <span  class="u-style-486a44">Developer Portal</span>
           </div>
           <h1 class="docs-title">API Gateway & Integrations</h1>
           <p class="docs-subtitle">
@@ -26,7 +26,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="material-icons" aria-hidden="true">vpn_key</span>
               <h2>Authentication & Access</h2>
             </div>
-            <p style="color: var(--text-muted); line-height: 1.6; margin: 0; font-size: 1.05rem">
+            <p  class="u-style-7f7d6d">
               Secure access to our high-throughput pipelines requires an API key. Register an account,
               generate a secure token in your user profile, and pass it in the Authorization header.
             </p>
@@ -41,7 +41,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="material-icons" aria-hidden="true">input</span>
               <h2>Data Ingestion</h2>
             </div>
-            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+            <p  class="u-style-efd290">
               High-throughput endpoint optimized for receiving batched or streaming data from
               distributed pipelines like Apache Spark or Databricks.
             </p>
@@ -49,7 +49,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="method">POST</span>
               <span class="path">/api/v1/ingest</span>
             </div>
-            <div class="code-block-premium" style="margin-top: auto">
+            <div class="code-block-premium u-style-5ab468" >
               <div class="code-header">cURL Request</div>
               <pre><code>curl -X POST https://backend.deml.app/api/v1/ingest \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -63,7 +63,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="material-icons" aria-hidden="true">model_training</span>
               <h2>Real-time Inference</h2>
             </div>
-            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+            <p  class="u-style-efd290">
               Low-latency endpoint for model inference, ideal for Kubernetes sidecars or deep learning
               services calling models directly.
             </p>
@@ -71,7 +71,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="method">POST</span>
               <span class="path">/api/v1/predict</span>
             </div>
-            <div class="code-block-premium" style="margin-top: auto">
+            <div class="code-block-premium u-style-5ab468" >
               <div class="code-header">cURL Request</div>
               <pre><code>curl -X POST https://backend.deml.app/api/v1/predict \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -85,11 +85,11 @@ import Layout from '../layouts/Layout.astro';
               <span class="material-icons" aria-hidden="true">terminal</span>
               <h2>Native Integrations</h2>
             </div>
-            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+            <p  class="u-style-efd290">
               We provide native support and documentation for integrating with the industry's leading
               tools, including:
             </p>
-            <ul style="color: var(--text-color); line-height: 1.8; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+            <ul  class="u-style-358aff">
               <li><strong>Kubernetes:</strong> Connect via CRDs or sidecar proxies.</li>
               <li><strong>TensorFlow:</strong> Stream using <code>tf.data.Dataset</code>.</li>
               <li><strong>Apache Spark:</strong> Write DataFrames directly.</li>
@@ -101,7 +101,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="material-icons" aria-hidden="true">security</span>
               <h2>Enterprise Security</h2>
             </div>
-            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+            <p  class="u-style-efd290">
               All tenant data is cryptographically isolated using strict multi-tenancy rules and
               enforced via our strict 30-day data retention policy.
               <strong>API Keys</strong> can only be managed exclusively through the user interface

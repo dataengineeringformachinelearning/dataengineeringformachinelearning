@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://dataengineeringformachinelearning.com/</loc>
+    <loc>https://deml.app/login</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://dataengineeringformachinelearning.com/explore</loc>
-    <changefreq>weekly</changefreq>
+    <loc>https://deml.app/explore</loc>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://dataengineeringformachinelearning.com/analytics</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://deml.app/status</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://dataengineeringformachinelearning.com/vulnerabilities</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://dataengineeringformachinelearning.com/settings</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://dataengineeringformachinelearning.com/status/platform-status</loc>
+    <loc>https://deml.app/status/platform-status</loc>
     <changefreq>always</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://deml.app/settings</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>
