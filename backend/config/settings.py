@@ -301,6 +301,7 @@ if "https://deml.app" not in CORS_ALLOWED_ORIGINS:
 if "https://backend.deml.app" not in CORS_ALLOWED_ORIGINS:
   CORS_ALLOWED_ORIGINS.append("https://backend.deml.app")
 
+
 from corsheaders.defaults import default_headers
 
 CORS_ALLOW_HEADERS = [

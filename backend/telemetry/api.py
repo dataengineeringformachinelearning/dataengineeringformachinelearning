@@ -23,18 +23,16 @@ class TelemetryPayload(Schema):
 
 async def _is_origin_validated(request, tenant_id: str | None) -> bool:
   from asgiref.sync import sync_to_async
-  from django.db.models import Q
-  from monitor.models import StatusPage, ValidatedSite
 
   origin = request.headers.get("origin") or request.headers.get("referer")
   if not origin:
     # If no origin, check if there's an API key
     api_key = request.headers.get("X-API-Key") or request.headers.get("Authorization")
     if api_key:
-      # We could validate the API key here
       return True
     return False
 
+  # Fast track internal dev domains
   try:
     from urllib.parse import urlparse
 
@@ -53,46 +51,9 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
   ]:
     return True
 
-  # If tenant_id is provided, it might actually be a StatusPage ID/slug from the widget
-  # Let's try to resolve the actual Tenant ID
-  actual_tenant_id = None
-  if tenant_id:
-    # Try as exact tenant ID first
-    try:
-      actual_tenant_id = tenant_id
-      # Optionally, verify tenant exists, but we'll just query ValidatedSite
-    except Exception:
-      pass
+  from monitor.cors_utils import is_domain_registered
 
-    # Or try as StatusPage slug/ID
-    try:
-      import uuid
-
-      try:
-        valid_uuid = uuid.UUID(str(tenant_id))
-        query = Q(id=valid_uuid) | Q(slug=tenant_id)
-      except (ValueError, TypeError):
-        query = Q(slug=tenant_id)
-
-      page = await sync_to_async(StatusPage.objects.filter(query).first)()
-      if page and page.tenant_id:
-        actual_tenant_id = str(page.tenant_id)
-    except Exception:
-      pass
-
-  if actual_tenant_id:
-    try:
-      import uuid
-
-      valid_id = uuid.UUID(str(actual_tenant_id))
-      return await sync_to_async(
-        ValidatedSite.objects.filter(tenant_id=valid_id, domain=domain, is_verified=True).exists
-      )()
-    except (ValueError, TypeError):
-      pass
-
-  # Fallback to checking if the domain is registered globally
-  return await sync_to_async(ValidatedSite.objects.filter(domain=domain, is_verified=True).exists)()
+  return await sync_to_async(is_domain_registered)(origin)
 
 
 @router.post("/endpoints")

@@ -1,5 +1,4 @@
 from corsheaders.signals import check_request_enabled
-from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -7,32 +6,9 @@ from django.dispatch import receiver
 @receiver(check_request_enabled)
 def cors_allow_monitored_domains(sender, request, **kwargs):
   origin = request.META.get("HTTP_ORIGIN")
-  if not origin:
-    return False
+  from monitor.cors_utils import is_domain_registered
 
-  try:
-    from monitor.models import Endpoints, MonitoredService, Tenant
-
-    # Match exact origin (e.g., https://example.com) or subpaths (e.g., https://example.com/)
-    q_exact = Q(url=origin)
-    q_slash = Q(url__startswith=origin + "/")
-
-    if Endpoints.objects.filter(q_exact | q_slash).exists():
-      return True
-
-    if MonitoredService.objects.filter(q_exact | q_slash).exists():
-      return True
-
-    q_target_exact = Q(target_url=origin)
-    q_target_slash = Q(target_url__startswith=origin + "/")
-
-    if Tenant.objects.filter(q_target_exact | q_target_slash).exists():
-      return True
-
-  except Exception:
-    pass
-
-  return False
+  return is_domain_registered(origin)
 
 
 @receiver(post_save, sender="monitor.Vulnerability")

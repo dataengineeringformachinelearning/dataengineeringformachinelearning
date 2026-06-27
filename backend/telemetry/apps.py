@@ -7,8 +7,6 @@ class TelemetryConfig(AppConfig):
 
   def ready(self):
     # Connect dynamic CORS handler
-    from corsheaders.signals import check_request_enabled
+    pass
 
-    from telemetry.cors import cors_allow_dynamic_telemetry
-
-    check_request_enabled.connect(cors_allow_dynamic_telemetry)
+    # Start workers in a separate thread to avoid blocking main thread

@@ -2028,17 +2028,6 @@ We actively dogfood our own product. The core infrastructure operates as **Tenan
 
 By running as a continuous sandbox for trials and a public sentinel, it showcases the platform's capabilities to the world and guarantees the pipelines are robust.
 
-> [!WARNING]
-> **Developer Invariant 1 (Tenant0 UUID Normalization):**
-> Never use string literals like `"platform"` as foreign keys in background workers or telemetry payloads. The `NetworkTelemetryMiddleware` explicitly intercepts legacy `"platform"` requests and dynamically maps them to the native UUID of Tenant0 (`is_platform_tenant=True`). This guarantees that Redpanda/Kafka streams and Polars aggregations operate on a homogenous stream of valid UUIDs end-to-end, preventing database foreign key constraint errors downstream.
-
-> [!WARNING]
-> **Developer Invariant 2 (Symmetrical Multi-Tenant Pipelines):**
-> When authoring background workers, cron workers, or OSINT scanners, NEVER hardcode execution exclusively for the platform. You must ALWAYS structure the pipeline to iterate dynamically over `Tenant.objects.all()`. Because the platform itself is cleanly bootstrapped as Tenant0, this guarantees that both the core infrastructure and individual customer environments are processed symmetrically within the exact same loop, eliminating architectural debt and hardcoded exceptions.
-
-> **Developer Invariant 3 (Data Enrichments & Critical Path):**
-> Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
-
 ### Codebase Stabilization & Automated SaaS Quality
 
 To ensure long-term maintainability, the platform is strictly governed by automated code quality checks and static analysis tools. A rigorous pre-commit pipeline validates all code before it merges into the `main` branch. This includes `ruff` for Python formatting and linting, `eslint` and `prettier` for frontend assets, `detect-secrets` for preventing hardcoded credentials, and `axe-core` for accessibility testing.

@@ -5,9 +5,7 @@ receivers:
         endpoint: "0.0.0.0:4318"
         cors:
           allowed_origins:
-            - "https://dataengineeringformachinelearning.com"
-            - "https://www.dataengineeringformachinelearning.com"
-            - "http://localhost:4200"
+            - "*"
           allowed_headers:
             - "Content-Type"
       grpc:
