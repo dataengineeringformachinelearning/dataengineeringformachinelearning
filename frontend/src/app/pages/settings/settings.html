@@ -623,6 +623,45 @@
           </div>
         </div>
 
+        <!-- CQRS Architecture Verification -->
+        <div class="status-card-outlined mfa-settings-card">
+          <div class="card-header-clean">
+            <h2 class="card-title-main">
+              <mat-icon>speed</mat-icon>
+              Architecture Verification (CQRS)
+            </h2>
+          </div>
+          <div class="card-body-clean">
+            <div>
+              <p class="embed-desc">
+                Test the end-to-end event loop: Angular -> Firebase Function -> Redpanda -> Django
+                Worker -> Firestore -> Angular UI.
+              </p>
+
+              <div class="mfa-enrollment-form panel-clean">
+                <button
+                  mat-flat-button
+                  color="accent"
+                  (click)="testArchitectureLoop()"
+                  [disabled]="isTestingArchitecture()"
+                  class="mfa-btn"
+                >
+                  @if (isTestingArchitecture()) {
+                  <span class="btn-spinner"></span>
+                  } @else { Test Event Loop }
+                </button>
+              </div>
+
+              @if (architectureTestResult()) {
+              <div class="alert alert-success mt-3" style="word-break: break-all">
+                <strong>Event Loop Success! Data from Firestore:</strong>
+                <pre>{{ architectureTestResult() | json }}</pre>
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+
         <!-- API Keys & Security Credentials -->
         <div class="status-card-outlined api-keys-card">
           <div class="card-header-clean">

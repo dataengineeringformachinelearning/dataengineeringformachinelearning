@@ -2,7 +2,7 @@ import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { firstValueFrom, timeout } from 'rxjs';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp, getApps } from 'firebase/app';
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -67,7 +67,7 @@ export class AuthService {
         this.isInitialized.set(true);
         this.isProcessing.set(false);
       } else {
-        const app = initializeApp(environment.firebase);
+        const app = getApps().length === 0 ? initializeApp(environment.firebase) : getApp();
         this.auth = getAuth(app);
 
         onAuthStateChanged(this.auth, async (user: FirebaseUser | null) => {

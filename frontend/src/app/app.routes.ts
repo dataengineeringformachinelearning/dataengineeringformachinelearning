@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', loadComponent: () => import('./pages/landing/landing').then(m => m.Landing) },
+  { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'book', loadComponent: () => import('./pages/book/book').then(m => m.Book) },
   {
     path: 'documentation',

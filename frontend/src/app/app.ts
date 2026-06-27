@@ -64,15 +64,17 @@ export class App implements OnInit {
       });
     });
 
-    pages.forEach(page => {
-      items.push({
-        id: page.id,
-        title: page.title,
-        content: page.description || '',
-        type: 'status-page',
-        url: page.id,
+    if (Array.isArray(pages)) {
+      pages.forEach(page => {
+        items.push({
+          id: page.id,
+          title: page.title,
+          content: page.description || '',
+          type: 'status-page',
+          url: page.id,
+        });
       });
-    });
+    }
 
     await this.searchService.clearAndIndex(items);
   }
@@ -135,7 +137,11 @@ export class App implements OnInit {
 
       this.monitorService.getStatusPages().subscribe({
         next: data => {
-          this.settingsService.statusPages.set(data);
+          if (Array.isArray(data)) {
+            this.settingsService.statusPages.set(data);
+          } else {
+            this.settingsService.statusPages.set([]);
+          }
         },
         error: err => console.error('Error fetching pages for global search:', err),
       });

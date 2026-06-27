@@ -3,7 +3,7 @@ import os
 
 from aiokafka import AIOKafkaProducer
 
-_global_producer = None
+_producers = {}
 
 
 def get_kafka_brokers() -> str:
@@ -15,16 +15,19 @@ def get_kafka_brokers() -> str:
 
 
 async def get_kafka_producer() -> AIOKafkaProducer:
-  """Returns a running global singleton instance of AIOKafkaProducer."""
-  global _global_producer
-  if _global_producer is None:
-    _global_producer = AIOKafkaProducer(bootstrap_servers=get_kafka_brokers())
+  """Returns a running AIOKafkaProducer bound to the current event loop."""
+  global _producers
+  loop = asyncio.get_running_loop()
+
+  if loop not in _producers:
+    producer = AIOKafkaProducer(bootstrap_servers=get_kafka_brokers())
     try:
-      await asyncio.wait_for(_global_producer.start(), timeout=5.0)
+      await asyncio.wait_for(producer.start(), timeout=5.0)
+      _producers[loop] = producer
     except asyncio.TimeoutError as err:
-      _global_producer = None
       raise ConnectionError("Failed to connect to Kafka broker (timeout)") from err
-  return _global_producer
+
+  return _producers[loop]
 
 
 def create_kafka_producer() -> AIOKafkaProducer:

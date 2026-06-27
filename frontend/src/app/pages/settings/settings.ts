@@ -38,7 +38,7 @@ import {
   UnifiedSelect,
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
-
+import { FirestoreService } from '../../services/firestore.service';
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -72,6 +72,7 @@ export class Settings implements OnInit {
   private metaService = inject(Meta);
   public settingsService = inject(SettingsService);
   private http = inject(HttpClient);
+  public firestoreService = inject(FirestoreService);
 
   statusPages = this.settingsService.statusPages;
   selectedPage = this.settingsService.selectedPage;
@@ -90,6 +91,8 @@ export class Settings implements OnInit {
   services = signal<MonitoredServiceData[]>([]);
 
   integrations = signal<IntegrationData[]>([]);
+  endpoints = signal<any[]>([]);
+  endpointsActive = signal<number>(0);
   isConnectingGoogle = signal<boolean>(false);
   isConnectingClarity = signal<boolean>(false);
   isConnectingCloudflare = signal<boolean>(false);
@@ -158,6 +161,11 @@ export class Settings implements OnInit {
   subscriptionCancelAtPeriodEnd = signal<boolean>(false);
   billingSuccess = signal<string | null>(null);
   billingError = signal<string | null>(null);
+
+  // CQRS Test
+  isTestingArchitecture = signal<boolean>(false);
+  architectureTestResult = signal<any>(null);
+  firestoreSubscription: any = null;
 
   constructor() {
     afterNextRender(() => {
@@ -365,14 +373,86 @@ export class Settings implements OnInit {
       });
   }
 
+  async testArchitectureLoop() {
+    const uid = this.authService.currentUserId();
+    if (!uid) return;
+
+    this.isTestingArchitecture.set(true);
+    this.architectureTestResult.set(null);
+    this.cdr.markForCheck();
+
+    // 1. Subscribe to Firestore for updates
+    if (this.firestoreSubscription) {
+      this.firestoreSubscription.unsubscribe(); // unsubscribe old
+    }
+
+    this.firestoreSubscription = this.firestoreService.getRealtimeStats().subscribe({
+      next: data => {
+        if (data) {
+          this.architectureTestResult.set(data);
+          this.isTestingArchitecture.set(false);
+          this.cdr.markForCheck();
+        }
+      },
+      error: err => {
+        console.error('Firestore subscription error:', err);
+        this.architectureTestResult.set({
+          error: err.message || 'Permission denied connecting to Firestore.',
+        });
+        this.isTestingArchitecture.set(false);
+        this.cdr.markForCheck();
+      },
+    });
+
+    // 2. Trigger the ingestEvent Cloud Function
+    try {
+      const user = this.authService.auth?.currentUser;
+      const token = user ? await user.getIdToken() : '';
+      await this.http
+        .post(
+          'http://127.0.0.1:5001/demldotcom/us-central1/ingestEvent',
+          { data: { action: 'get_stats', uid, payload: {} } },
+          { headers: { Authorization: `Bearer ${token}` } },
+        )
+        .toPromise();
+    } catch (e) {
+      console.error('Failed to trigger ingestEvent:', e);
+      this.architectureTestResult.set({ error: 'Failed to trigger Gateway' });
+      this.isTestingArchitecture.set(false);
+      this.cdr.markForCheck();
+    }
+  }
+
   loadIntegrations() {
     if (this.authService.isAuthenticated()) {
       this.monitorService.getIntegrations().subscribe({
         next: data => {
-          this.integrations.set(data);
+          if (Array.isArray(data)) {
+            this.integrations.set(data);
+          } else {
+            this.integrations.set([]);
+          }
           this.cdr.markForCheck();
         },
         error: err => console.error('Error fetching integrations:', err),
+      });
+    }
+  }
+
+  loadEndpoints() {
+    if (this.authService.isAuthenticated()) {
+      this.monitorService.getAllEndpoints().subscribe({
+        next: data => {
+          if (Array.isArray(data)) {
+            const active = data.filter((d: any) => d.is_active).length;
+            this.endpoints.set(data);
+            this.endpointsActive.set(active);
+          } else {
+            this.endpoints.set([]);
+            this.endpointsActive.set(0);
+          }
+        },
+        error: err => console.error('Error fetching endpoints:', err),
       });
     }
   }
@@ -381,17 +461,18 @@ export class Settings implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.monitorService.getStatusPages().subscribe({
         next: data => {
-          // Filter to only their pages, excluding platform-status
-          const myPages = data.filter(
-            p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status',
-          );
-          this.statusPages.set(myPages);
-          if (myPages.length > 0 && !this.selectedPage()) {
-            this.selectPage(myPages[0]);
+          if (Array.isArray(data)) {
+            // Filter to only their pages, excluding platform-status
+            const myPages = data.filter(
+              p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status',
+            );
+            this.statusPages.set(myPages);
+            if (myPages.length > 0 && !this.selectedPage()) {
+              this.selectPage(myPages[0]);
+            }
           }
-          this.cdr.markForCheck();
         },
-        error: err => console.error('Error fetching pages:', err),
+        error: err => console.error('Error fetching status pages:', err),
       });
     }
   }
@@ -941,7 +1022,7 @@ export class Settings implements OnInit {
   checkLinkedProviders() {
     const user = this.authService.auth?.currentUser;
     if (user) {
-      const providers = user.providerData.map((p: any) => p.providerId);
+      const providers = user.providerData ? user.providerData.map((p: any) => p.providerId) : [];
       this.isGoogleLinked.set(providers.includes('google.com'));
       this.isAppleLinked.set(providers.includes('apple.com'));
       this.cdr.markForCheck();

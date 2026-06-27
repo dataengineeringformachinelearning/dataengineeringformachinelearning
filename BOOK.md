@@ -1470,14 +1470,36 @@ npm install --legacy-peer-deps
 
 ```bash
 cd frontend
-npx dotenvx run -- npm start
+npm start
 ```
 
 The client will be hosted at `http://localhost:4200/`.
 
 ---
 
-## 4. Start Sanity Studio (CMS)
+## 4. Start Marketing Site (Astro)
+
+In a new terminal window or split:
+
+### Setup (First-time only)
+
+```bash
+cd marketing
+npm install
+```
+
+### Run Server
+
+```bash
+cd marketing
+npm run dev
+```
+
+The marketing site will be hosted at `http://localhost:4321/`.
+
+---
+
+## 5. Start Sanity Studio (CMS)
 
 In a new terminal window or split:
 
@@ -1499,7 +1521,7 @@ The studio interface will be hosted at `http://localhost:3333/`.
 
 ---
 
-## 5. Troubleshooting & Maintenance
+## 6. Troubleshooting & Maintenance
 
 ### Resetting Python Environment
 
@@ -1512,7 +1534,7 @@ source .venv/bin/activate
 uv pip install -r requirements.txt
 ```
 
-### Resetting Frontend/Studio NPM Dependencies
+### Resetting Frontend/Studio/Marketing NPM Dependencies
 
 If you encounter dependency issues or slow installs, reset the NPM tree:
 
@@ -1524,7 +1546,7 @@ npm install --legacy-peer-deps
 
 ---
 
-## 6. Local Mock Authentication
+## 7. Local Mock Authentication
 
 When developing locally, you can bypass the cloud Firebase Authentication backend and run completely offline:
 

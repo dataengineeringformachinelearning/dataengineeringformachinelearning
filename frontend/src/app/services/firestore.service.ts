@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { initializeApp } from 'firebase/app';
+import { getApp, getApps, initializeApp } from 'firebase/app';
 import { getFirestore, doc, onSnapshot, DocumentData, Firestore } from 'firebase/firestore';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
@@ -13,8 +13,8 @@ export class FirestoreService {
   private authService = inject(AuthService);
 
   constructor() {
-    const app = initializeApp(environment.firebase);
-    this.db = getFirestore(app);
+    const app = getApps().length === 0 ? initializeApp(environment.firebase) : getApp();
+    this.db = getFirestore(app, 'deml');
   }
 
   /**
@@ -22,13 +22,13 @@ export class FirestoreService {
    */
   getRealtimeStats(): Observable<DocumentData | undefined> {
     return new Observable(observer => {
-      const user = this.authService.getCurrentUser();
+      const user = this.authService.auth?.currentUser;
       if (!user) {
         observer.error('User not authenticated');
         return;
       }
 
-      const docRef = doc(this.db, 'users', user.id.toString(), 'data', 'stats');
+      const docRef = doc(this.db, 'users', user.uid, 'data', 'stats');
 
       const unsubscribe = onSnapshot(
         docRef,

@@ -25,7 +25,9 @@ router = Router(tags=["Billing"])
 @router.post("/create-checkout-session")
 def create_checkout_session(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "Authentication required"}, status=401)
 
   try:
     data = json.loads(request.body) if request.body else {}
@@ -38,7 +40,9 @@ def create_checkout_session(request):
 
       membership = TenantMembership.objects.filter(user=request.user).first()
       if not membership:
-        return {"error": "User does not belong to any tenant"}, 400
+        from django.http import JsonResponse
+
+        return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
       tenant = membership.tenant
 
     price_id = "price_1TlgG2Er73F9pBqwItcWHIJf"
@@ -60,7 +64,9 @@ def create_checkout_session(request):
     return {"checkout_url": session.url}
   except Exception as e:
     logger.error(f"Error creating checkout session: {e}")
-    return {"error": str(e)}, 500
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": str(e)}, status=500)
 
 
 @router.post("/webhook", auth=None)
@@ -119,13 +125,15 @@ def stripe_webhook(request):
 @router.post("/sync")
 def sync_subscription(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "Authentication required"}, status=401)
 
   from monitor.models import TenantMembership
 
   membership = TenantMembership.objects.filter(user=request.user).first()
   if not membership:
-    return {"error": "User does not belong to any tenant"}, 400
+    return {"status": "synced", "active": False, "cancel_at_period_end": False}
 
   tenant = membership.tenant
   email = request.user.email
@@ -156,51 +164,73 @@ def sync_subscription(request):
     tenant.save()
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
   except Exception as e:
+    import traceback
+
+    with open("/tmp/sync_error.txt", "w") as f:
+      f.write(traceback.format_exc())
     logger.error(f"Error syncing subscription: {e}")
-    return {"error": str(e)}, 500
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": str(e)}, status=500)
 
 
 @router.post("/cancel-subscription")
 def cancel_subscription(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "Authentication required"}, status=401)
 
   from monitor.models import TenantMembership
 
   membership = TenantMembership.objects.filter(user=request.user).first()
   if not membership:
-    return {"error": "User does not belong to any tenant"}, 400
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
 
   tenant = membership.tenant
   if not tenant.stripe_subscription_id:
-    return {"error": "No active subscription found"}, 400
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "No active subscription found"}, status=400)
 
   try:
     sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=True)
     return {"status": "cancelled", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
     logger.error(f"Error cancelling subscription: {e}")
-    return {"error": str(e)}, 500
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": str(e)}, status=500)
 
 
 @router.post("/resume-subscription")
 def resume_subscription(request):
   if not request.user.is_authenticated:
-    return {"error": "Authentication required"}, 401
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "Authentication required"}, status=401)
 
   from monitor.models import TenantMembership
 
   membership = TenantMembership.objects.filter(user=request.user).first()
   if not membership:
-    return {"error": "User does not belong to any tenant"}, 400
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
 
   tenant = membership.tenant
   if not tenant.stripe_subscription_id:
-    return {"error": "No active subscription found"}, 400
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "No active subscription found"}, status=400)
 
   try:
     sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=False)
     return {"status": "resumed", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
     logger.error(f"Error resuming subscription: {e}")
-    return {"error": str(e)}, 500
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": str(e)}, status=500)

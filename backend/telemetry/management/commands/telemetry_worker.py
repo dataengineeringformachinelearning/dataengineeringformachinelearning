@@ -159,7 +159,7 @@ class Command(BaseCommand):
   def process_frontend_event(self, uid: str, action: str, event_payload: dict):
     from firebase_admin import firestore
 
-    db = firestore.client()
+    db = firestore.client(database_id="deml")
 
     try:
       # Simple mock logic for different actions.

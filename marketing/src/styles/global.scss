@@ -1,4 +1,4 @@
-@use '@angular/material' as mat;
+
 @use './theme' as theme;
 
 // ====================== ACCESSIBILITY & SKIP LINK UTILITIES ======================
@@ -97,7 +97,6 @@ html[data-theme='light']
 @import 'prismjs/themes/prism-okaidia.css';
 
 // ====================== LEAFLET ======================
-@import 'leaflet/dist/leaflet.css';
 
 pre[class*='language-'] {
   background-color: #1a1a1a !important;
@@ -118,46 +117,7 @@ code[class*='language-'] {
 // ====================== GOOGLE FONT ======================
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-html {
-  @include mat.theme(
-    (
-      color: (
-        theme-type: light,
-        primary: mat.$azure-palette,
-      ),
-      typography: (
-        brand-family: '"Inter", sans-serif',
-        plain-family: '"Inter", sans-serif',
-      ),
-      density: 0,
-    )
-  );
-}
 
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme='light']) {
-    @include mat.theme(
-      (
-        color: (
-          theme-type: dark,
-          primary: mat.$azure-palette,
-        ),
-      )
-    );
-  }
-}
-
-html[data-theme='dark'],
-html.dark {
-  @include mat.theme(
-    (
-      color: (
-        theme-type: dark,
-        primary: mat.$azure-palette,
-      ),
-    )
-  );
-}
 
 // ====================== GLOBAL LAYOUT ======================
 *,
