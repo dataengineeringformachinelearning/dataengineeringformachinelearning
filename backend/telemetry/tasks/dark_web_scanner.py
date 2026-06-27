@@ -12,7 +12,10 @@ class DarkWebScanner:
   """
 
   # Ensure this matches the tor-proxy service port in docker-compose.yml
-  PROXIES = {"http": "socks5h://tor-proxy:9050", "https": "socks5h://tor-proxy:9050"}
+  PROXIES = {
+    "http": "socks5h://deml-tor-proxy.railway.internal:9050",
+    "https": "socks5h://deml-tor-proxy.railway.internal:9050",
+  }
 
   @classmethod
   def check_hibp_breaches(cls, account, tenant_id=None):

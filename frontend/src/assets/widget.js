@@ -239,7 +239,280 @@
 
         // Set up Shadow DOM structure including status indicators and vulnerability modal triggers
         this.shadowRoot.innerHTML = `
-        <link rel="stylesheet" href="${frontendHost}/assets/widget.css">
+        <style>
+          :host {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin: 16px auto;
+          }
+          :root {
+            --color-primary: #2176ff;
+            --card-bg: #1a1a1a;
+            --border: rgba(255, 255, 255, 0.12);
+            --text-color: #f8fafc;
+            --text-muted: rgba(255, 255, 255, 0.7);
+          }
+          .widget-container {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10000px;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: #f8fafc;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            width: fit-content;
+            gap: 8px;
+          }
+          .widget-container:hover {
+            background: rgba(15, 23, 42, 0.7);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+          }
+          .widget-link {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+          }
+          .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            margin-right: 8px;
+            display: inline-block;
+          }
+          .divider {
+            color: rgba(255, 255, 255, 0.2);
+            user-select: none;
+          }
+          .report-trigger {
+            background: none;
+            border: none;
+            color: #ef4444;
+            cursor: pointer;
+            padding: 0px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+          }
+          .report-trigger:hover {
+            background-color: #fee2e2;
+          }
+          .report-icon {
+            width: 16px;
+            height: 16px;
+          }
+          .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+          }
+          .modal-content {
+            background-color: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            animation: modal-anim 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            text-align: left;
+          }
+          @keyframes modal-anim {
+            from {
+              transform: scale(0.95) translateY(10px);
+              opacity: 0;
+            }
+            to {
+              transform: scale(1) translateY(0);
+              opacity: 1;
+            }
+          }
+          .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          }
+          .modal-header h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .close-btn {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 1;
+            transition: color 0.2s;
+          }
+          .close-btn:hover {
+            color: #f8fafc;
+          }
+          .modal-body {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+          }
+          .helper-text {
+            font-size: 14px;
+            color: #94a3b8;
+            margin: 0;
+            line-height: 1.5;
+          }
+          .form-field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+          }
+          .form-field label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #cbd5e1;
+          }
+          .form-field input,
+          .form-field textarea,
+          .form-field select {
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: #f8fafc;
+            font-family: inherit;
+            transition: all 0.2s;
+          }
+          .form-field input:focus,
+          .form-field textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+          }
+          .form-row {
+            display: flex;
+            gap: 8px;
+          }
+          .form-row .form-field {
+            flex: 1;
+          }
+          .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-bottom-left-radius: 16px;
+            border-bottom-right-radius: 16px;
+          }
+          .btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 96px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.2s;
+          }
+          .btn-cancel {
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #cbd5e1;
+          }
+          .btn-cancel:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #f8fafc;
+          }
+          .btn-submit {
+            background-color: #3b82f6;
+            color: white;
+          }
+          .btn-submit:hover:not(:disabled) {
+            opacity: 1;
+            background-color: #2563eb;
+          }
+          .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+          .status-msg {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 12px;
+          }
+          .status-msg.success {
+            background-color: rgba(21, 128, 61, 0.2);
+            border: 1px solid rgba(21, 128, 61, 0.3);
+            color: #4ade80;
+          }
+          .status-msg.error {
+            background-color: rgba(185, 28, 28, 0.2);
+            border: 1px solid rgba(185, 28, 28, 0.3);
+            color: #f87171;
+          }
+          .status-msg.warning {
+            background-color: rgba(180, 83, 9, 0.2);
+            border: 1px solid rgba(180, 83, 9, 0.3);
+            color: #fbbf24;
+          }
+          .honeypot-field {
+            position: absolute !important;
+            left: -9999px !important;
+            top: -9999px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+          }
+          .security-banner {
+            display: flex;
+            gap: 8px;
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            line-height: 1.4;
+            margin-bottom: 8px;
+          }
+          .security-banner svg {
+            flex-shrink: 0;
+            margin-top: 0px;
+            color: #d97706;
+          }
+        </style>
         <div class="widget-container">
           <a class="widget-link" href="${frontendHost}/status/${pageId}" target="_blank">
             <span class="status-dot"></span>

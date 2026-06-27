@@ -48,9 +48,7 @@ def send_alert_email(subject: str, message: str):
     logger.warning("ALERT_EMAIL_TARGET is not set. Skipping email sending.")
     return
 
-  from_email = os.environ.get(
-    "ALERT_EMAIL_FROM", "notifications@dataengineeringformachinelearning.com"
-  )
+  from_email = os.environ.get("ALERT_EMAIL_FROM", "notifications@deml.app")
 
   html_message = f"""
   <!DOCTYPE html>
@@ -178,12 +176,12 @@ def send_alert_email(subject: str, message: str):
                 <pre>{message}</pre>
               </div>
 
-              <div class="cta">
-                <a href="https://dataengineeringformachinelearning.com/analytics">View Analytics Dashboard</a>
+               <div class="cta">
+                <a href="https://deml.app/analytics">View Analytics Dashboard</a>
               </div>
 
               <p style="font-size: 14px; color: #666; margin-top: 20px; line-height: 1.5;">
-                If you have any questions or need immediate assistance, please contact our support team at <a href="mailto:support@dataengineeringformachinelearning.com" style="color: #2176ff;">support@dataengineeringformachinelearning.com</a>.
+                If you have any questions or need immediate assistance, please contact our support team at <a href="mailto:support@deml.app" style="color: #2176ff;">support@deml.app</a>.
               </p>
             </div>
 

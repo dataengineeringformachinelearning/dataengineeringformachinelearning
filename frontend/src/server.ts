@@ -11,6 +11,7 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
 app.disable('x-powered-by');
+app.set('trust proxy', true);
 const angularApp = new AngularNodeAppEngine();
 
 /**
