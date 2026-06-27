@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import '../styles/landing.scss';
 
-const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
+const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? 'https://deml.app';
 const version = '2.0.0';
 
 const pipelineSteps = [
@@ -50,7 +50,7 @@ const pipelineSteps = [
 ---
 
 <Layout title="DEML (DATA ENGINEERING FOR MACHINE LEARNING)">
-  <div class="landing-container platform-theme bento-layout">
+  <div class="landing-container platform-theme bento-layout page-inner-wrapper">
     <div class="ambient-ripple"></div>
 
     <header class="hero-section">

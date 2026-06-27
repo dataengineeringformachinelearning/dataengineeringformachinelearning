@@ -14,10 +14,7 @@ async def send_issue_to_redpanda(topic: str, issue_report: str, bug_report_id: s
   """
   payload = {"event_type": "user_issue", "report": issue_report, "bug_report_id": bug_report_id}
   producer = create_kafka_producer()
-  await producer.start()
-  try:
+  async with producer:
     value = json.dumps(payload).encode("utf-8")
     await producer.send_and_wait(topic, value)
-  finally:
-    await producer.stop()
   return f"Successfully sent issue report to topic '{topic}'"

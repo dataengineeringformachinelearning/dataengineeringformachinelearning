@@ -44,9 +44,6 @@ class MlConfig(AppConfig):
 
   async def publish_trigger(self):
     producer = create_kafka_producer()
-    await producer.start()
-    try:
+    async with producer:
       msg = {"action": "train_all_tenants"}
       await producer.send_and_wait("ml-training-events", json.dumps(msg).encode("utf-8"))
-    finally:
-      await producer.stop()

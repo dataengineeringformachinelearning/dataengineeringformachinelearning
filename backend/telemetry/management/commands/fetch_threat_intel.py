@@ -117,8 +117,7 @@ class Command(BaseCommand):
       async def produce_telemetry(row):
         brokers = get_kafka_brokers()
         producer = AIOKafkaProducer(bootstrap_servers=brokers)
-        await producer.start()
-        try:
+        async with producer:
           payload = {
             "source": "google_analytics_threat_intel",
             "tenant_id": tenant_id,
@@ -130,8 +129,6 @@ class Command(BaseCommand):
             "timestamp": timezone.now().isoformat(),
           }
           await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
-        finally:
-          await producer.stop()
 
       asyncio.run(produce_telemetry(row))
     except Exception:
@@ -309,8 +306,7 @@ class Command(BaseCommand):
         async def produce_telemetry(sess, rep, tenant_id=tenant_id):
           brokers = get_kafka_brokers()
           producer = AIOKafkaProducer(bootstrap_servers=brokers)
-          await producer.start()
-          try:
+          async with producer:
             payload = {
               "source": "microsoft_clarity_threat_intel",
               "tenant_id": tenant_id,
@@ -324,8 +320,6 @@ class Command(BaseCommand):
               "timestamp": timezone.now().isoformat(),
             }
             await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
-          finally:
-            await producer.stop()
 
         asyncio.run(produce_telemetry(sess, rep))
       except Exception:
@@ -383,8 +377,7 @@ class Command(BaseCommand):
         async def produce_telemetry(sess, rep, tenant_id=tenant_id):
           brokers = get_kafka_brokers()
           producer = AIOKafkaProducer(bootstrap_servers=brokers)
-          await producer.start()
-          try:
+          async with producer:
             payload = {
               "source": "cloudflare_threat_intel",
               "tenant_id": tenant_id,
@@ -398,8 +391,6 @@ class Command(BaseCommand):
               "timestamp": timezone.now().isoformat(),
             }
             await producer.send_and_wait("app-events", json.dumps(payload).encode("utf-8"))
-          finally:
-            await producer.stop()
 
         asyncio.run(produce_telemetry(sess, rep))
       except Exception:

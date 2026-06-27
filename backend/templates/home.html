@@ -65,7 +65,8 @@
       rel="stylesheet"
     />
 
-    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+    <!-- Shared design system for full stack visual cohesion (same as app and marketing) -->
+    <link rel="stylesheet" href="{{ design_system_url }}" />
     <script>
       (function () {
         const savedTheme = localStorage.getItem("theme");

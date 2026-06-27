@@ -70,21 +70,14 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 </header>
 
 <style lang="scss">
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  width: 100%;
-  height: 64px;
-  background-color: var(--navbar-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-layout);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  box-sizing: border-box;
-}
+/*
+  All navbar, button, layout primitives now come from the single shared design-system.css
+  (served at /assets/design-system.css from the main app).
+  This guarantees identical look, button styles, spacing, and positions on every domain.
+  Only tiny scoped rules kept here.
+*/
+.navbar { /* styles in shared */ }
+.auth-btn, .nav-btn { /* styles in shared */ }
 
 .navbar-brand {
   margin-right: 8px;

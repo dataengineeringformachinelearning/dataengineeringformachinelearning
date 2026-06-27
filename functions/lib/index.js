@@ -103,11 +103,15 @@ exports.ingestEvent = functions.https.onCall(async (data, context) => {
   functions.logger.info("UID DEBUG:", { uid, type: typeof uid });
   const eventPayload = data;
   // 2. Prepare message for Redpanda
+  const timestamp = new Date().toISOString();
+  const idempotencyKey = `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
   const message = {
     key: String(uid),
     value: JSON.stringify({
       uid,
-      timestamp: new Date().toISOString(),
+      timestamp,
+      idempotency_key: idempotencyKey,
+      version: "1.0",
       payload: eventPayload,
     }),
   };
@@ -118,43 +122,9 @@ exports.ingestEvent = functions.https.onCall(async (data, context) => {
       topic: "frontend-events",
       messages: [message],
     });
-    // For the Event Projections verification action, also write stats directly so the UI can observe
-    // the update even if the Django worker/Redpanda path isn't fully live in this environment.
-    if (eventPayload.action === "get_stats") {
-      try {
-        const db = (0, firestore_1.getFirestore)("deml");
-        const statsData = {
-          last_updated: firestore_1.FieldValue.serverTimestamp(),
-          action_processed: "get_stats",
-          status: "success",
-          active_endpoints: 5,
-          message:
-            "Real-time stats updated via Cloud Function (Redpanda path).",
-        };
-        if (context.auth && context.auth.uid) {
-          await db
-            .collection("users")
-            .doc(context.auth.uid)
-            .collection("data")
-            .doc("stats")
-            .set(statsData, { merge: true });
-        }
-        if (data.uid && data.uid !== (context.auth && context.auth.uid)) {
-          await db
-            .collection("users")
-            .doc(String(data.uid))
-            .collection("data")
-            .doc("stats")
-            .set(statsData, { merge: true });
-        }
-      } catch (writeErr) {
-        functions.logger.warn(
-          "Could not write verification stats after Redpanda publish:",
-          writeErr,
-        );
-      }
-    }
     // 4. Return immediately (HTTP 200 via onCall framework)
+    // Note: Stats projection now handled exclusively by Django telemetry_worker for consistency.
+    // The worker uses idempotency and outbox relay for reliability.
     return { status: "accepted", message: "Event successfully queued." };
   } catch (error) {
     functions.logger.error(
@@ -169,33 +139,8 @@ exports.ingestEvent = functions.https.onCall(async (data, context) => {
         payload: eventPayload,
         type: "fallback",
       });
-      // Special case: if action is 'get_stats', mock the stats update in Firestore
-      // so the settings page can load stats immediately even if Redpanda is unreachable
-      if (eventPayload.action === "get_stats") {
-        const statsData = {
-          last_updated: firestore_1.FieldValue.serverTimestamp(),
-          action_processed: "get_stats",
-          status: "success",
-          active_endpoints: 5,
-          message: "Real-time stats updated via Cloud Function fallback.",
-        };
-        if (context.auth && context.auth.uid) {
-          await db
-            .collection("users")
-            .doc(context.auth.uid)
-            .collection("data")
-            .doc("stats")
-            .set(statsData, { merge: true });
-        }
-        if (data.uid && data.uid !== (context.auth && context.auth.uid)) {
-          await db
-            .collection("users")
-            .doc(String(data.uid))
-            .collection("data")
-            .doc("stats")
-            .set(statsData, { merge: true });
-        }
-      }
+      // Projection for get_stats is now handled by the Django worker (idempotent, via outbox).
+      // Events collection acts as audit/fallback log.
       return {
         status: "accepted",
         message: "Event accepted via Firestore fallback.",

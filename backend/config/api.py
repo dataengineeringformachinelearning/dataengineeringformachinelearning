@@ -25,14 +25,17 @@ class CustomSwagger(Swagger):
     <title>{api.title}</title>
     <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
     <link rel="shortcut icon" href="https://deml.app/favicon.ico">
+    <!-- Shared design system for cohesion with the rest of the stack -->
+    <link rel="stylesheet" href="https://deml.app/assets/design-system.css">
     <style>
         .swagger-ui .topbar {{
             background-color: #111827;
             border-bottom: 1px solid #1f2937;
         }}
+        body {{ font-family: var(--font-family, system-ui); background: var(--bg-color); color: var(--text-color); }}
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <div id="swagger-ui"></div>
     <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
     <script>
