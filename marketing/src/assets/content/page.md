@@ -1806,7 +1806,7 @@ This document outlines the dependencies and libraries used in this project.
 - `Django`==5.2.15
 - `django-migration-linter`==6.0.0
 - `django-cors-headers`==4.6.0
-- `gunicorn`==25.1.0
+- `gunicorn`==23.0.0
 - `numpy`==1.26.4
 - `polars`==1.41.2
 - `psycopg2-binary`==2.9.11
@@ -1832,3 +1832,13 @@ This document outlines the dependencies and libraries used in this project.
 - `connectorx`
 - `liboqs-python`==0.15.0
 - `huggingface-hub`>=0.23.0
+- `safetensors`>=0.4.5
+- `aiokafka`==0.12.0
+- `stripe`>=9.0.0
+- `redis`>=5.0.0
+- `channels`>=4.0.0
+- `daphne`>=4.0.0
+- `channels-redis`>=4.2.0
+- `wappalyzer`==2.0.1
+- `pysocks`
+- `requests[socks]`

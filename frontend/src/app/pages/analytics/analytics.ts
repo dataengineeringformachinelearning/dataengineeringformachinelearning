@@ -507,9 +507,14 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       next: response => {
         if (response.status === 'success' && response.data) {
           this.tenants = response.data;
+          this.tenantOptions = this.tenants.map((t: any) => ({
+            value: t.id,
+            label: t.is_platform ? `${t.name} (Global)` : t.name,
+          }));
           if (!this.selectedTenantId && this.tenants.length > 0) {
-            const platformTenant = this.tenants.find((t: any) => t.is_platform);
-            this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
+            // Default to the user's own (non-platform) tenant so they see their data first
+            const userTenant = this.tenants.find((t: any) => !t.is_platform);
+            this.selectedTenantId = userTenant ? userTenant.id : this.tenants[0].id;
           }
         }
         // Always load analytics data after attempting to load tenants (so even if empty, it falls back)

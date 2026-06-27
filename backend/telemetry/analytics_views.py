@@ -105,7 +105,7 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     model_path = get_ces_model_path()
     if os.path.exists(model_path):
       model = CESModel()
-      model.load_state_dict(torch.load(model_path))
+      model.load_state_dict(torch.load(model_path, weights_only=True))
       model.eval()
       with torch.no_grad():
         x = torch.tensor([[fr, sr, float(global_incidents)]], dtype=torch.float32)
@@ -508,7 +508,7 @@ def update_incident(request, incident_id: str, payload: IncidentCaseUpdate):
   from monitor.models import IncidentCase
 
   try:
-    case = IncidentCase.objects.get(id=incident_id, tenant__memberships__user=request.user)
+    case = IncidentCase.objects.get(id=incident_id, tenant__members__user=request.user)
   except IncidentCase.DoesNotExist:
     from ninja.errors import HttpError
 
@@ -581,7 +581,7 @@ def update_playbook(request, playbook_id: str, payload: PlaybookUpdate):
   from monitor.models import Playbook
 
   try:
-    playbook = Playbook.objects.get(id=playbook_id, tenant__memberships__user=request.user)
+    playbook = Playbook.objects.get(id=playbook_id, tenant__members__user=request.user)
   except Playbook.DoesNotExist:
     from ninja.errors import HttpError
 

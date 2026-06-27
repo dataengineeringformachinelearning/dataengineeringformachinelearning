@@ -348,7 +348,7 @@ def train_threat_model(tenant: Any) -> ThreatReport:
     train_platform_threat_model()
 
   model = ThreatModel()
-  model.load_state_dict(torch.load(model_path))
+  model.load_state_dict(torch.load(model_path, weights_only=True))
   model.eval()
 
   with torch.no_grad():

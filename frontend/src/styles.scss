@@ -1250,3 +1250,31 @@ body, p, li, input, select, textarea, button, label, small, td, th,
 .section-tag, .hud-subtitle, .hud-select, .stat-unit, .chart-custom-title, .chart-custom-trend {
   font-size: clamp(17.33px, var(--base-font-size, 18px), 50rem);
 }
+
+
+/* Extracted Inline Styles */
+.u-style-e24d2c { color: #ffffff; background-color: #000000 }
+
+
+/* Extracted Inline Styles */
+.u-style-315505 { margin-bottom: 24px;
+                  display: flex;
+                  flex-direction: column;
+                  gap: 16px;
+                  border: 1px solid var(--border-primary);
+                  background: rgba(var(--color-primary-rgb), 0.05);
+                  padding: 16px;
+                  border-radius: 8px; }
+.u-style-0f195f { display: flex; align-items: flex-start; gap: 12px }
+.u-style-6784e6 { color: var(--color-primary); font-size: 24px; width: 24px; height: 24px }
+.u-style-04b067 { color: var(--text-color) }
+.u-style-39bd7e { color: var(--text-muted); display: block; margin-top: 4px }
+.u-style-197c13 { border-top: 1px solid var(--border); padding-top: 16px }
+.u-style-4d9a87 { margin: 0 0 12px 0;
+                      color: var(--text-color);
+                      font-size: 1.1rem;
+                      font-weight: 600; }
+.u-style-bb5495 { display: flex; flex-direction: column; gap: 12px }
+.u-style-eb2b00 { display: flex; gap: 12px; flex-wrap: wrap }
+.u-style-a7e5d2 { flex: 1; min-width: 200px }
+.u-style-a1ae42 { align-self: flex-start }

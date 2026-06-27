@@ -8,7 +8,7 @@ from utils.audit import log_audit_event
 from utils.kafka import get_kafka_brokers
 from utils.permissions import role_required
 
-from monitor.models import Endpoints, MonitoredService, StatusPage
+from monitor.models import Endpoints, MonitoredService, StatusPage, TenantMembership
 
 router = Router()
 
@@ -130,9 +130,6 @@ def list_status_pages(request):
             # nosemgrep: python.django.security.audit.unvalidated-password.unvalidated-password
             default_user.set_password(get_random_string(32))
             default_user.save()
-
-        scheme = "https" if request.is_secure() else "http"
-        f"{scheme}://{request.get_host()}"
 
         # Double check inside transaction to prevent race conditions
         page, created = StatusPage.objects.get_or_create(
@@ -333,8 +330,11 @@ def create_status_page(request, payload: StatusPageIn):
     )
   if StatusPage.objects.filter(slug=payload.slug).exists():
     raise HttpError(400, "Slug already exists")
+  # Derive tenant from user's membership so analytics pipeline can find this page
+  membership = TenantMembership.objects.filter(user=request.user).first()
   page = StatusPage.objects.create(
     user=request.user,
+    tenant=membership.tenant if membership else None,
     title=payload.title,
     slug=payload.slug,
     description=payload.description or "",

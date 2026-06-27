@@ -13,27 +13,23 @@ def main():
   print("Running migrations...", flush=True)
   subprocess.run([python_bin, "manage.py", "migrate"], check=True)
 
-  # Start Gunicorn server
-  print("Starting Gunicorn...", flush=True)
+  # Start Daphne ASGI server (required for Channels/WebSocket support)
+  print("Starting Daphne ASGI server...", flush=True)
   port = os.getenv("PORT", "8000")
 
-  # Prefer the virtualenv's gunicorn binary
-  gunicorn_bin = "/opt/venv/bin/gunicorn"
-  if not os.path.exists(gunicorn_bin):
-    gunicorn_bin = os.path.join(os.path.dirname(python_bin), "gunicorn")
+  # Prefer the virtualenv's daphne binary
+  daphne_bin = "/opt/venv/bin/daphne"
+  if not os.path.exists(daphne_bin):
+    daphne_bin = os.path.join(os.path.dirname(python_bin), "daphne")
 
   subprocess.run(
     [
-      gunicorn_bin,
-      "--bind",
-      f"0.0.0.0:{port}",
-      "config.wsgi:application",
-      "--workers",
-      os.getenv("WEB_CONCURRENCY", "1"),
-      "--threads",
-      "4",
-      "--timeout",
-      "120",
+      daphne_bin,
+      "-b",
+      "0.0.0.0",
+      "-p",
+      port,
+      "config.asgi:application",
     ],
     check=True,
   )

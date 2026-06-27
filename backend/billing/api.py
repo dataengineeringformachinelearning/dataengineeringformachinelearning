@@ -280,11 +280,7 @@ def sync_subscription(request: Any) -> Any:
     tenant.save()
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
   except Exception as e:
-    import traceback
-
-    with open("/tmp/sync_error.txt", "w") as f:
-      f.write(traceback.format_exc())
-    logger.error(f"Error syncing subscription: {e}")
+    logger.error(f"Error syncing subscription: {e}", exc_info=True)
     from django.http import JsonResponse
 
     return JsonResponse({"error": str(e)}, status=500)

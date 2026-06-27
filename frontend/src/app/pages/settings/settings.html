@@ -103,49 +103,22 @@
             @if (selectedPage()) {
             <div>
               @if (selectedPage()?.slug === 'platform-status') {
-              <div
-                class="alert alert-info alert-fallback-banner"
-                style="
-                  margin-bottom: 24px;
-                  display: flex;
-                  flex-direction: column;
-                  gap: 16px;
-                  border: 1px solid var(--border-primary);
-                  background: rgba(var(--color-primary-rgb), 0.05);
-                  padding: 16px;
-                  border-radius: 8px;
-                "
-              >
-                <div style="display: flex; align-items: flex-start; gap: 12px">
-                  <mat-icon
-                    style="color: var(--color-primary); font-size: 24px; width: 24px; height: 24px"
-                    >info</mat-icon
-                  >
+              <div class="alert alert-info alert-fallback-banner u-style-315505">
+                <div class="u-style-0f195f">
+                  <mat-icon class="u-style-6784e6">info</mat-icon>
                   <div>
-                    <strong style="color: var(--text-color)">Platform Status Fallback:</strong>
-                    <span style="color: var(--text-muted); display: block; margin-top: 4px">
+                    <strong class="u-style-04b067">Platform Status Fallback:</strong>
+                    <span class="u-style-39bd7e">
                       You are currently viewing the system-wide Platform Status page configuration
                       as a fallback because you have not created your own custom status page yet.
                     </span>
                   </div>
                 </div>
-                <div
-                  class="fallback-cta-box"
-                  style="border-top: 1px solid var(--border); padding-top: 16px"
-                >
-                  <h3
-                    style="
-                      margin: 0 0 12px 0;
-                      color: var(--text-color);
-                      font-size: 1.1rem;
-                      font-weight: 600;
-                    "
-                  >
-                    Create Your Own Custom Status Page
-                  </h3>
-                  <div style="display: flex; flex-direction: column; gap: 12px">
-                    <div style="display: flex; gap: 12px; flex-wrap: wrap">
-                      <mat-form-field appearance="outline" style="flex: 1; min-width: 200px">
+                <div class="fallback-cta-box u-style-197c13">
+                  <h3 class="u-style-4d9a87">Create Your Own Custom Status Page</h3>
+                  <div class="u-style-bb5495">
+                    <div class="u-style-eb2b00">
+                      <mat-form-field appearance="outline" class="u-style-a7e5d2">
                         <mat-label>Title</mat-label>
                         <input
                           matInput
@@ -154,7 +127,7 @@
                           [disabled]="isViewer"
                         />
                       </mat-form-field>
-                      <mat-form-field appearance="outline" style="flex: 1; min-width: 200px">
+                      <mat-form-field appearance="outline" class="u-style-a7e5d2">
                         <mat-label>Slug</mat-label>
                         <input
                           matInput
@@ -169,7 +142,7 @@
                       color="primary"
                       (click)="createStatusPage()"
                       [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || isViewer"
-                      style="align-self: flex-start"
+                      class="u-style-a1ae42"
                     >
                       @if (!isCreatingPage()) {
                       <mat-icon>add_circle</mat-icon>
