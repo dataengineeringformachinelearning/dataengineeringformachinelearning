@@ -1,12 +1,12 @@
 ---
-const API_BASE = import.meta.env.PUBLIC_API_BASE || '';
-const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL || '';
+const API_BASE = import.meta.env.PUBLIC_API_BASE ?? '';
+const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 ---
 
 <script>
   (window as any).__DEML = {
-    API_BASE: import.meta.env.PUBLIC_API_BASE || '',
-    MAIN_APP: import.meta.env.PUBLIC_MAIN_APP_URL || '',
+    API_BASE: import.meta.env.PUBLIC_API_BASE ?? '',
+    MAIN_APP: import.meta.env.PUBLIC_MAIN_APP_URL ?? '',
   };
 </script>
 <header class="navbar">
@@ -401,9 +401,9 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL || '';
     // which generates a short-lived one-time token and redirects here with ?session_handoff=TOKEN
     // This sets a localStorage flag so UI can reflect logged-in state (e.g. show Dashboard instead of Sign In).
 
-    const config = (window as any).__DEML || {};
-    const API_BASE = config.API_BASE || '';
-    const MAIN_APP = config.MAIN_APP || '';
+    const config = (window as any).__DEML ?? {};
+    const API_BASE = config.API_BASE ?? '';
+    const MAIN_APP = config.MAIN_APP ?? '';
 
     async function checkAuthHandoff() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -491,7 +491,8 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL || '';
           const mainOrigin = new URL(MAIN_APP).origin;
           if (event.origin !== mainOrigin && !event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
         } catch (e) {
-          if (event.origin !== 'https://deml.app' && !event.origin.includes('localhost')) return;
+          // ENV-driven only. If MAIN_APP not set, be conservative and only trust localhost origins.
+          if (!event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
         }
         if (event.data && event.data.type === 'AUTH_STATUS') {
           window.removeEventListener('message', listener);

@@ -32,7 +32,7 @@ Firebase Cloud Functions (`ingestEvent`) are deployed separately via GitHub Acti
 
 All hard-coded domains removed. Use these vars:
 
-- `MARKETING_URL` (backend + frontend builds): `https://dataengineeringformachinelearning.com`
+- `MARKETING_URL` (backend + frontend builds): `https://dataengineeringformachinelearning.com` (required; code uses env or empty string, no hardcoded fallbacks)
 - `PUBLIC_API_BASE` (Astro marketing build): `https://backend.deml.app` (or appropriate backend URL)
 - `PUBLIC_MAIN_APP_URL` (Astro): `https://deml.app`
 - `PUBLIC_APP_URL` (Astro): `https://deml.app`

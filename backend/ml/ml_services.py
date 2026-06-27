@@ -363,7 +363,21 @@ def train_threat_model(tenant: Any) -> ThreatReport:
         ThreatIntelligence.objects.filter(tenant=tenant).order_by("-timestamp").first()
       )
       if latest_threat:
-        top_location = latest_threat.location or latest_threat.ip_address or latest_threat.source
+        top_location = latest_threat.location
+        if not top_location and latest_threat.ip_address:
+          try:
+            from utils.enrichment import get_ip_enrichment
+
+            enrich = get_ip_enrichment(latest_threat.ip_address)
+            if enrich and enrich.get("location") and enrich.get("location") != "Unknown":
+              top_location = enrich["location"]
+              latest_threat.location = top_location
+              latest_threat.save(update_fields=["location"])
+          except Exception as e:
+            logger.warning("Failed to enrich top location IP: %s", e)
+
+        if not top_location:
+          top_location = latest_threat.ip_address or latest_threat.source
         location_weight = 0.1
       else:
         top_location = "No Connected Integration"

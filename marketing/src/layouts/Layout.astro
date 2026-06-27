@@ -12,7 +12,7 @@ export interface Props {
 const { title, description = "Interactive steps, working notes, and AI annotation on the DEML (DATA ENGINEERING FOR MACHINE LEARNING) book." } = Astro.props;
 
 // Determine App URL based on environment
-const APP_URL = import.meta.env.PUBLIC_APP_URL || (import.meta.env.DEV ? 'http://localhost:4200' : 'https://deml.app');
+const APP_URL = import.meta.env.PUBLIC_APP_URL ?? '';
 ---
 
 <!doctype html>

@@ -297,10 +297,8 @@ CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 from typing import Final
 
-FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:4200")
-MARKETING_URL: Final[str] = os.getenv(
-  "MARKETING_URL", "https://dataengineeringformachinelearning.com"
-)
+FRONTEND_URL = os.getenv("FRONTEND_URL") or ""
+MARKETING_URL: Final[str] = os.getenv("MARKETING_URL") or ""
 
 # Stripe Settings
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")

@@ -310,7 +310,7 @@ class Command(BaseCommand):
     from django.contrib.auth.models import User
     from monitor.models import MonitoredService, StatusPage, Tenant
 
-    frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200").rstrip("/")
+    frontend_url = (getattr(settings, "FRONTEND_URL", "") or "").rstrip("/")
 
     # Loop over all tenants to map endpoints dynamically
     all_tenants = {str(t.id): t for t in Tenant.objects.all()}

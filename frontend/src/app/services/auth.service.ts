@@ -589,7 +589,7 @@ export class AuthService {
   }
 
   async navigateToMarketingSite(marketingUrl: string = environment.marketingUrl) {
-    const targetUrl = marketingUrl || 'https://dataengineeringformachinelearning.com';
+    const targetUrl = marketingUrl ?? '';
     if (!this.isAuthenticated() || !this.auth?.currentUser) {
       window.location.href = targetUrl;
       return;

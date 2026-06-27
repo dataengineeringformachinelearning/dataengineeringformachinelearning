@@ -214,23 +214,17 @@
           return;
         }
 
-        // Resolve URLs
+        // Resolve URLs: strictly prefer data-* attributes or the origin of the loaded script.
+        // No hardcoded production domains or fallbacks. Set data-backend-url / data-frontend-url on the embed script.
         const currentScript =
           document.currentScript || document.querySelector('script[src*="widget.js"]');
         const scriptOrigin = currentScript
           ? new URL(currentScript.src).origin
           : window.location.origin;
 
-        const frontendHost =
-          !scriptOrigin.includes('localhost') && !scriptOrigin.includes('127.0.0.1')
-            ? 'https://deml.app'
-            : scriptOrigin;
+        const frontendHost = this.getAttribute('data-frontend-url') ?? scriptOrigin;
 
-        const backendUrl =
-          this.getAttribute('data-backend-url') ||
-          (frontendHost.includes('localhost') || frontendHost.includes('127.0.0.1')
-            ? 'http://localhost:8000'
-            : 'https://backend.deml.app');
+        const backendUrl = this.getAttribute('data-backend-url') ?? '';
 
         // Resolve Client IP lazily during idle cycles
         runWhenIdle(async () => {
@@ -596,8 +590,7 @@
               // Dynamically read the collector URL from the script tag's data attribute, default to production domain
               const scriptTag =
                 document.currentScript || document.querySelector('script[src*="widget.js"]');
-              const otelUrl =
-                scriptTag?.getAttribute('data-otel-url') || 'https://telemetry.deml.app/v1/traces';
+              const otelUrl = scriptTag?.getAttribute('data-otel-url') ?? '';
 
               const exporter = new OTLPTraceExporter({
                 url: otelUrl,

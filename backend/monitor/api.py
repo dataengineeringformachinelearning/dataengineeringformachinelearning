@@ -135,19 +135,35 @@ def list_status_pages(request):
             default_user.save()
 
         # Double check inside transaction to prevent race conditions
+        from monitor.models import Tenant, TenantMembership
+
+        platform_tenant = Tenant.objects.filter(is_platform_tenant=True).first()
+
         page, created = StatusPage.objects.get_or_create(
           slug="platform-status",
           defaults={
+            "tenant": platform_tenant,
             "user": default_user,
             "title": "Platform Status",
             "description": "Monitoring system health and telemetry pipelines for the DEML (DATA ENGINEERING FOR MACHINE LEARNING).",
           },
         )
 
+        if not created and page.tenant is None and platform_tenant:
+          page.tenant = platform_tenant
+          page.save(update_fields=["tenant"])
+
+        if platform_tenant:
+          TenantMembership.objects.get_or_create(
+            user=default_user,
+            tenant=platform_tenant,
+            defaults={"role": "Owner"},
+          )
+
         if created:
           from django.conf import settings
 
-          frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200").rstrip("/")
+          frontend_url = (getattr(settings, "FRONTEND_URL", "") or "").rstrip("/")
           MonitoredService.objects.get_or_create(
             status_page=page,
             name="Django Web Server",
@@ -694,7 +710,7 @@ def google_callback(request, code: str, state: str):
     "grant_type": "authorization_code",
   }
 
-  frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200")
+  frontend_url = getattr(settings, "FRONTEND_URL", "") or ""
 
   try:
     response = requests.post(token_url, data=data, timeout=10)

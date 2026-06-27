@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import '../styles/landing.scss';
 
-const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL || 'https://deml.app';
+const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 const version = '2.0.0';
 
 const pipelineSteps = [

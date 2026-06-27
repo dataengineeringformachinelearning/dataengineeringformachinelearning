@@ -86,7 +86,7 @@ async def test_telemetry_worker_normalization() -> None:
 
   from django.conf import settings
 
-  frontend_url = getattr(settings, "FRONTEND_URL", "http://localhost:4200").rstrip("/")
+  frontend_url = (getattr(settings, "FRONTEND_URL", "") or "").rstrip("/")
   expected_url = f"{frontend_url}/status"
 
   await cmd.save_to_db(df)
