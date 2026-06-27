@@ -223,7 +223,7 @@ The DEML Platform natively integrates with Hugging Face to automate the sharing 
 
 **Requirements:**
 
-- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway).
+- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway). See [RAILWAY.md](RAILWAY.md) and the `*.env.example` files for the complete, up-to-date list (including `MARKETING_URL`, `PUBLIC_*` for cross-site handoff between deml.app and the marketing site, Outbox/Redpanda/Dragonfly, etc.).
 - Add `HF_TOKEN` and `HF_SPACE_REPO` as GitHub Repository Secrets to enable the Spaces sync action.
 
 ---
@@ -287,6 +287,8 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 ---
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
+> Full Railway service + environment variable reference: [RAILWAY.md](RAILWAY.md). Always keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` as the source of truth.
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
 

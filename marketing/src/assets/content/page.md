@@ -767,7 +767,7 @@ Railway provides the declarative infrastructure-as-code capabilities required to
 
 This topology allows me to scale my infrastructure surgically. If a massive influx of external traffic threatens to overwhelm the platform, Railway automatically provisions additional replica nodes for the Django API edge, while the Telemetry Workers continue to process the Redpanda queue at their own deliberate, uncompromised pace. The frontend static assets are distributed globally to edge nodes, ensuring rapid time-to-interactive for users regardless of their geographic location.
 
-Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Railway intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. Detailed scaling configurations, environment variable mappings, and specific deployment hooks are meticulously logged and version-controlled within the `RAILWAY.md` file. This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
+Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Railway intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. Detailed scaling configurations, environment variable mappings, and specific deployment hooks are documented in the canonical [RAILWAY.md](RAILWAY.md) (plus per-service tables and the latest env-driven cross-site handoff configuration). This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
 
 ### Infrastructure & Compute Resource Allocation
 
@@ -1065,7 +1065,9 @@ Because we are processing potentially identifiable information (IP addresses, pr
 
 ## Appendix C: Railway Deployment
 
-This document outlines the deployment configuration for the project on [Railway](https://railway.app/). The application is split into eight main services.
+**See the dedicated [RAILWAY.md](RAILWAY.md) for the current authoritative service list, per-service environment variable tables, internal DNS, and build-time variables (MARKETING*URL + PUBLIC*\* for auth handoff).**
+
+This appendix gives a historical overview. The application runs as many services on Railway (backend, frontend, multiple workers, Redpanda, Dragonfly, Postgres, ClickHouse, supporting tools). Latest variable names and values are maintained in the root RAILWAY.md + the \*.env.example files.
 
 ## How to Deploy in One Project
 

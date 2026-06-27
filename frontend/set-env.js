@@ -96,6 +96,7 @@ export const environment = {
   production: true,
   version: '${appVersion}',
   backendUrl: getBackendUrl(),
+  marketingUrl: '${process.env.MARKETING_URL || 'https://dataengineeringformachinelearning.com'}',
   firebase: getFirebaseConfig(),
   sanity: {
     projectId: '${sanityProjectId}',
@@ -129,6 +130,7 @@ export const environment = {
   production: false,
   version: '${appVersion}',
   backendUrl: 'http://localhost:8000',
+  marketingUrl: '${process.env.MARKETING_URL || 'http://localhost:4321'}',
   firebase: getFirebaseConfig(),
   sanity: {
     projectId: '${sanityProjectId}',

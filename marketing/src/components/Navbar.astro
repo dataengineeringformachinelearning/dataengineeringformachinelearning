@@ -1,5 +1,14 @@
 ---
+const API_BASE = import.meta.env.PUBLIC_API_BASE || '';
+const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL || '';
 ---
+
+<script>
+  (window as any).__DEML = {
+    API_BASE: import.meta.env.PUBLIC_API_BASE || '',
+    MAIN_APP: import.meta.env.PUBLIC_MAIN_APP_URL || '',
+  };
+</script>
 <header class="navbar">
   <div class="navbar-content">
     <div class="navbar-left">
@@ -10,7 +19,7 @@
 
     <!-- Centered Nav Links -->
     <div class="navbar-center desktop-nav">
-      <a href="https://deml.app/explore" class="nav-btn">
+      <a href={MAIN_APP + '/explore'} class="nav-btn">
         <span class="material-icons">explore</span>
         <span>Explore</span>
       </a>
@@ -22,7 +31,7 @@
 
     <div class="navbar-right">
       <div class="desktop-auth">
-        <a href="https://deml.app/login" class="auth-btn" id="auth-btn-desktop">
+        <a href={MAIN_APP + '/login'} class="auth-btn" id="auth-btn-desktop">
           <span class="material-icons" id="auth-icon-desktop">login</span>
           <span id="auth-text-desktop">Sign In</span>
         </a>
@@ -42,7 +51,7 @@
 
   <!-- Mobile Collapsible Menu Dropdown -->
   <div class="mobile-menu" id="mobile-menu">
-    <a href="https://deml.app/explore" class="mobile-nav-btn">
+    <a href={MAIN_APP + '/explore'} class="mobile-nav-btn">
       <span class="material-icons">explore</span>
       <span>Explore</span>
     </a>
@@ -53,7 +62,7 @@
 
     <div class="mobile-divider"></div>
 
-    <a href="https://deml.app/login" class="mobile-auth-btn" id="auth-btn-mobile">
+    <a href={MAIN_APP + '/login'} class="mobile-auth-btn" id="auth-btn-mobile">
       <span class="material-icons" id="auth-icon-mobile">login</span>
       <span id="auth-text-mobile">Sign In</span>
     </a>
@@ -387,14 +396,22 @@
       }
     });
 
-    // Auth Handoff Logic
+    // Auth Handoff Logic - informs this marketing site of sign-in state from the main app.
+    // Triggered when navigating from the signed-in Angular app via authService.navigateToMarketingSite()
+    // which generates a short-lived one-time token and redirects here with ?session_handoff=TOKEN
+    // This sets a localStorage flag so UI can reflect logged-in state (e.g. show Dashboard instead of Sign In).
+
+    const config = (window as any).__DEML || {};
+    const API_BASE = config.API_BASE || '';
+    const MAIN_APP = config.MAIN_APP || '';
+
     async function checkAuthHandoff() {
       const urlParams = new URLSearchParams(window.location.search);
       const handoffToken = urlParams.get('session_handoff');
 
       if (handoffToken) {
         try {
-          const res = await fetch('https://api.deml.app/api/v1/auth/handoff/verify', {
+          const res = await fetch(`${API_BASE}/api/v1/auth/handoff/verify`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -405,42 +422,139 @@
           if (res.ok) {
             const data = await res.json();
             if (data.status === 'success') {
-              localStorage.setItem('deml_session_active', 'true');
+              // Set for backward compat and expiry
+              const expiry = Date.now() + (24 * 60 * 60 * 1000);
+              localStorage.setItem('deml_session_active', JSON.stringify({ active: true, expires: expiry, user: data.user }));
+              // Update UI using the status
+              updateAuthUIFromStatus({ isAuthenticated: true, ...data });
             }
           }
         } catch (e) {
           console.error('Failed to verify handoff token', e);
         }
 
-        // Clean URL
+        // Clean URL to remove the token (one-time use)
         const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
         window.history.replaceState({path: cleanUrl}, '', cleanUrl);
       }
 
-      // Update UI if logged in
-      if (localStorage.getItem('deml_session_active') === 'true') {
-        const desktopBtn = document.getElementById('auth-btn-desktop');
-        const desktopIcon = document.getElementById('auth-icon-desktop');
-        const desktopText = document.getElementById('auth-text-desktop');
-
-        if (desktopBtn && desktopIcon && desktopText) {
-          desktopBtn.href = 'https://deml.app/dashboard';
-          desktopIcon.textContent = 'dashboard';
-          desktopText.textContent = 'Dashboard';
-        }
-
-        const mobileBtn = document.getElementById('auth-btn-mobile');
-        const mobileIcon = document.getElementById('auth-icon-mobile');
-        const mobileText = document.getElementById('auth-text-mobile');
-
-        if (mobileBtn && mobileIcon && mobileText) {
-          mobileBtn.href = 'https://deml.app/dashboard';
-          mobileIcon.textContent = 'dashboard';
-          mobileText.textContent = 'Dashboard';
+      // Update UI based on cached flag if no iframe response yet
+      const flag = localStorage.getItem('deml_session_active');
+      if (flag) {
+        try {
+          const parsed = JSON.parse(flag);
+          if (parsed.active && (!parsed.expires || Date.now() < parsed.expires)) {
+            updateAuthUIFromStatus({ isAuthenticated: true, user: parsed.user });
+          } else {
+            localStorage.removeItem('deml_session_active');
+          }
+        } catch (e) {
+          // legacy
+          if (flag === 'true') {
+            updateAuthUIFromStatus({ isAuthenticated: true });
+          } else {
+            localStorage.removeItem('deml_session_active');
+          }
         }
       }
     }
 
     checkAuthHandoff();
+
+    // Shared auth status via iframe postMessage (cross-domain browser context sharing)
+    // This allows the marketing site to detect login state on deml.app without explicit redirect/handoff.
+    // The iframe loads a page on the main app domain that can access its own Firebase/auth state.
+    function checkAuthViaIframe() {
+      // Check cached status first (with 5 min TTL to avoid constant loads)
+      const cached = localStorage.getItem('deml_auth_status');
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed.timestamp && (Date.now() - parsed.timestamp) < 5 * 60 * 1000) {
+            updateAuthUIFromStatus(parsed);
+            return;
+          }
+        } catch (e) {}
+      }
+
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.style.width = '0';
+      iframe.style.height = '0';
+      iframe.src = `${MAIN_APP}/auth-status`;
+      document.body.appendChild(iframe);
+
+      // Listen for response from the iframe (strict origin check)
+      const listener = (event: MessageEvent) => {
+        // Accept from main app domain (computed from env, fallback for dev)
+        try {
+          const mainOrigin = new URL(MAIN_APP).origin;
+          if (event.origin !== mainOrigin && !event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
+        } catch (e) {
+          if (event.origin !== 'https://deml.app' && !event.origin.includes('localhost')) return;
+        }
+        if (event.data && event.data.type === 'AUTH_STATUS') {
+          window.removeEventListener('message', listener);
+
+          // Cache it with short TTL
+          const statusWithTime = { ...event.data, timestamp: Date.now() };
+          localStorage.setItem('deml_auth_status', JSON.stringify(statusWithTime));
+
+          updateAuthUIFromStatus(event.data);
+
+          // Remove iframe after use
+          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        }
+      };
+      window.addEventListener('message', listener);
+
+      // Fallback: remove iframe after timeout if no response
+      setTimeout(() => {
+        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+        window.removeEventListener('message', listener);
+      }, 10000);
+    }
+
+    function updateAuthUIFromStatus(status: any) {
+      const isLoggedIn = status.isAuthenticated === true;
+
+      const desktopBtn = document.getElementById('auth-btn-desktop');
+      const desktopIcon = document.getElementById('auth-icon-desktop');
+      const desktopText = document.getElementById('auth-text-desktop');
+
+      const mobileBtn = document.getElementById('auth-btn-mobile');
+      const mobileIcon = document.getElementById('auth-icon-mobile');
+      const mobileText = document.getElementById('auth-text-mobile');
+
+      if (isLoggedIn) {
+        if (desktopBtn && desktopIcon && desktopText) {
+          desktopBtn.href = `${MAIN_APP}/dashboard`;
+          desktopIcon.textContent = 'dashboard';
+          desktopText.textContent = 'Dashboard';
+        }
+        if (mobileBtn && mobileIcon && mobileText) {
+          mobileBtn.href = `${MAIN_APP}/dashboard`;
+          mobileIcon.textContent = 'dashboard';
+          mobileText.textContent = 'Dashboard';
+        }
+      } else {
+        // Optionally clear stale flag
+        localStorage.removeItem('deml_session_active');
+        localStorage.removeItem('deml_auth_status');
+        if (desktopBtn && desktopIcon && desktopText) {
+          desktopBtn.href = `${MAIN_APP}/login`;
+          desktopIcon.textContent = 'login';
+          desktopText.textContent = 'Sign In';
+        }
+        if (mobileBtn && mobileIcon && mobileText) {
+          mobileBtn.href = `${MAIN_APP}/login`;
+          mobileIcon.textContent = 'login';
+          mobileText.textContent = 'Sign In';
+        }
+      }
+    }
+
+    // Run the iframe check on load (in addition to handoff)
+    checkAuthViaIframe();
   });
 </script>

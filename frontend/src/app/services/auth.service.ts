@@ -588,11 +588,10 @@ export class AuthService {
     }
   }
 
-  async navigateToMarketingSite(
-    marketingUrl: string = 'https://dataengineeringformachinelearning.com',
-  ) {
+  async navigateToMarketingSite(marketingUrl: string = environment.marketingUrl) {
+    const targetUrl = marketingUrl || 'https://dataengineeringformachinelearning.com';
     if (!this.isAuthenticated() || !this.auth?.currentUser) {
-      window.location.href = marketingUrl;
+      window.location.href = targetUrl;
       return;
     }
     this.isProcessing.set(true);
@@ -608,14 +607,14 @@ export class AuthService {
         ),
       );
       if (res.status === 'success' && res.token) {
-        const separator = marketingUrl.includes('?') ? '&' : '?';
-        window.location.href = `${marketingUrl}${separator}session_handoff=${res.token}`;
+        const separator = targetUrl.includes('?') ? '&' : '?';
+        window.location.href = `${targetUrl}${separator}session_handoff=${res.token}`;
       } else {
-        window.location.href = marketingUrl;
+        window.location.href = targetUrl;
       }
     } catch (e: any) {
       console.error('Failed to generate handoff token', e);
-      window.location.href = marketingUrl;
+      window.location.href = targetUrl;
     } finally {
       this.isProcessing.set(false);
     }
