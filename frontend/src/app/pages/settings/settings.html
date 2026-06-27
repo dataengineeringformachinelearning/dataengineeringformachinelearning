@@ -39,6 +39,7 @@
               color="warn"
               (click)="deleteStatusPage(selectedPage()!.id)"
               title="Delete status page"
+              aria-label="Delete status page"
               class="delete-page-btn"
               [disabled]="isViewer"
             >
@@ -266,6 +267,7 @@
                       mat-icon-button
                       color="warn"
                       (click)="deleteService(service.id)"
+                      aria-label="Delete service"
                       [disabled]="isViewer"
                     >
                       <mat-icon>delete</mat-icon>
@@ -336,6 +338,7 @@
                       mat-icon-button
                       color="warn"
                       (click)="deleteIncident(incident.id)"
+                      aria-label="Delete incident"
                       [disabled]="isViewer"
                     >
                       <mat-icon>delete</mat-icon>
@@ -737,6 +740,7 @@
                     (click)="revokeApiKey(key.id)"
                     [disabled]="isViewer"
                     title="Revoke Key"
+                    aria-label="Revoke API Key"
                   >
                     <mat-icon>delete_forever</mat-icon>
                   </button>

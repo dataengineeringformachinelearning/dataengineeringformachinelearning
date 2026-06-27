@@ -164,8 +164,24 @@ def sync_subscription(request):
   tenant = membership.tenant
   email = request.user.email
 
+  if not email:
+    tenant.tier = "Standard"
+    tenant.subscription_active = False
+    tenant.save()
+    return {"status": "synced", "active": False, "cancel_at_period_end": False}
+
   try:
-    customers = stripe.Customer.list(email=email).data
+    customers = []
+    if tenant.stripe_customer_id:
+      try:
+        customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
+        if not getattr(customer, "deleted", False):
+          customers = [customer]
+      except Exception:
+        pass
+    if not customers:
+      customers = stripe.Customer.list(email=email).data
+
     if customers:
       for customer in customers:
         subscriptions = stripe.Subscription.list(customer=customer.id, status="active").data
@@ -184,6 +200,12 @@ def sync_subscription(request):
             "active": True,
             "cancel_at_period_end": sub.cancel_at_period_end,
           }
+
+    if tenant.stripe_customer_id is None and tenant.tier == "Pro":
+      # Preserve manual upgrades that don't have a Stripe customer tied to them
+      tenant.subscription_active = True
+      tenant.save()
+      return {"status": "synced", "active": True, "cancel_at_period_end": False}
 
     tenant.tier = "Standard"
     tenant.subscription_active = False

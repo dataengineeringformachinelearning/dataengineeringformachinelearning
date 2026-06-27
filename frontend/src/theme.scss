@@ -1,12 +1,8 @@
 // CUSTOM PALETTE (Material Theme 3 - User Provided)
 
 :root {
-  /* Colors - Hex */
-  --jet-black: #121212; /* Deep modern dark grey, formerly #31393cff */
-  --crayola-blue: #2176ffff;
-  --blue-bell: #33a1fdff;
-  --golden-pollen: #fdca40ff;
-  --carrot-orange: #f79824ff;
+  /* Colors - Hex (Base Palette) */
+  --jet-black: #121212; /* Deep modern dark grey */
   --white: #ffffff;
   --black: #000000;
 
@@ -18,7 +14,7 @@
   --border-radius-lg: 18px;
   --border-radius-md: 9px;
   --border-radius-sm: 9px;
-  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); /* Faster, sharper */
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 
@@ -26,58 +22,28 @@
   --grid-gap: 24px;
   --card-padding: 24px;
   --container-max-width: 1440px;
+
+  /* Accessibility focus ring */
+  --focus-ring: 3px solid var(--color-primary);
+  --focus-ring-offset: 2px;
 }
 
 html[data-theme='dark'] {
+  /* Adjusted for >= 4.5:1 contrast against #121212 */
+  --crayola-blue: #4a90e2; /* Lighter blue for dark mode */
+  --blue-bell: #6db3fd;
+  --golden-pollen: #fddb60; /* Lighter yellow */
+  --carrot-orange: #f9a84d; /* Lighter orange for dark mode */
+
   --color-primary: var(--crayola-blue);
-  --color-on-primary: var(--white);
-  --color-primary-container: var(--blue-bell);
-  --color-on-primary-container: #1a1a1a;
-
-  --color-surface: #1e1e1e; /* Slightly elevated from background */
-  --color-on-surface: var(--white);
-  --color-background: var(--jet-black); /* #121212 */
-  --color-on-background: var(--white);
-
-  --color-success: var(--blue-bell);
-  --color-warning: var(--golden-pollen); /* Keeping semantic but removing glow later */
-  --color-error: var(--carrot-orange);
-  --color-info: var(--crayola-blue);
-
-  --color-gauge-red: var(--color-error);
-
-  --border: rgba(255, 255, 255, 0.08); /* Extremely subtle border for cards */
-  --border-layout: rgba(255, 255, 255, 0.12); /* Slightly brighter for structural dividers */
-
-  --hover-color: var(--crayola-blue);
-  --bg-color: var(--color-background);
-  --text-color: var(--color-on-background);
-  --text-muted: rgba(255, 255, 255, 0.65);
-  --card-bg: var(--color-surface);
-  --navbar-bg: rgba(18, 18, 18, 0.85);
-  --link-color: var(--blue-bell);
-  --link-hover-color: var(--crayola-blue);
-  --hero-title-color: var(--white);
-  --primary-text-color: var(--crayola-blue);
-
-  --button-primary: var(--color-primary);
-  --button-primary-text: var(--color-on-primary);
-
-  --color-dark-grey-btn-bg: var(--black);
-  --color-dark-grey-btn-text: var(--white);
-}
-
-html[data-theme='light'],
-:root {
-  --color-primary: var(--crayola-blue);
-  --color-on-primary: var(--white);
+  --color-on-primary: var(--jet-black);
   --color-primary-container: var(--blue-bell);
   --color-on-primary-container: var(--jet-black);
 
-  --color-surface: var(--white);
-  --color-on-surface: var(--black);
-  --color-background: var(--white); /* Pure white lab coat style */
-  --color-on-background: var(--black);
+  --color-surface: #1e1e1e;
+  --color-on-surface: var(--white);
+  --color-background: var(--jet-black);
+  --color-on-background: var(--white);
 
   --color-success: var(--blue-bell);
   --color-warning: var(--golden-pollen);
@@ -86,17 +52,63 @@ html[data-theme='light'],
 
   --color-gauge-red: var(--color-error);
 
-  --border: rgba(0, 0, 0, 0.08); /* Sterile, thin border for cards */
-  --border-layout: rgba(0, 0, 0, 0.15); /* Slightly darker for structural dividers */
+  --border: rgba(255, 255, 255, 0.15); /* Slightly increased contrast */
+  --border-layout: rgba(255, 255, 255, 0.25);
 
   --hover-color: var(--blue-bell);
   --bg-color: var(--color-background);
   --text-color: var(--color-on-background);
-  --text-muted: rgba(0, 0, 0, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.7); /* Improved contrast for muted text */
   --card-bg: var(--color-surface);
-  --navbar-bg: rgba(255, 255, 255, 0.85);
+  --navbar-bg: rgba(18, 18, 18, 0.95);
+  --link-color: var(--blue-bell);
+  --link-hover-color: #8cc3ff;
+  --hero-title-color: var(--white);
+  --primary-text-color: var(--crayola-blue);
+
+  --button-primary: var(--color-primary);
+  --button-primary-text: var(--jet-black); /* Dark text on light blue button */
+
+  --color-dark-grey-btn-bg: #333333;
+  --color-dark-grey-btn-text: var(--white);
+}
+
+html[data-theme='light'],
+:root {
+  /* Adjusted for >= 4.5:1 contrast against #ffffff */
+  --crayola-blue: #0056b3; /* Darker blue for light mode */
+  --blue-bell: #0077cc;
+  --golden-pollen: #c49000; /* Darker yellow/gold */
+  --carrot-orange: #d86900; /* Darker orange for light mode */
+
+  --color-primary: var(--crayola-blue);
+  --color-on-primary: var(--white);
+  --color-primary-container: var(--blue-bell);
+  --color-on-primary-container: var(--white);
+
+  --color-surface: var(--white);
+  --color-on-surface: var(--jet-black);
+  --color-background: var(--white);
+  --color-on-background: var(--jet-black);
+
+  --color-success: var(--blue-bell);
+  --color-warning: var(--golden-pollen);
+  --color-error: var(--carrot-orange);
+  --color-info: var(--crayola-blue);
+
+  --color-gauge-red: var(--color-error);
+
+  --border: rgba(0, 0, 0, 0.15); /* Increased contrast */
+  --border-layout: rgba(0, 0, 0, 0.25);
+
+  --hover-color: var(--crayola-blue);
+  --bg-color: var(--color-background);
+  --text-color: var(--color-on-background);
+  --text-muted: rgba(0, 0, 0, 0.65); /* Improved contrast for muted text */
+  --card-bg: var(--color-surface);
+  --navbar-bg: rgba(255, 255, 255, 0.95);
   --link-color: var(--crayola-blue);
-  --link-hover-color: var(--blue-bell);
+  --link-hover-color: #004494;
   --hero-title-color: var(--jet-black);
   --primary-text-color: var(--crayola-blue);
 

@@ -185,9 +185,10 @@
   }
 
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
     color: var(--text-muted);
   }
 
@@ -284,9 +285,10 @@
   }
 
   mat-icon {
-    font-size: 20px;
-    width: 16px;
-    height: 16px;
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
     flex-shrink: 0;
     color: var(--text-muted);
     transition: color 0.2s;
@@ -319,9 +321,10 @@
   }
 
   .tree-arrow {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
     color: var(--text-muted);
   }
 }
@@ -380,9 +383,10 @@
       border-left: 3px solid transparent;
 
       .new-page-icon {
-        font-size: 16px;
-        width: 16px;
-        height: 16px;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
       }
 
       &:hover {
@@ -534,9 +538,10 @@
     }
 
     .result-icon {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
       color: var(--text-muted);
     }
 
