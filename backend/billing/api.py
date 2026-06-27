@@ -188,7 +188,22 @@ def sync_subscription(request):
   tenant = membership.tenant
   email = request.user.email
 
-  if not email:
+  # Collect all possible emails to check against Stripe
+  emails_to_check = set()
+  if email:
+    emails_to_check.add(email)
+
+  if hasattr(request, "firebase_token") and request.firebase_token:
+    identities = request.firebase_token.get("firebase", {}).get("identities", {})
+    linked_emails = identities.get("email", [])
+    for linked_email in linked_emails:
+      emails_to_check.add(linked_email)
+
+  if not emails_to_check and not tenant.stripe_customer_id:
+    if tenant.stripe_customer_id is None and tenant.tier == "Pro":
+      tenant.subscription_active = True
+      tenant.save()
+      return {"status": "synced", "active": True, "cancel_at_period_end": False}
     tenant.tier = "Standard"
     tenant.subscription_active = False
     tenant.save()
@@ -200,11 +215,13 @@ def sync_subscription(request):
       try:
         customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
         if not getattr(customer, "deleted", False):
-          customers = [customer]
+          customers.append(customer)
       except Exception:
         pass
+
     if not customers:
-      customers = stripe.Customer.list(email=email).data
+      for e in emails_to_check:
+        customers.extend(stripe.Customer.list(email=e).data)
 
     if customers:
       for customer in customers:

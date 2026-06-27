@@ -34,12 +34,39 @@ class Command(BaseCommand):
       if not owner_membership:
         continue
 
-      email = owner_membership.user.email
-      if not email:
+      emails_to_check = set()
+      if owner_membership.user.email:
+        emails_to_check.add(owner_membership.user.email)
+
+      if hasattr(owner_membership.user, "profile") and owner_membership.user.profile.linked_emails:
+        for linked_email in owner_membership.user.profile.linked_emails:
+          emails_to_check.add(linked_email)
+
+      if not emails_to_check and not tenant.stripe_customer_id:
+        if tenant.stripe_customer_id is None and tenant.tier == "Pro":
+          tenant.subscription_active = True
+          tenant.save()
+        else:
+          if tenant.subscription_active or tenant.tier == "Pro":
+            tenant.tier = "Standard"
+            tenant.subscription_active = False
+            tenant.save()
         continue
 
       try:
-        customers = stripe.Customer.list(email=email).data
+        customers = []
+        if tenant.stripe_customer_id:
+          try:
+            customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
+            if not getattr(customer, "deleted", False):
+              customers.append(customer)
+          except Exception:
+            pass
+
+        if not customers:
+          for e in emails_to_check:
+            customers.extend(stripe.Customer.list(email=e).data)
+
         active_sub_found = False
 
         if customers:
@@ -56,25 +83,26 @@ class Command(BaseCommand):
               )
               tenant.save()
               active_sub_found = True
-              self.stdout.write(
-                self.style.SUCCESS(f"Synced active subscription for {tenant.name} ({email})")
-              )
+              self.stdout.write(self.style.SUCCESS(f"Synced active subscription for {tenant.name}"))
               break
 
         if not active_sub_found:
-          # If we used to have an active sub or if it's currently marked active but shouldn't be
+          if tenant.stripe_customer_id is None and tenant.tier == "Pro":
+            # Preserve manual PRO access
+            tenant.subscription_active = True
+            tenant.save()
+            continue
+
           if tenant.subscription_active or tenant.tier == "Pro":
             tenant.tier = "Standard"
             tenant.subscription_active = False
             tenant.save()
             self.stdout.write(
-              self.style.WARNING(
-                f"Downgraded tenant {tenant.name} ({email}) - no active subscription found"
-              )
+              self.style.WARNING(f"Downgraded tenant {tenant.name} - no active subscription found")
             )
 
       except Exception as e:
-        logger.error(f"Error syncing tenant {tenant.id} ({email}): {e}")
+        logger.error(f"Error syncing tenant {tenant.id}: {e}")
         self.stderr.write(self.style.ERROR(f"Error syncing {tenant.name}: {e}"))
 
     self.stdout.write(self.style.SUCCESS("Subscription sweep completed."))

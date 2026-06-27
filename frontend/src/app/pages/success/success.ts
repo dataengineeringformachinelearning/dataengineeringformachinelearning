@@ -39,7 +39,7 @@ export class Success implements OnInit {
   }
 
   private syncSubscription() {
-    this.http.post(`${environment.backendUrl}/api/billing/sync`, {}).subscribe({
+    this.http.post(`${environment.backendUrl}/api/v1/billing/sync`, {}).subscribe({
       next: (res: any) => {
         this.isSyncing = false;
         this.syncSuccess = res.active;

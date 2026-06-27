@@ -66,9 +66,23 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
           profile.role = "Security Admin"
         else:
           profile.role = "Operator"
-        profile.save()
         logger.info(f"Created user profile with role: {profile.role} for user: {user.username}")
-      else:
+
+      # Sync linked_emails
+      identities = decoded_token.get("firebase", {}).get("identities", {})
+      linked_emails = list(identities.get("email", []))
+      if email and email not in linked_emails:
+        linked_emails.append(email)
+
+      profile_updated = False
+      if set(profile.linked_emails) != set(linked_emails):
+        profile.linked_emails = linked_emails
+        profile_updated = True
+
+      if p_created or profile_updated:
+        profile.save()
+
+      if not p_created:
         # Keep email and display name in sync if they changed
         updated = False
         if email and user.email != email:
