@@ -7,28 +7,30 @@
   </div>
 </div>
 } @else {
-<!-- Navbar -->
-<app-navbar></app-navbar>
+<div class="app-layout" ngSkipHydration>
+  <!-- Navbar -->
+  <app-navbar></app-navbar>
 
-@if (isDashboardPage()) {
-<div class="dashboard-wrapper">
-  <app-sidebar></app-sidebar>
-  <main id="main-content" class="dashboard-content" role="main" tabindex="-1">
+  @if (isDashboardPage()) {
+  <div class="dashboard-wrapper">
+    <app-sidebar></app-sidebar>
+    <main id="main-content" class="dashboard-content" role="main" tabindex="-1">
+      <router-outlet />
+    </main>
+  </div>
+  } @else {
+  <!-- Main Content -->
+  <div id="main-content-alt" class="main-content" [attr.role]="'main'" tabindex="-1">
     <router-outlet />
-  </main>
-</div>
-} @else {
-<!-- Main Content -->
-<div id="main-content-alt" class="main-content" [attr.role]="'main'" tabindex="-1">
-  <router-outlet />
-</div>
-}
+  </div>
+  }
 
-<!-- Footer -->
-<app-footer ngSkipHydration></app-footer>
+  <!-- Footer -->
+  <app-footer ngSkipHydration></app-footer>
 
-<!-- Issue Reporter FAB -->
-<app-issue-reporter ngSkipHydration></app-issue-reporter>
-<!-- Cookie Consent Banner -->
-<app-cookie-banner ngSkipHydration></app-cookie-banner>
+  <!-- Issue Reporter FAB -->
+  <app-issue-reporter ngSkipHydration></app-issue-reporter>
+  <!-- Cookie Consent Banner -->
+  <app-cookie-banner ngSkipHydration></app-cookie-banner>
+</div>
 }

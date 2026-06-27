@@ -34,7 +34,13 @@ def create_checkout_session(request):
     tenant_id = data.get("tenant_id")
 
     if tenant_id:
-      tenant = Tenant.objects.get(id=tenant_id)
+      try:
+        import uuid
+
+        valid_id = uuid.UUID(tenant_id)
+        tenant = Tenant.objects.get(id=valid_id)
+      except (ValueError, TypeError, Tenant.DoesNotExist):
+        return 400, {"error": "Invalid tenant ID"}
     else:
       from monitor.models import TenantMembership
 
@@ -43,6 +49,12 @@ def create_checkout_session(request):
         from django.http import JsonResponse
 
         return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
+
+      if membership.role == "Viewer":
+        from django.http import JsonResponse
+
+        return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
+
       tenant = membership.tenant
 
     price_id = "price_1TlgG2Er73F9pBqwItcWHIJf"
@@ -87,9 +99,19 @@ def stripe_webhook(request):
   # Handle the checkout.session.completed event
   if event["type"] == "checkout.session.completed":
     session = event["data"]["object"]
-    client_reference_id = session.get("client_reference_id")
-    customer_id = session.get("customer")
-    subscription_id = session.get("subscription")
+    client_reference_id = (
+      session.get("client_reference_id")
+      if isinstance(session, dict)
+      else getattr(session, "client_reference_id", None)
+    )
+    customer_id = (
+      session.get("customer") if isinstance(session, dict) else getattr(session, "customer", None)
+    )
+    subscription_id = (
+      session.get("subscription")
+      if isinstance(session, dict)
+      else getattr(session, "subscription", None)
+    )
 
     if client_reference_id:
       try:
@@ -112,7 +134,11 @@ def stripe_webhook(request):
 
   elif event["type"] == "customer.subscription.deleted":
     subscription = event["data"]["object"]
-    sub_id = subscription.get("id")
+    sub_id = (
+      subscription.get("id")
+      if isinstance(subscription, dict)
+      else getattr(subscription, "id", None)
+    )
     tenants = Tenant.objects.filter(stripe_subscription_id=sub_id)
     for tenant in tenants:
       tenant.tier = "Standard"
@@ -189,6 +215,11 @@ def cancel_subscription(request):
 
     return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
 
+  if membership.role == "Viewer":
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
+
   tenant = membership.tenant
   if not tenant.stripe_subscription_id:
     from django.http import JsonResponse
@@ -219,6 +250,11 @@ def resume_subscription(request):
     from django.http import JsonResponse
 
     return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
+
+  if membership.role == "Viewer":
+    from django.http import JsonResponse
+
+    return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
 
   tenant = membership.tenant
   if not tenant.stripe_subscription_id:

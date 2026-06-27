@@ -107,11 +107,7 @@ def api_health(request):
   return {"status": "ok"}
 
 
-from ninja.pagination import paginate
-
-
 @router.get("/status_pages", response=list[StatusPageOut])
-@paginate
 def list_status_pages(request):
   # Auto-create default page if it doesn't exist
   if not StatusPage.objects.filter(slug="platform-status").exists():

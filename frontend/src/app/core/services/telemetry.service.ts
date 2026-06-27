@@ -68,7 +68,8 @@ export class TelemetryService implements OnDestroy {
     const queue: TelemetryPayload[] = (() => {
       if (stored) {
         try {
-          return JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          return Array.isArray(parsed) ? parsed : [];
         } catch {
           return [];
         }
@@ -87,7 +88,8 @@ export class TelemetryService implements OnDestroy {
 
     const queue: TelemetryPayload[] = (() => {
       try {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
       } catch {
         return [];
       }

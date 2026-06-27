@@ -95,7 +95,9 @@ export class Sidebar implements OnInit {
   globalStatus = computed(() => {
     const map = this.incidentsMap();
     for (const key of Object.keys(map)) {
-      const active = map[key].filter(inc => inc.status !== 'Resolved');
+      const incs = map[key];
+      if (!Array.isArray(incs)) continue;
+      const active = incs.filter(inc => inc.status !== 'Resolved');
       if (active.length > 0) {
         return 'Degraded Performance';
       }
@@ -103,7 +105,9 @@ export class Sidebar implements OnInit {
 
     const services = this.servicesMap();
     for (const key of Object.keys(services)) {
-      const down = services[key].filter(s => s.status === 'Outage');
+      const svcs = services[key];
+      if (!Array.isArray(svcs)) continue;
+      const down = svcs.filter(s => s.status === 'Outage');
       if (down.length > 0) {
         return 'Degraded Performance';
       }

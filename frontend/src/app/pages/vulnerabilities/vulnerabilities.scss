@@ -730,3 +730,159 @@
     opacity: 0;
   }
 }
+
+/* SIEM specific styles */
+.siem-grid {
+  margin-top: 32px;
+}
+
+.siem-item, .playbook-item {
+  margin-bottom: 12px;
+  cursor: default;
+  &:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.header-action-btn {
+  margin-left: auto;
+  background-color: var(--crayola-blue, #2176ff);
+  color: #fff;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--blue-bell, #33a1fd);
+  }
+}
+
+/* Theme Switch */
+.theme-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--border);
+    transition: .3s;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+
+    &:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 4px;
+      bottom: 3px;
+      background-color: var(--text-muted, #ccc);
+      transition: .3s;
+      border-radius: 50%;
+    }
+  }
+
+  input:checked + .slider {
+    background-color: var(--crayola-blue, #2176ff);
+    border-color: var(--crayola-blue, #2176ff);
+  }
+
+  input:checked + .slider:before {
+    transform: translateX(24px);
+    background-color: #fff;
+  }
+}
+
+/* Tenant Selector Group (Mobile First) */
+.tenant-selector-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+
+  .selector-input {
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
+    width: auto;
+
+    .selector-input {
+      width: 200px;
+    }
+  }
+}
+
+/* SIEM & Playbook Typographic & Grid adjustments */
+.siem-desc {
+  margin: 8px 0 16px;
+  color: #a1a1aa;
+  font-size: 1rem;
+}
+
+.siem-client-id {
+  font-size: 1rem;
+  color: #71717a;
+}
+
+.playbook-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.playbook-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  cursor: default;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.playbook-title {
+  margin: 0 0 8px;
+}
+
+.playbook-desc {
+  margin: 0;
+  color: #a1a1aa;
+  font-size: 1rem;
+}
+
+.playbook-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.btn-small {
+  padding: 8px 16px;
+  font-size: 1rem;
+}

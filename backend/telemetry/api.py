@@ -64,25 +64,33 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
 
     # Or try as StatusPage slug/ID
     try:
-      page = await sync_to_async(
-        StatusPage.objects.filter(Q(id=tenant_id) | Q(slug=tenant_id)).first
-      )()
+      import uuid
+
+      try:
+        valid_uuid = uuid.UUID(str(tenant_id))
+        query = Q(id=valid_uuid) | Q(slug=tenant_id)
+      except (ValueError, TypeError):
+        query = Q(slug=tenant_id)
+
+      page = await sync_to_async(StatusPage.objects.filter(query).first)()
       if page and page.tenant_id:
-        actual_tenant_id = page.tenant_id
+        actual_tenant_id = str(page.tenant_id)
     except Exception:
       pass
 
   if actual_tenant_id:
-    return await sync_to_async(
-      ValidatedSite.objects.filter(
-        tenant_id=actual_tenant_id, domain=domain, is_verified=True
-      ).exists
-    )()
-  else:
-    # Fallback to checking if the domain is registered globally
-    return await sync_to_async(
-      ValidatedSite.objects.filter(domain=domain, is_verified=True).exists
-    )()
+    try:
+      import uuid
+
+      valid_id = uuid.UUID(str(actual_tenant_id))
+      return await sync_to_async(
+        ValidatedSite.objects.filter(tenant_id=valid_id, domain=domain, is_verified=True).exists
+      )()
+    except (ValueError, TypeError):
+      pass
+
+  # Fallback to checking if the domain is registered globally
+  return await sync_to_async(ValidatedSite.objects.filter(domain=domain, is_verified=True).exists)()
 
 
 @router.post("/endpoints")
@@ -96,13 +104,19 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
   data = payload.dict()
   data["response_time"] = payload.response_time_ms / 1000.0
 
-  try:
-    producer = await get_kafka_producer()
-    value = json.dumps(data).encode("utf-8")
-    await producer.send("app-events", value)
-  except Exception as e:
-    logger.error(f"Failed to send telemetry to Kafka: {e}")
-    return HttpResponse("Telemetry ingestion queue unavailable", status=503)
+  async def _send_to_kafka():
+    try:
+      producer = await get_kafka_producer()
+      value = json.dumps(data).encode("utf-8")
+      await producer.send("app-events", value)
+    except Exception as e:
+      logger.error(f"Failed to send telemetry to Kafka: {e}")
+
+  import asyncio
+
+  task = asyncio.create_task(_send_to_kafka())
+  background_tasks.add(task)
+  task.add_done_callback(background_tasks.discard)
 
   return HttpResponse(status=202)
 

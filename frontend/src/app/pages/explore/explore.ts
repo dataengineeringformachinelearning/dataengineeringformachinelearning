@@ -47,7 +47,7 @@ export class Explore implements OnInit {
   mockPage: StatusPageData = {
     id: 'mock-id',
     title: 'Loading Directory...',
-    slug: 'mock-slug',
+    slug: 'loading',
     description: 'Fetching status pages from the platform directory...',
     created_at: new Date().toISOString(),
     user_id: null,
@@ -55,7 +55,7 @@ export class Explore implements OnInit {
 
   displayPages = computed(() => {
     if (this.isLoading() && !this.loadFailed()) {
-      return [this.mockPage, this.mockPage];
+      return [this.mockPage];
     }
     return this.statusPages();
   });
@@ -88,12 +88,17 @@ export class Explore implements OnInit {
     this.monitorService.getStatusPages().subscribe({
       next: data => {
         // Under /explore we show all public status pages, including the main 'platform-status' system page
+        if (!Array.isArray(data)) return;
         const publicPages = data.filter(p => p.is_published || p.slug === 'platform-status');
         this.statusPages.set(publicPages);
         this.monitorService.fetchAllIncidents(publicPages);
         this.monitorService.fetchAllServices(publicPages);
-        // Removed N+1 ML fetches (fetchLatestStat, fetchThreatReport) to vastly improve
-        // Explore page load times. These will be fetched individually on the dedicated status page.
+
+        for (const page of publicPages) {
+          this.mlService.fetchLatestStat(page.id);
+          this.mlService.fetchThreatReport(page.id);
+        }
+
         this.isLoading.set(false);
         this.cdr.markForCheck();
       },

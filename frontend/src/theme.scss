@@ -60,6 +60,9 @@ html[data-theme='dark'] {
   --hero-title-color: var(--white);
   --primary-text-color: var(--crayola-blue);
 
+  --button-primary: var(--color-primary);
+  --button-primary-text: var(--color-on-primary);
+
   --color-dark-grey-btn-bg: var(--black);
   --color-dark-grey-btn-text: var(--white);
 }
@@ -96,6 +99,9 @@ html[data-theme='light'],
   --link-hover-color: var(--blue-bell);
   --hero-title-color: var(--jet-black);
   --primary-text-color: var(--crayola-blue);
+
+  --button-primary: var(--color-primary);
+  --button-primary-text: var(--color-on-primary);
 
   --color-dark-grey-btn-bg: var(--jet-black);
   --color-dark-grey-btn-text: var(--white);

@@ -2,6 +2,7 @@ from ninja import Router, Schema
 
 router = Router()
 public_router = Router()
+background_tasks = set()
 
 
 class IntegrationStatus(Schema):
@@ -117,13 +118,19 @@ async def ingest_data(request, payload: IngestPayload):
   chain_of_custody_hash = hashlib.sha256(raw_payload_str.encode("utf-8")).hexdigest()
   data["chain_of_custody_hash"] = chain_of_custody_hash
 
-  try:
-    producer = await get_kafka_producer()
-    value = json.dumps(data).encode("utf-8")
-    await producer.send("app-events", value)
-  except Exception as e:
-    logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
-    # We can still return success for MVP or 503
+  async def _send_to_kafka():
+    try:
+      producer = await get_kafka_producer()
+      value = json.dumps(data).encode("utf-8")
+      await producer.send("app-events", value)
+    except Exception as e:
+      logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
+
+  import asyncio
+
+  task = asyncio.create_task(_send_to_kafka())
+  background_tasks.add(task)
+  task.add_done_callback(background_tasks.discard)
 
   return {
     "status": "success",
@@ -174,12 +181,19 @@ async def predict(request, payload: PredictPayload):
   latency_ms = 12.4
   data["latency_ms"] = latency_ms
 
-  try:
-    producer = await get_kafka_producer()
-    value = json.dumps(data).encode("utf-8")
-    await producer.send("app-events", value)
-  except Exception as e:
-    logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
+  async def _send_to_kafka():
+    try:
+      producer = await get_kafka_producer()
+      value = json.dumps(data).encode("utf-8")
+      await producer.send("app-events", value)
+    except Exception as e:
+      logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
+
+  import asyncio
+
+  task = asyncio.create_task(_send_to_kafka())
+  background_tasks.add(task)
+  task.add_done_callback(background_tasks.discard)
 
   return {
     "status": "success",
@@ -234,12 +248,19 @@ async def predict_llm(request, payload: LLMPredictPayload):
   latency_ms = 450.2
   data["latency_ms"] = latency_ms
 
-  try:
-    producer = await get_kafka_producer()
-    value = json.dumps(data).encode("utf-8")
-    await producer.send("app-events", value)
-  except Exception as e:
-    logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
+  async def _send_to_kafka():
+    try:
+      producer = await get_kafka_producer()
+      value = json.dumps(data).encode("utf-8")
+      await producer.send("app-events", value)
+    except Exception as e:
+      logging.getLogger(__name__).error(f"Failed to send telemetry to Kafka: {e}")
+
+  import asyncio
+
+  task = asyncio.create_task(_send_to_kafka())
+  background_tasks.add(task)
+  task.add_done_callback(background_tasks.discard)
 
   return {
     "status": "success",

@@ -24,9 +24,18 @@ if HAS_REDIS:
   try:
     redis_url = os.environ.get("REDIS_URL")
     if redis_url:
-      redis_client = redis.from_url(redis_url, decode_responses=True)
+      redis_client = redis.from_url(
+        redis_url, decode_responses=True, socket_connect_timeout=2, socket_timeout=2
+      )
     else:
-      redis_client = redis.Redis(host=redis_host, port=redis_port, db=0, decode_responses=True)
+      redis_client = redis.Redis(
+        host=redis_host,
+        port=redis_port,
+        db=0,
+        decode_responses=True,
+        socket_connect_timeout=2,
+        socket_timeout=2,
+      )
   except Exception as e:
     logger.error(f"Failed to connect to redis: {e}")
     redis_client = None

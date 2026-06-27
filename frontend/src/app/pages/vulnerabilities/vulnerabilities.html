@@ -13,17 +13,14 @@
         </div>
 
         @if (tenants.length > 0) {
-        <div
-          class="tenant-selector-group"
-          style="margin-left: auto; display: flex; align-items: center; gap: 1rem"
-        >
+        <div class="tenant-selector-group">
           <app-unified-select
             id="tenantSelect"
             label="Environment:"
             [options]="tenantOptions"
             [value]="selectedTenantId"
             (valueChange)="onTenantChange($event)"
-            style="width: 200px"
+            class="selector-input"
           ></app-unified-select>
 
           @if (availableSites.length > 0) {
@@ -33,7 +30,7 @@
             [options]="siteOptions"
             [value]="selectedSite || 'All'"
             (valueChange)="onSiteChange($event)"
-            style="width: 200px; margin-left: 1rem"
+            class="selector-input"
           ></app-unified-select>
           }
         </div>
@@ -102,6 +99,7 @@
             <div
               class="queue-item"
               [class.active]="selectedVuln()?.id === v.id"
+              [attr.aria-pressed]="selectedVuln()?.id === v.id"
               (click)="selectVulnerability(v)"
               tabindex="0"
               (keydown.enter)="selectVulnerability(v)"
@@ -180,6 +178,7 @@
                       [attr.data-level]="getCellColor(4 - impact, likelihood)"
                       [class.selected]="selectedVuln()?.impact === (4 - impact) && selectedVuln()?.likelihood === likelihood"
                       (click)="setMatrixCell(4 - impact, likelihood)"
+                      [attr.aria-pressed]="selectedVuln()?.impact === (4 - impact) && selectedVuln()?.likelihood === likelihood"
                       aria-label="Set impact to {{ 4 - impact }} and likelihood to {{ likelihood }}"
                     >
                       <span class="cell-score">{{ (4 - impact) * likelihood }}</span>
@@ -212,6 +211,7 @@
                 <button
                   class="btn-triage"
                   [class.active]="selectedVuln()?.status === 'Triage'"
+                  [attr.aria-pressed]="selectedVuln()?.status === 'Triage'"
                   (click)="updateStatus('Triage')"
                 >
                   Triage
@@ -219,6 +219,7 @@
                 <button
                   class="btn-triage"
                   [class.active]="selectedVuln()?.status === 'Open'"
+                  [attr.aria-pressed]="selectedVuln()?.status === 'Open'"
                   (click)="updateStatus('Open')"
                 >
                   Open
@@ -226,6 +227,7 @@
                 <button
                   class="btn-triage"
                   [class.active]="selectedVuln()?.status === 'In Progress'"
+                  [attr.aria-pressed]="selectedVuln()?.status === 'In Progress'"
                   (click)="updateStatus('In Progress')"
                 >
                   In Progress
@@ -233,6 +235,7 @@
                 <button
                   class="btn-triage"
                   [class.active]="selectedVuln()?.status === 'Resolved'"
+                  [attr.aria-pressed]="selectedVuln()?.status === 'Resolved'"
                   (click)="updateStatus('Resolved')"
                 >
                   Resolved
@@ -240,6 +243,7 @@
                 <button
                   class="btn-triage"
                   [class.active]="selectedVuln()?.status === 'False Positive'"
+                  [attr.aria-pressed]="selectedVuln()?.status === 'False Positive'"
                   (click)="updateStatus('False Positive')"
                 >
                   False Positive
@@ -268,6 +272,71 @@
             </p>
           </div>
           }
+        </section>
+      </div>
+
+      <!-- SIEM Integration Grid -->
+      <div class="dashboard-grid siem-grid">
+        <!-- Incident Cases Panel -->
+        <section class="panel-section col-span-4 col-span-md-6">
+          <div class="panel-header">
+            <mat-icon class="panel-icon">warning</mat-icon>
+            <h2>Active Incident Cases (SIEM)</h2>
+            <button mat-button class="header-action-btn">Run Query</button>
+          </div>
+          <div class="incident-list">
+            @for (incident of incidents; track incident.id) {
+            <div class="queue-item siem-item">
+              <div class="item-header">
+                <span class="item-id">{{ incident.id }}</span>
+                <span class="item-badge" [attr.data-severity]="incident.severity.toLowerCase()">
+                  {{ incident.severity }}
+                </span>
+              </div>
+              <h3 class="item-title">{{ incident.title }}</h3>
+              <p class="profile-desc siem-desc">{{ incident.description }}</p>
+              <div class="item-footer">
+                <span class="status-indicator" [attr.data-status]="incident.status.toLowerCase()">
+                  {{ incident.status }}
+                </span>
+                <span class="client-id siem-client-id"
+                  >{{ incident.created_at | date:'short' }}</span
+                >
+              </div>
+            </div>
+            }
+          </div>
+        </section>
+
+        <!-- Response Playbooks Panel -->
+        <section class="panel-section col-span-4 col-span-md-6">
+          <div class="panel-header">
+            <mat-icon class="panel-icon">book</mat-icon>
+            <h2>Response Playbooks (SOAR)</h2>
+            <button mat-button class="header-action-btn">Create</button>
+          </div>
+          <div class="playbook-list">
+            @for (playbook of playbooks; track playbook.id) {
+            <div class="queue-item playbook-item">
+              <div class="playbook-info">
+                <h3 class="item-title playbook-title">{{ playbook.name }}</h3>
+                <p class="profile-desc playbook-desc">{{ playbook.description }}</p>
+              </div>
+              <div class="playbook-actions">
+                <label class="theme-switch">
+                  <input
+                    type="checkbox"
+                    aria-label="Toggle playbook"
+                    [checked]="playbook.is_active"
+                    [attr.aria-label]="'Toggle playbook ' + playbook.name"
+                  />
+                  <span class="slider"></span>
+                </label>
+                <button class="btn-triage btn-small">Edit</button>
+              </div>
+            </div>
+            }
+          </div>
         </section>
       </div>
     </div>

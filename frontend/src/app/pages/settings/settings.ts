@@ -461,15 +461,14 @@ export class Settings implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.monitorService.getStatusPages().subscribe({
         next: data => {
-          if (Array.isArray(data)) {
-            // Filter to only their pages, excluding platform-status
-            const myPages = data.filter(
-              p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status',
-            );
-            this.statusPages.set(myPages);
-            if (myPages.length > 0 && !this.selectedPage()) {
-              this.selectPage(myPages[0]);
-            }
+          if (!Array.isArray(data)) return;
+          // Filter to only their pages, excluding platform-status
+          const myPages = data.filter(
+            p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status',
+          );
+          this.statusPages.set(myPages);
+          if (myPages.length > 0 && !this.selectedPage()) {
+            this.selectPage(myPages[0]);
           }
         },
         error: err => console.error('Error fetching status pages:', err),

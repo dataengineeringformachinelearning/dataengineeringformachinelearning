@@ -288,7 +288,7 @@ def test_db_cleanup_command() -> None:
 
   # Verify only the recent records remain
   assert Endpoints.objects.filter(id=ep_new.id).exists()
-  assert Endpoints.objects.filter(id=ep_old.id).exists()
+  assert not Endpoints.objects.filter(id=ep_old.id).exists()
 
   assert BugReport.objects.filter(id=bug_new.id).exists()
   assert BugReport.objects.filter(id=bug_old.id).exists()

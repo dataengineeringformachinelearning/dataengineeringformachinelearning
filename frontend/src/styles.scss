@@ -1021,3 +1021,11 @@ select option:checked {
   color: var(--color-on-primary-container);
   font-weight: 600;
 }
+
+// ====================== CHIP & BADGE PILL FIX ======================
+// Ensure chips and badges always retain their pill shape across the UI
+[class*='chip'],
+[class*='badge'],
+.mat-mdc-chip {
+  border-radius: 96px !important;
+}
