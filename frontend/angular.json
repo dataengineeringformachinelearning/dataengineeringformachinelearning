@@ -59,7 +59,7 @@
               "entry": "src/server.ts"
             },
             "security": {
-              "allowedHosts": ["dataengineeringformachinelearning.com"]
+              "allowedHosts": ["dataengineeringformachinelearning.com", "deml.app"]
             }
           },
           "configurations": {
