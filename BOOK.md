@@ -1660,7 +1660,7 @@ export const globalState = signal({
 
 ---
 
-## Chapter 9: The Integrations Gateway & API Key Infrastructure
+## Chapter 29: The Integrations Gateway & API Key Infrastructure
 
 As the platform matured beyond its foundational dashboard and telemetry systems, a critical requirement emerged: the ability to seamlessly ingest streaming data from distributed, high-throughput systems and expose low-latency predictive models. Enterprise environments rarely operate in isolation. They utilize complex, multi-tiered architectures powered by Apache Spark, Databricks, Kubernetes, PyTorch, and TensorFlow. To integrate gracefully into these ecosystems, the platform required a dedicated API Gateway capable of handling both heavy ingestion and real-time inference.
 
@@ -1674,7 +1674,7 @@ Crucially, the architecture unifies machine data and user telemetry. When the `/
 
 This architecture successfully decoupled the human-facing application from the machine-facing gateway. By standardizing the ingestion schema, centralizing data flow into the widget streams, and enforcing strict cryptographic access controls via the UI, the platform was now ready to securely handle automated, enterprise-scale data streams from the industry's most demanding tools.
 
-## Chapter 10: DevSecOps, Platform Standardization, and Leak-Proof Tenancy
+## Chapter 30: DevSecOps, Platform Standardization, and Leak-Proof Tenancy
 
 As the platform scaled, the necessity for uncompromising infrastructure security and UI/UX standardization became paramount. I initiated a comprehensive DevSecOps audit, focusing first on the frontend containerization. By transitioning the Angular UI deployment pipeline to leverage unprivileged multi-stage builds (specifically 'nginxinc/nginx-unprivileged'), I successfully eliminated all runtime shells and package managers. This drastically reduced the attack surface, ensuring the production image was strictly limited to serving static assets.
 

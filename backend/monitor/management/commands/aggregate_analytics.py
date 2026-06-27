@@ -111,7 +111,7 @@ class Command(BaseCommand):
       ):
         continue
 
-      obj, created = AggregatedAnalytics.objects.update_or_create(
+      _, _ = AggregatedAnalytics.objects.update_or_create(
         tenant=tenant,
         timestamp=hour_start,
         bucket_size="1h",

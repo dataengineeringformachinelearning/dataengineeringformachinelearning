@@ -408,9 +408,18 @@ export class Settings implements OnInit {
     try {
       const user = this.authService.auth?.currentUser;
       const token = user ? await user.getIdToken() : '';
+      const projectId = environment.firebase.projectId || 'demldotcom';
+      const isLocal =
+        typeof window !== 'undefined' &&
+        (window.location.hostname.includes('localhost') ||
+          window.location.hostname.includes('127.0.0.1'));
+      const functionsUrl = isLocal
+        ? `http://127.0.0.1:5001/${projectId}/us-central1/ingestEvent`
+        : `https://us-central1-${projectId}.cloudfunctions.net/ingestEvent`;
+
       await this.http
         .post(
-          'http://127.0.0.1:5001/demldotcom/us-central1/ingestEvent',
+          functionsUrl,
           { data: { action: 'get_stats', uid, payload: {} } },
           { headers: { Authorization: `Bearer ${token}` } },
         )

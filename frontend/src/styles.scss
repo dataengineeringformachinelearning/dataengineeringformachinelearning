@@ -193,7 +193,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: 'Inter', sans-serif;
-  font-size: var(--base-font-size, 16px);
+  font-size: var(--base-font-size, 18px);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -505,7 +505,7 @@ main.main {
 }
 
 .content-wrapper {
-  max-width: var(--container-max-width, 1152px);
+  max-width: var(--container-max-width, 1260px);
   margin: 0 auto;
   width: 100%;
   display: flex;
@@ -1244,3 +1244,9 @@ select option:checked {
             gap: 8px;
             justify-content: center;
             flex-wrap: wrap; }
+
+// Strictly enforce the minimum typography floor of 13pt (17.33px)
+body, p, li, input, select, textarea, button, label, small, td, th,
+.section-tag, .hud-subtitle, .hud-select, .stat-unit, .chart-custom-title, .chart-custom-trend {
+  font-size: clamp(17.33px, var(--base-font-size, 18px), 50rem);
+}

@@ -17,7 +17,7 @@ def create_tenant_0(apps, schema_editor):
   AggregatedAnalytics = apps.get_model("monitor", "AggregatedAnalytics")
 
   # Create Tenant 0
-  tenant_0, created = Tenant.objects.get_or_create(
+  tenant_0, _ = Tenant.objects.get_or_create(
     is_platform_tenant=True,
     defaults={
       "id": uuid.uuid4(),

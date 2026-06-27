@@ -109,15 +109,18 @@
             <h2>Enterprise Security</h2>
           </div>
           <p class="u-style-efd290">
-            All tenant data is cryptographically isolated using strict multi-tenancy rules and
-            enforced via our strict 30-day data retention policy.
+            All tenant data is cryptographically isolated using strict multi-tenancy rules. Raw
+            telemetry records (endpoints, audit logs, and cookie consents) are cleared after 30 days
+            via our automated db_cleanup worker, while high-value intelligence reports, training
+            runs, and user configurations are retained indefinitely.
             <strong>API Keys</strong> can only be managed exclusively through the user interface
             under your Settings panel. For ultimate security, keys are displayed only once upon
             creation and are immediately hashed in the database using SHA-256. <br /><br />
-            Our infrastructure leverages strict Google Distroless-like multi-stage deployments
-            (e.g., chainguard nginx) to eliminate shell-based attack surfaces. Data sent to our
-            ingestion endpoints feeds directly into Redpanda message brokers, ensuring your
-            analytics dashboard displays a fully unified, multi-tenant view of your infrastructure.
+            Our infrastructure leverages strict Google Distroless multi-stage container builds
+            (specifically <code>gcr.io/distroless/python3</code> and <code>nodejs</code> base
+            layers) to eliminate shell-based attack surfaces. Data sent to our ingestion endpoints
+            feeds directly into Redpanda message brokers, ensuring your analytics dashboard displays
+            a fully unified, multi-tenant view of your infrastructure.
           </p>
         </div>
       </div>

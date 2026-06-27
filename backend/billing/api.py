@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+from typing import Any
 
 try:
   import stripe
@@ -173,7 +174,7 @@ def stripe_webhook(request):
 
 
 @router.post("/sync")
-def sync_subscription(request):
+def sync_subscription(request: Any) -> Any:
   if not request.user.is_authenticated:
     from django.http import JsonResponse
 
@@ -199,6 +200,14 @@ def sync_subscription(request):
     for linked_email in linked_emails:
       emails_to_check.add(linked_email)
 
+  if not HAS_STRIPE or not getattr(stripe, "api_key", None):
+    return {
+      "status": "synced",
+      "active": tenant.subscription_active,
+      "cancel_at_period_end": False,
+      "message": "Billing sync unavailable (Stripe not configured)",
+    }
+
   if not emails_to_check and not tenant.stripe_customer_id:
     if tenant.stripe_customer_id is None and tenant.tier == "Pro":
       tenant.subscription_active = True
@@ -209,6 +218,7 @@ def sync_subscription(request):
     tenant.save()
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
 
+  stripe_error_occurred = False
   try:
     customers = []
     if tenant.stripe_customer_id:
@@ -216,31 +226,48 @@ def sync_subscription(request):
         customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
         if not getattr(customer, "deleted", False):
           customers.append(customer)
-      except Exception:
-        pass
+      except Exception as err:
+        logger.warning(f"Stripe customer retrieve failed: {err}")
+        stripe_error_occurred = True
 
-    if not customers:
+    if not customers and not stripe_error_occurred:
       for e in emails_to_check:
-        customers.extend(stripe.Customer.list(email=e).data)
+        try:
+          customers.extend(stripe.Customer.list(email=e).data)
+        except Exception as err:
+          logger.warning(f"Stripe customer list failed: {err}")
+          stripe_error_occurred = True
 
-    if customers:
+    if customers and not stripe_error_occurred:
       for customer in customers:
-        subscriptions = stripe.Subscription.list(customer=customer.id, status="active").data
-        if subscriptions:
-          sub = subscriptions[0]
-          tenant.tier = "Pro"
-          tenant.stripe_customer_id = customer.id
-          tenant.stripe_subscription_id = sub.id
-          tenant.subscription_active = True
-          tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
-            sub.current_period_end, tz=datetime.timezone.utc
-          )
-          tenant.save()
-          return {
-            "status": "synced",
-            "active": True,
-            "cancel_at_period_end": sub.cancel_at_period_end,
-          }
+        try:
+          subscriptions = stripe.Subscription.list(customer=customer.id, status="active").data
+          if subscriptions:
+            sub = subscriptions[0]
+            tenant.tier = "Pro"
+            tenant.stripe_customer_id = customer.id
+            tenant.stripe_subscription_id = sub.id
+            tenant.subscription_active = True
+            tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
+              sub.current_period_end, tz=datetime.timezone.utc
+            )
+            tenant.save()
+            return {
+              "status": "synced",
+              "active": True,
+              "cancel_at_period_end": sub.cancel_at_period_end,
+            }
+        except Exception as err:
+          logger.warning(f"Stripe subscription list failed: {err}")
+          stripe_error_occurred = True
+
+    if stripe_error_occurred:
+      return {
+        "status": "synced",
+        "active": tenant.subscription_active,
+        "cancel_at_period_end": False,
+        "message": "Billing sync degraded (Stripe API error)",
+      }
 
     if tenant.stripe_customer_id is None and tenant.tier == "Pro":
       # Preserve manual upgrades that don't have a Stripe customer tied to them
