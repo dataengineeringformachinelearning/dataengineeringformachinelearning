@@ -198,7 +198,7 @@ The platform supports automated email alerts for system events and model trainin
 
 - Set `RESEND_API_KEY` to your Resend API Key in your backend environment variables.
 - Set `ALERT_EMAIL_TARGET` to the destination email address for system alerts.
-- (Optional) Set `ALERT_EMAIL_FROM` to customize the sender address (defaults to `notifications@dataengineeringformachinelearning.com`).
+- (Optional) Set `ALERT_EMAIL_FROM` to customize the sender address (defaults to `notifications@deml.app`).
 
 ---
 
@@ -1425,7 +1425,7 @@ This service serves the user interface.
 - **Root Directory**: `/frontend`
 - **Builder**: Dockerfile (utilizes secure `nginxinc/nginx-unprivileged:alpine-slim` base image)
 - **Start Command**: `nginx -g "daemon off;"` (Default in Dockerfile)
-- **Public URL**: `https://dataengineeringformachinelearning.com`
+- **Public URL**: `https://deml.app`
 - **Target Port**: `8080`
 - **Private Internal DNS**: `dataengineeringformachinelearnin.railway.internal`
 - **Compute Limits**: 24 vCPU / 24 GB Memory
@@ -1458,15 +1458,15 @@ This service runs the main Django web server.
   - **SECRET_KEY**: `<your-production-secret-key>`
   - **DEBUG**: `False`
   - **ALLOWED_HOSTS**: `backend.deml.app`
-  - **FRONTEND_URL**: `https://dataengineeringformachinelearning.com`
+  - **FRONTEND_URL**: `https://deml.app`
   - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
   - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g., `deml-clickhouse.railway.internal`).
   - **CLICKHOUSE_PORT**: `8123` (HTTP port for the python client)
   - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
   - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
   - **CORS_ALLOW_CREDENTIALS**: `True`
-  - **CORS_ALLOWED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.deml.app`
-  - **CSRF_TRUSTED_ORIGINS**: `https://dataengineeringformachinelearning.com,https://backend.deml.app`
+  - **CORS_ALLOWED_ORIGINS**: `https://deml.app,https://backend.deml.app`
+  - **CSRF_TRUSTED_ORIGINS**: `https://deml.app,https://backend.deml.app`
   - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
   - **DRAGONFLY_HOST**: `deml-dragonfly.railway.internal`
   - **FIREBASE_SERVICE_ACCOUNT_JSON**: Raw JSON string of your Firebase service account credentials.
@@ -1481,7 +1481,7 @@ This service runs the main Django web server.
   - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
   - **RESEND_API_KEY**: `<your-resend-api-key>`
   - **ALERT_EMAIL_TARGET**: `<your-target-email@example.com>`
-  - **ALERT_EMAIL_FROM**: `notifications@dataengineeringformachinelearning.com`
+  - **ALERT_EMAIL_FROM**: `notifications@deml.app`
   - **SENTRY_DSN**: `<your-sentry-dsn>`
   - **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
   - **GCP_KMS_LOCATION**: Location of the Key Ring
@@ -1946,7 +1946,7 @@ When developing locally, you can bypass the cloud Firebase Authentication backen
 1. In the `frontend/.env` file, leave the Firebase API Key as `PLACEHOLDER_API_KEY`.
 2. When the frontend starts, it detects this placeholder and enables **mock authentication mode** automatically.
 3. You can log in with **any username/email and password**:
-   - **Security Admin** (full access): Use email `admin@dataengineeringformachinelearning.com` (any password).
+   - **Security Admin** (full access): Use email `admin@deml.app` (any password).
    - **Operator** (standard access): Use any other email or username.
 4. When `settings.DEBUG = True`, the backend Django API server intercepts the mock tokens and automatically creates/logs in the corresponding Django user profile.
 
