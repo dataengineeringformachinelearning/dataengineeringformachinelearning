@@ -1,0 +1,390 @@
+---
+---
+<header class="navbar">
+  <div class="navbar-content">
+    <div class="navbar-left">
+      <a href="/" class="navbar-brand" aria-label="Go to homepage" id="navbar-brand-link">
+        <span class="material-icons brand-icon navbar-logo glowing-icon-sm" aria-hidden="true">analytics</span>
+      </a>
+    </div>
+
+    <!-- Centered Nav Links -->
+    <div class="navbar-center desktop-nav">
+      <a href="https://app.dataengineeringformachinelearning.com/explore" class="nav-btn">
+        <span class="material-icons">explore</span>
+        <span>Explore</span>
+      </a>
+      <a href="/documentation" class="nav-btn">
+        <span class="material-icons">description</span>
+        <span>Documentation</span>
+      </a>
+    </div>
+
+    <div class="navbar-right">
+      <div class="desktop-auth">
+        <a href="https://app.dataengineeringformachinelearning.com/login" class="auth-btn">
+          <span class="material-icons">login</span>
+          <span>Sign In</span>
+        </a>
+      </div>
+
+      <!-- Theme Switch Button -->
+      <button class="theme-toggle-btn" aria-label="Toggle light and dark theme" id="theme-toggle-btn">
+        <span class="material-icons" id="theme-icon">light_mode</span>
+      </button>
+
+      <!-- Hamburger Menu Toggle Button (Mobile) -->
+      <button class="menu-toggle-btn" aria-label="Toggle navigation menu" aria-expanded="false" id="mobile-menu-btn">
+        <span class="material-icons" id="menu-icon">menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Collapsible Menu Dropdown -->
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="https://app.dataengineeringformachinelearning.com/explore" class="mobile-nav-btn">
+      <span class="material-icons">explore</span>
+      <span>Explore</span>
+    </a>
+    <a href="/documentation" class="mobile-nav-btn">
+      <span class="material-icons">description</span>
+      <span>Documentation</span>
+    </a>
+
+    <div class="mobile-divider"></div>
+
+    <a href="https://app.dataengineeringformachinelearning.com/login" class="mobile-auth-btn">
+      <span class="material-icons">login</span>
+      <span>Sign In</span>
+    </a>
+  </div>
+</header>
+
+<style lang="scss">
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  height: 64px;
+  background-color: var(--navbar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-layout);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.navbar-brand {
+  margin-right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.navbar-logo {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: var(--color-primary);
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.navbar-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.navbar-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.navbar-center {
+  display: flex;
+  justify-content: center;
+}
+
+.desktop-nav {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.desktop-auth {
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-btn {
+  font-size: 1rem !important;
+  color: var(--text-muted) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  transition: var(--transition-smooth) !important;
+  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important;
+  padding: 0 16px !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  text-decoration: none;
+
+  .material-icons {
+    margin: 0;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    color: var(--text-color) !important;
+    background-color: rgba(33, 118, 255, 0.05) !important;
+  }
+}
+
+.theme-toggle-btn {
+  color: var(--text-muted) !important;
+  transition: color 0.2s, transform 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  &:hover {
+    color: var(--text-color) !important;
+    transform: rotate(15deg);
+  }
+}
+
+.menu-toggle-btn {
+  display: inline-flex !important;
+  color: var(--text-muted) !important;
+  transition: color 0.2s;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+
+  &:hover {
+    color: var(--text-color) !important;
+  }
+}
+
+.auth-btn {
+  background: var(--color-dark-grey-btn-bg) !important;
+  color: var(--color-dark-grey-btn-text) !important;
+  font-weight: 600 !important;
+  border-radius: 96px !important; // Pill shape
+  padding: 0 16px !important;
+  box-shadow: var(--shadow-sm) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  border: 1px solid var(--border) !important;
+  transition: var(--transition-smooth) !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+  text-decoration: none;
+  cursor: pointer;
+
+  .material-icons {
+    margin: 0;
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    transform: translateY(-2px) !important;
+    background-color: var(--hover-color) !important;
+    border-color: var(--crayola-blue) !important;
+    color: var(--text-color) !important;
+    box-shadow: var(--shadow-md) !important;
+
+    .material-icons {
+      transform: translateX(2px);
+    }
+  }
+}
+
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  width: auto;
+  background-color: var(--card-bg);
+  box-shadow: var(--shadow-md);
+  border-bottom: 1px solid var(--border);
+  padding: 24px;
+  box-sizing: border-box;
+  z-index: 49;
+  gap: 8px;
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease;
+
+  &.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+    display: flex;
+  }
+}
+
+.mobile-nav-btn {
+  width: 100% !important;
+  justify-content: flex-start !important;
+  font-size: 1rem !important;
+  color: var(--text-muted) !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  border-radius: var(--border-radius-sm) !important;
+  padding: 0 16px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  text-decoration: none;
+  box-sizing: border-box;
+
+  .material-icons {
+    margin: 0;
+    font-size: 20px;
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    color: var(--text-color) !important;
+    background-color: rgba(33, 118, 255, 0.05) !important;
+  }
+}
+
+.mobile-divider {
+  height: 0px;
+  background-color: var(--border);
+  margin: 8px 0;
+}
+
+.mobile-auth-btn {
+  width: 100% !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  justify-content: center !important;
+  border-radius: 96px !important; // Pill shape
+  background: var(--color-dark-grey-btn-bg) !important;
+  color: var(--color-dark-grey-btn-text) !important;
+  font-weight: 600 !important;
+  border: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .desktop-nav {
+    display: flex;
+  }
+
+  .desktop-auth {
+    display: flex;
+  }
+
+  .menu-toggle-btn {
+    display: none !important;
+  }
+
+  .mobile-menu {
+    display: none !important;
+  }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Theme logic
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    const themeIcon = document.getElementById('theme-icon');
+
+    function updateThemeIcon() {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+    }
+
+    updateThemeIcon();
+
+    themeBtn.addEventListener('click', () => {
+      let currentTheme = document.documentElement.getAttribute('data-theme');
+      let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+
+      if (newTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+
+      updateThemeIcon();
+    });
+
+    // Mobile menu logic
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const menuIcon = document.getElementById('menu-icon');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    menuBtn.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.contains('open');
+      if (isOpen) {
+        mobileMenu.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuIcon.textContent = 'menu';
+      } else {
+        mobileMenu.classList.add('open');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        menuIcon.textContent = 'close';
+      }
+    });
+  });
+</script>

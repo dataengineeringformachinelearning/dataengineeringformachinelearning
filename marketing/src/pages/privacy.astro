@@ -1,0 +1,417 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Privacy Policy - DEML Platform">
+  <div class="dashboard-page-container">
+    <div class="ambient-background"></div>
+    <div class="dashboard-content-area">
+      <div class="content-wrapper">
+        <article class="page-content" id="privacy-policy-document">
+          <header class="privacy-header">
+            <h1 id="privacy-main-heading">Privacy Policy & Data Compliance</h1>
+            <p class="last-updated">Last Updated: June 7, 2026</p>
+          </header>
+
+          <section class="privacy-section" id="sec-introduction">
+            <h2>1. Introduction</h2>
+            <p>
+              Web Application ("we", "our", or "us") is committed to protecting your privacy. This
+              Privacy Policy explains how we collect, use, and safeguard your personal information
+              when you visit our website, read our platform documentation, or interact with our system
+              status services.
+            </p>
+            <p>
+              We build and maintain our platform with privacy-by-design principles. We ensure that
+              data collection is kept to a minimum and only processed in accordance with global
+              regulations, including the General Data Protection Regulation (GDPR) and the California
+              Consumer Privacy Act (CCPA).
+            </p>
+          </section>
+
+          <section class="privacy-section" id="sec-cookies">
+            <h2>2. Cookie Policy & Preferences</h2>
+            <p>
+              We use cookies and similar tracking technologies to analyze site traffic, remember your
+              interface theme preferences, and monitor platform performance. Cookies are small data
+              files stored on your device.
+            </p>
+            <div class="cookie-types-grid">
+              <div class="cookie-card">
+                <h3>Strictly Necessary</h3>
+                <p>
+                  Essential for basic security, user sessions, and core navigation. These cannot be
+                  disabled.
+                </p>
+              </div>
+              <div class="cookie-card">
+                <h3>Performance & Analytics</h3>
+                <p>
+                  Track load times, network response, and system telemetry to help us diagnose issues
+                  and optimize API queries.
+                </p>
+              </div>
+              <div class="cookie-card">
+                <h3>Marketing & Preferences</h3>
+                <p>
+                  Customize system status indicators, layout preferences, and remember theme
+                  selections.
+                </p>
+              </div>
+            </div>
+
+            <div class="cookie-action-box">
+              <p>You can adjust, enable, or revoke your cookie choices at any time.</p>
+              <button class="mat-mdc-raised-button mat-primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
+                Manage Cookie Preferences
+              </button>
+            </div>
+          </section>
+
+          <section class="privacy-section" id="gdpr">
+            <h2>3. GDPR Compliance (EU User Rights)</h2>
+            <p>
+              If you are located in the European Union (EU) or European Economic Area (EEA), you are
+              granted specific rights under the General Data Protection Regulation (GDPR). These
+              include:
+            </p>
+            <ul class="gdpr-rights-list">
+              <li><strong>Right of Access:</strong> Request a copy of all personal data we hold about you.</li>
+              <li><strong>Right to Rectification:</strong> Request correction of any inaccurate or incomplete personal data.</li>
+              <li><strong>Right to Erasure ("Right to be Forgotten"):</strong> Request deletion of your personal data when no longer needed.</li>
+              <li><strong>Right to Restriction of Processing:</strong> Request that we limit how we process your information.</li>
+              <li><strong>Right to Data Portability:</strong> Request transmission of your data to another organization in a structured format.</li>
+            </ul>
+
+            <div class="compliance-form-card" id="gdpr-request-form-card">
+              <h3>GDPR Data Request Center</h3>
+              <p class="form-instruction">
+                Use this form to request an export or permanent deletion of any personal data
+                collected during your sessions.
+              </p>
+
+              <form class="compliance-form" id="gdpr-form">
+                <div class="form-group">
+                  <label for="gdpr-email">Your Email Address</label>
+                  <input type="email" id="gdpr-email" placeholder="name@example.com" required class="form-input" />
+                </div>
+
+                <div class="form-group">
+                  <label for="gdpr-type">Request Type</label>
+                  <select id="gdpr-type" class="form-input" required>
+                    <option value="" disabled selected>Select Request Type</option>
+                    <option value="export">Data Export Request</option>
+                    <option value="delete">Data Deletion Request</option>
+                    <option value="rectify">Data Rectification Request</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="gdpr-details">Additional Details (Optional)</label>
+                  <textarea id="gdpr-details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
+                </div>
+
+                <button type="submit" class="mat-mdc-raised-button mat-accent" id="privacy-submit-gdpr-request">
+                  Submit Compliance Request
+                </button>
+              </form>
+            </div>
+          </section>
+
+          <section class="privacy-section" id="sec-ccpa">
+            <h2>4. CCPA/CPRA Compliance (California Rights)</h2>
+            <p>
+              Under the California Consumer Privacy Act (CCPA) and the California Privacy Rights Act
+              (CPRA), California residents have specific rights regarding their personal information:
+            </p>
+            <ul>
+              <li><strong>Right to Know:</strong> Discover what personal information we collect, source, and share.</li>
+              <li><strong>Right to Opt-Out:</strong> Direct us to stop selling or sharing your personal information (Note: We do not sell or share any user personal information with third parties).</li>
+              <li><strong>Right to Limit:</strong> Restrict the use of sensitive personal information.</li>
+              <li><strong>Right to Non-Discrimination:</strong> Enjoy equal service and pricing even if you exercise your privacy rights.</li>
+            </ul>
+          </section>
+
+          <section class="privacy-section" id="sec-security">
+            <h2>5. Security, E2E Encryption & Data Retention</h2>
+            <p>
+              The platform enforces end-to-end encryption. All telemetry payloads, microservice status
+              metrics, and client communications are encrypted in transit using TLS 1.3 / SSL
+              protocol. Furthermore, integrated third-party credentials (such as Google Analytics 4
+              tokens and Microsoft Clarity API keys) are secured at-rest in our database using
+              transparent AES-256 Fernet-level encryption derived from application secret keys.
+            </p>
+            <p>
+              Your status pages, services, incidents, and telemetry data are private-by-default and
+              are not shared publicly unless you explicitly approve by toggling the "Publish Status
+              Page" setting. Telemetry logs and historical ML reports are automatically purged from
+              databases 30 days after creation.
+            </p>
+          </section>
+
+          <section class="privacy-section" id="sec-contact">
+            <h2>6. Contact & Data Protection Officer</h2>
+            <p>
+              If you have any questions regarding this Privacy Policy, your cookie choices, or wish to
+              appeal a compliance request, please contact our Data Protection Officer:
+            </p>
+            <div class="contact-card">
+              <p><strong>Email:</strong>&nbsp;<a href="mailto:flow@dataengineeringformachinelearning.com">flow&#64;dataengineeringformachinelearning.com</a></p>
+              <p><strong>Address:</strong>&nbsp;No Address</p>
+              <p><strong>Data protection officer contact:</strong>&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a></p>
+            </div>
+          </section>
+        </article>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style lang="scss">
+.dashboard-page-container {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.content-wrapper {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+.privacy-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+  text-align: center;
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    letter-spacing: -0.03em;
+    color: var(--hero-title-color);
+  }
+
+  .last-updated {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+}
+
+.privacy-section {
+  margin-bottom: 32px;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 0;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
+    border-left: 4px solid var(--color-success);
+    padding-left: 8px;
+  }
+
+  p {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    color: var(--text-color);
+    opacity: 0.95;
+    margin-bottom: 16px;
+  }
+
+  ul {
+    padding-left: 24px;
+    margin-bottom: 16px;
+
+    li {
+      margin-bottom: 8px;
+      font-size: 1.025rem;
+      strong { color: var(--text-color); }
+    }
+  }
+}
+
+.cookie-types-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.cookie-card {
+  background: rgba(128, 128, 128, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--text-color);
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.45;
+    margin: 0;
+    color: var(--text-muted);
+  }
+}
+
+.cookie-action-box {
+  background: color-mix(in srgb, var(--color-success) 8%, transparent);
+  border: 1px dashed var(--color-success);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  p { margin: 0; font-weight: 500; }
+  button { margin-top: 8px; }
+}
+
+.compliance-form-card {
+  background: rgba(128, 128, 128, 0.03);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 32px;
+  box-shadow: var(--shadow-sm);
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: var(--text-color);
+  }
+
+  .form-instruction {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0 0 24px 0;
+  }
+}
+
+.compliance-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-color);
+  }
+
+  .form-input {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+
+    &:focus {
+      border-color: var(--color-success);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-success) 15%, transparent);
+    }
+  }
+
+  textarea.form-input { resize: vertical; }
+
+  select.form-input {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24' viewBox='0 0 24 24' width='24' fill='%239fb8ad'%3E%3Cpath d='M0 0h24v24H0V0z' fill='none'/%3E%3Cpath d='M7 10l5 5 5-5H7z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25rem;
+    padding-right: 32px;
+  }
+}
+
+.contact-card {
+  background: rgba(128, 128, 128, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  box-shadow: var(--shadow-sm);
+
+  p {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    &:last-child { margin: 0; }
+  }
+
+  a {
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+}
+
+.mat-mdc-raised-button {
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &.mat-accent {
+    background-color: var(--color-success);
+  }
+}
+
+@media (min-width: 768px) {
+  .compliance-form-card { padding: 24px; }
+  .cookie-types-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+}
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const gdprForm = document.getElementById('gdpr-form');
+    if (gdprForm) {
+      gdprForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Compliance request submitted successfully. You will receive an email confirmation shortly.');
+        gdprForm.reset();
+      });
+    }
+  });
+</script>

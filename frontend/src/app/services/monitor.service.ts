@@ -60,7 +60,7 @@ export class MonitorService {
   public servicesMap = signal<Record<string, MonitoredServiceData[]>>({});
 
   fetchAllIncidents(pages: StatusPageData[]) {
-    if (!pages) return;
+    if (!Array.isArray(pages)) return;
     pages.forEach(page => {
       this.getIncidents(page.id).subscribe({
         next: incidents => {
@@ -72,7 +72,7 @@ export class MonitorService {
   }
 
   fetchAllServices(pages: StatusPageData[]) {
-    if (!pages) return;
+    if (!Array.isArray(pages)) return;
     pages.forEach(page => {
       this.getServices(page.id).subscribe({
         next: services => {

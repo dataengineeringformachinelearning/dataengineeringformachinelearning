@@ -139,7 +139,11 @@ export class App implements OnInit {
 
       this.monitorService.getStatusPages().subscribe({
         next: data => {
-          this.settingsService.statusPages.set(data);
+          if (Array.isArray(data)) {
+            this.settingsService.statusPages.set(data);
+          } else {
+            this.settingsService.statusPages.set([]);
+          }
         },
         error: err => console.error('Error fetching pages for global search:', err),
       });

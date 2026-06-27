@@ -134,9 +134,13 @@ export class Sidebar implements OnInit {
 
     this.monitorService.getStatusPages().subscribe({
       next: data => {
-        this.statusPages.set(data);
-        this.monitorService.fetchAllIncidents(data);
-        this.monitorService.fetchAllServices(data);
+        if (Array.isArray(data)) {
+          this.statusPages.set(data);
+          this.monitorService.fetchAllIncidents(data);
+          this.monitorService.fetchAllServices(data);
+        } else {
+          this.statusPages.set([]);
+        }
         this.cdr.markForCheck();
       },
       error: err => {

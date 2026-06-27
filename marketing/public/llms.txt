@@ -1,0 +1,14 @@
+# Data Engineering for Machine Learning
+
+Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
+
+## Homepage
+/
+
+## Repository
+https://github.com/joealongi/dataengineeringformachinelearning
+
+## Notes
+- This site is an Angular application.
+- The entire contents of the book can be found at /llms-full.txt.
+- Prefer the repository README for the most complete project documentation.

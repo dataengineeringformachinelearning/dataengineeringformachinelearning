@@ -31,15 +31,25 @@ def sync_readme():
 
     book_content = "".join(book_lines[start_idx:])
 
-    with open(page_md_path, "w", encoding="utf-8") as f:
-      f.write(book_content)
+    marketing_page_md_path = os.path.join(
+      root_dir, "marketing", "src", "assets", "content", "page.md"
+    )
+    os.makedirs(os.path.dirname(marketing_page_md_path), exist_ok=True)
+
+    for path in [page_md_path, marketing_page_md_path]:
+      with open(path, "w", encoding="utf-8") as f:
+        f.write(book_content)
 
     # --- 2. Process README.md for readme.md ---
     with open(readme_path, encoding="utf-8") as f:
       readme_content = f.read()
 
-    with open(readme_md_path, "w", encoding="utf-8") as f:
-      f.write(readme_content)
+    marketing_readme_md_path = os.path.join(
+      root_dir, "marketing", "src", "assets", "content", "readme.md"
+    )
+    for path in [readme_md_path, marketing_readme_md_path]:
+      with open(path, "w", encoding="utf-8") as f:
+        f.write(readme_content)
 
     # --- 3. Process LLMS-full.txt ---
     llms_full_content = readme_content + "\n\n"
@@ -54,13 +64,16 @@ def sync_readme():
     # Add BOOK.md
     llms_full_content += "".join(book_lines)
 
-    with open(llms_full_path, "w", encoding="utf-8") as f:
-      f.write(llms_full_content)
+    marketing_llms_full_path = os.path.join(root_dir, "marketing", "public", "llms-full.txt")
+    os.makedirs(os.path.dirname(marketing_llms_full_path), exist_ok=True)
+    for path in [llms_full_path, marketing_llms_full_path]:
+      with open(path, "w", encoding="utf-8") as f:
+        f.write(llms_full_content)
 
     print("Successfully synced markdown content to:")
-    print(f" - {llms_full_path}")
-    print(f" - {page_md_path}")
-    print(f" - {readme_md_path}")
+    print(f" - {llms_full_path} & {marketing_llms_full_path}")
+    print(f" - {page_md_path} & {marketing_page_md_path}")
+    print(f" - {readme_md_path} & {marketing_readme_md_path}")
 
     # Also sync llms.txt description if present
     if os.path.exists(llms_path):
@@ -72,9 +85,11 @@ def sync_readme():
         llms_lines[2] = (
           "Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.\n"
         )
-        with open(llms_path, "w", encoding="utf-8") as f:
-          f.writelines(llms_lines)
-        print(f" - {llms_path}")
+        marketing_llms_path = os.path.join(root_dir, "marketing", "public", "llms.txt")
+        for path in [llms_path, marketing_llms_path]:
+          with open(path, "w", encoding="utf-8") as f:
+            f.writelines(llms_lines)
+        print(f" - {llms_path} & {marketing_llms_path}")
 
   except Exception as e:
     print(f"Error syncing markdown content: {e}")

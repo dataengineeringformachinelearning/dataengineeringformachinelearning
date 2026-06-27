@@ -1,0 +1,17 @@
+{
+  "projects": {
+    "default": "demldotcom"
+  },
+  "targets": {
+    "demldotcom": {
+      "hosting": {
+        "marketing": [
+          "demldotcom"
+        ],
+        "app": [
+          "app-demldotcom"
+        ]
+      }
+    }
+  }
+}

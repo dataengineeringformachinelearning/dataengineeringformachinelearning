@@ -1,0 +1,282 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Documentation - DEML Platform">
+  <div class="dashboard-page-container">
+    <div class="ambient-background"></div>
+    <div class="dashboard-content-area">
+      <div class="page-inner-wrapper">
+        <header class="docs-hero">
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: var(--card-bg); border: 1px solid var(--border); padding: 8px 16px; border-radius: 999px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+            <span style="width: 6px; height: 6px; border-radius: 50%; background-color: var(--color-primary);"></span>
+            <span style="font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text-color); text-transform: uppercase;">Developer Portal</span>
+          </div>
+          <h1 class="docs-title">API Gateway & Integrations</h1>
+          <p class="docs-subtitle">
+            The central nervous system for your MLOps workflows. Seamlessly connect your
+            infrastructure, stream telemetry, and interface with powerful models through our secure
+            endpoints.
+          </p>
+        </header>
+
+        <div class="docs-bento-grid">
+          <div class="docs-bento-card docs-bento-full">
+            <div class="bento-header">
+              <span class="material-icons" aria-hidden="true">vpn_key</span>
+              <h2>Authentication & Access</h2>
+            </div>
+            <p style="color: var(--text-muted); line-height: 1.6; margin: 0; font-size: 1.05rem">
+              Secure access to our high-throughput pipelines requires an API key. Register an account,
+              generate a secure token in your user profile, and pass it in the Authorization header.
+            </p>
+            <div class="code-block-premium">
+              <div class="code-header">HTTP Header</div>
+              <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
+            </div>
+          </div>
+
+          <div class="docs-bento-card">
+            <div class="bento-header">
+              <span class="material-icons" aria-hidden="true">input</span>
+              <h2>Data Ingestion</h2>
+            </div>
+            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+              High-throughput endpoint optimized for receiving batched or streaming data from
+              distributed pipelines like Apache Spark or Databricks.
+            </p>
+            <div class="endpoint-badge">
+              <span class="method">POST</span>
+              <span class="path">/api/v1/ingest</span>
+            </div>
+            <div class="code-block-premium" style="margin-top: auto">
+              <div class="code-header">cURL Request</div>
+              <pre><code>curl -X POST https://backend.dataengineeringformachinelearning.com/api/v1/ingest \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123; "batch_id": "123", "records": [&#123;"feature1": 1.0&#125;] &#125;'</code></pre>
+            </div>
+          </div>
+
+          <div class="docs-bento-card">
+            <div class="bento-header">
+              <span class="material-icons" aria-hidden="true">model_training</span>
+              <h2>Real-time Inference</h2>
+            </div>
+            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+              Low-latency endpoint for model inference, ideal for Kubernetes sidecars or deep learning
+              services calling models directly.
+            </p>
+            <div class="endpoint-badge">
+              <span class="method">POST</span>
+              <span class="path">/api/v1/predict</span>
+            </div>
+            <div class="code-block-premium" style="margin-top: auto">
+              <div class="code-header">cURL Request</div>
+              <pre><code>curl -X POST https://backend.dataengineeringformachinelearning.com/api/v1/predict \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123; "model_version": "v2", "inputs": [0.5, 0.2] &#125;'</code></pre>
+            </div>
+          </div>
+
+          <div class="docs-bento-card">
+            <div class="bento-header">
+              <span class="material-icons" aria-hidden="true">terminal</span>
+              <h2>Native Integrations</h2>
+            </div>
+            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+              We provide native support and documentation for integrating with the industry's leading
+              tools, including:
+            </p>
+            <ul style="color: var(--text-color); line-height: 1.8; margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px;">
+              <li><strong>Kubernetes:</strong> Connect via CRDs or sidecar proxies.</li>
+              <li><strong>TensorFlow:</strong> Stream using <code>tf.data.Dataset</code>.</li>
+              <li><strong>Apache Spark:</strong> Write DataFrames directly.</li>
+            </ul>
+          </div>
+
+          <div class="docs-bento-card">
+            <div class="bento-header">
+              <span class="material-icons" aria-hidden="true">security</span>
+              <h2>Enterprise Security</h2>
+            </div>
+            <p style="color: var(--text-muted); line-height: 1.6; margin: 0">
+              All tenant data is cryptographically isolated using strict multi-tenancy rules and
+              enforced via our strict 30-day data retention policy.
+              <strong>API Keys</strong> can only be managed exclusively through the user interface
+              under your Settings panel. For ultimate security, keys are displayed only once upon
+              creation and are immediately hashed in the database using SHA-256. <br /><br />
+              Our infrastructure leverages strict Google Distroless-like multi-stage deployments
+              (e.g., chainguard nginx) to eliminate shell-based attack surfaces. Data sent to our
+              ingestion endpoints feeds directly into Redpanda message brokers, ensuring your
+              analytics dashboard displays a fully unified, multi-tenant view of your infrastructure.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style lang="scss">
+.dashboard-page-container {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  overflow: hidden;
+}
+
+.docs-hero {
+  position: relative;
+  margin: 0 auto 56px auto;
+  text-align: center;
+  padding: 32px 0;
+
+  .docs-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--hero-title-color, var(--text-color));
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .docs-subtitle {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    max-width: 704px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+}
+
+.docs-bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: var(--container-max-width, 1152px);
+  margin: 0 auto 56px auto;
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.docs-bento-card {
+  background: var(--color-surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-8px);
+    border-color: var(--crayola-blue);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .bento-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    .material-icons {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      color: var(--crayola-blue);
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin: 0;
+      color: var(--text-color);
+      letter-spacing: -0.02em;
+    }
+  }
+}
+
+.docs-bento-full {
+  grid-column: 1 / -1;
+}
+
+.code-block-premium {
+  background: var(--jet-black, #121212);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+
+  .code-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 16px;
+    font-size: 1rem;
+    color: var(--carrot-orange, #ff9100);
+    font-family: monospace;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--carrot-orange, #ff9100);
+      box-shadow: 0 0 9px var(--carrot-orange, #ff9100);
+    }
+  }
+
+  pre {
+    margin: 0;
+    padding: 1.5rem;
+    overflow-x: auto;
+
+    code {
+      color: #e0e0e0;
+      font-family: monospace;
+      font-size: 1rem;
+      line-height: 1.6;
+      white-space: pre-wrap !important;
+      word-wrap: break-word !important;
+    }
+  }
+}
+
+.endpoint-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px;
+  border-radius: 8px;
+  width: fit-content;
+
+  .method {
+    color: var(--success-color, #4caf50);
+    font-weight: 800;
+    font-family: monospace;
+    font-size: 1rem;
+  }
+
+  .path {
+    color: var(--text-color);
+    font-family: monospace;
+    font-size: 1rem;
+  }
+}
+</style>
