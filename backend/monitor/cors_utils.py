@@ -19,21 +19,38 @@ def is_domain_registered(origin: str) -> bool:
   try:
     parsed = urlparse(origin)
     domain = parsed.hostname if parsed.hostname else origin
-  except Exception:
-    return False
+    if not domain:
+      return False
 
-  cache_key = f"cors_origin_allowed:{domain}"
-  is_allowed = cache.get(cache_key)
+    # Fast-track platform domains
+    platform_domains = {
+      "dataengineeringformachinelearning.com",
+      "www.dataengineeringformachinelearning.com",
+      "deml.app",
+      "www.deml.app",
+      "localhost",
+      "127.0.0.1",
+    }
+    if domain in platform_domains:
+      return True
 
-  if is_allowed is not None:
-    return is_allowed
+    cache_key = f"cors_origin_allowed:{domain}"
+    try:
+      is_allowed = cache.get(cache_key)
+      if is_allowed is not None:
+        return is_allowed
+    except Exception as cache_err:
+      logger.warning(f"Cache lookup failed for CORS check of {domain}: {cache_err}")
+      is_allowed = None
 
-  try:
     from monitor.models import Endpoints, MonitoredService, Tenant, ValidatedSite
 
     # Check ValidatedSite by domain
     if ValidatedSite.objects.filter(domain=domain).exists():
-      cache.set(cache_key, True, timeout=3600)
+      try:
+        cache.set(cache_key, True, timeout=3600)
+      except Exception:
+        pass
       return True
 
     # For URLs in the database, we can check if they match the domain or the full origin
@@ -42,11 +59,17 @@ def is_domain_registered(origin: str) -> bool:
     q_domain = Q(url__icontains=domain)
 
     if Endpoints.objects.filter(q_exact_origin | q_slash_origin | q_domain).exists():
-      cache.set(cache_key, True, timeout=3600)
+      try:
+        cache.set(cache_key, True, timeout=3600)
+      except Exception:
+        pass
       return True
 
     if MonitoredService.objects.filter(q_exact_origin | q_slash_origin | q_domain).exists():
-      cache.set(cache_key, True, timeout=3600)
+      try:
+        cache.set(cache_key, True, timeout=3600)
+      except Exception:
+        pass
       return True
 
     q_target_exact = Q(target_url=origin)
@@ -54,12 +77,18 @@ def is_domain_registered(origin: str) -> bool:
     q_target_domain = Q(target_url__icontains=domain)
 
     if Tenant.objects.filter(q_target_exact | q_target_slash | q_target_domain).exists():
-      cache.set(cache_key, True, timeout=3600)
+      try:
+        cache.set(cache_key, True, timeout=3600)
+      except Exception:
+        pass
       return True
 
     # Cache the miss for 1 hour as well to prevent DB spam on repeated failures
-    cache.set(cache_key, False, timeout=3600)
+    try:
+      cache.set(cache_key, False, timeout=3600)
+    except Exception:
+      pass
     return False
   except Exception as e:
-    logger.error(f"Error checking DB for dynamic CORS origin {domain}: {e}")
+    logger.error(f"Error checking dynamic CORS origin {origin}: {e}")
     return False

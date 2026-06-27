@@ -1,11 +1,15 @@
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from django.test import AsyncClient
 
 
+@pytest.mark.django_db
 @pytest.mark.asyncio
 async def test_ingest_endpoint_telemetry(async_client: AsyncClient) -> None:
+  from asgiref.sync import sync_to_async
+  from monitor.models import OutboxEvent
+
   payload = {
     "url": "http://telemetry-test.com",
     "status_code": 200,
@@ -14,22 +18,20 @@ async def test_ingest_endpoint_telemetry(async_client: AsyncClient) -> None:
     "is_active": True,
   }
 
-  # Mock AIOKafkaProducer's send method
-  mock_producer = AsyncMock()
-  mock_producer.send = AsyncMock(return_value=None)
+  response = await async_client.post(
+    "/api/v1/telemetry/endpoints",
+    data=payload,
+    content_type="application/json",
+    headers={"origin": "http://localhost"},
+  )
+  assert response.status_code == 202
 
-  with patch("telemetry.api.get_kafka_producer", AsyncMock(return_value=mock_producer)):
-    response = await async_client.post(
-      "/api/v1/telemetry/endpoints",
-      data=payload,
-      content_type="application/json",
-      headers={"origin": "http://localhost"},
-    )
-    assert response.status_code == 202
-    mock_producer.send.assert_called_once()
-    # Verify first argument to send is "app-events"
-    args, _kwargs = mock_producer.send.call_args
-    assert args[0] == "app-events"
+  # Verify OutboxEvent was successfully created in the database
+  events = await sync_to_async(list)(OutboxEvent.objects.all())
+  assert len(events) == 1
+  event = events[0]
+  assert event.topic == "app-events"
+  assert event.payload["url"] == "http://telemetry-test.com"
 
 
 @pytest.mark.django_db
