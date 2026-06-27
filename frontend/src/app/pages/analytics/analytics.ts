@@ -122,8 +122,17 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private getEmptyAreaChart(color: string, seriesName: string): ChartOptions {
+    const zeroData = Array(24).fill(0);
+    const now = new Date();
+    const categories = Array(24)
+      .fill('')
+      .map((_, i) => {
+        const d = new Date(now.getTime() - (23 - i) * 60 * 60 * 1000);
+        return d.getHours() + ':00';
+      });
+
     return {
-      series: [{ name: seriesName, data: [] }],
+      series: [{ name: seriesName, data: zeroData }],
       chart: {
         type: 'area',
         sparkline: { enabled: false },
@@ -142,7 +151,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       markers: { size: 0, hover: { size: 5 } },
       xaxis: {
         type: 'category',
-        categories: [],
+        categories: categories,
         axisBorder: { show: false },
         axisTicks: { show: false },
       },
@@ -159,8 +168,17 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   }
 
   private getEmptyBarChart(color: string, seriesName: string): ChartOptions {
+    const zeroData = Array(24).fill(0);
+    const now = new Date();
+    const categories = Array(24)
+      .fill('')
+      .map((_, i) => {
+        const d = new Date(now.getTime() - (23 - i) * 60 * 60 * 1000);
+        return d.getHours() + ':00';
+      });
+
     return {
-      series: [{ name: seriesName, data: [] }],
+      series: [{ name: seriesName, data: zeroData }],
       chart: {
         type: 'bar',
         height: '100%',
@@ -177,7 +195,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       fill: {},
       xaxis: {
         type: 'category',
-        categories: [],
+        categories: categories,
         axisBorder: { show: false },
         axisTicks: { show: false },
       },
@@ -195,7 +213,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
   private getEmptyDonutChart(): ChartOptions {
     return {
-      series: [],
+      series: [0, 0, 0, 0],
       chart: {
         type: 'donut',
         height: '100%',
@@ -211,7 +229,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           opacity: 0.2,
         },
       },
-      labels: [],
+      labels: ['Low', 'Medium', 'High', 'Critical'],
       colors: [
         'var(--crayola-blue)',
         'var(--blue-bell)',
@@ -494,15 +512,20 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             this.selectedTenantId = platformTenant ? platformTenant.id : this.tenants[0].id;
           }
         }
+        // Always load analytics data after attempting to load tenants (so even if empty, it falls back)
+        this.loadAnalyticsData();
       },
-      error: err => console.error('Failed to load tenants', err),
+      error: err => {
+        console.error('Failed to load tenants', err);
+        // Fallback load
+        this.loadAnalyticsData();
+      },
     });
   }
 
   ngOnInit() {
     if (this.isBrowser) {
       this.loadTenants();
-      this.loadAnalyticsData();
 
       this.intervalId = setInterval(() => {
         this.loadAnalyticsData();
@@ -520,8 +543,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onTenantChange(event: any) {
-    this.selectedTenantId = event.target.value;
+  public onTenantChange(tenantId: string) {
+    this.selectedTenantId = tenantId;
     this.selectedSite = 'All'; // reset site selection when tenant changes
     this.loadAnalyticsData();
   }

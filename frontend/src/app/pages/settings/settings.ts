@@ -472,9 +472,16 @@ export class Settings implements OnInit {
         next: data => {
           if (!Array.isArray(data)) return;
           // Filter to only their pages, excluding platform-status
-          const myPages = data.filter(
+          let myPages = data.filter(
             p => p.user_id === this.authService.currentUserId() && p.slug !== 'platform-status',
           );
+          if (myPages.length === 0) {
+            // Include platform-status as a fallback so widget and settings load
+            const platformPage = data.find(p => p.slug === 'platform-status');
+            if (platformPage) {
+              myPages = [platformPage];
+            }
+          }
           this.statusPages.set(myPages);
           if (myPages.length > 0 && !this.selectedPage()) {
             this.selectPage(myPages[0]);
