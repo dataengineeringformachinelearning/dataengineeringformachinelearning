@@ -587,4 +587,37 @@ export class AuthService {
       return { success: false, error: `Failed to unlink ${providerId}. Please try again.` };
     }
   }
+
+  async navigateToMarketingSite(
+    marketingUrl: string = 'https://dataengineeringformachinelearning.com',
+  ) {
+    if (!this.isAuthenticated() || !this.auth?.currentUser) {
+      window.location.href = marketingUrl;
+      return;
+    }
+    this.isProcessing.set(true);
+    try {
+      const fbToken = await this.auth.currentUser.getIdToken();
+      const res: any = await firstValueFrom(
+        this.http.post(
+          `${environment.backendUrl}/api/v1/auth/handoff/generate`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${fbToken}` },
+          },
+        ),
+      );
+      if (res.status === 'success' && res.token) {
+        const separator = marketingUrl.includes('?') ? '&' : '?';
+        window.location.href = `${marketingUrl}${separator}session_handoff=${res.token}`;
+      } else {
+        window.location.href = marketingUrl;
+      }
+    } catch (e: any) {
+      console.error('Failed to generate handoff token', e);
+      window.location.href = marketingUrl;
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
 }

@@ -1,3 +1,5 @@
+import uuid
+
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
@@ -105,3 +107,65 @@ def delete_api_key(request, key_id: str):
     return {"status": "success"}
   except (ValueError, APIKey.DoesNotExist) as e:
     raise HttpError(404, "API Key not found") from e
+
+
+class HandoffGenerateOut(Schema):
+  status: str
+  token: str
+
+
+@router.post(
+  "/handoff/generate", response=HandoffGenerateOut, summary="Generate cross-domain handoff token"
+)
+def generate_handoff_token(request):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+
+  from utils.rate_limit import redis_client
+
+  if not redis_client:
+    raise HttpError(500, "Redis unavailable")
+
+  token = str(uuid.uuid4())
+  # Store the user ID in redis for 60 seconds
+  redis_client.setex(f"handoff:{token}", 60, request.user.id)
+
+  return {"status": "success", "token": token}
+
+
+class HandoffVerifyIn(Schema):
+  token: str
+
+
+@router.post(
+  "/handoff/verify", response=SuccessSchema, auth=None, summary="Verify cross-domain handoff token"
+)
+def verify_handoff_token(request, payload: HandoffVerifyIn):
+  from utils.rate_limit import redis_client
+
+  if not redis_client:
+    raise HttpError(500, "Redis unavailable")
+
+  user_id = redis_client.get(f"handoff:{payload.token}")
+  if not user_id:
+    raise HttpError(401, "Invalid or expired token")
+
+  # Token valid, delete it so it's one-time use
+  redis_client.delete(f"handoff:{payload.token}")
+
+  from django.contrib.auth import get_user_model
+
+  User = get_user_model()
+  try:
+    user = User.objects.get(id=int(user_id))
+    role = "Viewer"
+    if hasattr(user, "profile"):
+      role = user.profile.role
+    return {
+      "status": "success",
+      "user": user.first_name or user.username,
+      "user_id": user.id,
+      "role": role,
+    }
+  except User.DoesNotExist:
+    raise HttpError(404, "User not found") from None

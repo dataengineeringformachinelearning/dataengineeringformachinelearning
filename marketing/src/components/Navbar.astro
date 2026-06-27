@@ -22,9 +22,9 @@
 
     <div class="navbar-right">
       <div class="desktop-auth">
-        <a href="https://deml.app/login" class="auth-btn">
-          <span class="material-icons">login</span>
-          <span>Sign In</span>
+        <a href="https://deml.app/login" class="auth-btn" id="auth-btn-desktop">
+          <span class="material-icons" id="auth-icon-desktop">login</span>
+          <span id="auth-text-desktop">Sign In</span>
         </a>
       </div>
 
@@ -53,9 +53,9 @@
 
     <div class="mobile-divider"></div>
 
-    <a href="https://deml.app/login" class="mobile-auth-btn">
-      <span class="material-icons">login</span>
-      <span>Sign In</span>
+    <a href="https://deml.app/login" class="mobile-auth-btn" id="auth-btn-mobile">
+      <span class="material-icons" id="auth-icon-mobile">login</span>
+      <span id="auth-text-mobile">Sign In</span>
     </a>
   </div>
 </header>
@@ -386,5 +386,61 @@
         menuIcon.textContent = 'close';
       }
     });
+
+    // Auth Handoff Logic
+    async function checkAuthHandoff() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const handoffToken = urlParams.get('session_handoff');
+
+      if (handoffToken) {
+        try {
+          const res = await fetch('https://api.deml.app/api/v1/auth/handoff/verify', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ token: handoffToken })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.status === 'success') {
+              localStorage.setItem('deml_session_active', 'true');
+            }
+          }
+        } catch (e) {
+          console.error('Failed to verify handoff token', e);
+        }
+
+        // Clean URL
+        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+        window.history.replaceState({path: cleanUrl}, '', cleanUrl);
+      }
+
+      // Update UI if logged in
+      if (localStorage.getItem('deml_session_active') === 'true') {
+        const desktopBtn = document.getElementById('auth-btn-desktop');
+        const desktopIcon = document.getElementById('auth-icon-desktop');
+        const desktopText = document.getElementById('auth-text-desktop');
+
+        if (desktopBtn && desktopIcon && desktopText) {
+          desktopBtn.href = 'https://deml.app/dashboard';
+          desktopIcon.textContent = 'dashboard';
+          desktopText.textContent = 'Dashboard';
+        }
+
+        const mobileBtn = document.getElementById('auth-btn-mobile');
+        const mobileIcon = document.getElementById('auth-icon-mobile');
+        const mobileText = document.getElementById('auth-text-mobile');
+
+        if (mobileBtn && mobileIcon && mobileText) {
+          mobileBtn.href = 'https://deml.app/dashboard';
+          mobileIcon.textContent = 'dashboard';
+          mobileText.textContent = 'Dashboard';
+        }
+      }
+    }
+
+    checkAuthHandoff();
   });
 </script>

@@ -3,9 +3,12 @@ import {
   inject,
   ChangeDetectionStrategy,
   signal,
+  effect,
   OnInit,
   OnDestroy,
 } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -42,6 +45,34 @@ export class Login implements OnInit, OnDestroy {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private http = inject(HttpClient);
+
+  constructor() {
+    effect(() => {
+      if (this.authService.isInitialized() && this.authService.isAuthenticated()) {
+        const action = this.route.snapshot.queryParams['action'];
+        if (action === 'checkout') {
+          this.isLoading.set(true);
+          this.http
+            .post<any>(`${environment.backendUrl}/api/v1/billing/create-checkout-session`, {})
+            .subscribe({
+              next: res => {
+                if (res.checkout_url) {
+                  window.location.href = res.checkout_url;
+                } else {
+                  this.router.navigate(['/settings']);
+                }
+              },
+              error: () => {
+                this.router.navigate(['/settings']);
+              },
+            });
+        } else {
+          this.handleSuccess();
+        }
+      }
+    });
+  }
 
   isRegisterMode = signal<boolean>(false);
   isForgotMode = signal<boolean>(false);
@@ -224,6 +255,10 @@ export class Login implements OnInit, OnDestroy {
   }
 
   handleSuccess(): void {
+    const action = this.route.snapshot.queryParams['action'];
+    if (action === 'checkout') {
+      return; // The effect will catch this and handle the redirect
+    }
     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/settings';
     this.router.navigateByUrl(returnUrl);
   }

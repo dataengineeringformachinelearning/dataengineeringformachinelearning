@@ -132,17 +132,41 @@ def stripe_webhook(request):
       except Tenant.DoesNotExist:
         logger.error(f"Tenant {client_reference_id} not found for checkout.")
 
-  elif event["type"] == "customer.subscription.deleted":
+  elif event["type"] in ["customer.subscription.updated", "customer.subscription.deleted"]:
     subscription = event["data"]["object"]
     sub_id = (
       subscription.get("id")
       if isinstance(subscription, dict)
       else getattr(subscription, "id", None)
     )
+    status = (
+      subscription.get("status")
+      if isinstance(subscription, dict)
+      else getattr(subscription, "status", None)
+    )
+    period_end = (
+      subscription.get("current_period_end")
+      if isinstance(subscription, dict)
+      else getattr(subscription, "current_period_end", None)
+    )
+
     tenants = Tenant.objects.filter(stripe_subscription_id=sub_id)
     for tenant in tenants:
-      tenant.tier = "Standard"
-      tenant.subscription_active = False
+      if event["type"] == "customer.subscription.deleted" or status in [
+        "canceled",
+        "unpaid",
+        "past_due",
+      ]:
+        tenant.tier = "Standard"
+        tenant.subscription_active = False
+      else:
+        tenant.tier = "Pro"
+        tenant.subscription_active = True
+
+      if period_end:
+        tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
+          period_end, tz=datetime.timezone.utc
+        )
       tenant.save()
 
   return HttpResponse(status=200)
