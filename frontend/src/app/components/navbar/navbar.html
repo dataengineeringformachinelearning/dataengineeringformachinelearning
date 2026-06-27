@@ -22,7 +22,7 @@
         href="https://dataengineeringformachinelearning.com/documentation"
         class="nav-btn"
       >
-        <mat-icon>description</mat-icon>
+        <mat-icon aria-hidden="true">description</mat-icon>
         <span>Documentation</span>
       </a>
 
@@ -33,7 +33,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon>explore</mat-icon>
+        <mat-icon aria-hidden="true">explore</mat-icon>
         <span>Explore</span>
       </a>
 
@@ -44,7 +44,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon>analytics</mat-icon>
+        <mat-icon aria-hidden="true">analytics</mat-icon>
         <span>Analytics</span>
       </a>
 
@@ -55,7 +55,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon>security</mat-icon>
+        <mat-icon aria-hidden="true">security</mat-icon>
         <span>Vulnerabilities</span>
       </a>
 
@@ -66,7 +66,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon>settings</mat-icon>
+        <mat-icon aria-hidden="true">settings</mat-icon>
         <span>Settings</span>
       </a>
       } @else {
@@ -77,7 +77,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon>explore</mat-icon>
+        <mat-icon aria-hidden="true">explore</mat-icon>
         <span>Explore</span>
       </a>
 
@@ -86,7 +86,7 @@
         href="https://dataengineeringformachinelearning.com/documentation"
         class="nav-btn"
       >
-        <mat-icon>description</mat-icon>
+        <mat-icon aria-hidden="true">description</mat-icon>
         <span>Documentation</span>
       </a>
       }
@@ -96,12 +96,12 @@
       <div class="desktop-auth">
         @if (!authService.isAuthenticated()) {
         <button mat-raised-button class="auth-btn" (click)="login()">
-          <mat-icon>login</mat-icon>
+          <mat-icon aria-hidden="true">login</mat-icon>
           <span>Sign In</span>
         </button>
         } @if (authService.isAuthenticated()) {
         <button mat-raised-button class="auth-btn" (click)="logout()">
-          <mat-icon>logout</mat-icon>
+          <mat-icon aria-hidden="true">logout</mat-icon>
           <span>Sign Out</span>
         </button>
         }
@@ -114,7 +114,9 @@
         class="theme-toggle-btn"
         aria-label="Toggle light and dark theme"
       >
-        <mat-icon>{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+        <mat-icon aria-hidden="true"
+          >{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon
+        >
       </button>
 
       <!-- Hamburger Menu Toggle Button (Mobile) -->
@@ -125,7 +127,7 @@
         aria-label="Toggle navigation menu"
         [attr.aria-expanded]="isMobileMenuOpen()"
       >
-        <mat-icon>{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        <mat-icon aria-hidden="true">{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
       </button>
     </div>
   </div>
@@ -139,7 +141,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>description</mat-icon>
+      <mat-icon aria-hidden="true">description</mat-icon>
       <span>Documentation</span>
     </a>
 
@@ -151,7 +153,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>explore</mat-icon>
+      <mat-icon aria-hidden="true">explore</mat-icon>
       <span>Explore</span>
     </a>
 
@@ -163,7 +165,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>analytics</mat-icon>
+      <mat-icon aria-hidden="true">analytics</mat-icon>
       <span>Analytics</span>
     </a>
 
@@ -175,7 +177,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>security</mat-icon>
+      <mat-icon aria-hidden="true">security</mat-icon>
       <span>Vulnerabilities</span>
     </a>
 
@@ -187,7 +189,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>settings</mat-icon>
+      <mat-icon aria-hidden="true">settings</mat-icon>
       <span>Settings</span>
     </a>
     } @else {
@@ -199,7 +201,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>explore</mat-icon>
+      <mat-icon aria-hidden="true">explore</mat-icon>
       <span>Explore</span>
     </a>
 
@@ -209,7 +211,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon>description</mat-icon>
+      <mat-icon aria-hidden="true">description</mat-icon>
       <span>Documentation</span>
     </a>
     }
@@ -218,12 +220,12 @@
 
     @if (!authService.isAuthenticated()) {
     <button mat-raised-button class="mobile-auth-btn" (click)="login(); closeMobileMenu()">
-      <mat-icon>login</mat-icon>
+      <mat-icon aria-hidden="true">login</mat-icon>
       <span>Sign In</span>
     </button>
     } @if (authService.isAuthenticated()) {
     <button mat-raised-button class="mobile-auth-btn" (click)="logout(); closeMobileMenu()">
-      <mat-icon>logout</mat-icon>
+      <mat-icon aria-hidden="true">logout</mat-icon>
       <span>Sign Out</span>
     </button>
     }

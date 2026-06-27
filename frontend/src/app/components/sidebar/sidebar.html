@@ -19,7 +19,7 @@
     <mat-icon class="brand-icon">analytics</mat-icon>
     <h2 class="brand-title">Platform</h2>
     <div class="collapse-toggle-btn" aria-hidden="true">
-      <mat-icon>{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      <mat-icon aria-hidden="true">{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
     </div>
   </div>
 
@@ -34,7 +34,7 @@
     (keydown.space)="$event.preventDefault(); openSearchDialog()"
   >
     <div class="search-wrapper">
-      <mat-icon>search</mat-icon>
+      <mat-icon aria-hidden="true">search</mat-icon>
       <span class="sidebar-search-placeholder">Search...</span>
       <kbd class="search-shortcut">⌘K</kbd>
     </div>
@@ -51,7 +51,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Documentation"
       >
-        <mat-icon>description</mat-icon>
+        <mat-icon aria-hidden="true">description</mat-icon>
         <span class="nav-text">Documentation</span>
       </a>
 
@@ -62,7 +62,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Explore"
       >
-        <mat-icon>explore</mat-icon>
+        <mat-icon aria-hidden="true">explore</mat-icon>
         <span class="nav-text">Explore</span>
       </a>
 
@@ -73,7 +73,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Analytics"
       >
-        <mat-icon>insert_chart</mat-icon>
+        <mat-icon aria-hidden="true">insert_chart</mat-icon>
         <span class="nav-text">Analytics</span>
       </a>
 
@@ -84,7 +84,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Vulnerabilities"
       >
-        <mat-icon>security</mat-icon>
+        <mat-icon aria-hidden="true">security</mat-icon>
         <span class="nav-text">Vulnerabilities</span>
       </a>
 
@@ -95,7 +95,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Settings"
       >
-        <mat-icon>settings</mat-icon>
+        <mat-icon aria-hidden="true">settings</mat-icon>
         <span class="nav-text">Settings</span>
       </a>
 
@@ -146,7 +146,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Explore"
       >
-        <mat-icon>explore</mat-icon>
+        <mat-icon aria-hidden="true">explore</mat-icon>
         <span class="nav-text">Explore</span>
       </a>
 
@@ -157,7 +157,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Documentation"
       >
-        <mat-icon>description</mat-icon>
+        <mat-icon aria-hidden="true">description</mat-icon>
         <span class="nav-text">Documentation</span>
       </a>
 
