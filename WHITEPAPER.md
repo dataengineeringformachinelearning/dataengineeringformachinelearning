@@ -1,6 +1,6 @@
 # The Whitepaper: Scalable Telemetry, Predictive SLAs, & Automated Threat Mitigation
 
-**Abstract:** Architecting the Web Application Platform (DEML Platform): A comprehensive guide to high-throughput event pipelines, ML-forecasted service levels, automated STIX 2.1 threat sharing, and integrated vulnerability management.
+**Abstract:** Architecting the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform): A comprehensive guide to high-throughput event pipelines, ML-forecasted service levels, automated STIX 2.1 threat sharing, and integrated vulnerability management.
 
 **Published:** June 2026
 **Author:** Joe Alongi [(ORCID: 0009-0007-2401-2603)](https://orcid.org/0009-0007-2401-2603)
@@ -12,7 +12,7 @@
 
 ## 1. Executive Summary
 
-Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the Web Application Platform (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics.
+Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics.
 
 As a testament to the architecture's stability, the platform actively dogfoods its own infrastructure. The platform itself runs as **Tenant0**, serving as a living "Apex Sandbox" and "Public Sentinel" showcasing its real-time telemetry and threat analysis capabilities to the world.
 
@@ -84,7 +84,7 @@ The primary intelligence layer employs a PyTorch Multi-Layer Perceptron (MLP) to
 
 ## 5. ML-Powered 30-Day Threat Detection & Telemetry Ingestion
 
-Our integration within the Web Application Platform (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.
+Our integration within the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.
 
 ## 6. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing
 

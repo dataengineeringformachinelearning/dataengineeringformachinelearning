@@ -41,10 +41,10 @@ export class Book implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('The Book - Web Application');
+    this.titleService.setTitle('The Book - DEML APP');
     this.metaService.updateTag({
       name: 'description',
-      content: 'Interactive guide, working notes, and reference chapters on Web Application.',
+      content: 'Interactive guide, working notes, and reference chapters on DEML APP.',
     });
     this.chapterOptions = this.bookService.chapters().map((c, i) => ({
       value: i,

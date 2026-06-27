@@ -16,7 +16,7 @@ export class Whitepaper implements OnInit {
 
   ngOnInit() {
     this.titleService.setTitle(
-      'Whitepaper: Scalable Telemetry & Deep Learning Predictions - Web Application',
+      'Whitepaper: Scalable Telemetry & Deep Learning Predictions - DEML APP',
     );
     this.metaService.updateTag({
       name: 'description',

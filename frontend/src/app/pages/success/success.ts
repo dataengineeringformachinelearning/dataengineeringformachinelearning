@@ -29,7 +29,7 @@ export class Success implements OnInit {
   syncSuccess = false;
 
   ngOnInit() {
-    this.titleService.setTitle('Subscription Successful - Web Application');
+    this.titleService.setTitle('Subscription Successful - DEML APP');
     this.metaService.updateTag({
       name: 'description',
       content: 'Your subscription was successful.',

@@ -94,7 +94,7 @@ export class Compliance implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Security Compliance & Threat Reporting - Web Application');
+    this.titleService.setTitle('Security Compliance & Threat Reporting - DEML APP');
     this.metaService.updateTag({
       name: 'description',
       content:

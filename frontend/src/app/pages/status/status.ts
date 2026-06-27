@@ -94,11 +94,11 @@ export class Status implements OnInit {
   }
 
   ngOnInit() {
-    this.titleService.setTitle('Service Status Dashboard - Web Application');
+    this.titleService.setTitle('Service Status Dashboard - DEML APP');
     this.metaService.updateTag({
       name: 'description',
       content:
-        'Real-time monitoring, service status checks, and uptime tracking for Web Application services.',
+        'Real-time monitoring, service status checks, and uptime tracking for DEML APP services.',
     });
   }
 

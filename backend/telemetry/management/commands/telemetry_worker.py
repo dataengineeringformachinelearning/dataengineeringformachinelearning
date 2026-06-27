@@ -279,7 +279,7 @@ class Command(BaseCommand):
         user=default_user,
         title="Platform Status",
         slug="platform-status",
-        description="Monitoring system health and telemetry pipelines for the Web Application Platform.",
+        description="Monitoring system health and telemetry pipelines for the DEML (DATA ENGINEERING FOR MACHINE LEARNING).",
       )
 
     def get_normalized_info(url_str):

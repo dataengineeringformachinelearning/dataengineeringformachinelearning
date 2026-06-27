@@ -18,7 +18,7 @@ export class Documentation implements OnInit {
   public content = readmeMarkdown;
 
   ngOnInit() {
-    this.titleService.setTitle('Developer Portal - Web Application');
+    this.titleService.setTitle('Developer Portal - DEML APP');
     this.metaService.updateTag({
       name: 'description',
       content: 'API Gateway and Platform Documentation.',

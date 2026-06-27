@@ -28,11 +28,11 @@ export class Privacy implements OnInit {
   ];
 
   ngOnInit() {
-    this.titleService.setTitle('Privacy Policy & GDPR Compliance - Web Application');
+    this.titleService.setTitle('Privacy Policy & GDPR Compliance - DEML APP');
     this.metaService.updateTag({
       name: 'description',
       content:
-        'Privacy policy, cookies preference details, and GDPR compliance documentation for Web Application.',
+        'Privacy policy, cookies preference details, and GDPR compliance documentation for DEML APP.',
     });
   }
 

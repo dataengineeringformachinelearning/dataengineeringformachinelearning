@@ -178,7 +178,7 @@ async def subscribe_newsletter(request, payload: SubscribePayload):
   subject = "Welcome to the DEML Platform Newsletter!"
   html_content = """
   <h1>Thank you for subscribing!</h1>
-  <p>You have successfully signed up for updates and insights from the Web Application (DEML) Platform.</p>
+  <p>You have successfully signed up for updates and insights from the DEML APP (DEML) Platform.</p>
   <p>If you did not request this, please ignore this email.</p>
   """
 

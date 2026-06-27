@@ -17,7 +17,7 @@ class CustomAPI(NinjaAPI):
 
 
 api = CustomAPI(
-  title="Web Application API",
+  title="DEML BACKEND APP API",
   version=getattr(settings, "APP_VERSION", "1.0.0"),
   docs_url="/docs",
 )

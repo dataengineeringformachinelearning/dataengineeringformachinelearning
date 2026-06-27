@@ -199,7 +199,7 @@ export class IsolatedStatus implements OnInit {
             800 + Math.random() * 700,
           );
 
-          this.titleService.setTitle(`${page.title} Status - Web Application`);
+          this.titleService.setTitle(`${page.title} Status - DEML APP`);
           this.metaService.updateTag({
             name: 'description',
             content: `Operational status, real-time alerts, and historical uptime details for the ${page.title} service status page.`,
