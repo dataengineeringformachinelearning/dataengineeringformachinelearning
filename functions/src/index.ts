@@ -1,9 +1,13 @@
-import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
+import { onCall, HttpsError } from "firebase-functions/v2/https";
+import { config as functionsConfig } from "firebase-functions";
+import { logger } from "firebase-functions";
 import { Kafka } from "kafkajs";
 
 admin.initializeApp();
+
+const fcfg = functionsConfig();
 
 // Initialize Kafka/Redpanda client
 // For fastest Event Projections (no polling):
@@ -57,19 +61,25 @@ async function getProducer() {
  * (public SASL-authenticated listener recommended for lowest latency).
  * Falls back to Firestore inbox only on publish failure.
  */
-export const ingestEvent = functions
-  .region("us-east4")
-  .https.onCall(async (data, context) => {
+export const ingestEvent = onCall(
+  {
+    region: "us-east4",
+    // Add more options here if needed in the future, e.g.:
+    // memory: "256MiB",
+    // timeoutSeconds: 60,
+  },
+  async (request) => {
     // 1. Validate Authentication (Native to Firebase onCall functions)
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
+    if (!request.auth) {
+      throw new HttpsError(
         "unauthenticated",
         "The function must be called while authenticated.",
       );
     }
 
-    const uid = context.auth.uid || data.uid || "anonymous";
-    functions.logger.info("UID DEBUG:", { uid, type: typeof uid });
+    const uid = request.auth.uid;
+    const data = request.data;
+    logger.info("UID DEBUG:", { uid, type: typeof uid });
     const eventPayload = data;
 
     // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
@@ -98,7 +108,7 @@ export const ingestEvent = functions
 
       return { status: "accepted", message: "Event successfully queued to Redpanda." };
     } catch (error) {
-      functions.logger.error(
+      logger.error(
         "Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:",
         error,
       );
@@ -122,14 +132,15 @@ export const ingestEvent = functions
           message: "Event accepted (queued via resilient fallback).",
         };
       } catch (fsError) {
-        functions.logger.error(
+        logger.error(
           "Failed to write fallback event to Firestore inbox:",
           fsError,
         );
-        throw new functions.https.HttpsError(
+        throw new HttpsError(
           "internal",
           "Unable to process event at this time.",
         );
       }
     }
-  });
+  }
+);
