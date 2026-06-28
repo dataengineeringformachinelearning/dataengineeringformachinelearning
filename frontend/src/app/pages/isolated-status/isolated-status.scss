@@ -817,14 +817,14 @@
   cursor: pointer;
   font-weight: 500;
   color: var(--text-color);
-  font-size: 16px;
+  font-size: var(--base-font-size);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 8px;
 
   mat-icon {
-    font-size: 16px;
+    font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
     color: var(--text-muted);
@@ -921,7 +921,7 @@
   padding: 16px 0;
 
   mat-icon {
-    font-size: 16px;
+    font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
   }

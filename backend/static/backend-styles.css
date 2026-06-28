@@ -11,7 +11,13 @@
   --black: #000000;
 
   /* Typography */
-  --base-font-size: 16px;
+  --base-font-size: 18px;
+
+  /* SaaS Grid & Modular Spacing layout tokens (9px base grid) */
+  --grid-unit: 9px;
+  --grid-gap: 27px;
+  --card-padding: 27px;
+  --container-max-width: 1260px;
   --header-letter-spacing: -0.02em;
 
   /* Universal Borders & Shadows */
@@ -782,14 +788,17 @@ footer {
 }
 
 .badge-dot {
-  width: 8px;
-  height: 8px;
+  display: inline-block;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background-color: var(--color-success);
+  margin-right: 9px;
+  flex-shrink: 0;
 }
 
 .badge-text {
-  font-size: 0.875rem;
+  font-size: var(--base-font-size);
   font-weight: 600;
   letter-spacing: 0.05em;
   color: var(--text-color);
@@ -799,9 +808,9 @@ footer {
 .bento-features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 24px;
+  gap: var(--grid-gap);
   width: 100%;
-  max-width: 1152px;
+  max-width: var(--container-max-width);
   margin: 2rem auto;
 }
 

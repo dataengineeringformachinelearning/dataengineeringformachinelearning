@@ -160,9 +160,7 @@
           const honeypot = document.createElement('input');
           honeypot.type = 'text';
           honeypot.name = 'deml_site_bot_check';
-          honeypot.style.position = 'absolute';
-          honeypot.style.left = '-9999px';
-          honeypot.style.opacity = '0';
+          honeypot.classList.add('honeypot-field');
           honeypot.tabIndex = -1;
           honeypot.setAttribute('aria-hidden', 'true');
           form.appendChild(honeypot);
@@ -314,6 +312,9 @@
             width: 16px;
             height: 16px;
           }
+          .is-hidden {
+            display: none !important;
+          }
           .modal-overlay {
             position: fixed;
             top: 0;
@@ -326,6 +327,9 @@
             align-items: center;
             justify-content: center;
             z-index: 99999;
+          }
+          .modal-title-icon {
+            color: var(--color-error, #ef4444);
           }
           .modal-content {
             background-color: #1e293b;
@@ -528,11 +532,11 @@
           </button>
         </div>
 
-        <div class="modal-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
+        <div class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc">
           <div class="modal-content">
             <div class="modal-header">
               <h3 id="modal-title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-error, #ef4444);" aria-hidden="true">
+                <svg class="modal-title-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
                 Report Security Threat
@@ -578,7 +582,7 @@
                 <textarea id="vuln-desc" class="input-desc" rows="4" placeholder="Detail how to reproduce the vulnerability..."></textarea>
               </div>
 
-              <div class="status-msg" style="display: none;"></div>
+              <div class="status-msg is-hidden"></div>
             </div>
             <div class="modal-footer">
               <button class="btn btn-cancel">Cancel</button>
@@ -609,21 +613,22 @@
         let dlpWarned = false;
 
         const toggleModal = () => {
-          const visible = modalOverlay.style.display !== 'none';
-          modalOverlay.style.display = visible ? 'none' : 'flex';
-          if (!visible) {
+          const visible = !modalOverlay.classList.contains('is-hidden');
+          if (visible) {
+            modalOverlay.classList.add('is-hidden');
+            reportTrigger.focus();
+          } else {
+            modalOverlay.classList.remove('is-hidden');
             inputTitle.value = '';
             inputDesc.value = '';
             inputCve.value = '';
             inputBot.value = '';
-            statusMsg.style.display = 'none';
+            statusMsg.classList.add('is-hidden');
             btnSubmit.disabled = false;
             dlpWarned = false;
             setTimeout(() => {
               inputTitle.focus();
             }, 50);
-          } else {
-            reportTrigger.focus();
           }
         };
 
@@ -633,8 +638,7 @@
 
         // Trap focus and close on Escape (Section 508 / WCAG Compliance)
         this.shadowRoot.addEventListener('keydown', e => {
-          const visible = modalOverlay.style.display !== 'none';
-          if (!visible) return;
+          if (modalOverlay.classList.contains('is-hidden')) return;
 
           if (e.key === 'Escape' || e.key === 'Esc') {
             toggleModal();
@@ -707,12 +711,12 @@
             // Fake success to fool bots
             statusMsg.innerText = 'Threat reported successfully! Triage initiated.';
             statusMsg.className = 'status-msg success';
-            statusMsg.style.display = 'block';
+            statusMsg.classList.remove('is-hidden');
             setTimeout(toggleModal, 2000);
             return;
           }
 
-          statusMsg.style.display = 'none';
+          statusMsg.classList.add('is-hidden');
 
           // Non-blocking DLP check
           const dlpRegex = /(password|api[_-]?key|secret|sk-[a-zA-Z0-9]{20,})/i;
@@ -723,7 +727,7 @@
               statusMsg.innerText =
                 'Warning: Your report appears to contain sensitive credentials (e.g., password or API key). Please remove them. Click submit again to proceed anyway.';
               statusMsg.className = 'status-msg warning';
-              statusMsg.style.display = 'block';
+              statusMsg.classList.remove('is-hidden');
               dlpWarned = true;
               return;
             }
@@ -788,7 +792,7 @@
             if (res.ok) {
               statusMsg.innerText = 'Threat reported successfully! Triage initiated.';
               statusMsg.className = 'status-msg success';
-              statusMsg.style.display = 'block';
+              statusMsg.classList.remove('is-hidden');
               setTimeout(toggleModal, 2000);
             } else {
               throw new Error('Server returned error status');
@@ -796,7 +800,7 @@
           } catch {
             statusMsg.innerText = 'Failed to report threat. Please try again.';
             statusMsg.className = 'status-msg error';
-            statusMsg.style.display = 'block';
+            statusMsg.classList.remove('is-hidden');
             btnSubmit.disabled = false;
           }
         });

@@ -10,7 +10,7 @@ import Layout from '../layouts/Layout.astro';
         <header class="hud-header">
           <div class="title-group">
             <div class="section-tag-row">
-              <span class="badge-dot" style="display: inline-block; width: 9px; height: 9px; background: var(--color-success); border-radius: 50%; margin-right: 9px;"></span>
+              <span class="badge-dot badge-dot--success" aria-hidden="true"></span>
               <span class="section-tag">SOC 2 & Threat Sharing Dashboard</span>
             </div>
             <h1 class="hud-title" id="compliance-title">Compliance, Threat Reporting & Encryption</h1>
@@ -169,7 +169,7 @@ import Layout from '../layouts/Layout.astro';
                 <span class="mode-tag">Currently Active: Sandbox Ingestion Mode</span>
               </div>
 
-              <div class="submission-response u-style-224b51" role="status" id="submission-result" >
+              <div class="submission-response is-hidden" role="status" id="submission-result">
                 <div class="response-header success">
                   <span class="material-icons" aria-hidden="true">check_circle</span>
                   <span>Threat indicator successfully validated and transmitted to Sandbox.</span>
@@ -400,7 +400,7 @@ import Layout from '../layouts/Layout.astro';
 
     .criteria-name { font-size: 1rem; font-weight: 600; color: var(--text-color); }
     .criteria-badge {
-      font-size: 0.85rem;
+      font-size: var(--base-font-size);
       font-weight: 700;
       padding: 4px 12px;
       border-radius: 96px;
@@ -415,7 +415,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .criteria-desc { font-size: 1rem; color: var(--text-muted); margin: 0 0 8px 0; line-height: 1.4; }
-  .criteria-details { font-size: 0.95rem; color: var(--text-color); margin: 0; strong { color: var(--text-muted); } }
+  .criteria-details { font-size: var(--base-font-size); color: var(--text-color); margin: 0; strong { color: var(--text-muted); } }
 }
 
 .sharing-section {
@@ -461,7 +461,7 @@ import Layout from '../layouts/Layout.astro';
 .sharing-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: var(--grid-gap);
   @media (min-width: 901px) { grid-template-columns: 1.2fr 1fr; }
 }
 
@@ -523,7 +523,7 @@ import Layout from '../layouts/Layout.astro';
   }
 
   .mode-tag {
-    font-size: 0.9rem;
+    font-size: var(--base-font-size);
     font-weight: 600;
     color: var(--color-success);
     background: color-mix(in srgb, var(--color-success) 10%, transparent);
@@ -553,13 +553,13 @@ import Layout from '../layouts/Layout.astro';
   .transmission-logs {
     border-top: 1px dashed var(--border);
     padding-top: 8px;
-    .logs-title { display: block; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+    .logs-title { display: block; font-size: var(--base-font-size); font-weight: 700; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
     .transmission-logs-list {
       display: flex; flex-direction: column; gap: 8px;
       .transmission-log-item {
         display: flex; align-items: center; gap: 8px;
         .log-dot { width: 6px; height: 6px; background: var(--color-primary); border-radius: 50%; }
-        .log-text { font-family: 'Inter', monospace; font-size: 0.9rem; color: var(--text-color); }
+        .log-text { font-family: 'Inter', monospace; font-size: var(--base-font-size); color: var(--text-color); }
       }
     }
   }
@@ -582,7 +582,7 @@ import Layout from '../layouts/Layout.astro';
     border-bottom: 1px solid var(--border);
 
     .dot { width: 10px; height: 10px; border-radius: 50%; &.red { background: var(--color-error); } &.yellow { background: var(--color-warning); } &.green { background: var(--color-success); } }
-    .file-name { color: var(--text-color); font-size: 0.9rem; font-family: 'Inter', monospace; margin-left: 8px; font-weight: 500;}
+    .file-name { color: var(--text-color); font-size: var(--base-font-size); font-family: 'Inter', monospace; margin-left: 8px; font-weight: 500;}
   }
 
   pre {
@@ -592,7 +592,7 @@ import Layout from '../layouts/Layout.astro';
     overflow-x: auto;
     max-height: 416px;
 
-    code { font-family: 'Inter', monospace; font-size: 0.9rem; color: #d4d4d4; line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
+    code { font-family: 'Inter', monospace; font-size: var(--base-font-size); color: var(--text-color); line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
   }
 }
 </style>
@@ -604,7 +604,7 @@ import Layout from '../layouts/Layout.astro';
     const warningBox = document.getElementById('safety-warning');
     if (dismissBtn && warningBox) {
       dismissBtn.addEventListener('click', () => {
-        warningBox.style.display = 'none';
+        warningBox.classList.add('is-hidden');
       });
     }
 
@@ -630,12 +630,14 @@ import Layout from '../layouts/Layout.astro';
       submitBtn.addEventListener('click', () => {
         submitBtn.setAttribute('disabled', 'true');
         submitBtnText.textContent = 'Transmitting...';
-        resultBox.style.display = 'none';
+        resultBox.classList.add('is-hidden');
+        resultBox.classList.remove('is-visible-block');
 
         setTimeout(() => {
           submitBtn.removeAttribute('disabled');
           submitBtnText.textContent = 'Submit Threat Indicator';
-          resultBox.style.display = 'block';
+          resultBox.classList.remove('is-hidden');
+          resultBox.classList.add('is-visible-block');
         }, 1200);
       });
     }

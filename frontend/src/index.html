@@ -123,6 +123,44 @@
       rel="stylesheet"
     />
 
+    <!-- Critical skip-link styles: axe pre-commit scans this file without Angular bundles. -->
+    <style>
+      /* Critical skip-link: clipped when idle, high-contrast when focused. */
+      a.skip-link {
+        position: fixed;
+        top: 16px;
+        left: 16px;
+        background-color: #000000;
+        color: #ffffff;
+        padding: 8px 16px;
+        z-index: 10000;
+        border-radius: 9px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 18px;
+        line-height: 1.4;
+        clip: rect(0 0 0 0);
+        clip-path: inset(50%);
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        white-space: nowrap;
+        border: 0;
+      }
+
+      a.skip-link:focus,
+      a.skip-link:focus-visible {
+        clip: auto;
+        clip-path: none;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        white-space: normal;
+        outline: 2px solid #2176ff;
+        outline-offset: 2px;
+      }
+    </style>
+
     <!-- Theme tokens are included via Angular global styles (styles.scss + theme.scss).
          Dedicated per-app stylesheets + shared tokens for other services (marketing, backend). -->
 
@@ -158,12 +196,9 @@
     </script>
   </head>
   <body class="mat-typography">
-    <a
-      href="#main-content"
-      class="skip-link u-style-e24d2c"
-      style="color: #ffffff; background-color: #000000"
-      >Skip to main content</a
-    >
-    <app-root></app-root>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <main id="main-content" tabindex="-1">
+      <app-root></app-root>
+    </main>
   </body>
 </html>

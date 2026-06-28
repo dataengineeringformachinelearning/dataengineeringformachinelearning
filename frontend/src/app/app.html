@@ -14,13 +14,13 @@
   @if (isDashboardPage()) {
   <div class="dashboard-wrapper">
     <app-sidebar></app-sidebar>
-    <main id="main-content" class="dashboard-content" role="main" tabindex="-1">
+    <div class="dashboard-content">
       <router-outlet />
-    </main>
+    </div>
   </div>
   } @else {
   <!-- Main Content -->
-  <div id="main-content-alt" class="main-content" [attr.role]="'main'" tabindex="-1">
+  <div class="main-content">
     <router-outlet />
   </div>
   }

@@ -19,8 +19,8 @@
   position: absolute;
   top: -100px;
   left: 16px;
-  background-color: #000000 !important;
-  color: #ffffff !important;
+  background-color: var(--black) !important;
+  color: var(--white) !important;
   padding: 8px 16px;
   z-index: 10000;
   border-radius: var(--border-radius-sm);
@@ -515,6 +515,51 @@ main.main {
   &.full-width {
     max-width: 100%;
   }
+}
+
+/* Mobile-first layout container (9px grid aligned) */
+.page-inner-wrapper {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gap);
+  box-sizing: border-box;
+}
+
+/* Status & hero badge indicators */
+.badge-dot {
+  display: inline-block;
+  width: var(--grid-unit, 9px);
+  height: var(--grid-unit, 9px);
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  margin-right: var(--grid-unit, 9px);
+  flex-shrink: 0;
+
+  &--success {
+    background-color: var(--color-success);
+  }
+}
+
+/* Visibility toggles (prefer classes over inline display styles) */
+.is-hidden {
+  display: none !important;
+}
+
+.is-visible-block {
+  display: block !important;
+}
+
+.is-visible-flex {
+  display: flex !important;
+}
+
+/* Dynamic progress width via CSS custom property */
+.progress-bar-fill {
+  width: var(--progress, 0%);
 }
 
 // ====================== GLOBAL ERROR TOAST ======================
@@ -1032,7 +1077,7 @@ select option:checked {
 
 
 /* Extracted Inline Styles */
-.u-style-e24d2c { color: #ffffff; background-color: #000000 }
+.u-style-e24d2c { color: var(--white); background-color: var(--black) }
 
 
 /* Extracted Inline Styles */
@@ -1065,6 +1110,7 @@ select option:checked {
                   left: 0;
                   top: 0;
                   bottom: 0;
+                  width: var(--progress, 0%);
                   background: linear-gradient(
                     90deg,
                     var(--color-primary) 0%,
@@ -1200,7 +1246,7 @@ select option:checked {
             border-radius: 999px;
             margin-bottom: 24px;
             box-shadow: var(--shadow-sm); }
-.u-style-b94f9d { font-size: 0.85rem;
+.u-style-b94f9d { font-size: var(--base-font-size);
               font-weight: 600;
               letter-spacing: 0.05em;
               color: var(--text-color);
@@ -1245,15 +1291,37 @@ select option:checked {
             justify-content: center;
             flex-wrap: wrap; }
 
-// Strictly enforce the minimum typography floor of 13pt (17.33px)
-body, p, li, input, select, textarea, button, label, small, td, th,
-.section-tag, .hud-subtitle, .hud-select, .stat-unit, .chart-custom-title, .chart-custom-trend {
-  font-size: clamp(17.33px, var(--base-font-size, 18px), 50rem);
+// WCAG/508: enforce 18px minimum typography floor
+body,
+p,
+li,
+input,
+select,
+textarea,
+button,
+label,
+small,
+td,
+th,
+.mat-mdc-button,
+.mat-mdc-form-field,
+.section-tag,
+.hud-subtitle,
+.hud-select,
+.stat-unit,
+.chart-custom-title,
+.chart-custom-trend,
+.badge-text,
+.criteria-desc,
+.criteria-details,
+.log-text,
+.file-name {
+  font-size: max(18px, var(--base-font-size, 18px));
 }
 
 
 /* Extracted Inline Styles */
-.u-style-e24d2c { color: #ffffff; background-color: #000000 }
+.u-style-e24d2c { color: var(--white); background-color: var(--black) }
 
 
 /* Extracted Inline Styles */

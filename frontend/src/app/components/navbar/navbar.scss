@@ -23,7 +23,7 @@
 }
 
 .navbar-title {
-  font-size: 16px;
+  font-size: var(--base-font-size);
   font-weight: 700;
   line-height: 1.2;
   color: var(--text-color);
@@ -95,7 +95,7 @@
 
   mat-icon {
     margin: 0;
-    font-size: 16px;
+    font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
   }
@@ -161,7 +161,7 @@
 
   mat-icon {
     margin: 0;
-    font-size: 16px;
+    font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
     transition: transform 0.3s ease;

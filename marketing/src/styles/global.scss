@@ -19,8 +19,8 @@
   position: absolute;
   top: -100px;
   left: 16px;
-  background-color: #000000 !important;
-  color: #ffffff !important;
+  background-color: var(--black) !important;
+  color: var(--white) !important;
   padding: 8px 16px;
   z-index: 10000;
   border-radius: var(--border-radius-sm);
@@ -153,7 +153,7 @@ body {
   background-color: var(--bg-color);
   color: var(--text-color);
   font-family: 'Inter', sans-serif;
-  font-size: var(--base-font-size, 16px);
+  font-size: var(--base-font-size, 18px);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -465,7 +465,7 @@ main.main {
 }
 
 .content-wrapper {
-  max-width: var(--container-max-width, 1152px);
+  max-width: var(--container-max-width, 1260px);
   margin: 0 auto;
   width: 100%;
   display: flex;
@@ -475,6 +475,51 @@ main.main {
   &.full-width {
     max-width: 100%;
   }
+}
+
+/* Mobile-first layout container (9px grid aligned) */
+.page-inner-wrapper {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gap);
+  box-sizing: border-box;
+}
+
+/* Status & hero badge indicators */
+.badge-dot {
+  display: inline-block;
+  width: var(--grid-unit, 9px);
+  height: var(--grid-unit, 9px);
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  margin-right: var(--grid-unit, 9px);
+  flex-shrink: 0;
+
+  &--success {
+    background-color: var(--color-success);
+  }
+}
+
+/* Visibility toggles (prefer classes over inline display styles) */
+.is-hidden {
+  display: none !important;
+}
+
+.is-visible-block {
+  display: block !important;
+}
+
+.is-visible-flex {
+  display: flex !important;
+}
+
+/* Dynamic progress width via CSS custom property */
+.progress-bar-fill {
+  width: var(--progress, 0%);
 }
 
 // ====================== GLOBAL ERROR TOAST ======================
@@ -996,7 +1041,7 @@ select option:checked {
 
 /* Extracted Inline Styles */
 .u-style-328aaa { margin: 18px 18px 0 }
-.u-style-315c1f { font-size: 16px; width: 16px; height: 16px; color: var(--text-muted); }
+.u-style-315c1f { font-size: var(--base-font-size); width: 18px; height: 18px; color: var(--text-muted); }
 .u-style-ef4080 { overflow-y: auto }
 .u-style-685a53 { width: 100%; padding: 8px; border-radius: 4px; background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border); }
 .u-style-541ffc { justify-content: center }
@@ -1005,7 +1050,7 @@ select option:checked {
 .u-style-2b2c9a { display: flex; justify-content: space-between; font-size: 1rem; font-weight: 600; color: var(--text-muted); margin-bottom: 9px; }
 .u-style-c3f737 { color: var(--color-primary-container) }
 .u-style-cf687c { width: 100%; height: 9px; background-color: var(--hover-color); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; position: relative; }
-.u-style-f9a078 { width: 0%; position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-container) 100%); transition: width 0.3s ease-out; }
+.u-style-f9a078 { width: var(--progress, 0%); position: absolute; left: 0; top: 0; bottom: 0; background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-container) 100%); transition: width 0.3s ease-out; }
 .u-style-9c7405 { display: flex; justify-content: center; align-items: center; padding: 45px 0; animation: fade-in 0.8s ease-out; }
 .u-style-54df94 { width: 100%; max-width: 460px; aspect-ratio: 3 / 4.2; background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 6px 18px 18px 6px; box-shadow: -6px 0 18px rgba(0, 0, 0, 0.1), 18px 18px 54px rgba(0, 0, 0, 0.15); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform 0.3s ease; }
 .u-style-bdb450 { position: absolute; left: 0; top: 0; bottom: 0; width: 28px; background: linear-gradient(90deg, rgba(0, 0, 0, 0.5) 0%, rgba(255, 255, 255, 0.1) 15%, rgba(0, 0, 0, 0.2) 100%); z-index: 10; border-right: 1px solid rgba(0, 0, 0, 0.2); }
@@ -1023,7 +1068,7 @@ select option:checked {
 
 /* Extracted Inline Styles */
 .u-style-58adc5 { display: inline-flex; align-items: center; gap: 8px; background: var(--card-bg); border: 1px solid var(--border); padding: 8px 16px; border-radius: 999px; margin-bottom: 24px; box-shadow: var(--shadow-sm); }
-.u-style-486a44 { font-size: 0.85rem; font-weight: 600; letter-spacing: 0.05em; color: var(--text-color); text-transform: uppercase; }
+.u-style-486a44 { font-size: var(--base-font-size); font-weight: 600; letter-spacing: 0.05em; color: var(--text-color); text-transform: uppercase; }
 .u-style-7f7d6d { color: var(--text-muted); line-height: 1.6; margin: 0; font-size: 1.05rem }
 .u-style-efd290 { color: var(--text-muted); line-height: 1.6; margin: 0 }
 .u-style-5ab468 { margin-top: auto }
@@ -1033,7 +1078,7 @@ select option:checked {
 /* Extracted Inline Styles */
 .u-style-199b6f { width: 100%; }
 .u-style-8f2b4f { vertical-align: middle; margin-right: 4px; }
-.u-style-224b51 { display: none; }
+.u-style-224b51 { display: none; } /* legacy: prefer .is-hidden */
 
 
 /* Extracted Inline Styles */
@@ -1049,6 +1094,28 @@ select option:checked {
 /* Extracted Inline Styles */
 .u-style-9150aa { justify-content: flex-start }
 
+// WCAG/508: enforce 18px minimum typography floor
+body,
+p,
+li,
+input,
+select,
+textarea,
+button,
+label,
+small,
+td,
+th,
+.badge-text,
+.criteria-desc,
+.criteria-details,
+.log-text,
+.file-name,
+.mode-tag,
+.logs-title {
+  font-size: max(18px, var(--base-font-size, 18px));
+}
+
 
 /* Extracted Inline Styles */
-.u-style-e24d2c { color: #ffffff; background-color: #000000 }
+.u-style-e24d2c { color: var(--white); background-color: var(--black) }

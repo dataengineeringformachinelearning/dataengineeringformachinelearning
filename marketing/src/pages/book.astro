@@ -103,14 +103,14 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
                 <span class="progress-percentage u-style-c3f737" id="progress-text" >0%</span>
               </div>
               <div class="progress-bar-container u-style-cf687c" >
-                <div class="progress-bar-fill u-style-f9a078" id="progress-bar" ></div>
+                <div class="progress-bar-fill u-style-f9a078" id="progress-bar"></div>
               </div>
             </div>
           </div>
 
           <div id="chapter-contents">
             {chapters.map((chapter, index) => (
-              <div class="chapter-content-view" id={`chapter-content-${index}`} style={index === 0 ? "display: block;" : "display: none;"}>
+              <div class={`chapter-content-view${index === 0 ? ' is-visible-block' : ' is-hidden'}`} id={`chapter-content-${index}`}>
                 {chapter.title === 'Cover' ? (
                   <div class="book-cover-page u-style-9c7405" >
                     <div  class="u-style-54df94">
@@ -264,8 +264,13 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
 
       // Contents
       contentViews.forEach((view, idx) => {
-        if (idx === currentIndex) view.style.display = 'block';
-        else view.style.display = 'none';
+        if (idx === currentIndex) {
+          view.classList.add('is-visible-block');
+          view.classList.remove('is-hidden');
+        } else {
+          view.classList.add('is-hidden');
+          view.classList.remove('is-visible-block');
+        }
       });
 
       // Pagination
@@ -275,7 +280,7 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
 
       // Progress bar
       const pct = Math.round(((currentIndex + 1) / totalChapters) * 100);
-      if (progressBar) progressBar.style.width = pct + '%';
+      if (progressBar) progressBar.style.setProperty('--progress', `${pct}%`);
       if (progressText) progressText.textContent = pct + '%';
 
       if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });

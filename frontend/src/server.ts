@@ -34,8 +34,10 @@ app.use((req, res, next) => {
 /**
  * Route /api/v1/* requests to the Django backend via proxy.
  * Resolves API calls during SSR and client-side requests using runtime BACKEND_URL.
+ * Uses app.use (not a wildcard path param) so Angular's route extractor and
+ * Express 5 / path-to-regexp v8 stay compatible during prerender builds.
  */
-app.all('/api/v1/:splat*', async (req, res) => {
+app.use('/api/v1', async (req, res) => {
   const rawBackendUrl = process.env['BACKEND_URL'] ?? '';
   if (!rawBackendUrl) {
     console.error('Proxy error: BACKEND_URL environment variable is not defined.');

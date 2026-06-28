@@ -17,7 +17,7 @@
 .unified-select-label {
   display: block;
   margin-bottom: 8px;
-  font-size: 16px;
+  font-size: var(--base-font-size);
   font-weight: 500;
   color: var(--text-color, #1f2937); /* light mode default */
 }
@@ -37,7 +37,7 @@
   border: 1px solid var(--border-color, #d1d5db);
   border-radius: 8px;
   color: var(--text-color, #111827);
-  font-size: 16px;
+  font-size: var(--base-font-size);
   font-family: inherit;
   cursor: pointer;
   text-align: left;
@@ -125,7 +125,7 @@
   margin: 0;
   list-style: none;
   color: var(--text-color, #111827);
-  font-size: 16px;
+  font-size: var(--base-font-size);
   font-family: inherit;
   cursor: pointer;
   user-select: none;

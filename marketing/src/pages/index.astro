@@ -127,8 +127,7 @@ const pipelineSteps = [
                 id={`step-panel-${step.id}`}
                 role="tabpanel"
                 aria-labelledby={`step-tab-${step.id}`}
-                class="step-content-box"
-                style={idx === 0 ? "" : "display: none;"}
+                class={`step-content-box${idx === 0 ? ' is-visible-block' : ' is-hidden'}`}
               >
                 <div class="step-text-content">
                   <h3>{step.name}</h3>
@@ -297,9 +296,11 @@ const pipelineSteps = [
 
       panels.forEach((panel, i) => {
         if (i === index) {
-          panel.style.display = 'block';
+          panel.classList.add('is-visible-block');
+          panel.classList.remove('is-hidden');
         } else {
-          panel.style.display = 'none';
+          panel.classList.add('is-hidden');
+          panel.classList.remove('is-visible-block');
         }
       });
 

@@ -465,7 +465,7 @@
 
   .panel-title {
     margin-bottom: 8px;
-    font-size: 16px;
+    font-size: var(--base-font-size);
     font-weight: 600;
   }
 
@@ -497,14 +497,14 @@
   .service-name-link {
     font-weight: 500;
     color: var(--text-color);
-    font-size: 16px;
+    font-size: var(--base-font-size);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 8px;
 
     mat-icon {
-      font-size: 16px;
+      font-size: var(--base-font-size);
       width: 16px;
       height: 16px;
       color: var(--text-muted);
@@ -526,20 +526,20 @@
 
   .service-sla {
     font-weight: 600;
-    font-size: 16px;
+    font-size: var(--base-font-size);
     color: var(--status-accent);
     white-space: nowrap;
   }
 
   .status-badge-premium {
     padding: 8px 8px;
-    font-size: 16px;
+    font-size: var(--base-font-size);
     height: auto;
   }
 
   .no-services-msg {
     color: var(--text-muted);
-    font-size: 16px;
+    font-size: var(--base-font-size);
     text-align: center;
     padding: 8px;
   }
@@ -713,7 +713,7 @@
   padding: 16px 0;
 
   mat-icon {
-    font-size: 16px;
+    font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
   }

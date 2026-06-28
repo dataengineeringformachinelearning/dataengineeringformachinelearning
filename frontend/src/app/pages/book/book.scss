@@ -136,7 +136,7 @@
   }
 
   mat-icon {
-    font-size: 16px;
+    font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
     color: var(--text-muted);
