@@ -6,8 +6,11 @@ import { Kafka } from "kafkajs";
 admin.initializeApp();
 
 // Initialize Kafka/Redpanda client
-// In production (Firebase Functions), set REDPANDA_BROKERS env (or secret) to a reachable broker.
-// Note: Railway internal DNS is NOT reachable from Cloud Functions; use a public endpoint or rely on Firestore fallback.
+// For fastest Event Projections (no polling):
+//   - Point Firebase Functions at the PUBLIC SASL-authenticated Redpanda listener
+//     (e.g. your-public-host.railway.app:9093 + SASL SCRAM-SHA-256 + SSL).
+//   - Internal services continue to use the private Railway DNS (no SASL).
+// See infrastructure/queue/Dockerfile + entrypoint.sh and backend/.env.example.
 const kafkaBrokers = process.env.REDPANDA_BROKERS || "localhost:19092";
 const useSsl =
   process.env.REDPANDA_SSL === "true" || kafkaBrokers.includes("railway.app");
@@ -46,8 +49,10 @@ async function getProducer() {
 }
 
 /**
- * Generic event ingestion gateway.
- * Natively validates the Auth token and pushes the event to Redpanda.
+ * Generic event ingestion gateway (client commands).
+ * Natively validates the Auth token and pushes the event to Redpanda
+ * (public SASL-authenticated listener recommended for lowest latency).
+ * Falls back to Firestore inbox only on publish failure.
  */
 export const ingestEvent = functions
   .region("us-east4")
@@ -64,11 +69,12 @@ export const ingestEvent = functions
     functions.logger.info("UID DEBUG:", { uid, type: typeof uid });
     const eventPayload = data;
 
-    // 2. Prepare message for Redpanda
+    // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const idempotencyKey = `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+    const providedIdemp = (data && (data.idempotency_key || (data.payload && data.payload.idempotency_key))) || null;
+    const idempotencyKey = providedIdemp || `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
     const message = {
-      key: String(uid), // Partition by user ID for ordered processing
+      key: String(uid), // Partition by user ID for ordered processing (stable per-tenant ordering)
       value: JSON.stringify({
         uid,
         timestamp,
@@ -79,41 +85,42 @@ export const ingestEvent = functions
     };
 
     try {
-      // 3. Push to Redpanda Topic
+      // 3. Push directly to Redpanda (primary fast path when using public SASL endpoint).
+      // This gives near real-time consumption by telemetry_worker with no polling delay.
       const p = await getProducer();
       await p.send({
         topic: "frontend-events",
         messages: [message],
       });
 
-      // 4. Return immediately (HTTP 200 via onCall framework)
-      // Note: Stats projection now handled exclusively by Django telemetry_worker for consistency.
-      // The worker uses idempotency and outbox relay for reliability.
-      return { status: "accepted", message: "Event successfully queued." };
+      return { status: "accepted", message: "Event successfully queued to Redpanda." };
     } catch (error) {
       functions.logger.error(
-        "Error publishing event to Redpanda, falling back to Firestore:",
+        "Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:",
         error,
       );
 
       try {
         const db = getFirestore("deml");
-        await db.collection("events").add({
+        // Resilient fallback only. The worker's poll_firestore_inbox task will project it.
+        // With a correctly configured public SASL Redpanda endpoint this path is almost never taken.
+        const inboxDoc = {
           uid,
           timestamp: new Date().toISOString(),
+          idempotency_key: idempotencyKey,
+          version: "1.0",
           payload: eventPayload,
-          type: "fallback",
-        });
+          source: "firebase-fallback",
+        };
+        await db.collection("frontend_command_inbox").add(inboxDoc);
 
-        // Projection for get_stats is now handled by the Django worker (idempotent, via outbox).
-        // Events collection acts as audit/fallback log.
         return {
           status: "accepted",
-          message: "Event accepted via Firestore fallback.",
+          message: "Event accepted (queued via resilient fallback).",
         };
       } catch (fsError) {
         functions.logger.error(
-          "Failed to write fallback event to Firestore:",
+          "Failed to write fallback event to Firestore inbox:",
           fsError,
         );
         throw new functions.https.HttpsError(

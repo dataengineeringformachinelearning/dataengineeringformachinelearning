@@ -393,6 +393,8 @@ export class Settings implements OnInit {
       this.firestoreSubscription.unsubscribe();
     }
 
+    let gotProjection = false;
+
     const projectionTimeout = setTimeout(() => {
       if (this.isTestingArchitecture()) {
         this.projectionResult.set({
@@ -408,6 +410,7 @@ export class Settings implements OnInit {
     this.firestoreSubscription = this.firestoreService.getRealtimeStats().subscribe({
       next: data => {
         if (data && (data['action_processed'] || data['active_endpoints'] !== undefined)) {
+          gotProjection = true;
           clearTimeout(projectionTimeout);
           this.projectionResult.set(data);
           this.isTestingArchitecture.set(false);
@@ -445,12 +448,14 @@ export class Settings implements OnInit {
         idempotency_key: idempotencyKey,
         payload: { source: 'settings_verification' },
       });
-      this.projectionResult.set({
-        status: 'accepted',
-        gateway: (result.data as any)?.message || 'Event queued successfully.',
-        message: 'Waiting for Django worker to project stats into Firestore...',
-      });
-      this.cdr.markForCheck();
+      if (!gotProjection) {
+        this.projectionResult.set({
+          status: 'accepted',
+          gateway: (result.data as any)?.message || 'Event queued successfully.',
+          message: 'Waiting for Django worker to project stats into Firestore...',
+        });
+        this.cdr.markForCheck();
+      }
     } catch (e) {
       clearTimeout(projectionTimeout);
       console.error('Failed to trigger ingestEvent:', e);

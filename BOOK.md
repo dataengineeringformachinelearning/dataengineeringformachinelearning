@@ -1253,7 +1253,10 @@ Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required
 **Variables:** Same core bundle as backend: `DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`, `REDPANDA_BROKERS`, `DRAGONFLY_HOST`, `STRUCTURED_LOGS=true`.
 
 > [!WARNING]
-> `REDPANDA_BROKERS` **must** use the broker's internal TCP address: `deml-queue.railway.internal:9092`. Never use public domains for inter-service traffic.
+> Backend services, workers and `outbox_relay` **must** use the broker's internal TCP address (`deml-queue.railway.internal:9092`) for all inter-service traffic.
+> The only exception is Firebase Cloud Functions (`ingestEvent`), which live outside the Railway private network.
+> For them, configure a **public SASL-authenticated listener** (see `infrastructure/queue/entrypoint.sh` + `Dockerfile`) and set the corresponding `REDPANDA_BROKERS`, `REDPANDA_SSL`, and SASL credentials in the Firebase Functions environment.
+> This enables the fast direct-to-Redpanda path with no polling.
 
 ### 5. ML Training Worker (`deml-machine-learning-worker`)
 
@@ -1285,7 +1288,7 @@ All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`)
 2. Angular/Firebase → `frontend-events` topic → **telemetry_worker** → Postgres + Firestore
 3. Idempotency keys + DLQ handled inside `telemetry_worker` projectors
 
-**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. Functions may need a **public** Redpanda endpoint or fall back to Firestore (see `functions/src/index.ts`).
+**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. For the fastest path (direct publish, no polling) give the Functions a public SASL-authenticated Redpanda listener (port 9093, SCRAM-SHA-256). See `infrastructure/queue/`, the updated `REDPANDA_*` guidance, and `functions/src/index.ts`. The inbox fallback remains only as defence-in-depth.
 
 ### Marketing Site (not a Railway service)
 

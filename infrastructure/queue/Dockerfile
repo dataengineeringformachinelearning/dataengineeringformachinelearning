@@ -1,22 +1,30 @@
 FROM redpandadata/redpanda:v26.1.9
 
-# We bake the configuration directly into the image's CMD to completely
-# bypass Railway's custom start command shell parsing quirks.
+# Dual-listener secure setup for Event Projections (and other client commands):
+#
+# - Internal listener (9092 / PLAINTEXT): Railway private network only.
+#   Used by Django, telemetry_worker, outbox_relay, etc. (fast path, no auth overhead).
+#
+# - External listener (9093 / SASL_SSL): Public, authenticated endpoint.
+#   Used by Firebase Cloud Functions (`ingestEvent`) which live outside the Railway private network.
+#
+# SASL (SCRAM-SHA-256) + SSL is required on the public listener.
+# A dedicated SASL user is bootstrapped automatically if you set:
+#   REDPANDA_SASL_USERNAME
+#   REDPANDA_SASL_PASSWORD
+#   PUBLIC_REDPANDA_HOST   (the public Railway hostname for port 9093)
+#
+# This gives fast direct publish (no polling) from Cloud Functions while keeping
+# internal Redpanda completely private.
 
-# Breakdown of arguments:
-# - smp 1 & memory 2G: Prevents OOM Segmentation Faults on Railway's 8GB limit
-# - kafka-addr: Listens on port 9092 on all interfaces
-# - advertise-kafka-addr: Tells clients to connect via the Railway internal network
+COPY entrypoint.sh /entrypoint.sh
 
-# Expose the Kafka port so Railway registers this service on the internal DNS
+USER root
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 9092
+EXPOSE 9093
 
-# Run as non-root user
 USER redpanda
 
-CMD ["redpanda", "start", \
-     "--mode", "dev-container", \
-     "--smp", "1", \
-     "--memory", "2G", \
-     "--kafka-addr", "PLAINTEXT://0.0.0.0:9092", \
-     "--advertise-kafka-addr", "PLAINTEXT://deml-queue.railway.internal:9092"]
+ENTRYPOINT ["/entrypoint.sh"]
