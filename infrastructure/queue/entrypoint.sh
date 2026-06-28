@@ -7,7 +7,7 @@ echo "==> Redpanda entrypoint starting (authenticated public endpoint support)..
 # The v26.1.9 CLI in this container rejects --kafka-addr and --mode on the command line.
 # Generating redpanda.yaml is the reliable way to define:
 #   - internal PLAINTEXT listener (no auth) on 9092 for Railway services
-#   - external SASL_SSL listener on 9093 for Firebase Cloud Functions
+#   - external SASL listener (SCRAM-SHA-256 over TCP) on 9093 for Firebase Cloud Functions
 
 INTERNAL_HOST="deml-queue.railway.internal"
 PUBLIC_HOST="${PUBLIC_REDPANDA_HOST:-localhost}"
@@ -39,9 +39,16 @@ redpanda:
     - name: external
       address: __PUBLIC_HOST__
       port: 9093
-  enable_sasl: true
-  sasl_mechanisms:
-    - SCRAM-SHA-256
+  # SASL enforcement is driven entirely by the per-listener `authentication_method`
+  # above (external=sasl, internal=none) plus the `sasl_mechanisms` cluster property
+  # set via the Admin API below. The cluster-level `enable_sasl` /
+  # `kafka_enable_authorization` flags are intentionally NOT set here:
+  #   * They are cluster properties, so redpanda logs "Unknown property ... for node
+  #     config store" if placed in this node config and ignores them.
+  #   * Leaving cluster authorization at its default (off) is required so the
+  #     anonymous principal on the internal no-auth 9092 listener (Django,
+  #     telemetry_worker, outbox_relay) is not rejected with
+  #     TopicAuthorizationFailedError on consume/group operations.
 
 rpk:
   kafka_api:
@@ -58,9 +65,13 @@ echo "Internal: $INTERNAL_HOST:9092 (no auth)"
 echo "External: $PUBLIC_HOST:9093 (SASL)"
 echo "PUBLIC_REDPANDA_HOST (raw): ${PUBLIC_REDPANDA_HOST:-<unset>}"
 
-# Start using the config file only. No --kafka-addr on CLI.
-redpanda start \
-  --config "$CONFIG_FILE" \
+# Start the broker using the bare `redpanda` binary and the generated config.
+# IMPORTANT: the bare `redpanda` binary reads its config via `--redpanda-cfg`.
+# `--config` is an rpk-only flag (`rpk redpanda start --config ...`); passing it to
+# the bare binary fails with "unrecognised option '--config'" and the broker never
+# binds its listeners (port 9092 closed -> every Railway service KafkaConnectionError).
+redpanda \
+  --redpanda-cfg "$CONFIG_FILE" \
   --overprovisioned \
   --smp 1 \
   --memory 2G \
@@ -68,22 +79,52 @@ redpanda start \
 
 RP_PID=$!
 
-# Create SASL user for external clients if credentials provided.
+# Apply cluster properties via the Admin API (idempotent for both fresh and existing
+# clusters). These cannot be reliably set from the redpanda.yaml node section:
+#   - auto_create_topics_enabled: producers and telemetry_worker never create topics
+#     explicitly, so this must be on. The old `--mode dev-container` startup enabled it
+#     implicitly; the explicit config file does not.
+#   - sasl_mechanisms: redpanda expects the value "SCRAM" (which serves SCRAM-SHA-256
+#     and SCRAM-SHA-512 to clients). "SCRAM-SHA-256" is rejected as invalid, which
+#     leaves the external listener advertising NO mechanisms (clients then fail with
+#     UNSUPPORTED_SASL_MECHANISM). Setting it here also repairs clusters that persisted
+#     the invalid value on an earlier boot.
+echo "Applying cluster config via Admin API (waiting for it to be ready)..."
+for i in $(seq 1 60); do
+  if rpk cluster config set auto_create_topics_enabled true >/tmp/cfg.log 2>&1; then
+    rpk cluster config set sasl_mechanisms "[SCRAM]" >>/tmp/cfg.log 2>&1 || true
+    echo "Cluster config applied (auto_create_topics_enabled=true, sasl_mechanisms=[SCRAM])."
+    break
+  fi
+  sleep 2
+done
+
+# Create the SASL user for the external (9093) listener if credentials are provided.
+# `rpk security user create` talks to the Admin API (9644), so it is unaffected by the
+# Kafka-listener SASL state. We retry until the Admin API is up instead of probing the
+# Kafka API (which returns ILLEGAL_SASL_STATE once enable_sasl is on).
 if [ -n "${REDPANDA_SASL_USERNAME}" ] && [ -n "${REDPANDA_SASL_PASSWORD}" ]; then
-  echo "Waiting for Redpanda internal listener to be ready..."
+  echo "Ensuring SASL user '${REDPANDA_SASL_USERNAME}' (waiting for Admin API)..."
+  created=0
   for i in $(seq 1 60); do
-    if rpk cluster metadata --brokers 127.0.0.1:9092 >/dev/null 2>&1; then
-      echo "Redpanda ready."
+    if rpk security user create "${REDPANDA_SASL_USERNAME}" \
+        --password "${REDPANDA_SASL_PASSWORD}" \
+        --mechanism SCRAM-SHA-256 >/tmp/user_create.log 2>&1; then
+      echo "SASL user '${REDPANDA_SASL_USERNAME}' created."
+      created=1
+      break
+    fi
+    if grep -qi "already exists" /tmp/user_create.log; then
+      echo "SASL user '${REDPANDA_SASL_USERNAME}' already exists."
+      created=1
       break
     fi
     sleep 2
   done
-
-  echo "Ensuring SASL user '${REDPANDA_SASL_USERNAME}' ..."
-  rpk security user create "${REDPANDA_SASL_USERNAME}" \
-    --password "${REDPANDA_SASL_PASSWORD}" \
-    --mechanism SCRAM-SHA-256 \
-    --brokers 127.0.0.1:9092 || echo "  (exists or non-fatal; continuing)"
+  if [ "$created" -ne 1 ]; then
+    echo "WARN: could not ensure SASL user; last output:"
+    cat /tmp/user_create.log 2>/dev/null || true
+  fi
 else
   echo "No SASL creds provided for external listener."
 fi
