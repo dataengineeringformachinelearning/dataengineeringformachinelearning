@@ -11,7 +11,6 @@ echo "==> Redpanda entrypoint starting (authenticated public endpoint support)..
 
 INTERNAL_ADDR=${REDPANDA_INTERNAL_ADDR:-PLAINTEXT://0.0.0.0:9092}
 EXTERNAL_ADDR=${REDPANDA_EXTERNAL_ADDR:-SASL_SSL://0.0.0.0:9093}
-
 INTERNAL_ADV=${REDPANDA_INTERNAL_ADV:-PLAINTEXT://deml-queue.railway.internal:9092}
 
 # PUBLIC_REDPANDA_HOST must be set to the public hostname only (no scheme, no port).
