@@ -26,10 +26,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js 20 (required by functions)
+      - name: Setup Node.js 22 (required by functions)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
           cache-dependency-path: 'functions/package-lock.json'
 
@@ -49,24 +49,31 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
-      - name: Optionally configure public Redpanda SASL listener for ingestEvent (fast direct path)
-        # For the lowest-latency Event Projections path (no polling), the Cloud Functions
-        # must publish directly to the public SASL_SSL listener on Redpanda (port 9093).
-        # Set these GitHub secrets in the repo:
-        #   REDPANDA_PUBLIC_BROKERS   e.g. queue.deml.app:9093
-        #   REDPANDA_PUBLIC_SASL_USERNAME
-        #   REDPANDA_PUBLIC_SASL_PASSWORD
-        # If not set, functions will fall back to previous behavior (inbox or error if misconfigured).
+      - name: Configure public Redpanda SASL listener for ingestEvent (fast direct path)
+        # For the lowest-latency Event Projections path (no polling), the Cloud Function
+        # publishes directly to the public Redpanda listener exposed via a Railway TCP
+        # Proxy. ingestEvent is a 2nd-gen (Cloud Run) function, so runtime config must be
+        # provided as environment variables (process.env) via a functions/.env file —
+        # the legacy `firebase functions:config:set` (gen1) does not apply to v2 functions.
+        #
+        # Set these GitHub repo secrets:
+        #   REDPANDA_PUBLIC_BROKERS        e.g. reseau.proxy.rlwy.net:20635 (Railway TCP Proxy)
+        #   REDPANDA_PUBLIC_SASL_USERNAME  e.g. admin
+        #   REDPANDA_PUBLIC_SASL_PASSWORD  (same value as the deml-queue service)
+        #   REDPANDA_PUBLIC_SSL            optional; leave unset/false for a Railway TCP
+        #                                  Proxy (plain TCP). Only "true" if TLS is
+        #                                  terminated in front of the broker.
+        # If REDPANDA_PUBLIC_BROKERS is not set, ingestEvent uses the resilient Firestore
+        # inbox fallback (slower, polled) instead of the direct path.
         if: ${{ secrets.REDPANDA_PUBLIC_BROKERS != '' }}
         run: |
-          firebase functions:config:set \
-            redpanda.brokers="${{ secrets.REDPANDA_PUBLIC_BROKERS }}" \
-            redpanda.ssl="true" \
-            redpanda.sasl_username="${{ secrets.REDPANDA_PUBLIC_SASL_USERNAME }}" \
-            redpanda.sasl_password="${{ secrets.REDPANDA_PUBLIC_SASL_PASSWORD }}" \
-            --project demldotcom --non-interactive || true
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
+          {
+            echo "REDPANDA_BROKERS=${{ secrets.REDPANDA_PUBLIC_BROKERS }}"
+            echo "REDPANDA_SASL_USERNAME=${{ secrets.REDPANDA_PUBLIC_SASL_USERNAME }}"
+            echo "REDPANDA_SASL_PASSWORD=${{ secrets.REDPANDA_PUBLIC_SASL_PASSWORD }}"
+            echo "REDPANDA_SSL=${{ secrets.REDPANDA_PUBLIC_SSL || 'false' }}"
+          } > functions/.env
+          echo "Wrote functions/.env (REDPANDA_BROKERS + SASL; REDPANDA_SSL=${{ secrets.REDPANDA_PUBLIC_SSL || 'false' }})"
 
       - name: Deploy Functions and Firestore (rules + indexes)
         run: |
