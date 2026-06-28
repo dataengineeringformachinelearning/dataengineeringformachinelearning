@@ -29,10 +29,12 @@ echo "Kafka addr: ${INTERNAL_ADDR},${EXTERNAL_ADDR}"
 echo "PUBLIC_REDPANDA_HOST (raw): ${PUBLIC_REDPANDA_HOST:-<unset>}"
 echo "Advertise:  ${INTERNAL_ADV},${EXTERNAL_ADV}"
 
-# Start Redpanda (foreground for container lifetime).
-# We launch it in background only long enough to bootstrap the SASL user, then wait.
+# Start Redpanda.
+# Clean flags for recent Redpanda images (v24+/v26). 
+# Removed '--mode dev-container' — it is not recognized on v26.1.9 and causes immediate parse error + restart loop.
+# --overprovisioned is important for container / Railway environments.
 redpanda start \
-  --mode dev-container \
+  --overprovisioned \
   --smp 1 \
   --memory 2G \
   --kafka-addr "${INTERNAL_ADDR},${EXTERNAL_ADDR}" \
@@ -48,21 +50,22 @@ RP_PID=$!
 #   REDPANDA_SASL_USERNAME=deml-func
 #   REDPANDA_SASL_PASSWORD=your-long-random-password
 if [ -n "${REDPANDA_SASL_USERNAME}" ] && [ -n "${REDPANDA_SASL_PASSWORD}" ]; then
-  echo "Waiting for Redpanda readiness before creating SASL user..."
-  for i in $(seq 1 40); do
-    if rpk cluster health --brokers 127.0.0.1:9092 >/dev/null 2>&1; then
-      echo "Redpanda healthy."
+  echo "Waiting for internal Redpanda Kafka listener (9092) to accept connections..."
+  for i in $(seq 1 60); do
+    # Use a lightweight check: try to get metadata via rpk (works on the internal PLAINTEXT listener)
+    if rpk cluster metadata --brokers 127.0.0.1:9092 >/dev/null 2>&1; then
+      echo "Redpanda internal listener is up."
       break
     fi
-    sleep 1
+    sleep 2
   done
 
   echo "Ensuring SASL user '${REDPANDA_SASL_USERNAME}' exists (for public clients)..."
-  # rpk will error if user exists; we swallow it (idempotent for our purposes).
+  # rpk will error if user exists; we swallow it (idempotent).
   rpk security user create "${REDPANDA_SASL_USERNAME}" \
     --password "${REDPANDA_SASL_PASSWORD}" \
     --mechanism SCRAM-SHA-256 \
-    --brokers 127.0.0.1:9092 || echo "  (user already exists or non-fatal error; continuing)"
+    --brokers 127.0.0.1:9092 || echo "  (user already exists or non-fatal; continuing)"
 else
   echo "REDPANDA_SASL_USERNAME / PASSWORD not set."
   echo "External clients will not be able to authenticate until a user is created manually:"
