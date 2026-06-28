@@ -76,6 +76,19 @@ def validate_production_config() -> None:
     raise RuntimeError("DEBUG must be False in production/Railway.")
 
 
+_SITE_URL_VARS: tuple[str, ...] = ("FRONTEND_URL", "BACKEND_URL", "MARKETING_URL")
+
+
+def validate_site_urls() -> None:
+  """Fail fast when cross-site URL trio is missing (no silent production defaults)."""
+  missing = [name for name in _SITE_URL_VARS if not get_str(name)]
+  if missing:
+    raise RuntimeError(
+      "Missing required environment variable(s): "
+      f"{', '.join(missing)}. Copy backend/.env.example to backend/.env and set values."
+    )
+
+
 def tor_proxy_url() -> str:
   """SOCKS5 proxy for dark-web OSINT (Tor). Override via TOR_PROXY_URL."""
   return get_str("TOR_PROXY_URL", "socks5h://deml-tor-proxy.railway.internal:9050")

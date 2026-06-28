@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 import pytest
-from django.test import AsyncClient
+from django.test import AsyncClient, override_settings
 
 
 @pytest.mark.django_db
@@ -65,6 +65,7 @@ async def test_cookie_consent_endpoint(async_client: AsyncClient) -> None:
 
 @pytest.mark.django_db
 @pytest.mark.asyncio
+@override_settings(FRONTEND_URL="http://test-frontend.local")
 async def test_telemetry_worker_normalization() -> None:
   import polars as pl
   from asgiref.sync import sync_to_async
@@ -94,7 +95,7 @@ async def test_telemetry_worker_normalization() -> None:
 
   from django.conf import settings
 
-  frontend_url = (getattr(settings, "FRONTEND_URL", "") or "https://deml.app").rstrip("/")
+  frontend_url = settings.FRONTEND_URL.rstrip("/")
   expected_url = f"{frontend_url}/status"
 
   await cmd.save_to_db(df)
