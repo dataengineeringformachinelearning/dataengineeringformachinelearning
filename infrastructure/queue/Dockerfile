@@ -25,6 +25,11 @@ RUN chmod +x /entrypoint.sh
 EXPOSE 9092
 EXPOSE 9093
 
-USER redpanda
+# Intentionally run the entrypoint as ROOT (not USER redpanda). Railway mounts the
+# persistent volume at /var/lib/redpanda/data owned by root; the unprivileged redpanda
+# user (uid 101) cannot write to it, which fails redpanda startup with
+# "Permission denied [/var/lib/redpanda/data/startup_log]". The entrypoint fixes the
+# data-dir ownership and then drops privileges to the redpanda user before starting
+# the broker.
 
 ENTRYPOINT ["/entrypoint.sh"]
