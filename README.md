@@ -26,7 +26,7 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 
 > **[Jump to Acknowledgements & Technologies](#acknowledgements--technologies)**
 
-> **Recent Architectural Evolution**: The platform has adopted an **Event Projections** model with Firebase Cloud Functions as the client command gateway, Redpanda for reliable event streaming, Django workers for processing, and Firestore (named `deml` database) for real-time queries. See the updated architecture diagram and the Settings → "Event Projections Verification" panel for the end-to-end test loop. Firebase Functions and rules are deployed via a dedicated GitHub workflow.
+> **Recent Architectural Evolution**: The platform has adopted an **Event Projections** model with Firebase Cloud Functions as the client command gateway, Redpanda for reliable event streaming, Django workers for processing, and Firestore (named `deml` database) for real-time queries. See the updated architecture diagram. The end-to-end loop is monitored automatically by a synthetic health probe in the telemetry worker and surfaced as the **"Event Projections"** component on the public `platform-status` page (no manual test button). Firebase Functions and rules are deployed via a dedicated GitHub workflow.
 
 ---
 
@@ -40,7 +40,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
 | [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
 
-**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path. Verify health via Settings → Event Projections Verification and the public `platform-status` sentinel.
+**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path. The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
 
 ---
 
