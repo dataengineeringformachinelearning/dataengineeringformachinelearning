@@ -12,6 +12,14 @@ _orig_register = django.urls.converters.register_converter
 
 def safe_register_converter(converter, type_name):
   try:
+    from django.urls.converters import get_converters
+
+    if type_name in get_converters():
+      return
+  except Exception:
+    pass
+
+  try:
     _orig_register(converter, type_name)
   except ValueError as e:
     if type_name == "uuid":

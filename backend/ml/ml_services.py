@@ -25,37 +25,42 @@ def get_ces_model_path():
 
 
 def query_teacher_model(prompt: str) -> float:
-  """Query an external teacher model; falls back to random on any error (with logging)."""
+  """Query an external teacher model (Gemini 2.5 Flash); falls back to random on any error (with logging)."""
   import random
 
   import requests
 
-  hf_token = os.environ.get("HF_TOKEN")
-  if not hf_token:
-    logger.warning("HF_TOKEN not set; using random fallback for teacher model")
+  google_api_key = os.environ.get("GOOGLE_API_KEY")
+  if not google_api_key:
+    logger.warning("GOOGLE_API_KEY not set; using random fallback for teacher model")
     return random.uniform(0.0, 1.0)
 
-  API_URL = "https://api-inference.huggingface.co/models/meta-llama/Meta-Llama-3-8B-Instruct"
-  headers = {"Authorization": f"Bearer {hf_token}"}
-  full_prompt = (
-    f"{prompt}\nReturn ONLY a floating point number between 0.0 and 1.0. Do not include any text."
-  )
+  API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={google_api_key}"
+  full_prompt = f"{prompt}\nReturn ONLY a floating point number between 0.0 and 1.0. Do not include any other text."
+  payload = {
+    "contents": [{"parts": [{"text": full_prompt}]}],
+    "generationConfig": {"temperature": 0.1, "maxOutputTokens": 10},
+  }
 
   try:
     response = requests.post(
       API_URL,
-      headers=headers,
-      json={"inputs": full_prompt, "parameters": {"max_new_tokens": 5, "temperature": 0.1}},
+      json=payload,
       timeout=5,
     )
     if response.status_code == 200:
       result = response.json()
-      if isinstance(result, list) and len(result) > 0:
-        text = result[0].get("generated_text", "").replace(full_prompt, "").strip()
-        try:
-          return min(1.0, max(0.0, float(text)))
-        except ValueError:
-          logger.warning("Teacher model returned non-numeric output; using random fallback")
+      candidates = result.get("candidates") or []
+      if candidates:
+        parts = candidates[0].get("content", {}).get("parts") or []
+        if parts:
+          text = parts[0].get("text", "").strip()
+          try:
+            return min(1.0, max(0.0, float(text)))
+          except ValueError:
+            logger.warning(
+              "Teacher model returned non-numeric output: '%s'; using random fallback", text
+            )
     else:
       logger.warning("Teacher model HTTP %s: %s", response.status_code, response.text[:200])
   except Exception as exc:

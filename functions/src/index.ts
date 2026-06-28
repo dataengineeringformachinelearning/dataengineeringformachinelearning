@@ -49,75 +49,77 @@ async function getProducer() {
  * Generic event ingestion gateway.
  * Natively validates the Auth token and pushes the event to Redpanda.
  */
-export const ingestEvent = functions.https.onCall(async (data, context) => {
-  // 1. Validate Authentication (Native to Firebase onCall functions)
-  if (!context.auth) {
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "The function must be called while authenticated.",
-    );
-  }
-
-  const uid = context.auth.uid || data.uid || "anonymous";
-  functions.logger.info("UID DEBUG:", { uid, type: typeof uid });
-  const eventPayload = data;
-
-  // 2. Prepare message for Redpanda
-  const timestamp = new Date().toISOString();
-  const idempotencyKey = `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
-  const message = {
-    key: String(uid), // Partition by user ID for ordered processing
-    value: JSON.stringify({
-      uid,
-      timestamp,
-      idempotency_key: idempotencyKey,
-      version: "1.0", // Event schema version for governance
-      payload: eventPayload,
-    }),
-  };
-
-  try {
-    // 3. Push to Redpanda Topic
-    const p = await getProducer();
-    await p.send({
-      topic: "frontend-events",
-      messages: [message],
-    });
-
-    // 4. Return immediately (HTTP 200 via onCall framework)
-    // Note: Stats projection now handled exclusively by Django telemetry_worker for consistency.
-    // The worker uses idempotency and outbox relay for reliability.
-    return { status: "accepted", message: "Event successfully queued." };
-  } catch (error) {
-    functions.logger.error(
-      "Error publishing event to Redpanda, falling back to Firestore:",
-      error,
-    );
-
-    try {
-      const db = getFirestore("deml");
-      await db.collection("events").add({
-        uid,
-        timestamp: new Date().toISOString(),
-        payload: eventPayload,
-        type: "fallback",
-      });
-
-      // Projection for get_stats is now handled by the Django worker (idempotent, via outbox).
-      // Events collection acts as audit/fallback log.
-      return {
-        status: "accepted",
-        message: "Event accepted via Firestore fallback.",
-      };
-    } catch (fsError) {
-      functions.logger.error(
-        "Failed to write fallback event to Firestore:",
-        fsError,
-      );
+export const ingestEvent = functions
+  .region("us-east4")
+  .https.onCall(async (data, context) => {
+    // 1. Validate Authentication (Native to Firebase onCall functions)
+    if (!context.auth) {
       throw new functions.https.HttpsError(
-        "internal",
-        "Unable to process event at this time.",
+        "unauthenticated",
+        "The function must be called while authenticated.",
       );
     }
-  }
-});
+
+    const uid = context.auth.uid || data.uid || "anonymous";
+    functions.logger.info("UID DEBUG:", { uid, type: typeof uid });
+    const eventPayload = data;
+
+    // 2. Prepare message for Redpanda
+    const timestamp = new Date().toISOString();
+    const idempotencyKey = `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+    const message = {
+      key: String(uid), // Partition by user ID for ordered processing
+      value: JSON.stringify({
+        uid,
+        timestamp,
+        idempotency_key: idempotencyKey,
+        version: "1.0", // Event schema version for governance
+        payload: eventPayload,
+      }),
+    };
+
+    try {
+      // 3. Push to Redpanda Topic
+      const p = await getProducer();
+      await p.send({
+        topic: "frontend-events",
+        messages: [message],
+      });
+
+      // 4. Return immediately (HTTP 200 via onCall framework)
+      // Note: Stats projection now handled exclusively by Django telemetry_worker for consistency.
+      // The worker uses idempotency and outbox relay for reliability.
+      return { status: "accepted", message: "Event successfully queued." };
+    } catch (error) {
+      functions.logger.error(
+        "Error publishing event to Redpanda, falling back to Firestore:",
+        error,
+      );
+
+      try {
+        const db = getFirestore("deml");
+        await db.collection("events").add({
+          uid,
+          timestamp: new Date().toISOString(),
+          payload: eventPayload,
+          type: "fallback",
+        });
+
+        // Projection for get_stats is now handled by the Django worker (idempotent, via outbox).
+        // Events collection acts as audit/fallback log.
+        return {
+          status: "accepted",
+          message: "Event accepted via Firestore fallback.",
+        };
+      } catch (fsError) {
+        functions.logger.error(
+          "Failed to write fallback event to Firestore:",
+          fsError,
+        );
+        throw new functions.https.HttpsError(
+          "internal",
+          "Unable to process event at this time.",
+        );
+      }
+    }
+  });

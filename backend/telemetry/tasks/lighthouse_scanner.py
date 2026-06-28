@@ -30,7 +30,7 @@ class LighthouseScanner:
       for cat in categories:
         req_url += f"&category={cat}"
 
-      api_key = os.getenv("PAGESPEED_API_KEY")
+      api_key = os.getenv("PAGESPEED_API_KEY") or os.getenv("GOOGLE_API_KEY")
       if api_key:
         req_url += f"&key={api_key}"
 

@@ -427,7 +427,7 @@ export class Settings implements OnInit {
 
     try {
       const app = getApp();
-      const functions = getFunctions(app, 'us-central1');
+      const functions = getFunctions(app, 'us-east4');
       const isLocal =
         typeof window !== 'undefined' &&
         (window.location.hostname.includes('localhost') ||
