@@ -1224,6 +1224,29 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Environment Variables**:
   - **REDPANDA_BROKERS**: Not strictly needed, but ensure port `9092` is exposed internally.
 
+### Public Authenticated Redpanda Listener (for Firebase Cloud Functions)
+
+To achieve the **fastest** client command path (Angular → `ingestEvent` → direct to Redpanda → worker consume → Firestore projection with **no polling**), the queue exposes a second listener:
+
+- Internal (9092, PLAINTEXT): used by all Railway services (backend, workers, outbox_relay).
+- External (9093, SASL_SSL + SCRAM-SHA-256): used **only** by Firebase Cloud Functions.
+
+**Setup on the `deml-queue` service (production):**
+- `PUBLIC_REDPANDA_HOST=queue.deml.app` (bare hostname, no scheme/port)
+- `REDPANDA_SASL_USERNAME=admin` (or a dedicated user)
+- `REDPANDA_SASL_PASSWORD=...`
+- Expose TCP port **9093** publicly in Railway networking for the service.
+
+The entrypoint (`infrastructure/queue/entrypoint.sh`) handles dual listeners and auto-creates the SASL user.
+
+**On the Firebase side** set these environment variables (or use functions config):
+- `REDPANDA_BROKERS=queue.deml.app:9093`
+- `REDPANDA_SSL=true`
+- `REDPANDA_SASL_USERNAME=...`
+- `REDPANDA_SASL_PASSWORD=...`
+
+The deploy workflow supports GitHub secrets for this.
+
 ### 4. Telemetry Worker (`deml-telemetry-worker`)
 
 Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), projects to Postgres + Firestore `deml` DB, runs health pings and analytics rollups.
@@ -1243,17 +1266,28 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 
 ### 4b. Outbox Relay (`deml-outbox-relay`)
 
-Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable API → Kafka delivery.
+Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable Django API → Kafka delivery (separate from the `ingestEvent` / `frontend-events` path used by client commands).
 
-- **Root Directory**: `/backend`
+**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-outbox-relay` Railway service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
+
+**How to add the missing service in Railway:**
+1. In Railway dashboard → New Service → GitHub Repo (select this repo).
+2. Root Directory: `/backend`
+3. Start Command: `python manage.py outbox_relay`
+4. Give it the same variables as `deml-backend` (use shared variables if possible).
+5. It will use the internal `REDPANDA_BROKERS=deml-queue.railway.internal:9092`.
+
 - **Start Command**: `python manage.py outbox_relay` (daemon; polls every 5s)
 - **Cron alternative**: `python manage.py outbox_relay --once` on a schedule
-- **Public URL**: None
+- **Public URL**: None (internal only)
 
-**Variables:** Same core bundle as backend: `DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`, `REDPANDA_BROKERS`, `DRAGONFLY_HOST`, `STRUCTURED_LOGS=true`.
+**Variables:** Same core bundle as backend + `REDPANDA_BROKERS=deml-queue.railway.internal:9092`.
 
 > [!WARNING]
-> `REDPANDA_BROKERS` **must** use the broker's internal TCP address: `deml-queue.railway.internal:9092`. Never use public domains for inter-service traffic.
+> Backend services, workers and `outbox_relay` **must** use the broker's internal TCP address (`deml-queue.railway.internal:9092`) for all inter-service traffic.
+> The only exception is Firebase Cloud Functions (`ingestEvent`), which live outside the Railway private network.
+> For them, configure a **public SASL-authenticated listener** (see `infrastructure/queue/entrypoint.sh` + `Dockerfile`) and set the corresponding `REDPANDA_BROKERS`, `REDPANDA_SSL`, and SASL credentials in the Firebase Functions environment.
+> This enables the fast direct-to-Redpanda path with no polling.
 
 ### 5. ML Training Worker (`deml-machine-learning-worker`)
 
@@ -1285,7 +1319,7 @@ All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`)
 2. Angular/Firebase → `frontend-events` topic → **telemetry_worker** → Postgres + Firestore
 3. Idempotency keys + DLQ handled inside `telemetry_worker` projectors
 
-**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. Functions may need a **public** Redpanda endpoint or fall back to Firestore (see `functions/src/index.ts`).
+**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. For the fastest path (direct publish, no polling) give the Functions a public SASL-authenticated Redpanda listener (port 9093, SCRAM-SHA-256). See `infrastructure/queue/`, the updated `REDPANDA_*` guidance, and `functions/src/index.ts`. The inbox fallback remains only as defence-in-depth.
 
 ### Marketing Site (not a Railway service)
 

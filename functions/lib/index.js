@@ -51,20 +51,26 @@ const firestore_1 = require("firebase-admin/firestore");
 const kafkajs_1 = require("kafkajs");
 admin.initializeApp();
 // Initialize Kafka/Redpanda client
-// In production (Firebase Functions), set REDPANDA_BROKERS env (or secret) to a reachable broker.
-// Note: Railway internal DNS is NOT reachable from Cloud Functions; use a public endpoint or rely on Firestore fallback.
+// For fastest Event Projections (no polling):
+//   - Point Firebase Functions at the PUBLIC SASL-authenticated Redpanda listener
+//     (e.g. your-public-host.railway.app:9093 + SASL SCRAM-SHA-256 + SSL).
+//   - Internal services continue to use the private Railway DNS (no SASL).
+// See infrastructure/queue/Dockerfile + entrypoint.sh and backend/.env.example.
 const kafkaBrokers = process.env.REDPANDA_BROKERS || "localhost:19092";
 const useSsl =
-  process.env.REDPANDA_SSL === "true" || kafkaBrokers.includes("railway.app");
+  process.env.REDPANDA_SSL === "true" ||
+  (fcfg.redpanda && fcfg.redpanda.ssl === "true") ||
+  kafkaBrokers.includes("railway.app") ||
+  (typeof kafkaBrokers === 'string' && !kafkaBrokers.includes('localhost') && !kafkaBrokers.includes('.internal'));
 const kafkaConfig = {
   clientId: "deml-gateway-function",
   brokers: [kafkaBrokers],
 };
 if (useSsl) {
   kafkaConfig.ssl = true;
-  // Add SASL if credentials provided via secrets/env
-  const saslUser = process.env.REDPANDA_SASL_USERNAME;
-  const saslPass = process.env.REDPANDA_SASL_PASSWORD;
+  // Add SASL if credentials provided via secrets/env or firebase functions config
+  const saslUser = process.env.REDPANDA_SASL_USERNAME || (fcfg.redpanda && fcfg.redpanda.sasl_username);
+  const saslPass = process.env.REDPANDA_SASL_PASSWORD || (fcfg.redpanda && fcfg.redpanda.sasl_password);
   if (saslUser && saslPass) {
     kafkaConfig.sasl = {
       mechanism: "scram-sha-256",
@@ -88,8 +94,10 @@ async function getProducer() {
   return producer;
 }
 /**
- * Generic event ingestion gateway.
- * Natively validates the Auth token and pushes the event to Redpanda.
+ * Generic event ingestion gateway (client commands).
+ * Natively validates the Auth token and pushes the event to Redpanda
+ * (public SASL-authenticated listener recommended for lowest latency).
+ * Falls back to Firestore inbox only on publish failure.
  */
 exports.ingestEvent = functions
   .region("us-east4")
@@ -104,9 +112,10 @@ exports.ingestEvent = functions
     const uid = context.auth.uid || data.uid || "anonymous";
     functions.logger.info("UID DEBUG:", { uid, type: typeof uid });
     const eventPayload = data;
-    // 2. Prepare message for Redpanda
+    // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const idempotencyKey = `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+    const providedIdemp = (data && (data.idempotency_key || (data.payload && data.payload.idempotency_key))) || null;
+    const idempotencyKey = providedIdemp || `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
     const message = {
       key: String(uid),
       value: JSON.stringify({
@@ -125,31 +134,32 @@ exports.ingestEvent = functions
         messages: [message],
       });
       // 4. Return immediately (HTTP 200 via onCall framework)
-      // Note: Stats projection now handled exclusively by Django telemetry_worker for consistency.
-      // The worker uses idempotency and outbox relay for reliability.
-      return { status: "accepted", message: "Event successfully queued." };
+      // Primary fast path: direct to (public authenticated) Redpanda.
+      return { status: "accepted", message: "Event successfully queued to Redpanda." };
     } catch (error) {
       functions.logger.error(
-        "Error publishing event to Redpanda, falling back to Firestore:",
+        "Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:",
         error,
       );
       try {
         const db = (0, firestore_1.getFirestore)("deml");
-        await db.collection("events").add({
+        // Resilient fallback only. With correct public SASL Redpanda this is rarely used.
+        const inboxDoc = {
           uid,
           timestamp: new Date().toISOString(),
+          idempotency_key: idempotencyKey,
+          version: "1.0",
           payload: eventPayload,
-          type: "fallback",
-        });
-        // Projection for get_stats is now handled by the Django worker (idempotent, via outbox).
-        // Events collection acts as audit/fallback log.
+          source: "firebase-fallback",
+        };
+        await db.collection("frontend_command_inbox").add(inboxDoc);
         return {
           status: "accepted",
-          message: "Event accepted via Firestore fallback.",
+          message: "Event accepted (queued via resilient fallback).",
         };
       } catch (fsError) {
         functions.logger.error(
-          "Failed to write fallback event to Firestore:",
+          "Failed to write fallback event to Firestore inbox:",
           fsError,
         );
         throw new functions.https.HttpsError(

@@ -29,11 +29,20 @@ class Command(BaseCommand):
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
-    for coro in (
+    coros = [
       schedulers.periodic_scheduler(self.stdout, self.stderr, self.style),
       pingers.active_pinger_scheduler(self.stdout, self.stderr, self.style),
       schedulers.quality_scanner_scheduler(self.stdout, self.stderr, self.style),
-    ):
+    ]
+
+    # Firestore inbox poller is the resilient fallback for client commands
+    # (e.g. when Cloud Functions cannot reach Redpanda). With a public SASL-authenticated
+    # Redpanda endpoint the direct publish path is used and this is rarely exercised.
+    # Set FIRESTORE_INBOX_POLL_ENABLED=0 to disable if you want zero polling.
+    if os.environ.get("FIRESTORE_INBOX_POLL_ENABLED", "1") != "0":
+      coros.append(projectors.poll_firestore_inbox(self.stdout, self.stderr, self.style))
+
+    for coro in coros:
       task = asyncio.create_task(coro)
       self.background_tasks.add(task)
       task.add_done_callback(self.background_tasks.discard)
@@ -74,5 +83,6 @@ class Command(BaseCommand):
   save_to_db = staticmethod(projectors.save_to_db)
   save_threat_intel_to_db = staticmethod(projectors.save_threat_intel_to_db)
   process_frontend_event = staticmethod(projectors.process_frontend_event)
+  process_pending_frontend_commands = staticmethod(projectors.process_pending_frontend_commands)
   update_bug_report = staticmethod(projectors.update_bug_report)
   ping_services = staticmethod(pingers.ping_services)

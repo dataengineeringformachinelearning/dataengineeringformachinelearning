@@ -69,6 +69,51 @@ def process_frontend_event(
 
 
 @sync_to_async
+def process_pending_frontend_commands(stdout, stderr, style):
+  """Poll the frontend_command_inbox (written by ingestEvent fallback) and project via same path.
+  Relies on idempotency dedup inside process_frontend_event. Cleans up inbox entries after attempt.
+  """
+
+  from firebase_admin import firestore as admin_firestore
+
+  db = admin_firestore.client(database_id="deml")
+  try:
+    inbox = db.collection("frontend_command_inbox")
+    # Bound the scan to a reasonable number; dedup inside process_frontend_event protects against replays.
+    # stream() all under limit; for command volume this is tiny
+    docs = list(inbox.limit(100).stream())
+    count = 0
+    for d in docs:
+      try:
+        data = d.to_dict() or {}
+        uid = data.get("uid")
+        outer_payload = data.get("payload") or data
+        action = (
+          outer_payload.get("action") if isinstance(outer_payload, dict) else data.get("action")
+        )
+        idem = data.get("idempotency_key") or (
+          outer_payload.get("idempotency_key") if isinstance(outer_payload, dict) else None
+        )
+        if uid and action:
+          # Reuse the same projector (idempotent)
+          process_frontend_event(stdout, stderr, uid, action, outer_payload, idem)
+          count += 1
+        # Remove regardless to keep collection small (idempotency guards correctness)
+        d.reference.delete()
+      except Exception as inner:
+        stderr.write(f"Error handling inbox doc {d.id}: {inner}")
+        # best effort delete to avoid poison
+        try:
+          d.reference.delete()
+        except Exception:
+          pass
+    if count:
+      stdout.write(style.SUCCESS(f"Projected {count} frontend command(s) from Firestore inbox"))
+  except Exception as e:
+    stderr.write(style.ERROR(f"Error polling frontend_command_inbox: {e}"))
+
+
+@sync_to_async
 def update_bug_report(stdout, stderr, bug_report_id: str, report_text: str):
   try:
     bug_report = BugReport.objects.get(id=bug_report_id)
@@ -282,11 +327,15 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
             stderr.write(style.WARNING(f"Unknown event version {event_version}"))
           event_payload = payload.get("payload", {})
           action = event_payload.get("action")
-          msg_key = (
-            msg.key.decode() if msg.key else f"{uid}:{payload.get('timestamp', '')}:{action}"
+          # Prefer the event's idempotency_key (e.g. from client verify- or generated unique) for dedup.
+          # Fall back to kafka key only if absent. Using uid as before caused permanent skips after first event per user.
+          idem_key = (
+            payload.get("idempotency_key")
+            or (event_payload.get("idempotency_key") if isinstance(event_payload, dict) else None)
+            or (msg.key.decode() if msg.key else f"{uid}:{payload.get('timestamp', '')}:{action}")
           )
           if uid and action:
-            await process_frontend_event(stdout, stderr, uid, action, event_payload, msg_key)
+            await process_frontend_event(stdout, stderr, uid, action, event_payload, idem_key)
         except Exception as e:
           stderr.write(style.ERROR(f"Failed to parse frontend-event msg: {e}"))
           try:
@@ -298,3 +347,26 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
       stdout.write(style.SUCCESS("Processed and committed frontend-events batch"))
 
   return True
+
+
+async def poll_firestore_inbox(stdout, stderr, style):
+  """Background resilient poller for frontend_command_inbox.
+  Only used when direct publish from Cloud Functions to (public) Redpanda fails.
+  With SASL-authenticated public Redpanda endpoint the direct Kafka path is used for
+  lowest latency (no 10s poll). This task can be disabled via FIRESTORE_INBOX_POLL_ENABLED=0.
+  """
+  import asyncio
+
+  stdout.write(
+    style.SUCCESS(
+      "Starting Firestore frontend_command_inbox poller (resilience fallback, every ~10s)..."
+    )
+  )
+  # initial delay to let other systems boot
+  await asyncio.sleep(8)
+  while True:
+    try:
+      await process_pending_frontend_commands(stdout, stderr, style)
+    except Exception as e:
+      stderr.write(style.ERROR(f"Firestore inbox poll failed: {e}"))
+    await asyncio.sleep(10)
