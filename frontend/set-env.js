@@ -28,9 +28,13 @@ const envCandidates = isTestEnv
   ? [path.join(ROOT, '.env.test'), path.join(ROOT, '.env')]
   : [path.join(ROOT, '.env')];
 
-// Best-effort load from file (local dev only).
-// Docker/Railway builds pass values via ARG/ENV, so a missing file is OK.
-let loadedEnvPath = envCandidates.find((candidate) => loadEnvFile(candidate)) || null;
+const loadedEnv = envCandidates.find((candidate) => loadEnvFile(candidate));
+if (!loadedEnv) {
+  const hint = isTestEnv
+    ? 'Ensure frontend/.env.test exists or copy frontend/.env.example to frontend/.env.'
+    : 'Copy frontend/.env.example to frontend/.env and set all required values.';
+  throw new Error(`Missing frontend environment file. ${hint}`);
+}
 
 const PLACEHOLDER_PATTERNS = [
   /^your-/i,
@@ -43,18 +47,14 @@ const PLACEHOLDER_PATTERNS = [
 const requireEnv = (name) => {
   const raw = process.env[name];
   const value = typeof raw === 'string' ? raw.trim() : '';
-  const source = loadedEnvPath
-    ? `in ${path.basename(loadedEnvPath)}`
-    : 'via Docker build ARG/ENV or a local .env file';
-
   if (!value) {
     throw new Error(
-      `Missing required env var ${name}. Provide it ${source} (see frontend/.env.example).`,
+      `Missing required env var ${name}. Set it in ${path.basename(loadedEnv)} (see frontend/.env.example).`,
     );
   }
   if (PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(value))) {
     throw new Error(
-      `Env var ${name} still uses a placeholder value ("${value}"). Provide a real value ${source}.`,
+      `Env var ${name} still uses a placeholder value ("${value}"). Set a real value in ${path.basename(loadedEnv)}.`,
     );
   }
   return value;
@@ -162,11 +162,10 @@ export const environment = {
 `;
 
 fs.writeFileSync(targetPath, buildEnvFile(true), 'utf8');
-const sourceName = loadedEnvPath ? path.basename(loadedEnvPath) : 'build environment (ARG/ENV)';
-console.log(`Angular environment.ts generated from ${sourceName}`);
+console.log(`Angular environment.ts generated from ${path.basename(loadedEnv)}`);
 
 fs.writeFileSync(targetPathDev, buildEnvFile(false), 'utf8');
-console.log(`Angular environment.development.ts generated from ${sourceName}`);
+console.log(`Angular environment.development.ts generated from ${path.basename(loadedEnv)}`);
 
 const firebaseConfigPath = path.join(ROOT, 'src', 'assets', 'firebase-config.js');
 fs.writeFileSync(
