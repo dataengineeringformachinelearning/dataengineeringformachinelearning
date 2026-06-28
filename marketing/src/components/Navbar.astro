@@ -70,14 +70,21 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 </header>
 
 <style lang="scss">
-/*
-  All navbar, button, layout primitives use the same class names across apps.
-  Styles defined in per-app stylesheets (this file + marketing globals for Astro,
-  Angular global + navbar component for main app, backend-styles.css for Django).
-  All pull variables from design-tokens.css.
-*/
-.navbar { /* defined per-app */ }
-.auth-btn, .nav-btn { /* defined per-app */ }
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  height: 64px;
+  background-color: var(--navbar-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-layout);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
 
 .navbar-brand {
   margin-right: 8px;
