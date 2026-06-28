@@ -12,31 +12,40 @@ const fcfg = functionsConfig();
 // Initialize Kafka/Redpanda client
 // For fastest Event Projections (no polling):
 //   - Point Firebase Functions at the PUBLIC SASL-authenticated Redpanda listener
-//     (e.g. your-public-host.railway.app:9093 + SASL SCRAM-SHA-256 + SSL).
+//     exposed via a Railway TCP Proxy (e.g. REDPANDA_BROKERS=<proxy-host>:<proxy-port>,
+//     REDPANDA_SASL_USERNAME/REDPANDA_SASL_PASSWORD). The Railway TCP Proxy forwards
+//     raw TCP and does NOT terminate TLS, so leave REDPANDA_SSL unset (plain SASL).
+//     Only set REDPANDA_SSL=true if TLS is terminated at the edge (e.g. Cloudflare Spectrum).
 //   - Internal services continue to use the private Railway DNS (no SASL).
 // See infrastructure/queue/Dockerfile + entrypoint.sh and backend/.env.example.
 const kafkaBrokers = process.env.REDPANDA_BROKERS || "localhost:19092";
+// TLS must be OPT-IN. The Redpanda broker's public listener serves SASL over plain
+// TCP (e.g. behind a Railway TCP Proxy, which does not terminate TLS). Auto-forcing
+// ssl:true for any non-local host made the TLS handshake fail against that plaintext
+// listener, so every publish fell through to the Firestore fallback. Only enable TLS
+// when REDPANDA_SSL=true (e.g. when an edge such as Cloudflare Spectrum terminates TLS).
 const useSsl =
   process.env.REDPANDA_SSL === "true" ||
-  (fcfg.redpanda && fcfg.redpanda.ssl === "true") ||
-  kafkaBrokers.includes("railway.app") ||
-  (typeof kafkaBrokers === 'string' && !kafkaBrokers.includes('localhost') && !kafkaBrokers.includes('.internal'));
+  (fcfg.redpanda && fcfg.redpanda.ssl === "true");
 const kafkaConfig: any = {
   clientId: "deml-gateway-function",
   brokers: [kafkaBrokers],
 };
 if (useSsl) {
   kafkaConfig.ssl = true;
-  // Add SASL if credentials provided via secrets/env or firebase functions config
-  const saslUser = process.env.REDPANDA_SASL_USERNAME || (fcfg.redpanda && fcfg.redpanda.sasl_username);
-  const saslPass = process.env.REDPANDA_SASL_PASSWORD || (fcfg.redpanda && fcfg.redpanda.sasl_password);
-  if (saslUser && saslPass) {
-    kafkaConfig.sasl = {
-      mechanism: "scram-sha-256",
-      username: saslUser,
-      password: saslPass,
-    };
-  }
+}
+// SASL is independent of TLS: SASL_PLAINTEXT (no SSL) and SASL_SSL are both valid.
+// Apply SASL whenever credentials are present so authenticated publish works with or
+// without TLS. (Previously SASL was only set inside the ssl block, so a plaintext SASL
+// connection silently sent no credentials.)
+const saslUser = process.env.REDPANDA_SASL_USERNAME || (fcfg.redpanda && fcfg.redpanda.sasl_username);
+const saslPass = process.env.REDPANDA_SASL_PASSWORD || (fcfg.redpanda && fcfg.redpanda.sasl_password);
+if (saslUser && saslPass) {
+  kafkaConfig.sasl = {
+    mechanism: "scram-sha-256",
+    username: saslUser,
+    password: saslPass,
+  };
 }
 const kafka = new Kafka(kafkaConfig);
 
