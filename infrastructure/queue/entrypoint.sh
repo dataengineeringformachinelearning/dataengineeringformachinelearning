@@ -15,6 +15,15 @@ PUBLIC_HOST="${PUBLIC_HOST#http://}"
 PUBLIC_HOST="${PUBLIC_HOST#https://}"
 PUBLIC_HOST="${PUBLIC_HOST%%:*}"
 
+# Advertised port for the external listener. The container always LISTENS on 9093,
+# but Railway's TCP Proxy publishes the service on a RANDOM external port that maps
+# to 9093. Kafka clients first hit the bootstrap address, then reconnect to whatever
+# the broker advertises, so the advertised port MUST equal the public/proxy port or
+# the Firebase function never connects (it will time out and fall back to Firestore).
+# Set PUBLIC_REDPANDA_PORT to the Railway TCP Proxy port; defaults to 9093 for setups
+# where the public port already equals 9093.
+PUBLIC_PORT="${PUBLIC_REDPANDA_PORT:-9093}"
+
 CONFIG_DIR="/etc/redpanda"
 CONFIG_FILE="$CONFIG_DIR/redpanda.yaml"
 
@@ -38,7 +47,7 @@ redpanda:
       port: 9092
     - name: external
       address: __PUBLIC_HOST__
-      port: 9093
+      port: __PUBLIC_PORT__
   # SASL enforcement is driven entirely by the per-listener `authentication_method`
   # above (external=sasl, internal=none) plus the `sasl_mechanisms` cluster property
   # set via the Admin API below. The cluster-level `enable_sasl` /
@@ -56,14 +65,16 @@ rpk:
       - 127.0.0.1:9092
 CONFIGEOF
 
-# Substitute the actual hosts (sed for portability)
+# Substitute the actual hosts/ports (sed for portability)
 sed -i "s|__INTERNAL_HOST__|$INTERNAL_HOST|g" "$CONFIG_FILE"
 sed -i "s|__PUBLIC_HOST__|$PUBLIC_HOST|g" "$CONFIG_FILE"
+sed -i "s|__PUBLIC_PORT__|$PUBLIC_PORT|g" "$CONFIG_FILE"
 
 echo "Generated $CONFIG_FILE"
 echo "Internal: $INTERNAL_HOST:9092 (no auth)"
-echo "External: $PUBLIC_HOST:9093 (SASL)"
-echo "PUBLIC_REDPANDA_HOST (raw): ${PUBLIC_REDPANDA_HOST:-<unset>}"
+echo "External (listen): 0.0.0.0:9093 (SASL)"
+echo "External (advertised): $PUBLIC_HOST:$PUBLIC_PORT (SASL)"
+echo "PUBLIC_REDPANDA_HOST (raw): ${PUBLIC_REDPANDA_HOST:-<unset>} ; PUBLIC_REDPANDA_PORT: ${PUBLIC_REDPANDA_PORT:-<unset, default 9093>}"
 
 # Start the broker using the bare `redpanda` binary and the generated config.
 # IMPORTANT: the bare `redpanda` binary reads its config via `--redpanda-cfg`.
