@@ -35,7 +35,13 @@ def _project_frontend_event(
   db = firestore.client(database_id="deml")
 
   try:
+    from telemetry.worker.synthetic import SYNTHETIC_HEALTH_UID
+
     dedup_doc_id = f"dedup_{idempotency_key}" if idempotency_key else None
+    # The synthetic health probe must re-project on every run, so never dedup it
+    # (also avoids accumulating dedup docs under the reserved health uid).
+    if uid == SYNTHETIC_HEALTH_UID:
+      dedup_doc_id = None
 
     if dedup_doc_id:
       dedup_ref = (
