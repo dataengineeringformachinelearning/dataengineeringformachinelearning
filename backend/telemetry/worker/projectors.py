@@ -350,13 +350,18 @@ async def consume_kafka_batch(consumer, stdout, stderr, style):
 
 
 async def poll_firestore_inbox(stdout, stderr, style):
-  """Background task: periodically drain the frontend_command_inbox and drive projections.
-  This makes the Event Projections verification (and client commands) reliable even when
-  Cloud Functions cannot reach Redpanda directly (e.g. cross-provider networking).
+  """Background resilient poller for frontend_command_inbox.
+  Only used when direct publish from Cloud Functions to (public) Redpanda fails.
+  With SASL-authenticated public Redpanda endpoint the direct Kafka path is used for
+  lowest latency (no 10s poll). This task can be disabled via FIRESTORE_INBOX_POLL_ENABLED=0.
   """
   import asyncio
 
-  stdout.write(style.SUCCESS("Starting Firestore frontend_command_inbox poller (every ~10s)..."))
+  stdout.write(
+    style.SUCCESS(
+      "Starting Firestore frontend_command_inbox poller (resilience fallback, every ~10s)..."
+    )
+  )
   # initial delay to let other systems boot
   await asyncio.sleep(8)
   while True:

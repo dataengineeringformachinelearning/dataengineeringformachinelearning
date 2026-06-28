@@ -32,10 +32,15 @@ services:
       - start
       - --smp 1
       - --overprovisioned
+      # Dual listener for testing the authenticated public path locally:
+      # internal = backend/workers (plaintext)
+      # external (19092) = SASL for functions/emulator testing the fast direct path
       - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
       - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
       - --pandaproxy-addr internal://0.0.0.0:8082,external://0.0.0.0:18082
       - --advertise-pandaproxy-addr internal://redpanda:8082,external://localhost:18082
+      - --enable-sasl
+      - --sasl-mechanisms SCRAM-SHA-256
     ports:
       - 19092:19092
       - 18082:18082
@@ -45,6 +50,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+    # After first `docker compose up -d redpanda`, create the SASL user for the external listener (once):
+    #   docker compose exec redpanda rpk security user create dem l-func --password 'dev-only-change-me' --mechanism SCRAM-SHA-256
+    # Then for local functions emulator testing of the direct path you can export:
+    #   REDPANDA_BROKERS=localhost:19092 REDPANDA_SSL=false REDPANDA_SASL_USERNAME=deml-func REDPANDA_SASL_PASSWORD=dev-only-change-me
+    # The fast (no-polling) path will be exercised when the Cloud Function code publishes.
 
   backend:
     build:

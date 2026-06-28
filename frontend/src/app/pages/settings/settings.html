@@ -690,10 +690,11 @@
           <div class="card-body-clean">
             <div>
               <p class="embed-desc">
-                Test the end-to-end Event Projections flow: Angular -> Firebase Function
-                (ingestEvent) -> Redpanda (or Firestore fallback) -> Django Worker -> Firestore
-                (deml DB) -> Angular UI via onSnapshot. Requires functions deployed and Firestore
-                "deml" DB + rules.
+                Test the end-to-end Event Projections flow (fast path): Angular -> Firebase Function
+                (ingestEvent) -> Redpanda (public SASL-authenticated endpoint) -> Django Worker ->
+                Firestore (deml DB) -> Angular via onSnapshot. For maximum speed use the public
+                authenticated Redpanda listener (no polling). Requires the Redpanda public listener
+                + SASL user configured and functions + Firestore "deml" DB + rules.
               </p>
 
               <div class="mfa-enrollment-form panel-clean">
