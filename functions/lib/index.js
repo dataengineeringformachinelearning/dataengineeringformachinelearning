@@ -104,9 +104,10 @@ exports.ingestEvent = functions
     const uid = context.auth.uid || data.uid || "anonymous";
     functions.logger.info("UID DEBUG:", { uid, type: typeof uid });
     const eventPayload = data;
-    // 2. Prepare message for Redpanda
+    // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const idempotencyKey = `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+    const providedIdemp = (data && (data.idempotency_key || (data.payload && data.payload.idempotency_key))) || null;
+    const idempotencyKey = providedIdemp || `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
     const message = {
       key: String(uid),
       value: JSON.stringify({
@@ -135,21 +136,25 @@ exports.ingestEvent = functions
       );
       try {
         const db = (0, firestore_1.getFirestore)("deml");
-        await db.collection("events").add({
+        // Write to frontend_command_inbox so the Django telemetry_worker can poll and project
+        // (when direct Redpanda publish is unavailable e.g. from Cloud Functions to private Railway broker).
+        // Worker will use the idempotency_key for dedup and perform the authoritative projection to users/{uid}/data/stats.
+        const inboxDoc = {
           uid,
           timestamp: new Date().toISOString(),
+          idempotency_key: idempotencyKey,
+          version: "1.0",
           payload: eventPayload,
-          type: "fallback",
-        });
-        // Projection for get_stats is now handled by the Django worker (idempotent, via outbox).
-        // Events collection acts as audit/fallback log.
+          source: "firebase-fallback",
+        };
+        await db.collection("frontend_command_inbox").add(inboxDoc);
         return {
           status: "accepted",
-          message: "Event accepted via Firestore fallback.",
+          message: "Event accepted via Firestore fallback (will be projected by worker).",
         };
       } catch (fsError) {
         functions.logger.error(
-          "Failed to write fallback event to Firestore:",
+          "Failed to write fallback event to Firestore inbox:",
           fsError,
         );
         throw new functions.https.HttpsError(
