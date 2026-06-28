@@ -1,0 +1,129 @@
+/* ============================================================
+   DEML DESIGN TOKENS - Shared CSS Custom Properties
+   Link this in ALL apps for consistent colors, spacing, etc.
+   Each app has its own stylesheet for component classes (.navbar, .auth-btn, etc.)
+   using these exact same var names and class names for cohesion.
+   ============================================================ */
+
+:root {
+  /* Colors - Base */
+  --jet-black: #31393c;
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Accent Palette */
+  --crayola-blue: #2176ff;
+  --blue-bell: #33a1fd;
+  --golden-pollen: #fdca40;
+  --carrot-orange: #f79824;
+
+  /* Typography */
+  --base-font-size: 18px;
+  --header-letter-spacing: -0.02em;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Inter', monospace;
+
+  /* Spacing - 9px grid */
+  --spacing-xs: 9px;
+  --spacing-sm: 18px;
+  --spacing-md: 27px;
+  --spacing-lg: 36px;
+  --spacing-xl: 54px;
+
+  /* Layout */
+  --container-max-width: 1152px;
+  --navbar-height: 64px;
+
+  /* Radii & Effects */
+  --border-radius-sm: 9px;
+  --border-radius-md: 9px;
+  --border-radius-lg: 18px;
+  --border-radius-pill: 96px;
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
+  /* Focus */
+  --focus-ring: 2px solid var(--color-primary);
+}
+
+/* Dark Theme */
+html[data-theme='dark'],
+html.dark {
+  --color-primary: var(--crayola-blue);
+  --color-on-primary: var(--white);
+  --color-primary-container: var(--blue-bell);
+  --color-on-primary-container: var(--black);
+
+  --color-surface: var(--jet-black);
+  --color-on-surface: var(--white);
+  --color-background: #121212;
+  --color-on-background: var(--white);
+
+  --color-success: var(--blue-bell);
+  --color-warning: var(--golden-pollen);
+  --color-error: var(--carrot-orange);
+  --color-info: var(--crayola-blue);
+
+  --border: rgba(255, 255, 255, 0.12);
+  --border-layout: rgba(255, 255, 255, 0.2);
+
+  --hover-color: var(--blue-bell);
+  --bg-color: var(--color-background);
+  --text-color: var(--color-on-background);
+  --text-muted: rgba(255, 255, 255, 0.7);
+  --card-bg: var(--color-surface);
+  --navbar-bg: rgba(18, 18, 18, 0.95);
+  --link-color: var(--blue-bell);
+  --link-hover-color: var(--crayola-blue);
+  --hero-title-color: var(--white);
+  --primary-text-color: var(--crayola-blue);
+
+  --color-dark-grey-btn-bg: var(--jet-black);
+  --color-dark-grey-btn-text: var(--white);
+}
+
+/* Light Theme */
+html[data-theme='light'],
+:root {
+  --color-primary: var(--crayola-blue);
+  --color-on-primary: var(--white);
+  --color-primary-container: var(--blue-bell);
+  --color-on-primary-container: var(--jet-black);
+
+  --color-surface: var(--white);
+  --color-on-surface: var(--jet-black);
+  --color-background: var(--white);
+  --color-on-background: var(--jet-black);
+
+  --color-success: var(--blue-bell);
+  --color-warning: var(--golden-pollen);
+  --color-error: var(--carrot-orange);
+  --color-info: var(--crayola-blue);
+
+  --border: rgba(49, 57, 60, 0.15);
+  --border-layout: rgba(49, 57, 60, 0.25);
+
+  --hover-color: var(--golden-pollen);
+  --bg-color: var(--color-background);
+  --text-color: var(--color-on-background);
+  --text-muted: rgba(49, 57, 60, 0.7);
+  --card-bg: var(--color-surface);
+  --navbar-bg: rgba(255, 255, 255, 0.95);
+  --link-color: var(--crayola-blue);
+  --link-hover-color: var(--blue-bell);
+  --hero-title-color: var(--jet-black);
+  --primary-text-color: var(--crayola-blue);
+
+  --color-dark-grey-btn-bg: var(--jet-black);
+  --color-dark-grey-btn-text: var(--white);
+}
+
+/* Base body from tokens */
+body {
+  font-family: var(--font-family);
+  font-size: var(--base-font-size);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+  line-height: 1.65;
+}

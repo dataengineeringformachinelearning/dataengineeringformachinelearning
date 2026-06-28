@@ -5,13 +5,23 @@
   margin: 16px auto;
 }
 
-/* Inherit from design-system when loaded on host page */
+/* Self-contained tokens matching the main design tokens for consistent look */
 :root {
+  --jet-black: #31393c;
+  --crayola-blue: #2176ff;
+  --blue-bell: #33a1fd;
+  --golden-pollen: #fdca40;
+  --carrot-orange: #f79824;
+  --white: #ffffff;
+  --black: #000000;
+  --base-font-size: 14px;
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
   --color-primary: #2176ff;
   --card-bg: #1a1a1a;
   --border: rgba(255, 255, 255, 0.12);
   --text-color: #f8fafc;
   --text-muted: rgba(255, 255, 255, 0.7);
+  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .widget-container {

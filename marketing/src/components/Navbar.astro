@@ -71,13 +71,13 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 
 <style lang="scss">
 /*
-  All navbar, button, layout primitives now come from the single shared design-system.css
-  (served at /assets/design-system.css from the main app).
-  This guarantees identical look, button styles, spacing, and positions on every domain.
-  Only tiny scoped rules kept here.
+  All navbar, button, layout primitives use the same class names across apps.
+  Styles defined in per-app stylesheets (this file + marketing globals for Astro,
+  Angular global + navbar component for main app, backend-styles.css for Django).
+  All pull variables from design-tokens.css.
 */
-.navbar { /* styles in shared */ }
-.auth-btn, .nav-btn { /* styles in shared */ }
+.navbar { /* defined per-app */ }
+.auth-btn, .nav-btn { /* defined per-app */ }
 
 .navbar-brand {
   margin-right: 8px;

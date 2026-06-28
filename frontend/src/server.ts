@@ -36,7 +36,13 @@ app.use((req, res, next) => {
  * Resolves API calls during SSR and client-side requests using runtime BACKEND_URL.
  */
 app.all('/api/v1/*', async (req, res) => {
-  const backendBaseUrl = process.env['BACKEND_URL'] ?? '';
+  const rawBackendUrl = process.env['BACKEND_URL'] ?? '';
+  if (!rawBackendUrl) {
+    console.error('Proxy error: BACKEND_URL environment variable is not defined.');
+    res.status(502).json({ error: 'Bad Gateway: BACKEND_URL is not configured' });
+    return;
+  }
+  const backendBaseUrl = rawBackendUrl.replace(/\/+$/, '');
   const targetUrl = `${backendBaseUrl}${req.originalUrl}`;
   try {
     const headers = new Headers();

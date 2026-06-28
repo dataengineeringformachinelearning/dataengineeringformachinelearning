@@ -13,7 +13,6 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 
 // Determine App URL based on environment
 const APP_URL = import.meta.env.PUBLIC_APP_URL ?? 'https://deml.app';
-const DESIGN_SYSTEM_URL = import.meta.env.PUBLIC_DESIGN_SYSTEM_URL || `${APP_URL}/assets/design-system.css`;
 ---
 
 <!doctype html>
@@ -68,8 +67,9 @@ const DESIGN_SYSTEM_URL = import.meta.env.PUBLIC_DESIGN_SYSTEM_URL || `${APP_URL
 		<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 
-		<!-- Shared Design System CSS - served from main app for perfect visual cohesion across domains -->
-		<link rel="stylesheet" href={DESIGN_SYSTEM_URL} />
+		<!-- Shared design tokens (variables only) -->
+		<!-- Shared design tokens (variables). Each app serves its synced copy and has own stylesheet for classes. -->
+		<link rel="stylesheet" href="/assets/design-tokens.css" />
 
 		<!-- Theme Script -->
 		<script is:inline>

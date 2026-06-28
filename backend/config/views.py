@@ -12,7 +12,6 @@ def home(request: HttpRequest) -> HttpResponse:
       "debug": settings.DEBUG,
       "frontend_url": frontend_url,
       "marketing_url": settings.MARKETING_URL.rstrip("/"),
-      "design_system_url": f"{frontend_url}/assets/design-system.css",
     },
   )
 
@@ -26,7 +25,6 @@ def custom_404(request: HttpRequest, exception: Exception) -> HttpResponse:
       "debug": settings.DEBUG,
       "frontend_url": frontend_url,
       "marketing_url": settings.MARKETING_URL.rstrip("/"),
-      "design_system_url": f"{frontend_url}/assets/design-system.css",
     },
     status=404,
   )

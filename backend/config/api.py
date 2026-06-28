@@ -25,8 +25,8 @@ class CustomSwagger(Swagger):
     <title>{api.title}</title>
     <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
     <link rel="shortcut icon" href="https://deml.app/favicon.ico">
-    <!-- Shared design system for cohesion with the rest of the stack -->
-    <link rel="stylesheet" href="https://deml.app/assets/design-system.css">
+    <!-- Shared tokens for cohesion -->
+    <link rel="stylesheet" href="https://deml.app/assets/design-tokens.css">
     <style>
         .swagger-ui .topbar {{
             background-color: #111827;
