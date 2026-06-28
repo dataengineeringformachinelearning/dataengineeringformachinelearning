@@ -52,7 +52,7 @@ services:
       retries: 5
 
     # After first `docker compose up -d redpanda`, create the SASL user for the external listener (once):
-    #   docker compose exec redpanda rpk security user create dem l-func --password 'dev-only-change-me' --mechanism SCRAM-SHA-256
+    #   docker compose exec redpanda rpk security user create deml-func --password 'dev-only-change-me' --mechanism SCRAM-SHA-256
     # Then for local functions emulator testing of the direct path you can export:
     #   REDPANDA_BROKERS=localhost:19092 REDPANDA_SSL=false REDPANDA_SASL_USERNAME=deml-func REDPANDA_SASL_PASSWORD=dev-only-change-me
     # The fast (no-polling) path will be exercised when the Cloud Function code publishes.
