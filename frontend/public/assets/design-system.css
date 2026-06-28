@@ -283,161 +283,18 @@ a:not([class*='btn']):not([class*='nav']):not([class*='auth']):hover {
   }
 }
 
-/* --- NAVBAR (identical across domains) --- */
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  width: 100%;
-  height: var(--navbar-height);
-  background-color: var(--navbar-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-layout);
-  display: flex;
-  align-items: center;
-  padding: 0 var(--spacing-md);
-  box-sizing: border-box;
-}
+/* --- NAVBAR styles removed from shared to prevent breakage.
+   Use app-specific styles + shared variables for cohesion.
+   Original detailed navbar rules were conflicting with Angular Material and Astro components. */
+/* .navbar styles removed from shared CSS to prevent breaking existing Angular/Marketing navbars. Use variables only. */
 
-.navbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-}
+/* navbar-content removed */
 
-.navbar-left,
-.navbar-right {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-}
-.navbar-center {
-  display: flex;
-  justify-content: center;
-  flex: 1;
-}
+/* other navbar parts removed */
 
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  text-decoration: none;
-}
-.navbar-logo {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
-  color: var(--color-primary);
-}
-.navbar-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text-color);
-}
+/* nav-btn and auth-btn detailed rules removed from shared */
 
-.nav-btn,
-.mobile-nav-btn {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  transition: var(--transition-smooth);
-  border-radius: var(--border-radius-sm);
-  padding: 0 var(--spacing-sm);
-  height: 40px;
-  line-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  text-decoration: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-.nav-btn:hover,
-.mobile-nav-btn:hover {
-  color: var(--text-color);
-  background: rgba(255, 255, 255, 0.04);
-}
-
-.auth-btn,
-.mobile-auth-btn {
-  background: var(--color-dark-grey-btn-bg);
-  color: var(--color-dark-grey-btn-text);
-  font-weight: 600;
-  border-radius: var(--border-radius-pill);
-  padding: 0 var(--spacing-sm);
-  box-shadow: var(--shadow-sm);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  border: 1px solid var(--border);
-  transition: var(--transition-smooth);
-  height: 40px;
-  line-height: 40px;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  white-space: nowrap;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 0.95rem;
-}
-.auth-btn:hover,
-.mobile-auth-btn:hover {
-  transform: translateY(-2px);
-  background-color: var(--hover-color);
-  border-color: var(--color-primary);
-  color: var(--text-color);
-  box-shadow: var(--shadow-hover);
-}
-.auth-btn .material-icons,
-.mobile-auth-btn .material-icons {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
-}
-
-/* Theme toggle & menu buttons */
-.theme-toggle-btn,
-.menu-toggle-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-}
-.theme-toggle-btn:hover {
-  color: var(--text-color);
-}
-
-/* Mobile menu */
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  position: absolute;
-  top: var(--navbar-height);
-  left: 0;
-  right: 0;
-  background: var(--card-bg);
-  box-shadow: var(--shadow-md);
-  border-bottom: 1px solid var(--border);
-  padding: var(--spacing-md);
-  z-index: 49;
-  gap: var(--spacing-xs);
-}
-.mobile-menu.open {
-  display: flex;
-}
+/* Theme toggle and mobile menu rules removed from global shared to fix positioning issues. */
 
 /* --- BUTTONS (cohesive everywhere) --- */
 .btn,
@@ -476,26 +333,7 @@ button.cta-button,
   color: var(--color-primary);
 }
 
-/* --- FORMS & INPUTS --- */
-input,
-select,
-textarea,
-.mat-mdc-form-field {
-  font-family: var(--font-family);
-  background: var(--card-bg);
-  color: var(--text-color);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md);
-  padding: 12px 16px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-input:focus,
-select:focus,
-textarea:focus {
-  border-color: var(--color-primary);
-  outline: none;
-}
+/* Forms & inputs: only variables, no broad background overrides to avoid extra backgrounds on Material inputs and custom fields. */
 
 /* --- STATUS / WIDGET COHESION --- */
 .status-dot {
@@ -581,8 +419,9 @@ textarea:focus {
    using the same tokens, spacing, buttons, cards, etc.
    ============================================================ */
 
-/* Backend hero (matches marketing hero + app HUD) */
-.hero-section {
+/* Backend hero (matches marketing hero + app HUD) - scoped */
+.backend-landing .hero-section,
+.backend-404 .hero-section {
   position: relative;
   z-index: 10;
   max-width: 896px;
@@ -595,7 +434,9 @@ textarea:focus {
   padding: var(--spacing-md) 0;
 }
 
-.hero-badge {
+.backend-landing .hero-badge,
+.backend-404 .backend-landing .hero-badge,
+.backend-404 .hero-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-xs);
@@ -695,7 +536,8 @@ textarea:focus {
 }
 
 /* Bento / feature grid on backend home (consistent cards) */
-.bento-features-grid {
+.backend-landing .bento-features-grid,
+.backend-404 .bento-features-grid {
   display: grid;
   gap: var(--spacing-md);
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -704,7 +546,8 @@ textarea:focus {
   width: 100%;
 }
 
-.feature-card {
+.backend-landing .feature-card,
+.backend-404 .feature-card {
   background: var(--card-bg);
   border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
@@ -717,40 +560,46 @@ textarea:focus {
     border-color 0.2s;
 }
 
-.feature-card:hover {
+.backend-landing .feature-card:hover,
+.backend-404 .feature-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
   border-color: var(--color-primary-container);
 }
 
-.feature-icon {
+.backend-landing .feature-icon,
+.backend-404 .feature-icon {
   font-size: 28px;
   color: var(--color-primary);
   margin-bottom: var(--spacing-sm);
 }
 
-.feature-title {
+.backend-landing .feature-title,
+.backend-404 .feature-title {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 var(--spacing-xs) 0;
   color: var(--text-color);
 }
 
-.feature-desc {
+.backend-landing .feature-desc,
+.backend-404 .feature-desc {
   color: var(--text-muted);
   font-size: 0.95rem;
   line-height: 1.6;
   margin: 0;
 }
 
-/* Footer on backend home (matches app/marketing) */
-.mega-footer {
-  border-top: 1px solid var(--border-layout);
+/* Footer on backend home (matches app/marketing) - scoped */
+.backend-landing .mega-footer,
+.backend-404 .mega-footer {
+  /* border removed to prevent double dividers; let app-specific footers control separators */
   padding-top: var(--spacing-lg);
   margin-top: var(--spacing-xl);
 }
 
-.footer-content {
+.backend-landing .footer-content,
+.backend-404 .footer-content {
   max-width: 1152px;
   margin: 0 auto;
 }
@@ -830,8 +679,9 @@ textarea:focus {
   margin-bottom: var(--spacing-md);
 }
 
-/* Theme toggle on backend 404/home */
-.theme-toggle-btn {
+/* Theme toggle on backend 404/home - scoped to avoid affecting main app and marketing */
+.backend-landing .theme-toggle-btn,
+.backend-404 .theme-toggle-btn {
   position: fixed;
   top: 16px;
   right: 16px;
@@ -848,7 +698,8 @@ textarea:focus {
   cursor: pointer;
 }
 
-.theme-toggle-btn:hover {
+.backend-landing .theme-toggle-btn:hover,
+.backend-404 .theme-toggle-btn:hover {
   color: var(--text-color);
   border-color: var(--color-primary);
 }
