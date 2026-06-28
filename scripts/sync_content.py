@@ -55,7 +55,13 @@ def sync_readme():
     # --- 3. Process LLMS-full.txt ---
     llms_full_content = readme_content + "\n\n"
 
-    # Concatenate all integrations docs
+    # Concatenate operational and integration docs
+    for rel_path in ["docs/conops.md"]:
+      extra_path = os.path.join(root_dir, rel_path)
+      if os.path.exists(extra_path):
+        with open(extra_path, encoding="utf-8") as f:
+          llms_full_content += f.read() + "\n\n"
+
     integrations_dir = os.path.join(root_dir, "docs", "integrations")
     if os.path.exists(integrations_dir):
       for md_file in glob.glob(os.path.join(integrations_dir, "*.md")):

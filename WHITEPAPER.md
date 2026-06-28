@@ -16,7 +16,51 @@ Modern Software-as-a-Service (SaaS) applications demand continuous reliability. 
 
 As a testament to the architecture's stability, the platform actively dogfoods its own infrastructure. The public **`platform-status`** page (`user=null`, `is_platform=True`) serves as a living "Apex Sandbox" and "Public Sentinel" showcasing real-time telemetry and threat analysis to the world—without requiring a separate organization login.
 
-## 2. High-Throughput Ingestion Architecture
+## 2. Concept of Operations (CONOPS)
+
+This section summarizes how the DEML platform is **operated** in production—the division of responsibilities across vendors, the steady-state data paths operators rely on, and the workflows each actor performs. The full narrative, service matrix, and contingency tables live in [BOOK.md § Concept of Operations](BOOK.md#concept-of-operations-conops) and [`docs/conops.md`](docs/conops.md).
+
+### 2.1 Mission
+
+Deliver account-isolated observability, predictive SLA forecasting, and threat analytics by combining:
+
+- **Commands** — client and API writes that must never block the transactional database
+- **Projections** — idempotent, enriched read models materialized for sub-second UI updates
+- **Queries** — real-time Firestore subscriptions and OLAP analytics in ClickHouse
+
+### 2.2 Operational environment
+
+| Plane                 | Technology                               | Role                                                           |
+| --------------------- | ---------------------------------------- | -------------------------------------------------------------- |
+| Compute & persistence | Railway (14 services)                    | Django API, workers, Postgres, Redpanda, ClickHouse, caches    |
+| Client gateway        | Firebase Cloud Functions (`ingestEvent`) | Authenticated command ingress to Redpanda (Firestore fallback) |
+| Identity              | Firebase Auth                            | JWT perimeter; MFA on mutations                                |
+| Read models           | Firestore (`deml` DB)                    | `users/{uid}/data/stats` projections                           |
+| Marketing             | Firebase Hosting                         | Astro landing and documentation site                           |
+| Security controls     | GCP (KMS, immutable audit logs)          | Envelope encryption, tamper-evident logging                    |
+| Artifacts             | Hugging Face Hub                         | Namespaced PyTorch `state_dict` weights                        |
+
+### 2.3 Actors & workflows
+
+- **Anonymous visitors** read published status pages and the world-readable `platform-status` sentinel only (ABAC).
+- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA required for writes), and verify the Event Projections loop in Settings.
+- **API integrators** stream data through `/api/v1/ingest` using hashed API keys scoped to `account_id`.
+- **Platform operators** manage Railway services, Firebase/GCP deploy workflows, Infisical secrets, and the internal vulnerability Kanban.
+
+### 2.4 Operational modes
+
+| Mode              | Trigger                         | Behavior                                                                          |
+| ----------------- | ------------------------------- | --------------------------------------------------------------------------------- |
+| Normal            | All services healthy            | Commands → Redpanda → worker → Firestore; outbox relay every 5s                   |
+| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; Railway-internal broker may still serve workers |
+| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts   |
+| Maintenance       | `main` merge                    | Railway rolling deploy; Firebase Functions/rules via GitHub Actions               |
+
+### 2.5 Maintenance cadence (summary)
+
+`outbox_relay` (5s), continuous Kafka consumers, hourly threat-intel fetch, daily ML retraining and 30-day raw telemetry purge, weekly Renovate, monthly/quarterly security audits. See [BOOK.md Appendix D](BOOK.md#appendix-d-maintenance--automation-schedule).
+
+## 3. High-Throughput Ingestion Architecture
 
 The platform uses an **Event Projections** architecture for client telemetry with production-grade reliability:
 
@@ -86,13 +130,13 @@ By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), we ach
 
 Additionally, to standardize distributed tracing and metrics, the platform integrates an OpenTelemetry (OTel) Collector. The collector receives native OTLP telemetry from the application services and infrastructure, exporting it directly to ClickHouse—a lightning-fast columnar database optimized for OLAP workloads. This separation enables scaled observability and efficient distributed tracing without burdening the primary PostgreSQL transactional database.
 
-## 3. Asynchronous Batch Processing with Polars
+## 4. Asynchronous Batch Processing with Polars
 
 Processing streaming events row-by-row introduces significant database write amplification. Our telemetry worker aggregates incoming events from Redpanda and processes them in micro-batches using Polars, an extremely fast multi-threaded DataFrame library written in Rust.
 
 By batching calculations, we compute historical uptime graphs (30-day intervals) and update cumulative SLA and threat records efficiently, reducing disk I/O by over 80%.
 
-## 4. Extensible Deep Learning Pipeline
+## 5. Extensible Deep Learning Pipeline
 
 To transition from reactive monitoring to proactive planning, we introduce a predictive deep learning pipeline built in PyTorch. The pipeline consumes sequence features derived from recent response-time variances, historical error rates, and peak usage patterns.
 
@@ -104,11 +148,11 @@ The primary intelligence layer employs a PyTorch Multi-Layer Perceptron (MLP) to
 - **Hidden Layers**: Fully connected layers utilizing Rectified Linear Unit (ReLU) activation functions.
 - **Optimization**: The model uses the Adam optimizer. Hyperparameters are tuned dynamically using an exhaustive Grid Search protocol (`GridSearchCV`) to continuously adapt the model to shifting operational baselines without manual intervention.
 
-## 5. ML-Powered 30-Day Threat Detection & Telemetry Ingestion
+## 6. ML-Powered 30-Day Threat Detection & Telemetry Ingestion
 
 Our integration within the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that account owners can load directly on their status pages, providing zero-dependency telemetry streaming.
 
-## 6. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing
+## 7. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing
 
 Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and Generative AI, has evolved into a powerful agentic paradigm for threat analysis. Because we can only plan for what we know or what history provides precedent for, we face a distinct challenge: if past data dictates future risk, we must engineer an entirely new way forward.
 
@@ -118,7 +162,7 @@ Using TAXII 2.1 and REST protocols, these indicators are routed natively to fede
 
 Furthermore, to support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 Readiness and compliance audits, the platform implements an end-to-end security architecture. This includes real-time E2E encryption telemetry (TLS 1.3 in-transit, and GCP KMS-backed envelope encryption at-rest with 30-day rotation), immutable audit logging streamed directly to centralized Google Cloud Logging buckets for SIEM ingestion, granular Role-Based Access Control (RBAC) supporting Viewer, Operator, and Security Admin configurations, hardened Google distroless container images executing under least-privilege non-root policies (USER nginx), strict Content-Security-Policy (CSP) and HSTS security headers, and continuous vulnerability guarding via Semgrep (for continuous code and dependency scanning), Renovate (for automated dependency upgrades), local Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets (with custom baseline filters), and Django Migration Linter checks.
 
-## 7. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
+## 8. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
 
 Access control is implemented as defense-in-depth: **RBAC** (what a logged-in user may do) plus **ABAC** (whether a specific resource is visible or mutable in the current session context). The platform uses a **User + Sites** model—one Firebase login maps to one Django `User` and one `UserProfile.account_id`, and that account may own many `StatusPage` sites. There are **no organization hierarchies, sub-users, or shared team logins per workspace**. Authorization therefore hinges on four axes rather than org charts:
 
@@ -164,7 +208,7 @@ Programmatic ingestion (`/api/v1/ingest`, `/api/v1/predict`) resolves scope via 
 
 Private-by-default: until `is_published` is set, only the owning login (and the API with a valid owner session) can read operational stats—anonymous visitors hitting `/status/:slug` or the stats API receive `403`/`404`.
 
-## 8. Data Tenancy, Retention, and Lifecycle Policy
+## 9. Data Tenancy, Retention, and Lifecycle Policy
 
 Observability systems must ensure strict isolation. The DEML Platform enforces **account-scoped isolation** at the database level: telemetry, integrations, threat reports, and status widgets are keyed to `User` / `UserProfile.account_id` (or the `platform` sentinel for `platform-status`). Data is private-by-default; nothing bleeds across accounts.
 
@@ -176,17 +220,17 @@ Additionally, the platform implements a strict 30-day retention and lifecycle po
 
 Furthermore, our engineering roadmap includes integrations with monetization systems like Stripe. This will enable paid tiers where models and forecasts are refreshed at a high-frequency interval (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.
 
-## 9. Team Workflows and Integrated Vulnerability Management
+## 10. Team Workflows and Integrated Vulnerability Management
 
 To facilitate collaborative security workflows and structured issue tracking, the platform implements a self-contained, integrated vulnerability tracking and management component. This component features an interactive Kanban board layout to prioritize, assign, and track remediation efforts natively, allowing security teams to update vulnerability states based on customized impact and likelihood metrics.
 
 Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. To maintain high visual quality, we implemented a custom skeleton loader for smooth page-loading transitions, and aligned the user interface with a premium, high-contrast Scandinavian Ocean Deep-inspired design system.
 
-## 10. Conclusion
+## 11. Conclusion
 
 By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.
 
-## 11. Acknowledgments
+## 12. Acknowledgments
 
 Special thanks to Google DeepMind and their groundbreaking work in Artificial Intelligence. The documentary _AlphaGo - The Movie_ served as a profound inspiration to delve deeper into the fields of AI and Machine Learning.
 
@@ -198,7 +242,7 @@ This platform was substantially authored with assistance from the following inte
 - **Grok Build** (Beta)
 - **Cursor** — Grok 4.3, Grok Build 0.1 (xAI)
 
-## 12. References
+## 13. References
 
 1. Redpanda Data, Inc. (2026). _Redpanda: A streaming data platform_.
 2. Apache Software Foundation. (2026). _Apache Kafka_.
@@ -220,7 +264,7 @@ This platform was substantially authored with assistance from the following inte
 18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
 19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
 
-## 13. DevSecOps and Platform Standardization Audit
+## 14. DevSecOps and Platform Standardization Audit
 
 In our continuous pursuit of operational excellence, we have recently completed a comprehensive DevSecOps and UI/UX standardization audit. This effort guarantees an uncompromising mobile-first foundation across the platform, standardizing layout wrappers and enforcing identical maximum width containers (`1152px`) perfectly aligned to a strict `9px` grid system for zero layout shifting. On the infrastructure side, we have transitioned our deployment pipeline to leverage strict, Google Distroless and unprivileged multi-stage container builds (e.g., `nginxinc/nginx-unprivileged` and `gcr.io/distroless/python3`), fundamentally reducing the attack surface by eliminating unnecessary shells and package managers in production. Additionally, we have rigorously audited Django ORM queries and ML workers to ensure robust, leak-proof data tenancy and strict adherence to our 30-day data retention policy.
 
@@ -228,6 +272,6 @@ Most recently, we fully integrated Application-Level Zeek-equivalent middleware 
 
 To ensure long-term, scalable SaaS reliability, we enforce an uncompromising CI/CD and pre-commit stabilization pipeline. The entire Python backend is continuously formatted and linted via `ruff`, while the frontend strictly adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including the telemetry ingestion endpoints, background threat modeling workers, and billing integration—are fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. The core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations that align perfectly with the production cluster.
 
-## 14. License
+## 15. License
 
 This work is licensed under a [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).

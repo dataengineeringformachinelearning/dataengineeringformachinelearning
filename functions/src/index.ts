@@ -38,8 +38,12 @@ if (useSsl) {
 // Apply SASL whenever credentials are present so authenticated publish works with or
 // without TLS. (Previously SASL was only set inside the ssl block, so a plaintext SASL
 // connection silently sent no credentials.)
-const saslUser = process.env.REDPANDA_SASL_USERNAME || (fcfg.redpanda && fcfg.redpanda.sasl_username);
-const saslPass = process.env.REDPANDA_SASL_PASSWORD || (fcfg.redpanda && fcfg.redpanda.sasl_password);
+const saslUser =
+  process.env.REDPANDA_SASL_USERNAME ||
+  (fcfg.redpanda && fcfg.redpanda.sasl_username);
+const saslPass =
+  process.env.REDPANDA_SASL_PASSWORD ||
+  (fcfg.redpanda && fcfg.redpanda.sasl_password);
 if (saslUser && saslPass) {
   kafkaConfig.sasl = {
     mechanism: "scram-sha-256",
@@ -93,8 +97,14 @@ export const ingestEvent = onCall(
 
     // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const providedIdemp = (data && (data.idempotency_key || (data.payload && data.payload.idempotency_key))) || null;
-    const idempotencyKey = providedIdemp || `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+    const providedIdemp =
+      (data &&
+        (data.idempotency_key ||
+          (data.payload && data.payload.idempotency_key))) ||
+      null;
+    const idempotencyKey =
+      providedIdemp ||
+      `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
     const message = {
       key: String(uid), // Partition by user ID for ordered processing (stable per-tenant ordering)
       value: JSON.stringify({
@@ -115,7 +125,10 @@ export const ingestEvent = onCall(
         messages: [message],
       });
 
-      return { status: "accepted", message: "Event successfully queued to Redpanda." };
+      return {
+        status: "accepted",
+        message: "Event successfully queued to Redpanda.",
+      };
     } catch (error) {
       logger.error(
         "Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:",
@@ -151,5 +164,5 @@ export const ingestEvent = onCall(
         );
       }
     }
-  }
+  },
 );

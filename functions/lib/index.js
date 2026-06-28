@@ -1,27 +1,48 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
+var __createBinding =
+  (this && this.__createBinding) ||
+  (Object.create
+    ? function (o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        var desc = Object.getOwnPropertyDescriptor(m, k);
+        if (
+          !desc ||
+          ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)
+        ) {
+          desc = {
+            enumerable: true,
+            get: function () {
+              return m[k];
+            },
+          };
+        }
+        Object.defineProperty(o, k2, desc);
+      }
+    : function (o, m, k, k2) {
+        if (k2 === undefined) k2 = k;
+        o[k2] = m[k];
+      });
+var __setModuleDefault =
+  (this && this.__setModuleDefault) ||
+  (Object.create
+    ? function (o, v) {
+        Object.defineProperty(o, "default", { enumerable: true, value: v });
+      }
+    : function (o, v) {
+        o["default"] = v;
+      });
+var __importStar =
+  (this && this.__importStar) ||
+  function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null)
+      for (var k in mod)
+        if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k))
+          __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
-};
+  };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ingestEvent = void 0;
 const admin = __importStar(require("firebase-admin"));
@@ -47,27 +68,32 @@ const kafkaBrokers = process.env.REDPANDA_BROKERS || "localhost:19092";
 // ssl:true for any non-local host made the TLS handshake fail against that plaintext
 // listener, so every publish fell through to the Firestore fallback. Only enable TLS
 // when REDPANDA_SSL=true (e.g. when an edge such as Cloudflare Spectrum terminates TLS).
-const useSsl = process.env.REDPANDA_SSL === "true" ||
-    (fcfg.redpanda && fcfg.redpanda.ssl === "true");
+const useSsl =
+  process.env.REDPANDA_SSL === "true" ||
+  (fcfg.redpanda && fcfg.redpanda.ssl === "true");
 const kafkaConfig = {
-    clientId: "deml-gateway-function",
-    brokers: [kafkaBrokers],
+  clientId: "deml-gateway-function",
+  brokers: [kafkaBrokers],
 };
 if (useSsl) {
-    kafkaConfig.ssl = true;
+  kafkaConfig.ssl = true;
 }
 // SASL is independent of TLS: SASL_PLAINTEXT (no SSL) and SASL_SSL are both valid.
 // Apply SASL whenever credentials are present so authenticated publish works with or
 // without TLS. (Previously SASL was only set inside the ssl block, so a plaintext SASL
 // connection silently sent no credentials.)
-const saslUser = process.env.REDPANDA_SASL_USERNAME || (fcfg.redpanda && fcfg.redpanda.sasl_username);
-const saslPass = process.env.REDPANDA_SASL_PASSWORD || (fcfg.redpanda && fcfg.redpanda.sasl_password);
+const saslUser =
+  process.env.REDPANDA_SASL_USERNAME ||
+  (fcfg.redpanda && fcfg.redpanda.sasl_username);
+const saslPass =
+  process.env.REDPANDA_SASL_PASSWORD ||
+  (fcfg.redpanda && fcfg.redpanda.sasl_password);
 if (saslUser && saslPass) {
-    kafkaConfig.sasl = {
-        mechanism: "scram-sha-256",
-        username: saslUser,
-        password: saslPass,
-    };
+  kafkaConfig.sasl = {
+    mechanism: "scram-sha-256",
+    username: saslUser,
+    password: saslPass,
+  };
 }
 const kafka = new kafkajs_1.Kafka(kafkaConfig);
 const producer = kafka.producer();
@@ -77,11 +103,11 @@ const producer = kafka.producer();
  */
 let isProducerConnected = false;
 async function getProducer() {
-    if (!isProducerConnected) {
-        await producer.connect();
-        isProducerConnected = true;
-    }
-    return producer;
+  if (!isProducerConnected) {
+    await producer.connect();
+    isProducerConnected = true;
+  }
+  return producer;
 }
 /**
  * Generic event ingestion gateway (client commands).
@@ -89,15 +115,20 @@ async function getProducer() {
  * (public SASL-authenticated listener recommended for lowest latency).
  * Falls back to Firestore inbox only on publish failure.
  */
-exports.ingestEvent = (0, https_1.onCall)({
+exports.ingestEvent = (0, https_1.onCall)(
+  {
     region: "us-east4",
     // Add more options here if needed in the future, e.g.:
     // memory: "256MiB",
     // timeoutSeconds: 60,
-}, async (request) => {
+  },
+  async (request) => {
     // 1. Validate Authentication (Native to Firebase onCall functions)
     if (!request.auth) {
-        throw new https_1.HttpsError("unauthenticated", "The function must be called while authenticated.");
+      throw new https_1.HttpsError(
+        "unauthenticated",
+        "The function must be called while authenticated.",
+      );
     }
     const uid = request.auth.uid;
     const data = request.data;
@@ -105,52 +136,69 @@ exports.ingestEvent = (0, https_1.onCall)({
     const eventPayload = data;
     // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const providedIdemp = (data && (data.idempotency_key || (data.payload && data.payload.idempotency_key))) || null;
-    const idempotencyKey = providedIdemp || `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+    const providedIdemp =
+      (data &&
+        (data.idempotency_key ||
+          (data.payload && data.payload.idempotency_key))) ||
+      null;
+    const idempotencyKey =
+      providedIdemp ||
+      `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
     const message = {
-        key: String(uid),
-        value: JSON.stringify({
-            uid,
-            timestamp,
-            idempotency_key: idempotencyKey,
-            version: "1.0",
-            payload: eventPayload,
-        }),
+      key: String(uid),
+      value: JSON.stringify({
+        uid,
+        timestamp,
+        idempotency_key: idempotencyKey,
+        version: "1.0",
+        payload: eventPayload,
+      }),
     };
     try {
-        // 3. Push directly to Redpanda (primary fast path when using public SASL endpoint).
-        // This gives near real-time consumption by telemetry_worker with no polling delay.
-        const p = await getProducer();
-        await p.send({
-            topic: "frontend-events",
-            messages: [message],
-        });
-        return { status: "accepted", message: "Event successfully queued to Redpanda." };
+      // 3. Push directly to Redpanda (primary fast path when using public SASL endpoint).
+      // This gives near real-time consumption by telemetry_worker with no polling delay.
+      const p = await getProducer();
+      await p.send({
+        topic: "frontend-events",
+        messages: [message],
+      });
+      return {
+        status: "accepted",
+        message: "Event successfully queued to Redpanda.",
+      };
+    } catch (error) {
+      firebase_functions_2.logger.error(
+        "Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:",
+        error,
+      );
+      try {
+        const db = (0, firestore_1.getFirestore)("deml");
+        // Resilient fallback only. The worker's poll_firestore_inbox task will project it.
+        // With a correctly configured public SASL Redpanda endpoint this path is almost never taken.
+        const inboxDoc = {
+          uid,
+          timestamp: new Date().toISOString(),
+          idempotency_key: idempotencyKey,
+          version: "1.0",
+          payload: eventPayload,
+          source: "firebase-fallback",
+        };
+        await db.collection("frontend_command_inbox").add(inboxDoc);
+        return {
+          status: "accepted",
+          message: "Event accepted (queued via resilient fallback).",
+        };
+      } catch (fsError) {
+        firebase_functions_2.logger.error(
+          "Failed to write fallback event to Firestore inbox:",
+          fsError,
+        );
+        throw new https_1.HttpsError(
+          "internal",
+          "Unable to process event at this time.",
+        );
+      }
     }
-    catch (error) {
-        firebase_functions_2.logger.error("Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:", error);
-        try {
-            const db = (0, firestore_1.getFirestore)("deml");
-            // Resilient fallback only. The worker's poll_firestore_inbox task will project it.
-            // With a correctly configured public SASL Redpanda endpoint this path is almost never taken.
-            const inboxDoc = {
-                uid,
-                timestamp: new Date().toISOString(),
-                idempotency_key: idempotencyKey,
-                version: "1.0",
-                payload: eventPayload,
-                source: "firebase-fallback",
-            };
-            await db.collection("frontend_command_inbox").add(inboxDoc);
-            return {
-                status: "accepted",
-                message: "Event accepted (queued via resilient fallback).",
-            };
-        }
-        catch (fsError) {
-            firebase_functions_2.logger.error("Failed to write fallback event to Firestore inbox:", fsError);
-            throw new https_1.HttpsError("internal", "Unable to process event at this time.");
-        }
-    }
-});
+  },
+);
 //# sourceMappingURL=index.js.map
