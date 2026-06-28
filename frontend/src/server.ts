@@ -32,16 +32,48 @@ app.use((req, res, next) => {
 });
 
 /**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
+ * Route /api/v1/* requests to the Django backend via proxy.
+ * Resolves API calls during SSR and client-side requests using runtime BACKEND_URL.
  */
+app.all('/api/v1/*', async (req, res) => {
+  const backendBaseUrl = process.env['BACKEND_URL'] ?? '';
+  const targetUrl = `${backendBaseUrl}${req.originalUrl}`;
+  try {
+    const headers = new Headers();
+    Object.entries(req.headers).forEach(([key, val]) => {
+      if (val !== undefined) {
+        if (Array.isArray(val)) {
+          val.forEach(v => headers.append(key, v));
+        } else {
+          headers.set(key, val);
+        }
+      }
+    });
+
+    headers.delete('host');
+
+    const body = ['GET', 'HEAD'].includes(req.method) ? undefined : req;
+
+    const response = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body: body as any,
+      duplex: body ? 'half' : undefined,
+    } as any);
+
+    res.status(response.status);
+    response.headers.forEach((val, key) => {
+      res.set(key, val);
+    });
+
+    const arrayBuffer = await response.arrayBuffer();
+    res.send(Buffer.from(arrayBuffer));
+  } catch (err) {
+    const sanitizedUrl = String(targetUrl).replace(/[\r\n]/g, '_');
+    console.error('Proxy error for %s:', sanitizedUrl, err);
+    res.status(502).json({ error: 'Bad Gateway via Frontend Proxy' });
+  }
+});
 
 /**
  * Serve static files from /browser
