@@ -37,18 +37,23 @@ ENV SKIP_SITE_URL_VALIDATION=true
 RUN python manage.py collectstatic --noinput --clear
 
 # Runtime stage
-# Use cc-debian12 because official distroless does not provide a python3.12-debian12 variant.
-# The Python 3.12 interpreter + site-packages come from the copied venv (built with --copies above).
+# Use cc-debian12 (minimal C runtime on Debian 12) because Distroless does not ship
+# a python3.12-debian12 variant. We bring our own Python 3.12 from the builder.
 FROM gcr.io/distroless/cc-debian12:nonroot
 
-# Copy the built liboqs shared libraries from the builder stage
+# Copy the built liboqs shared libraries
 COPY --chown=65532:65532 --from=builder /opt/oqs /opt/oqs
+
+# Copy the Python 3.12 shared library that the venv's python binary is linked against.
+# Without this, we get "libpython3.12.so.1.0: cannot open shared object file".
+COPY --from=builder /usr/local/lib/libpython3.12.so.1.0 /usr/local/lib/
+COPY --from=builder /usr/local/lib/libpython3.12.so.1 /usr/local/lib/ || true
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    LD_LIBRARY_PATH="/opt/oqs/lib"
+    LD_LIBRARY_PATH="/usr/local/lib:/opt/oqs/lib"
 
 WORKDIR /app
 
