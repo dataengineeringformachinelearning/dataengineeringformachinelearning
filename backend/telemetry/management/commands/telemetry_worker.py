@@ -33,6 +33,7 @@ class Command(BaseCommand):
       schedulers.periodic_scheduler(self.stdout, self.stderr, self.style),
       pingers.active_pinger_scheduler(self.stdout, self.stderr, self.style),
       schedulers.quality_scanner_scheduler(self.stdout, self.stderr, self.style),
+      projectors.poll_firestore_inbox(self.stdout, self.stderr, self.style),
     ):
       task = asyncio.create_task(coro)
       self.background_tasks.add(task)
@@ -74,5 +75,6 @@ class Command(BaseCommand):
   save_to_db = staticmethod(projectors.save_to_db)
   save_threat_intel_to_db = staticmethod(projectors.save_threat_intel_to_db)
   process_frontend_event = staticmethod(projectors.process_frontend_event)
+  process_pending_frontend_commands = staticmethod(projectors.process_pending_frontend_commands)
   update_bug_report = staticmethod(projectors.update_bug_report)
   ping_services = staticmethod(pingers.ping_services)
