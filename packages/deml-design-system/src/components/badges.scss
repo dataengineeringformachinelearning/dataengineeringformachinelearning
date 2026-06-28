@@ -75,4 +75,27 @@
     padding: 8px 12px;
     font-size: max(16px, var(--base-font-size, 18px));
   }
+
+  &.pro-verified {
+    background: color-mix(in srgb, var(--golden-pollen) 14%, transparent);
+    color: var(--golden-pollen);
+    border-color: color-mix(in srgb, var(--golden-pollen) 28%, transparent);
+    text-transform: none;
+    letter-spacing: 0.02em;
+
+    mat-icon,
+    .material-icons {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+      flex-shrink: 0;
+    }
+  }
+
+  html[data-theme='light'] &.pro-verified {
+    color: var(--carrot-orange);
+    border-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
+    background: color-mix(in srgb, var(--carrot-orange) 10%, transparent);
+  }
 }

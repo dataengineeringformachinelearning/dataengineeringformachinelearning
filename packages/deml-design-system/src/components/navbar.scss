@@ -5,14 +5,14 @@
   top: 0;
   z-index: 50;
   width: 100%;
-  height: var(--navbar-height, 64px);
+  min-height: var(--navbar-height, 64px);
   background-color: var(--navbar-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-layout);
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 9px 24px;
   box-sizing: border-box;
 }
 
@@ -22,6 +22,9 @@
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  overflow: visible;
+  flex-shrink: 0;
+  padding: 2px 0;
 }
 
 .navbar-title {
@@ -33,10 +36,28 @@
 }
 
 .navbar-logo {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
+  font-size: 28px;
+  width: 36px;
+  height: 36px;
+  line-height: 1;
   color: var(--color-primary);
+  overflow: visible;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Angular mat-icon defaults to overflow:hidden — clips ligature glyphs at tight sizes.
+.navbar-brand .navbar-logo.mat-icon,
+.navbar-brand mat-icon.navbar-logo {
+  overflow: visible !important;
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 28px !important;
+  line-height: 28px !important;
+  padding: 4px !important;
+  box-sizing: content-box;
 }
 
 .navbar-content {
@@ -71,7 +92,8 @@
 .desktop-nav {
   display: none;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  padding: 4px 0;
 }
 
 .desktop-auth {
@@ -332,11 +354,27 @@
 
 .glowing-icon-sm {
   color: var(--primary-text-color) !important;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));
   transition: all 0.3s ease;
 }
 
-.glowing-icon-sm:hover {
+// Glow on the brand link wrapper so mat-icon overflow does not clip the filter.
+.navbar-brand.glowing-icon-sm,
+.navbar-brand:has(.glowing-icon-sm) {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));
+}
+
+.navbar-brand.glowing-icon-sm:hover,
+.navbar-brand:has(.glowing-icon-sm):hover {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent));
+}
+
+.loader-logo.glowing-icon-sm,
+:not(.navbar-brand) > .glowing-icon-sm {
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));
+}
+
+.loader-logo.glowing-icon-sm:hover,
+:not(.navbar-brand) > .glowing-icon-sm:hover {
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent));
 }
 

@@ -1,7 +1,10 @@
 <div class="status-card-outlined" [id]="page.slug">
   <div class="card-header-clean">
     <div class="header-main-info">
-      <h2 class="card-title">{{ page.title }}</h2>
+      <div class="card-title-row">
+        <h2 class="card-title">{{ page.title }}</h2>
+        <app-pro-verified-badge [show]="!!page.is_pro_verified"></app-pro-verified-badge>
+      </div>
       <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
     </div>
 

@@ -182,6 +182,21 @@ def _is_stale_platform_service(name: str, url: str) -> bool:
   return False
 
 
+def _dedupe_platform_services_by_name(page) -> int:
+  """Remove duplicate MonitoredService rows (same name) — get_or_create raises on multiples."""
+  from monitor.models import MonitoredService
+
+  removed = 0
+  for name in (
+    MonitoredService.objects.filter(status_page=page).values_list("name", flat=True).distinct()
+  ):
+    qs = MonitoredService.objects.filter(status_page=page, name=name).order_by("-created_at")
+    if qs.count() > 1:
+      keep = qs.first()
+      removed += qs.exclude(id=keep.id).delete()[0]
+  return removed
+
+
 def ensure_platform_monitored_services() -> int:
   """Upsert canonical platform-status services and prune telemetry/auto-created duplicates."""
   from account.platform import ensure_platform_status_page
@@ -191,19 +206,21 @@ def ensure_platform_monitored_services() -> int:
   canonical = _platform_canonical_rows()
   canonical_names = {name for name, _ in canonical}
 
-  updated = 0
+  updated = _dedupe_platform_services_by_name(page)
+
   for name, url in canonical:
-    service, created = MonitoredService.objects.get_or_create(
-      status_page=page,
-      name=name,
-      defaults={"url": url},
-    )
-    if not created and service.url != url:
-      service.url = url
-      service.save(update_fields=["url"])
+    qs = MonitoredService.objects.filter(status_page=page, name=name).order_by("-created_at")
+    service = qs.first()
+    if service is None:
+      MonitoredService.objects.create(status_page=page, name=name, url=url)
       updated += 1
-    elif created:
-      updated += 1
+    else:
+      if service.url != url:
+        service.url = url
+        service.save(update_fields=["url"])
+        updated += 1
+      if qs.count() > 1:
+        updated += qs.exclude(id=service.id).delete()[0]
 
   for service in MonitoredService.objects.filter(status_page=page):
     if service.name not in canonical_names or _is_stale_platform_service(

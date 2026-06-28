@@ -285,26 +285,55 @@
             <button mat-button class="header-action-btn">Run Query</button>
           </div>
           <div class="incident-list">
-            @for (incident of incidents(); track incident.id) {
-            <div class="queue-item siem-item">
-              <div class="item-header">
-                <span class="item-id">{{ incident.id }}</span>
-                <span class="status-badge-premium" [ngClass]="incident.severity.toLowerCase()">
-                  {{ incident.severity }}
-                </span>
+            @if (incidents().length === 0) {
+            <div class="empty-state siem-empty-state">
+              <mat-icon>verified_user</mat-icon>
+              <h3 class="empty-title">NO ACTIVE INCIDENTS</h3>
+              <p>SIEM case queue is clear. New incidents will appear here when detected.</p>
+            </div>
+            } @else { @for (incident of incidents(); track incident.id) {
+            <div
+              class="queue-item siem-item"
+              [class.active]="selectedIncident()?.id === incident.id"
+            >
+              <div
+                class="siem-item-selectable"
+                tabindex="0"
+                role="button"
+                [attr.aria-pressed]="selectedIncident()?.id === incident.id"
+                [attr.aria-label]="'Select incident ' + incident.title"
+                (click)="selectIncident(incident)"
+                (keydown.enter)="selectIncident(incident)"
+                (keydown.space)="$event.preventDefault(); selectIncident(incident)"
+              >
+                <div class="item-header">
+                  <span class="item-id">INC-{{ incident.id.substring(0, 8).toUpperCase() }}</span>
+                  <span class="status-badge-premium" [ngClass]="incident.severity.toLowerCase()">
+                    {{ incident.severity }}
+                  </span>
+                </div>
+                <h3 class="item-title">{{ incident.title }}</h3>
+                <p class="profile-desc siem-desc">{{ incident.description }}</p>
               </div>
-              <h3 class="item-title">{{ incident.title }}</h3>
-              <p class="profile-desc siem-desc">{{ incident.description }}</p>
-              <div class="item-footer">
-                <span class="status-indicator" [attr.data-status]="incident.status.toLowerCase()">
-                  {{ incident.status }}
-                </span>
+              <div class="item-footer siem-item-footer">
+                <div class="siem-status-actions">
+                  @for (status of incidentStatusOptions; track status) {
+                  <button
+                    type="button"
+                    class="btn-triage btn-small"
+                    [class.active]="incident.status === status"
+                    (click)="updateIncidentStatus(incident, status)"
+                  >
+                    {{ status }}
+                  </button>
+                  }
+                </div>
                 <span class="client-id siem-client-id"
                   >{{ incident.created_at | date:'short' }}</span
                 >
               </div>
             </div>
-            }
+            } }
           </div>
         </section>
 
@@ -316,27 +345,49 @@
             <button mat-button class="header-action-btn">Create</button>
           </div>
           <div class="playbook-list">
-            @for (playbook of playbooks(); track playbook.id) {
-            <div class="queue-item playbook-item">
-              <div class="playbook-info">
+            @if (playbooks().length === 0) {
+            <div class="empty-state siem-empty-state">
+              <mat-icon>menu_book</mat-icon>
+              <h3 class="empty-title">NO PLAYBOOKS CONFIGURED</h3>
+              <p>Create response playbooks to automate incident remediation workflows.</p>
+            </div>
+            } @else { @for (playbook of playbooks(); track playbook.id) {
+            <div
+              class="queue-item playbook-item"
+              [class.active]="selectedPlaybook()?.id === playbook.id"
+            >
+              <div
+                class="playbook-info"
+                tabindex="0"
+                role="button"
+                [attr.aria-pressed]="selectedPlaybook()?.id === playbook.id"
+                [attr.aria-label]="'Select playbook ' + playbook.name"
+                (click)="selectPlaybook(playbook)"
+                (keydown.enter)="selectPlaybook(playbook)"
+                (keydown.space)="$event.preventDefault(); selectPlaybook(playbook)"
+              >
                 <h3 class="item-title playbook-title">{{ playbook.name }}</h3>
                 <p class="profile-desc playbook-desc">{{ playbook.description }}</p>
               </div>
               <div class="playbook-actions">
                 <label class="theme-switch">
+                  <span class="sr-only"
+                    >{{ playbook.is_active ? 'Deactivate' : 'Activate' }} playbook {{ playbook.name
+                    }}</span
+                  >
                   <input
                     type="checkbox"
-                    aria-label="Toggle playbook"
                     [checked]="playbook.is_active"
                     (change)="togglePlaybook(playbook)"
-                    [attr.aria-label]="'Toggle playbook ' + playbook.name"
                   />
-                  <span class="slider"></span>
+                  <span class="slider" aria-hidden="true"></span>
                 </label>
-                <button class="btn-triage btn-small">Edit</button>
+                <span class="playbook-status-label" [id]="'playbook-status-' + playbook.id"
+                  >{{ playbook.is_active ? 'Active' : 'Paused' }}</span
+                >
               </div>
             </div>
-            }
+            } }
           </div>
         </section>
       </div>

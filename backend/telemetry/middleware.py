@@ -1,6 +1,8 @@
-import json
 import logging
 import time
+
+from utils.request import anonymize_ip
+from utils.structured_log import log_event
 
 logger = logging.getLogger(__name__)
 
@@ -71,18 +73,18 @@ class NetworkTelemetryMiddleware:
         if account_id:
           cache.set(cache_key, account_id, 3600)
 
-    log_data = {
-      "account_id": account_id,
-      "event_type": "network_traffic",
-      "ip_address": ip,
-      "method": request.method,
-      "path": request.path,
-      "status_code": response.status_code,
-      "user_agent": request.META.get("HTTP_USER_AGENT", ""),
-      "duration_ms": int(duration * 1000),
-      "payload_size": len(response.content) if hasattr(response, "content") else 0,
-    }
-
-    logger.info(f"NETWORK_TELEMETRY: {json.dumps(log_data)}")
+    # Log anonymized IP only — raw IP is persisted in Endpoints via projectors when needed.
+    log_event(
+      logger,
+      logging.INFO,
+      "network_traffic",
+      account_id=account_id,
+      ip_address=anonymize_ip(ip),
+      method=request.method,
+      path=request.path,
+      status_code=response.status_code,
+      duration_ms=int(duration * 1000),
+      correlation_id=getattr(request, "correlation_id", ""),
+    )
 
     return response

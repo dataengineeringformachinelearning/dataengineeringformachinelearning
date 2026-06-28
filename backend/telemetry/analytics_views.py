@@ -75,23 +75,7 @@ def get_incidents(request, account_id: str | None = None):
   if account_id and profile and str(account_id) != str(profile.account_id):
     return []
 
-  cases = list(IncidentCase.objects.filter(user=user))
-  if not cases:
-    c1 = IncidentCase.objects.create(
-      user=user,
-      title="Suspicious API Key Usage",
-      severity="High",
-      status="Open",
-      description="Multiple predictions requested from Tor exit node IP.",
-    )
-    c2 = IncidentCase.objects.create(
-      user=user,
-      title="Potential Prompt Injection",
-      severity="Medium",
-      status="Investigating",
-      description="System prompt override detected on /predict/llm endpoint.",
-    )
-    cases = [c1, c2]
+  cases = list(IncidentCase.objects.filter(user=user).order_by("-created_at"))
 
   return [
     IncidentCaseOut(
@@ -140,21 +124,7 @@ def get_playbooks(request, account_id: str | None = None):
   if account_id and profile and str(account_id) != str(profile.account_id):
     return []
 
-  playbooks = list(Playbook.objects.filter(user=user))
-  if not playbooks:
-    p1 = Playbook.objects.create(
-      user=user,
-      name="Revoke Compromised API Key",
-      description="Automatically revoke API keys if abused from blacklisted Tor nodes.",
-      is_active=True,
-    )
-    p2 = Playbook.objects.create(
-      user=user,
-      name="Block HTTP Flood",
-      description="Webhook to Cloudflare WAF to null-route IPs exceeding 1000 req/min.",
-      is_active=True,
-    )
-    playbooks = [p1, p2]
+  playbooks = list(Playbook.objects.filter(user=user).order_by("name"))
 
   return [
     PlaybookOut(id=str(p.id), name=p.name, description=p.description, is_active=p.is_active)

@@ -15,11 +15,19 @@ import { MatIconModule } from '@angular/material/icon';
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
 import { ThreatReportResponse } from '../../services/ml.service';
 import { formatServiceName } from '../../core/utils/formatter.utils';
+import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
 
 @Component({
   selector: 'app-status-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatCardModule, MatButtonModule, MatIconModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    ProVerifiedBadge,
+  ],
   templateUrl: './status-card.html',
   styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

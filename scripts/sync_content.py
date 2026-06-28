@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 
 
 def sync_readme():
@@ -118,6 +119,23 @@ def sync_version():
       print(f"Error syncing version.txt: {e}")
 
 
+def sync_search_index():
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  root_dir = os.path.dirname(script_dir)
+  src = os.path.join(root_dir, "frontend", "src", "assets", "content", "search-index.json")
+  dest_dir = os.path.join(root_dir, "marketing", "public", "assets", "content")
+  dest = os.path.join(dest_dir, "search-index.json")
+
+  if not os.path.exists(src):
+    print(f"search-index source missing: {src}")
+    return
+
+  os.makedirs(dest_dir, exist_ok=True)
+  shutil.copy2(src, dest)
+  print(f"Synced search-index.json to {dest}")
+
+
 if __name__ == "__main__":
   sync_readme()
   sync_version()
+  sync_search_index()

@@ -21,7 +21,12 @@ import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
-import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
+import {
+  VulnerabilityService,
+  Vulnerability,
+  IncidentCase,
+  Playbook,
+} from '../../services/vulnerability.service';
 
 @Component({
   selector: 'app-vulnerabilities',
@@ -47,6 +52,10 @@ export class Vulnerabilities implements OnInit {
 
   incidents = this.vulnService.incidents;
   playbooks = this.vulnService.playbooks;
+
+  selectedIncident = signal<IncidentCase | null>(null);
+  selectedPlaybook = signal<Playbook | null>(null);
+  incidentStatusOptions = ['Open', 'Investigating', 'Mitigated', 'Resolved', 'False Positive'];
 
   selectedVuln = signal<Vulnerability | null>(null);
   filterStatus = signal<string>('All');
@@ -251,10 +260,31 @@ export class Vulnerabilities implements OnInit {
     });
   }
 
-  togglePlaybook(playbook: any) {
+  selectIncident(incident: IncidentCase) {
+    this.selectedIncident.set(incident);
+    this.cdr.markForCheck();
+  }
+
+  selectPlaybook(playbook: Playbook) {
+    this.selectedPlaybook.set(playbook);
+    this.cdr.markForCheck();
+  }
+
+  updateIncidentStatus(incident: IncidentCase, status: string) {
+    this.vulnService.updateIncident(incident.id, { status }).subscribe({
+      next: () => {
+        this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+        this.cdr.markForCheck();
+      },
+      error: err => console.error('Failed to update incident:', err),
+    });
+  }
+
+  togglePlaybook(playbook: Playbook) {
     this.vulnService.updatePlaybook(playbook.id, { is_active: !playbook.is_active }).subscribe({
       next: () => {
         this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
+        this.cdr.markForCheck();
       },
     });
   }

@@ -23,6 +23,7 @@ export interface StatusPageData {
   cloudflare_analytics_id?: string;
   created_at: string;
   user_id: number | null;
+  is_pro_verified?: boolean;
   cumulative_sla?: number;
   overall_uptime?: number;
   uptime_history?: { status: string; uptime: number }[];

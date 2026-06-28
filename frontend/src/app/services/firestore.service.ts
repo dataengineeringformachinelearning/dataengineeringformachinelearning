@@ -22,13 +22,13 @@ export class FirestoreService {
    */
   getRealtimeStats(): Observable<DocumentData | undefined> {
     return new Observable(observer => {
-      const user = this.authService.auth?.currentUser;
-      if (!user) {
+      const firebaseUid = this.authService.auth?.currentUser?.uid;
+      if (!firebaseUid) {
         observer.error('User not authenticated');
         return;
       }
 
-      const docRef = doc(this.db, 'users', user.uid, 'data', 'stats');
+      const docRef = doc(this.db, 'users', firebaseUid, 'data', 'stats');
 
       const unsubscribe = onSnapshot(
         docRef,

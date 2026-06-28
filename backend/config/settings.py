@@ -95,7 +95,8 @@ sentry_dsn = os.getenv("SENTRY_DSN", "")
 if sentry_dsn:
   sentry_sdk.init(
     dsn=sentry_dsn,
-    send_default_pii=True,
+    # PII off by default — enable only when SENTRY_SEND_PII=true for debugging.
+    send_default_pii=os.getenv("SENTRY_SEND_PII", "false").lower() == "true",
   )
 
 # Initialize Firebase Admin
@@ -130,13 +131,19 @@ if not firebase_admin._apps:
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
+from utils.env import get_bool, get_csv, get_str, validate_production_config
+
+# Fail fast on Railway/production if SECRET_KEY or DEBUG are insecure.
+validate_production_config()
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-  "SECRET_KEY", "django-insecure-izn^)q(e0k=rklyawiv0*4(unp)%4%@v54**mnt!@tw!thaub9"
+SECRET_KEY = get_str(
+  "SECRET_KEY",
+  "django-insecure-izn^)q(e0k=rklyawiv0*4(unp)%4%@v54**mnt!@tw!thaub9",
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "True").lower() == "true"
+DEBUG = get_bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = [
   host.strip().strip('"').strip("'")
@@ -167,6 +174,7 @@ MIDDLEWARE = [
   "corsheaders.middleware.CorsMiddleware",
   "django.middleware.security.SecurityMiddleware",
   "whitenoise.middleware.WhiteNoiseMiddleware",
+  "config.correlation_middleware.CorrelationIdMiddleware",
   "django.middleware.common.CommonMiddleware",
   "django.middleware.csrf.CsrfViewMiddleware",
   "config.middleware.FirebaseAuthenticationMiddleware",
@@ -276,10 +284,7 @@ STORAGES = {
   },
 }
 
-cors_allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS", "")
-CORS_ALLOWED_ORIGINS = (
-  [origin.strip() for origin in cors_allowed_origins.split(",")] if cors_allowed_origins else []
-)
+CORS_ALLOWED_ORIGINS = get_csv("CORS_ALLOWED_ORIGINS")
 
 from corsheaders.defaults import default_headers
 
@@ -291,14 +296,24 @@ CORS_ALLOW_HEADERS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+CORS_ALLOW_CREDENTIALS = get_bool("CORS_ALLOW_CREDENTIALS", default=True)
+
+_csrf_origins = get_csv("CSRF_TRUSTED_ORIGINS")
+CSRF_TRUSTED_ORIGINS = _csrf_origins if _csrf_origins else CORS_ALLOWED_ORIGINS
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
 from typing import Final
 
-FRONTEND_URL = os.getenv("FRONTEND_URL") or ""
-MARKETING_URL: Final[str] = os.getenv("MARKETING_URL") or ""
+FRONTEND_URL = get_str("FRONTEND_URL")
+BACKEND_URL = get_str("BACKEND_URL")
+MARKETING_URL: Final[str] = get_str("MARKETING_URL")
+
+# Internal service URLs (env-driven; see BOOK.md Appendix C)
+from utils.env import cpe_guesser_url, scanner_service_url, tor_proxy_url
+
+SCANNER_SERVICE_URL = scanner_service_url()
+CPE_GUESSER_URL = cpe_guesser_url()
+TOR_PROXY_URL = tor_proxy_url()
 
 # Stripe Settings
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY", "")
@@ -353,11 +368,14 @@ LOGGING = {
       "format": "{levelname} {message}",
       "style": "{",
     },
+    "json": {
+      "()": "utils.structured_log.StructuredJsonFormatter",
+    },
   },
   "handlers": {
     "console": {
       "class": "logging.StreamHandler",
-      "formatter": "simple",
+      "formatter": "json" if os.getenv("STRUCTURED_LOGS", "true").lower() == "true" else "simple",
     },
   },
   "loggers": {
@@ -369,6 +387,16 @@ LOGGING = {
       "handlers": ["console"],
       "level": "INFO",
       "propagate": True,
+    },
+    "telemetry": {
+      "handlers": ["console"],
+      "level": "INFO",
+      "propagate": False,
+    },
+    "utils": {
+      "handlers": ["console"],
+      "level": "INFO",
+      "propagate": False,
     },
   },
 }

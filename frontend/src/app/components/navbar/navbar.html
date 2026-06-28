@@ -78,12 +78,12 @@
     <div class="navbar-right">
       <div class="desktop-auth">
         @if (!authService.isAuthenticated()) {
-        <button mat-raised-button class="auth-btn" (click)="login()">
+        <button type="button" class="auth-btn" (click)="login()">
           <mat-icon aria-hidden="true">login</mat-icon>
           <span>Sign In</span>
         </button>
         } @if (authService.isAuthenticated()) {
-        <button mat-raised-button class="auth-btn" (click)="logout()">
+        <button type="button" class="auth-btn" (click)="logout()">
           <mat-icon aria-hidden="true">logout</mat-icon>
           <span>Sign Out</span>
         </button>
@@ -183,12 +183,12 @@
     <div class="mobile-divider"></div>
 
     @if (!authService.isAuthenticated()) {
-    <button mat-raised-button class="mobile-auth-btn" (click)="login(); closeMobileMenu()">
+    <button type="button" class="mobile-auth-btn" (click)="login(); closeMobileMenu()">
       <mat-icon aria-hidden="true">login</mat-icon>
       <span>Sign In</span>
     </button>
     } @if (authService.isAuthenticated()) {
-    <button mat-raised-button class="mobile-auth-btn" (click)="logout(); closeMobileMenu()">
+    <button type="button" class="mobile-auth-btn" (click)="logout(); closeMobileMenu()">
       <mat-icon aria-hidden="true">logout</mat-icon>
       <span>Sign Out</span>
     </button>

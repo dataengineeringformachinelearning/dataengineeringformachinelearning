@@ -19,7 +19,10 @@
               'Degraded' ? 'warning' : 'error') }}
             </mat-icon>
             <div class="status-banner-text">
-              <h2>{{ page.title }}</h2>
+              <div class="status-title-row">
+                <h2>{{ page.title }}</h2>
+                <app-pro-verified-badge [show]="!!page.is_pro_verified"></app-pro-verified-badge>
+              </div>
               <p>
                 {{ globalPageStatus() === 'Operational' ? 'All systems are functioning normally.' :
                 (globalPageStatus() === 'Degraded' ? 'Some services are experiencing degraded

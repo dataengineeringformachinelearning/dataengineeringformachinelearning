@@ -1,44 +1,14 @@
 import datetime
 from typing import Any
+from unittest.mock import patch
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import Client
 
-from monitor.models import Endpoints, MonitoredService, StatusPage
+from monitor.models import Endpoints, MonitoredService, StatusPage, UserProfile
 
 User = get_user_model()
-
-
-@pytest.fixture
-def test_user(db: Any) -> User:
-  return User.objects.create_user(
-    username="testuser", password="password123", email="test@example.com"
-  )
-
-
-from unittest.mock import patch
-
-
-@pytest.fixture
-def mock_verify_token() -> Any:
-  with patch("firebase_admin.auth.verify_id_token") as mock:
-    mock.return_value = {"uid": "testuser", "email": "test@example.com", "name": "testuser"}
-    yield mock
-
-
-@pytest.fixture
-def authenticated_client(client: Client, test_user: User, mock_verify_token: Any) -> Any:
-  # Monkeypatch client.request to inject Bearer token
-  original_request = client.request
-
-  def new_request(*args, **kwargs):
-    kwargs["HTTP_AUTHORIZATION"] = "Bearer valid-token"
-    return original_request(*args, **kwargs)
-
-  client.request = new_request
-  yield client
-  client.request = original_request
 
 
 @pytest.mark.django_db
@@ -64,6 +34,34 @@ def test_get_all_endpoints(authenticated_client: Client, test_user: User) -> Non
   assert len(data) == 1
   assert data[0]["url"] == "http://test.com"
   assert data[0]["is_active"] is True
+
+
+@pytest.mark.django_db
+def test_status_page_pro_verified_badge(client: Client, test_user: User) -> None:
+  UserProfile.objects.create(user=test_user, tier="Pro", subscription_active=True)
+  StatusPage.objects.create(
+    user=test_user,
+    title="Pro User Status",
+    slug="pro-user-status",
+    is_published=True,
+  )
+  User.objects.create_user(username="freeuser", password="password123", email="free@example.com")
+  free_user = User.objects.get(username="freeuser")
+  UserProfile.objects.create(user=free_user, tier="Standard", subscription_active=False)
+  StatusPage.objects.create(
+    user=free_user,
+    title="Free User Status",
+    slug="free-user-status",
+    is_published=True,
+  )
+
+  response = client.get("/api/v1/system-status/status_pages")
+  assert response.status_code == 200
+  by_slug = {p["slug"]: p for p in response.json()}
+
+  assert by_slug["pro-user-status"]["is_pro_verified"] is True
+  assert by_slug["free-user-status"]["is_pro_verified"] is False
+  assert by_slug["platform-status"]["is_pro_verified"] is False
 
 
 @pytest.mark.django_db
@@ -136,6 +134,20 @@ def test_add_service(authenticated_client: Client, test_user: User) -> None:
   assert data["name"] == "Frontend Web Server"
   assert data["url"] == "http://frontend.local"
   assert MonitoredService.objects.filter(name="Frontend Web Server").exists()
+
+
+@pytest.mark.django_db
+def test_list_platform_services(client: Client) -> None:
+  from account.platform import ensure_platform_status_page
+  from utils.service_urls import ensure_platform_monitored_services
+
+  page = ensure_platform_status_page()
+  ensure_platform_monitored_services()
+  response = client.get(f"/api/v1/system-status/status_pages/{page.id}/services")
+  assert response.status_code == 200, response.content
+  data = response.json()
+  assert len(data) >= 1
+  assert all("status" in row and "sla" in row for row in data)
 
 
 @pytest.mark.django_db

@@ -1,8 +1,15 @@
 import logging
 
 import requests
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+
+def _tor_proxies() -> dict[str, str]:
+  """Build SOCKS5 proxy dict from TOR_PROXY_URL (env-driven)."""
+  url = getattr(settings, "TOR_PROXY_URL", "socks5h://deml-tor-proxy.railway.internal:9050")
+  return {"http": url, "https": url}
 
 
 class DarkWebScanner:
@@ -11,10 +18,9 @@ class DarkWebScanner:
   to find credential leaks and brand mentions.
   """
 
-  PROXIES = {
-    "http": "socks5h://deml-tor-proxy.railway.internal:9050",
-    "https": "socks5h://deml-tor-proxy.railway.internal:9050",
-  }
+  @classmethod
+  def proxies(cls) -> dict[str, str]:
+    return _tor_proxies()
 
   @classmethod
   def _save_threat(cls, account_id, **kwargs):
@@ -70,7 +76,7 @@ class DarkWebScanner:
         f"http://juhanurmihxlp77nkq76byazcldy2hlmovfu2epvl5ankdibsot4csyd.onion/search/?q={keyword}"
       )
 
-      response = requests.get(url, proxies=cls.PROXIES, timeout=30)  # nosemgrep
+      response = requests.get(url, proxies=cls.proxies(), timeout=30)  # nosemgrep
 
       if response.status_code == 200:
         logger.info(f"Successfully reached Ahmia for keyword '{keyword}'.")

@@ -382,27 +382,40 @@ export class Settings implements OnInit {
   }
 
   async verifyEventProjections() {
-    const uid = this.authService.currentUserId();
+    const uid = this.authService.auth?.currentUser?.uid;
     if (!uid) return;
 
     this.isTestingArchitecture.set(true);
-    this.projectionResult.set(null);
+    this.projectionResult.set({ status: 'queued', message: 'Waiting for worker projection...' });
     this.cdr.markForCheck();
 
-    // 1. Subscribe to Firestore for updates
     if (this.firestoreSubscription) {
-      this.firestoreSubscription.unsubscribe(); // unsubscribe old
+      this.firestoreSubscription.unsubscribe();
     }
+
+    const projectionTimeout = setTimeout(() => {
+      if (this.isTestingArchitecture()) {
+        this.projectionResult.set({
+          error: 'Projection timeout',
+          message:
+            'Event was queued but no Firestore update arrived within 30s. Ensure telemetry_worker and outbox_relay are running.',
+        });
+        this.isTestingArchitecture.set(false);
+        this.cdr.markForCheck();
+      }
+    }, 30000);
 
     this.firestoreSubscription = this.firestoreService.getRealtimeStats().subscribe({
       next: data => {
-        if (data) {
+        if (data && (data['action_processed'] || data['active_endpoints'] !== undefined)) {
+          clearTimeout(projectionTimeout);
           this.projectionResult.set(data);
           this.isTestingArchitecture.set(false);
           this.cdr.markForCheck();
         }
       },
       error: err => {
+        clearTimeout(projectionTimeout);
         console.error('Firestore subscription error:', err);
         this.projectionResult.set({
           error: err.message || 'Permission denied connecting to Firestore.',
@@ -412,7 +425,6 @@ export class Settings implements OnInit {
       },
     });
 
-    // 2. Trigger the ingestEvent Cloud Function using the official SDK (reliable auth context in prod)
     try {
       const app = getApp();
       const functions = getFunctions(app, 'us-central1');
@@ -425,9 +437,22 @@ export class Settings implements OnInit {
       }
 
       const ingestEvent = httpsCallable(functions, 'ingestEvent');
-      await ingestEvent({ action: 'get_stats', uid, payload: {} });
-      // On success the Firestore subscription above will receive the update via function fallback or worker
+      const idempotencyKey = `verify-${uid}-${Date.now()}`;
+      const result = await ingestEvent({
+        action: 'get_stats',
+        uid,
+        version: '1.0',
+        idempotency_key: idempotencyKey,
+        payload: { source: 'settings_verification' },
+      });
+      this.projectionResult.set({
+        status: 'accepted',
+        gateway: (result.data as any)?.message || 'Event queued successfully.',
+        message: 'Waiting for Django worker to project stats into Firestore...',
+      });
+      this.cdr.markForCheck();
     } catch (e) {
+      clearTimeout(projectionTimeout);
       console.error('Failed to trigger ingestEvent:', e);
       this.projectionResult.set({
         error: 'Failed to trigger Gateway',

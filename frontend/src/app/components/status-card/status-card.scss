@@ -20,6 +20,17 @@
   --timeline-warning: #ffc107;
 }
 
+.card-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-title {
+  margin: 0;
+}
+
 // Explore-specific classes that are part of the status card block:
 .view-btn-container {
   display: flex;

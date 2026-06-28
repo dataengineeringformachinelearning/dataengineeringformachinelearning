@@ -88,6 +88,7 @@ class StatusPageOut(Schema):
   cloudflare_analytics_id: str | None = None
   created_at: datetime.datetime
   user_id: int | None = None
+  is_pro_verified: bool = False
   cumulative_sla: float | None = None
   overall_uptime: float | None = None
   uptime_history: list[UptimeDaySchema] | None = None
@@ -143,12 +144,14 @@ def list_status_pages(request):
         Q(is_published=True) | Q(user=request.user) | Q(slug="platform-status")
       )
       .distinct()
+      .select_related("user__profile")
       .prefetch_related("services")
     )
   else:
     pages = (
       StatusPage.objects.filter(Q(is_published=True) | Q(slug="platform-status"))
       .distinct()
+      .select_related("user__profile")
       .prefetch_related("services")
     )
 
@@ -157,6 +160,8 @@ def list_status_pages(request):
 
 def _build_status_page_out(p: StatusPage) -> StatusPageOut:
   """Project status page + rollup metrics (AggregatedAnalytics first for 24h)."""
+  from monitor.subscription import owner_has_pro_subscription
+
   urls = list(p.services.values_list("url", flat=True))
   metrics = MetricsService.for_urls(
     urls,
@@ -174,6 +179,7 @@ def _build_status_page_out(p: StatusPage) -> StatusPageOut:
     cloudflare_analytics_id=p.cloudflare_analytics_id,
     created_at=p.created_at,
     user_id=p.user_id,
+    is_pro_verified=owner_has_pro_subscription(p),
     cumulative_sla=metrics.cumulative_sla,
     overall_uptime=metrics.overall_uptime,
     uptime_history=[
@@ -190,12 +196,13 @@ def get_status_page_by_slug(request, slug: str):
 
   if request.user.is_authenticated:
     page = get_object_or_404(
-      StatusPage,
+      StatusPage.objects.select_related("user__profile").prefetch_related("services"),
       Q(slug=slug) & (Q(is_published=True) | Q(user=request.user) | Q(slug="platform-status")),
     )
   else:
     page = get_object_or_404(
-      StatusPage, Q(slug=slug) & (Q(is_published=True) | Q(slug="platform-status"))
+      StatusPage.objects.select_related("user__profile").prefetch_related("services"),
+      Q(slug=slug) & (Q(is_published=True) | Q(slug="platform-status")),
     )
   return _build_status_page_out(page)
 

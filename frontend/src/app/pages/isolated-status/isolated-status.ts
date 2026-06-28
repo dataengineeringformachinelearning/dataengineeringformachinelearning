@@ -22,13 +22,21 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
+import { ProVerifiedBadge } from '../../components/pro-verified-badge/pro-verified-badge';
 
 import { timeout } from 'rxjs';
 
 @Component({
   selector: 'app-isolated-status',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, RouterModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    RouterModule,
+    ProVerifiedBadge,
+  ],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './isolated-status.scss',

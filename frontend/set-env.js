@@ -44,6 +44,7 @@ const storageBucket = process.env.FIREBASE_STORAGE_BUCKET ?? 'demldotcom.firebas
 const messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID ?? '870072971206';
 const sanityProjectId = process.env.SANITY_PROJECT_ID ?? 'hj5wtuct';
 const sanityDataset = process.env.SANITY_DATASET ?? 'production';
+const sentryDsn = process.env.SENTRY_DSN ?? '';
 
 // URL resolution prefers build-time env (BACKEND_URL, MARKETING_URL from Railway etc).
 // If not provided (empty), falls back to runtime hostname logic for common deploys (localhost, Railway patterns).
@@ -152,7 +153,8 @@ export const environment = {
   sanity: {
     projectId: '${sanityProjectId}',
     dataset: '${sanityDataset}'
-  }
+  },
+  sentryDsn: '${sentryDsn}'
 };
 `;
 
@@ -190,7 +192,8 @@ export const environment = {
   sanity: {
     projectId: '${sanityProjectId}',
     dataset: '${sanityDataset}'
-  }
+  },
+  sentryDsn: '${sentryDsn}'
 };
 `;
 

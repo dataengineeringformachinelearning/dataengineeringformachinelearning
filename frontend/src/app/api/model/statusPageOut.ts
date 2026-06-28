@@ -20,6 +20,7 @@ export interface StatusPageOut {
   cloudflare_analytics_id?: string | null;
   created_at: string;
   user_id?: number | null;
+  is_pro_verified?: boolean;
   cumulative_sla?: number | null;
   overall_uptime?: number | null;
   uptime_history?: UptimeDaySchema[] | null;

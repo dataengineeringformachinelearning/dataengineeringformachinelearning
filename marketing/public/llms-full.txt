@@ -224,7 +224,7 @@ The DEML Platform natively integrates with Hugging Face to automate the sharing 
 
 **Requirements:**
 
-- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway). See [RAILWAY.md](RAILWAY.md) and the `*.env.example` files for the complete, up-to-date list (including `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL` for cross-site handoff, Outbox/Redpanda/Dragonfly, etc.).
+- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway). See [Appendix C in BOOK.md](BOOK.md#appendix-c-railway-deployment) and the `*.env.example` files for the complete, up-to-date list (including `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL` for cross-site handoff, Outbox/Redpanda/Dragonfly, etc.).
 - Add `HF_TOKEN` and `HF_SPACE_REPO` as GitHub Repository Secrets to enable the Spaces sync action.
 
 ---
@@ -296,7 +296,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 
 [![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
-> Full Railway service + environment variable reference: [RAILWAY.md](RAILWAY.md). Always keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` as the source of truth.
+> Full Railway service + environment variable reference: [Appendix C in BOOK.md](BOOK.md#appendix-c-railway-deployment). Always keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` as the source of truth.
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
 
@@ -1219,7 +1219,7 @@ Railway provides the declarative infrastructure-as-code capabilities required to
 
 This topology allows me to scale my infrastructure surgically. If a massive influx of external traffic threatens to overwhelm the platform, Railway automatically provisions additional replica nodes for the Django API edge, while the Telemetry Workers continue to process the Redpanda queue at their own deliberate, uncompromised pace. The frontend static assets are distributed globally to edge nodes, ensuring rapid time-to-interactive for users regardless of their geographic location.
 
-Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Railway intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. Detailed scaling configurations, environment variable mappings, and specific deployment hooks are documented in the canonical [RAILWAY.md](RAILWAY.md) (plus per-service tables and the latest env-driven cross-site handoff configuration). This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
+Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Railway intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. The complete per-service setup checklist — env vars, workers, outbox relay, cross-site URL trio, and local `docker-compose` parity — lives in **Appendix C**. This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
 
 ### Infrastructure & Compute Resource Allocation
 
@@ -1536,21 +1536,40 @@ Because we are processing potentially identifiable information (IP addresses, pr
 
 ## Appendix C: Railway Deployment
 
-**See the dedicated [RAILWAY.md](RAILWAY.md) for the current authoritative service list, per-service environment variable tables, internal DNS, and build-time variables (MARKETING*URL + PUBLIC*\* for auth handoff).**
+**Env templates:** `backend/.env.example`, `frontend/.env.example`, `marketing/.env.example`.
 
-This appendix gives a historical overview. The application runs as many services on Railway (backend, frontend, multiple workers, Redpanda, Dragonfly, Postgres, ClickHouse, supporting tools). Latest variable names and values are maintained in the root RAILWAY.md + the \*.env.example files.
+This appendix is the **complete setup checklist** for deploying the DEML platform on Railway (project: `deml`). Every hostname, broker address, and cross-site URL is **env-driven** — never hardcode domains in application code.
 
-## How to Deploy in One Project
+### Pre-Deploy Checklist
 
-To deploy all these components under a single Railway project:
+Before creating services, prepare:
 
-1. **Create a New Project**: Go to your Railway dashboard and click **New Project** -> **Empty Project**.
-2. **Add Services**: For each component below, click **New Service** -> **GitHub Repo**, and select this repository.
-3. **Configure Services**:
-   - Go to the **Settings** tab for each newly created service.
-   - Set the **Root Directory** as specified for each service below.
-   - Override the **Start Command** if specified.
-4. **Environment Variables**: Add a Postgres database (via **New Service** -> **Database** -> **Add PostgreSQL**) and configure all necessary environment variables in the **Variables** tab for each service according to the configurations listed below.
+1. **Secrets** in Railway Variables or [Infisical](https://infisical.com/) (recommended for SOC 2 / CMMC): `SECRET_KEY`, `FIREBASE_SERVICE_ACCOUNT_JSON`, `GCP_SERVICE_ACCOUNT_JSON`, Stripe, Resend, threat-intel API keys, `HF_TOKEN`, `SENTRY_DSN`.
+2. **Cross-site URL trio** (same names on backend, frontend, and marketing builds):
+
+| Variable        | Production value                                | Purpose                        |
+| --------------- | ----------------------------------------------- | ------------------------------ |
+| `FRONTEND_URL`  | `https://deml.app`                              | Angular app, widgets, status   |
+| `BACKEND_URL`   | `https://backend.deml.app`                      | Django API, OAuth callbacks    |
+| `MARKETING_URL` | `https://dataengineeringformachinelearning.com` | Astro site, auth handoff, CORS |
+
+3. **CORS / CSRF** must list every public origin (app + marketing + backend + local dev). Copy from `backend/.env.example` and extend for your domains.
+4. **Production guards**: `DEBUG=False`, unique `SECRET_KEY`. On Railway, the backend **fails fast** if these are insecure (`backend/utils/env.py`).
+5. **Privacy defaults**: `SENTRY_SEND_PII=false`, `STRUCTURED_LOGS=true` (JSON logs with correlation IDs).
+
+### How to Deploy in One Project
+
+1. **Create a New Project**: Railway dashboard → **New Project** → **Empty Project** (name: `deml`).
+2. **Add Postgres**: **New** → **Database** → **PostgreSQL**. Note the internal `DATABASE_URL`.
+3. **Add Services**: For each component below, **New Service** → **GitHub Repo** → select this repository.
+4. **Configure each service** (Settings tab):
+   - **Root Directory** as specified below.
+   - **Start Command** when overridden.
+   - **Watch Paths** (e.g. `/frontend/**`, `/backend/**`) so unrelated changes do not trigger rebuilds.
+5. **Variables tab**: Set env vars per service (see per-service sections). Workers share nearly the same bundle as `deml-backend`.
+6. **Redeploy frontend** after changing build-time vars (`FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`, `FIREBASE_*`, `SENTRY_DSN`) so `set-env.js` regenerates `environment.ts`.
+7. **Marketing site** (Astro) is hosted **outside** this Railway project (Firebase Hosting). Set the same URL trio at **build** time on that host.
+8. **Firebase** Cloud Functions + Firestore rules deploy via GitHub Actions (`.github/workflows/firebase-backend-deploy.yml`), not Railway.
 
 ## Infisical Integration
 
@@ -1565,81 +1584,68 @@ To satisfy strict secret management guidelines (SOC 2, CMMC 2.0, NIST SP 800-171
 
 ## Services Overview
 
-### 1. Web Frontend
+### 1. Web Frontend (`deml-frontend`)
 
-This service serves the user interface.
+Angular SPA — dashboard, status pages, widgets.
 
-- **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/frontend`
-- **Builder**: Dockerfile (utilizes secure `nginxinc/nginx-unprivileged:alpine-slim` base image)
-- **Start Command**: `nginx -g "daemon off;"` (Default in Dockerfile)
+- **Builder**: Dockerfile (`nginxinc/nginx-unprivileged:alpine-slim`)
+- **Start Command**: `nginx -g "daemon off;"` (Dockerfile default)
 - **Public URL**: `https://deml.app`
-- **Target Port**: `8080`
-- **Private Internal DNS**: `dataengineeringformachinelearnin.railway.internal`
-- **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**:
-  - **FIREBASE_API_KEY**: Your Firebase web app API key.
-  - **FIREBASE_PROJECT_ID**: Your Firebase web app project ID.
-  - **FIREBASE_APP_ID**: Your Firebase web app ID.
-  - **FIREBASE_AUTH_DOMAIN**: Your Firebase web app auth domain.
-  - **FIREBASE_STORAGE_BUCKET**: Your Firebase storage bucket.
-  - **FIREBASE_MESSAGING_SENDER_ID**: Your Firebase messaging sender ID.
-  - **SANITY_PROJECT_ID**: Your Sanity.io project ID.
-  - **SANITY_DATASET**: Your Sanity.io dataset name (e.g., `production`).
-  - **BACKEND_URL**: `https://backend.deml.app`
-
-### 2. Web Backend (API)
-
-This service runs the main Django web server.
-
-- **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure, minimal `gcr.io/distroless/python3-debian12` distroless runtime)
-- **Start Command**: `/opt/venv/bin/python start.py` (Default in Dockerfile)
-- **Public URL**: `https://backend.deml.app`
-- **Target Port**: `8080`
 - **Private Internal DNS**: `deml-frontend.railway.internal`
-- **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**:
-  - **SECRET_KEY**: `<your-production-secret-key>`
-  - **DEBUG**: `False`
-  - **ALLOWED_HOSTS**: `backend.deml.app`
-  - **FRONTEND_URL**: `https://deml.app`
-  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
-  - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g., `deml-clickhouse.railway.internal`).
-  - **CLICKHOUSE_PORT**: `8123` (HTTP port for the python client)
-  - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
-  - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
-  - **CORS_ALLOW_CREDENTIALS**: `True`
-  - **CORS_ALLOWED_ORIGINS**: `https://deml.app,https://backend.deml.app`
-  - **CSRF_TRUSTED_ORIGINS**: `https://deml.app,https://backend.deml.app`
-  - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
-  - **DRAGONFLY_HOST**: `deml-dragonfly.railway.internal`
-  - **FIREBASE_SERVICE_ACCOUNT_JSON**: Raw JSON string of your Firebase service account credentials.
-  - **GOOGLE_API_KEY**: `<your-google-api-key>`
-  - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>`
-  - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
-  - **GOOGLE_OAUTH_REDIRECT_URI**: `https://backend.deml.app/api/v1/system-status/integrations/google/callback`
-  - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>`
-  - **IPINFO_API_KEY**: `<your-ipinfo-api-key>`
-  - **CISA_TAXII_ENDPOINT**: `<your-cisa-taxii-endpoint>`
-  - **ISAC_API_KEY**: `<your-isac-api-key>`
-  - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
-  - **RESEND_API_KEY**: `<your-resend-api-key>`
-  - **ALERT_EMAIL_TARGET**: `<your-target-email@example.com>`
-  - **ALERT_EMAIL_FROM**: `notifications@deml.app`
-  - **SENTRY_DSN**: `<your-sentry-dsn>`
-  - **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
-  - **GCP_KMS_LOCATION**: Location of the Key Ring
-  - **GCP_KMS_KEY_RING**: Name of the KMS Key Ring
-  - **GCP_KMS_KEY_NAME**: Name of the Key Encrypting Key (KEK)
-  - **GCP_LOGGING_ENABLED**: `True`
-  - **GOOGLE_APPLICATION_CREDENTIALS**: Path to GCP service account JSON
-  - **GCP_SERVICE_ACCOUNT_JSON**: Raw JSON string of your GCP service account credentials
-  - **HF_TOKEN**: Hugging Face Access Token for pushing trained models to the Hub
-  - **HF_REPO_ID**: Target Hugging Face model repository (e.g., `username/deml-models`)
+- **Build step**: `set-env.js` runs at deploy and writes `src/environments/environment.ts`.
+
+**Required build-time variables** (see `frontend/.env.example`):
+
+| Variable                       | Example                                         | Notes                                   |
+| ------------------------------ | ----------------------------------------------- | --------------------------------------- |
+| `FRONTEND_URL`                 | `https://deml.app`                              | Widget + status links                   |
+| `BACKEND_URL`                  | `https://backend.deml.app`                      | API base                                |
+| `MARKETING_URL`                | `https://dataengineeringformachinelearning.com` | Auth handoff                            |
+| `FIREBASE_API_KEY`             | (secret)                                        | Web auth                                |
+| `FIREBASE_PROJECT_ID`          | `demldotcom`                                    |                                         |
+| `FIREBASE_APP_ID`              | (from Firebase console)                         |                                         |
+| `FIREBASE_AUTH_DOMAIN`         | `demldotcom.firebaseapp.com`                    |                                         |
+| `FIREBASE_STORAGE_BUCKET`      | `demldotcom.firebasestorage.app`                |                                         |
+| `FIREBASE_MESSAGING_SENDER_ID` | (from Firebase console)                         |                                         |
+| `SANITY_PROJECT_ID`            | `hj5wtuct`                                      | CMS content                             |
+| `SANITY_DATASET`               | `production`                                    |                                         |
+| `SENTRY_DSN`                   | (optional)                                      | Client error reporting; omit to disable |
+
+### 2. Web Backend (`deml-backend`)
+
+Django + Ninja API — auth, outbox writes, billing, monitor.
+
+- **Root Directory**: `/backend`
+- **Builder**: Dockerfile (`gcr.io/distroless/python3-debian12`)
+- **Start Command**: `/opt/venv/bin/python start.py`
+- **Public URL**: `https://backend.deml.app`
+- **Private Internal DNS**: `deml-backend.railway.internal`
+
+**Required variables** (see `backend/.env.example`):
+
+| Category            | Variables                                                                                             |
+| ------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Core**            | `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`, `DATABASE_URL`                                          |
+| **Cross-site URLs** | `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`                                                        |
+| **CORS / CSRF**     | `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS`, `CORS_ALLOW_CREDENTIALS=True`                         |
+| **Event bus**       | `REDPANDA_BROKERS=deml-queue.railway.internal:9092`, `DRAGONFLY_HOST=deml-dragonfly.railway.internal` |
+| **Firebase**        | `FIREBASE_SERVICE_ACCOUNT_JSON`, `FIREBASE_PROJECT_ID`, `GOOGLE_CLOUD_PROJECT`                        |
+| **OAuth / AI**      | `GOOGLE_API_KEY`, `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REDIRECT_URI` |
+| **Threat intel**    | `ABUSEIPDB_API_KEY`, `IPINFO_API_KEY`, `OTX_API_KEY`, `ISAC_API_KEY`, `CISA_TAXII_ENDPOINT`           |
+| **Email / alerts**  | `RESEND_API_KEY`, `ALERT_EMAIL_TARGET`, `ALERT_EMAIL_FROM`, `DISCORD_WEBHOOK_URL`                     |
+| **Observability**   | `SENTRY_DSN`, `SENTRY_SEND_PII=false`, `STRUCTURED_LOGS=true`, `GCP_LOGGING_ENABLED`                  |
+| **Billing**         | `STRIPE_PUBLIC_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`                                     |
+| **ML / encryption** | `HF_TOKEN`, `HF_REPO_ID`, `GCP_KMS_*`, `GCP_SERVICE_ACCOUNT_JSON`                                     |
+| **CVE pipeline**    | `SCANNER_SERVICE_URL`, `CPE_GUESSER_URL`, `CLICKHOUSE_URI`, `CVE_DICT_DB_URL`                         |
+| **Dark web OSINT**  | `TOR_PROXY_URL=socks5h://deml-tor-proxy.railway.internal:9050`                                        |
+
+**CORS example (production):**
+
+```
+CORS_ALLOWED_ORIGINS=https://deml.app,https://dataengineeringformachinelearning.com,https://backend.deml.app,https://backend.dataengineeringformachinelearning.com
+CSRF_TRUSTED_ORIGINS=https://deml.app,https://dataengineeringformachinelearning.com,https://backend.deml.app,https://backend.dataengineeringformachinelearning.com
+```
 
 ### 3. Redpanda Broker (Message Queue)
 
@@ -1658,82 +1664,80 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Environment Variables**:
   - **REDPANDA_BROKERS**: Not strictly needed, but ensure port `9092` is exposed internally.
 
-### 4. Telemetry Worker (Consumer)
+### 4. Telemetry Worker (`deml-telemetry-worker`)
 
-Background worker process to consume telemetry/streaming data from Redpanda and write it to Postgres.
+Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), projects to Postgres + Firestore `deml` DB, runs health pings and analytics rollups.
 
-- **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
-- **Start Command**: `/opt/venv/bin/python manage.py telemetry_worker`
-- **Target Port**: None (Background worker process)
+- **Start Command**: `python manage.py telemetry_worker`
 - **Private Internal DNS**: `deml-telemetry-worker.railway.internal`
-- **Public URL**: None (Strictly an internal background process)
-- **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**:
-  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
-  - **DEBUG**: `False`
-  - **SECRET_KEY**: `<your-production-secret-key>`
-  - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
-  - **DRAGONFLY_HOST**: `deml-dragonfly.railway.internal`
+- **Public URL**: None (internal only)
 
-**Additional Services for Reliability:**
+**Variables:** Copy the **full backend bundle** (see §2). Minimum:
 
-- **Outbox Relay** (`python manage.py outbox_relay --once` or as daemon/cron): Publishes from the `OutboxEvent` table to Redpanda. Run as a separate Railway service or scheduled job to guarantee delivery.
-- Idempotency and DLQ are handled inside the telemetry_worker.
+- `DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`
+- `REDPANDA_BROKERS`, `DRAGONFLY_HOST`
+- `FIREBASE_SERVICE_ACCOUNT_JSON`
+- `STRUCTURED_LOGS=true`
+- Threat-intel keys if enrichment is enabled
 
-**Note on Firebase Components**: Firebase Cloud Functions (`ingestEvent`, with event versioning) and Firestore rules (for the `deml` named database and Event Projections user data isolation) are deployed independently via a dedicated GitHub Actions workflow (`.github/workflows/firebase-backend-deploy.yml`) using the `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM` service account. This is separate from Railway backend services and the marketing hosting deploy.
+### 4b. Outbox Relay (`deml-outbox-relay`)
+
+Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable API → Kafka delivery.
+
+- **Root Directory**: `/backend`
+- **Start Command**: `python manage.py outbox_relay` (daemon; polls every 5s)
+- **Cron alternative**: `python manage.py outbox_relay --once` on a schedule
+- **Public URL**: None
+
+**Variables:** Same core bundle as backend: `DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`, `REDPANDA_BROKERS`, `DRAGONFLY_HOST`, `STRUCTURED_LOGS=true`.
 
 > [!WARNING]
-> The `REDPANDA_BROKERS` environment variable MUST point to the actual Redpanda Broker's internal TCP address (e.g., `deml-queue.railway.internal:9092`).
+> `REDPANDA_BROKERS` **must** use the broker's internal TCP address: `deml-queue.railway.internal:9092`. Never use public domains for inter-service traffic.
 
-### 5. ML Training Worker (Consumer)
+### 5. ML Training Worker (`deml-machine-learning-worker`)
 
-Background ML training process to consume training triggers from Redpanda, load PyTorch, run model training, and write results to Postgres.
+Consumes `ml-training-events`, runs `train_all_models`, syncs to Hugging Face Hub.
 
-- **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
-- **Start Command**: `/opt/venv/bin/python manage.py ml_worker`
-- **Target Port**: None (Background worker process)
+- **Start Command**: `python manage.py ml_worker`
 - **Private Internal DNS**: `deml-machine-learning-worker.railway.internal`
-- **Public URL**: None (Strictly an internal background process)
-- **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**:
-  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
-  - **DEBUG**: `False`
-  - **SECRET_KEY**: `<your-production-secret-key>`
-  - **REDPANDA_BROKERS**: `deml-queue.railway.internal:9092`
-  - **DRAGONFLY_HOST**: `deml-dragonfly.railway.internal`
 
-### 6. Security and Compliance Worker (Scheduler)
+**Variables:** Backend bundle + `HF_TOKEN`, `HF_REPO_ID`, `REDPANDA_BROKERS`, `DRAGONFLY_HOST`.
 
-Periodic security worker to fetch threat intelligence data and manage 90-day compliance checks.
+### 6. Security Worker (`deml-security-worker`)
 
-- **Source**: GitHub repository (`main` branch)
+Hourly threat intel, daily DEK rotation check, DB cleanup, dark-web scan, Stripe subscription sync.
+
 - **Root Directory**: `/backend`
-- **Builder**: Dockerfile (utilizes secure `gcr.io/distroless/python3-debian12` base image)
-- **Start Command**: `/opt/venv/bin/python manage.py security_worker`
-- **Target Port**: None (Background worker process)
+- **Start Command**: `python manage.py security_worker`
 - **Private Internal DNS**: `deml-security-worker.railway.internal`
-- **Public URL**: None (Strictly an internal background process)
-- **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
-- **Environment Variables**:
-  - **DATABASE_URL**: `${{Postgres.DATABASE_URL}}`
-  - **DEBUG**: `False`
-  - **SECRET_KEY**: `<your-production-secret-key>`
-  - **GOOGLE_OAUTH_CLIENT_ID**: `<your-google-oauth-client-id>`
-  - **GOOGLE_OAUTH_CLIENT_SECRET**: `<your-google-oauth-client-secret>`
-  - **ABUSEIPDB_API_KEY**: `<your-abuseipdb-api-key>`
-  - **IPINFO_API_KEY**: `<your-ipinfo-api-key>`
-  - **OTX_API_KEY**: `<your-alienvault-otx-api-key>`
-  - **GCP_KMS_PROJECT_ID**: GCP Project ID containing Key Ring
-  - **GCP_KMS_LOCATION**: Location of the Key Ring
-  - **GCP_KMS_KEY_RING**: Name of the KMS Key Ring
-  - **GCP_KMS_KEY_NAME**: Name of the Key Encrypting Key (KEK)
+
+**Variables:** Backend bundle + threat-intel keys + `GCP_KMS_*` + `TOR_PROXY_URL`.
+
+### Shared Worker Environment Bundle
+
+All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`) should inherit the same secrets as `deml-backend` unless a key is truly unused. Use Railway **shared variables** or Infisical to avoid drift. Centralized reads go through `backend/utils/env.py`.
+
+**Event flow (for operators):**
+
+1. API writes → `OutboxEvent` (Postgres) → **outbox_relay** → Redpanda
+2. Angular/Firebase → `frontend-events` topic → **telemetry_worker** → Postgres + Firestore
+3. Idempotency keys + DLQ handled inside `telemetry_worker` projectors
+
+**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. Functions may need a **public** Redpanda endpoint or fall back to Firestore (see `functions/src/index.ts`).
+
+### Marketing Site (not a Railway service)
+
+Hosted separately (Firebase Hosting / static). Build with the same URL trio:
+
+| Variable        | Example                                         |
+| --------------- | ----------------------------------------------- |
+| `FRONTEND_URL`  | `https://deml.app`                              |
+| `BACKEND_URL`   | `https://backend.deml.app`                      |
+| `MARKETING_URL` | `https://dataengineeringformachinelearning.com` |
+
+See `marketing/.env.example`. Legacy `PUBLIC_MAIN_APP_URL` / `PUBLIC_API_BASE` still work but are deprecated.
 
 ### 7. ClickHouse Database (Telemetry Storage)
 
@@ -1794,6 +1798,8 @@ This microservice provides an offline, isolated environment for executing `osv-s
   - **CPE_GUESSER_URL**: `http://deml-cpe-guesser.railway.internal:1323/unique`
   - **NVD_API_KEY**: Your National Vulnerability Database API Key (optional but highly recommended to bypass rate limits)
 
+**Consumers** (`deml-backend`, workers) set `SCANNER_SERVICE_URL=http://deml-scanner.railway.internal:8000`.
+
 ### 10. CPE Guesser Service
 
 This service converts raw technology strings into CPE 2.3 identifiers. It is required for the Vulnerability Scanner Engine to properly normalize infrastructure data.
@@ -1830,14 +1836,20 @@ This service manages the Software Bill of Materials (SBOM) and tracks vulnerabil
 
 ### 12. Tor Proxy (Dark Web Scanner)
 
-A lightweight proxy that allows the backend Telemetry Workers to anonymously scrape dark web search engines (e.g., Ahmia) for brand mentions.
+A lightweight proxy that allows the security worker to anonymously scrape dark web search engines (e.g., Ahmia) for brand mentions.
 
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/infrastructure/tor-proxy`
 - **Builder**: Dockerfile (Minimal `alpine` image running as non-root `tor` user)
 - **Target Port**: `9050`
 - **Private Internal DNS**: `deml-tor-proxy.railway.internal`
-- **Environment Variables**: None required.
+- **Environment Variables**: None on the proxy itself.
+
+**Consumers** (`deml-backend`, `deml-security-worker`) must set:
+
+```
+TOR_PROXY_URL=socks5h://deml-tor-proxy.railway.internal:9050
+```
 
 ### 13. Dragonfly (Redis Replacement for WebSockets)
 
@@ -1851,16 +1863,63 @@ This service provides the in-memory pub/sub message broker required by Django Ch
 - **Public URL**: None (Strictly an internal service)
 - **Environment Variables**: None required by default.
 
-_(Once deployed, ensure the `DRAGONFLY_HOST` environment variable on the **Web Backend**, **Telemetry Worker**, and **ML Training Worker** points to this internal DNS, e.g., `deml-dragonfly.railway.internal`)_
+_(Once deployed, set `DRAGONFLY_HOST=deml-dragonfly.railway.internal` on **deml-backend**, all workers, and any service using Channels or rate limiting.)_
 
 ## Internal Networking
 
-Services within this environment can communicate securely over Railway's private internal network without traversing the public internet.
+All inter-service traffic uses Railway private DNS (`*.railway.internal`). **Never** route broker, database, or cache traffic over public URLs.
 
-- **Backend API**: Accessible internally at `deml-backend.railway.internal:8080`
-- **Frontend**: Accessible internally at `deml-frontend.railway.internal:8080`
-- **Postgres Database**: Connected via the internal network. Ensure the `DATABASE_URL` environment variable uses the internal connection string.
-- **Redpanda Broker**: Connected via the internal TCP network (e.g., `deml-queue.railway.internal:9092`).
+| Service     | Internal address                                             |
+| ----------- | ------------------------------------------------------------ |
+| Backend API | `deml-backend.railway.internal:8080`                         |
+| Frontend    | `deml-frontend.railway.internal:8080`                        |
+| Postgres    | Via `DATABASE_URL` (internal connection string from Railway) |
+| Redpanda    | `deml-queue.railway.internal:9092`                           |
+| Dragonfly   | `deml-dragonfly.railway.internal:6379`                       |
+| ClickHouse  | `deml-clickhouse.railway.internal:8123`                      |
+| Scanner     | `deml-scanner.railway.internal:8000`                         |
+| CPE Guesser | `deml-cpe-guesser.railway.internal:1323`                     |
+| Tor proxy   | `deml-tor-proxy.railway.internal:9050`                       |
+
+## Local Development (`docker-compose.yml`)
+
+Local parity includes: `backend`, `telemetry_worker`, `ml_worker`, `security_worker`, `outbox_relay`, Postgres, Redpanda, Dragonfly, ClickHouse, Tor proxy, and supporting infra. Copy `backend/.env.example` to `backend/.env` and use localhost overrides:
+
+```
+REDPANDA_BROKERS=redpanda:9092
+DRAGONFLY_HOST=dragonfly
+FRONTEND_URL=http://localhost:4200
+BACKEND_URL=http://localhost:8000
+MARKETING_URL=http://localhost:4321
+TOR_PROXY_URL=socks5h://tor-proxy:9050
+```
+
+Run `docker compose up` from the repo root. Frontend: `cd frontend && npm start`. Marketing: `cd marketing && npm run dev`.
+
+## Updating Environment Variables
+
+1. Prefer setting in Railway dashboard (Variables tab per service) or via CLI.
+2. After changing build-time vars (`MARKETING_URL`, `BACKEND_URL`, `FIREBASE_*`) for frontend, trigger a new deploy so `set-env.js` runs.
+3. Keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` in sync with reality.
+
+## Security Notes
+
+- Never commit real `.env`.
+- Secrets (Stripe, Resend, Firebase SA, KMS, HF) should use Railway secret variables or Infisical integration.
+- CORS/CSRF lists are the primary control for cross-origin auth handoff.
+
+See also: `backend/.env.example`, `frontend/.env.example`, `marketing/.env.example`, BOOK.md (Event Projections chapter), and AGENTS.md (CORS rule: never hardcode domains).
+
+## Railway CLI Quick Reference
+
+```bash
+railway link
+railway variables --service deml-backend --set "MARKETING_URL=https://dataengineeringformachinelearning.com"
+railway variables --service deml-frontend --set "SENTRY_DSN=<your-dsn>"
+railway variables --service deml-backend
+```
+
+After any build-time variable change on `deml-frontend`, trigger a redeploy.
 
 ## CI/CD Pipeline
 

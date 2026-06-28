@@ -128,6 +128,7 @@ This document captures the core coding principles, philosophies, and "how we bui
 - `scripts/git_flow.py`: Versioning, PR automation.
 - `scripts/run_axe.js`: A11y enforcement.
 - `scripts/sync_content.py`: Doc sync (critical for agents/LLMs).
+- `scripts/dump_openapi.py`: Regenerate `frontend/openapi.json` from Django Ninja schema.
 - `scripts/deml-cleanup.sh`: Maintenance.
 - Pre-commit config, ruff, eslint, prettier.
 - uv, tsx, Docker (unprivileged).

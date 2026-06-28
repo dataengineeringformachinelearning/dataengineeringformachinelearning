@@ -107,7 +107,6 @@
     }
 
     try {
-      const script = new URL(scriptOrigin);
       return normalizeStatusAppHost(scriptOrigin);
     } catch {
       return normalizeStatusAppHost(scriptOrigin || DEFAULT_STATUS_APP);

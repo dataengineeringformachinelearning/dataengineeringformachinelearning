@@ -89,6 +89,28 @@ def test_ensure_platform_monitored_services_prunes_duplicates():
   assert django.url == "https://deml.app/"
 
 
+@pytest.mark.django_db
+@override_settings(
+  FRONTEND_URL="https://deml.app", MARKETING_URL="https://dataengineeringformachinelearning.com"
+)
+def test_ensure_platform_monitored_services_handles_duplicate_names(client):
+  from django.test import Client
+
+  page = ensure_platform_status_page()
+  MonitoredService.objects.create(
+    status_page=page, name="Django Web Server", url="https://deml.app/old-a"
+  )
+  MonitoredService.objects.create(
+    status_page=page, name="Django Web Server", url="https://deml.app/old-b"
+  )
+
+  ensure_platform_monitored_services()
+
+  assert MonitoredService.objects.filter(status_page=page, name="Django Web Server").count() == 1
+  response = Client().get(f"/api/v1/system-status/status_pages/{page.id}/services")
+  assert response.status_code == 200
+
+
 @override_settings(FRONTEND_URL="https://deml.app")
 def test_metrics_url_for_service_normalizes_platform_only():
   raw = "http://localhost:8000/api/v1/system-status/health"

@@ -372,12 +372,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public hasData(options: ChartOptions): boolean {
     if (!options || !options.series) return false;
     if (options.chart?.type === 'donut') {
-      return options.series.length > 0;
+      const values = options.series as number[];
+      return values.some(v => v > 0);
     }
-    if (options.series.length > 0 && options.series[0].data) {
-      return options.series[0].data.length > 0;
-    }
-    return false;
+    // Bar/line charts: render when series structure exists (zero counts are valid telemetry).
+    return options.series.length > 0;
   }
 
   private loadAnalyticsData() {
@@ -564,20 +563,27 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
     setTimeout(() => {
       const mapContainer = document.getElementById('originMap');
-      if (mapContainer && !this.map) {
-        this.map = L.map('originMap', {
-          zoomControl: false,
-          attributionControl: false,
-        }).setView([20, 0], 2);
+      if (!mapContainer) return;
 
-        const tileUrl = this.isDarkMode
-          ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-          : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-
-        L.tileLayer(tileUrl, {
-          attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
-        }).addTo(this.map);
+      if (this.map) {
+        this.map.remove();
+        this.map = undefined;
+        mapContainer.replaceChildren();
       }
+
+      this.map = L.map('originMap', {
+        zoomControl: false,
+        attributionControl: false,
+      }).setView([20, 0], 2);
+
+      const tileUrl = this.isDarkMode
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
+      L.tileLayer(tileUrl, {
+        attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>',
+      }).addTo(this.map);
+
       this.updateMapMarkers();
 
       setTimeout(() => {

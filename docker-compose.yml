@@ -62,6 +62,11 @@ services:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
       - DRAGONFLY_HOST=dragonfly
+      - FRONTEND_URL=http://localhost:4200
+      - BACKEND_URL=http://localhost:8000
+      - MARKETING_URL=http://localhost:4321
+      - TOR_PROXY_URL=socks5h://tor-proxy:9050
+      - STRUCTURED_LOGS=true
     depends_on:
       postgres:
         condition: service_healthy
@@ -84,6 +89,8 @@ services:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
       - DRAGONFLY_HOST=dragonfly
+      - TOR_PROXY_URL=socks5h://tor-proxy:9050
+      - STRUCTURED_LOGS=true
     depends_on:
       backend:
         condition: service_started
@@ -104,11 +111,49 @@ services:
       - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
       - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
       - DRAGONFLY_HOST=dragonfly
+      - TOR_PROXY_URL=socks5h://tor-proxy:9050
+      - SCANNER_SERVICE_URL=http://scanner:8000
+      - CPE_GUESSER_URL=http://cpe-guesser:1323/unique
     depends_on:
       backend:
         condition: service_started
     command: >
       sh -c "python manage.py ml_worker"
+
+  security_worker:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
+      - DRAGONFLY_HOST=dragonfly
+      - TOR_PROXY_URL=socks5h://tor-proxy:9050
+    depends_on:
+      backend:
+        condition: service_started
+    command: >
+      sh -c "python manage.py security_worker"
+
+  outbox_relay:
+    build:
+      context: ./backend
+    volumes:
+      - ./backend:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
+      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
+      - DRAGONFLY_HOST=dragonfly
+    depends_on:
+      backend:
+        condition: service_started
+      redpanda:
+        condition: service_healthy
+    command: >
+      sh -c "python manage.py outbox_relay"
 
   clickhouse:
     build:

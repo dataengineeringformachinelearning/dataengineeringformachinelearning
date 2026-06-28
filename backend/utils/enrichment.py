@@ -104,3 +104,17 @@ def get_ip_enrichment(ip_address):
   cache.set(cache_key, enrichment_data, 60 * 60 * 24)
 
   return enrichment_data
+
+
+def get_ip_enrichment_batch(ip_addresses: list[str | None]) -> dict[str, dict]:
+  """
+  Batch IP enrichment for projector hot paths.
+
+  Uses Django cache first so repeated IPs in a Kafka batch hit memory instead
+  of issuing one HTTP request per row.
+  """
+  unique_ips = {ip for ip in ip_addresses if ip}
+  result: dict[str, dict] = {}
+  for ip in unique_ips:
+    result[ip] = get_ip_enrichment(ip)
+  return result

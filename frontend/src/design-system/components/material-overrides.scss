@@ -18,6 +18,22 @@
   font-size: max(18px, var(--base-font-size));
 }
 
+.mat-mdc-button.mat-warn,
+.mat-mdc-raised-button.mat-warn,
+.mat-mdc-unelevated-button.mat-warn,
+.mat-mdc-flat-button.mat-warn,
+.mat-mdc-outlined-button.mat-warn,
+.mat-mdc-stroked-button.mat-warn {
+  --mdc-filled-button-container-color: var(--carrot-orange);
+  --mdc-filled-button-label-text-color: var(--white);
+  --mdc-outlined-button-outline-color: var(--carrot-orange);
+  --mdc-outlined-button-label-text-color: var(--carrot-orange);
+  --mat-filled-button-state-layer-color: var(--white);
+  --mat-outlined-button-state-layer-color: var(--carrot-orange);
+  font-size: max(18px, var(--base-font-size));
+  border-radius: var(--border-radius-sm);
+}
+
 .mat-mdc-form-field,
 .mat-mdc-select,
 .mat-mdc-option,

@@ -16,6 +16,11 @@ Thumbs.db
 .env.*
 !.env.example
 
+# Service account keys (use FIREBASE_SERVICE_ACCOUNT_JSON / GCP_SERVICE_ACCOUNT_JSON env vars)
+firebase-service-account.json
+**/firebase-service-account.json
+gcp-service-account.json
+
 # Python General
 __pycache__/
 *.py[cod]
@@ -36,6 +41,10 @@ db.sqlite3-journal
 # Python Tools
 .ruff_cache/
 .pytest_cache/
+
+# Firebase emulator / CLI debug output
+firebase-debug.log
+**/firebase-debug.log
 
 # Node / JS
 node_modules/

@@ -133,6 +133,18 @@
     height: 32px;
   }
 
+  .status-title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+
+    h2 {
+      margin: 0;
+    }
+  }
+
   .status-banner-text {
     flex: 1;
     min-width: 200px;

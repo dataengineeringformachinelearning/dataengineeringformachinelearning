@@ -11,7 +11,7 @@ from account.context import resolve_scope_from_account_id
 from account.platform import PLATFORM_ACCOUNT_ID
 from asgiref.sync import sync_to_async
 from monitor.models import BugReport, Endpoints, ThreatIntelligence
-from utils.enrichment import get_ip_enrichment, parse_user_agent
+from utils.enrichment import get_ip_enrichment_batch, parse_user_agent
 from utils.kafka import get_kafka_producer
 from utils.request import anonymize_ip
 from utils.service_urls import get_normalized_service_info
@@ -157,12 +157,15 @@ def save_to_db(df: pl.DataFrame):
       )
     )
 
+  # Batch enrichment: one cache lookup per unique IP, not per row.
+  ip_enrichment = get_ip_enrichment_batch(df["ip_address"].to_list())
+
   objects_to_create = []
   for row in df.iter_rows(named=True):
     duration = timedelta(seconds=row["response_time"])
     ip = row.get("ip_address")
     ua = row.get("user_agent", "")
-    ip_data = get_ip_enrichment(ip)
+    ip_data = ip_enrichment.get(ip) or {"location": "Unknown", "asn": "Unknown", "isp": "Unknown"}
     ua_data = parse_user_agent(ua)
 
     account_key = row.get("account_id") or row.get("tenant_id") or PLATFORM_ACCOUNT_ID

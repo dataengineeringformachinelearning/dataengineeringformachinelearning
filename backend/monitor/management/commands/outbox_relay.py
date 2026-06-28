@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from utils.kafka import get_kafka_producer
+from utils.structured_log import log_event, set_correlation_id
 
 from monitor.models import OutboxEvent
 
@@ -34,21 +35,31 @@ class Command(BaseCommand):
       action="store_true",
       help="Run once and exit (for cron).",
     )
+    parser.add_argument(
+      "--poll-interval",
+      type=int,
+      default=5,
+      help="Seconds between daemon polls.",
+    )
 
   def handle(self, *args, **options):
     max_age = options["max_age_hours"]
     batch_size = options["batch_size"]
     run_once = options["once"]
+    poll_interval = options["poll_interval"]
 
-    self.stdout.write(self.style.SUCCESS("Starting Outbox Relay..."))
+    log_event(logger, logging.INFO, "outbox_relay_start", run_once=run_once)
 
     if run_once:
       asyncio.run(self.run_once(max_age, batch_size))
     else:
-      # For daemon mode, loop
-      while True:
-        asyncio.run(self.run_once(max_age, batch_size))
-        asyncio.run(asyncio.sleep(5))  # poll every 5s in daemon
+      # Single long-lived event loop — avoids recreating loops every poll.
+      asyncio.run(self.daemon_loop(max_age, batch_size, poll_interval))
+
+  async def daemon_loop(self, max_age_hours: int, batch_size: int, poll_interval: int):
+    while True:
+      await self.run_once(max_age_hours, batch_size)
+      await asyncio.sleep(poll_interval)
 
   async def run_once(self, max_age_hours: int, batch_size: int):
     cutoff = timezone.now() - timedelta(hours=max_age_hours)
@@ -62,8 +73,11 @@ class Command(BaseCommand):
       return
 
     producer = await get_kafka_producer()
+    published = 0
+    failed = 0
 
     for event in events:
+      set_correlation_id(f"outbox-{event.id}")
       try:
         value = json.dumps(event.payload).encode("utf-8")
         key = event.key.encode("utf-8") if event.key else None
@@ -84,17 +98,43 @@ class Command(BaseCommand):
         await sync_to_async(event.save)(
           update_fields=["is_published", "published_at", "last_error"]
         )
-
-        self.stdout.write(self.style.SUCCESS(f"Published outbox event {event.id} to {event.topic}"))
+        published += 1
+        log_event(
+          logger,
+          logging.INFO,
+          "outbox_published",
+          event_id=str(event.id),
+          topic=event.topic,
+        )
 
       except Exception as e:
+        failed += 1
         event.attempts += 1
         event.last_error = str(e)[:1000]
         await sync_to_async(event.save)(update_fields=["attempts", "last_error"])
-        logger.error(f"Failed to publish outbox {event.id}: {e}")
+        log_event(
+          logger,
+          logging.ERROR,
+          "outbox_publish_failed",
+          event_id=str(event.id),
+          attempts=event.attempts,
+          error=str(e)[:500],
+        )
 
-        # After 5 attempts, mark for DLQ or alert (simple: leave as is)
         if event.attempts >= 5:
-          logger.error(f"Outbox event {event.id} failed {event.attempts} times - consider DLQ")
+          log_event(
+            logger,
+            logging.ERROR,
+            "outbox_dlq_candidate",
+            event_id=str(event.id),
+            attempts=event.attempts,
+          )
 
-    self.stdout.write(self.style.SUCCESS(f"Processed {len(events)} outbox events"))
+    log_event(
+      logger,
+      logging.INFO,
+      "outbox_batch_complete",
+      total=len(events),
+      published=published,
+      failed=failed,
+    )

@@ -39,12 +39,19 @@
   }
 
   .loader-logo {
-    font-size: 48px;
-    width: 48px;
-    height: 48px;
+    font-size: 40px;
+    width: 56px;
+    height: 56px;
+    line-height: 40px;
+    overflow: visible !important;
     color: var(--color-primary);
     margin-bottom: var(--grid-gap);
     animation: pulse 2s infinite ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    box-sizing: content-box;
   }
 
   .premium-spinner {

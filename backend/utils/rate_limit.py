@@ -14,15 +14,15 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-import os
+from utils.env import get_int, get_str
 
-# Initialize redis connection
-redis_host = os.environ.get("REDISHOST", getattr(settings, "DRAGONFLY_HOST", "dragonfly"))
-redis_port = int(os.environ.get("REDISPORT", getattr(settings, "REDIS_PORT", 6379)))
+# Dragonfly/Redis — prefer DRAGONFLY_HOST (canonical); REDIS_URL overrides all.
+redis_host = get_str("REDISHOST") or getattr(settings, "DRAGONFLY_HOST", "dragonfly")
+redis_port = get_int("REDISPORT", getattr(settings, "REDIS_PORT", 6379))
 
 if HAS_REDIS:
   try:
-    redis_url = os.environ.get("REDIS_URL")
+    redis_url = get_str("REDIS_URL")
     if redis_url:
       redis_client = redis.from_url(
         redis_url, decode_responses=True, socket_connect_timeout=2, socket_timeout=2
