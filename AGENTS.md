@@ -2,6 +2,8 @@
 
 **Mission**: Build a zero-compromise, precision-engineered Data Engineering for Machine Learning (DEML) platform that merges rigorous data engineering with predictive machine learning. Prioritize quality, security, scalability, multi-tenancy isolation, and resilience at every step. The platform dogfoods itself as Tenant0 and must be production-grade, observable, secure, and maintainable.
 
+**Operations**: Production behavior—vendor split (Railway / Firebase / GCP), command/projection/query paths, actor workflows, maintenance cadence, and degraded modes—is defined in [BOOK.md § CONOPS](BOOK.md#concept-of-operations-conops), [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops), and [`docs/conops.md`](docs/conops.md). Architectural code changes must remain consistent with that CONOPS.
+
 This document captures the core coding principles, philosophies, and "how we build" from the BOOK.md. All agents, contributors, and LLMs working on the codebase must internalize these to align with the vision of "thoughtful coders" and precision engineering.
 
 ## Core Philosophy

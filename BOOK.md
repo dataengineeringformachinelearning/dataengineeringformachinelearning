@@ -15,15 +15,242 @@ Welcome to my working notebook and companion repository. As 2026 began, I found 
 
 Over the last ten years, my path has evolved from early web development, through the founding of startups, to deep software engineering and architecture. Those foundational years unlocked the paradigms I am now pouring into this platform. My goal here is simple: to champion the thoughtful coders. We're going to build this system together, starting from a completely fresh Mac install and working my way up to a deployed, secure, and observable ML-driven application. I will merge rigorous data engineering with the predictive power of machine learning, prioritizing quality and precision every step of the way.
 
-For a brief summary of the platform's hypothesis, value add, architecture diagrams, and algorithms, please read the [Whitepaper](WHITEPAPER.md). For a visual slide-deck overview of the same material, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
+For a brief summary of the platform's hypothesis, value add, architecture diagrams, and algorithms, please read the [Whitepaper](WHITEPAPER.md). For how the platform is **operated** in production (vendors, workflows, maintenance, contingencies), read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual slide-deck overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
 **Note on Recent Evolution (2026 updates):** The architecture now emphasizes **Event Projections** with production reliability features. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for events and Firestore (named "deml" database + dedicated security rules) for materialized read models. Django uses a **Transactional Outbox** (`OutboxEvent` + `outbox_relay` command) for reliable publishing. The `telemetry_worker` performs idempotent projections (with DLQ support). Firebase Functions and rules deploy via dedicated GitHub workflow. See updated diagrams and the in-app "Event Projections Verification" test.
 
 ## Quick Links
 
+- [Concept of Operations (CONOPS)](#concept-of-operations-conops)
 - [Whitepaper](WHITEPAPER.md)
+- [Operator Reference (`docs/conops.md`)](docs/conops.md)
 - [Presentation (Gamma)](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg) — slide-deck companion to this book
 - [Acknowledgements & Technologies](#acknowledgements--technologies)
+
+---
+
+## Concept of Operations (CONOPS)
+
+This section is the **single operational narrative** for the DEML platform: who uses it, how it runs in production, which technologies execute each responsibility, and what operators do when things degrade. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models, Railway compute, GCP security controls). Detailed checklists live in [Appendix C](#appendix-c-railway-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
+
+### 1. Purpose & Scope
+
+The DEML platform is a multi-tenant observability and machine-learning SaaS. Operators, security engineers, and integrators use it to ingest telemetry, publish status pages, forecast SLAs, evaluate threat anomalies, and share STIX 2.1 indicators. This CONOPS covers:
+
+- Normal steady-state operations across all production services
+- User-facing workflows (anonymous visitors, account owners, API integrators)
+- Internal data paths (commands, projections, queries, batch ML)
+- Deployment boundaries (Railway, Firebase, GCP, Hugging Face)
+- Maintenance cadence, monitoring, and degraded-mode behavior
+
+Out of scope: local developer onboarding (see [Chapter 1](#chapter-1-the-fresh-install--environment-setup) and [Appendix E](#appendix-e-contributing-guidelines--getting-started)), and deep algorithmic derivations (see [Whitepaper](WHITEPAPER.md)).
+
+### 2. Mission & Operational Objectives
+
+| Objective                        | How the platform achieves it                                                                                                                             |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Reliable telemetry ingestion** | Non-blocking command path via `ingestEvent` → Redpanda; Django **Transactional Outbox** for API-origin events; idempotent `telemetry_worker` projections |
+| **Low-latency dashboards**       | Materialized read models in Firestore (`deml` DB); Angular `onSnapshot` on `users/{uid}/data/stats`                                                      |
+| **Account isolation**            | Postgres tenancy by `UserProfile.account_id`; Firestore rules scoped to `request.auth.uid`; symmetrical worker loops per account + `platform` sentinel   |
+| **Predictive intelligence**      | Daily `ml_worker` retraining on anonymized aggregate data; per-account inference without cross-tenant raw leakage                                        |
+| **Transparent public status**    | `platform-status` dogfoods the stack under real load; customer pages gated by `is_published` ABAC                                                        |
+| **Audit-ready security**         | Firebase Auth + MFA on writes; GCP KMS envelope encryption; immutable GCS audit logs; continuous Semgrep/Trivy/Renovate                                  |
+
+### 3. System Overview
+
+The platform separates **commands** (writes), **projections** (derived state), and **queries** (reads):
+
+```mermaid
+flowchart TB
+    subgraph Surfaces
+        M[Astro Marketing Site]
+        A[Angular App deml.app]
+        API[Integration API Keys]
+    end
+
+    subgraph Commands
+        FCF[Firebase Cloud Functions ingestEvent]
+        DJ[Django REST + OutboxEvent]
+    end
+
+    subgraph Bus
+        RP[Redpanda frontend-events / DLQ]
+        OR[outbox_relay 5s cadence]
+    end
+
+    subgraph Projections
+        TW[telemetry_worker Polars + ORM]
+        FS[(Firestore deml)]
+    end
+
+    subgraph Truth
+        PG[(PostgreSQL)]
+        CH[(ClickHouse OLAP)]
+    end
+
+    M -->|Auth handoff| A
+    A -->|Callable + JWT REST| FCF
+    A -->|REST| DJ
+    API -->|Bearer API key| DJ
+    FCF -->|Try publish| RP
+    FCF -->|Fallback| FS
+    DJ -->|Atomic write| PG
+    OR -->|Publish| RP
+    DJ -.->|Outbox rows| PG
+    RP --> TW
+    TW --> FS
+    TW --> PG
+    A -.->|onSnapshot| FS
+    DJ -->|OTLP| CH
+```
+
+**Authoritative stores:** PostgreSQL holds transactional truth (users, status pages, incidents, API keys, outbox). Firestore holds **projected** real-time stats optimized for client subscriptions. ClickHouse holds OLAP traces and CES analytics. Redpanda is the durable command bus—not a system of record.
+
+### 4. Operational Environment
+
+| Layer                      | Provider                                                                  | Responsibility                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Compute & data plane**   | [Railway](https://railway.app/)                                           | Django API, Angular SSR, Postgres, Redpanda, ClickHouse, Dragonfly, all background workers, scanner, OTEL collector, Tor proxy |
+| **Client command gateway** | [Firebase Cloud Functions](https://firebase.google.com/docs/functions)    | `ingestEvent` callable with native Auth context                                                                                |
+| **Identity**               | [Firebase Authentication](https://firebase.google.com/products/auth)      | Email/OAuth/MFA; JWT verified by Django middleware                                                                             |
+| **Real-time read models**  | [Firestore](https://firebase.google.com/docs/firestore) (named DB `deml`) | Projected stats; security rules enforce per-user isolation                                                                     |
+| **Marketing hosting**      | [Firebase Hosting](https://firebase.google.com/docs/hosting)              | Astro `marketing/dist` at `dataengineeringformachinelearning.com`                                                              |
+| **Cryptography & audit**   | [Google Cloud](https://cloud.google.com/) (Terraform)                     | KMS envelope keys, immutable audit log bucket, service accounts                                                                |
+| **Secrets**                | [Infisical](https://infisical.com/) (recommended)                         | Runtime secret injection; SOC 2 / CMMC alignment                                                                               |
+| **Model artifacts**        | [Hugging Face Hub](https://huggingface.co/)                               | Namespaced `.pt` state dict uploads                                                                                            |
+| **Content**                | [Sanity.io](https://www.sanity.io/)                                       | Incident narratives decoupled from Django                                                                                      |
+
+**Cross-site URL trio** (env-driven everywhere): `FRONTEND_URL` (`https://deml.app`), `BACKEND_URL` (`https://backend.deml.app`), `MARKETING_URL` (`https://dataengineeringformachinelearning.com`).
+
+### 5. Operational Modes
+
+| Mode                                               | Description                                                                                                                                     | Operator actions                                                                                                              |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; verify Event Projections panel in Settings                                       |
+| **Degraded — Redpanda unreachable from Functions** | `ingestEvent` writes fallback rows to Firestore `events` collection; `telemetry_worker` still processes broker when Railway-internal path works | Confirm `REDPANDA_BROKERS` uses public endpoint for Functions or accept Firestore fallback; check `frontend-events-dlq` depth |
+| **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-outbox-relay`; inspect DLQ topic; replay idempotent keys                            |
+| **Maintenance**                                    | Migrations, dependency upgrades, model retraining                                                                                               | Railway rolling deploy on `main` merge; Firebase workflow deploys Functions/rules independently                               |
+| **Incident / public comms**                        | Outage or degradation visible to users                                                                                                          | Publish via Sanity; `platform-status` remains world-readable; unpublished customer pages stay private                         |
+
+### 6. User Roles & Operational Workflows
+
+The platform uses a **User + Sites** model—one Firebase login, many `StatusPage` records, no org hierarchies ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)).
+
+| Actor                          | Primary workflows                                                                                                                           |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Anonymous visitor**          | Browse published status pages and `platform-status`; `/explore` directory; no PII beyond CDN logs                                           |
+| **Account owner (`Operator`)** | Firebase login → Django profile provisioned; create status pages (MFA required); configure integrations; run Event Projections verification |
+| **Viewer**                     | Read-only Settings and dashboards; API returns `403` on mutations                                                                           |
+| **Security Admin**             | Platform bootstrap account; same write surface as Operator for owned resources                                                              |
+| **API integrator**             | `Authorization: Bearer <API_KEY>` on `/api/v1/ingest` and `/api/v1/predict`; scoped to `account_id`                                         |
+| **Platform operator (you)**    | Railway dashboard, Firebase console, GCP KMS/logs, GitHub Actions, Infisical, internal vulnerability Kanban                                 |
+
+**Typical owner session:** Marketing site → auth handoff → Angular dashboard → client events fire `ingestEvent` → stats appear via Firestore subscription → REST calls for configuration and ML endpoints.
+
+**Typical integration session:** External pipeline POSTs batched telemetry to `/api/v1/ingest` → Django writes business state + `OutboxEvent` atomically → `outbox_relay` publishes → worker projects enriched aggregates.
+
+### 7. Command, Control & Data Flows
+
+**Client command path (primary):**
+
+1. Angular calls Firebase callable `ingestEvent` with `version: "1.0"` and generated `idempotency_key`.
+2. Function validates `context.auth`; partitions Kafka messages by `uid`.
+3. On broker success: message lands on `frontend-events`; function returns `accepted` immediately.
+4. On broker failure: fallback document written to Firestore `events` (clients cannot read this collection per rules).
+5. `telemetry_worker` consumes, deduplicates via stable keys, enriches from Postgres, writes `users/{uid}/data/stats`.
+6. Angular `FirestoreService.getRealtimeStats()` streams updates via `onSnapshot`.
+
+**Django command path (integrations & legacy):**
+
+1. Authenticated REST handler mutates Postgres inside a transaction.
+2. `OutboxEvent` row inserted in the same transaction.
+3. `outbox_relay` (every 5s) publishes to Redpanda; same worker pipeline applies.
+
+**Query path:** Clients never poll Postgres for live stats; they subscribe to Firestore projections. Historical analytics and CES use ClickHouse via backend APIs.
+
+### 8. Deployment Topology & Service Matrix
+
+Production runs **14 Railway services** (see [Chapter 22](#chapter-22-production-deployment-on-railway)). Core operational paths:
+
+| Service                                   | Operational role                                                        |
+| ----------------------------------------- | ----------------------------------------------------------------------- |
+| `deml-frontend`                           | Angular app, widgets, public status UI                                  |
+| `deml-backend`                            | Django REST, auth middleware, billing, outbox writers                   |
+| `deml-postgres`                           | System of record                                                        |
+| `deml-queue`                              | Redpanda (`deml-queue.railway.internal:9092` for inter-service traffic) |
+| `deml-telemetry-worker`                   | Projection engine + pingers + analytics rollups                         |
+| `deml-outbox-relay`                       | Reliable outbox publisher                                               |
+| `deml-ml-worker`                          | Training and inference jobs                                             |
+| `deml-security-worker`                    | Threat intel, retention, Stripe sync, key rotation                      |
+| `deml-clickhouse` + `deml-otel-collector` | Distributed tracing / CES inputs                                        |
+| `deml-dragonfly`                          | Rate limiting and hot caches                                            |
+| `deml-scanner` + `deml-cpe-guesser`       | Vulnerability ledger enrichment                                         |
+| `deml-tor-proxy`                          | OSINT dark-web routing                                                  |
+
+**Firebase deploy path (separate from Railway):** `.github/workflows/firebase-backend-deploy.yml` ships Cloud Functions + Firestore rules; `firebase-hosting-*.yml` ships marketing. **Never** point Railway services at Railway public broker URLs for internal traffic—use `*.railway.internal` ([Appendix C](#appendix-c-railway-deployment)).
+
+### 9. Security Operations
+
+- **Perimeter:** Firebase App Check + reCAPTCHA; TLS 1.3 everywhere; strict CSP on marketing ([`firebase.json`](firebase.json)).
+- **Authentication:** JWT verification in `FirebaseAuthenticationMiddleware`; MFA enforced on writes via `amr` claim.
+- **Authorization:** RBAC (`Viewer` / `Operator` / `Security Admin`) + ABAC (`is_published`, ownership, `platform-status` immutability).
+- **Data protection:** AES-256-GCM field encryption; DEK rotation every 30 days; GCP KMS envelope ([Chapter 10](#chapter-10-encrypting-the-data--key-management)).
+- **Supply chain:** Pre-commit + GitHub Actions (Semgrep, Trivy, Gitleaks, Renovate); internal Kanban for vulns ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)).
+- **Compliance posture:** Architected for SOC 2 Type II, CMMC 2.0 Level 2, NIST SP 800-171 Rev. 3 ([Chapter 23](#chapter-23-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3)).
+
+### 10. Observability & Health Monitoring
+
+| Signal                   | Source                                 | Operator use                                                                                           |
+| ------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Real-time user stats** | Firestore projections                  | Settings → Event Projections Verification                                                              |
+| **CES dashboard**        | ClickHouse + backend aggregates        | Threat / SLA / Stableness gauges ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) |
+| **Traces**               | OpenTelemetry → Collector → ClickHouse | Latency regressions, worker stalls                                                                     |
+| **Errors**               | Sentry (frontend + backend)            | Release regressions                                                                                    |
+| **Synthetic uptime**     | `telemetry_worker` pingers (30s)       | Status page accuracy                                                                                   |
+| **Infrastructure**       | Railway metrics, GCP Logging           | Capacity, audit trail                                                                                  |
+
+### 11. Maintenance & Automation Cadence
+
+All schedules are canonical in [Appendix D](#appendix-d-maintenance--automation-schedule). Summary:
+
+- **Every 5s:** `outbox_relay` publishes pending events.
+- **Continuous:** `telemetry_worker`, `ml_worker` Kafka consumers.
+- **Hourly:** Threat intel fetch (`security_worker`).
+- **Daily:** ML retraining, `db_cleanup` (30-day raw retention), Stripe `sync_subscriptions`, DEK rotation checks.
+- **Weekly / Monthly / Quarterly:** Renovate, Semgrep, deep audits via GitHub Actions.
+
+### 12. Contingency & Degraded Operations
+
+| Failure                          | System behavior                                                                 | Recovery                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Redpanda unavailable (Functions) | Firestore fallback writes; worker may still consume via Railway internal broker | Restore broker; drain DLQ; verify projections catch up idempotently |
+| `outbox_relay` stopped           | Events accumulate in Postgres outbox                                            | Restart relay; backlog publishes in order                           |
+| Firestore rules mis-deployed     | Client reads/writes rejected                                                    | Re-run `firebase-backend-deploy.yml`                                |
+| Worker OOM on Polars batch       | Messages route to `frontend-events-dlq`                                         | Fix payload/enrichment; replay with stable keys                     |
+| Postgres outage                  | REST mutations fail; cached projections may stale                               | Railway restore from volume snapshot; run migrations                |
+| KMS unreachable                  | Cannot decrypt integration tokens                                               | Restore GCP credentials; verify `telemetry-app-sa` IAM              |
+
+### 13. CI/CD & Release Operations
+
+1. Feature branch → pre-commit (Ruff, ESLint, Axe) → PR.
+2. Merge to `main` → Railway webhook builds affected services (watch paths per service).
+3. Same merge → Firebase workflows deploy Functions/rules/hosting when paths match.
+4. `scripts/sync_content.py` propagates BOOK/README to frontend and marketing assets.
+5. `purge-cloudflare-cache.yml` invalidates CDN after deploy.
+
+Semantic versioning and release notes: `scripts/git_flow.py` ([Chapter 16](#chapter-16-developer-workflow-and-version-management)).
+
+### 14. Documentation Map
+
+| Document                                                   | Audience                 | Content                             |
+| ---------------------------------------------------------- | ------------------------ | ----------------------------------- |
+| **This CONOPS**                                            | Operators, architects    | End-to-end operational narrative    |
+| [`docs/conops.md`](docs/conops.md)                         | On-call engineers        | Checklists, modes, quick reference  |
+| [WHITEPAPER.md](WHITEPAPER.md) §2                          | Executives, reviewers    | Concise CONOPS + hypothesis         |
+| [README.md](README.md)                                     | Integrators              | API gateway, architecture diagram   |
+| [Appendix C](#appendix-c-railway-deployment)               | DevOps                   | Per-service Railway variables       |
+| [Appendix D](#appendix-d-maintenance--automation-schedule) | SRE                      | Schedules and retention             |
+| [AGENTS.md](AGENTS.md)                                     | AI agents / contributors | Coding principles aligned to CONOPS |
 
 ---
 

@@ -71,8 +71,14 @@ export const ingestEvent = functions
 
     // 2. Prepare message for Redpanda. Prefer client-supplied idempotency_key for dedup/projection.
     const timestamp = new Date().toISOString();
-    const providedIdemp = (data && (data.idempotency_key || (data.payload && data.payload.idempotency_key))) || null;
-    const idempotencyKey = providedIdemp || `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
+    const providedIdemp =
+      (data &&
+        (data.idempotency_key ||
+          (data.payload && data.payload.idempotency_key))) ||
+      null;
+    const idempotencyKey =
+      providedIdemp ||
+      `${uid}:${timestamp}:${eventPayload.action || "unknown"}`;
     const message = {
       key: String(uid), // Partition by user ID for ordered processing (stable per-tenant ordering)
       value: JSON.stringify({
@@ -93,7 +99,10 @@ export const ingestEvent = functions
         messages: [message],
       });
 
-      return { status: "accepted", message: "Event successfully queued to Redpanda." };
+      return {
+        status: "accepted",
+        message: "Event successfully queued to Redpanda.",
+      };
     } catch (error) {
       functions.logger.error(
         "Direct publish to Redpanda failed, writing to Firestore inbox as resilient fallback:",

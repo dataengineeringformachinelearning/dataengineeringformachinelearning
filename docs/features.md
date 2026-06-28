@@ -2,6 +2,14 @@
 
 The Data Engineering for Machine Learning (DEML) Platform provides a comprehensive ecosystem built for robust observability, data intelligence, and security.
 
+## Concept of Operations (CONOPS)
+
+Operational doctrine—how the platform runs in production, who performs which workflows, and how services degrade and recover—is maintained in:
+
+- [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops) — canonical narrative
+- [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops) — executive summary
+- [conops.md](conops.md) — operator quick reference (checklists, service matrix, contingencies)
+
 ## Core Features Outline
 
 1. **High-Throughput Asynchronous Telemetry Ingestion + Event Projections (Reliable)**
@@ -51,4 +59,4 @@ The Data Engineering for Machine Learning (DEML) Platform provides a comprehensi
     - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin` (one role per login). Status page create/update/delete requires `Operator` or `Security Admin` (`@role_required`). Settings UI disables mutations for `Viewer`.
     - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + MFA (`amr` contains `mfa`). `platform-status` is immutable for customers.
     - **Public stats:** `/status/:slug` and `/explore` expose uptime and service health only when `is_published=True` or `slug=platform-status`.
-    - See [WHITEPAPER.md §7](../WHITEPAPER.md#7-role-based--attribute-based-access-control-rbac--abac) for the full access matrix.
+    - See [WHITEPAPER.md §8](../WHITEPAPER.md#8-role-based--attribute-based-access-control-rbac--abac) for the full access matrix.

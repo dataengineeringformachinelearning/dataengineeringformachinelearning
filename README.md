@@ -30,6 +30,20 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 
 ---
 
+## Concept of Operations (CONOPS)
+
+How the platform is **operated** in production—vendor boundaries, actor workflows, data paths, maintenance cadence, and degraded-mode behavior—is documented in three layers:
+
+| Document                                                         | Audience                                                               |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| [BOOK.md § CONOPS](BOOK.md#concept-of-operations-conops)         | Full operational narrative (architecture, security ops, contingencies) |
+| [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
+| [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
+
+**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path. Verify health via Settings → Event Projections Verification and the public `platform-status` sentinel.
+
+---
+
 ## Core Features
 
 - **Event Projections Architecture**: Commands via Firebase Cloud Functions (`ingestEvent`) to Redpanda (with Firestore fallback); Projections materialized into Firestore (named `deml` DB); Queries via direct real-time subscriptions. Django workers act as the projection layer.
@@ -249,7 +263,7 @@ We take data security seriously. As a multi-account SaaS platform, we employ str
 - **OSINT & Dark Web Scanning:** Daily background cron workers leverage the "Have I Been Pwned" (HIBP) API and query the Tor network via Ahmia to automatically hunt for compromised account emails and brand mentions on dark web forums. Additionally, Certificate Transparency logs are scanned for exposed subdomains. All findings are natively serialized as `ThreatIntelligence` and `Endpoints` records in the database to instantly populate your security dashboard.
 - **Post-Quantum Cryptography (PQC):** The platform features a Post-Quantum Key Encapsulation Mechanism (KEM) using `liboqs`. External services can invoke the `/api/v1/telemetry/pq-key-exchange` endpoint to securely negotiate a PQ session key before transmitting transient, highly sensitive telemetry payloads over standard TLS. The server enforces Forward Secrecy by strictly caching the ephemeral secret key for exactly 5 minutes using a unique UUID and permanently destroying it immediately upon decapsulation. This actively prevents "Store Now, Decrypt Later" (SNDL) attacks. (Fails over gracefully to AES if `liboqs` is absent).
 - **Platform Status Bootstrapping:** Django signals (`post_migrate`) ensure the public `platform-status` page exists (`user=null`, `is_platform=True`) so workers, ML pipelines, and the marketing sentinel share one canonical showcase scope—no hardcoded tenant strings.
-- **Access Control Architecture (RBAC & ABAC):** One login per account; no org hierarchies. Authorization combines role, session, ownership, and publication state (see [WHITEPAPER.md §7](WHITEPAPER.md#7-role-based--attribute-based-access-control-rbac--abac) for the full matrix).
+- **Access Control Architecture (RBAC & ABAC):** One login per account; no org hierarchies. Authorization combines role, session, ownership, and publication state (see [WHITEPAPER.md §8](WHITEPAPER.md#8-role-based--attribute-based-access-control-rbac--abac) for the full matrix).
   - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin`. Status page create/update/delete requires `Operator` or `Security Admin` via `@role_required`. The Settings UI disables all mutations for `Viewer`. `/analytics` and `/vulnerabilities` require login (`authGuard`).
   - **ABAC:** Anonymous users read **published** pages and **`platform-status`** only. Logged-in owners also read their **unpublished** pages and stats. Writes require ownership + MFA (`amr` contains `mfa` in the Firebase JWT). `platform-status` is read-only for everyone. API ingest keys resolve to `account_id` dynamically.
   - **Public stats pages:** Visiting `/status/:slug` or `/explore` while logged out shows uptime and service health only when `is_published=True` or `slug=platform-status`; private pages return forbidden/empty lists.
