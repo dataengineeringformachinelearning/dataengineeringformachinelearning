@@ -22,34 +22,10 @@ class TelemetryPayload(Schema):
 
 
 async def _is_origin_validated(request, account_id: str | None) -> bool:
-  from asgiref.sync import sync_to_async
-
   origin = request.headers.get("origin") or request.headers.get("referer")
   if not origin:
-    # If no origin, check if there's an API key
     api_key = request.headers.get("X-API-Key") or request.headers.get("Authorization")
-    if api_key:
-      return True
-    return False
-
-  # Fast track internal dev domains
-  try:
-    from urllib.parse import urlparse
-
-    parsed = urlparse(origin)
-    domain = parsed.hostname if parsed.hostname else origin
-  except Exception:
-    return False
-
-  if domain in [
-    "dataengineeringformachinelearning.com",
-    "www.dataengineeringformachinelearning.com",
-    "deml.app",
-    "www.deml.app",
-    "localhost",
-    "127.0.0.1",
-  ]:
-    return True
+    return bool(api_key)
 
   from monitor.cors_utils import is_domain_registered
 

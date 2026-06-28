@@ -2,7 +2,12 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Any
 
+from account.context import require_auth as _require_auth
+from monitor.access import require_page_owner
+from monitor.models import StatusPage
 from ninja.errors import HttpError
+
+require_auth = _require_auth
 
 
 def role_required(allowed_roles: list[str]) -> Callable:
@@ -28,3 +33,12 @@ def role_required(allowed_roles: list[str]) -> Callable:
     return wrapper
 
   return decorator
+
+
+def require_owner_page(page_id: str, request) -> StatusPage:
+  """Load a status page owned by the caller; blocks platform mutations."""
+  from django.shortcuts import get_object_or_404
+
+  page = get_object_or_404(StatusPage, id=page_id)
+  require_page_owner(request, page)
+  return page

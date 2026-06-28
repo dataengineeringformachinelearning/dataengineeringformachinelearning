@@ -57,7 +57,7 @@ def train_model(request: Any, status_page_id: str | None = None) -> Any:
   if not status_page:
     raise HttpError(400, "No status page available for training")
 
-  from monitor.api import check_status_page_access
+  from monitor.access import check_status_page_access
 
   if not check_status_page_access(request, status_page):
     raise HttpError(403, "Permission denied")
@@ -88,7 +88,7 @@ def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
     status_page = StatusPage.objects.filter(slug="platform-status").first()
 
   if status_page:
-    from monitor.api import check_status_page_access
+    from monitor.access import check_status_page_access
 
     if not check_status_page_access(request, status_page):
       raise HttpError(403, "Permission denied")
@@ -153,7 +153,7 @@ def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
   if status_page_id:
     try:
       status_page = StatusPage.objects.get(id=status_page_id)
-      from monitor.api import check_status_page_access
+      from monitor.access import check_status_page_access
 
       if not check_status_page_access(request, status_page):
         raise HttpError(403, "Permission denied")
@@ -217,7 +217,7 @@ def get_threat_report_stix(request: Any, status_page_id: str | None = None) -> A
   if status_page_id:
     try:
       status_page = StatusPage.objects.get(id=status_page_id)
-      from monitor.api import check_status_page_access
+      from monitor.access import check_status_page_access
 
       if not check_status_page_access(request, status_page):
         raise HttpError(403, "Permission denied")
@@ -380,95 +380,9 @@ def submit_to_isac(request: Any, payload: ISACSubmissionIn) -> Any:
   }
 
 
-class SOCCriteria(Schema):
-  name: str
-  category: str
-  status: str  # compliant, warning, or pending
-  description: str
-  details: str
-
-
-class E2EEncryptionOut(Schema):
-  transit: str
-  rest: str
-  clientPayload: str
-  rotationDaysRemaining: int
-
-
-class SOCStatusOut(Schema):
-  status: str
-  overall_score: float
-  criteria: list[SOCCriteria]
-  e2e_encryption: E2EEncryptionOut | None = None
+from ml.compliance.soc import SOCStatusOut, build_soc_status
 
 
 @router.get("/compliance/soc-status", response=SOCStatusOut)
 def get_soc_status(request: Any) -> Any:
-  # Standardize readiness checkpoints
-  criteria = [
-    {
-      "name": "End-to-End Encryption in Transit",
-      "category": "Security / Confidentiality",
-      "status": "compliant",
-      "description": "All data payloads transmitted between user, browser, and ingestion services must use secure TLS 1.3 / SSL.",
-      "details": "Verified active. Ingestion services enforce HTTPS and reject non-SSL connections.",
-    },
-    {
-      "name": "AES-256 Encryption at Rest",
-      "category": "Confidentiality",
-      "status": "compliant",
-      "description": "Telemetry logs, status page variables, and credentials must be encrypted at rest.",
-      "details": "Active. Data is envelope-encrypted using a local/GCP KMS cryptographic Key Encrypting Key (KEK) with automated 30-day rotation.",
-    },
-    {
-      "name": "Audit Logging & Threat Anomaly Tracking",
-      "category": "Security",
-      "status": "compliant",
-      "description": "All system status changes and logins must trigger audit logs streamed to a centralized logging pipeline.",
-      "details": "Active. Immutable audit events are logged in Postgres and streamed directly to centralized Google Cloud Logging buckets.",
-    },
-    {
-      "name": "Multi-Factor Authentication (MFA) & Google SSO",
-      "category": "Security",
-      "status": "compliant",
-      "description": "Enforce Google SSO with cryptographic hardware authenticator support for administrative endpoints.",
-      "details": "Active. Authenticator / Google SSO with role-based checks is enforced globally for settings modifications.",
-    },
-    {
-      "name": "Database Backups & Redundancy",
-      "category": "Availability",
-      "status": "compliant",
-      "description": "System state database must perform daily snapshots to prevent critical data loss.",
-      "details": "Active. Standard cron schedules daily snapshots with 30-day retention.",
-    },
-  ]
-
-  # Calculate compliance score
-  total = len(criteria)
-  compliant_count = sum(1 for c in criteria if c["status"] == "compliant")
-  score = float(compliant_count / total)
-
-  # Dynamic encryption telemetry from active DataEncryptionKey
-  from django.utils import timezone
-  from monitor.models import DataEncryptionKey
-
-  dek_obj = DataEncryptionKey.objects.filter(is_active=True).order_by("-created_at").first()
-  if dek_obj:
-    days_passed = (timezone.now() - dek_obj.created_at).days
-    rotation_days_remaining = max(0, 30 - days_passed)
-  else:
-    rotation_days_remaining = 30
-
-  e2e_encryption = {
-    "transit": "TLS 1.3 / SSL Encryption active on all connections",
-    "rest": "KMS / AES-256 managed keys active on database volumes",
-    "clientPayload": "Active payload signing & end-to-end telemetry integrity verification",
-    "rotationDaysRemaining": rotation_days_remaining,
-  }
-
-  return {
-    "status": "success",
-    "overall_score": score,
-    "criteria": criteria,
-    "e2e_encryption": e2e_encryption,
-  }
+  return build_soc_status()
