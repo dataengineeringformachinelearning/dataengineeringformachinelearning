@@ -80,7 +80,13 @@ _SITE_URL_VARS: tuple[str, ...] = ("FRONTEND_URL", "BACKEND_URL", "MARKETING_URL
 
 
 def validate_site_urls() -> None:
-  """Fail fast when cross-site URL trio is missing (no silent production defaults)."""
+  """Fail fast when cross-site URL trio is missing (no silent production defaults).
+
+  Skips during Docker builds (collectstatic etc.) when SKIP_SITE_URL_VALIDATION is set,
+  because the cross-site URLs are provided as Railway runtime variables, not build args.
+  """
+  if os.getenv("SKIP_SITE_URL_VALIDATION", "").lower() in ("1", "true", "yes"):
+    return
   missing = [name for name in _SITE_URL_VARS if not get_str(name)]
   if missing:
     raise RuntimeError(
