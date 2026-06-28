@@ -11,6 +11,7 @@ admin.initializeApp();
 //     (e.g. your-public-host.railway.app:9093 + SASL SCRAM-SHA-256 + SSL).
 //   - Internal services continue to use the private Railway DNS (no SASL).
 // See infrastructure/queue/Dockerfile + entrypoint.sh and backend/.env.example.
+
 // Resolve Redpanda brokers for the ingestEvent gateway.
 // Priority for fast direct path (public SASL listener):
 // 1. Explicit env (set in Firebase Functions environment variables or Railway for emulator)
@@ -26,6 +27,7 @@ const useSsl =
   (fcfg.redpanda && fcfg.redpanda.ssl === "true") ||
   kafkaBrokers.includes("railway.app") ||
   (typeof kafkaBrokers === 'string' && !kafkaBrokers.includes('localhost') && !kafkaBrokers.includes('.internal'));
+
 const kafkaConfig: any = {
   clientId: "deml-gateway-function",
   brokers: [kafkaBrokers],
@@ -43,6 +45,7 @@ if (useSsl) {
     };
   }
 }
+
 const kafka = new Kafka(kafkaConfig);
 
 const producer = kafka.producer();
@@ -114,8 +117,7 @@ export const ingestEvent = functions
 
       try {
         const db = getFirestore("deml");
-        // Resilient fallback only. The worker's poll_firestore_inbox task will project it.
-        // With a correctly configured public SASL Redpanda endpoint this path is almost never taken.
+        // Resilient fallback only. With correct public SASL Redpanda this is rarely used.
         const inboxDoc = {
           uid,
           timestamp: new Date().toISOString(),
