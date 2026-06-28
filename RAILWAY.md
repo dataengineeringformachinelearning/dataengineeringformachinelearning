@@ -30,16 +30,23 @@ Firebase Cloud Functions (`ingestEvent`) are deployed separately via GitHub Acti
 
 ## Cross-Site Auth Handoff & Marketing Integration (Env-Driven)
 
-All hard-coded domains removed. Use these vars:
+All hard-coded domains removed. Use the **same three names** everywhere:
 
-- `MARKETING_URL` (backend + frontend builds): `https://dataengineeringformachinelearning.com` (required; code uses env or empty string, no hardcoded fallbacks)
-- `PUBLIC_API_BASE` (Astro marketing build): `https://backend.deml.app` (or appropriate backend URL)
-- `PUBLIC_MAIN_APP_URL` (Astro): `https://deml.app`
-- `PUBLIC_APP_URL` (Astro): `https://deml.app`
-- `BACKEND_URL` (frontend): `https://backend.deml.app`
-- `FRONTEND_URL` (backend): `https://deml.app`
+| Variable        | Value (prod)                                    | Meaning                                             |
+| --------------- | ----------------------------------------------- | --------------------------------------------------- |
+| `FRONTEND_URL`  | `https://deml.app`                              | Angular app (status pages, dashboard, widget links) |
+| `BACKEND_URL`   | `https://backend.deml.app`                      | Django API                                          |
+| `MARKETING_URL` | `https://dataengineeringformachinelearning.com` | Astro marketing site                                |
 
-Marketing site (Astro) is **not** a service inside this Railway project. Deploy it wherever the `dataengineeringformachinelearning.com` DNS points and supply the `PUBLIC_*` at build.
+**Where to set them:**
+
+| Service                                                 | Variables needed                                                                |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| deml-backend                                            | `FRONTEND_URL`, `MARKETING_URL` (`BACKEND_URL` optional — inferred from deploy) |
+| deml-frontend                                           | `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL` (build via `set-env.js`)         |
+| Marketing site (Astro, **not** in this Railway project) | `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL` at **build** time                |
+
+Legacy `PUBLIC_MAIN_APP_URL` / `PUBLIC_API_BASE` on marketing builds still work but are deprecated.
 
 ## Per-Service Environment Variables
 
@@ -47,23 +54,23 @@ Marketing site (Astro) is **not** a service inside this Railway project. Deploy 
 
 Required / commonly set:
 
-| Variable                                                  | Prod Example (internal)                                                                     | Notes                 |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------- | --------------------- |
-| SECRET_KEY                                                | (secret)                                                                                    | Django                |
-| DEBUG                                                     | False                                                                                       |                       |
-| ALLOWED_HOSTS                                             | backend.deml.app,...                                                                        | CSV                   |
-| DATABASE_URL                                              | postgresql://...@deml-postgres.../railway                                                   |                       |
-| CORS_ALLOWED_ORIGINS                                      | https://deml.app,https://dataengineeringformachinelearning.com,https://backend.deml.app,... | Must be complete      |
-| REDPANDA_BROKERS                                          | deml-queue.railway.internal:9092                                                            |                       |
-| DRAGONFLY_HOST                                            | deml-dragonfly.railway.internal                                                             |                       |
-| FIREBASE_SERVICE_ACCOUNT_JSON                             | (full JSON or file)                                                                         |                       |
-| MARKETING_URL                                             | https://dataengineeringformachinelearning.com                                               | **Added for handoff** |
-| FRONTEND_URL                                              | https://deml.app                                                                            |                       |
-| RESEND*API_KEY, ALERT*\*, DISCORD_WEBHOOK_URL, SENTRY_DSN | (as needed)                                                                                 |                       |
-| All threat keys (ABUSEIPDB, OTX, IPINFO...)               | ...                                                                                         |                       |
-| STRIPE\_\*                                                | ...                                                                                         |                       |
-| GCP*KMS*\_ , HF\_\_                                       | ...                                                                                         |                       |
-| RAILWAY\_\* (auto)                                        | ...                                                                                         | Injected by platform  |
+| Variable                                                  | Prod Example (internal)                                                                     | Notes                |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------- |
+| SECRET_KEY                                                | (secret)                                                                                    | Django               |
+| DEBUG                                                     | False                                                                                       |                      |
+| ALLOWED_HOSTS                                             | backend.deml.app,...                                                                        | CSV                  |
+| DATABASE_URL                                              | postgresql://...@deml-postgres.../railway                                                   |                      |
+| CORS_ALLOWED_ORIGINS                                      | https://deml.app,https://dataengineeringformachinelearning.com,https://backend.deml.app,... | Must be complete     |
+| REDPANDA_BROKERS                                          | deml-queue.railway.internal:9092                                                            |                      |
+| DRAGONFLY_HOST                                            | deml-dragonfly.railway.internal                                                             |                      |
+| FIREBASE_SERVICE_ACCOUNT_JSON                             | (full JSON or file)                                                                         |                      |
+| FRONTEND_URL                                              | https://deml.app                                                                            | Angular app links    |
+| MARKETING_URL                                             | https://dataengineeringformachinelearning.com                                               | Auth handoff / CORS  |
+| RESEND*API_KEY, ALERT*\*, DISCORD_WEBHOOK_URL, SENTRY_DSN | (as needed)                                                                                 |                      |
+| All threat keys (ABUSEIPDB, OTX, IPINFO...)               | ...                                                                                         |                      |
+| STRIPE\_\*                                                | ...                                                                                         |                      |
+| GCP*KMS*\_ , HF\_\_                                       | ...                                                                                         |                      |
+| RAILWAY\_\* (auto)                                        | ...                                                                                         | Injected by platform |
 
 Additional for specific workers (same base +):
 
@@ -71,12 +78,13 @@ Additional for specific workers (same base +):
 
 ### deml-frontend (Angular)
 
-| Variable      | Example                                       | Notes                    |
-| ------------- | --------------------------------------------- | ------------------------ |
-| BACKEND_URL   | https://backend.deml.app                      | Build + runtime hint     |
-| MARKETING_URL | https://dataengineeringformachinelearning.com | **Required for handoff** |
-| FIREBASE\_\*  | ...                                           |                          |
-| SANITY\_\*    | ...                                           |                          |
+| Variable      | Example                                       | Notes                 |
+| ------------- | --------------------------------------------- | --------------------- |
+| FRONTEND_URL  | https://deml.app                              | Widget + status links |
+| BACKEND_URL   | https://backend.deml.app                      | API base              |
+| MARKETING_URL | https://dataengineeringformachinelearning.com | Auth handoff          |
+| FIREBASE\_\*  | ...                                           |                       |
+| SANITY\_\*    | ...                                           |                       |
 
 `set-env.js` runs during Railway build and writes `src/environments/environment.ts`.
 

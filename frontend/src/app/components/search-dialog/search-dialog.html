@@ -35,7 +35,9 @@
           <div class="result-title" [innerHTML]="getHighlightedTitle(result)"></div>
           <div class="result-snippet" [innerHTML]="getHighlightedSnippet(result)"></div>
         </div>
-        <div class="result-type-badge">{{ result.type === 'chapter' ? 'Doc' : 'Status' }}</div>
+        <span class="status-badge-premium neutral status-badge-premium--compact"
+          >{{ result.type === 'chapter' ? 'Doc' : 'Status' }}</span
+        >
       </div>
       } @if (searchResults().length === 0) {
       <div class="no-results-state">

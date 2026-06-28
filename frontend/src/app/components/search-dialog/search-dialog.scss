@@ -189,20 +189,6 @@
     text-overflow: ellipsis;
   }
 
-  .result-type-badge {
-    font-size: 1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 0px 8px;
-    border-radius: 0px;
-    background: rgba(255, 255, 255, 0.08);
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-
-    :host-context(html[data-theme='light']) & {
-      background: color-mix(in srgb, var(--color-surface) 8%, transparent);
-    }
-  }
 }
 
 /* Highlight matching text */

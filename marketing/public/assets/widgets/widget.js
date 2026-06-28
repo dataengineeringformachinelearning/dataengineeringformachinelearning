@@ -53,43 +53,64 @@
     }
   };
 
+  const DEFAULT_STATUS_APP = "https://deml.app";
+
+  const isMarketingHost = (hostname) =>
+    hostname === "dataengineeringformachinelearning.com" ||
+    hostname === "www.dataengineeringformachinelearning.com";
+
+  // Status pages are served by the Angular app (deml.app), never the marketing site.
+  const normalizeStatusAppHost = (url) => {
+    if (!url) return DEFAULT_STATUS_APP;
+    try {
+      const parsed = new URL(
+        url.startsWith("http") ? url : `https://${url.replace(/^\/+/, "")}`,
+      );
+      if (isMarketingHost(parsed.hostname)) {
+        return DEFAULT_STATUS_APP;
+      }
+      return `${parsed.protocol}//${parsed.hostname}${parsed.port ? `:${parsed.port}` : ""}`;
+    } catch {
+      return String(url).replace(/\/$/, "");
+    }
+  };
+
   const statusPageUrl = (frontendHost, slug) =>
-    `${frontendHost.replace(/\/$/, "")}/status/${slug}`;
+    `${normalizeStatusAppHost(frontendHost)}/status/${slug}`;
 
   const resolveFrontendHost = ({ explicit, backendUrl, scriptOrigin }) => {
     if (explicit) {
-      return explicit.replace(/\/$/, "");
+      return normalizeStatusAppHost(explicit);
     }
 
     if (backendUrl) {
       try {
         const backend = new URL(backendUrl);
         if (backend.hostname.startsWith("backend.")) {
-          return `${backend.protocol}//${backend.hostname.slice("backend.".length)}`;
+          return normalizeStatusAppHost(
+            `${backend.protocol}//${backend.hostname.slice("backend.".length)}`,
+          );
         }
         if (
           backend.hostname === "localhost" ||
           backend.hostname === "127.0.0.1"
         ) {
           const port = backend.port === "8000" ? "4200" : backend.port;
-          return `${backend.protocol}//${backend.hostname}${port ? `:${port}` : ""}`;
+          return normalizeStatusAppHost(
+            `${backend.protocol}//${backend.hostname}${port ? `:${port}` : ""}`,
+          );
         }
-        return `${backend.protocol}//${backend.hostname}${backend.port ? `:${backend.port}` : ""}`;
+        return normalizeStatusAppHost(
+          `${backend.protocol}//${backend.hostname}${backend.port ? `:${backend.port}` : ""}`,
+        );
       } catch {}
     }
 
     try {
       const script = new URL(scriptOrigin);
-      const host = script.hostname;
-      if (
-        host === "dataengineeringformachinelearning.com" ||
-        host === "www.dataengineeringformachinelearning.com"
-      ) {
-        return "https://deml.app";
-      }
-      return scriptOrigin.replace(/\/$/, "");
+      return normalizeStatusAppHost(scriptOrigin);
     } catch {
-      return (scriptOrigin || "").replace(/\/$/, "");
+      return normalizeStatusAppHost(scriptOrigin || DEFAULT_STATUS_APP);
     }
   };
 

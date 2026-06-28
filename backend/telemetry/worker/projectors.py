@@ -8,9 +8,9 @@ from datetime import timedelta
 
 import polars as pl
 from account.context import resolve_scope_from_account_id
-from account.platform import PLATFORM_ACCOUNT_ID, ensure_platform_status_page
+from account.platform import PLATFORM_ACCOUNT_ID
 from asgiref.sync import sync_to_async
-from monitor.models import BugReport, Endpoints, MonitoredService, ThreatIntelligence
+from monitor.models import BugReport, Endpoints, ThreatIntelligence
 from utils.enrichment import get_ip_enrichment, parse_user_agent
 from utils.kafka import get_kafka_producer
 from utils.request import anonymize_ip
@@ -133,16 +133,12 @@ def save_threat_intel_to_db(threat_data_list: list):
 
 @sync_to_async
 def save_to_db(df: pl.DataFrame):
-  page = ensure_platform_status_page()
-
-  url_mapping: dict[str, str] = {}
   normalized_data = []
   for row in df.iter_rows(named=True):
     url_val = row.get("url")
     if not url_val:
       continue
-    norm_url, name = get_normalized_service_info(url_val)
-    url_mapping[norm_url] = name
+    norm_url, _ = get_normalized_service_info(url_val)
     row_dict = dict(row)
     row_dict["url"] = norm_url
     normalized_data.append(row_dict)
@@ -151,16 +147,6 @@ def save_to_db(df: pl.DataFrame):
     return
 
   df = pl.DataFrame(normalized_data)
-  urls = list(df["url"].unique())
-  existing_urls = set(
-    MonitoredService.objects.filter(status_page=page, url__in=urls).values_list("url", flat=True)
-  )
-
-  for u in urls:
-    if u not in existing_urls:
-      MonitoredService.objects.create(
-        status_page=page, name=url_mapping.get(u, "Django Web Server"), url=u
-      )
 
   unique_ips = [ip for ip in df["ip_address"].to_list() if ip]
   malicious_ips: set[str] = set()

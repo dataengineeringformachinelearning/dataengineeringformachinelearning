@@ -159,23 +159,6 @@
       color: var(--text-color);
     }
 
-    .criteria-badge {
-      font-size: 1rem;
-      font-weight: 600;
-      padding: 8px 8px;
-      border-radius: 0px;
-      text-transform: uppercase;
-
-      &.success {
-        background: var(--color-success-dim);
-        color: var(--color-success);
-      }
-
-      &.warning {
-        background: rgba(33, 118, 255, 0.15);
-        color: var(--color-warning);
-      }
-    }
   }
 
   .criteria-desc {

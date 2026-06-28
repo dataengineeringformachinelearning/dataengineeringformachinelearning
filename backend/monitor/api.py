@@ -304,18 +304,30 @@ def list_services(request, page_id: str):
   page = get_object_or_404(StatusPage, id=page_id)
   if not check_status_page_access(request, page):
     raise HttpError(403, "Permission denied")
-  services = page.services.all()
   is_platform = page.is_platform or page.slug == "platform-status"
+  if is_platform:
+    from utils.service_urls import ensure_platform_monitored_services
+
+    ensure_platform_monitored_services()
+  services = page.services.order_by("name")
+  from utils.service_urls import metrics_url_for_service
+
   out = []
   for s in services:
-    latest_log = (
-      Endpoints.objects.filter(url=s.url).exclude(status_code=0).order_by("-last_tested").first()
-    )
+    metrics_url = metrics_url_for_service(s.url, is_platform=is_platform)
+    endpoint_qs = Endpoints.objects.filter(url=metrics_url).exclude(status_code=0)
+    if is_platform:
+      endpoint_qs = endpoint_qs.filter(is_platform=True, user__isnull=True)
+    elif page.user_id:
+      endpoint_qs = endpoint_qs.filter(user=page.user, is_platform=False)
+    latest_log = endpoint_qs.order_by("-last_tested").first()
     status = "Operational"
     if latest_log and (not latest_log.is_active or latest_log.status_code >= 500):
       status = "Outage"
 
-    sla = MetricsService.for_urls([s.url], user=page.user, is_platform=is_platform).cumulative_sla
+    sla = MetricsService.for_urls(
+      [metrics_url], user=page.user, is_platform=is_platform
+    ).cumulative_sla
 
     out.append(
       MonitoredServiceOut(

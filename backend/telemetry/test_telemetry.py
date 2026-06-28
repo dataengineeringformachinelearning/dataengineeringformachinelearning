@@ -99,12 +99,10 @@ async def test_telemetry_worker_normalization() -> None:
 
   await cmd.save_to_db(df)
 
-  # Both URLs should normalize and merge to a single service mapping to the expected status URL
+  # Telemetry projects Endpoints only; platform MonitoredService rows come from ensure_platform_*.
   services = await sync_to_async(list)(MonitoredService.objects.filter(url=expected_url))
-  assert len(services) == 1
-  assert services[0].name == "Status Pages Services"
+  assert len(services) == 0
 
-  # Endpoints should also use the normalized URL
   endpoints = await sync_to_async(list)(Endpoints.objects.filter(url=expected_url))
   assert len(endpoints) == 2
 

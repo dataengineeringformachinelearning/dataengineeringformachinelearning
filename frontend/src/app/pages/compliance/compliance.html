@@ -87,8 +87,8 @@
               <div class="criteria-top">
                 <span class="criteria-name">{{ c.name }}</span>
                 <span
-                  class="criteria-badge"
-                  [class.success]="c.status === 'compliant'"
+                  class="status-badge-premium"
+                  [class.operational]="c.status === 'compliant'"
                   [class.warning]="c.status === 'warning'"
                 >
                   {{ c.status === 'compliant' ? 'Compliant' : 'Warning' }}

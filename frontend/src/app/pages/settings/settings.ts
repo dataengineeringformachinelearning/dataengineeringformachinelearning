@@ -219,9 +219,14 @@ export class Settings implements OnInit {
   getWidgetCode(): string {
     const page = this.selectedPage();
     if (!page) return '';
-    const appUrl = window.location.origin;
+    const statusAppUrl = this.getStatusAppUrl();
     const backendUrl = environment.backendUrl;
-    return `<script src="${appUrl}/assets/widget.js" data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${appUrl}"></script>`;
+    return `<script src="${statusAppUrl}/assets/widget.js" data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
+  }
+
+  /** Angular app origin — status pages and widget deep links (FRONTEND_URL). */
+  private getStatusAppUrl(): string {
+    return environment.frontendUrl ?? window.location.origin;
   }
 
   async copyWidgetCode() {

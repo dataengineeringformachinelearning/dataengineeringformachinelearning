@@ -10,38 +10,45 @@ The Data Engineering for Machine Learning (DEML) Platform provides a comprehensi
    - `telemetry_worker` performs idempotent projections (with DLQ to `frontend-events-dlq`) and builds materialized read models in Firestore (`deml` DB).
    - Queries use direct Firestore real-time subscriptions. Redpanda + Polars for heavy batch work. Decouples from transactional DB while providing at-least-once + dedup semantics.
 
-2. **Data Tenancy & Absolute Isolation**
-   - All ingested telemetry data and dashboard widgets strictly map to the specific Tenant executing the ingestion. Privacy is guaranteed by default with strict tenant isolation enforced at the database and application levels. Data cannot bleed across tenant boundaries.
+2. **Account & Site Isolation (User + Sites)**
+   - One Firebase login → one Django `User` → `UserProfile.account_id`. Each account may own many `StatusPage` sites.
+   - No organization hierarchies or multiple logins per workspace. Telemetry, integrations, and widgets are scoped to `user` / `account_id`; data cannot bleed across accounts.
 
 3. **Big Data Aggregate Threat Modeling ("Herd Immunity")**
-   - The platform trains a global `platform_threat_model.pt` that aggregates anonymized, non-PII metrics across all tenants (e.g., global failure rates, average suspicious request ratios over the last 90 days). This ensures that every tenant benefits from the massive scale of big data and platform-wide insights.
+   - The platform trains a global `platform_threat_model.pt` that aggregates anonymized, non-PII metrics across all accounts (e.g., global failure rates, average suspicious request ratios over the last 90 days).
 
-4. **Tenant-Specific Inference & Evaluation**
-   - Individual threat reports evaluate their specific, isolated telemetry (like location weights and failure rates) against the massive global aggregate model. This dual approach ensures models train on aggregate to catch anomalies by using big data, while evaluating specifically on the tenant's exact operational footprint.
+4. **Account-Scoped Inference & Evaluation**
+   - Individual threat reports evaluate isolated telemetry (location weights, failure rates) against the global aggregate model—training on big data, inferencing on the account's footprint only.
 
 5. **Predictive SLA Deep Learning**
-   - Dedicated PyTorch models (`sla_models`) are trained per-tenant to continuously forecast uptime SLAs. These models ingest temporal vectors, endpoint latency, and variance, updating predictions without manual tuning.
+   - Dedicated PyTorch models (`sla_models`) forecast uptime SLAs per account. They ingest temporal vectors, endpoint latency, and variance, updating predictions without manual tuning.
 
 6. **Next-Generation SIEM / SOAR Digest & Sharing**
-   - Automated serialization of AI anomaly predictions into industry-standard STIX 2.1 JSON payloads. These indicators are shared natively via TAXII 2.1 to central hubs (like MS-ISAC), contributing to the global threat landscape.
+   - Automated serialization of AI anomaly predictions into industry-standard STIX 2.1 JSON payloads. These indicators are shared natively via TAXII 2.1 to central hubs (like MS-ISAC).
 
 7. **Hugging Face Global Ecosystem Integration**
    - Native integration with Hugging Face automates the publication of PyTorch models to the Hub and continuously syncs public status pages and whitepapers via Spaces deployments.
 
-8. **Tenant0, System Design, and Critical Path of the Application**
-   - Our platform dogfoods itself. The core infrastructure operates under `Tenant0` (The Platform Tenant). It runs its own telemetry ingestion, status pages, and threat models. It serves as a continuous, living "Apex Sandbox" to safely trial experimental features under real load and as a "Public Sentinel" showcasing exactly what the platform is capable of. Data enrichments and features must meet Tenant0 standards and follow the system design path of the platform so all tenant data benefits. The explicit pipeline process is: **collect, enhance, aggregate, showcase** to the user. The final processed results must be written to a dedicated table for snappy, optimized access via the UI. This ensures the "critical path of the application" remains highly responsive while delivering deep, enriched insights to the user.
+8. **`platform-status`, System Design, and Critical Path**
+   - The platform dogfoods itself via the public `platform-status` page (`user=null`, `is_platform=True`)—an "Apex Sandbox" and "Public Sentinel" under real load. Background workers iterate over active accounts plus this platform scope so pipelines stay symmetrical. Pipeline: **collect, enhance, aggregate, showcase**. Results land in optimized tables for snappy UI access.
 
 9. **Application-Level Zeek-Equivalent Middleware**
-   - A custom passive interception layer runs at the edge to inspect all incoming HTTP request headers, source IPs, methods, and process latency. It natively homogenizes traffic via zero-latency caches and streams telemetry aligned perfectly to the target Tenant UUID.
+   - Passive interception of HTTP headers, source IPs, methods, and latency. Zero-latency cached mappings associate traffic with the target `account_id` without blocking the request thread.
 
 10. **OSINT & Dark Web Threat Intel Integration**
-    - The platform actively runs reconnaissance against Tor (Ahmia) for brand mentions and Certificate Transparency logs for exposed assets. It automatically formalizes these findings natively into `ThreatIntelligence` and `Endpoints` database records for instantaneous dashboard visibility.
+    - Reconnaissance against Tor (Ahmia) and Certificate Transparency logs. Findings serialize into `ThreatIntelligence` and `Endpoints` for dashboard visibility.
 
 11. **Post-Quantum Cryptography (PQC) & Forward Secrecy**
-    - Implements hybrid Key Encapsulation Mechanisms (KEMs) using `liboqs` allowing clients to negotiate quantum-resistant session keys over the `/api/v1/telemetry/pq-key-exchange` endpoint. Active Forward Secrecy is enforced via exact 5-minute cache expirations of ephemeral secret keys.
+    - Hybrid KEMs via `liboqs` on `/api/v1/telemetry/pq-key-exchange`. Ephemeral secret keys expire after five minutes.
 
-12. **Symmetrical Multi-Tenant Pipelines (`Tenant.objects.all()`)**
-    - All background workers, ML model training loops, and OSINT scanners are explicitly engineered to iterate over `Tenant.objects.all()`. By treating the platform (`Tenant0`) exactly like any other customer, the architecture guarantees absolute feature parity and eradicates the technical debt of hardcoded, single-tenant exceptions.
+12. **Symmetrical Account Pipelines**
+    - Background workers, ML training loops, and OSINT scanners iterate over provisioned users/accounts (and the `platform` sentinel). No hardcoded single-customer exceptions.
 
 13. **Enterprise Compliance & Security Standards**
-    - The platform is architected to support rigorous security frameworks including SOC 2 Type II, CMMC 2.0, and NIST SP 800-171 Rev. 3 readiness out of the box.
+    - Architected for SOC 2 Type II, CMMC 2.0, and NIST SP 800-171 Rev. 3 readiness.
+
+14. **RBAC & ABAC Access Control**
+    - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin` (one role per login). Status page create/update/delete requires `Operator` or `Security Admin` (`@role_required`). Settings UI disables mutations for `Viewer`.
+    - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + MFA (`amr` contains `mfa`). `platform-status` is immutable for customers.
+    - **Public stats:** `/status/:slug` and `/explore` expose uptime and service health only when `is_published=True` or `slug=platform-status`.
+    - See [WHITEPAPER.md §7](../WHITEPAPER.md#7-role-based--attribute-based-access-control-rbac--abac) for the full access matrix.

@@ -10,9 +10,6 @@ export interface Props {
 }
 
 const { title, description = "Interactive steps, working notes, and AI annotation on the DEML (DATA ENGINEERING FOR MACHINE LEARNING) book." } = Astro.props;
-
-// Determine App URL based on environment
-const APP_URL = import.meta.env.PUBLIC_APP_URL ?? 'https://deml.app';
 ---
 
 <!doctype html>
@@ -60,7 +57,7 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL ?? 'https://deml.app';
 
 		<!-- Theme Colors -->
 		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-		<meta name="theme-color" content="#183a37" media="(prefers-color-scheme: dark)" />
+		<meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
 		<meta name="color-scheme" content="light dark" />
 
 		<!-- Fonts -->

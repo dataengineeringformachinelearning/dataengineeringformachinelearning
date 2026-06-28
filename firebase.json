@@ -10,6 +10,13 @@
       "target": "marketing",
       "public": "marketing/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "/status/:slug",
+          "destination": "https://deml.app/status/:slug",
+          "type": 302
+        }
+      ],
       "headers": [
         {
           "source": "**",

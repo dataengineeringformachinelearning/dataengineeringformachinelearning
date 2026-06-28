@@ -1,13 +1,11 @@
 ---
-const API_BASE = import.meta.env.PUBLIC_API_BASE ?? '';
-const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
+import { siteEnv } from '../lib/site-env';
+
+const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
 ---
 
-<script>
-  (window as any).__DEML = {
-    API_BASE: import.meta.env.PUBLIC_API_BASE ?? '',
-    MAIN_APP: import.meta.env.PUBLIC_MAIN_APP_URL ?? '',
-  };
+<script define:vars={{ FRONTEND_URL, BACKEND_URL, MARKETING_URL }}>
+  window.__DEML = { FRONTEND_URL, BACKEND_URL, MARKETING_URL };
 </script>
 <header class="navbar">
   <div class="navbar-content">
@@ -19,7 +17,7 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 
     <!-- Centered Nav Links -->
     <div class="navbar-center desktop-nav">
-      <a href={MAIN_APP + '/explore'} class="nav-btn">
+      <a href={FRONTEND_URL + '/explore'} class="nav-btn">
         <span class="material-icons">explore</span>
         <span>Explore</span>
       </a>
@@ -31,7 +29,7 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 
     <div class="navbar-right">
       <div class="desktop-auth">
-        <a href={MAIN_APP + '/login'} class="auth-btn" id="auth-btn-desktop">
+        <a href={FRONTEND_URL + '/login'} class="auth-btn" id="auth-btn-desktop">
           <span class="material-icons" id="auth-icon-desktop">login</span>
           <span id="auth-text-desktop">Sign In</span>
         </a>
@@ -51,7 +49,7 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 
   <!-- Mobile Collapsible Menu Dropdown -->
   <div class="mobile-menu" id="mobile-menu">
-    <a href={MAIN_APP + '/explore'} class="mobile-nav-btn">
+    <a href={FRONTEND_URL + '/explore'} class="mobile-nav-btn">
       <span class="material-icons">explore</span>
       <span>Explore</span>
     </a>
@@ -62,7 +60,7 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 
     <div class="mobile-divider"></div>
 
-    <a href={MAIN_APP + '/login'} class="mobile-auth-btn" id="auth-btn-mobile">
+    <a href={FRONTEND_URL + '/login'} class="mobile-auth-btn" id="auth-btn-mobile">
       <span class="material-icons" id="auth-icon-mobile">login</span>
       <span id="auth-text-mobile">Sign In</span>
     </a>
@@ -124,8 +122,8 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
     // This sets a localStorage flag so UI can reflect logged-in state (e.g. show Dashboard instead of Sign In).
 
     const config = (window as any).__DEML ?? {};
-    const API_BASE = config.API_BASE ?? '';
-    const MAIN_APP = config.MAIN_APP ?? '';
+    const BACKEND_URL = config.BACKEND_URL ?? config.API_BASE ?? '';
+    const FRONTEND_URL = config.FRONTEND_URL ?? config.MAIN_APP ?? '';
 
     async function checkAuthHandoff() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -133,7 +131,7 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 
       if (handoffToken) {
         try {
-          const res = await fetch(`${API_BASE}/api/v1/auth/handoff/verify`, {
+          const res = await fetch(`${BACKEND_URL}/api/v1/auth/handoff/verify`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -203,17 +201,17 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
       iframe.style.display = 'none';
       iframe.style.width = '0';
       iframe.style.height = '0';
-      iframe.src = `${MAIN_APP}/auth-status`;
+      iframe.src = `${FRONTEND_URL}/auth-status`;
       document.body.appendChild(iframe);
 
       // Listen for response from the iframe (strict origin check)
       const listener = (event: MessageEvent) => {
         // Accept from main app domain (computed from env, fallback for dev)
         try {
-          const mainOrigin = new URL(MAIN_APP).origin;
+          const mainOrigin = new URL(FRONTEND_URL).origin;
           if (event.origin !== mainOrigin && !event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
         } catch (e) {
-          // ENV-driven only. If MAIN_APP not set, be conservative and only trust localhost origins.
+          // ENV-driven only. If FRONTEND_URL not set, be conservative and only trust localhost origins.
           if (!event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
         }
         if (event.data && event.data.type === 'AUTH_STATUS') {
@@ -251,12 +249,12 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
 
       if (isLoggedIn) {
         if (desktopBtn && desktopIcon && desktopText) {
-          desktopBtn.href = `${MAIN_APP}/dashboard`;
+          desktopBtn.href = `${FRONTEND_URL}/dashboard`;
           desktopIcon.textContent = 'dashboard';
           desktopText.textContent = 'Dashboard';
         }
         if (mobileBtn && mobileIcon && mobileText) {
-          mobileBtn.href = `${MAIN_APP}/dashboard`;
+          mobileBtn.href = `${FRONTEND_URL}/dashboard`;
           mobileIcon.textContent = 'dashboard';
           mobileText.textContent = 'Dashboard';
         }
@@ -265,12 +263,12 @@ const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? '';
         localStorage.removeItem('deml_session_active');
         localStorage.removeItem('deml_auth_status');
         if (desktopBtn && desktopIcon && desktopText) {
-          desktopBtn.href = `${MAIN_APP}/login`;
+          desktopBtn.href = `${FRONTEND_URL}/login`;
           desktopIcon.textContent = 'login';
           desktopText.textContent = 'Sign In';
         }
         if (mobileBtn && mobileIcon && mobileText) {
-          mobileBtn.href = `${MAIN_APP}/login`;
+          mobileBtn.href = `${FRONTEND_URL}/login`;
           mobileIcon.textContent = 'login';
           mobileText.textContent = 'Sign In';
         }

@@ -34,9 +34,9 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 
 - **Event Projections Architecture**: Commands via Firebase Cloud Functions (`ingestEvent`) to Redpanda (with Firestore fallback); Projections materialized into Firestore (named `deml` DB); Queries via direct real-time subscriptions. Django workers act as the projection layer.
 - **High-Throughput Ingestion**: Broker-based telemetry pipelines via Redpanda and Polars.
-- **Tenant Isolation**: Absolute database-level isolation ensuring data and widget intake align precisely with your tenant workspace.
+- **Account & Site Isolation**: One login per account (`UserProfile.account_id`); many status pages per user. Telemetry and widgets are scoped to your account—no org hierarchies or shared sub-logins.
 - **Big Data Aggregate Threat Modeling**: Models train on global anonymized data to leverage "herd immunity" for catching anomalies based on vast datasets.
-- **Tenant-Specific Evaluation**: Threat reports map and evaluate your specific telemetry against the massive platform model.
+- **Account-Scoped Evaluation**: Threat reports map and evaluate your specific telemetry against the massive platform model.
 - **Predictive SLAs**: Deep learning models dynamically forecasting service level agreements.
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
@@ -191,8 +191,9 @@ Welcome to the platform! Getting your infrastructure connected and streaming dat
 
 ### 1. Account Setup
 
-- **Registration**: Sign up for a secure account via the web dashboard.
-- **Organizations**: Create an Organization for your team to enable Role-Based Access Control (RBAC) and shared dashboards.
+- **Registration**: Sign up for a secure account via the web dashboard (one Firebase login → one account).
+- **Sites**: Create one or more status pages under your account. Publish a page (`is_published`) to expose it on `/explore` and to anonymous visitors; leave it unpublished to keep stats private to your login.
+- **Roles**: Each account has a single role (`Viewer`, `Operator`, or `Security Admin`) on `UserProfile`—there are no nested org users or team seats. New accounts default to `Operator`.
 - **Billing**: Select your tier. The free tier provides up to 60 API requests per minute for sandbox testing and development.
 
 ### 2. Connect Your Services
@@ -217,13 +218,13 @@ Authorization: Bearer YOUR_API_KEY
 
 The DEML Platform natively integrates with Hugging Face to automate the sharing of PyTorch models and static assets. We employ a privacy-first, aggregated architecture to share threat intelligence globally without exposing user data.
 
-- **Global Platform Models**: Background workers securely aggregate anonymized telemetry across the entire platform to train a single global `platform_threat_model.pt`. This model benefits from "herd immunity" without exposing any single tenant's data.
+- **Global Platform Models**: Background workers securely aggregate anonymized telemetry across the entire platform to train a single global `platform_threat_model.pt`. This model benefits from "herd immunity" without exposing any single account's raw data.
 - **Model Hub**: The global PyTorch threat models and SLA models are automatically pushed to the Hugging Face Hub using the `huggingface_hub` API.
 - **Spaces Deployment**: GitHub Actions are configured to automatically sync the Book, Whitepaper, and UI to a Hugging Face Space upon commits to `main`.
 
 **Requirements:**
 
-- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway). See [RAILWAY.md](RAILWAY.md) and the `*.env.example` files for the complete, up-to-date list (including `MARKETING_URL`, `PUBLIC_*` for cross-site handoff between deml.app and the marketing site, Outbox/Redpanda/Dragonfly, etc.).
+- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway). See [RAILWAY.md](RAILWAY.md) and the `*.env.example` files for the complete, up-to-date list (including `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL` for cross-site handoff, Outbox/Redpanda/Dragonfly, etc.).
 - Add `HF_TOKEN` and `HF_SPACE_REPO` as GitHub Repository Secrets to enable the Spaces sync action.
 
 ---
@@ -240,17 +241,18 @@ The platform supports automated email alerts for system events and model trainin
 
 ## Enterprise Security & Compliance
 
-We take data security seriously. As a multi-tenant SaaS platform, we employ strict isolation protocols to protect your data.
+We take data security seriously. As a multi-account SaaS platform, we employ strict isolation protocols to protect your data.
 
-- **Data Isolation:** All tenant data is cryptographically isolated using strict multi-tenancy rules and dedicated encryption keys.
+- **Data Isolation:** All account data is cryptographically isolated using account-scoped keys (`UserProfile.account_id`) and dedicated encryption at rest.
 - **Continuous Auditing:** Our infrastructure undergoes continuous vulnerability scanning to ensure your models are safe.
-- **Application-Level Telemetry:** A native middleware acts similarly to Zeek, passively monitoring all incoming request headers, IPs, methods, and processing latencies. This telemetry is tracked and completely isolated to the specific tenant targeted by the incoming traffic using zero-latency cached domain mappings to avoid database blocking.
-- **OSINT & Dark Web Scanning:** Daily background cron workers leverage the "Have I Been Pwned" (HIBP) API and query the Tor network via Ahmia to automatically hunt for compromised tenant emails and brand mentions on dark web forums. Additionally, Certificate Transparency logs are scanned for exposed subdomains. All findings are natively serialized as `ThreatIntelligence` and `Endpoints` records in the database to instantly populate the tenant's security dashboard.
+- **Application-Level Telemetry:** A native middleware acts similarly to Zeek, passively monitoring all incoming request headers, IPs, methods, and processing latencies. This telemetry is tracked and scoped to the account resolved from the request (cached domain → account mappings) without blocking the main thread.
+- **OSINT & Dark Web Scanning:** Daily background cron workers leverage the "Have I Been Pwned" (HIBP) API and query the Tor network via Ahmia to automatically hunt for compromised account emails and brand mentions on dark web forums. Additionally, Certificate Transparency logs are scanned for exposed subdomains. All findings are natively serialized as `ThreatIntelligence` and `Endpoints` records in the database to instantly populate your security dashboard.
 - **Post-Quantum Cryptography (PQC):** The platform features a Post-Quantum Key Encapsulation Mechanism (KEM) using `liboqs`. External services can invoke the `/api/v1/telemetry/pq-key-exchange` endpoint to securely negotiate a PQ session key before transmitting transient, highly sensitive telemetry payloads over standard TLS. The server enforces Forward Secrecy by strictly caching the ephemeral secret key for exactly 5 minutes using a unique UUID and permanently destroying it immediately upon decapsulation. This actively prevents "Store Now, Decrypt Later" (SNDL) attacks. (Fails over gracefully to AES if `liboqs` is absent).
-- **Tenant0 Bootstrapping:** The platform utilizes Django signals (`post_migrate`) to dynamically bootstrap itself as `Tenant0` on the first run, seamlessly homogenizing all background workers, ML models, and pipelines to utilize standard UUIDs, eliminating the risk of hardcoded string literal constraints.
-- **Access Control Architecture (RBAC & ABAC):**
-  - **Role-Based Access Control (RBAC):** Users hold one of three distinct roles: `Viewer` (read-only access to status and analytics), `Operator` (standard write access to status pages, endpoints, and services), or `Security Admin` (full administrative rights and configuration overrides).
-  - **Attribute-Based Access Control (ABAC):** Visibility policies adapt dynamically. Logged-out public users can only access published status pages (`is_published=True`) and the default `platform-status` (Tenant0). Logged-in users can also access status pages they explicitly own (`user=request.user`). Programmatic API ingestion maps to isolated tenant spaces dynamically via secure API tokens rather than hardcoded domains. Write actions dynamically require multi-factor authentication (MFA) verification via client JWT attributes.
+- **Platform Status Bootstrapping:** Django signals (`post_migrate`) ensure the public `platform-status` page exists (`user=null`, `is_platform=True`) so workers, ML pipelines, and the marketing sentinel share one canonical showcase scope—no hardcoded tenant strings.
+- **Access Control Architecture (RBAC & ABAC):** One login per account; no org hierarchies. Authorization combines role, session, ownership, and publication state (see [WHITEPAPER.md §7](WHITEPAPER.md#7-role-based--attribute-based-access-control-rbac--abac) for the full matrix).
+  - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin`. Status page create/update/delete requires `Operator` or `Security Admin` via `@role_required`. The Settings UI disables all mutations for `Viewer`. `/analytics` and `/vulnerabilities` require login (`authGuard`).
+  - **ABAC:** Anonymous users read **published** pages and **`platform-status`** only. Logged-in owners also read their **unpublished** pages and stats. Writes require ownership + MFA (`amr` contains `mfa` in the Firebase JWT). `platform-status` is read-only for everyone. API ingest keys resolve to `account_id` dynamically.
+  - **Public stats pages:** Visiting `/status/:slug` or `/explore` while logged out shows uptime and service health only when `is_published=True` or `slug=platform-status`; private pages return forbidden/empty lists.
 - **Compliance:** We are actively pursuing SOC 2 Type II, CMMC 2.0, NIST SP 800-171 Rev. 3, and GDPR compliance certifications. You can review our full security posture and architecture in our Whitepaper.
 
 ## Disclaimer & Liability
@@ -283,6 +285,12 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
+- **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
+  - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
+  - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
+  - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
+  - [Grok Build](https://x.ai/) (Beta)
+  - [Cursor](https://cursor.com/) — Grok 4.3, Grok Build 0.1 (xAI)
 
 ---
 

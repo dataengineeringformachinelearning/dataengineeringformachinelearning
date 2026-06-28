@@ -11,12 +11,12 @@
       class="status-badge-premium"
       [ngClass]="getPageStatusClass()"
     >
-      <span class="status-dot-greenblue"></span>
+      <span class="status-dot" aria-hidden="true"></span>
       {{ getPageStatus() }}
     </a>
     } @else {
     <div class="status-badge-premium" [ngClass]="getPageStatusClass()">
-      <span class="status-dot-greenblue"></span>
+      <span class="status-dot" aria-hidden="true"></span>
       {{ getPageStatus() }}
     </div>
     }

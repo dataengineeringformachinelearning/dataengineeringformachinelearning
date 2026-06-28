@@ -48,7 +48,7 @@
               @if (sanityService.loading()) {
               <div class="announcement-card-premium info">
                 <div class="ann-header">
-                  <span class="ann-severity-badge info">info</span>
+                  <span class="status-badge-premium info">info</span>
                   <span class="ann-date">Jun 13, 2026</span>
                 </div>
                 <h3 class="ann-title">System Status Update</h3>
@@ -60,7 +60,7 @@
               } @else { @for (ann of sanityService.announcements(); track ann._id) {
               <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
                 <div class="ann-header">
-                  <span class="ann-severity-badge" [ngClass]="ann.severity || 'info'">
+                  <span class="status-badge-premium" [ngClass]="ann.severity || 'info'">
                     {{ ann.severity || 'info' }}
                   </span>
                   <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>

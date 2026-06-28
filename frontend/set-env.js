@@ -50,6 +50,7 @@ const sanityDataset = process.env.SANITY_DATASET ?? 'production';
 // This avoids broken API calls when build env not set.
 const buildBackendUrl = process.env.BACKEND_URL ?? '';
 const buildMarketingUrl = process.env.MARKETING_URL ?? '';
+const buildFrontendUrl = process.env.FRONTEND_URL ?? '';
 
 const getBackendUrlCode = `
 const getBackendUrl = () => {
@@ -77,6 +78,26 @@ const getBackendUrl = () => {
     return 'https://backend.deml.app';
   }
   return 'https://backend.deml.app';
+};
+`;
+
+const getFrontendUrlCode = `
+const getFrontendUrl = () => {
+  if (typeof window === 'undefined') {
+    const globalProcess = (globalThis as any).process;
+    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['FRONTEND_URL']) {
+      return globalProcess.env['FRONTEND_URL'];
+    }
+    return '${buildFrontendUrl || 'https://deml.app'}';
+  }
+  const host = window.location.hostname;
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return window.location.origin;
+  }
+  if (host === 'deml.app' || host.endsWith('.deml.app')) {
+    return 'https://deml.app';
+  }
+  return '${buildFrontendUrl || 'https://deml.app'}';
 };
 `;
 
@@ -118,12 +139,14 @@ const getFirebaseConfig = () => {
 };
 
 ${getBackendUrlCode}
+${getFrontendUrlCode}
 ${getMarketingUrlCode}
 
 export const environment = {
   production: true,
   version: '${appVersion}',
   backendUrl: getBackendUrl(),
+  frontendUrl: getFrontendUrl(),
   marketingUrl: getMarketingUrl(),
   firebase: getFirebaseConfig(),
   sanity: {
@@ -154,12 +177,14 @@ const getFirebaseConfig = () => {
 };
 
 ${getBackendUrlCode}
+${getFrontendUrlCode}
 ${getMarketingUrlCode}
 
 export const environment = {
   production: false,
   version: '${appVersion}',
   backendUrl: getBackendUrl(),
+  frontendUrl: getFrontendUrl(),
   marketingUrl: getMarketingUrl(),
   firebase: getFirebaseConfig(),
   sanity: {

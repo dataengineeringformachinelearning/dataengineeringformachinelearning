@@ -59,7 +59,7 @@
           <div class="panel-header">
             <mat-icon class="panel-icon">sort</mat-icon>
             <h2>Ingestion Queue</h2>
-            <div class="count-badge">{{ filteredVulnerabilities().length }}</div>
+            <span class="status-badge-premium primary">{{ filteredVulnerabilities().length }}</span>
           </div>
 
           <div class="filter-bar">
@@ -109,7 +109,7 @@
             >
               <div class="item-header">
                 <span class="item-id">VULN-{{ v.id.substring(0, 8).toUpperCase() }}</span>
-                <span class="item-badge" [attr.data-severity]="v.severity.toLowerCase()">
+                <span class="status-badge-premium" [ngClass]="v.severity.toLowerCase()">
                   {{ v.severity }}
                 </span>
               </div>
@@ -289,7 +289,7 @@
             <div class="queue-item siem-item">
               <div class="item-header">
                 <span class="item-id">{{ incident.id }}</span>
-                <span class="item-badge" [attr.data-severity]="incident.severity.toLowerCase()">
+                <span class="status-badge-premium" [ngClass]="incident.severity.toLowerCase()">
                   {{ incident.severity }}
                 </span>
               </div>

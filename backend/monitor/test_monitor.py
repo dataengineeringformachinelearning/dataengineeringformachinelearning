@@ -205,6 +205,33 @@ def test_private_status_page_anonymous_denied(client: Client, test_user: User) -
 
 
 @pytest.mark.django_db
+def test_viewer_role_denied_create_status_page(
+  client: Client, test_user: User, mock_verify_token: Any
+) -> None:
+  from monitor.models import UserProfile
+
+  UserProfile.objects.create(user=test_user, role="Viewer")
+
+  original_request = client.request
+
+  def authed_request(*args: Any, **kwargs: Any):
+    kwargs["HTTP_AUTHORIZATION"] = "Bearer valid-token"
+    return original_request(*args, **kwargs)
+
+  client.request = authed_request
+  try:
+    response = client.post(
+      "/api/v1/system-status/status_pages",
+      data={"title": "Viewer Page", "slug": "viewer-page"},
+      content_type="application/json",
+    )
+    assert response.status_code == 403
+    assert "Viewer" in response.json()["detail"]
+  finally:
+    client.request = original_request
+
+
+@pytest.mark.django_db
 def test_private_status_page_owner_allowed(authenticated_client: Client, test_user: User) -> None:
   # Create a private status page for test_user
   page = StatusPage.objects.create(

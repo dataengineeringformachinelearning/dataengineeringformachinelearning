@@ -1,0 +1,2 @@
+# Status pages live on the Angular app (deml.app), not the marketing site.
+/status/*  https://deml.app/status/:splat  302

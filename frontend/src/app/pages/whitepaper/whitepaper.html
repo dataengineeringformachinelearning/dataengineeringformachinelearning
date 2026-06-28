@@ -1,5 +1,4 @@
 <div class="dashboard-page-container">
-  <div class="ambient-background"></div>
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
       <div class="whitepaper-container">
@@ -247,15 +246,42 @@
           </section>
 
           <section class="paper-section">
-            <h2>7. Data Tenancy, Retention, and Lifecycle Policy</h2>
+            <h2>7. Role-Based &amp; Attribute-Based Access Control (RBAC &amp; ABAC)</h2>
+            <p>
+              Authorization combines <strong>RBAC</strong> (per-login roles on
+              <code>UserProfile</code>) with <strong>ABAC</strong> (session, ownership, publication,
+              and platform scope). The platform uses a <strong>User + Sites</strong> model: one
+              Firebase login, one account (<code>account_id</code>), many
+              <code>StatusPage</code> sites. There are no organization hierarchies or multiple
+              logins per workspace.
+            </p>
+            <p>
+              <strong>RBAC:</strong> Each account has one role—<code>Viewer</code>,
+              <code>Operator</code>, or <code>Security Admin</code>. Status page
+              create/update/delete requires <code>Operator</code> or <code>Security Admin</code> via
+              <code>@role_required</code>. The Settings UI disables mutations for
+              <code>Viewer</code>. <code>/analytics</code> and <code>/vulnerabilities</code> require
+              login (<code>authGuard</code>).
+            </p>
+            <p>
+              <strong>ABAC:</strong> Anonymous users read <strong>published</strong> pages and the
+              public <code>platform-status</code> sentinel only. Logged-in owners also read their
+              <strong>unpublished</strong> pages and stats.
+              <code>check_status_page_access</code> guards services, incidents, and ML rollups.
+              Writes require ownership plus MFA (<code>amr</code> contains <code>mfa</code> in the
+              Firebase JWT). <code>platform-status</code> is immutable for customers.
+            </p>
+          </section>
+
+          <section class="paper-section">
+            <h2>8. Data Tenancy, Retention, and Lifecycle Policy</h2>
             <p>
               Observability systems must ensure strict isolation. The DEML Platform enforces
-              absolute multi-tenancy boundaries at the database level and ensures all data is
-              private-by-default. Direct cross-tenant fallbacks (such as global threat reports) are
-              strictly eliminated; instead, threat models and predictions are trained exclusively on
-              the target user's telemetry. If a tenant does not yet have enough collected telemetry,
-              the model is trained on-demand using safe, zero-threat baselines instead of shared
-              data.
+              account-scoped boundaries at the database level and ensures all data is
+              private-by-default. Direct cross-account raw fallbacks are strictly eliminated;
+              instead, threat models evaluate the target user's isolated telemetry against a global
+              aggregate model. If an account does not yet have enough collected telemetry, the model
+              uses safe, zero-threat baselines instead of shared raw data.
             </p>
             <p>
               To protect sensitive credentials (such as Google Analytics 4 tokens, Microsoft Clarity
@@ -282,7 +308,7 @@
           </section>
 
           <section class="paper-section">
-            <h2>8. Team Workflows and Integrated Vulnerability Management</h2>
+            <h2>9. Team Workflows and Integrated Vulnerability Management</h2>
             <p>
               To facilitate collaborative security workflows and structured issue tracking, the
               platform implements a self-contained, integrated vulnerability tracking and management
@@ -301,7 +327,7 @@
           </section>
 
           <section class="paper-section">
-            <h2>9. Conclusion</h2>
+            <h2>10. Conclusion</h2>
             <p>
               By combining asynchronous broker patterns, ultra-fast DataFrame engines, and
               predictive deep learning models, the platform establishes a robust data engineering
@@ -310,7 +336,7 @@
           </section>
 
           <section class="paper-section">
-            <h2>10. Acknowledgments</h2>
+            <h2>11. Acknowledgments</h2>
             <p>
               Special thanks to Google DeepMind and their groundbreaking work in Artificial
               Intelligence. The documentary
@@ -323,10 +349,24 @@
               served as a profound inspiration to delve deeper into the fields of AI and Machine
               Learning, demonstrating the extraordinary potential of advanced computational systems.
             </p>
+            <p>
+              This platform was substantially authored with assistance from the following integrated
+              development environments and AI coding tools:
+            </p>
+            <ul>
+              <li><strong>Visual Studio Code + Cline</strong> — Grok Code Fast 1 (xAI)</li>
+              <li><strong>Windsurf</strong> — Grok Code Fast 1 (xAI)</li>
+              <li>
+                <strong>Google Antigravity</strong> — Gemini 3.1 Pro, Gemini 3.5 Flash, Claude Opus,
+                Claude Sonnet
+              </li>
+              <li><strong>Grok Build</strong> (Beta)</li>
+              <li><strong>Cursor</strong> — Grok 4.3, Grok Build 0.1 (xAI)</li>
+            </ul>
           </section>
 
           <section class="paper-section">
-            <h2>11. References</h2>
+            <h2>12. References</h2>
             <ol>
               <li>Redpanda Data, Inc. (2026). <em>Redpanda: A streaming data platform</em>.</li>
               <li>Apache Software Foundation. (2026). <em>Apache Kafka</em>.</li>
@@ -366,7 +406,7 @@
           </section>
 
           <section class="paper-section">
-            <h2>12. License</h2>
+            <h2>13. License</h2>
             <p>
               This work is licensed under a
               <a

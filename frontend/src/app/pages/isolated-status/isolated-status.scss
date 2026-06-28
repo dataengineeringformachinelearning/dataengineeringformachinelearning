@@ -151,15 +151,6 @@
     }
   }
 
-  .last-updated-time {
-    font-size: 1rem;
-    font-weight: 500;
-    opacity: 0.7;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 8px 8px;
-    border-radius: 16px;
-  }
-
   /* Status Colors */
   &.operational {
     background: linear-gradient(135deg, color-mix(in srgb, var(--color-success) 15%, transparent) 0%, color-mix(in srgb, var(--color-success) 5%, transparent) 100%);
@@ -414,34 +405,6 @@
     color: var(--text-muted);
   }
 
-  .service-status-pill {
-    padding: 8px 8px;
-    border-radius: 16px;
-    font-size: 1rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    border: 1px solid transparent;
-
-    &.operational {
-      background: color-mix(in srgb, var(--color-success) 8%, transparent);
-      color: var(--color-success);
-      border-color: color-mix(in srgb, var(--color-success) 15%, transparent);
-    }
-
-    &.degraded {
-      background: color-mix(in srgb, var(--color-warning) 8%, transparent);
-      color: var(--color-warning);
-      border-color: color-mix(in srgb, var(--color-warning) 15%, transparent);
-    }
-
-    &.outage {
-      background: color-mix(in srgb, var(--color-error) 8%, transparent);
-      color: var(--color-error);
-      border-color: color-mix(in srgb, var(--color-error) 15%, transparent);
-    }
-  }
-
   .no-services-placeholder {
     padding: 32px;
     text-align: center;
@@ -686,23 +649,6 @@
     gap: 8px;
     margin-bottom: 8px;
     flex-wrap: wrap;
-  }
-
-  .incident-badge-standalone {
-    font-size: 1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    padding: 8px 8px;
-    border-radius: 0px;
-    background: color-mix(in srgb, var(--color-warning) 10%, transparent);
-    color: var(--color-warning);
-    border: 1px solid color-mix(in srgb, var(--color-warning) 20%, transparent);
-
-    &.resolved {
-      background: color-mix(in srgb, var(--color-success) 10%, transparent);
-      color: var(--color-success);
-      border: 1px solid color-mix(in srgb, var(--color-success) 20%, transparent);
-    }
   }
 
   .incident-title-text {
@@ -985,32 +931,6 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
-}
-
-.ann-severity-badge {
-  font-size: 1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 8px 8px;
-  border-radius: 0px;
-  letter-spacing: 0.05em;
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-muted);
-
-  &.info {
-    background: color-mix(in srgb, var(--color-info) 10%, transparent);
-    color: var(--color-info);
-  }
-
-  &.warning {
-    background: color-mix(in srgb, var(--color-warning) 15%, transparent);
-    color: var(--color-warning);
-  }
-
-  &.critical {
-    background: color-mix(in srgb, var(--color-error) 15%, transparent);
-    color: var(--color-error);
-  }
 }
 
 .ann-date {

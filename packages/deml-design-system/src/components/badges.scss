@@ -1,0 +1,78 @@
+// Unified status chips / pills / badges — use .status-badge-premium + semantic modifier.
+
+.status-badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  text-decoration: none;
+
+  .status-dot,
+  .status-dot-greenblue {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: currentColor;
+    box-shadow: 0 0 8px currentColor;
+  }
+
+  &.operational,
+  &.resolved,
+  &.success,
+  &.low,
+  &.compliant {
+    background: color-mix(in srgb, var(--color-success) 8%, transparent);
+    color: var(--color-success);
+    border-color: color-mix(in srgb, var(--color-success) 15%, transparent);
+  }
+
+  &.degraded,
+  &.warning,
+  &.medium,
+  &.investigating,
+  &.identified {
+    background: color-mix(in srgb, var(--color-warning) 8%, transparent);
+    color: var(--color-warning);
+    border-color: color-mix(in srgb, var(--color-warning) 15%, transparent);
+  }
+
+  &.outage,
+  &.critical,
+  &.high,
+  &.error {
+    background: color-mix(in srgb, var(--color-error) 8%, transparent);
+    color: var(--color-error);
+    border-color: color-mix(in srgb, var(--color-error) 15%, transparent);
+  }
+
+  &.info,
+  &.neutral {
+    background: color-mix(in srgb, var(--color-info) 10%, transparent);
+    color: var(--color-info);
+    border-color: color-mix(in srgb, var(--color-info) 15%, transparent);
+  }
+
+  &.primary {
+    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    color: var(--color-primary-container);
+    border-color: color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  html[data-theme='light'] &.primary {
+    color: var(--color-primary);
+  }
+
+  &--compact {
+    padding: 8px 12px;
+    font-size: max(16px, var(--base-font-size, 18px));
+  }
+}

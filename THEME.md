@@ -58,9 +58,11 @@ $gradient-radial: radial-gradient(#31393cff, #2176ffff, #33a1fdff, #fdca40ff, #f
 
 ---
 
-## 2. Typography
+## 2. Typography and Layout
 
-- Base font size: 16px
+- Base font size: **18px minimum** across all UI text (`--base-font-size`).
+- Spacing uses a **9px grid** (`--grid-unit`, `--space-1` through `--space-8`).
+- Design **mobile-first**: default styles target small screens; use `@media (min-width: …)` to scale up.
 - Header letter spacing should use negative/smaller spacing (`letter-spacing: -0.02em` or similar) to ensure a clean, modern look.
 - Use bold, high-contrast typography to emphasize metrics and data over decorative elements.
 

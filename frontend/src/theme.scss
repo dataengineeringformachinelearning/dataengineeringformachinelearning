@@ -31,7 +31,7 @@ button:hover,
 .video-wrapper,
 iframe {
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-sm);
   overflow: hidden;
   background: var(--black);

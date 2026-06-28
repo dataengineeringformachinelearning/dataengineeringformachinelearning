@@ -2,9 +2,47 @@
 
 from __future__ import annotations
 
+import re
 from urllib.parse import urlparse
 
 from django.conf import settings
+
+# Single source of truth for platform-status monitored rows (name → canonical URL).
+PLATFORM_CANONICAL_SERVICE_NAMES: frozenset[str] = frozenset(
+  {
+    "Django Web Server",
+    "Marketing Web Server",
+    "Auth User",
+    "Auth Register",
+    "ML Engine Latest",
+    "Telemetry Cookie Consent",
+    "Status Pages",
+    "Status Pages Slug Platform Status",
+  }
+)
+
+_LEGACY_PLATFORM_SERVICE_NAMES: frozenset[str] = frozenset(
+  {
+    "Model Latest",
+    "Angular Web App",
+    "Landing Page",
+    "Status Pages Incidents",
+    "Status Pages Services",
+    "Redpanda Broker",
+  }
+)
+
+_STALE_URL_FRAGMENTS: tuple[str, ...] = (
+  "/api/v1/auth/register",
+  "/api/v1/model/latest",
+  "/api/v1/telemetry/cookie-consent",
+  "/api/v1/monitor/",
+  "/api/v1/system-status/health",
+)
+
+_UUID_RE = re.compile(
+  r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", re.IGNORECASE
+)
 
 
 def _frontend_base() -> str:
@@ -106,17 +144,18 @@ def resolve_ping_url(url_str: str, service_name: str | None = None) -> str:
   return normalized if normalized != f"{_frontend_base()}/" or not parsed.path else url_str
 
 
-def ensure_platform_monitored_services() -> int:
-  """Upsert canonical platform-status services and remove stale API-path duplicates."""
-  from account.platform import ensure_platform_status_page
-  from monitor.models import MonitoredService
+def metrics_url_for_service(url_str: str, *, is_platform: bool) -> str:
+  """URL key used for Endpoints / SLA lookups (normalized on platform-status only)."""
+  if not is_platform:
+    return url_str
+  canonical, _ = get_normalized_service_info(url_str)
+  return canonical
 
+
+def _platform_canonical_rows() -> list[tuple[str, str]]:
   frontend = _frontend_base()
   marketing = _marketing_base()
-
-  page = ensure_platform_status_page()
-
-  canonical = [
+  return [
     ("Django Web Server", f"{frontend}/"),
     ("Marketing Web Server", f"{marketing}/"),
     ("Auth User", f"{frontend}/settings"),
@@ -129,6 +168,28 @@ def ensure_platform_monitored_services() -> int:
     ),
     ("Status Pages", f"{frontend}/api/v1/system-status/status_pages"),
   ]
+
+
+def _is_stale_platform_service(name: str, url: str) -> bool:
+  if name in _LEGACY_PLATFORM_SERVICE_NAMES:
+    return True
+  if name not in PLATFORM_CANONICAL_SERVICE_NAMES:
+    return True
+  if _UUID_RE.search(name) or _UUID_RE.search(url or ""):
+    return True
+  if any(fragment in (url or "") for fragment in _STALE_URL_FRAGMENTS):
+    return True
+  return False
+
+
+def ensure_platform_monitored_services() -> int:
+  """Upsert canonical platform-status services and prune telemetry/auto-created duplicates."""
+  from account.platform import ensure_platform_status_page
+  from monitor.models import MonitoredService
+
+  page = ensure_platform_status_page()
+  canonical = _platform_canonical_rows()
+  canonical_names = {name for name, _ in canonical}
 
   updated = 0
   for name, url in canonical:
@@ -144,13 +205,10 @@ def ensure_platform_monitored_services() -> int:
     elif created:
       updated += 1
 
-  stale_paths = (
-    "/api/v1/auth/register",
-    "/api/v1/model/latest",
-    "/api/v1/telemetry/cookie-consent",
-  )
   for service in MonitoredService.objects.filter(status_page=page):
-    if any(fragment in (service.url or "") for fragment in stale_paths):
+    if service.name not in canonical_names or _is_stale_platform_service(
+      service.name, service.url or ""
+    ):
       service.delete()
       updated += 1
 

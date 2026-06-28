@@ -114,15 +114,6 @@
     flex: 1;
   }
 
-  .count-badge {
-    background-color: var(--color-primary);
-    color: var(--color-on-primary);
-    font-size: 1rem;
-    padding: 0rem 8px;
-    border-radius: 16px;
-    font-weight: bold;
-    font-family: 'Inter', monospace;
-  }
 }
 
 /* Filters */
@@ -215,32 +206,6 @@
     color: var(--text-muted);
   }
 
-  .item-badge {
-    font-size: 1rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    padding: 0rem 8px;
-    border-radius: 0px;
-    font-family: 'Inter', monospace;
-
-    &[data-severity='low'] {
-      background-color: var(--color-success-dim);
-      color: var(--color-success);
-    }
-    &[data-severity='medium'] {
-      background-color: rgba(255, 193, 7, 0.15);
-      color: var(--color-warning);
-    }
-    &[data-severity='high'] {
-      background-color: rgba(244, 67, 54, 0.15);
-      color: var(--color-error);
-    }
-    &[data-severity='critical'] {
-      background-color: rgba(33, 118, 255, 0.15);
-      color: var(--crayola-blue);
-      border: 1px solid var(--crayola-blue);
-    }
-  }
 }
 
 .item-title {

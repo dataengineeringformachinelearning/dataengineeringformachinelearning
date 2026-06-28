@@ -177,34 +177,53 @@ import background from '../assets/background.svg';
 		}
 	}
 
-	@media screen and (max-width: 768px) {
+	#container {
+		display: flex;
+		flex-direction: column;
+	}
+
+	#hero {
+		display: block;
+		padding-top: 10%;
+	}
+
+	#links {
+		flex-wrap: wrap;
+	}
+
+	#links a.button {
+		padding: 14px 18px;
+	}
+
+	#news {
+		right: 16px;
+		left: 16px;
+		bottom: 2.5rem;
+		max-width: 100%;
+	}
+
+	h1 {
+		line-height: 1.5;
+	}
+
+	@media screen and (min-width: 769px) {
 		#container {
-			display: flex;
-			flex-direction: column;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
 		}
 
 		#hero {
-			display: block;
-			padding-top: 10%;
-		}
-
-		#links {
-			flex-wrap: wrap;
-		}
-
-		#links a.button {
-			padding: 14px 18px;
+			padding-top: 0;
 		}
 
 		#news {
 			right: 16px;
-			left: 16px;
-			bottom: 2.5rem;
-			max-width: 100%;
+			left: auto;
+			max-width: 300px;
 		}
 
 		h1 {
-			line-height: 1.5;
+			line-height: 1.1;
 		}
 	}
 </style>

@@ -27,7 +27,10 @@
                 }}
               </p>
             </div>
-            <span class="last-updated-time">Live Predictions Active</span>
+            <span class="status-badge-premium operational">
+              <span class="status-dot" aria-hidden="true"></span>
+              Live Predictions Active
+            </span>
           </div>
         </div>
         <!-- Description and Info -->
@@ -57,7 +60,7 @@
             @if (sanityService.loading()) {
             <div class="announcement-card-premium info">
               <div class="ann-header">
-                <span class="ann-severity-badge info">info</span>
+                <span class="status-badge-premium info">info</span>
                 <span class="ann-date">Jun 13, 2026</span>
               </div>
               <h3 class="ann-title">System Status Update</h3>
@@ -69,7 +72,7 @@
             } @else { @for (ann of sanityService.announcements(); track ann._id) {
             <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
               <div class="ann-header">
-                <span class="ann-severity-badge" [ngClass]="ann.severity || 'info'">
+                <span class="status-badge-premium" [ngClass]="ann.severity || 'info'">
                   {{ ann.severity || 'info' }}
                 </span>
                 <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
@@ -280,9 +283,10 @@
               <div class="service-metrics">
                 <span class="service-sla-percentage">{{ s.sla | number:'1.2-2' }}% SLA</span>
                 <span
-                  class="service-status-pill"
+                  class="status-badge-premium"
                   [ngClass]="s.status?.toLowerCase() || 'operational'"
                 >
+                  <span class="status-dot" aria-hidden="true"></span>
                   {{ s.status || 'Operational' }}
                 </span>
               </div>
@@ -335,7 +339,7 @@
               [ngClass]="{'resolved': incident.status === 'Resolved'}"
             >
               <div class="incident-top-meta">
-                <span class="incident-badge-standalone" [ngClass]="incident.status.toLowerCase()"
+                <span class="status-badge-premium" [ngClass]="incident.status.toLowerCase()"
                   >{{ incident.status }}</span
                 >
                 <h4 class="incident-title-text">{{ incident.title }}</h4>

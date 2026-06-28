@@ -1,7 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC_DIR = path.resolve(__dirname, '../src');
+const SCAN_DIRS = [
+  path.resolve(__dirname, '../src'),
+  path.resolve(__dirname, '../../marketing/src/styles'),
+  path.resolve(__dirname, '../../marketing/src/components'),
+  path.resolve(__dirname, '../../marketing/src/pages'),
+  path.resolve(__dirname, '../../marketing/src/layouts'),
+];
 const ALLOWED_EXCEPTIONS = ['/* mobile-first-exception */', '/* mobile-first-override */'];
 
 function getFiles(dir, fileList = []) {
@@ -20,7 +26,7 @@ function getFiles(dir, fileList = []) {
 }
 
 let violationsCount = 0;
-const files = getFiles(SRC_DIR);
+const files = SCAN_DIRS.flatMap(dir => (fs.existsSync(dir) ? getFiles(dir) : []));
 
 console.log(`Scanning ${files.length} stylesheet files for mobile-first media queries...`);
 

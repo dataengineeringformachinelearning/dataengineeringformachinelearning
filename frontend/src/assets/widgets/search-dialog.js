@@ -135,15 +135,23 @@ const css = `
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.deml-result-type-badge {
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-muted, #999);
-  letter-spacing: 0.05em;
-  border-radius: 4px;
+.status-badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: capitalize;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.status-badge-premium.neutral {
+  background: color-mix(in srgb, var(--color-info, #2176ff) 10%, transparent);
+  color: var(--color-info, #2176ff);
+  border-color: color-mix(in srgb, var(--color-info, #2176ff) 15%, transparent);
 }
 mark.deml-search-highlight {
   background: rgba(33, 118, 255, 0.2);
@@ -354,7 +362,7 @@ function renderSearch() {
             <div class="deml-result-title">${res.title}</div>
             <div class="deml-result-snippet">${res.content.substring(0, 80)}...</div>
           </div>
-          <div class="deml-result-type-badge">${badge}</div>
+          <span class="status-badge-premium neutral">${badge}</span>
         </a>
       `;
     });

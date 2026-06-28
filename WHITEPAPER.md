@@ -14,7 +14,7 @@
 
 Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics.
 
-As a testament to the architecture's stability, the platform actively dogfoods its own infrastructure. The platform itself runs as **Tenant0**, serving as a living "Apex Sandbox" and "Public Sentinel" showcasing its real-time telemetry and threat analysis capabilities to the world.
+As a testament to the architecture's stability, the platform actively dogfoods its own infrastructure. The public **`platform-status`** page (`user=null`, `is_platform=True`) serves as a living "Apex Sandbox" and "Public Sentinel" showcasing real-time telemetry and threat analysis to the world—without requiring a separate organization login.
 
 ## 2. High-Throughput Ingestion Architecture
 
@@ -106,7 +106,7 @@ The primary intelligence layer employs a PyTorch Multi-Layer Perceptron (MLP) to
 
 ## 5. ML-Powered 30-Day Threat Detection & Telemetry Ingestion
 
-Our integration within the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that tenants can load directly on their sites, providing zero-dependency telemetry streaming.
+Our integration within the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that account owners can load directly on their status pages, providing zero-dependency telemetry streaming.
 
 ## 6. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing
 
@@ -120,17 +120,55 @@ Furthermore, to support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 R
 
 ## 7. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
 
-Access control on the platform is implemented as a defense-in-depth framework combining Role-Based Access Control (RBAC) with dynamic Attribute-Based Access Control (ABAC). Because individual tenants are mapped strictly to their own organizations and do not feature multiple sub-tier user logins per organization, the access control matrix focuses on distinguishing administrative control tiers from public and context-specific attributes:
+Access control is implemented as defense-in-depth: **RBAC** (what a logged-in user may do) plus **ABAC** (whether a specific resource is visible or mutable in the current session context). The platform uses a **User + Sites** model—one Firebase login maps to one Django `User` and one `UserProfile.account_id`, and that account may own many `StatusPage` sites. There are **no organization hierarchies, sub-users, or shared team logins per workspace**. Authorization therefore hinges on four axes rather than org charts:
 
-- **RBAC Enforcement:** The system maps users to one of three roles stored in `UserProfile.role`: `Viewer`, `Operator`, or `Security Admin`. For write operations (such as creating or modifying status pages, services, or incidents), the backend intercepts requests via the `@role_required(["Operator", "Security Admin"])` decorator, verifying that the authenticated user possesses the correct operational role. Rejection is handled atomically via `403 Forbidden` errors.
-- **ABAC Invariants (Public vs. Private Contexts):** Rather than flat organizational hierarchies, the platform uses resource attributes to evaluate access. Public (logged-out) users can view status pages and telemetry metrics only if `is_published=True` or if the page is the default `platform-status` (Tenant0). Logged-in users can also access status pages they explicitly own (`status_page.user == request.user`). Programmatic API requests target the `/api/v1/ingest` and `/api/v1/predict` gateways and validate access using cryptographic API keys that dynamically resolve tenant mappings rather than hardcoding client domains.
-- **Contextual MFA Validation:** Beyond standard roles, all write actions on monitored infrastructure require multi-factor authentication (MFA) to be satisfied, which is validated programmatically by inspecting the Firebase identity token's authentication method reference (`amr`) attributes.
+1. **Session** — logged out (anonymous) vs logged in (Firebase JWT).
+2. **Ownership** — `status_page.user_id == request.user.id` for private resources.
+3. **Publication** — `is_published=True` exposes a status page (and its services, incidents, and rollup metrics) to anonymous visitors.
+4. **Platform scope** — the canonical `platform-status` page (`is_platform=True`, `user=null`) is always world-readable and never mutable by customers.
+
+### RBAC (per-account roles)
+
+Each `UserProfile` carries exactly one role: `Viewer`, `Operator`, or `Security Admin`. Roles apply to the **single login** behind that profile—not to nested org members.
+
+| Role             | Typical capability                                                                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `Viewer`         | Read dashboards, status pages, and analytics; Settings UI is read-only.                                                            |
+| `Operator`       | Create/update/delete owned status pages (API-enforced); manage services, incidents, and integrations when UI controls are enabled. |
+| `Security Admin` | Same write surface as Operator; reserved for platform administration (`admin@…` bootstrap).                                        |
+
+**API enforcement:** Status page lifecycle endpoints (`POST`/`PUT`/`DELETE` `/status_pages`) use `@role_required(["Operator", "Security Admin"])`. Viewers receive `403 Forbidden`. New Firebase users are provisioned as `Operator` on first login; `Viewer` is assigned when an account is deliberately restricted.
+
+**UI enforcement:** The Angular Settings console disables all mutation controls when `currentUserRole() === 'Viewer'`. Routes `/analytics` and `/vulnerabilities` require `authGuard` (login only). `/status`, `/status/:slug`, and `/explore` remain reachable without login for public pages.
+
+### ABAC (resource and context attributes)
+
+Implemented in `monitor/access.py` and query filters in `monitor/api.py`:
+
+- **`check_status_page_access`** — allows read of services, incidents, and ML rollups when `slug == "platform-status"`, `is_platform`, `is_published`, or the caller owns the page.
+- **`require_page_owner` / `forbid_platform_page`** — write paths require ownership; `platform-status` mutations always return `403`.
+- **`check_mfa_satisfied`** — write operations inspect the Firebase token `amr` claim for `"mfa"` (test UID `testuser` is exempt in CI).
+- **List/get filters** — anonymous callers see only `is_published` pages plus `platform-status`; authenticated callers additionally see their own unpublished pages.
+
+Programmatic ingestion (`/api/v1/ingest`, `/api/v1/predict`) resolves scope via API keys hashed in the database, mapping to `UserProfile.account_id` (or the `platform` sentinel for showcase traffic)—not hardcoded domains.
+
+### Access decision matrix (status pages & public stats)
+
+| Action                                   | Anonymous (logged out)         | Logged-in owner                              | Logged-in non-owner                                              |
+| ---------------------------------------- | ------------------------------ | -------------------------------------------- | ---------------------------------------------------------------- |
+| List / explore status pages              | Published + `platform-status`  | Published + own + `platform-status`          | Published + `platform-status` only                               |
+| View services / incidents / uptime stats | Published or `platform-status` | Also own **unpublished** pages               | Published or `platform-status`; **403** on others' private pages |
+| Create / update / delete status page     | `401`                          | `Operator`/`Security Admin` + MFA + owner    | `403` or `404`                                                   |
+| Add / remove services or incidents       | `401`                          | Owner + MFA (Settings blocks `Viewer` in UI) | `404` not owner                                                  |
+| Mutate `platform-status`                 | N/A (read-only)                | **Forbidden**                                | **Forbidden**                                                    |
+
+Private-by-default: until `is_published` is set, only the owning login (and the API with a valid owner session) can read operational stats—anonymous visitors hitting `/status/:slug` or the stats API receive `403`/`404`.
 
 ## 8. Data Tenancy, Retention, and Lifecycle Policy
 
-Observability systems must ensure strict isolation. The DEML Platform enforces absolute multi-tenancy boundaries at the database level and ensures all data is private-by-default. All data intake, status widgets, and telemetry records are strictly aligned to their host tenant, guaranteeing that raw data cannot bleed across workspaces.
+Observability systems must ensure strict isolation. The DEML Platform enforces **account-scoped isolation** at the database level: telemetry, integrations, threat reports, and status widgets are keyed to `User` / `UserProfile.account_id` (or the `platform` sentinel for `platform-status`). Data is private-by-default; nothing bleeds across accounts.
 
-However, to provide world-class threat detection, we employ a dual-model strategy. The global `platform_threat_model.pt` continuously trains on **aggregate, anonymized Big Data** across the entire platform (extracting non-PII metrics like global failure rates and suspicious request ratios). This allows all users to benefit from collective "herd immunity" while maintaining perfect isolation. Direct cross-tenant raw fallbacks are strictly eliminated; instead, threat models evaluate and predict anomalies exclusively against the target user's isolated telemetry fed through the massive aggregate network. If a tenant does not yet have enough collected telemetry, the model leverages safe, zero-threat baselines instead of raw shared data.
+However, to provide world-class threat detection, we employ a dual-model strategy. The global `platform_threat_model.pt` continuously trains on **aggregate, anonymized Big Data** across the entire platform (extracting non-PII metrics like global failure rates and suspicious request ratios). This allows all users to benefit from collective "herd immunity" while maintaining perfect isolation. Direct cross-account raw fallbacks are strictly eliminated; instead, threat models evaluate and predict anomalies exclusively against the target user's isolated telemetry fed through the massive aggregate network. If an account does not yet have enough collected telemetry, the model leverages safe, zero-threat baselines instead of raw shared data.
 
 To protect sensitive credentials (such as Google Analytics 4 tokens, Microsoft Clarity API keys, and Cloudflare tokens) from unauthorized exposure, the platform utilizes transparent application-level AES-256 Fernet encryption at-rest. Furthermore, public access to status page details, services, incidents, and telemetry graphs is strictly restricted. Unless the status page owner explicitly approves by publishing the page, the system blocks all public traffic, preventing the exposure of private endpoints or telemetry.
 
@@ -148,7 +186,19 @@ Furthermore, we enforce strict compliance by integrating automated accessibility
 
 By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.
 
-## 11. References
+## 11. Acknowledgments
+
+Special thanks to Google DeepMind and their groundbreaking work in Artificial Intelligence. The documentary _AlphaGo - The Movie_ served as a profound inspiration to delve deeper into the fields of AI and Machine Learning.
+
+This platform was substantially authored with assistance from the following integrated development environments and AI coding tools:
+
+- **Visual Studio Code + Cline** — Grok Code Fast 1 (xAI)
+- **Windsurf** — Grok Code Fast 1 (xAI)
+- **Google Antigravity** — Gemini 3.1 Pro, Gemini 3.5 Flash, Claude Opus, Claude Sonnet
+- **Grok Build** (Beta)
+- **Cursor** — Grok 4.3, Grok Build 0.1 (xAI)
+
+## 12. References
 
 1. Redpanda Data, Inc. (2026). _Redpanda: A streaming data platform_.
 2. Apache Software Foundation. (2026). _Apache Kafka_.
@@ -170,7 +220,7 @@ By combining asynchronous broker patterns, ultra-fast DataFrame engines, and pre
 18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
 19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
 
-## 12. DevSecOps and Platform Standardization Audit
+## 13. DevSecOps and Platform Standardization Audit
 
 In our continuous pursuit of operational excellence, we have recently completed a comprehensive DevSecOps and UI/UX standardization audit. This effort guarantees an uncompromising mobile-first foundation across the platform, standardizing layout wrappers and enforcing identical maximum width containers (`1152px`) perfectly aligned to a strict `9px` grid system for zero layout shifting. On the infrastructure side, we have transitioned our deployment pipeline to leverage strict, Google Distroless and unprivileged multi-stage container builds (e.g., `nginxinc/nginx-unprivileged` and `gcr.io/distroless/python3`), fundamentally reducing the attack surface by eliminating unnecessary shells and package managers in production. Additionally, we have rigorously audited Django ORM queries and ML workers to ensure robust, leak-proof data tenancy and strict adherence to our 30-day data retention policy.
 
@@ -178,6 +228,6 @@ Most recently, we fully integrated Application-Level Zeek-equivalent middleware 
 
 To ensure long-term, scalable SaaS reliability, we enforce an uncompromising CI/CD and pre-commit stabilization pipeline. The entire Python backend is continuously formatted and linted via `ruff`, while the frontend strictly adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including the telemetry ingestion endpoints, background threat modeling workers, and billing integration—are fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. The core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations that align perfectly with the production cluster.
 
-## 13. License
+## 14. License
 
 This work is licensed under a [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).

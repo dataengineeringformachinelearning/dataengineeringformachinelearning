@@ -33,43 +33,21 @@
   }
 }
 
-.cta-badge {
+.status-badge-premium {
   position: relative;
   z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: color-mix(in srgb, var(--color-surface) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-surface) 30%, transparent);
-  border-radius: 32px;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-primary-container);
   margin-bottom: 24px;
+  text-transform: uppercase;
 
   .badge-icon {
     font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
-    color: var(--color-primary-container);
     transition: transform 0.3s ease;
   }
 }
 
 :host-context(html[data-theme='light']) {
-  .cta-badge {
-    background: color-mix(in srgb, var(--color-surface) 6%, transparent);
-    border-color: color-mix(in srgb, var(--color-surface) 15%, transparent);
-    color: var(--color-primary);
-
-    .badge-icon {
-      color: var(--color-primary);
-    }
-  }
-
   .empty-state-premium {
     background: rgba(255, 255, 255, 0.7);
     border-color: color-mix(in srgb, var(--color-surface) 15%, transparent);

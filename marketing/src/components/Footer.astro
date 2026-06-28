@@ -192,7 +192,7 @@ const currentYear = new Date().getFullYear();
   border-radius: 10000px;
   background-color: transparent;
   border: 1px solid var(--border);
-  cursor: default;
+  cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
@@ -221,20 +221,34 @@ const currentYear = new Date().getFullYear();
 
 <script>
   import confetti from 'canvas-confetti';
-  document.addEventListener('DOMContentLoaded', () => {
+
+  function fireUsaConfetti(target: HTMLElement) {
+    const rect = target.getBoundingClientRect();
+    confetti({
+      particleCount: 50,
+      spread: 60,
+      colors: ['#FF0000', '#FFFFFF', '#0000FF'],
+      disableForReducedMotion: true,
+      zIndex: 9999,
+      origin: {
+        x: (rect.left + rect.width / 2) / window.innerWidth,
+        y: (rect.top + rect.height / 2) / window.innerHeight,
+      },
+    });
+  }
+
+  function bindUsaBadgeConfetti() {
     const usaBadge = document.getElementById('usa-badge');
-    if (usaBadge) {
-      usaBadge.addEventListener('mouseenter', (e) => {
-          confetti({
-          particleCount: 100,
-          spread: 70,
-          colors: ['#ff0000', '#ffffff', '#0000ff'],
-          origin: {
-            x: e.clientX / window.innerWidth,
-            y: e.clientY / window.innerHeight
-          }
-        });
-      });
-    }
-  });
+    if (!usaBadge || usaBadge.dataset.confettiBound === 'true') return;
+    usaBadge.dataset.confettiBound = 'true';
+    usaBadge.addEventListener('mouseenter', () => fireUsaConfetti(usaBadge));
+    usaBadge.addEventListener('click', () => fireUsaConfetti(usaBadge));
+  }
+
+  // Astro hoists this module to the end of <body>; DOMContentLoaded has often already fired.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindUsaBadgeConfetti);
+  } else {
+    bindUsaBadgeConfetti();
+  }
 </script>

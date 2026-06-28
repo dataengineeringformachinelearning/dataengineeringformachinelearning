@@ -6,13 +6,14 @@ Welcome to my working notebook and companion repository. As 2026 began, I found 
 
 Over the last ten years, my path has evolved from early web development, through the founding of startups, to deep software engineering and architecture. Those foundational years unlocked the paradigms I am now pouring into this platform. My goal here is simple: to champion the thoughtful coders. We're going to build this system together, starting from a completely fresh Mac install and working my way up to a deployed, secure, and observable ML-driven application. I will merge rigorous data engineering with the predictive power of machine learning, prioritizing quality and precision every step of the way.
 
-For a brief summary of the platform's hypothesis, value add, architecture diagrams, and algorithms, please read the [Whitepaper](WHITEPAPER.md).
+For a brief summary of the platform's hypothesis, value add, architecture diagrams, and algorithms, please read the [Whitepaper](WHITEPAPER.md). For a visual slide-deck overview of the same material, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
 **Note on Recent Evolution (2026 updates):** The architecture now emphasizes **Event Projections** with production reliability features. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for events and Firestore (named "deml" database + dedicated security rules) for materialized read models. Django uses a **Transactional Outbox** (`OutboxEvent` + `outbox_relay` command) for reliable publishing. The `telemetry_worker` performs idempotent projections (with DLQ support). Firebase Functions and rules deploy via dedicated GitHub workflow. See updated diagrams and the in-app "Event Projections Verification" test.
 
 ## Quick Links
 
 - [Whitepaper](WHITEPAPER.md)
+- [Presentation (Gamma)](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg) — slide-deck companion to this book
 - [Acknowledgements & Technologies](#acknowledgements--technologies)
 
 ---
@@ -889,62 +890,75 @@ Furthermore, our data-at-rest encryption (currently AES-256-GCM) is generally co
 
 ## Chapter 28: Access Control Matrix: Role-Based (RBAC) & Attribute-Based (ABAC) Paradigms
 
-Architecting a scalable, multi-tenant software-as-a-service application requires a rigid and robust authorization model. In our platform, the access control perimeter is structured as an overlapping layer of Role-Based Access Control (RBAC) and Attribute-Based Access Control (ABAC). Unlike larger enterprise installations where tenants contain complex internal hierarchies and deep org-charts, our system operates on the invariant of a singular workspace context per tenant. While this simplifies the database constraints, it increases the necessity of dynamic, context-aware validation. RBAC assigns static roles—specifically `Viewer`, `Operator`, and `Security Admin`—to user profiles, establishing a baseline of operational capability. These roles are codified inside [Django](https://www.djangoproject.com/) REST API models via custom field selections and verified programmatically. This ensures that static privileges, such as editing integrations or modifying status pages, are restricted at the API boundary, protecting endpoints from unauthorized write operations. By using decorators, the backend acts as an uncompromising gateway. A user belonging to the `Viewer` tier is strictly limited to HTTP `GET` requests for monitoring dashboards, while write actions are completely gated. Conversely, an `Operator` or `Security Admin` is granted access to the state changes. However, this is only the initial layer of security. To prevent privilege escalation and secure sensitive operations, this static model is dynamically augmented by attribute evaluations at runtime.
+Architecting a scalable SaaS observability platform requires authorization that matches how customers actually use the product. The DEML Platform uses a **User + Sites** model: one [Firebase Authentication](https://firebase.google.com/products/auth) login maps to one [Django](https://www.djangoproject.com/) `User`, one `UserProfile.account_id`, and many owned `StatusPage` records. There are **no organization hierarchies, no team sub-logins, and no shared seats within a workspace**. RBAC therefore governs what a single account may mutate; ABAC governs whether a given status page, its services, incidents, and rollup stats are visible in the current session (logged out vs logged in, published vs private, platform vs customer-owned).
 
-The second line of defense is governed by Attribute-Based Access Control (ABAC), which evaluates contextual properties of the resource and request. The primary use-case is distinguishing between public (logged-out) traffic and private (authenticated) access. For example, status pages can be publicly accessed only if the page's status is explicitly set to `is_published=True` or if it represents the default `platform-status` page of Tenant0. If a page is unpublished, the system dynamically checks the resource's owner attribute against the request's authenticated user object (`status_page.user == request.user`). Additionally, the integrations gateway uses ABAC invariants to authorize machine-to-machine streaming. The gateway processes incoming telemetry on `/api/v1/ingest` and `/api/v1/predict` by matching client-provided bearer tokens to unique SHA-256 hashes in the database. Instead of hardcoding domains in configuration files, this lookup dynamically resolves the target tenant context and applies the correct isolation rules. Furthermore, write operations require the presence of a verified multi-factor authentication (MFA) attribute in the client's [Firebase Authentication](https://firebase.google.com/products/auth) JSON Web Token (JWT) metadata. If the MFA flag is absent, the system rejects the operation, ensuring that even administrative accounts are protected by multi-factor checks during state modifications.
+### RBAC: one role per login
 
-To implement these authorization patterns cleanly without polluting our business logic, we leverage Django middleware, signals, and python decorators. The backend relies on custom decorator utilities like `@role_required` to intercept request execution blocks, inspect the active session context, and execute security assertions before routing control to standard [Django Ninja](https://django-ninja.dev/) controllers. On the client side, the [Angular](https://angular.dev/) framework mirrors these security states using route guards (`authGuard` and `rootGuard`) that consume local authentication signals. These guards verify state conditions and handle client-side routing, redirecting unauthenticated traffic to the login interface while ensuring authenticated sessions land directly in their respective dashboards. By combining static RBAC hierarchies with dynamic ABAC attribute assertions, the platform achieves a zero-trust model. It guarantees that raw telemetry, security alerts, and threat models remain strictly partitioned. This ensures compliance with modern security frameworks (SOC 2, CMMC 2.0, NIST SP 800-171 Rev. 3) and guarantees that our multi-tenant [PostgreSQL](https://www.postgresql.org/) database operates securely at scale without sacrificing usability.
-
-### Generic Access Control Examples
+`UserProfile.role` is exactly one of `Viewer`, `Operator`, or `Security Admin`. On first Firebase login, middleware provisions a profile—defaulting to `Operator` (or `Security Admin` for the platform bootstrap account). The `@role_required` decorator in `utils/permissions.py` gates status page lifecycle APIs:
 
 ```python
-# Sample backend RBAC and ABAC checking decorator
-from functools import wraps
-from django.http import Http404
-from ninja.errors import HttpError
+@role_required(["Operator", "Security Admin"])
+def create_status_page(request, payload: StatusPageIn):
+    if not check_mfa_satisfied(request):
+        raise HttpError(403, "Multi-factor authentication required")
+    ...
+```
 
-def enforce_security_context(allowed_roles=None):
-    def decorator(view_func):
-        @wraps(view_func)
-        def _wrapped_view(request, *args, **kwargs):
-            # ABAC Check 1: Multi-Factor Authentication
-            token_meta = getattr(request, "auth_token_claims", {})
-            if "mfa" not in token_meta.get("amr", []):
-                raise HttpError(403, "MFA Verification Required")
+`Viewer` accounts receive `403 Forbidden` on `POST`/`PUT`/`DELETE` `/status_pages`. Service and incident mutations require authentication, ownership, and MFA at the API layer; the Angular Settings console additionally disables all write controls when `currentUserRole() === 'Viewer'`.
 
-            # RBAC Check: Role validation
-            user_profile = getattr(request.user, "profile", None)
-            user_role = user_profile.role if user_profile else "Viewer"
-            if allowed_roles and user_role not in allowed_roles:
-                raise HttpError(403, "Role unauthorized for this action")
+### ABAC: publication, ownership, and platform scope
 
-            return view_func(request, *args, **kwargs)
-        return _wrapped_view
-    return decorator
+Resource visibility is enforced in `monitor/access.py`:
+
+```python
+def check_status_page_access(request, status_page: StatusPage) -> bool:
+    if status_page.slug == "platform-status" or status_page.is_platform or status_page.is_published:
+        return True
+    if request.user.is_authenticated and status_page.user_id == request.user.id:
+        return True
+    return False
+```
+
+This function protects reads of services, incidents, and ML-backed rollups. Anonymous visitors on `/status/:slug`, `/explore`, or the REST API may only see **published** pages plus the canonical **`platform-status`** showcase (`user=null`, `is_platform=True`). Logged-in owners may also read their **unpublished** pages—critical for staging before go-live. Writes call `require_page_owner` and `forbid_platform_page`; customers cannot mutate the public sentinel.
+
+MFA is ABAC on the session token: `check_mfa_satisfied` requires `"mfa"` in the Firebase JWT `amr` claim before any state change. Machine clients use a separate ABAC path—API keys on `/api/v1/ingest` and `/api/v1/predict` resolve to `UserProfile.account_id` (or the `platform` sentinel) via hashed tokens, not hardcoded hostnames.
+
+### Frontend routing mirrors backend intent
+
+| Route                            | Guard          | Anonymous                                | Logged-in                   |
+| -------------------------------- | -------------- | ---------------------------------------- | --------------------------- |
+| `/status`, `/status/:slug`       | none           | published + `platform-status`            | + own unpublished           |
+| `/explore`                       | none           | published directory                      | same filter                 |
+| `/analytics`, `/vulnerabilities` | `authGuard`    | redirect `/login`                        | account data                |
+| `/settings`                      | none (UI RBAC) | loads; mutations need login + non-Viewer | full console if `Operator`+ |
+
+`authGuard` only checks authentication—it does not replace server-side RBAC/ABAC. The backend remains authoritative.
+
+### Production helpers (not generic samples)
+
+```python
+# monitor/access.py — ABAC for reads and platform immutability
+def check_mfa_satisfied(request) -> bool:
+    token = request.firebase_token
+    amr = token.get("amr", [])
+    return "mfa" in amr or token.get("uid") == "testuser"
+
+def require_page_owner(request, page: StatusPage) -> None:
+    forbid_platform_page(page)
+    if not request.user.is_authenticated or page.user_id != request.user.id:
+        raise HttpError(404, "Status page not found")
 ```
 
 ```typescript
-// Sample frontend route guard mirroring security context
-import { inject } from "@angular/core";
-import { CanActivateFn, Router } from "@angular/router";
-import { AuthService } from "../services/auth.service";
-
-export const genericSecurityGuard: CanActivateFn = (route, state) => {
+// guards/auth.guard.ts — login required for sensitive dashboards
+export const authGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-
-  if (authService.isAuthenticated()) {
-    // ABAC Check: User must hold Operator or Admin capabilities to view settings
-    const role = authService.getUserRole();
-    if (role === "Operator" || role === "Security Admin") {
-      return true;
-    }
-    return router.parseUrl("/unauthorized");
-  }
-
-  return router.parseUrl("/login");
+  return authService.isAuthenticated() ? true : router.parseUrl("/login");
 };
 ```
+
+By combining per-account RBAC with publication- and ownership-aware ABAC, the platform keeps private operational stats off the public internet while still exposing a world-readable `platform-status` sentinel and customer-published pages—without inventing org charts we do not implement.
 
 ---
 
@@ -960,6 +974,12 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
+- **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
+  - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
+  - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
+  - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
+  - [Grok Build](https://x.ai/) (Beta)
+  - [Cursor](https://cursor.com/) — Grok 4.3, Grok Build 0.1 (xAI)
 
 ---
 
