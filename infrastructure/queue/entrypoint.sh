@@ -3,73 +3,90 @@ set -e
 
 echo "==> Redpanda entrypoint starting (authenticated public endpoint support)..."
 
-# Internal listener: PLAINTEXT over Railway private network.
-#   - Used by backend, workers, outbox_relay (fast, zero auth overhead inside trusted VPC).
-# External/public listener: SASL_SSL.
-#   - Used by Firebase Cloud Functions (cross-cloud) and other external producers.
-#   - Requires SCRAM-SHA-256 + TLS for auth + encryption.
+# Use a config file for listener configuration.
+# The v26.1.9 CLI in this container rejects --kafka-addr and --mode on the command line.
+# Generating redpanda.yaml is the reliable way to define:
+#   - internal PLAINTEXT listener (no auth) on 9092 for Railway services
+#   - external SASL_SSL listener on 9093 for Firebase Cloud Functions
 
-INTERNAL_ADDR=${REDPANDA_INTERNAL_ADDR:-PLAINTEXT://0.0.0.0:9092}
-EXTERNAL_ADDR=${REDPANDA_EXTERNAL_ADDR:-SASL_SSL://0.0.0.0:9093}
-INTERNAL_ADV=${REDPANDA_INTERNAL_ADV:-PLAINTEXT://deml-queue.railway.internal:9092}
+INTERNAL_HOST="deml-queue.railway.internal"
+PUBLIC_HOST="${PUBLIC_REDPANDA_HOST:-localhost}"
+PUBLIC_HOST="${PUBLIC_HOST#http://}"
+PUBLIC_HOST="${PUBLIC_HOST#https://}"
+PUBLIC_HOST="${PUBLIC_HOST%%:*}"
 
-# PUBLIC_REDPANDA_HOST must be set to the public hostname only (no scheme, no port).
-# Examples: queue.deml.app   or your-queue.up.railway.app
-# We defensively strip any accidental http:// or https:// or port the user may have included.
-raw_host="${PUBLIC_REDPANDA_HOST:-localhost}"
-# strip scheme
-raw_host="${raw_host#http://}"
-raw_host="${raw_host#https://}"
-# strip any trailing port if someone included it
-raw_host="${raw_host%%:*}"
-EXTERNAL_ADV=${REDPANDA_EXTERNAL_ADV:-SASL_SSL://${raw_host}:9093}
+CONFIG_DIR="/etc/redpanda"
+CONFIG_FILE="$CONFIG_DIR/redpanda.yaml"
 
-echo "Kafka addr: ${INTERNAL_ADDR},${EXTERNAL_ADDR}"
+mkdir -p "$CONFIG_DIR"
+
+cat > "$CONFIG_FILE" << 'CONFIGEOF'
+redpanda:
+  data_directory: /var/lib/redpanda/data
+  kafka_api:
+    - name: internal
+      address: 0.0.0.0
+      port: 9092
+      authentication_method: none
+    - name: external
+      address: 0.0.0.0
+      port: 9093
+      authentication_method: sasl
+  advertised_kafka_api:
+    - name: internal
+      address: __INTERNAL_HOST__
+      port: 9092
+    - name: external
+      address: __PUBLIC_HOST__
+      port: 9093
+  enable_sasl: true
+  sasl_mechanisms:
+    - SCRAM-SHA-256
+
+rpk:
+  kafka_api:
+    brokers:
+      - 127.0.0.1:9092
+CONFIGEOF
+
+# Substitute the actual hosts (sed for portability)
+sed -i "s|__INTERNAL_HOST__|$INTERNAL_HOST|g" "$CONFIG_FILE"
+sed -i "s|__PUBLIC_HOST__|$PUBLIC_HOST|g" "$CONFIG_FILE"
+
+echo "Generated $CONFIG_FILE"
+echo "Internal: $INTERNAL_HOST:9092 (no auth)"
+echo "External: $PUBLIC_HOST:9093 (SASL)"
 echo "PUBLIC_REDPANDA_HOST (raw): ${PUBLIC_REDPANDA_HOST:-<unset>}"
-echo "Advertise:  ${INTERNAL_ADV},${EXTERNAL_ADV}"
 
-# Start Redpanda.
-# Clean flags for recent Redpanda images (v24+/v26). 
-# Removed '--mode dev-container' — it is not recognized on v26.1.9 and causes immediate parse error + restart loop.
-# --overprovisioned is important for container / Railway environments.
+# Start using the config file only. No --kafka-addr on CLI.
 redpanda start \
+  --config "$CONFIG_FILE" \
   --overprovisioned \
   --smp 1 \
   --memory 2G \
-  --kafka-addr "${INTERNAL_ADDR},${EXTERNAL_ADDR}" \
-  --advertise-kafka-addr "${INTERNAL_ADV},${EXTERNAL_ADV}" \
-  --enable-sasl \
-  --sasl-mechanisms SCRAM-SHA-256 \
   --default-log-level info &
 
 RP_PID=$!
 
-# One-time (idempotent) creation of the SASL user used by external clients (e.g. ingestEvent).
-# Provide these two env vars on the Redpanda Railway service:
-#   REDPANDA_SASL_USERNAME=deml-func
-#   REDPANDA_SASL_PASSWORD=your-long-random-password
+# Create SASL user for external clients if credentials provided.
 if [ -n "${REDPANDA_SASL_USERNAME}" ] && [ -n "${REDPANDA_SASL_PASSWORD}" ]; then
-  echo "Waiting for internal Redpanda Kafka listener (9092) to accept connections..."
+  echo "Waiting for Redpanda internal listener to be ready..."
   for i in $(seq 1 60); do
-    # Use a lightweight check: try to get metadata via rpk (works on the internal PLAINTEXT listener)
     if rpk cluster metadata --brokers 127.0.0.1:9092 >/dev/null 2>&1; then
-      echo "Redpanda internal listener is up."
+      echo "Redpanda ready."
       break
     fi
     sleep 2
   done
 
-  echo "Ensuring SASL user '${REDPANDA_SASL_USERNAME}' exists (for public clients)..."
-  # rpk will error if user exists; we swallow it (idempotent).
+  echo "Ensuring SASL user '${REDPANDA_SASL_USERNAME}' ..."
   rpk security user create "${REDPANDA_SASL_USERNAME}" \
     --password "${REDPANDA_SASL_PASSWORD}" \
     --mechanism SCRAM-SHA-256 \
-    --brokers 127.0.0.1:9092 || echo "  (user already exists or non-fatal; continuing)"
+    --brokers 127.0.0.1:9092 || echo "  (exists or non-fatal; continuing)"
 else
-  echo "REDPANDA_SASL_USERNAME / PASSWORD not set."
-  echo "External clients will not be able to authenticate until a user is created manually:"
-  echo "  rpk security user create <user> --password <pass> --mechanism SCRAM-SHA-256"
+  echo "No SASL creds provided for external listener."
 fi
 
-echo "Redpanda is up. Handing off to main process."
+echo "Redpanda handing off."
 wait $RP_PID
