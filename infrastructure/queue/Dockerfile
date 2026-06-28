@@ -19,6 +19,12 @@ FROM redpandadata/redpanda:v26.1.9
 
 COPY entrypoint.sh /entrypoint.sh
 
+# The container intentionally starts as root so the entrypoint can chown the
+# root-owned Railway persistent volume mounted at /var/lib/redpanda/data; it then
+# immediately drops privileges to the unprivileged `redpanda` user via `runuser`
+# before exec-ing the broker (see entrypoint.sh). Redpanda therefore does NOT run as
+# root at runtime. Semgrep's static check cannot see the runtime privilege drop.
+# nosemgrep: dockerfile.security.last-user-is-root.last-user-is-root
 USER root
 RUN chmod +x /entrypoint.sh
 
