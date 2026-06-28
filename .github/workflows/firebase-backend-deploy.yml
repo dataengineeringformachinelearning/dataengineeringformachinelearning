@@ -49,6 +49,25 @@ jobs:
       - name: Install Firebase CLI
         run: npm install -g firebase-tools
 
+      - name: Optionally configure public Redpanda SASL listener for ingestEvent (fast direct path)
+        # For the lowest-latency Event Projections path (no polling), the Cloud Functions
+        # must publish directly to the public SASL_SSL listener on Redpanda (port 9093).
+        # Set these GitHub secrets in the repo:
+        #   REDPANDA_PUBLIC_BROKERS   e.g. queue.deml.app:9093
+        #   REDPANDA_PUBLIC_SASL_USERNAME
+        #   REDPANDA_PUBLIC_SASL_PASSWORD
+        # If not set, functions will fall back to previous behavior (inbox or error if misconfigured).
+        if: ${{ secrets.REDPANDA_PUBLIC_BROKERS != '' }}
+        run: |
+          firebase functions:config:set \
+            redpanda.brokers="${{ secrets.REDPANDA_PUBLIC_BROKERS }}" \
+            redpanda.ssl="true" \
+            redpanda.sasl_username="${{ secrets.REDPANDA_PUBLIC_SASL_USERNAME }}" \
+            redpanda.sasl_password="${{ secrets.REDPANDA_PUBLIC_SASL_PASSWORD }}" \
+            --project demldotcom --non-interactive || true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
+
       - name: Deploy Functions and Firestore (rules + indexes)
         run: |
           firebase deploy --only functions,firestore --project demldotcom --non-interactive
@@ -59,4 +78,5 @@ jobs:
         run: |
           echo "✅ Firebase Functions and Firestore rules deployed to project: demldotcom"
           echo "   - Functions: ingestEvent (and any other)"
-          echo "   - Firestore: rules from firestore.rules (for dem l named DB + users data)"
+          echo "   - Firestore: rules from firestore.rules (for deml named DB + users data)"
+          echo "   - To enable fast direct Redpanda publish from Functions: set the REDPANDA_PUBLIC_* GitHub secrets and re-run this workflow"

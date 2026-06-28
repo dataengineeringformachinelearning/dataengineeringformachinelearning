@@ -58,16 +58,19 @@ admin.initializeApp();
 // See infrastructure/queue/Dockerfile + entrypoint.sh and backend/.env.example.
 const kafkaBrokers = process.env.REDPANDA_BROKERS || "localhost:19092";
 const useSsl =
-  process.env.REDPANDA_SSL === "true" || kafkaBrokers.includes("railway.app");
+  process.env.REDPANDA_SSL === "true" ||
+  (fcfg.redpanda && fcfg.redpanda.ssl === "true") ||
+  kafkaBrokers.includes("railway.app") ||
+  (typeof kafkaBrokers === 'string' && !kafkaBrokers.includes('localhost') && !kafkaBrokers.includes('.internal'));
 const kafkaConfig = {
   clientId: "deml-gateway-function",
   brokers: [kafkaBrokers],
 };
 if (useSsl) {
   kafkaConfig.ssl = true;
-  // Add SASL if credentials provided via secrets/env
-  const saslUser = process.env.REDPANDA_SASL_USERNAME;
-  const saslPass = process.env.REDPANDA_SASL_PASSWORD;
+  // Add SASL if credentials provided via secrets/env or firebase functions config
+  const saslUser = process.env.REDPANDA_SASL_USERNAME || (fcfg.redpanda && fcfg.redpanda.sasl_username);
+  const saslPass = process.env.REDPANDA_SASL_PASSWORD || (fcfg.redpanda && fcfg.redpanda.sasl_password);
   if (saslUser && saslPass) {
     kafkaConfig.sasl = {
       mechanism: "scram-sha-256",
