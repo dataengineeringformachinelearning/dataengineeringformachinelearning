@@ -21,8 +21,8 @@ ENV LD_LIBRARY_PATH="/opt/oqs/lib" \
     CPLUS_INCLUDE_PATH="/opt/oqs/include" \
     LIBRARY_PATH="/opt/oqs/lib"
 
-# Create virtual environment
-RUN python -m venv /opt/venv
+# Create virtual environment with copies (so the venv is portable without symlinks to the builder's python)
+RUN python -m venv --copies /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install requirements
@@ -38,10 +38,12 @@ RUN ln -sf /usr/bin/python3 /opt/venv/bin/python && \
     ln -sf /usr/bin/python3 /opt/venv/bin/python3
 
 # Runtime stage
-FROM gcr.io/distroless/python3.12-debian12
+# Use cc-debian12 because official distroless does not provide a python3.12-debian12 variant.
+# The Python 3.12 interpreter + site-packages come from the copied venv (built with --copies above).
+FROM gcr.io/distroless/cc-debian12:nonroot
 
 # Copy the built liboqs shared libraries from the builder stage
-COPY --from=builder /opt/oqs /opt/oqs
+COPY --chown=65532:65532 --from=builder /opt/oqs /opt/oqs
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
