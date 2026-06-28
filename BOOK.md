@@ -126,7 +126,7 @@ flowchart TB
 
 | Mode                                               | Description                                                                                                                                     | Operator actions                                                                                                              |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; check the "Event Projections" component on platform-status                                       |
+| **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; check the "Event Projections" component on platform-status                       |
 | **Degraded — Redpanda unreachable from Functions** | `ingestEvent` writes fallback rows to Firestore `events` collection; `telemetry_worker` still processes broker when Railway-internal path works | Confirm `REDPANDA_BROKERS` uses public endpoint for Functions or accept Firestore fallback; check `frontend-events-dlq` depth |
 | **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-outbox-relay`; inspect DLQ topic; replay idempotent keys                            |
 | **Maintenance**                                    | Migrations, dependency upgrades, model retraining                                                                                               | Railway rolling deploy on `main` merge; Firebase workflow deploys Functions/rules independently                               |
@@ -1496,6 +1496,7 @@ must be provided as **environment variables** (`process.env`) — the legacy
 `firebase functions:config:set` does not apply to v2 functions. The deploy workflow
 (`.github/workflows/firebase-backend-deploy.yml`) writes a `functions/.env` from these
 **GitHub repository secrets** before `firebase deploy`:
+
 - `REDPANDA_PUBLIC_BROKERS` → `REDPANDA_BROKERS`, e.g. `zephyr.proxy.rlwy.net:32253`
 - `REDPANDA_PUBLIC_SASL_USERNAME` → `REDPANDA_SASL_USERNAME`, e.g. `admin`
 - `REDPANDA_PUBLIC_SASL_PASSWORD` → `REDPANDA_SASL_PASSWORD` (same value as the `deml-queue` service)
