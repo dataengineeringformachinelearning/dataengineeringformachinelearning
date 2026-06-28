@@ -4,8 +4,8 @@ opentelemetry-distro
 opentelemetry-instrumentation-django
 opentelemetry-exporter-otlp
 clickhouse-connect
-Django==6.0.6
-django-migration-linter==6.0.0
+Django==5.2.15
+django-migration-linter==5.2.0
 django-cors-headers==4.6.0
 gunicorn==23.0.0
 numpy==1.26.4
