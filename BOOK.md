@@ -1319,15 +1319,7 @@ All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`)
 2. Angular/Firebase → `frontend-events` topic → **telemetry_worker** → Postgres + Firestore
 3. Idempotency keys + DLQ handled inside `telemetry_worker` projectors
 
-**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. For the fastest path (direct publish, **no polling**) give the Functions a public SASL-authenticated Redpanda listener (port 9093, SCRAM-SHA-256 + TLS). 
-
-See:
-- `infrastructure/queue/entrypoint.sh` + `Dockerfile` (dual listener + auto user bootstrap)
-- `.env.example` and the "Public Redpanda Listener" guidance below
-- `functions/src/index.ts` (now also reads from Firebase functions config + env)
-- The GitHub workflow now supports `REDPANDA_PUBLIC_*` GitHub secrets to configure the Functions side during deploy.
-
-The inbox + poller fallback in the telemetry worker remains as defence-in-depth (can be disabled with `FIRESTORE_INBOX_POLL_ENABLED=0`).
+**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. For the fastest path (direct publish, no polling) give the Functions a public SASL-authenticated Redpanda listener (port 9093, SCRAM-SHA-256). See `infrastructure/queue/`, the updated `REDPANDA_*` guidance, and `functions/src/index.ts`. The inbox fallback remains only as defence-in-depth.
 
 ### Marketing Site (not a Railway service)
 

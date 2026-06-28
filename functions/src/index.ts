@@ -11,16 +11,7 @@ admin.initializeApp();
 //     (e.g. your-public-host.railway.app:9093 + SASL SCRAM-SHA-256 + SSL).
 //   - Internal services continue to use the private Railway DNS (no SASL).
 // See infrastructure/queue/Dockerfile + entrypoint.sh and backend/.env.example.
-// Resolve Redpanda brokers for the ingestEvent gateway.
-// Priority for fast direct path (public SASL listener):
-// 1. Explicit env (set in Firebase Functions environment variables or Railway for emulator)
-// 2. Firebase functions config (redpanda.brokers etc. set via firebase functions:config:set)
-// 3. Default localhost (dev)
-import { config as functionsConfig } from 'firebase-functions';
-const fcfg = functionsConfig();
-const cfgBrokers = (fcfg.redpanda && fcfg.redpanda.brokers) || undefined;
-const kafkaBrokers = process.env.REDPANDA_BROKERS || cfgBrokers || "localhost:19092";
-
+const kafkaBrokers = process.env.REDPANDA_BROKERS || "localhost:19092";
 const useSsl =
   process.env.REDPANDA_SSL === "true" ||
   (fcfg.redpanda && fcfg.redpanda.ssl === "true") ||
