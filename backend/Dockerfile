@@ -1,5 +1,5 @@
 # Builder stage
-FROM python:3.12-slim-bookworm AS builder
+FROM python:3.11-slim-bookworm AS builder
 
 WORKDIR /app
 
@@ -36,15 +36,14 @@ COPY . .
 ENV SKIP_SITE_URL_VALIDATION=true
 RUN python manage.py collectstatic --noinput --clear
 
-# Stage Python 3.12 shared library (required for the --copies venv at runtime).
-# python:3.12-slim-bookworm has it; the distroless cc base does not.
+# Stage Python 3.11 shared library (required for the --copies venv at runtime).
+# python:3.11-slim-bookworm has it; the distroless cc base does not.
 RUN mkdir -p /opt/python-lib && \
-    cp /usr/local/lib/libpython3.12.so.1.0 /opt/python-lib/ && \
-    cp -P /usr/local/lib/libpython3.12.so.1 /opt/python-lib/ 2>/dev/null || true
+    cp /usr/local/lib/libpython3.11.so.1.0 /opt/python-lib/ && \
+    cp -P /usr/local/lib/libpython3.11.so.1 /opt/python-lib/ 2>/dev/null || true
 
 # Runtime stage
-# Use cc-debian12 (minimal C runtime on Debian 12) because Distroless does not ship
-# a python3.12-debian12 variant. We bring our own Python 3.12 from the builder.
+# Use cc-debian12 (minimal C runtime on Debian 12).
 FROM gcr.io/distroless/cc-debian12:nonroot
 
 # Copy the built liboqs shared libraries
@@ -54,7 +53,7 @@ COPY --chown=65532:65532 --from=builder /opt/oqs /opt/oqs
 COPY --from=builder /opt/python-lib/ /usr/local/lib/
 
 ENV PATH="/opt/venv/bin:$PATH" \
-    PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
+    PYTHONPATH="/opt/venv/lib/python3.11/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     LD_LIBRARY_PATH="/usr/local/lib:/opt/oqs/lib"
