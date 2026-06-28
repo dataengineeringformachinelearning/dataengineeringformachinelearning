@@ -45,9 +45,13 @@ FROM gcr.io/distroless/cc-debian12:nonroot
 COPY --chown=65532:65532 --from=builder /opt/oqs /opt/oqs
 
 # Copy the Python 3.12 shared library that the venv's python binary is linked against.
-# Without this, we get "libpython3.12.so.1.0: cannot open shared object file".
-COPY --from=builder /usr/local/lib/libpython3.12.so.1.0 /usr/local/lib/
-COPY --from=builder /usr/local/lib/libpython3.12.so.1 /usr/local/lib/ || true
+# The distroless cc-debian12 image is minimal and does not include Python libs.
+# Stage the required .so file(s) in the builder so the final COPY is reliable.
+RUN mkdir -p /opt/python-lib && \
+    cp /usr/local/lib/libpython3.12.so.1.0 /opt/python-lib/ && \
+    cp -P /usr/local/lib/libpython3.12.so.1 /opt/python-lib/ 2>/dev/null || true
+
+COPY --from=builder /opt/python-lib/ /usr/local/lib/
 
 ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
