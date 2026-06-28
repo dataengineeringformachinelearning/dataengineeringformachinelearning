@@ -1240,11 +1240,13 @@ To achieve the **fastest** client command path (Angular → `ingestEvent` → di
 
 **Setup on the `deml-queue` service (production):**
 1. In Railway → `deml-queue` → Settings → Networking, add a **TCP Proxy** targeting
-   container port **9093**. Railway returns an address like `xxxx.proxy.rlwy.net:34567`.
+   container port **9093**. Railway returns an address like `xxxx.proxy.rlwy.net:NNNNN`
+   (the current production proxy is `reseau.proxy.rlwy.net:20635`).
+   - CLI equivalent: `railway tcp-proxy create --port 9093 --service deml-queue`
 2. Set service variables so the broker advertises that reachable address:
-   - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net`
-   - `PUBLIC_REDPANDA_PORT=34567` (the proxy's external port; the container keeps
-     listening on 9093, which is the proxy target)
+   - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net` (e.g. `reseau.proxy.rlwy.net`)
+   - `PUBLIC_REDPANDA_PORT=NNNNN` (the proxy's external port, e.g. `20635`; the container
+     keeps listening on 9093, which is the proxy target)
    - `REDPANDA_SASL_USERNAME=admin` (or a dedicated user)
    - `REDPANDA_SASL_PASSWORD=...`
 
@@ -1252,20 +1254,25 @@ The entrypoint (`infrastructure/queue/entrypoint.sh`) handles dual listeners, ad
 `PUBLIC_REDPANDA_HOST:PUBLIC_REDPANDA_PORT` on the external listener, and auto-creates the
 SASL user.
 
-**On the Firebase side** set these environment variables (or use functions config):
-- `REDPANDA_BROKERS=xxxx.proxy.rlwy.net:34567`
-- `REDPANDA_SASL_USERNAME=...`
-- `REDPANDA_SASL_PASSWORD=...`
-- Leave `REDPANDA_SSL` unset/false (Railway TCP Proxy does not terminate TLS; SASL is
-  sent over plain TCP). Only set `REDPANDA_SSL=true` if TLS is terminated at the edge
-  (e.g. Cloudflare Spectrum).
+**On the Firebase side**, `ingestEvent` is a 2nd-gen (Cloud Run) function, so its config
+must be provided as **environment variables** (`process.env`) — the legacy
+`firebase functions:config:set` does not apply to v2 functions. The deploy workflow
+(`.github/workflows/firebase-backend-deploy.yml`) writes a `functions/.env` from these
+**GitHub repository secrets** before `firebase deploy`:
+- `REDPANDA_PUBLIC_BROKERS` → `REDPANDA_BROKERS`, e.g. `reseau.proxy.rlwy.net:20635`
+- `REDPANDA_PUBLIC_SASL_USERNAME` → `REDPANDA_SASL_USERNAME`, e.g. `admin`
+- `REDPANDA_PUBLIC_SASL_PASSWORD` → `REDPANDA_SASL_PASSWORD` (same value as the `deml-queue` service)
+- `REDPANDA_PUBLIC_SSL` (optional) → `REDPANDA_SSL`; **leave unset/false** for a Railway
+  TCP Proxy (plain TCP). Only `true` if TLS is terminated at the edge (e.g. Cloudflare Spectrum).
+
+Set those secrets, then re-run the "Deploy Firebase Backend" workflow. (For stricter
+secret handling you may instead bind `REDPANDA_SASL_PASSWORD` via Google Secret Manager /
+`firebase functions:secrets:set` and `defineSecret` in code.)
 
 If the public path is unavailable the system still works via the resilient fallback:
 `ingestEvent` writes to the Firestore `frontend_command_inbox` and the telemetry worker's
 `poll_firestore_inbox` task (every ~10s) projects it — slower, but the verification still
 passes.
-
-The deploy workflow supports GitHub secrets for this.
 
 ### 4. Telemetry Worker (`deml-telemetry-worker`)
 
