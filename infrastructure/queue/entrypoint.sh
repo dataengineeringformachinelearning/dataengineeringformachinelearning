@@ -1,6 +1,19 @@
 #!/bin/sh
 set -e
 
+# Railway (and most platforms) mount the persistent volume at /var/lib/redpanda/data
+# owned by root. The redpanda binary runs as the unprivileged 'redpanda' user (uid 101)
+# and cannot write to a root-owned data dir, so it dies on boot with
+#   "Failure during startup: ... Permission denied [/var/lib/redpanda/data/startup_log]"
+# and never binds its Kafka listeners (clients then get connection-closed / timeouts).
+# When started as root, fix ownership of the data dir, then re-exec this script as the
+# redpanda user so the broker (and rpk admin calls) run unprivileged.
+if [ "$(id -u)" = "0" ]; then
+  mkdir -p /var/lib/redpanda/data
+  chown -R redpanda:redpanda /var/lib/redpanda/data
+  exec runuser -u redpanda -- "$0" "$@"
+fi
+
 echo "==> Redpanda entrypoint starting (authenticated public endpoint support)..."
 
 # Use a config file for listener configuration.
