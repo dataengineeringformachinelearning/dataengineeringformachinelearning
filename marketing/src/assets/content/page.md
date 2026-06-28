@@ -1442,6 +1442,51 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Environment Variables**:
   - **REDPANDA_BROKERS**: Not strictly needed, but ensure port `9092` is exposed internally.
 
+### Public Authenticated Redpanda Listener (for Firebase Cloud Functions)
+
+To achieve the **fastest** client command path (Angular → `ingestEvent` → direct to Redpanda → worker consume → Firestore projection with **no polling**), the queue exposes a second listener:
+
+- Internal (9092, PLAINTEXT): used by all Railway services (backend, workers, outbox_relay).
+- External (9093, SASL + SCRAM-SHA-256 over plain TCP): used **only** by Firebase Cloud Functions.
+
+> **Critical:** the public endpoint must be a Railway **TCP Proxy** (raw TCP), **not** an
+> HTTP custom domain (e.g. `queue.deml.app`). An HTTP/HTTPS domain terminates TLS and
+> speaks HTTP — it cannot carry the raw Kafka protocol, so the function connection is
+> reset and `ingestEvent` silently falls back to the Firestore inbox (slow polled
+> projection instead of the fast path). This was the original cause of the public path
+> never working.
+
+**Setup on the `deml-queue` service (production):**
+
+1. In Railway → `deml-queue` → Settings → Networking, add a **TCP Proxy** targeting
+   container port **9093**. Railway returns an address like `xxxx.proxy.rlwy.net:34567`.
+2. Set service variables so the broker advertises that reachable address:
+   - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net`
+   - `PUBLIC_REDPANDA_PORT=34567` (the proxy's external port; the container keeps
+     listening on 9093, which is the proxy target)
+   - `REDPANDA_SASL_USERNAME=admin` (or a dedicated user)
+   - `REDPANDA_SASL_PASSWORD=...`
+
+The entrypoint (`infrastructure/queue/entrypoint.sh`) handles dual listeners, advertises
+`PUBLIC_REDPANDA_HOST:PUBLIC_REDPANDA_PORT` on the external listener, and auto-creates the
+SASL user.
+
+**On the Firebase side** set these environment variables (or use functions config):
+
+- `REDPANDA_BROKERS=xxxx.proxy.rlwy.net:34567`
+- `REDPANDA_SASL_USERNAME=...`
+- `REDPANDA_SASL_PASSWORD=...`
+- Leave `REDPANDA_SSL` unset/false (Railway TCP Proxy does not terminate TLS; SASL is
+  sent over plain TCP). Only set `REDPANDA_SSL=true` if TLS is terminated at the edge
+  (e.g. Cloudflare Spectrum).
+
+If the public path is unavailable the system still works via the resilient fallback:
+`ingestEvent` writes to the Firestore `frontend_command_inbox` and the telemetry worker's
+`poll_firestore_inbox` task (every ~10s) projects it — slower, but the verification still
+passes.
+
+The deploy workflow supports GitHub secrets for this.
+
 ### 4. Telemetry Worker (`deml-telemetry-worker`)
 
 Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), projects to Postgres + Firestore `deml` DB, runs health pings and analytics rollups.
@@ -1461,14 +1506,23 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 
 ### 4b. Outbox Relay (`deml-outbox-relay`)
 
-Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable API → Kafka delivery.
+Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable Django API → Kafka delivery (separate from the `ingestEvent` / `frontend-events` path used by client commands).
 
-- **Root Directory**: `/backend`
+**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-outbox-relay` Railway service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
+
+**How to add the missing service in Railway:**
+
+1. In Railway dashboard → New Service → GitHub Repo (select this repo).
+2. Root Directory: `/backend`
+3. Start Command: `python manage.py outbox_relay`
+4. Give it the same variables as `deml-backend` (use shared variables if possible).
+5. It will use the internal `REDPANDA_BROKERS=deml-queue.railway.internal:9092`.
+
 - **Start Command**: `python manage.py outbox_relay` (daemon; polls every 5s)
 - **Cron alternative**: `python manage.py outbox_relay --once` on a schedule
-- **Public URL**: None
+- **Public URL**: None (internal only)
 
-**Variables:** Same core bundle as backend: `DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`, `REDPANDA_BROKERS`, `DRAGONFLY_HOST`, `STRUCTURED_LOGS=true`.
+**Variables:** Same core bundle as backend + `REDPANDA_BROKERS=deml-queue.railway.internal:9092`.
 
 > [!WARNING]
 > Backend services, workers and `outbox_relay` **must** use the broker's internal TCP address (`deml-queue.railway.internal:9092`) for all inter-service traffic.

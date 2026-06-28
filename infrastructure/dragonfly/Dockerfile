@@ -23,6 +23,13 @@ FROM gcr.io/distroless/cc-debian12:nonroot
 # Copy the binary from the downloader stage
 COPY --from=downloader /usr/local/bin/dragonfly /usr/local/bin/dragonfly
 
+# The dragonfly binary is dynamically linked against libz.so.1 (zlib), which is the
+# only one of its shared-library dependencies NOT shipped in distroless/cc-debian12.
+# Without it the container crash-loops with:
+#   "error while loading shared libraries: libz.so.1: cannot open shared object file".
+# Copy zlib from the Debian build stage so the binary can start.
+COPY --from=downloader /usr/lib/x86_64-linux-gnu/libz.so.1* /usr/lib/x86_64-linux-gnu/
+
 # Expose default Dragonfly/Redis port
 EXPOSE 6379
 
