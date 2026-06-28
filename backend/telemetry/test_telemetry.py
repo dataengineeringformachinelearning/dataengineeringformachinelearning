@@ -36,6 +36,14 @@ async def test_ingest_endpoint_telemetry(async_client: AsyncClient) -> None:
 
 @pytest.mark.django_db
 @pytest.mark.asyncio
+async def test_cookie_consent_health_get(async_client: AsyncClient) -> None:
+  response = await async_client.get("/api/v1/telemetry/cookie-consent")
+  assert response.status_code == 200
+  assert response.json()["status"] == "ok"
+
+
+@pytest.mark.django_db
+@pytest.mark.asyncio
 async def test_cookie_consent_endpoint(async_client: AsyncClient) -> None:
   payload = {"necessary": True, "analytical": True, "marketing": False}
   response = await async_client.post(

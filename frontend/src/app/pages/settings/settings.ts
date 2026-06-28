@@ -219,8 +219,9 @@ export class Settings implements OnInit {
   getWidgetCode(): string {
     const page = this.selectedPage();
     if (!page) return '';
-    const origin = window.location.origin;
-    return `<script src="${origin}/assets/widget.js" data-page-id="${page.slug}"></script>`;
+    const appUrl = window.location.origin;
+    const backendUrl = environment.backendUrl;
+    return `<script src="${appUrl}/assets/widget.js" data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${appUrl}"></script>`;
   }
 
   async copyWidgetCode() {

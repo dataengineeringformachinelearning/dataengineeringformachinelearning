@@ -1,97 +1,7 @@
 
 @use './theme' as theme;
 
-// ====================== ACCESSIBILITY & SKIP LINK UTILITIES ======================
-.sr-only,
-.visually-hidden {
-  position: absolute !important;
-  width: 0px !important;
-  height: 0px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0, 0, 0, 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-}
-
-.skip-link {
-  position: absolute;
-  top: -100px;
-  left: 16px;
-  background-color: var(--black) !important;
-  color: var(--white) !important;
-  padding: 8px 16px;
-  z-index: 10000;
-  border-radius: var(--border-radius-sm);
-  text-decoration: none;
-  font-weight: 600;
-  transition: top 0.2s ease;
-  outline: none;
-}
-
-.skip-link:focus-visible {
-  top: 16px;
-  outline: 2px solid var(--color-primary-container);
-  outline-offset: 2px;
-}
-
-/* Global Outline outline-ring helper */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-[role='button']:focus-visible,
-[role='tab']:focus-visible {
-  outline: 2px solid var(--color-primary-container) !important;
-  outline-offset: 3px !important;
-}
-
-html[data-theme='light'] {
-  a:focus-visible,
-  button:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
-  select:focus-visible,
-  [role='button']:focus-visible,
-  [role='tab']:focus-visible {
-    outline: 2px solid var(--color-primary) !important;
-  }
-}
-
-/* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
-   as the form field container handles focus state visually at the border level.
-   We instead apply the focus outline to the entire form field using :has() */
-.mat-mdc-form-field input:focus-visible,
-.mat-mdc-form-field textarea:focus-visible,
-.mat-mdc-form-field select:focus-visible,
-.mat-form-field input:focus-visible,
-.mat-form-field textarea:focus-visible,
-.mat-form-field select:focus-visible,
-html[data-theme='light'] .mat-mdc-form-field input:focus-visible,
-html[data-theme='light'] .mat-mdc-form-field textarea:focus-visible,
-html[data-theme='light'] .mat-mdc-form-field select:focus-visible,
-html[data-theme='light'] .mat-form-field input:focus-visible,
-html[data-theme='light'] .mat-form-field textarea:focus-visible,
-html[data-theme='light'] .mat-form-field select:focus-visible {
-  outline: none !important;
-}
-
-/* Wrap the accessibility focus ring around the visual field container (excluding the subscript area) */
-.mdc-text-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
-.mat-form-field-flex:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid var(--color-primary-container) !important;
-  outline-offset: 3px !important;
-  border-radius: var(--border-radius-sm);
-}
-
-html[data-theme='light']
-  .mdc-text-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
-html[data-theme='light']
-  .mat-form-field-flex:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid var(--color-primary) !important;
-}
+// Shared a11y, layout, navbar: /assets/deml-components.css (synced from packages/deml-design-system)
 
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';
@@ -477,51 +387,6 @@ main.main {
   }
 }
 
-/* Mobile-first layout container (9px grid aligned) */
-.page-inner-wrapper {
-  width: 100%;
-  max-width: var(--container-max-width);
-  margin: 0 auto;
-  padding: var(--card-padding);
-  display: flex;
-  flex-direction: column;
-  gap: var(--grid-gap);
-  box-sizing: border-box;
-}
-
-/* Status & hero badge indicators */
-.badge-dot {
-  display: inline-block;
-  width: var(--grid-unit, 9px);
-  height: var(--grid-unit, 9px);
-  border-radius: 50%;
-  background-color: var(--color-primary);
-  margin-right: var(--grid-unit, 9px);
-  flex-shrink: 0;
-
-  &--success {
-    background-color: var(--color-success);
-  }
-}
-
-/* Visibility toggles (prefer classes over inline display styles) */
-.is-hidden {
-  display: none !important;
-}
-
-.is-visible-block {
-  display: block !important;
-}
-
-.is-visible-flex {
-  display: flex !important;
-}
-
-/* Dynamic progress width via CSS custom property */
-.progress-bar-fill {
-  width: var(--progress, 0%);
-}
-
 // ====================== GLOBAL ERROR TOAST ======================
 #global-error-toast {
   position: fixed;
@@ -875,16 +740,6 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
   left: 150%;
 }
 
-/* Glow styles for global icons */
-.glowing-icon-sm {
-  color: var(--primary-text-color) !important;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));
-  transition: all 0.3s ease;
-}
-.glowing-icon-sm:hover {
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent));
-}
-
 /* ====================== RESPONSIVE GRID SYSTEM ====================== */
 .grid-layout {
   display: grid;
@@ -1094,28 +949,10 @@ select option:checked {
 /* Extracted Inline Styles */
 .u-style-9150aa { justify-content: flex-start }
 
-// WCAG/508: enforce 18px minimum typography floor
-body,
-p,
-li,
-input,
-select,
-textarea,
-button,
-label,
-small,
-td,
-th,
-.badge-text,
-.criteria-desc,
-.criteria-details,
-.log-text,
-.file-name,
 .mode-tag,
 .logs-title {
   font-size: max(18px, var(--base-font-size, 18px));
 }
-
 
 /* Extracted Inline Styles */
 .u-style-e24d2c { color: var(--white); background-color: var(--black) }

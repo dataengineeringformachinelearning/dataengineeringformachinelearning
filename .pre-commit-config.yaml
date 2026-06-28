@@ -17,17 +17,14 @@ repos:
         args: [--fix]
       - id: ruff-format
 
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v4.0.0-alpha.8
-    hooks:
-      - id: prettier
-        files: \.(js|ts|css|html|json|md)$
-        exclude: ^frontend/(public/llms-full.txt|src/assets/content/page.md)$
-        additional_dependencies:
-          - prettier@3.8.2
-
   - repo: local
     hooks:
+      - id: sync-design-system
+        name: Sync design system package to consumers
+        entry: python scripts/sync_design_system.py
+        language: system
+        files: ^packages/deml-design-system/
+        pass_filenames: false
       - id: semgrep
         name: Semgrep SAST Scan
         entry: uvx semgrep scan --error
@@ -72,6 +69,15 @@ repos:
         language: system
         always_run: true
         pass_filenames: false
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        files: \.(js|ts|css|html|json|md)$
+        exclude: ^(frontend/(public/llms-full.txt|src/assets/content/page.md)|(.*/)?(design-tokens|deml-components)\.css)$
+        additional_dependencies:
+          - prettier@3.8.2
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.18.2

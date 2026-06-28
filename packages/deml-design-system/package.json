@@ -1,0 +1,12 @@
+{
+  "name": "@deml/design-system",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Canonical DEML design tokens and shared component styles",
+  "scripts": {
+    "build": "sass src/tokens-export.scss dist/design-tokens.css --style=expanded --no-source-map && sass src/deml-components.scss dist/deml-components.css --style=expanded --no-source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.89.2"
+  }
+}

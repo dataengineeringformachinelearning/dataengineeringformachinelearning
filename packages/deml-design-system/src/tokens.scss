@@ -1,13 +1,16 @@
-@charset "UTF-8";
-/*! DEML Design Tokens — generated from packages/deml-design-system. Do not edit copies; run scripts/sync_design_system.py */
+// DEML design tokens — single source of truth for CSS custom properties.
+// Synced to consumers via scripts/sync_design_system.py
+
 :root {
   /* Colors - Hex (Base Palette) */
   --jet-black: #31393c;
   --white: #ffffff;
   --black: #000000;
+
   /* Typography */
   --base-font-size: 18px;
   --header-letter-spacing: -0.02em;
+
   /* Universal Borders & Shadows */
   --border-radius-lg: 18px;
   --border-radius-md: 9px;
@@ -16,37 +19,45 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+
   /* SaaS Grid & Modular Spacing layout tokens (9px base grid) */
   --grid-unit: 9px;
   --grid-gap: 27px;
   --card-padding: 27px;
   --container-max-width: 1260px;
   --navbar-height: 64px;
+
   /* Accessibility focus ring */
   --focus-ring: 3px solid var(--color-primary);
   --focus-ring-offset: 2px;
 }
 
-html[data-theme=dark] {
+html[data-theme='dark'] {
   --crayola-blue: #2176ff;
   --blue-bell: #33a1fd;
   --golden-pollen: #fdca40;
   --carrot-orange: #f79824;
+
   --color-primary: var(--crayola-blue);
   --color-on-primary: var(--white);
   --color-primary-container: var(--blue-bell);
   --color-on-primary-container: var(--black);
+
   --color-surface: var(--jet-black);
   --color-on-surface: var(--white);
   --color-background: #121212;
   --color-on-background: var(--white);
+
   --color-success: var(--blue-bell);
   --color-warning: var(--golden-pollen);
   --color-error: var(--carrot-orange);
   --color-info: var(--crayola-blue);
+
   --color-gauge-red: var(--color-error);
+
   --border: rgba(255, 255, 255, 0.12);
   --border-layout: rgba(255, 255, 255, 0.2);
+
   --hover-color: var(--blue-bell);
   --bg-color: var(--color-background);
   --text-color: var(--color-on-background);
@@ -57,33 +68,41 @@ html[data-theme=dark] {
   --link-hover-color: var(--crayola-blue);
   --hero-title-color: var(--white);
   --primary-text-color: var(--crayola-blue);
+
   --button-primary: var(--color-primary);
   --button-primary-text: var(--white);
+
   --color-dark-grey-btn-bg: var(--jet-black);
   --color-dark-grey-btn-text: var(--white);
 }
 
-html[data-theme=light],
+html[data-theme='light'],
 :root {
   --crayola-blue: #2176ff;
   --blue-bell: #33a1fd;
   --golden-pollen: #fdca40;
   --carrot-orange: #f79824;
+
   --color-primary: var(--crayola-blue);
   --color-on-primary: var(--white);
   --color-primary-container: var(--blue-bell);
   --color-on-primary-container: var(--white);
+
   --color-surface: var(--white);
   --color-on-surface: var(--jet-black);
   --color-background: var(--white);
   --color-on-background: var(--jet-black);
+
   --color-success: var(--blue-bell);
   --color-warning: var(--golden-pollen);
   --color-error: var(--carrot-orange);
   --color-info: var(--crayola-blue);
+
   --color-gauge-red: var(--color-error);
+
   --border: rgba(49, 57, 60, 0.15);
   --border-layout: rgba(49, 57, 60, 0.25);
+
   --hover-color: var(--golden-pollen);
   --bg-color: var(--color-background);
   --text-color: var(--color-on-background);
@@ -94,66 +113,10 @@ html[data-theme=light],
   --link-hover-color: var(--blue-bell);
   --hero-title-color: var(--jet-black);
   --primary-text-color: var(--crayola-blue);
+
   --button-primary: var(--color-primary);
   --button-primary-text: var(--color-on-primary);
+
   --color-dark-grey-btn-bg: var(--jet-black);
   --color-dark-grey-btn-text: var(--white);
-}
-
-html[data-theme=dark] {
-  --mat-sys-primary: var(--blue-bell);
-  --mat-sys-on-primary: var(--black);
-  --mat-sys-primary-container: var(--crayola-blue);
-  --mat-sys-on-primary-container: var(--white);
-  --mat-sys-secondary: var(--blue-bell);
-  --mat-sys-on-secondary: var(--black);
-  --mat-sys-tertiary: var(--golden-pollen);
-  --mat-sys-on-tertiary: var(--black);
-  --mat-sys-surface: var(--color-surface);
-  --mat-sys-on-surface: var(--white);
-  --mat-sys-surface-variant: #1a1a1a;
-  --mat-sys-on-surface-variant: var(--text-muted);
-  --mat-sys-background: var(--bg-color);
-  --mat-sys-on-background: var(--white);
-  --mat-sys-outline: var(--border);
-  --mat-sys-outline-variant: var(--border);
-  --mat-sys-error: var(--carrot-orange);
-  --mat-sys-on-error: var(--white);
-}
-
-html[data-theme=light],
-:root {
-  --mat-sys-primary: var(--crayola-blue);
-  --mat-sys-on-primary: var(--white);
-  --mat-sys-primary-container: var(--blue-bell);
-  --mat-sys-on-primary-container: var(--white);
-  --mat-sys-secondary: var(--crayola-blue);
-  --mat-sys-on-secondary: var(--white);
-  --mat-sys-tertiary: var(--golden-pollen);
-  --mat-sys-on-tertiary: var(--jet-black);
-  --mat-sys-surface: var(--color-surface);
-  --mat-sys-on-surface: var(--jet-black);
-  --mat-sys-surface-variant: #f5f5f5;
-  --mat-sys-on-surface-variant: var(--text-muted);
-  --mat-sys-background: var(--white);
-  --mat-sys-on-background: var(--jet-black);
-  --mat-sys-outline: var(--border);
-  --mat-sys-outline-variant: var(--border);
-  --mat-sys-error: var(--carrot-orange);
-  --mat-sys-on-error: var(--white);
-}
-
-body {
-  font-size: var(--base-font-size);
-  color: var(--text-color);
-  background-color: var(--bg-color);
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  letter-spacing: var(--header-letter-spacing);
 }

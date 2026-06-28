@@ -13,6 +13,12 @@ class SuccessSchema(Schema):
   role: str | None = None
 
 
+@router.get("/register", response=SuccessSchema, auth=None)
+def api_register_health(request):
+  """Health probe for monitors; user registration is handled client-side via Firebase."""
+  return {"status": "ok", "user": None, "user_id": None, "role": None}
+
+
 @router.get("/user", response=SuccessSchema)
 def api_user(request):
   if request.user.is_authenticated:

@@ -27,6 +27,7 @@ class CustomSwagger(Swagger):
     <link rel="shortcut icon" href="https://deml.app/favicon.ico">
     <!-- Shared tokens for cohesion -->
     <link rel="stylesheet" href="https://deml.app/assets/design-tokens.css">
+    <link rel="stylesheet" href="https://deml.app/assets/deml-components.css">
     <style>
         .swagger-ui .topbar {{
             background-color: #111827;
@@ -101,6 +102,16 @@ def add_router_if_not_exists(prefix, router_instance):
 
 add_router_if_not_exists("/system-status/", monitor_router)
 add_router_if_not_exists("/ml/", ml_router)
+
+# Legacy alias: some monitors probe /api/v1/model/latest (OpenAPI model namespace typo)
+from ml.ml_api import LatestRunOut, get_latest_training
+
+
+@api.get("/model/latest", response=LatestRunOut)
+def model_latest_alias(request: Any, status_page_id: str | None = None) -> Any:
+  return get_latest_training(request, status_page_id)
+
+
 add_router_if_not_exists("/telemetry/", telemetry_router)
 
 from telemetry.analytics_views import router as analytics_router

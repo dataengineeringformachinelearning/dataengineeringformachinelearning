@@ -1,0 +1,44 @@
+// Angular Material M3 token overrides (included in design-tokens.css for the app shell).
+
+html[data-theme='dark'] {
+  --mat-sys-primary: var(--blue-bell);
+  --mat-sys-on-primary: var(--black);
+  --mat-sys-primary-container: var(--crayola-blue);
+  --mat-sys-on-primary-container: var(--white);
+  --mat-sys-secondary: var(--blue-bell);
+  --mat-sys-on-secondary: var(--black);
+  --mat-sys-tertiary: var(--golden-pollen);
+  --mat-sys-on-tertiary: var(--black);
+  --mat-sys-surface: var(--color-surface);
+  --mat-sys-on-surface: var(--white);
+  --mat-sys-surface-variant: #1a1a1a;
+  --mat-sys-on-surface-variant: var(--text-muted);
+  --mat-sys-background: var(--bg-color);
+  --mat-sys-on-background: var(--white);
+  --mat-sys-outline: var(--border);
+  --mat-sys-outline-variant: var(--border);
+  --mat-sys-error: var(--carrot-orange);
+  --mat-sys-on-error: var(--white);
+}
+
+html[data-theme='light'],
+:root {
+  --mat-sys-primary: var(--crayola-blue);
+  --mat-sys-on-primary: var(--white);
+  --mat-sys-primary-container: var(--blue-bell);
+  --mat-sys-on-primary-container: var(--white);
+  --mat-sys-secondary: var(--crayola-blue);
+  --mat-sys-on-secondary: var(--white);
+  --mat-sys-tertiary: var(--golden-pollen);
+  --mat-sys-on-tertiary: var(--jet-black);
+  --mat-sys-surface: var(--color-surface);
+  --mat-sys-on-surface: var(--jet-black);
+  --mat-sys-surface-variant: #f5f5f5;
+  --mat-sys-on-surface-variant: var(--text-muted);
+  --mat-sys-background: var(--white);
+  --mat-sys-on-background: var(--jet-black);
+  --mat-sys-outline: var(--border);
+  --mat-sys-outline-variant: var(--border);
+  --mat-sys-error: var(--carrot-orange);
+  --mat-sys-on-error: var(--white);
+}

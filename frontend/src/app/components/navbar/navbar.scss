@@ -1,164 +1,27 @@
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  width: 100%;
-  height: 64px;
-  background-color: var(--navbar-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border-layout);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  box-sizing: border-box;
-}
-
-.navbar-brand {
-  margin-right: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-}
-
-.navbar-title {
-  font-size: var(--base-font-size);
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--text-color);
-  letter-spacing: -0.02em;
-}
-
-.navbar-logo {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
-  color: var(--color-primary);
-}
-
-.navbar-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-.navbar-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.navbar-right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.navbar-center {
-  display: flex;
-  justify-content: center;
-}
-
-.desktop-nav {
-  display: none;
-  align-items: center;
-  gap: 8px;
-}
-
-.desktop-auth {
-  display: none;
-  align-items: center;
-  gap: 8px;
-}
+// Angular Material overrides — base navbar styles live in @deml/design-system.
 
 .nav-btn {
-  font-size: 1rem !important;
-  color: var(--text-muted) !important;
-  font-weight: 600 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
-  transition: var(--transition-smooth) !important;
-  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important; /* Sharp technical alignment, bottom flat for active indicator */
-  padding: 0 16px !important;
-  height: 40px !important;
-  line-height: 40px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-
   mat-icon {
     margin: 0;
     font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
   }
-
-  &:hover {
-    color: var(--text-color) !important;
-    background-color: rgba(33, 118, 255, 0.05) !important;
-  }
-
-  &.active {
-    color: var(--text-color) !important;
-    background-color: rgba(33, 118, 255, 0.1) !important;
-    box-shadow: inset 0 -2px 0 0 var(--crayola-blue) !important; /* active dial needle at bottom */
-  }
 }
 
 .theme-toggle-btn {
   color: var(--text-muted) !important;
-  transition:
-    color 0.2s,
-    transform 0.2s;
 
   &:hover {
     color: var(--text-color) !important;
-    transform: rotate(15deg);
   }
 }
 
 .menu-toggle-btn {
   display: inline-flex !important;
-  color: var(--text-muted) !important;
-  transition: color 0.2s;
-
-  &:hover {
-    color: var(--text-color) !important;
-  }
-}
-
-.divider {
-  height: 24px;
-  width: 0px;
-  background-color: var(--border);
-  margin: 0 8px;
 }
 
 .auth-btn {
-  background: var(--color-dark-grey-btn-bg) !important;
-  color: var(--color-dark-grey-btn-text) !important;
-  font-weight: 600 !important;
-  border-radius: 96px !important; // Pill shape to match marketing navbar
-  padding: 0 16px !important;
-  box-shadow: var(--shadow-sm) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  border: 1px solid var(--border) !important;
-  transition: var(--transition-smooth) !important;
-  height: 40px !important;
-  line-height: 40px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  white-space: nowrap !important;
-
   mat-icon {
     margin: 0;
     font-size: var(--base-font-size);
@@ -167,117 +30,16 @@
     transition: transform 0.3s ease;
   }
 
-  &:hover {
-    transform: translateY(-2px) !important;
-    background-color: var(--hover-color) !important;
-    border-color: var(--crayola-blue) !important;
-    color: var(--text-color) !important;
-    box-shadow: var(--shadow-md) !important;
-
-    mat-icon {
-      transform: translateX(2px);
-    }
-  }
-}
-
-.mobile-menu {
-  display: none;
-  flex-direction: column;
-  position: absolute;
-  top: 64px;
-  left: 0;
-  right: 0;
-  width: auto;
-  background-color: var(--card-bg);
-  box-shadow: var(--shadow-md);
-  border-bottom: 1px solid var(--border);
-  padding: 24px;
-  box-sizing: border-box;
-  z-index: 49;
-  gap: 8px;
-  transform: translateY(-10px);
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.25s ease;
-
-  &.open {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
-    display: flex;
+  &:hover mat-icon {
+    transform: translateX(2px);
   }
 }
 
 .mobile-nav-btn {
-  width: 100% !important;
-  justify-content: flex-start !important;
-  font-size: 1rem !important;
-  color: var(--text-muted) !important;
-  height: 40px !important;
-  line-height: 40px !important;
-  border-radius: var(--border-radius-sm) !important;
-  padding: 0 16px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-
   mat-icon {
     margin: 0;
     font-size: 20px;
     width: 20px;
     height: 20px;
-  }
-
-  &:hover {
-    color: var(--text-color) !important;
-    background-color: rgba(33, 118, 255, 0.05) !important;
-  }
-
-  &.active {
-    color: var(--text-color) !important;
-    background-color: rgba(33, 118, 255, 0.1) !important;
-    box-shadow: inset 0 0 0 1px var(--crayola-blue) !important;
-  }
-}
-
-.mobile-divider {
-  height: 0px;
-  background-color: var(--border);
-  margin: 8px 0;
-}
-
-.mobile-auth-btn {
-  width: 100% !important;
-  height: 40px !important;
-  line-height: 40px !important;
-  justify-content: center !important;
-  border-radius: var(--border-radius-lg) !important;
-  background: var(--color-dark-grey-btn-bg) !important;
-  color: var(--color-dark-grey-btn-text) !important;
-  font-weight: 600 !important;
-  border: none !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  white-space: nowrap !important;
-}
-
-@media (min-width: 768px) {
-  .desktop-nav {
-    display: flex;
-  }
-
-  .desktop-auth {
-    display: flex;
-  }
-
-  .menu-toggle-btn {
-    display: none !important;
-  }
-
-  .mobile-menu {
-    display: none !important;
   }
 }

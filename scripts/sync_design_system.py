@@ -1,0 +1,72 @@
+import os
+import shutil
+import subprocess
+import sys
+
+
+def sync_design_system():
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  root_dir = os.path.dirname(script_dir)
+  pkg_dir = os.path.join(root_dir, "packages", "deml-design-system")
+  dist_dir = os.path.join(pkg_dir, "dist")
+
+  if not os.path.isdir(pkg_dir):
+    print(f"Design system package not found at {pkg_dir}", file=sys.stderr)
+    sys.exit(1)
+
+  print("Building @deml/design-system...")
+  subprocess.run(["npm", "run", "build"], cwd=pkg_dir, check=True)
+
+  dist_tokens = os.path.join(dist_dir, "design-tokens.css")
+  dist_components = os.path.join(dist_dir, "deml-components.css")
+
+  # Match pre-commit prettier formatting so sync + prettier hooks do not fight.
+  prettier_config = os.path.join(root_dir, "frontend", ".prettierrc")
+  subprocess.run(
+    [
+      "npx",
+      "-y",
+      "prettier@3.8.2",
+      "--config",
+      prettier_config,
+      "--write",
+      dist_tokens,
+      dist_components,
+    ],
+    check=True,
+  )
+
+  for path in (dist_tokens, dist_components):
+    if not os.path.isfile(path):
+      print(f"Expected build output missing: {path}", file=sys.stderr)
+      sys.exit(1)
+
+  token_targets = [
+    os.path.join(root_dir, "frontend", "src", "assets", "design-tokens.css"),
+    os.path.join(root_dir, "frontend", "public", "assets", "design-tokens.css"),
+    os.path.join(root_dir, "backend", "static", "design-tokens.css"),
+    os.path.join(root_dir, "marketing", "public", "assets", "design-tokens.css"),
+  ]
+
+  component_targets = [
+    os.path.join(root_dir, "frontend", "src", "assets", "deml-components.css"),
+    os.path.join(root_dir, "frontend", "public", "assets", "deml-components.css"),
+    os.path.join(root_dir, "backend", "static", "deml-components.css"),
+    os.path.join(root_dir, "marketing", "public", "assets", "deml-components.css"),
+  ]
+
+  for target in token_targets:
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+    shutil.copy2(dist_tokens, target)
+
+  for target in component_targets:
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+    shutil.copy2(dist_components, target)
+
+  print("Successfully synced design system to:")
+  for target in token_targets + component_targets:
+    print(f" - {target}")
+
+
+if __name__ == "__main__":
+  sync_design_system()

@@ -89,6 +89,12 @@ class CookieConsentPayload(Schema):
   marketing: bool
 
 
+@router.get("/cookie-consent")
+def cookie_consent_health(request):
+  """Lightweight GET probe for PlatformStatusAutoPinger (POST remains the write path)."""
+  return {"status": "ok", "endpoint": "cookie-consent"}
+
+
 @router.post("/cookie-consent")
 async def save_cookie_consent(request, payload: CookieConsentPayload):
   from asgiref.sync import sync_to_async

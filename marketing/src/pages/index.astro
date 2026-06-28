@@ -3,6 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import '../styles/landing.scss';
 
 const MAIN_APP = import.meta.env.PUBLIC_MAIN_APP_URL ?? 'https://deml.app';
+const API_BASE = import.meta.env.PUBLIC_API_BASE ?? 'https://backend.deml.app';
+const WIDGET_PAGE_ID = 'platform-status';
+const WIDGET_SCRIPT_PATH = '/assets/widgets/widget.js';
+const widgetEmbedAttrs = `data-backend-url="${API_BASE}" data-frontend-url="${MAIN_APP}" data-page-id="${WIDGET_PAGE_ID}"`;
+const widgetEmbedSnippet = `<script src="${WIDGET_SCRIPT_PATH}" ${widgetEmbedAttrs} async defer></script>`;
+const widgetEmbedSnippetHtml = widgetEmbedSnippet
+  .replaceAll('<', '&lt;')
+  .replaceAll('>', '&gt;');
 const version = '2.0.0';
 
 const pipelineSteps = [
@@ -13,8 +21,7 @@ const pipelineSteps = [
     tag: 'CLIENT-SIDE EMBED',
     description:
       "The embedded status widget securely streams real-time, zero-dependency telemetry (visitor logs, anomalies) directly from the tenant's site into our ingestion pipeline.",
-    codeSnippet:
-      '<script src="https://platform.demo/assets/widget.js" data-page-id="tenant-id" async defer></script>',
+    codeSnippet: widgetEmbedSnippet,
   },
   {
     id: 'clean',
@@ -136,7 +143,7 @@ const pipelineSteps = [
                 <div class="step-code-visual">
                   <div class="code-header">
                     <span class="file-name">
-                      {step.id === 'predict' ? 'threat_model.py' : step.id === 'clean' ? 'events.sqlx' : step.id === 'analyze' ? 'query.sql' : 'payload.json'}
+                      {step.id === 'predict' ? 'threat_model.py' : step.id === 'clean' ? 'events.sqlx' : step.id === 'analyze' ? 'query.sql' : 'embed.html'}
                     </span>
                   </div>
                   <pre><code>{step.codeSnippet}</code></pre>
@@ -152,11 +159,18 @@ const pipelineSteps = [
           <div class="bento-header">
             <span class="showcase-tag">LIVE TELEMETRY WIDGET</span>
             <div class="embed-code">
-              <code>&lt;script src="/assets/widgets/widget.js" data-backend-url="https://backend.deml.app" data-page-id="platform-status"&gt;&lt;/script&gt;</code>
+              <code set:html={widgetEmbedSnippetHtml} />
             </div>
           </div>
           <div class="widget-mount-point" id="hero-widget-mount">
-            <script src="/assets/widgets/widget.js" data-backend-url="https://backend.deml.app" data-page-id="platform-status" async defer></script>
+            <script
+              src={WIDGET_SCRIPT_PATH}
+              data-backend-url={API_BASE}
+              data-frontend-url={MAIN_APP}
+              data-page-id={WIDGET_PAGE_ID}
+              async
+              defer
+            ></script>
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@
     if (currentScript && currentScript.hasAttribute('data-page-id')) {
       const pageId = currentScript.getAttribute('data-page-id');
       const backendUrl = currentScript.getAttribute('data-backend-url');
+      const frontendUrl = currentScript.getAttribute('data-frontend-url');
 
       // Check if we already inserted the widget next to this script tag
       if (!currentScript.nextSibling || currentScript.nextSibling.nodeName !== 'PLATFORM-WIDGET') {
@@ -12,6 +13,9 @@
         widget.setAttribute('data-page-id', pageId);
         if (backendUrl) {
           widget.setAttribute('data-backend-url', backendUrl);
+        }
+        if (frontendUrl) {
+          widget.setAttribute('data-frontend-url', frontendUrl);
         }
         currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);
       }
@@ -40,6 +44,42 @@
       } else {
         setTimeout(callback, 200);
       }
+    }
+  };
+
+  const statusPageUrl = (frontendHost, slug) => `${frontendHost.replace(/\/$/, '')}/status/${slug}`;
+
+  const resolveFrontendHost = ({ explicit, backendUrl, scriptOrigin }) => {
+    if (explicit) {
+      return explicit.replace(/\/$/, '');
+    }
+
+    if (backendUrl) {
+      try {
+        const backend = new URL(backendUrl);
+        if (backend.hostname.startsWith('backend.')) {
+          return `${backend.protocol}//${backend.hostname.slice('backend.'.length)}`;
+        }
+        if (backend.hostname === 'localhost' || backend.hostname === '127.0.0.1') {
+          const port = backend.port === '8000' ? '4200' : backend.port;
+          return `${backend.protocol}//${backend.hostname}${port ? `:${port}` : ''}`;
+        }
+        return `${backend.protocol}//${backend.hostname}${backend.port ? `:${backend.port}` : ''}`;
+      } catch {}
+    }
+
+    try {
+      const script = new URL(scriptOrigin);
+      const host = script.hostname;
+      if (
+        host === 'dataengineeringformachinelearning.com' ||
+        host === 'www.dataengineeringformachinelearning.com'
+      ) {
+        return 'https://deml.app';
+      }
+      return scriptOrigin.replace(/\/$/, '');
+    } catch {
+      return (scriptOrigin || '').replace(/\/$/, '');
     }
   };
 
@@ -220,9 +260,12 @@
           ? new URL(currentScript.src).origin
           : window.location.origin;
 
-        const frontendHost = this.getAttribute('data-frontend-url') ?? scriptOrigin;
-
         const backendUrl = this.getAttribute('data-backend-url') ?? '';
+        const frontendHost = resolveFrontendHost({
+          explicit: this.getAttribute('data-frontend-url'),
+          backendUrl,
+          scriptOrigin,
+        });
 
         // Resolve Client IP lazily during idle cycles
         runWhenIdle(async () => {
@@ -518,7 +561,7 @@
           }
         </style>
         <div class="widget-container">
-          <a class="widget-link" href="${frontendHost}/status/${pageId}" target="_blank">
+          <a class="widget-link" href="${statusPageUrl(frontendHost, pageId)}" target="_blank">
             <span class="status-dot"></span>
             <span class="status-text">Loading status...</span>
           </a>
@@ -901,7 +944,7 @@
 
         // Fetch and cache status parameters defensively (5 minute TTL)
         const fetchStatus = async () => {
-          const cacheKey = `deml_status_cache_${pageId}`;
+          const cacheKey = `deml_status_cache_v2_${pageId}`;
           try {
             const cached = sessionStorage.getItem(cacheKey);
             if (cached) {
@@ -941,7 +984,7 @@
             }
 
             if (page) {
-              const href = `${frontendHost}/status/${page.slug}`;
+              const href = statusPageUrl(frontendHost, page.slug);
               widgetLink.href = href;
 
               let color = 'var(--color-success, #10b981)';
@@ -1015,11 +1058,15 @@
   if (currentScript && currentScript.hasAttribute('data-page-id')) {
     const pageId = currentScript.getAttribute('data-page-id');
     const backendUrl = currentScript.getAttribute('data-backend-url');
+    const frontendUrl = currentScript.getAttribute('data-frontend-url');
 
     const widget = document.createElement('platform-widget');
     widget.setAttribute('data-page-id', pageId);
     if (backendUrl) {
       widget.setAttribute('data-backend-url', backendUrl);
+    }
+    if (frontendUrl) {
+      widget.setAttribute('data-frontend-url', frontendUrl);
     }
 
     currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);

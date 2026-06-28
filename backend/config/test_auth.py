@@ -23,6 +23,13 @@ def mock_verify_token() -> Any:
 
 
 @pytest.mark.django_db
+def test_register_health_probe(client: Client) -> None:
+  response = client.get("/api/v1/auth/register")
+  assert response.status_code == 200
+  assert response.json()["status"] == "ok"
+
+
+@pytest.mark.django_db
 def test_get_current_user_authenticated(
   client: Client, test_user: User, mock_verify_token: Any
 ) -> None:

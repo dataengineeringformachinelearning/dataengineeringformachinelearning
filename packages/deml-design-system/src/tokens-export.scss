@@ -1,4 +1,6 @@
-@use '../../../packages/deml-design-system/src/tokens' as *;
+/*! DEML Design Tokens — generated from packages/deml-design-system. Do not edit copies; run scripts/sync_design_system.py */
+@use 'tokens';
+@use 'material-tokens';
 
 body {
   font-size: var(--base-font-size);

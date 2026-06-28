@@ -304,13 +304,8 @@ class Command(BaseCommand):
   @sync_to_async
   def save_to_db(self, df: pl.DataFrame):
     # Ensure platform-status page exists
-    from urllib.parse import urlparse
-
-    from django.conf import settings
     from django.contrib.auth.models import User
     from monitor.models import MonitoredService, StatusPage, Tenant
-
-    frontend_url = (getattr(settings, "FRONTEND_URL", "") or "").rstrip("/")
 
     # Loop over all tenants to map endpoints dynamically
     all_tenants = {str(t.id): t for t in Tenant.objects.all()}
@@ -336,63 +331,7 @@ class Command(BaseCommand):
         description="Monitoring system health and telemetry pipelines for the DEML (DATA ENGINEERING FOR MACHINE LEARNING).",
       )
 
-    def get_normalized_info(url_str: str) -> tuple[str, str]:
-      if not url_str:
-        return f"{frontend_url}/", "Django Web Server"
-      if "9092" in url_str:
-        return url_str, "Redpanda Broker"
-
-      parsed = urlparse(url_str)
-      domain: str = f"{parsed.scheme}://{parsed.netloc}" if parsed.netloc else frontend_url
-
-      base_domain: str = frontend_url
-      if "dataengineeringformachinelearning.com" in domain:
-        base_domain = "https://dataengineeringformachinelearning.com"
-      elif "deml.app" in domain:
-        base_domain = "https://deml.app"
-
-      path: str = parsed.path.strip("/")
-
-      # Default fallback mappings
-      norm_url: str = f"{base_domain}/"
-      name: str = "Django Web Server"
-      if "dataengineeringformachinelearning.com" in base_domain:
-        name = "Marketing Web Server"
-
-      if "system-status/health" in path:
-        norm_url = f"{base_domain}/"
-        name = (
-          "Django Web Server"
-          if "dataengineeringformachinelearning.com" not in base_domain
-          else "Marketing Web Server"
-        )
-      elif "auth/user" in path:
-        norm_url = f"{base_domain}/settings"
-        name = "Auth User"
-      elif "auth/register" in path:
-        norm_url = f"{base_domain}/"
-        name = "Auth Register"
-      elif "ml/latest" in path:
-        norm_url = f"{base_domain}/status"
-        name = "ML Engine Latest"
-      elif "telemetry/cookie-consent" in path:
-        norm_url = f"{base_domain}/privacy"
-        name = "Telemetry Cookie Consent"
-      elif "status_pages" in path:
-        if "services" in path:
-          norm_url = f"{base_domain}/status"
-          name = "Status Pages Services"
-        elif "incidents" in path:
-          norm_url = f"{base_domain}/status"
-          name = "Status Pages Incidents"
-        elif "slug" in path:
-          norm_url = f"{base_domain}/status"
-          name = "Status Pages Slug Platform Status"
-        else:
-          norm_url = f"{base_domain}/settings"
-          name = "Status Pages"
-
-      return norm_url, name
+    from utils.service_urls import get_normalized_service_info
 
     # Clean/Normalize the dataframe URLs and track names
     url_mapping = {}
@@ -401,7 +340,7 @@ class Command(BaseCommand):
       url_val = row.get("url")
       if not url_val:
         continue
-      norm_url, name = get_normalized_info(url_val)
+      norm_url, name = get_normalized_service_info(url_val)
       url_mapping[norm_url] = name
 
       row_dict = dict(row)
@@ -516,6 +455,7 @@ class Command(BaseCommand):
 
   async def active_pinger_scheduler(self):
     self.stdout.write(self.style.SUCCESS("Starting active pinger scheduler..."))
+    await sync_to_async(self._ensure_platform_services)()
     # Wait 15 seconds to let the system boot
     await asyncio.sleep(15)
     while True:
@@ -524,6 +464,13 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Error in automatic pinger task: {e}"))
       await asyncio.sleep(30)
+
+  def _ensure_platform_services(self):
+    from utils.service_urls import ensure_platform_monitored_services
+
+    count = ensure_platform_monitored_services()
+    if count:
+      self.stdout.write(self.style.SUCCESS(f"Synced {count} platform-status monitored service(s)"))
 
   @sync_to_async
   def ping_services(self):
@@ -534,23 +481,28 @@ class Command(BaseCommand):
 
     from django.db import close_old_connections
     from monitor.models import Endpoints, MonitoredService
+    from utils.service_urls import get_normalized_service_info, resolve_ping_url
 
     close_old_connections()
     try:
       services = MonitoredService.objects.select_related("status_page__tenant").all()
 
-      tenant_urls = {}
+      tenant_targets: dict = {}
       for s in services:
         tenant = s.status_page.tenant if s.status_page else None
         if not tenant:
           continue
-        if tenant not in tenant_urls:
-          tenant_urls[tenant] = set()
-        if s.url:
-          tenant_urls[tenant].add(s.url)
+        if tenant not in tenant_targets:
+          tenant_targets[tenant] = {}
+        if not s.url:
+          continue
+        ping_url = resolve_ping_url(s.url, s.name)
+        canonical_url, _ = get_normalized_service_info(s.url)
+        tenant_targets[tenant][ping_url] = canonical_url
 
-      for tenant, urls in tenant_urls.items():
-        for url in urls:
+      for tenant, targets in tenant_targets.items():
+        for ping_url, canonical_url in targets.items():
+          url = ping_url
           start_time = time.time()
           status_code = 503
           is_active = False
@@ -579,7 +531,7 @@ class Command(BaseCommand):
 
           Endpoints.objects.create(
             tenant=tenant,
-            url=url,
+            url=canonical_url,
             status_code=status_code,
             response_time=duration,
             ip_address="127.0.0.1",

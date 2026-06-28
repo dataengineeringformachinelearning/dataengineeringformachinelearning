@@ -1,0 +1,61 @@
+// Shared layout utilities (9px grid, visibility toggles, typography floor).
+
+.page-inner-wrapper {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: var(--card-padding);
+  display: flex;
+  flex-direction: column;
+  gap: var(--grid-gap);
+  box-sizing: border-box;
+}
+
+.badge-dot {
+  display: inline-block;
+  width: var(--grid-unit, 9px);
+  height: var(--grid-unit, 9px);
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  margin-right: var(--grid-unit, 9px);
+  flex-shrink: 0;
+}
+
+.badge-dot--success {
+  background-color: var(--color-success);
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+.is-visible-block {
+  display: block !important;
+}
+
+.is-visible-flex {
+  display: flex !important;
+}
+
+.progress-bar-fill {
+  width: var(--progress, 0%);
+}
+
+body,
+p,
+li,
+input,
+select,
+textarea,
+button,
+label,
+small,
+td,
+th,
+.badge-text,
+.criteria-desc,
+.criteria-details,
+.log-text,
+.file-name {
+  font-size: max(18px, var(--base-font-size, 18px));
+}
