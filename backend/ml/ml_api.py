@@ -6,9 +6,25 @@ from ninja import Router, Schema
 from ninja.errors import HttpError
 
 from ml.ml_services import train_tenant_sla
-from ml.models import TrainingRun
+from ml.models import ThreatReport, TrainingRun
 
 router = Router()
+
+
+def _scope_from_status_page(status_page: StatusPage) -> tuple[Any, bool]:
+  return status_page.user, status_page.is_platform
+
+
+def _training_runs_for_page(status_page: StatusPage):
+  if status_page.is_platform:
+    return TrainingRun.objects.filter(is_platform=True, user__isnull=True)
+  return TrainingRun.objects.filter(user=status_page.user, is_platform=False)
+
+
+def _threat_reports_for_page(status_page: StatusPage):
+  if status_page.is_platform:
+    return ThreatReport.objects.filter(is_platform=True, user__isnull=True)
+  return ThreatReport.objects.filter(user=status_page.user, is_platform=False)
 
 
 class TrainOut(Schema):
@@ -46,13 +62,14 @@ def train_model(request: Any, status_page_id: str | None = None) -> Any:
   if not check_status_page_access(request, status_page):
     raise HttpError(403, "Permission denied")
 
-  run = train_tenant_sla(status_page.tenant)
+  user, is_platform = _scope_from_status_page(status_page)
+  run = train_tenant_sla(user, is_platform=is_platform)
   if not run:
     raise HttpError(400, f"No data available for training status page '{status_page.title}'")
 
   return {
     "status": "success",
-    "message": f"Model trained successfully for tenant '{status_page.title}'",
+    "message": f"Model trained successfully for '{status_page.title}'",
     "average_sla": run.average_sla,
     "loss": run.loss,
     "run_id": str(run.id),
@@ -75,13 +92,18 @@ def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
 
     if not check_status_page_access(request, status_page):
       raise HttpError(403, "Permission denied")
-    run = TrainingRun.objects.filter(tenant=status_page.tenant).order_by("-created_at").first()
+    run = _training_runs_for_page(status_page).order_by("-created_at").first()
   else:
-    run = TrainingRun.objects.filter(tenant__isnull=True).order_by("-created_at").first()
+    run = (
+      TrainingRun.objects.filter(is_platform=True, user__isnull=True)
+      .order_by("-created_at")
+      .first()
+    )
 
   if not run and status_page:
     try:
-      run = train_tenant_sla(status_page.tenant)
+      user, is_platform = _scope_from_status_page(status_page)
+      run = train_tenant_sla(user, is_platform=is_platform)
     except Exception:
       run = None
 
@@ -97,7 +119,6 @@ def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
 
 
 from ml.ml_services import train_threat_model
-from ml.models import ThreatReport
 
 
 class ThreatReportOut(Schema):
@@ -115,13 +136,7 @@ def train_threat_intel(request: Any) -> Any:
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
 
-  from monitor.models import TenantMembership
-
-  membership = TenantMembership.objects.filter(user=request.user).first()
-  if not membership:
-    raise HttpError(400, "User does not belong to any tenant")
-
-  report = train_threat_model(membership.tenant)
+  report = train_threat_model(request.user, is_platform=False)
   return {
     "status": "success",
     "anomaly_score": report.anomaly_score,
@@ -134,7 +149,7 @@ def train_threat_intel(request: Any) -> Any:
 
 @router.get("/threat-intel/report", response=ThreatReportOut)
 def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
-  target_tenant = None
+  status_page = None
   if status_page_id:
     try:
       status_page = StatusPage.objects.get(id=status_page_id)
@@ -142,39 +157,24 @@ def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
 
       if not check_status_page_access(request, status_page):
         raise HttpError(403, "Permission denied")
-      target_tenant = status_page.tenant
     except (StatusPage.DoesNotExist, ValueError):
-      pass
+      status_page = None
 
-  if not target_tenant:
-    target_user = None
+  if not status_page:
     if request.user.is_authenticated:
-      target_user = request.user
-    else:
-      default_page = StatusPage.objects.filter(slug="platform-status").first()
-      if default_page:
-        target_user = default_page.user
+      status_page = StatusPage.objects.filter(user=request.user).first()
+    if not status_page:
+      status_page = StatusPage.objects.filter(slug="platform-status", is_platform=True).first()
 
-    if not target_user:
-      from django.contrib.auth.models import User
+  if not status_page:
+    return {"status": "success", "message": "No accounts available for threat intelligence"}
 
-      target_user = User.objects.first()
-
-    if target_user:
-      from monitor.models import TenantMembership
-
-      membership = TenantMembership.objects.filter(user=target_user).first()
-      if membership:
-        target_tenant = membership.tenant
-
-  if not target_tenant:
-    return {"status": "success", "message": "No tenants available for threat intelligence"}
-
-  report = ThreatReport.objects.filter(tenant=target_tenant).order_by("-created_at").first()
+  report = _threat_reports_for_page(status_page).order_by("-created_at").first()
 
   if not report:
     try:
-      report = train_threat_model(target_tenant)
+      user, is_platform = _scope_from_status_page(status_page)
+      report = train_threat_model(user, is_platform=is_platform)
     except Exception:
       report = None
 
@@ -213,8 +213,7 @@ class STIXBundleOut(Schema):
 
 @router.get("/threat-intel/stix", response=STIXBundleOut)
 def get_threat_report_stix(request: Any, status_page_id: str | None = None) -> Any:
-  # Get threat report same as standard endpoint
-  target_tenant = None
+  status_page = None
   if status_page_id:
     try:
       status_page = StatusPage.objects.get(id=status_page_id)
@@ -222,37 +221,22 @@ def get_threat_report_stix(request: Any, status_page_id: str | None = None) -> A
 
       if not check_status_page_access(request, status_page):
         raise HttpError(403, "Permission denied")
-      target_tenant = status_page.tenant
     except (StatusPage.DoesNotExist, ValueError):
-      pass
+      status_page = None
 
-  if not target_tenant:
-    target_user = None
+  if not status_page:
     if request.user.is_authenticated:
-      target_user = request.user
-    else:
-      default_page = StatusPage.objects.filter(slug="platform-status").first()
-      if default_page:
-        target_user = default_page.user
-
-    if not target_user:
-      from django.contrib.auth.models import User
-
-      target_user = User.objects.first()
-
-    if target_user:
-      from monitor.models import TenantMembership
-
-      membership = TenantMembership.objects.filter(user=target_user).first()
-      if membership:
-        target_tenant = membership.tenant
+      status_page = StatusPage.objects.filter(user=request.user).first()
+    if not status_page:
+      status_page = StatusPage.objects.filter(slug="platform-status", is_platform=True).first()
 
   report = None
-  if target_tenant:
-    report = ThreatReport.objects.filter(tenant=target_tenant).order_by("-created_at").first()
+  if status_page:
+    report = _threat_reports_for_page(status_page).order_by("-created_at").first()
     if not report:
       try:
-        report = train_threat_model(target_tenant)
+        user, is_platform = _scope_from_status_page(status_page)
+        report = train_threat_model(user, is_platform=is_platform)
       except Exception:
         report = None
 

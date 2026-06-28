@@ -11,7 +11,7 @@ from utils.audit import log_audit_event
 from utils.kafka import get_kafka_brokers
 from utils.permissions import role_required
 
-from monitor.models import Endpoints, MonitoredService, StatusPage, TenantMembership
+from monitor.models import Endpoints, MonitoredService, StatusPage
 
 router = Router()
 
@@ -114,53 +114,13 @@ def api_health(request):
 def list_status_pages(request):
   # Auto-create default page if it doesn't exist
   if not StatusPage.objects.filter(slug="platform-status").exists():
-    from django.contrib.auth.models import User
+    from account.platform import ensure_platform_status_page
     from django.db import IntegrityError, transaction
 
     try:
       with transaction.atomic():
-        default_user = User.objects.filter(username="system").first()
-        if not default_user:
-          default_user, created = User.objects.get_or_create(
-            username="system",
-            defaults={
-              "email": "system@dataengineeringformachinelearning.com",
-            },
-          )
-          if created:
-            from django.utils.crypto import get_random_string
-
-            # nosemgrep: python.django.security.audit.unvalidated-password.unvalidated-password
-            default_user.set_password(get_random_string(32))
-            default_user.save()
-
-        # Double check inside transaction to prevent race conditions
-        from monitor.models import Tenant, TenantMembership
-
-        platform_tenant = Tenant.objects.filter(is_platform_tenant=True).first()
-
-        page, created = StatusPage.objects.get_or_create(
-          slug="platform-status",
-          defaults={
-            "tenant": platform_tenant,
-            "user": default_user,
-            "title": "Platform Status",
-            "description": "Monitoring system health and telemetry pipelines for the DEML (DATA ENGINEERING FOR MACHINE LEARNING).",
-          },
-        )
-
-        if not created and page.tenant is None and platform_tenant:
-          page.tenant = platform_tenant
-          page.save(update_fields=["tenant"])
-
-        if platform_tenant:
-          TenantMembership.objects.get_or_create(
-            user=default_user,
-            tenant=platform_tenant,
-            defaults={"role": "Owner"},
-          )
-
-        if created:
+        page = ensure_platform_status_page()
+        if not MonitoredService.objects.filter(status_page=page).exists():
           from django.conf import settings
 
           frontend_url = (getattr(settings, "FRONTEND_URL", "") or "").rstrip("/")
@@ -349,11 +309,8 @@ def create_status_page(request, payload: StatusPageIn):
     )
   if StatusPage.objects.filter(slug=payload.slug).exists():
     raise HttpError(400, "Slug already exists")
-  # Derive tenant from user's membership so analytics pipeline can find this page
-  membership = TenantMembership.objects.filter(user=request.user).first()
   page = StatusPage.objects.create(
     user=request.user,
-    tenant=membership.tenant if membership else None,
     title=payload.title,
     slug=payload.slug,
     description=payload.description or "",
@@ -410,9 +367,11 @@ def update_status_page(request, page_id: str, payload: StatusPageIn):
 def delete_status_page(request, page_id: str):
   if not check_mfa_satisfied(request):
     raise HttpError(403, "Multi-factor authentication required")
-  page = get_object_or_404(StatusPage, id=page_id, user=request.user)
-  if page.slug == "platform-status":
+  page = get_object_or_404(StatusPage, id=page_id)
+  if page.slug == "platform-status" or page.is_platform:
     raise HttpError(403, "Cannot delete system platform-status page")
+  if page.user_id != request.user.id:
+    raise HttpError(404, "Status page not found")
   log_audit_event(
     request,
     "STATUS_PAGE_DELETE",

@@ -13,12 +13,13 @@ class OSINTScanner:
   """
 
   @classmethod
-  def scan_domain(cls, domain, tenant_id=None):
+  def scan_domain(cls, domain, account_id=None):
     try:
       import datetime
 
-      logger.info(f"[Tenant: {tenant_id}] Running OSINT scan for domain: {domain}")
-      # Example using crt.sh (Certificate Transparency logs)
+      from account.context import resolve_scope_from_account_id
+
+      logger.info(f"[Account: {account_id}] Running OSINT scan for domain: {domain}")
       url = f"https://crt.sh/?q={domain}&output=json"
       response = requests.get(url, timeout=15)
       response.raise_for_status()
@@ -32,12 +33,14 @@ class OSINTScanner:
 
       logger.info(f"Discovered {len(subdomains)} subdomains for {domain}.")
 
-      if tenant_id:
+      if account_id:
         from monitor.models import Endpoints
 
+        user, is_platform = resolve_scope_from_account_id(account_id)
         for sub in subdomains:
           Endpoints.objects.get_or_create(
-            tenant_id=tenant_id,
+            user=user,
+            is_platform=is_platform,
             url=f"https://{sub}",
             defaults={
               "status_code": 0,
@@ -57,5 +60,4 @@ class OSINTScanner:
 
 
 if __name__ == "__main__":
-  # Example usage
-  OSINTScanner.scan_domain("dataengineeringformachinelearning.com", tenant_id=None)
+  OSINTScanner.scan_domain("dataengineeringformachinelearning.com", account_id=None)

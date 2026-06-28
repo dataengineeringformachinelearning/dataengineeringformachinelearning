@@ -8,13 +8,10 @@ User = get_user_model()
 
 class TrainingRun(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    "monitor.Tenant",
-    on_delete=models.CASCADE,
-    related_name="training_runs",
-    null=True,
-    blank=True,
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="training_runs", null=True, blank=True
   )
+  is_platform = models.BooleanField(default=False)
   created_at = models.DateTimeField(auto_now_add=True)
   average_sla = models.FloatField()
   loss = models.FloatField()
@@ -32,13 +29,14 @@ class TrainingRun(models.Model):
 
 class ThreatReport(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    "monitor.Tenant", on_delete=models.CASCADE, related_name="threat_reports", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="threat_reports", null=True, blank=True
   )
-  anomaly_score = models.FloatField()  # overall traffic anomaly probability (0.0 to 1.0)
+  is_platform = models.BooleanField(default=False)
+  anomaly_score = models.FloatField()
   top_location = models.CharField(max_length=255, default="Unknown")
-  location_weight = models.FloatField(default=0.0)  # percentage of traffic from top location
-  suspicious_ratio = models.FloatField(default=0.0)  # percentage of traffic flagged as suspicious
+  location_weight = models.FloatField(default=0.0)
+  suspicious_ratio = models.FloatField(default=0.0)
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:

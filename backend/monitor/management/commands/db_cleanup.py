@@ -55,7 +55,7 @@ class Command(BaseCommand):
       )
     )
 
-    # ThreatIntelligence, BugReport, and user configuration (Tenants, API keys)
+    # ThreatIntelligence, BugReport, and user configuration (profiles, API keys)
     # are kept indefinitely as requested.
 
     # Note: BugReport, ThreatReport, and TrainingRun are high-value business objects

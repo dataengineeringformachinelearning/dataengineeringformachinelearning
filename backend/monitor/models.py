@@ -6,59 +6,14 @@ from django.db import models
 User = get_user_model()
 
 
-class Tenant(models.Model):
-  """
-  Core boundary for isolation (CIA Triad: Confidentiality).
-  """
-
-  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  name = models.CharField(max_length=255)
-  slug = models.SlugField(unique=True, max_length=255)
-  target_url = models.URLField(blank=True, null=True)
-  is_platform_tenant = models.BooleanField(default=False)
-  tier = models.CharField(
-    max_length=50,
-    choices=[("Standard", "Standard"), ("Pro", "Pro")],
-    default="Standard",
-  )
-  stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
-  stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True)
-  subscription_active = models.BooleanField(default=True)
-  subscription_current_period_end = models.DateTimeField(null=True, blank=True)
-  created_at = models.DateTimeField(auto_now_add=True)
-
-  class Meta:
-    db_table = "tenants"
-
-  def __str__(self):
-    return f"{self.name} {'(Platform)' if self.is_platform_tenant else ''}"
-
-
-class TenantMembership(models.Model):
-  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="tenant_memberships")
-  tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="members")
-  role = models.CharField(
-    max_length=50,
-    choices=[("Owner", "Owner"), ("Admin", "Admin"), ("Viewer", "Viewer")],
-    default="Viewer",
-  )
-  created_at = models.DateTimeField(auto_now_add=True)
-
-  class Meta:
-    db_table = "tenant_memberships"
-    unique_together = ("user", "tenant")
-
-  def __str__(self):
-    return f"{self.user.username} in {self.tenant.name}"
-
-
 class StatusPage(models.Model):
+  """Public status surface; platform-status has user=null (no login, showcase only)."""
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="status_pages", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="status_pages", null=True, blank=True
   )
-  user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="status_pages")
+  is_platform = models.BooleanField(default=False)
   title = models.CharField(max_length=255)
   slug = models.SlugField(unique=True, max_length=255)
   description = models.TextField(blank=True)
@@ -91,9 +46,10 @@ class MonitoredService(models.Model):
 
 class Asset(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="assets", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="assets", null=True, blank=True
   )
+  is_platform = models.BooleanField(default=False)
   hostname = models.CharField(max_length=255)
   internal_ip = models.GenericIPAddressField(null=True, blank=True)
   os_version = models.CharField(max_length=255, null=True, blank=True)
@@ -122,9 +78,10 @@ class Endpoints(models.Model):
   """
 
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="endpoints", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="endpoints", null=True, blank=True
   )
+  is_platform = models.BooleanField(default=False, db_index=True)
   url = models.URLField()
   last_tested = models.DateTimeField(auto_now=True)
   status_code = models.IntegerField()
@@ -159,8 +116,8 @@ class Incident(models.Model):
     ("Resolved", "Resolved"),
   ]
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="incidents", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="incidents", null=True, blank=True
   )
   status_page = models.ForeignKey(StatusPage, on_delete=models.CASCADE, related_name="incidents")
   title = models.CharField(max_length=255)
@@ -179,9 +136,10 @@ class Incident(models.Model):
 
 class CookieConsent(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="cookie_consents", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="cookie_consents", null=True, blank=True
   )
+  is_platform = models.BooleanField(default=False)
   necessary = models.BooleanField(default=True)
   analytical = models.BooleanField(default=False)
   marketing = models.BooleanField(default=False)
@@ -199,8 +157,8 @@ class CookieConsent(models.Model):
 
 class BugReport(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="bug_reports", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="bug_reports", null=True, blank=True
   )
   user_description = models.TextField()
   telemetry_context = models.JSONField(null=True, blank=True)
@@ -303,8 +261,8 @@ class Vulnerability(models.Model):
     ("Critical", "Critical"),
   ]
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="vulnerabilities", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="vulnerabilities", null=True, blank=True
   )
   asset = models.ForeignKey(
     Asset, on_delete=models.CASCADE, related_name="vulnerabilities", null=True, blank=True
@@ -355,14 +313,24 @@ class AuditLog(models.Model):
 
 
 class UserProfile(models.Model):
+  """Billing + external account_id; one profile per login user."""
+
   ROLE_CHOICES = [
     ("Viewer", "Viewer"),
     ("Operator", "Operator"),
     ("Security Admin", "Security Admin"),
   ]
+  TIER_CHOICES = [("Standard", "Standard"), ("Pro", "Pro")]
+
   user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+  account_id = models.UUIDField(unique=True, default=uuid.uuid4, editable=False)
   role = models.CharField(max_length=50, choices=ROLE_CHOICES, default="Viewer")
   linked_emails = models.JSONField(default=list, blank=True, null=True)
+  tier = models.CharField(max_length=50, choices=TIER_CHOICES, default="Standard")
+  stripe_customer_id = models.CharField(max_length=255, blank=True, null=True)
+  stripe_subscription_id = models.CharField(max_length=255, blank=True, null=True)
+  subscription_active = models.BooleanField(default=True)
+  subscription_current_period_end = models.DateTimeField(null=True, blank=True)
 
   class Meta:
     db_table = "user_profiles"
@@ -377,12 +345,10 @@ class ThreatIntelligence(models.Model):
   """
 
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="threat_intel", null=True, blank=True
-  )
   user = models.ForeignKey(
     User, on_delete=models.CASCADE, related_name="threat_intelligence", null=True, blank=True
   )
+  is_platform = models.BooleanField(default=False)
   source = models.CharField(max_length=255)
   ip_address = models.GenericIPAddressField(null=True, blank=True)
   location = models.CharField(max_length=255, null=True, blank=True)
@@ -418,9 +384,10 @@ class AggregatedAnalytics(models.Model):
   """
 
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(
-    Tenant, on_delete=models.CASCADE, related_name="aggregated_analytics", null=True, blank=True
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="aggregated_analytics", null=True, blank=True
   )
+  is_platform = models.BooleanField(default=False, db_index=True)
   timestamp = models.DateTimeField(
     db_index=True, help_text="The start time of the aggregation bucket"
   )
@@ -453,10 +420,22 @@ class AggregatedAnalytics(models.Model):
   class Meta:
     db_table = "aggregated_analytics"
     ordering = ["-timestamp"]
-    unique_together = ("tenant", "timestamp", "bucket_size")
+    constraints = [
+      models.UniqueConstraint(
+        fields=["user", "timestamp", "bucket_size"],
+        condition=models.Q(is_platform=False),
+        name="unique_user_analytics_bucket",
+      ),
+      models.UniqueConstraint(
+        fields=["timestamp", "bucket_size"],
+        condition=models.Q(is_platform=True),
+        name="unique_platform_analytics_bucket",
+      ),
+    ]
 
   def __str__(self):
-    return f"Analytics {self.bucket_size} bucket at {self.timestamp}"
+    scope = "platform" if self.is_platform else (self.user_id or "unknown")
+    return f"Analytics {self.bucket_size} @ {self.timestamp} ({scope})"
 
 
 import hashlib
@@ -511,18 +490,22 @@ class OutboxEvent(models.Model):
 
 
 class ValidatedSite(models.Model):
+  """Registered domain for a user account; gates telemetry ingest (CORS)."""
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="validated_sites")
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="validated_sites", null=True, blank=True
+  )
   domain = models.CharField(max_length=255)
   is_verified = models.BooleanField(default=True)
   created_at = models.DateTimeField(auto_now_add=True)
 
   class Meta:
     db_table = "validated_sites"
-    unique_together = ("tenant", "domain")
+    unique_together = ("user", "domain")
 
   def __str__(self):
-    return f"{self.domain} ({self.tenant.name})"
+    return f"{self.domain} ({self.user.username})"
 
 
 class IncidentCase(models.Model):
@@ -540,7 +523,9 @@ class IncidentCase(models.Model):
     ("Critical", "Critical"),
   ]
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="incident_cases")
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="incident_cases", null=True, blank=True
+  )
   title = models.CharField(max_length=255)
   description = models.TextField(blank=True, null=True)
   status = models.CharField(max_length=50, choices=STATUS_CHOICES, default="Open")
@@ -564,7 +549,9 @@ class IncidentCase(models.Model):
 
 class Playbook(models.Model):
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  tenant = models.ForeignKey(Tenant, on_delete=models.CASCADE, related_name="playbooks")
+  user = models.ForeignKey(
+    User, on_delete=models.CASCADE, related_name="playbooks", null=True, blank=True
+  )
   name = models.CharField(max_length=255)
   description = models.TextField(blank=True, null=True)
   is_active = models.BooleanField(default=True)

@@ -1,5 +1,5 @@
-@use '../../packages/deml-design-system/src/tokens' as *;
-@use '../../packages/deml-design-system/src/material-tokens' as *;
+@use 'tokens' as *;
+@use 'material-tokens' as *;
 
 body {
   font-size: var(--base-font-size);

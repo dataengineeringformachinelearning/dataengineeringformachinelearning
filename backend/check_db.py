@@ -5,20 +5,21 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
-from monitor.models import Endpoints, MonitoredService, StatusPage, Tenant
+from account.platform import get_platform_status_page
+from monitor.models import Endpoints, MonitoredService, StatusPage
 
-t = Tenant.objects.filter(is_platform_tenant=True).first()
-if not t:
-  print("No platform tenant found!")
+page = get_platform_status_page()
+if not page:
+  print("No platform status page found!")
 else:
-  print(f"Platform Tenant: {t.name}")
-  pages = StatusPage.objects.filter(tenant=t)
+  print(f"Platform Status Page: {page.title}")
+  pages = StatusPage.objects.filter(is_platform=True)
   print(f"Status Pages count: {pages.count()}")
   for p in pages:
-    print(f" - Page: {p.name}")
-  urls = list(MonitoredService.objects.filter(status_page__in=pages).values_list("url", flat=True))
+    print(f" - Page: {p.title}")
+  urls = list(MonitoredService.objects.filter(status_page=page).values_list("url", flat=True))
   print(f"MonitoredService URLs: {urls}")
-  eps = Endpoints.objects.filter(url__in=urls).count()
+  eps = Endpoints.objects.filter(url__in=urls, is_platform=True).count()
   print(f"Endpoints matching URLs count: {eps}")
   print(f"Total Endpoints count: {Endpoints.objects.count()}")
 

@@ -43,7 +43,7 @@ def is_domain_registered(origin: str) -> bool:
       logger.warning(f"Cache lookup failed for CORS check of {domain}: {cache_err}")
       is_allowed = None
 
-    from monitor.models import Endpoints, MonitoredService, Tenant, ValidatedSite
+    from monitor.models import Endpoints, MonitoredService, ValidatedSite
 
     # Check ValidatedSite by domain
     if ValidatedSite.objects.filter(domain=domain).exists():
@@ -66,17 +66,6 @@ def is_domain_registered(origin: str) -> bool:
       return True
 
     if MonitoredService.objects.filter(q_exact_origin | q_slash_origin | q_domain).exists():
-      try:
-        cache.set(cache_key, True, timeout=3600)
-      except Exception:
-        pass
-      return True
-
-    q_target_exact = Q(target_url=origin)
-    q_target_slash = Q(target_url__startswith=origin + "/")
-    q_target_domain = Q(target_url__icontains=domain)
-
-    if Tenant.objects.filter(q_target_exact | q_target_slash | q_target_domain).exists():
       try:
         cache.set(cache_key, True, timeout=3600)
       except Exception:

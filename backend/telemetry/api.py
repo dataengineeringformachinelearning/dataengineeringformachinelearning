@@ -12,7 +12,7 @@ background_tasks = set()
 
 
 class TelemetryPayload(Schema):
-  tenant_id: str | None = None
+  account_id: str | None = None
   url: str
   status_code: int
   response_time_ms: float
@@ -21,7 +21,7 @@ class TelemetryPayload(Schema):
   telemetry_context: dict | None = None
 
 
-async def _is_origin_validated(request, tenant_id: str | None) -> bool:
+async def _is_origin_validated(request, account_id: str | None) -> bool:
   from asgiref.sync import sync_to_async
 
   origin = request.headers.get("origin") or request.headers.get("referer")
@@ -58,7 +58,7 @@ async def _is_origin_validated(request, tenant_id: str | None) -> bool:
 
 @router.post("/endpoints")
 async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
-  is_valid = await _is_origin_validated(request, payload.tenant_id)
+  is_valid = await _is_origin_validated(request, payload.account_id)
   if not is_valid:
     logger.warning(f"Rejected telemetry from unvalidated origin: {request.headers.get('origin')}")
     return HttpResponse("Forbidden: Unvalidated Site", status=403)
@@ -72,7 +72,7 @@ async def ingest_endpoint_telemetry(request, payload: TelemetryPayload):
   try:
     await sync_to_async(OutboxEvent.objects.create)(
       topic="app-events",
-      key=str(data.get("tenant_id") or data.get("url", "unknown"))[:255],
+      key=str(data.get("account_id") or data.get("url", "unknown"))[:255],
       payload=data,
       headers={"source": "django-api", "ip": data.get("ip_address")},
     )
@@ -161,7 +161,7 @@ async def subscribe_newsletter(request, payload: SubscribePayload):
 
 
 class TelemetryDualStreamPayload(Schema):
-  tenant_id: str
+  account_id: str
   url: str | None = None
   stream_type: str  # "infrastructure" or "application_dependency"
   # For infrastructure
@@ -176,7 +176,7 @@ class TelemetryDualStreamPayload(Schema):
 async def ingest_technology_telemetry(request, payload: TelemetryDualStreamPayload):
   from .vulnerability_ledger import process_dual_stream_batch
 
-  is_valid = await _is_origin_validated(request, payload.tenant_id)
+  is_valid = await _is_origin_validated(request, payload.account_id)
   if not is_valid:
     logger.warning(
       f"Rejected technology telemetry from unvalidated origin: {request.headers.get('origin')}"
@@ -194,7 +194,7 @@ async def ingest_technology_telemetry(request, payload: TelemetryDualStreamPaylo
     if payload.stream_type == "infrastructure":
       infra_batch.append(
         {
-          "tenant_id": data["tenant_id"],
+          "account_id": data["account_id"],
           "url": data.get("url"),
           "tech_name": data.get("tech_name"),
           "version": data.get("version"),
@@ -203,7 +203,7 @@ async def ingest_technology_telemetry(request, payload: TelemetryDualStreamPaylo
     elif payload.stream_type == "application_dependency":
       app_batch.append(
         {
-          "tenant_id": data["tenant_id"],
+          "account_id": data["account_id"],
           "url": data.get("url"),
           "manifest_type": data.get("manifest_type"),
           "manifest_content": data.get("manifest_content"),

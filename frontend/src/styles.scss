@@ -1,8 +1,8 @@
 @use '@angular/material' as mat;
 @use './theme' as theme;
-@use '../../packages/deml-design-system/src/components/a11y' as *;
-@use '../../packages/deml-design-system/src/components/layout' as *;
-@use '../../packages/deml-design-system/src/components/navbar' as *;
+@use 'components/a11y' as *;
+@use 'components/layout' as *;
+@use 'components/navbar' as *;
 
 /* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
    as the form field container handles focus state visually at the border level.

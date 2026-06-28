@@ -29,35 +29,50 @@ class NetworkTelemetryMiddleware:
 
     duration = time.time() - start_time
 
-    # Determine tenant_id
-    tenant_id = request.headers.get("X-Tenant-ID")
+    # Determine account_id
+    from account.platform import PLATFORM_ACCOUNT_ID
+
+    account_id = request.headers.get("X-Account-ID") or request.headers.get("X-Tenant-ID")
 
     # Dynamic zero-latency fallback mapping based on Host domain
-    if not tenant_id or tenant_id == "platform":
+    if not account_id or account_id == PLATFORM_ACCOUNT_ID:
       from django.core.cache import cache
 
       host = request.get_host().split(":")[0]
-      cache_key = f"tenant_host_map_{host}"
-      tenant_id = cache.get(cache_key)
+      cache_key = f"account_host_map_{host}"
+      account_id = cache.get(cache_key)
 
-      if not tenant_id:
-        from monitor.models import Tenant
+      if not account_id:
+        from monitor.models import MonitoredService, ValidatedSite
 
-        # 1. First attempt to map by target_url (for customer custom domains)
-        tenant = Tenant.objects.filter(target_url__icontains=host).first()
+        # 1. Map by validated customer domain
+        site = ValidatedSite.objects.filter(domain=host).select_related("user__profile").first()
+        if site and hasattr(site.user, "profile") and site.user.profile.account_id:
+          account_id = str(site.user.profile.account_id)
+        else:
+          # 2. Map by monitored service URL
+          service = (
+            MonitoredService.objects.filter(url__icontains=host)
+            .select_related("status_page__user__profile")
+            .first()
+          )
+          if (
+            service
+            and service.status_page
+            and service.status_page.user
+            and hasattr(service.status_page.user, "profile")
+            and service.status_page.user.profile.account_id
+          ):
+            account_id = str(service.status_page.user.profile.account_id)
+          else:
+            # 3. Fallback to platform showcase scope
+            account_id = PLATFORM_ACCOUNT_ID
 
-        # 2. Fallback to Tenant0 (Platform) if no customer matches or it explicitly requested 'platform'
-        if not tenant:
-          tenant = Tenant.objects.filter(is_platform_tenant=True).first()
-
-        tenant_id = str(tenant.id) if tenant else None
-
-        if tenant_id:
-          # Cache for 1 hour to ensure zero database latency on subsequent requests
-          cache.set(cache_key, tenant_id, 3600)
+        if account_id:
+          cache.set(cache_key, account_id, 3600)
 
     log_data = {
-      "tenant_id": tenant_id,
+      "account_id": account_id,
       "event_type": "network_traffic",
       "ip_address": ip,
       "method": request.method,
@@ -68,8 +83,6 @@ class NetworkTelemetryMiddleware:
       "payload_size": len(response.content) if hasattr(response, "content") else 0,
     }
 
-    # In a real setup, this would be pushed to Redpanda.
-    # For now, we log it so vector/otel or a Django cron worker can pick it up.
     logger.info(f"NETWORK_TELEMETRY: {json.dumps(log_data)}")
 
     return response

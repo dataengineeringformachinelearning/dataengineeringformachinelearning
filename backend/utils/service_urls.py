@@ -108,29 +108,13 @@ def resolve_ping_url(url_str: str, service_name: str | None = None) -> str:
 
 def ensure_platform_monitored_services() -> int:
   """Upsert canonical platform-status services and remove stale API-path duplicates."""
-  from django.contrib.auth.models import User
-  from monitor.models import MonitoredService, StatusPage, Tenant
+  from account.platform import ensure_platform_status_page
+  from monitor.models import MonitoredService
 
   frontend = _frontend_base()
   marketing = _marketing_base()
 
-  tenant = Tenant.objects.filter(is_platform_tenant=True).first()
-  if not tenant:
-    return 0
-
-  page = StatusPage.objects.filter(slug="platform-status").first()
-  if not page:
-    default_user = User.objects.first()
-    if not default_user:
-      return 0
-    page = StatusPage.objects.create(
-      tenant=tenant,
-      user=default_user,
-      title="Platform Status",
-      slug="platform-status",
-      description="Monitoring system health and telemetry pipelines for the DEML platform.",
-      is_published=True,
-    )
+  page = ensure_platform_status_page()
 
   canonical = [
     ("Django Web Server", f"{frontend}/"),

@@ -1,10 +1,13 @@
+from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from ml.ml_services import train_tenant_sla, train_threat_model
 
+User = get_user_model()
+
 
 class Command(BaseCommand):
-  help = "Purges logs/telemetry older than 7 days and retrains SLA & Threat forecast models for all tenants."
+  help = "Purges logs/telemetry older than 7 days and retrains SLA & Threat forecast models for all accounts."
 
   def handle(self, *args, **options):
     self.stdout.write("Starting database telemetry/log cleanup...")
@@ -13,14 +16,11 @@ class Command(BaseCommand):
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"Database cleanup failed: {e}"))
 
-    from monitor.models import Tenant
-
-    self.stdout.write("Starting SLA and Threat forecast model training for all tenants...")
-    tenants = Tenant.objects.all()
-    for tenant in tenants:
-      self.stdout.write(f"Training models for tenant '{tenant.name}'...")
+    self.stdout.write("Starting SLA and Threat forecast model training for all users...")
+    for user in User.objects.filter(profile__isnull=False).select_related("profile"):
+      self.stdout.write(f"Training models for user '{user.username}'...")
       try:
-        run = train_tenant_sla(tenant)
+        run = train_tenant_sla(user, is_platform=False)
         if run:
           self.stdout.write(
             self.style.SUCCESS(
@@ -32,9 +32,9 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"  - SLA training failed: {e}"))
 
-      self.stdout.write(f"Training threat model for tenant '{tenant.name}'...")
+      self.stdout.write(f"Training threat model for user '{user.username}'...")
       try:
-        report = train_threat_model(tenant)
+        report = train_threat_model(user, is_platform=False)
         self.stdout.write(
           self.style.SUCCESS(
             f"  - Threat model trained successfully: anomaly score = {report.anomaly_score * 100:.1f}%"
@@ -42,6 +42,24 @@ class Command(BaseCommand):
         )
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"  - Threat training failed: {e}"))
+
+    self.stdout.write("Training platform scope models...")
+    try:
+      run = train_tenant_sla(None, is_platform=True)
+      if run:
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"  - Platform SLA forecast trained: average predicted SLA = {run.average_sla:.2f}%"
+          )
+        )
+      report = train_threat_model(None, is_platform=True)
+      self.stdout.write(
+        self.style.SUCCESS(
+          f"  - Platform threat model trained: anomaly score = {report.anomaly_score * 100:.1f}%"
+        )
+      )
+    except Exception as e:
+      self.stderr.write(self.style.ERROR(f"  - Platform training failed: {e}"))
 
     self.stdout.write("Training global CES model...")
     try:

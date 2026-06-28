@@ -1,43 +1,38 @@
 import pytest
 from django.contrib.auth.models import User
 from django.test import Client
-from monitor.models import StatusPage
+from monitor.models import StatusPage, UserProfile
 
 from ml.models import ThreatReport
 
 
 @pytest.mark.django_db
 def test_get_threat_report_stix(client: Client) -> None:
-  # Set up status page and threat report
-  from monitor.models import Tenant, TenantMembership
-
   user = User.objects.create_user(username="compliance_user", password="password")
-  tenant = Tenant.objects.create(name="Test Tenant", slug="test-tenant")
-  TenantMembership.objects.create(user=user, tenant=tenant, role="Admin")
-  StatusPage.objects.create(
-    user=user, tenant=tenant, title="Platform Status", slug="platform-status"
+  UserProfile.objects.get_or_create(user=user)
+  page = StatusPage.objects.create(
+    user=user, title="My Status", slug="compliance-status", is_published=True
   )
   ThreatReport.objects.create(
-    tenant=tenant,
+    user=user,
+    is_platform=False,
     anomaly_score=0.15,
     top_location="United States",
     location_weight=0.8,
     suspicious_ratio=0.03,
   )
 
-  response = client.get("/api/v1/ml/threat-intel/stix")
+  response = client.get(f"/api/v1/ml/threat-intel/stix?status_page_id={page.id}")
   assert response.status_code == 200
   data = response.json()
   assert data["type"] == "bundle"
   assert "id" in data
   assert len(data["objects"]) == 2
 
-  # Check identity object
   identity = next(obj for obj in data["objects"] if obj["type"] == "identity")
   assert identity["name"] == "DEML (DATA ENGINEERING FOR MACHINE LEARNING)"
   assert identity["identity_class"] == "organization"
 
-  # Check indicator object
   indicator = next(obj for obj in data["objects"] if obj["type"] == "indicator")
   assert indicator["pattern_type"] == "stix"
   assert "Anomaly" in indicator["name"]
@@ -47,9 +42,6 @@ def test_get_threat_report_stix(client: Client) -> None:
 @pytest.mark.django_db
 def test_submit_to_isac_sandbox(client: Client) -> None:
   import json
-
-  user = User.objects.create_user(username="compliance_user", password="password")
-  StatusPage.objects.create(user=user, title="Platform Status", slug="platform-status")
 
   payload = {"destination": "CISA"}
   response = client.post(
@@ -73,7 +65,6 @@ def test_get_soc_status(client: Client) -> None:
   assert data["overall_score"] > 0.5
   assert len(data["criteria"]) == 5
 
-  # Ensure all required criteria are present
   criteria_names = [c["name"] for c in data["criteria"]]
   assert "End-to-End Encryption in Transit" in criteria_names
   assert "AES-256 Encryption at Rest" in criteria_names

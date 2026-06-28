@@ -78,36 +78,29 @@ async def report_issue(request: Any, payload: IssueReportPayload) -> Any:
 
 @router.post("/vulnerabilities", response=VulnerabilityOut)
 def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> Any:
-  import uuid
-
-  from monitor.models import TenantMembership, Vulnerability
+  from account.context import resolve_scope_from_account_id
+  from monitor.models import Vulnerability
 
   # Set default severity if not provided or valid
   severity = payload.severity
   if severity not in ["Low", "Medium", "High", "Critical"]:
     severity = "Medium"
 
-  tenant_id = None
-  try:
-    if payload.customer_id and payload.customer_id != "Internal":
-      tenant_uuid = uuid.UUID(payload.customer_id)
-      tenant_id = tenant_uuid
-  except ValueError:
-    pass
+  user_obj = None
+  if payload.customer_id and payload.customer_id != "Internal":
+    user_obj, _ = resolve_scope_from_account_id(payload.customer_id)
 
-  if not tenant_id and request.user.is_authenticated:
-    tm = TenantMembership.objects.filter(user=request.user).first()
-    if tm:
-      tenant_id = tm.tenant_id
+  if not user_obj and request.user.is_authenticated:
+    user_obj = request.user
 
   vuln = Vulnerability.objects.create(
+    user=user_obj,
     title=payload.title,
     description=payload.description,
     telemetry_context=payload.telemetry_context,
     customer_id=payload.customer_id,
     cve_id=payload.cve_id,
     severity=severity,
-    tenant_id=tenant_id,
   )
 
   return {
@@ -128,30 +121,28 @@ def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> A
 
 @router.get("/vulnerabilities", response=list[VulnerabilityOut])
 def list_vulnerabilities(
-  request: Any, tenant_id: str | None = None, site_url: str | None = None
+  request: Any, account_id: str | None = None, site_url: str | None = None
 ) -> Any:
   from django.db.models import Q
-  from monitor.models import TenantMembership, Vulnerability
+  from monitor.models import Vulnerability
 
   if request.user.is_authenticated:
-    memberships = TenantMembership.objects.filter(user=request.user).values_list(
-      "tenant_id", flat=True
-    )
-    tenant_ids_str = [str(t_id) for t_id in memberships]
+    profile = getattr(request.user, "profile", None)
+    user_account_id = str(profile.account_id) if profile and profile.account_id else None
 
-    if tenant_id and str(tenant_id) not in tenant_ids_str:
-      tenant_id = None
+    if account_id and user_account_id and str(account_id) != user_account_id:
+      account_id = None
 
-    if tenant_id:
+    if account_id:
       vulns = Vulnerability.objects.filter(
-        Q(tenant_id=tenant_id) | Q(customer_id=str(tenant_id))
+        Q(user=request.user) | Q(customer_id=str(account_id))
       ).order_by("-created_at")
     else:
-      vulns = Vulnerability.objects.filter(
-        Q(tenant_id__in=memberships)
-        | Q(customer_id__in=tenant_ids_str)
-        | Q(customer_id=str(request.user.id))
-      ).order_by("-created_at")
+      filters = Q(user=request.user)
+      if user_account_id:
+        filters |= Q(customer_id=user_account_id)
+      filters |= Q(customer_id=str(request.user.id))
+      vulns = Vulnerability.objects.filter(filters).order_by("-created_at")
   else:
     vulns = Vulnerability.objects.filter(customer_id="Internal").order_by("-created_at")
 

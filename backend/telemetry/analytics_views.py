@@ -9,68 +9,61 @@ router = Router()
 
 
 @router.get("/tenants")
-def get_user_tenants(request):
+def get_user_accounts(request):
   if not request.user.is_authenticated:
     from ninja.errors import HttpError
 
     raise HttpError(401, "Not authenticated")
 
-  from monitor.models import TenantMembership
+  profile = getattr(request.user, "profile", None)
+  if not profile or not profile.account_id:
+    from ninja.errors import HttpError
 
-  memberships = TenantMembership.objects.filter(user=request.user).select_related("tenant")
-  tenants = [
+    raise HttpError(403, "Account profile not provisioned")
+
+  accounts = [
     {
-      "id": str(m.tenant.id),
-      "name": m.tenant.name,
-      "slug": m.tenant.slug,
-      "is_platform": m.tenant.is_platform_tenant,
-      "role": m.role,
+      "id": str(profile.account_id),
+      "name": f"{request.user.first_name or request.user.username}'s Workspace",
+      "slug": request.user.username,
+      "is_platform": False,
+      "role": profile.role,
     }
-    for m in memberships
   ]
-  return {"status": "success", "data": tenants}
+  return {"status": "success", "data": accounts}
 
 
 @router.get("/overview")
-def get_analytics_overview(request, tenant_id: str | None = None, site_url: str | None = None):
+def get_analytics_overview(request, account_id: str | None = None, site_url: str | None = None):
   if not request.user.is_authenticated:
     from ninja.errors import HttpError
 
     raise HttpError(401, "Not authenticated")
+
+  from account.platform import PLATFORM_ACCOUNT_ID
 
   now = timezone.now()
   last_24h = now - timedelta(days=1)
 
-  from monitor.models import Tenant, TenantMembership
+  profile = getattr(request.user, "profile", None)
+  if not profile or not profile.account_id:
+    from ninja.errors import HttpError
 
-  # Determine which tenant context to load
-  target_tenant = None
-  if tenant_id:
-    membership = (
-      TenantMembership.objects.filter(user=request.user, tenant_id=tenant_id)
-      .select_related("tenant")
-      .first()
-    )
-    if not membership:
-      from ninja.errors import HttpError
+    raise HttpError(403, "Account profile not provisioned")
 
-      raise HttpError(403, "Access denied to this tenant")
-    target_tenant = membership.tenant
-  else:
-    membership = TenantMembership.objects.filter(user=request.user).select_related("tenant").first()
-    if membership:
-      target_tenant = membership.tenant
-    else:
-      target_tenant = Tenant.objects.filter(is_platform_tenant=True).first()
+  is_platform = False
+  if account_id in (PLATFORM_ACCOUNT_ID, "platform"):
+    is_platform = True
+  elif account_id and str(account_id) != str(profile.account_id):
+    from ninja.errors import HttpError
 
-  # ==========================================
-  # 1. GLOBAL CES (Anonymized & Aggregated)
-  # ==========================================
+    raise HttpError(403, "Access denied to this account")
+
   from monitor.models import AggregatedAnalytics
 
   global_analytics = list(
     AggregatedAnalytics.objects.filter(
-      tenant__isnull=True, timestamp__gte=last_24h, bucket_size="1h"
+      is_platform=True, user__isnull=True, timestamp__gte=last_24h, bucket_size="1h"
     )
   )
   if global_analytics:
@@ -85,19 +78,15 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     global_incidents = 0
     global_uptime = 99.9
 
-  # Calculate CES mathematically from global anonymous aggregates for sub-components
   ces_threat_level = min(100, global_incidents * 20 + (30 if global_p99 > 500 else 0))
   ces_sla_level = max(0, global_uptime - (5 if global_p99 > 800 else 0))
   ces_stability_level = max(0, 100 - global_incidents * 10 - (15 if global_p99 > 300 else 0))
 
-  # ML-driven Countermeasure Effectiveness Score (CES)
   import os
 
   import torch
   from ml.ml_services import CESModel, get_ces_model_path
 
-  # Approximate fr, sr for inference based on global uptime/incidents,
-  # or in a real app, query Endpoints similar to train_ces_model
   fr = max(0.0, 1.0 - (global_uptime / 100.0))
   sr = min(1.0, (global_incidents * 0.1) + (0.05 if global_p99 > 500 else 0.01))
 
@@ -111,7 +100,6 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
         x = torch.tensor([[fr, sr, float(global_incidents)]], dtype=torch.float32)
         ces_level = model(x).item()
     else:
-      # Fallback math if model isn't trained yet
       ces_level = max(
         0,
         min(100, ces_sla_level * 0.5 + ces_stability_level * 0.4 + (100 - ces_threat_level) * 0.1),
@@ -121,9 +109,6 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
       0, min(100, ces_sla_level * 0.5 + ces_stability_level * 0.4 + (100 - ces_threat_level) * 0.1)
     )
 
-  # ==========================================
-  # 2. STRICT USER TENANCY (Isolated Metrics)
-  # ==========================================
   from monitor.models import (
     AnalyticsIntegration,
     CookieConsent,
@@ -135,7 +120,15 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     Vulnerability,
   )
 
-  user_pages = StatusPage.objects.filter(tenant=target_tenant)
+  if is_platform:
+    user_pages = StatusPage.objects.filter(is_platform=True)
+    endpoint_filter = {"is_platform": True, "user__isnull": True}
+    agg_filter = {"is_platform": True, "user__isnull": True}
+  else:
+    user_pages = StatusPage.objects.filter(user=request.user, is_platform=False)
+    endpoint_filter = {"user": request.user, "is_platform": False}
+    agg_filter = {"user": request.user, "is_platform": False}
+
   user_urls = list(
     MonitoredService.objects.filter(status_page__in=user_pages).values_list("url", flat=True)
   )
@@ -144,11 +137,9 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
   if site_url and site_url != "All":
     user_urls = [u for u in user_urls if u == site_url]
 
-  from monitor.models import AggregatedAnalytics
-
   aggregated = list(
     AggregatedAnalytics.objects.filter(
-      tenant=target_tenant, timestamp__gte=last_24h, bucket_size="1h"
+      **agg_filter, timestamp__gte=last_24h, bucket_size="1h"
     ).order_by("timestamp")
   )
 
@@ -160,7 +151,7 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
 
   raw_endpoints = list(
     Endpoints.objects.filter(
-      url__in=user_urls, last_tested__gte=raw_start, last_tested__lt=now
+      url__in=user_urls, last_tested__gte=raw_start, last_tested__lt=now, **endpoint_filter
     ).exclude(status_code=0)
   )
 
@@ -187,14 +178,22 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
   agg_p99 = max((a.p99_latency_ms for a in aggregated), default=0.0)
   p99_latency = round(max(raw_p99, agg_p99), 2)
 
-  active_incidents = Incident.objects.filter(
-    tenant=target_tenant, status__in=["Investigating", "Identified"]
-  ).count()
-
-  threats = ThreatIntelligence.objects.filter(tenant=target_tenant, timestamp__gte=last_24h)
+  if is_platform:
+    active_incidents = Incident.objects.filter(
+      status_page__is_platform=True, status__in=["Investigating", "Identified"]
+    ).count()
+    threats = ThreatIntelligence.objects.filter(
+      is_platform=True, user__isnull=True, timestamp__gte=last_24h
+    )
+  else:
+    active_incidents = Incident.objects.filter(
+      status_page__user=request.user, status__in=["Investigating", "Identified"]
+    ).count()
+    threats = ThreatIntelligence.objects.filter(
+      user=request.user, is_platform=False, timestamp__gte=last_24h
+    )
   active_threat_count = threats.count()
 
-  # Basic safe fallbacks if no data exists
   if total_reqs == 0:
     time_series = [
       {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "latency": 0} for i in range(24)
@@ -216,7 +215,6 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     http_statuses = []
     endpoint_counts = []
   else:
-    # Build isolated time series manually
     time_series = []
     candlestick_data = []
     request_frequency = []
@@ -309,38 +307,40 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
     if not endpoint_counts:
       endpoint_counts = [{"endpoint": url, "count": 0} for url in user_urls]
 
-  # Retrieve provider integrations
   active_providers = list(
     AnalyticsIntegration.objects.filter(user=request.user, active=True).values_list(
       "provider", flat=True
     )
   )
 
-  # Cookie Consents for the tenant (global or isolated to their nodes)
+  if is_platform:
+    cookie_filter = {"is_platform": True, "user__isnull": True}
+    vuln_filter = {"user__isnull": True}
+  else:
+    cookie_filter = {"user": request.user, "is_platform": False}
+    vuln_filter = {"user": request.user}
+
   cookies_analytical = sum(a.cookie_consents_analytical for a in aggregated)
   cookies_analytical += CookieConsent.objects.filter(
-    tenant=target_tenant, analytical=True, created_at__gte=raw_start, created_at__lt=now
+    analytical=True, created_at__gte=raw_start, created_at__lt=now, **cookie_filter
   ).count()
 
   cookies_marketing = sum(a.cookie_consents_marketing for a in aggregated)
   cookies_marketing += CookieConsent.objects.filter(
-    tenant=target_tenant, marketing=True, created_at__gte=raw_start, created_at__lt=now
+    marketing=True, created_at__gte=raw_start, created_at__lt=now, **cookie_filter
   ).count()
 
-  # Unique Visitors
   raw_unique_visitors = len(set(ep.ip_address for ep in raw_endpoints if ep.ip_address))
   max_agg_unique = max((a.unique_visitors for a in aggregated), default=0)
   unique_visitors = max(max_agg_unique, raw_unique_visitors)
 
-  # Widget Interactions
   widget_interactions = sum(a.widget_interactions for a in aggregated)
   for ep in raw_endpoints:
     if ep.telemetry_context and isinstance(ep.telemetry_context, dict):
       ga_data = ep.telemetry_context.get("global_agent_data", {})
       widget_interactions += ga_data.get("clicks", 0)
 
-  # Incorporate vulnerabilities into security alerts
-  vulns = Vulnerability.objects.filter(tenant=target_tenant, created_at__gte=last_24h)
+  vulns = Vulnerability.objects.filter(created_at__gte=last_24h, **vuln_filter)
   security_alerts = [
     {
       "time": (now - timedelta(hours=24 - i)).strftime("%H:00"),
@@ -350,24 +350,23 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
   ]
   threat_severity = []
   if threats.exists() or vulns.exists():
-    # Summarize severities
     severities = {"Low": 0, "Medium": 0, "High": 0, "Critical": 0}
-    severities["Medium"] += threats.count()  # default threats to medium
+    severities["Medium"] += threats.count()
     for v in vulns:
       severities[v.severity] = severities.get(v.severity, 0) + 1
     threat_severity = [{"severity": k, "count": v} for k, v in severities.items() if v > 0]
 
-  # API Usage / Rate Limit logic
   quota = 60
   usage = 0
+  tier = profile.tier
   try:
     import time
 
-    from utils.rate_limit import get_tenant_rate_limit, redis_client
+    from utils.rate_limit import get_user_rate_limit, redis_client
 
-    quota = get_tenant_rate_limit(target_tenant)
+    quota = get_user_rate_limit(request.user)
     if redis_client:
-      key = f"rate_limit:tenant:{target_tenant.id}"
+      key = f"rate_limit:account:{profile.account_id}"
       current_time = int(time.time())
       window_start = current_time - 60
       pipe = redis_client.pipeline()
@@ -409,7 +408,7 @@ def get_analytics_overview(request, tenant_id: str | None = None, site_url: str 
       "api_usage": {
         "quota_per_minute": quota,
         "usage_current_minute": usage,
-        "tier": getattr(target_tenant, "tier", "Standard"),
+        "tier": tier,
       },
     },
   }
@@ -445,40 +444,29 @@ class PlaybookUpdate(Schema):
 
 
 @router.get("/incidents", response=list[IncidentCaseOut])
-def get_incidents(request, tenant_id: str | None = None):
+def get_incidents(request, account_id: str | None = None):
   if not request.user.is_authenticated:
     from ninja.errors import HttpError
 
     raise HttpError(401, "Not authenticated")
 
-  from monitor.models import IncidentCase, Tenant, TenantMembership
+  from monitor.models import IncidentCase
 
-  target_tenant = None
-  if tenant_id:
-    membership = TenantMembership.objects.filter(user=request.user, tenant_id=tenant_id).first()
-    if membership:
-      target_tenant = membership.tenant
-  else:
-    membership = TenantMembership.objects.filter(user=request.user).first()
-    target_tenant = (
-      membership.tenant if membership else Tenant.objects.filter(is_platform_tenant=True).first()
-    )
-
-  if not target_tenant:
+  profile = getattr(request.user, "profile", None)
+  if account_id and profile and str(account_id) != str(profile.account_id):
     return []
 
-  # Create dummy ones if none exist just for the UI
-  cases = list(IncidentCase.objects.filter(tenant=target_tenant))
+  cases = list(IncidentCase.objects.filter(user=request.user))
   if not cases:
     c1 = IncidentCase.objects.create(
-      tenant=target_tenant,
+      user=request.user,
       title="Suspicious API Key Usage",
       severity="High",
       status="Open",
       description="Multiple predictions requested from Tor exit node IP.",
     )
     c2 = IncidentCase.objects.create(
-      tenant=target_tenant,
+      user=request.user,
       title="Potential Prompt Injection",
       severity="Medium",
       status="Investigating",
@@ -508,7 +496,7 @@ def update_incident(request, incident_id: str, payload: IncidentCaseUpdate):
   from monitor.models import IncidentCase
 
   try:
-    case = IncidentCase.objects.get(id=incident_id, tenant__members__user=request.user)
+    case = IncidentCase.objects.get(id=incident_id, user=request.user)
   except IncidentCase.DoesNotExist:
     from ninja.errors import HttpError
 
@@ -528,38 +516,28 @@ def update_incident(request, incident_id: str, payload: IncidentCaseUpdate):
 
 
 @router.get("/playbooks", response=list[PlaybookOut])
-def get_playbooks(request, tenant_id: str | None = None):
+def get_playbooks(request, account_id: str | None = None):
   if not request.user.is_authenticated:
     from ninja.errors import HttpError
 
     raise HttpError(401, "Not authenticated")
 
-  from monitor.models import Playbook, Tenant, TenantMembership
+  from monitor.models import Playbook
 
-  target_tenant = None
-  if tenant_id:
-    membership = TenantMembership.objects.filter(user=request.user, tenant_id=tenant_id).first()
-    if membership:
-      target_tenant = membership.tenant
-  else:
-    membership = TenantMembership.objects.filter(user=request.user).first()
-    target_tenant = (
-      membership.tenant if membership else Tenant.objects.filter(is_platform_tenant=True).first()
-    )
-
-  if not target_tenant:
+  profile = getattr(request.user, "profile", None)
+  if account_id and profile and str(account_id) != str(profile.account_id):
     return []
 
-  playbooks = list(Playbook.objects.filter(tenant=target_tenant))
+  playbooks = list(Playbook.objects.filter(user=request.user))
   if not playbooks:
     p1 = Playbook.objects.create(
-      tenant=target_tenant,
+      user=request.user,
       name="Revoke Compromised API Key",
       description="Automatically revoke API keys if abused from blacklisted Tor nodes.",
       is_active=True,
     )
     p2 = Playbook.objects.create(
-      tenant=target_tenant,
+      user=request.user,
       name="Block HTTP Flood",
       description="Webhook to Cloudflare WAF to null-route IPs exceeding 1000 req/min.",
       is_active=True,
@@ -581,7 +559,7 @@ def update_playbook(request, playbook_id: str, payload: PlaybookUpdate):
   from monitor.models import Playbook
 
   try:
-    playbook = Playbook.objects.get(id=playbook_id, tenant__members__user=request.user)
+    playbook = Playbook.objects.get(id=playbook_id, user=request.user)
   except Playbook.DoesNotExist:
     from ninja.errors import HttpError
 

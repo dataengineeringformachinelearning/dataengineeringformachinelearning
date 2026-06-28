@@ -185,12 +185,11 @@ async def test_cookie_consent_anonymization(async_client: AsyncClient) -> None:
 @pytest.mark.asyncio
 async def test_telemetry_worker_ip_anonymization() -> None:
   import polars as pl
+  from account.platform import PLATFORM_ACCOUNT_ID
   from asgiref.sync import sync_to_async
-  from monitor.models import Endpoints, Tenant
+  from monitor.models import Endpoints
 
   from telemetry.management.commands.telemetry_worker import Command
-
-  tenant_0 = await sync_to_async(Tenant.objects.filter(is_platform_tenant=True).first)()
 
   cmd = Command()
   df = pl.DataFrame(
@@ -201,7 +200,7 @@ async def test_telemetry_worker_ip_anonymization() -> None:
         "response_time": 0.05,
         "ip_address": "203.0.113.195",
         "is_active": True,
-        "tenant_id": str(tenant_0.id) if tenant_0 else None,
+        "account_id": PLATFORM_ACCOUNT_ID,
       }
     ]
   )
@@ -228,21 +227,17 @@ def test_analytics_overview_hybrid_query(client) -> None:
     Endpoints,
     MonitoredService,
     StatusPage,
-    Tenant,
-    TenantMembership,
+    UserProfile,
   )
 
   user, _ = User.objects.get_or_create(
     username="test_analytics_user", email="test_analytics_user@test.com"
   )
-  tenant, _ = Tenant.objects.get_or_create(
-    name="Test Analytics Tenant", slug="test-analytics-tenant"
-  )
-  TenantMembership.objects.get_or_create(user=user, tenant=tenant)
+  profile, _ = UserProfile.objects.get_or_create(user=user)
 
   page, _ = StatusPage.objects.get_or_create(
     slug="test-analytics-platform-status",
-    defaults={"tenant": tenant, "user": user, "title": "Platform Status"},
+    defaults={"user": user, "title": "Platform Status"},
   )
   service_url = "http://test-service.local/"
   MonitoredService.objects.get_or_create(
@@ -252,7 +247,8 @@ def test_analytics_overview_hybrid_query(client) -> None:
   now = timezone.now()
   past_hour = now.replace(minute=0, second=0, microsecond=0) - timedelta(hours=2)
   AggregatedAnalytics.objects.create(
-    tenant=tenant,
+    user=user,
+    is_platform=False,
     timestamp=past_hour,
     bucket_size="1h",
     total_requests=100,
@@ -263,7 +259,8 @@ def test_analytics_overview_hybrid_query(client) -> None:
 
   current_raw_time = now - timedelta(minutes=10)
   Endpoints.objects.create(
-    tenant=tenant,
+    user=user,
+    is_platform=False,
     url=service_url,
     status_code=200,
     response_time=timedelta(milliseconds=150),
@@ -280,7 +277,7 @@ def test_analytics_overview_hybrid_query(client) -> None:
     }
     response = client.get(
       "/api/v1/analytics/overview",
-      {"tenant_id": str(tenant.id), "site_url": service_url},
+      {"account_id": str(profile.account_id), "site_url": service_url},
       HTTP_AUTHORIZATION="Bearer valid-token",
     )
   assert response.status_code == 200

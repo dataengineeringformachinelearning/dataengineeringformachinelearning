@@ -16,9 +16,9 @@ class LighthouseScanner:
   PAGESPEED_API_URL = "https://www.googleapis.com/pagespeedonline/v5/runPagespeed"
 
   @classmethod
-  def scan_url(cls, url, tenant_id=None):
+  def scan_url(cls, url, account_id=None):
     try:
-      logger.info(f"[Tenant: {tenant_id}] Running Lighthouse scan for {url}...")
+      logger.info(f"[Account: {account_id}] Running Lighthouse scan for {url}...")
 
       # Categories we want Lighthouse to audit
       categories = ["performance", "accessibility", "best-practices", "seo"]

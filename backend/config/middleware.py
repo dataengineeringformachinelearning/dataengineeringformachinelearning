@@ -57,8 +57,7 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
         logger.info(f"Created Django user for Firebase UID: {uid}")
 
       # Ensure user profile and role exists
-      from django.utils.text import slugify
-      from monitor.models import Tenant, TenantMembership, UserProfile
+      from monitor.models import UserProfile
 
       profile, p_created = UserProfile.objects.get_or_create(user=user)
       if p_created:
@@ -93,31 +92,6 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
           updated = True
         if updated:
           user.save()
-
-      # Automatic Tenant Provisioning
-      has_tenant = TenantMembership.objects.filter(user=user).exists()
-      if not has_tenant:
-        tenant_name = f"{user.first_name or user.username}'s Workspace"
-        tenant_slug = slugify(tenant_name)
-        if not tenant_slug:
-          tenant_slug = f"workspace-{user.id}"
-        # Ensure slug uniqueness
-        base_slug = tenant_slug
-        counter = 1
-        while Tenant.objects.filter(slug=tenant_slug).exists():
-          tenant_slug = f"{base_slug}-{counter}"
-          counter += 1
-
-        tenant = Tenant.objects.create(
-          name=tenant_name,
-          slug=tenant_slug,
-          is_platform_tenant=False,
-          tier="Standard",
-        )
-        TenantMembership.objects.create(user=user, tenant=tenant, role="Owner")
-        logger.info(
-          f"Automatically provisioned new tenant '{tenant_name}' for user {user.username}"
-        )
 
       # Authenticate the request with this user
       request.user = user

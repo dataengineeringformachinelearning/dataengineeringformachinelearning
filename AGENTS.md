@@ -9,7 +9,7 @@ This document captures the core coding principles, philosophies, and "how we bui
 - **Zero-Compromise Standards**: Quality is non-negotiable and a survival mechanism. No technical debt through human vigilance alone. Everything must be automated, enforced, and precise.
 - **Precision Engineering**: Focus on architectural logic, not trivia. High-velocity development enabled by guardrails.
 - **Path of Least Resistance**: Tooling guides developers to do the right thing automatically.
-- **Symmetrical Multi-Tenancy**: Every worker, ML loop, scanner, etc., must iterate over `Tenant.objects.all()`. The platform bootstraps as `Tenant0` and experiences exactly the same code paths as customers. No hardcoded exceptions.
+- **Symmetrical Multi-Account Pipeline**: Every worker, ML loop, scanner, etc., processes each `User` account (and the platform scope via `is_platform=True` / `platform-status`) through identical code paths. The platform showcase has no login — public metrics only.
 - **Event Projections Architecture** (recent evolution):
   - **Commands**: Client events via Firebase Cloud Functions (`ingestEvent` callable, with `version` and `idempotency_key`).
   - **Reliable Delivery**: Transactional Outbox in Django (Postgres `OutboxEvent` written atomically) + `outbox_relay` management command for publishing to Redpanda.

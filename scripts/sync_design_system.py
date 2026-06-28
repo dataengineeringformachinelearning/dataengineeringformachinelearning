@@ -63,9 +63,16 @@ def sync_design_system():
     os.makedirs(os.path.dirname(target), exist_ok=True)
     shutil.copy2(dist_components, target)
 
+  scss_src = os.path.join(pkg_dir, "src")
+  scss_target = os.path.join(root_dir, "frontend", "src", "design-system")
+  if os.path.isdir(scss_src):
+    shutil.copytree(scss_src, scss_target, dirs_exist_ok=True)
+
   print("Successfully synced design system to:")
   for target in token_targets + component_targets:
     print(f" - {target}")
+  if os.path.isdir(scss_target):
+    print(f" - {scss_target}")
 
 
 if __name__ == "__main__":

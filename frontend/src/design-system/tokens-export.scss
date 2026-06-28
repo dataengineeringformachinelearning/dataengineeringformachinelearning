@@ -1,0 +1,18 @@
+/*! DEML Design Tokens — generated from packages/deml-design-system. Do not edit copies; run scripts/sync_design_system.py */
+@use 'tokens';
+@use 'material-tokens';
+
+body {
+  font-size: var(--base-font-size);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: var(--header-letter-spacing);
+}

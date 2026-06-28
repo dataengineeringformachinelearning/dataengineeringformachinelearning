@@ -13,4 +13,4 @@ class MonitorConfig(AppConfig):
     import monitor.signals  # noqa
     from django.db.models.signals import post_migrate
 
-    post_migrate.connect(monitor.signals.ensure_tenant0_exists, sender=self)
+    post_migrate.connect(monitor.signals.ensure_platform_status_page_exists, sender=self)

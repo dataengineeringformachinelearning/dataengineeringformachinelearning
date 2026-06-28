@@ -89,7 +89,7 @@ class CESModel(nn.Module):
     return x * 100.0
 
 
-def train_tenant_sla(tenant: Any) -> TrainingRun | None:
+def train_tenant_sla(user: Any = None, *, is_platform: bool = False) -> TrainingRun | None:
   import numpy as np
   import torch
   import torch.nn as nn
@@ -139,7 +139,10 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
         preds = self.model(X_tensor)
       return preds.numpy()
 
-  endpoints = Endpoints.objects.filter(tenant=tenant)
+  if is_platform:
+    endpoints = Endpoints.objects.filter(is_platform=True, user__isnull=True)
+  else:
+    endpoints = Endpoints.objects.filter(user=user, is_platform=False)
   if not endpoints.exists():
     return None
 
@@ -194,11 +197,9 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
       api = HfApi(token=hf_token)
       import hashlib
 
-      if hasattr(tenant, "slug"):
-        safe_identifier = hashlib.sha256(tenant.slug.encode()).hexdigest()[:12]
-        model_name = f"{safe_identifier}_sla_model.pt"
-      else:
-        model_name = "default_sla_model.pt"
+      identifier = "platform" if is_platform else getattr(user, "username", "default")
+      safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
+      model_name = f"{safe_identifier}_sla_model.pt"
       api.upload_file(
         path_or_fileobj="/tmp/sla_model.pt",
         path_in_repo=f"sla_models/{model_name}",
@@ -208,7 +209,12 @@ def train_tenant_sla(tenant: Any) -> TrainingRun | None:
     except Exception as e:
       logger.error("Failed to push SLA model to Hugging Face: %s", e)
 
-  run = TrainingRun.objects.create(tenant=tenant, average_sla=avg_predicted_sla, loss=final_loss)
+  run = TrainingRun.objects.create(
+    user=None if is_platform else user,
+    is_platform=is_platform,
+    average_sla=avg_predicted_sla,
+    loss=final_loss,
+  )
   return run
 
 
@@ -296,7 +302,7 @@ def train_platform_threat_model() -> dict:
   }
 
 
-def train_threat_model(tenant: Any) -> ThreatReport:
+def train_threat_model(user: Any = None, *, is_platform: bool = False) -> ThreatReport:
   import datetime as dt
 
   import torch
@@ -309,12 +315,18 @@ def train_threat_model(tenant: Any) -> ThreatReport:
   # ThreatModel is now defined globally
   # Query actual Endpoints telemetry from the last 90 days to derive baseline features
   cutoff = timezone.now() - dt.timedelta(days=90)
-  endpoints = Endpoints.objects.filter(tenant=tenant, last_tested__gte=cutoff)
+  if is_platform:
+    endpoints = Endpoints.objects.filter(
+      is_platform=True, user__isnull=True, last_tested__gte=cutoff
+    )
+  else:
+    endpoints = Endpoints.objects.filter(user=user, is_platform=False, last_tested__gte=cutoff)
   total_requests = endpoints.count()
 
   if total_requests == 0:
     return ThreatReport.objects.create(
-      tenant=tenant,
+      user=None if is_platform else user,
+      is_platform=is_platform,
       anomaly_score=0.0,
       top_location="No Connected Integration",
       location_weight=0.0,
@@ -331,10 +343,10 @@ def train_threat_model(tenant: Any) -> ThreatReport:
     suspicious_ratio = 0.05
 
   # Find connected integrations for feature extraction
-  from monitor.models import TenantMembership
-
-  members = TenantMembership.objects.filter(tenant=tenant).values_list("user", flat=True)
-  integrations = AnalyticsIntegration.objects.filter(user__in=members, active=True)
+  if is_platform:
+    integrations = AnalyticsIntegration.objects.filter(active=True)
+  else:
+    integrations = AnalyticsIntegration.objects.filter(user=user, active=True)
 
   # Default/Fallback metrics if user hasn't synced real integrations yet
   location_weight = 0.35
@@ -342,7 +354,7 @@ def train_threat_model(tenant: Any) -> ThreatReport:
 
   # If integrations exist, pull real details (or simulate based on them)
   if integrations.exists():
-    if tenant and getattr(tenant, "is_platform_tenant", False):
+    if is_platform:
       location_weight = 0.35
       top_location = "United States"
       failure_rate = 0.02
@@ -360,7 +372,9 @@ def train_threat_model(tenant: Any) -> ThreatReport:
       from monitor.models import ThreatIntelligence
 
       latest_threat = (
-        ThreatIntelligence.objects.filter(tenant=tenant).order_by("-timestamp").first()
+        ThreatIntelligence.objects.filter(user=user, is_platform=False)
+        .order_by("-timestamp")
+        .first()
       )
       if latest_threat:
         top_location = latest_threat.location
@@ -405,7 +419,8 @@ def train_threat_model(tenant: Any) -> ThreatReport:
     prediction = model(current_x).item()
 
   report = ThreatReport.objects.create(
-    tenant=tenant,
+    user=None if is_platform else user,
+    is_platform=is_platform,
     anomaly_score=prediction,
     top_location=top_location,
     location_weight=location_weight,

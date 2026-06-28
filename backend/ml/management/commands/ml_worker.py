@@ -3,9 +3,12 @@ import json
 
 from aiokafka import AIOKafkaConsumer
 from asgiref.sync import sync_to_async
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from ml.ml_services import train_tenant_sla
 from utils.kafka import get_kafka_brokers
+
+User = get_user_model()
 
 
 class Command(BaseCommand):
@@ -20,7 +23,6 @@ class Command(BaseCommand):
     asyncio.run(self.run_worker())
 
   async def run_worker(self):
-    # Start periodic daily scheduler task
     task = asyncio.create_task(self.periodic_scheduler())
     self.background_tasks.add(task)
     task.add_done_callback(self.background_tasks.discard)
@@ -68,9 +70,9 @@ class Command(BaseCommand):
                 if action == "train_all_tenants":
                   await self.train_all()
                 elif action == "train_tenant":
-                  tenant_id = payload.get("tenant_id")
-                  if tenant_id:
-                    await self.train_single(tenant_id)
+                  account_id = payload.get("account_id") or payload.get("tenant_id")
+                  if account_id:
+                    await self.train_single(account_id)
               except Exception as e:
                 self.stderr.write(self.style.ERROR(f"Error processing message: {e}"))
         except Exception as loop_e:
@@ -83,76 +85,85 @@ class Command(BaseCommand):
   @sync_to_async
   def train_all(self):
     from django.db import close_old_connections
-    from monitor.models import Tenant
+    from ml.ml_services import train_threat_model
 
     close_old_connections()
     try:
-      tenants = Tenant.objects.all()
-      for tenant in tenants:
+      for user in User.objects.filter(profile__isnull=False).select_related("profile"):
         try:
-          run = train_tenant_sla(tenant)
+          run = train_tenant_sla(user, is_platform=False)
           if run:
             self.stdout.write(
               self.style.SUCCESS(
-                f"Trained SLA forecast model for tenant '{tenant.name}' (SLA: {run.average_sla:.2f}%)"
+                f"Trained SLA forecast model for '{user.username}' (SLA: {run.average_sla:.2f}%)"
               )
             )
           else:
-            self.stdout.write(f"Skipped tenant '{tenant.name}' (no telemetry data)")
+            self.stdout.write(f"Skipped user '{user.username}' (no telemetry data)")
 
-          # Automate Threat Model training along with the SLA model
-          from ml.ml_services import train_threat_model
-
-          report = train_threat_model(tenant)
+          report = train_threat_model(user, is_platform=False)
           if report:
             self.stdout.write(
               self.style.SUCCESS(
-                f"Trained threat forecast model for tenant '{tenant.name}' (Score: {report.anomaly_score * 100:.1f}%)"
+                f"Trained threat forecast model for '{user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
               )
             )
         except Exception as e:
-          self.stderr.write(self.style.ERROR(f"Failed to train tenant '{tenant.name}': {e}"))
+          self.stderr.write(self.style.ERROR(f"Failed to train user '{user.username}': {e}"))
+
+      run = train_tenant_sla(None, is_platform=True)
+      if run:
+        self.stdout.write(
+          self.style.SUCCESS(f"Trained platform SLA model (SLA: {run.average_sla:.2f}%)")
+        )
+      report = train_threat_model(None, is_platform=True)
+      if report:
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"Trained platform threat model (Score: {report.anomaly_score * 100:.1f}%)"
+          )
+        )
     finally:
       close_old_connections()
 
   @sync_to_async
-  def train_single(self, tenant_id):
+  def train_single(self, account_id):
+    from account.context import resolve_scope_from_account_id
     from django.db import close_old_connections
-    from monitor.models import Tenant
+    from ml.ml_services import train_threat_model
 
     close_old_connections()
     try:
-      tenant = Tenant.objects.get(id=tenant_id)
-      run = train_tenant_sla(tenant)
+      user, is_platform = resolve_scope_from_account_id(account_id)
+      if not user and not is_platform:
+        self.stderr.write(self.style.WARNING(f"Account ID {account_id} not found"))
+        return
+
+      label = "platform" if is_platform else user.username
+      run = train_tenant_sla(user, is_platform=is_platform)
       if run:
         self.stdout.write(
           self.style.SUCCESS(
-            f"Trained SLA forecast model for tenant '{tenant.name}' (SLA: {run.average_sla:.2f}%)"
+            f"Trained SLA forecast model for '{label}' (SLA: {run.average_sla:.2f}%)"
           )
         )
       else:
-        self.stdout.write(f"Skipped tenant '{tenant.name}' (no telemetry data)")
+        self.stdout.write(f"Skipped '{label}' (no telemetry data)")
 
-      # Automate Threat Model training along with the SLA model
-      from ml.ml_services import train_threat_model
-
-      report = train_threat_model(tenant)
+      report = train_threat_model(user, is_platform=is_platform)
       if report:
         self.stdout.write(
           self.style.SUCCESS(
-            f"Trained threat forecast model for tenant '{tenant.name}' (Score: {report.anomaly_score * 100:.1f}%)"
+            f"Trained threat forecast model for '{label}' (Score: {report.anomaly_score * 100:.1f}%)"
           )
         )
-    except Tenant.DoesNotExist:
-      self.stderr.write(self.style.WARNING(f"Tenant ID {tenant_id} not found"))
     except Exception as e:
-      self.stderr.write(self.style.ERROR(f"Failed to train tenant: {e}"))
+      self.stderr.write(self.style.ERROR(f"Failed to train account: {e}"))
     finally:
       close_old_connections()
 
   async def periodic_scheduler(self):
     self.stdout.write(self.style.SUCCESS("Starting periodic daily training & cleanup scheduler..."))
-    # Wait 10 seconds for startup to stabilize
     await asyncio.sleep(10)
     while True:
       try:
@@ -166,7 +177,6 @@ class Command(BaseCommand):
           )
         )
 
-        # Send daily status report
         from utils.discord import send_discord_alert
         from utils.email import get_recent_stats_text, send_alert_email
 
@@ -179,5 +189,4 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Periodic Scheduler: Hourly run failed: {e}"))
 
-      # Wait 1 day (86400 seconds)
       await asyncio.sleep(86400)

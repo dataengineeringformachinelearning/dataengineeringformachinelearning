@@ -257,35 +257,40 @@ class Command(BaseCommand):
 
   @sync_to_async
   def save_threat_intel_to_db(self, threat_data_list: list):
+    from account.context import resolve_scope_from_account_id
     from django.contrib.auth import get_user_model
-    from monitor.models import TenantMembership, ThreatIntelligence
+    from monitor.models import ThreatIntelligence
 
     User = get_user_model()
 
     objects_to_create = []
     users_cache = {}
-    tenants_cache = {}
+    scope_cache = {}
 
     for payload in threat_data_list:
       user_id = payload.get("user_id")
+      account_key = payload.get("account_id") or payload.get("tenant_id")
       user_obj = None
-      tenant_obj = None
+      is_platform = False
+
       if user_id:
         if user_id not in users_cache:
           try:
-            u = User.objects.get(id=user_id)
-            users_cache[user_id] = u
-            membership = TenantMembership.objects.filter(user=u).first()
-            tenants_cache[user_id] = membership.tenant if membership else None
+            users_cache[user_id] = User.objects.get(id=user_id)
           except User.DoesNotExist:
             users_cache[user_id] = None
-            tenants_cache[user_id] = None
         user_obj = users_cache[user_id]
-        tenant_obj = tenants_cache[user_id]
+
+      if account_key:
+        if account_key not in scope_cache:
+          scope_cache[account_key] = resolve_scope_from_account_id(account_key)
+        resolved_user, is_platform = scope_cache[account_key]
+        if resolved_user:
+          user_obj = resolved_user
 
       ti = ThreatIntelligence(
-        tenant=tenant_obj,
-        user=user_obj,
+        user=None if is_platform else user_obj,
+        is_platform=is_platform,
         source=payload.get("source"),
         ip_address=payload.get("ip"),
         location=payload.get("location"),
@@ -303,33 +308,11 @@ class Command(BaseCommand):
 
   @sync_to_async
   def save_to_db(self, df: pl.DataFrame):
-    # Ensure platform-status page exists
-    from django.contrib.auth.models import User
-    from monitor.models import MonitoredService, StatusPage, Tenant
+    from account.context import resolve_scope_from_account_id
+    from account.platform import PLATFORM_ACCOUNT_ID, ensure_platform_status_page
+    from monitor.models import MonitoredService
 
-    # Loop over all tenants to map endpoints dynamically
-    all_tenants = {str(t.id): t for t in Tenant.objects.all()}
-    tenant_0 = next((t for t in all_tenants.values() if t.is_platform_tenant), None)
-
-    try:
-      page = StatusPage.objects.get(slug="platform-status")
-    except StatusPage.DoesNotExist:
-      default_user = User.objects.first()
-      if not default_user:
-        from django.utils.crypto import get_random_string
-
-        default_user = User.objects.create_user(
-          username="system",
-          email="system@dataengineeringformachinelearning.com",
-          password=get_random_string(32),
-        )
-      page = StatusPage.objects.create(
-        tenant=tenant_0,
-        user=default_user,
-        title="Platform Status",
-        slug="platform-status",
-        description="Monitoring system health and telemetry pipelines for the DEML (DATA ENGINEERING FOR MACHINE LEARNING).",
-      )
+    page = ensure_platform_status_page()
 
     from utils.service_urls import get_normalized_service_info
 
@@ -387,17 +370,19 @@ class Command(BaseCommand):
       ip_data = get_ip_enrichment(ip)
       ua_data = parse_user_agent(ua)
 
-      t_id = row.get("tenant_id")
-      tenant = all_tenants.get(str(t_id)) if t_id else tenant_0
+      account_key = row.get("account_id") or row.get("tenant_id") or PLATFORM_ACCOUNT_ID
+      user_obj, is_platform = resolve_scope_from_account_id(account_key)
+      if not user_obj and not is_platform:
+        user_obj, is_platform = None, True
 
       telemetry_context = row.get("telemetry_context") or {}
       if ip in malicious_ips:
         telemetry_context["malicious_ip_detected"] = True
         telemetry_context["threat_match"] = True
 
-      # Create instance (we don't save yet to do it in bulk)
       ep = Endpoints(
-        tenant=tenant,
+        user=None if is_platform else user_obj,
+        is_platform=is_platform,
         url=row["url"],
         status_code=row["status_code"],
         response_time=duration,
@@ -485,22 +470,28 @@ class Command(BaseCommand):
 
     close_old_connections()
     try:
-      services = MonitoredService.objects.select_related("status_page__tenant").all()
+      services = MonitoredService.objects.select_related("status_page").all()
 
-      tenant_targets: dict = {}
+      scope_targets: dict = {}
       for s in services:
-        tenant = s.status_page.tenant if s.status_page else None
-        if not tenant:
+        page = s.status_page
+        if not page:
           continue
-        if tenant not in tenant_targets:
-          tenant_targets[tenant] = {}
+        scope_key = ("platform", None) if page.is_platform else ("user", page.user_id)
+        if scope_key not in scope_targets:
+          scope_targets[scope_key] = {
+            "user": page.user,
+            "is_platform": page.is_platform,
+            "targets": {},
+          }
         if not s.url:
           continue
         ping_url = resolve_ping_url(s.url, s.name)
         canonical_url, _ = get_normalized_service_info(s.url)
-        tenant_targets[tenant][ping_url] = canonical_url
+        scope_targets[scope_key]["targets"][ping_url] = canonical_url
 
-      for tenant, targets in tenant_targets.items():
+      for scope in scope_targets.values():
+        targets = scope["targets"]
         for ping_url, canonical_url in targets.items():
           url = ping_url
           start_time = time.time()
@@ -530,7 +521,8 @@ class Command(BaseCommand):
           duration = datetime.timedelta(seconds=(time.time() - start_time))
 
           Endpoints.objects.create(
-            tenant=tenant,
+            user=None if scope["is_platform"] else scope["user"],
+            is_platform=scope["is_platform"],
             url=canonical_url,
             status_code=status_code,
             response_time=duration,
@@ -561,30 +553,46 @@ class Command(BaseCommand):
 
   @sync_to_async
   def run_lighthouse_scans(self):
+    from django.contrib.auth import get_user_model
     from django.db import close_old_connections
-    from monitor.models import Tenant
+    from monitor.models import MonitoredService, StatusPage
 
     from telemetry.tasks.lighthouse_scanner import LighthouseScanner
 
+    User = get_user_model()
     close_old_connections()
     try:
-      tenants = Tenant.objects.filter(target_url__isnull=False)
-      for tenant in tenants:
-        # Avoid scanning if no URL
-        if not tenant.target_url:
-          continue
+      scan_targets: list[tuple[str, object | None, bool]] = []
+      for page in StatusPage.objects.filter(is_platform=True):
+        service = page.services.first()
+        if service and service.url:
+          scan_targets.append((service.url, None, True))
 
-        # Call the scanner
-        scores = LighthouseScanner.scan_url(tenant.target_url, tenant_id=tenant.id)
+      for user in User.objects.filter(profile__isnull=False).select_related("profile"):
+        page = StatusPage.objects.filter(user=user, is_platform=False).first()
+        if not page:
+          continue
+        service = MonitoredService.objects.filter(status_page=page).first()
+        if service and service.url:
+          scan_targets.append((service.url, user, False))
+
+      for url, user, is_platform in scan_targets:
+        scores = LighthouseScanner.scan_url(
+          url, account_id="platform" if is_platform else str(user.profile.account_id)
+        )
         if scores:
           from django.utils import timezone
           from monitor.models import AggregatedAnalytics
 
           current_hour = timezone.now().replace(minute=0, second=0, microsecond=0)
+          lookup = {
+            "timestamp": current_hour,
+            "bucket_size": "1h",
+            "is_platform": is_platform,
+            "user": None if is_platform else user,
+          }
           latest_agg, created = AggregatedAnalytics.objects.get_or_create(
-            tenant=tenant,
-            timestamp=current_hour,
-            bucket_size="1h",
+            **lookup,
             defaults={"metadata": {"lighthouse_scores": scores}},
           )
           if not created:
@@ -593,9 +601,8 @@ class Command(BaseCommand):
             latest_agg.metadata["lighthouse_scores"] = scores
             latest_agg.save()
 
-          self.stdout.write(
-            self.style.SUCCESS(f"[Tenant {tenant.name}] Lighthouse Scores: {scores}")
-          )
+          label = "platform" if is_platform else user.username
+          self.stdout.write(self.style.SUCCESS(f"[{label}] Lighthouse Scores: {scores}"))
 
     finally:
       close_old_connections()

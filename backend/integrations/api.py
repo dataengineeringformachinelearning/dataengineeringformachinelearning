@@ -106,11 +106,12 @@ async def ingest_data(request, payload: IngestPayload):
   import json
   import logging
 
+  from account.context import account_id_for_user
   from utils.kafka import get_kafka_producer
 
-  tenant = request.auth
+  user = request.auth
   data = payload.dict()
-  data["tenant_id"] = str(tenant.id)
+  data["account_id"] = account_id_for_user(user)
   data["event_type"] = "ingestion"
 
   # Cyber Forensics: Chain of Custody Hashing
@@ -172,9 +173,11 @@ async def predict(request, payload: PredictPayload):
         400, "Potential Data Poisoning Detected: Input values out of accepted bounds."
       )
 
-  tenant = request.auth
+  from account.context import account_id_for_user
+
+  user = request.auth
   data = payload.dict()
-  data["tenant_id"] = str(tenant.id)
+  data["account_id"] = account_id_for_user(user)
   data["event_type"] = "prediction"
 
   # Mock inference latency
@@ -226,10 +229,11 @@ async def predict_llm(request, payload: LLMPredictPayload):
   import logging
   import re
 
+  from account.context import account_id_for_user
   from ninja.errors import HttpError
   from utils.kafka import get_kafka_producer
 
-  tenant = request.auth
+  user = request.auth
   prompt = payload.prompt.lower()
 
   # AI Threat Detection: Basic Prompt Injection Heuristics
@@ -242,7 +246,7 @@ async def predict_llm(request, payload: LLMPredictPayload):
     )
 
   data = payload.dict()
-  data["tenant_id"] = str(tenant.id)
+  data["account_id"] = account_id_for_user(user)
   data["event_type"] = "llm_prediction"
 
   latency_ms = 450.2

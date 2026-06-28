@@ -11,7 +11,6 @@ from monitor.models import (
   AuditLog,
   IncidentCase,
   StatusPage,
-  TenantMembership,
   ThreatIntelligence,
 )
 
@@ -22,12 +21,6 @@ primary_user = User.objects.get(id=primary_id)
 for old_id in old_ids:
   print(f"Merging user {old_id} into {primary_id}")
   StatusPage.objects.filter(user_id=old_id).update(user=primary_user)
-  for tm in TenantMembership.objects.filter(user_id=old_id):
-    if not TenantMembership.objects.filter(user=primary_user, tenant=tm.tenant).exists():
-      tm.user = primary_user
-      tm.save()
-    else:
-      tm.delete()
   AnalyticsIntegration.objects.filter(user_id=old_id).update(user=primary_user)
   APIKey.objects.filter(user_id=old_id).update(user=primary_user)
   AuditLog.objects.filter(user_id=old_id).update(user=primary_user)

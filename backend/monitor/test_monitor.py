@@ -115,10 +115,9 @@ def test_delete_status_page(authenticated_client: Client, test_user: User) -> No
 
 @pytest.mark.django_db
 def test_delete_system_status_page_forbidden(authenticated_client: Client, test_user: User) -> None:
-  # Cannot delete default platform-status page
-  page = StatusPage.objects.create(
-    user=test_user, title="Platform Status", slug="platform-status", description="Demo"
-  )
+  from account.platform import ensure_platform_status_page
+
+  page = ensure_platform_status_page()
   response = authenticated_client.delete(f"/api/v1/system-status/status_pages/{page.id}")
   assert response.status_code == 403
 

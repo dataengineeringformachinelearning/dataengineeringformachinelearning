@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import uuid
 from typing import Any
 
 try:
@@ -12,7 +13,7 @@ except ImportError:
 
 from django.conf import settings
 from django.http import HttpResponse
-from monitor.models import Tenant
+from monitor.models import UserProfile
 from ninja import Router
 
 logger = logging.getLogger(__name__)
@@ -21,6 +22,12 @@ if HAS_STRIPE:
   stripe.api_key = getattr(settings, "STRIPE_SECRET_KEY", "")
 
 router = Router(tags=["Billing"])
+
+
+def _get_profile(request) -> UserProfile | None:
+  if not hasattr(request.user, "profile"):
+    return None
+  return request.user.profile
 
 
 @router.post("/create-checkout-session")
@@ -32,31 +39,26 @@ def create_checkout_session(request):
 
   try:
     data = json.loads(request.body) if request.body else {}
-    tenant_id = data.get("tenant_id")
+    account_id = data.get("account_id")
 
-    if tenant_id:
+    profile = _get_profile(request)
+    if not profile:
+      from django.http import JsonResponse
+
+      return JsonResponse({"error": "Account profile not provisioned"}, status=400)
+
+    if account_id:
       try:
-        import uuid
+        valid_id = uuid.UUID(account_id)
+        if valid_id != profile.account_id:
+          return 400, {"error": "Invalid account ID"}
+      except (ValueError, TypeError):
+        return 400, {"error": "Invalid account ID"}
 
-        valid_id = uuid.UUID(tenant_id)
-        tenant = Tenant.objects.get(id=valid_id)
-      except (ValueError, TypeError, Tenant.DoesNotExist):
-        return 400, {"error": "Invalid tenant ID"}
-    else:
-      from monitor.models import TenantMembership
+    if profile.role == "Viewer":
+      from django.http import JsonResponse
 
-      membership = TenantMembership.objects.filter(user=request.user).first()
-      if not membership:
-        from django.http import JsonResponse
-
-        return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
-
-      if membership.role == "Viewer":
-        from django.http import JsonResponse
-
-        return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
-
-      tenant = membership.tenant
+      return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
 
     price_id = "price_1TlgG2Er73F9pBqwItcWHIJf"
 
@@ -71,7 +73,7 @@ def create_checkout_session(request):
       mode="subscription",
       success_url=settings.FRONTEND_URL + "/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url=settings.FRONTEND_URL + "/",
-      client_reference_id=str(tenant.id),
+      client_reference_id=str(profile.account_id),
       allow_promotion_codes=True,
     )
     return {"checkout_url": session.url}
@@ -116,22 +118,22 @@ def stripe_webhook(request):
 
     if client_reference_id:
       try:
-        tenant = Tenant.objects.get(id=client_reference_id)
-        tenant.tier = "Pro"
-        tenant.stripe_customer_id = customer_id
-        tenant.stripe_subscription_id = subscription_id
-        tenant.subscription_active = True
+        profile = UserProfile.objects.get(account_id=client_reference_id)
+        profile.tier = "Pro"
+        profile.stripe_customer_id = customer_id
+        profile.stripe_subscription_id = subscription_id
+        profile.subscription_active = True
 
         # Fetch subscription to get current_period_end
         if subscription_id:
           sub = stripe.Subscription.retrieve(subscription_id)
-          tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
+          profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
             sub.current_period_end, tz=datetime.timezone.utc
           )
 
-        tenant.save()
-      except Tenant.DoesNotExist:
-        logger.error(f"Tenant {client_reference_id} not found for checkout.")
+        profile.save()
+      except UserProfile.DoesNotExist:
+        logger.error(f"UserProfile {client_reference_id} not found for checkout.")
 
   elif event["type"] in ["customer.subscription.updated", "customer.subscription.deleted"]:
     subscription = event["data"]["object"]
@@ -151,24 +153,24 @@ def stripe_webhook(request):
       else getattr(subscription, "current_period_end", None)
     )
 
-    tenants = Tenant.objects.filter(stripe_subscription_id=sub_id)
-    for tenant in tenants:
+    profiles = UserProfile.objects.filter(stripe_subscription_id=sub_id)
+    for profile in profiles:
       if event["type"] == "customer.subscription.deleted" or status in [
         "canceled",
         "unpaid",
         "past_due",
       ]:
-        tenant.tier = "Standard"
-        tenant.subscription_active = False
+        profile.tier = "Standard"
+        profile.subscription_active = False
       else:
-        tenant.tier = "Pro"
-        tenant.subscription_active = True
+        profile.tier = "Pro"
+        profile.subscription_active = True
 
       if period_end:
-        tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
+        profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
           period_end, tz=datetime.timezone.utc
         )
-      tenant.save()
+      profile.save()
 
   return HttpResponse(status=200)
 
@@ -180,13 +182,10 @@ def sync_subscription(request: Any) -> Any:
 
     return JsonResponse({"error": "Authentication required"}, status=401)
 
-  from monitor.models import TenantMembership
-
-  membership = TenantMembership.objects.filter(user=request.user).first()
-  if not membership:
+  profile = _get_profile(request)
+  if not profile:
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
 
-  tenant = membership.tenant
   email = request.user.email
 
   # Collect all possible emails to check against Stripe
@@ -203,27 +202,27 @@ def sync_subscription(request: Any) -> Any:
   if not HAS_STRIPE or not getattr(stripe, "api_key", None):
     return {
       "status": "synced",
-      "active": tenant.subscription_active,
+      "active": profile.subscription_active,
       "cancel_at_period_end": False,
       "message": "Billing sync unavailable (Stripe not configured)",
     }
 
-  if not emails_to_check and not tenant.stripe_customer_id:
-    if tenant.stripe_customer_id is None and tenant.tier == "Pro":
-      tenant.subscription_active = True
-      tenant.save()
+  if not emails_to_check and not profile.stripe_customer_id:
+    if profile.stripe_customer_id is None and profile.tier == "Pro":
+      profile.subscription_active = True
+      profile.save()
       return {"status": "synced", "active": True, "cancel_at_period_end": False}
-    tenant.tier = "Standard"
-    tenant.subscription_active = False
-    tenant.save()
+    profile.tier = "Standard"
+    profile.subscription_active = False
+    profile.save()
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
 
   stripe_error_occurred = False
   try:
     customers = []
-    if tenant.stripe_customer_id:
+    if profile.stripe_customer_id:
       try:
-        customer = stripe.Customer.retrieve(tenant.stripe_customer_id)
+        customer = stripe.Customer.retrieve(profile.stripe_customer_id)
         if not getattr(customer, "deleted", False):
           customers.append(customer)
       except Exception as err:
@@ -244,14 +243,14 @@ def sync_subscription(request: Any) -> Any:
           subscriptions = stripe.Subscription.list(customer=customer.id, status="active").data
           if subscriptions:
             sub = subscriptions[0]
-            tenant.tier = "Pro"
-            tenant.stripe_customer_id = customer.id
-            tenant.stripe_subscription_id = sub.id
-            tenant.subscription_active = True
-            tenant.subscription_current_period_end = datetime.datetime.fromtimestamp(
+            profile.tier = "Pro"
+            profile.stripe_customer_id = customer.id
+            profile.stripe_subscription_id = sub.id
+            profile.subscription_active = True
+            profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
               sub.current_period_end, tz=datetime.timezone.utc
             )
-            tenant.save()
+            profile.save()
             return {
               "status": "synced",
               "active": True,
@@ -264,20 +263,20 @@ def sync_subscription(request: Any) -> Any:
     if stripe_error_occurred:
       return {
         "status": "synced",
-        "active": tenant.subscription_active,
+        "active": profile.subscription_active,
         "cancel_at_period_end": False,
         "message": "Billing sync degraded (Stripe API error)",
       }
 
-    if tenant.stripe_customer_id is None and tenant.tier == "Pro":
+    if profile.stripe_customer_id is None and profile.tier == "Pro":
       # Preserve manual upgrades that don't have a Stripe customer tied to them
-      tenant.subscription_active = True
-      tenant.save()
+      profile.subscription_active = True
+      profile.save()
       return {"status": "synced", "active": True, "cancel_at_period_end": False}
 
-    tenant.tier = "Standard"
-    tenant.subscription_active = False
-    tenant.save()
+    profile.tier = "Standard"
+    profile.subscription_active = False
+    profile.save()
     return {"status": "synced", "active": False, "cancel_at_period_end": False}
   except Exception as e:
     logger.error(f"Error syncing subscription: {e}", exc_info=True)
@@ -293,27 +292,24 @@ def cancel_subscription(request):
 
     return JsonResponse({"error": "Authentication required"}, status=401)
 
-  from monitor.models import TenantMembership
-
-  membership = TenantMembership.objects.filter(user=request.user).first()
-  if not membership:
+  profile = _get_profile(request)
+  if not profile:
     from django.http import JsonResponse
 
-    return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
+    return JsonResponse({"error": "Account profile not provisioned"}, status=400)
 
-  if membership.role == "Viewer":
+  if profile.role == "Viewer":
     from django.http import JsonResponse
 
     return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
 
-  tenant = membership.tenant
-  if not tenant.stripe_subscription_id:
+  if not profile.stripe_subscription_id:
     from django.http import JsonResponse
 
     return JsonResponse({"error": "No active subscription found"}, status=400)
 
   try:
-    sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=True)
+    sub = stripe.Subscription.modify(profile.stripe_subscription_id, cancel_at_period_end=True)
     return {"status": "cancelled", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
     logger.error(f"Error cancelling subscription: {e}")
@@ -329,27 +325,24 @@ def resume_subscription(request):
 
     return JsonResponse({"error": "Authentication required"}, status=401)
 
-  from monitor.models import TenantMembership
-
-  membership = TenantMembership.objects.filter(user=request.user).first()
-  if not membership:
+  profile = _get_profile(request)
+  if not profile:
     from django.http import JsonResponse
 
-    return JsonResponse({"error": "User does not belong to any tenant"}, status=400)
+    return JsonResponse({"error": "Account profile not provisioned"}, status=400)
 
-  if membership.role == "Viewer":
+  if profile.role == "Viewer":
     from django.http import JsonResponse
 
     return JsonResponse({"error": "Viewers cannot manage subscriptions"}, status=403)
 
-  tenant = membership.tenant
-  if not tenant.stripe_subscription_id:
+  if not profile.stripe_subscription_id:
     from django.http import JsonResponse
 
     return JsonResponse({"error": "No active subscription found"}, status=400)
 
   try:
-    sub = stripe.Subscription.modify(tenant.stripe_subscription_id, cancel_at_period_end=False)
+    sub = stripe.Subscription.modify(profile.stripe_subscription_id, cancel_at_period_end=False)
     return {"status": "resumed", "cancel_at_period_end": sub.cancel_at_period_end}
   except Exception as e:
     logger.error(f"Error resuming subscription: {e}")

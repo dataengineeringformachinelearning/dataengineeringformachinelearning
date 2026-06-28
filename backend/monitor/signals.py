@@ -13,13 +13,11 @@ def cors_allow_monitored_domains(sender, request, **kwargs):
 
 @receiver(post_save, sender="monitor.Vulnerability")
 def notify_vulnerability_created(sender, instance, created, **kwargs):
-  if created and instance.tenant:
+  if created and instance.user:
     from utils.discord import send_discord_alert
     from utils.email import get_recent_stats_text, send_alert_email
 
-    subject = (
-      f"Alert: New Vulnerability Detected for Tenant '{instance.tenant.name}' - {instance.title}"
-    )
+    subject = f"Alert: New Vulnerability Detected for {instance.user.username} - {instance.title}"
     message = f"A new vulnerability was logged:\n\nTitle: {instance.title}\nSeverity: {instance.severity}\nDescription: {instance.description}\n\n"
     message += get_recent_stats_text()
     send_alert_email(subject, message)
@@ -34,29 +32,24 @@ def notify_incident_created(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender="monitor.ThreatIntelligence")
 def notify_threat_detected(sender, instance, created, **kwargs):
-  if created and instance.is_malicious and instance.tenant:
+  if created and instance.is_malicious:
     from utils.discord import send_discord_alert
     from utils.email import get_recent_stats_text, send_alert_email
 
-    subject = f"Alert: Malicious Threat Detected for Tenant '{instance.tenant.name}' from {instance.ip_address or instance.location}"
+    scope = (
+      "platform"
+      if instance.is_platform
+      else (instance.user.username if instance.user else "unknown")
+    )
+    subject = f"Alert: Malicious Threat Detected for {scope} from {instance.ip_address or instance.location}"
     message = f"A new malicious threat was detected:\n\nSource: {instance.source}\nIP: {instance.ip_address}\nLocation: {instance.location}\nAbuse Score: {instance.abuse_confidence_score}\n\n"
     message += get_recent_stats_text()
     send_alert_email(subject, message)
     send_discord_alert(subject, message)
 
 
-def ensure_tenant0_exists(sender, **kwargs):
-  """
-  A post_migrate signal receiver that guarantees the DEML Platform
-  (Tenant0) always exists in the database.
-  """
-  from monitor.models import Tenant
+def ensure_platform_status_page_exists(sender, **kwargs):
+  """Guarantee the public platform-status page exists after migrations."""
+  from account.platform import ensure_platform_status_page
 
-  Tenant.objects.get_or_create(
-    is_platform_tenant=True,
-    defaults={
-      "name": "DEML Platform",
-      "slug": "platform",
-      "target_url": "https://deml.app",
-    },
-  )
+  ensure_platform_status_page()

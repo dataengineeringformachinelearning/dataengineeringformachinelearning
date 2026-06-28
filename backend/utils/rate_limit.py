@@ -43,19 +43,29 @@ else:
   redis_client = None
 
 
-def get_tenant_rate_limit(tenant):
-  """Return max requests per minute based on tenant tier"""
-  if not tenant:
-    return 60  # default fallback
+def get_user_rate_limit(user):
+  """Return max requests per minute based on user profile tier."""
+  if not user:
+    return 60
 
-  if tenant.tier == "Pro":
+  profile = getattr(user, "profile", None)
+  if profile and profile.tier == "Pro":
     return 1000
-  return 60  # Standard tier
+  return 60
+
+
+def get_tenant_rate_limit(tenant_or_user):
+  """Backward-compatible alias for rate limit tier lookup."""
+  if tenant_or_user is None:
+    return 60
+  if hasattr(tenant_or_user, "tier") and not hasattr(tenant_or_user, "profile"):
+    return 1000 if tenant_or_user.tier == "Pro" else 60
+  return get_user_rate_limit(tenant_or_user)
 
 
 def rate_limit():
   """
-  Ninja decorator to enforce rate limits per Tenant.
+  Ninja decorator to enforce rate limits per user account.
   Assumes request.auth contains the authenticated User (like from IntegrationAPIKeyAuth).
   """
 
@@ -72,17 +82,13 @@ def rate_limit():
         key = f"rate_limit:ip:{client_ip}"
         limit = 60
       else:
-        # Synchronous ORM calls should be wrapped in sync_to_async or pre-fetched, but since it's an async endpoint we might need to handle it.
-        # However, ninja handles async auth by running auth in threadpool if it's sync.
-        # Let's just use sync_to_async for the membership lookup to be safe.
         from asgiref.sync import sync_to_async
 
         @sync_to_async
         def get_limit_and_key(u):
-          membership = u.tenant_memberships.first()
-          if membership:
-            t = membership.tenant
-            return get_tenant_rate_limit(t), f"rate_limit:tenant:{t.id}"
+          profile = getattr(u, "profile", None)
+          if profile:
+            return get_user_rate_limit(u), f"rate_limit:account:{profile.account_id}"
           return 60, f"rate_limit:user:{u.id}"
 
         limit, key = await get_limit_and_key(user)
@@ -90,7 +96,6 @@ def rate_limit():
       current_time = int(time.time())
       window_start = current_time - 60
 
-      # redis-py is sync, but we are in async. Should run in threadpool.
       from asgiref.sync import sync_to_async
 
       @sync_to_async
@@ -125,11 +130,10 @@ def rate_limit():
         key = f"rate_limit:ip:{client_ip}"
         limit = 60
       else:
-        membership = user.tenant_memberships.first()
-        if membership:
-          tenant = membership.tenant
-          limit = get_tenant_rate_limit(tenant)
-          key = f"rate_limit:tenant:{tenant.id}"
+        profile = getattr(user, "profile", None)
+        if profile:
+          limit = get_user_rate_limit(user)
+          key = f"rate_limit:account:{profile.account_id}"
         else:
           limit = 60
           key = f"rate_limit:user:{user.id}"
