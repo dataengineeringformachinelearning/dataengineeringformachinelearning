@@ -33,10 +33,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 RUN python manage.py collectstatic --noinput --clear
 
-# Re-link python symlinks to /usr/bin/python3 (distroless python path)
-RUN ln -sf /usr/bin/python3 /opt/venv/bin/python && \
-    ln -sf /usr/bin/python3 /opt/venv/bin/python3
-
 # Runtime stage
 # Use cc-debian12 because official distroless does not provide a python3.12-debian12 variant.
 # The Python 3.12 interpreter + site-packages come from the copied venv (built with --copies above).
