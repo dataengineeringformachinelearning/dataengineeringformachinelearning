@@ -9,7 +9,7 @@ from aiokafka import AIOKafkaConsumer
 from django.core.management.base import BaseCommand
 from utils.kafka import get_kafka_brokers
 
-from telemetry.worker import pingers, projectors, schedulers
+from telemetry.worker import pingers, projectors, schedulers, synthetic
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 import django
@@ -41,6 +41,14 @@ class Command(BaseCommand):
     # Set FIRESTORE_INBOX_POLL_ENABLED=0 to disable if you want zero polling.
     if os.environ.get("FIRESTORE_INBOX_POLL_ENABLED", "1") != "0":
       coros.append(projectors.poll_firestore_inbox(self.stdout, self.stderr, self.style))
+
+    # Automated synthetic health probe for the Event Projections loop (replaces the old
+    # manual Settings verification button); result surfaces on the platform status page.
+    # Set EVENT_PROJECTIONS_MONITOR_ENABLED=0 to disable.
+    if os.environ.get("EVENT_PROJECTIONS_MONITOR_ENABLED", "1") != "0":
+      coros.append(
+        synthetic.event_projections_monitor_scheduler(self.stdout, self.stderr, self.style)
+      )
 
     for coro in coros:
       task = asyncio.create_task(coro)

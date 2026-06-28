@@ -347,6 +347,32 @@ def list_services(request, page_id: str):
         sla=sla,
       )
     )
+
+  # Surface automated synthetic checks (e.g. the Event Projections loop) as components
+  # on the platform status page. These are recorded by the telemetry worker, not pinged
+  # over HTTP, so they live in SyntheticMonitor rather than MonitoredService/Endpoints.
+  if is_platform:
+    from django.utils import timezone
+
+    from monitor.models import SyntheticMonitor
+
+    # If the worker stops reporting, the loop is effectively down.
+    stale_after = datetime.timedelta(minutes=5)
+    for sm in SyntheticMonitor.objects.all():
+      sm_status = sm.status
+      if timezone.now() - sm.checked_at > stale_after:
+        sm_status = "Outage"
+      out.append(
+        MonitoredServiceOut(
+          id=str(sm.id),
+          name=sm.name,
+          url="",
+          status_page_id=str(page.id),
+          created_at=sm.checked_at,
+          status=sm_status,
+          sla=100.0 if sm_status == "Operational" else 0.0,
+        )
+      )
   return out
 
 

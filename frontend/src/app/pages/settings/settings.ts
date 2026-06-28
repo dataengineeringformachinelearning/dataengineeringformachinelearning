@@ -32,15 +32,12 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
-import { getApp } from 'firebase/app';
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
 import {
   UnifiedSelect,
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
-import { FirestoreService } from '../../services/firestore.service';
 @Component({
   selector: 'app-settings',
   standalone: true,
@@ -74,7 +71,6 @@ export class Settings implements OnInit {
   private metaService = inject(Meta);
   public settingsService = inject(SettingsService);
   private http = inject(HttpClient);
-  public firestoreService = inject(FirestoreService);
 
   statusPages = this.settingsService.statusPages;
   selectedPage = this.settingsService.selectedPage;
@@ -163,11 +159,6 @@ export class Settings implements OnInit {
   subscriptionCancelAtPeriodEnd = signal<boolean>(false);
   billingSuccess = signal<string | null>(null);
   billingError = signal<string | null>(null);
-
-  // Event Projections Test
-  isTestingArchitecture = signal<boolean>(false);
-  projectionResult = signal<any>(null);
-  firestoreSubscription: any = null;
 
   constructor() {
     afterNextRender(() => {
@@ -379,93 +370,6 @@ export class Settings implements OnInit {
           this.cdr.markForCheck();
         },
       });
-  }
-
-  async verifyEventProjections() {
-    const uid = this.authService.auth?.currentUser?.uid;
-    if (!uid) return;
-
-    this.isTestingArchitecture.set(true);
-    this.projectionResult.set({ status: 'queued', message: 'Waiting for worker projection...' });
-    this.cdr.markForCheck();
-
-    if (this.firestoreSubscription) {
-      this.firestoreSubscription.unsubscribe();
-    }
-
-    let gotProjection = false;
-
-    const projectionTimeout = setTimeout(() => {
-      if (this.isTestingArchitecture()) {
-        this.projectionResult.set({
-          error: 'Projection timeout',
-          message:
-            'Event was queued but no Firestore update arrived within 30s. Ensure telemetry_worker and outbox_relay are running.',
-        });
-        this.isTestingArchitecture.set(false);
-        this.cdr.markForCheck();
-      }
-    }, 30000);
-
-    this.firestoreSubscription = this.firestoreService.getRealtimeStats().subscribe({
-      next: data => {
-        if (data && (data['action_processed'] || data['active_endpoints'] !== undefined)) {
-          gotProjection = true;
-          clearTimeout(projectionTimeout);
-          this.projectionResult.set(data);
-          this.isTestingArchitecture.set(false);
-          this.cdr.markForCheck();
-        }
-      },
-      error: err => {
-        clearTimeout(projectionTimeout);
-        console.error('Firestore subscription error:', err);
-        this.projectionResult.set({
-          error: err.message || 'Permission denied connecting to Firestore.',
-        });
-        this.isTestingArchitecture.set(false);
-        this.cdr.markForCheck();
-      },
-    });
-
-    try {
-      const app = getApp();
-      const functions = getFunctions(app, 'us-east4');
-      const isLocal =
-        typeof window !== 'undefined' &&
-        (window.location.hostname.includes('localhost') ||
-          window.location.hostname.includes('127.0.0.1'));
-      if (isLocal) {
-        connectFunctionsEmulator(functions, '127.0.0.1', 5001);
-      }
-
-      const ingestEvent = httpsCallable(functions, 'ingestEvent');
-      const idempotencyKey = `verify-${uid}-${Date.now()}`;
-      const result = await ingestEvent({
-        action: 'get_stats',
-        uid,
-        version: '1.0',
-        idempotency_key: idempotencyKey,
-        payload: { source: 'settings_verification' },
-      });
-      if (!gotProjection) {
-        this.projectionResult.set({
-          status: 'accepted',
-          gateway: (result.data as any)?.message || 'Event queued successfully.',
-          message: 'Waiting for Django worker to project stats into Firestore...',
-        });
-        this.cdr.markForCheck();
-      }
-    } catch (e) {
-      clearTimeout(projectionTimeout);
-      console.error('Failed to trigger ingestEvent:', e);
-      this.projectionResult.set({
-        error: 'Failed to trigger Gateway',
-        details: (e as any)?.message,
-      });
-      this.isTestingArchitecture.set(false);
-      this.cdr.markForCheck();
-    }
   }
 
   loadIntegrations() {

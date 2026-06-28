@@ -590,3 +590,29 @@ class PlaybookAction(models.Model):
 
   def __str__(self):
     return f"{self.playbook.name} - {self.action_type}"
+
+
+class SyntheticMonitor(models.Model):
+  """Latest result of an automated synthetic health probe (e.g. the Event Projections
+  loop), surfaced as a component on the platform status page. One row per named check;
+  the worker upserts it on each probe."""
+
+  STATUS_CHOICES = [
+    ("Operational", "Operational"),
+    ("Degraded", "Degraded"),
+    ("Outage", "Outage"),
+  ]
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  name = models.CharField(max_length=255, unique=True)
+  status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Operational")
+  latency_ms = models.IntegerField(null=True, blank=True)
+  detail = models.CharField(max_length=500, blank=True, default="")
+  checked_at = models.DateTimeField(auto_now=True)
+
+  class Meta:
+    db_table = "synthetic_monitors"
+    ordering = ["name"]
+
+  def __str__(self):
+    return f"{self.name} ({self.status})"

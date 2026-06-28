@@ -43,7 +43,7 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 ### 2.3 Actors & workflows
 
 - **Anonymous visitors** read published status pages and the world-readable `platform-status` sentinel only (ABAC).
-- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA required for writes), and verify the Event Projections loop in Settings.
+- **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA required for writes); the Event Projections loop is monitored automatically by a synthetic probe and shown on the public `platform-status` page.
 - **API integrators** stream data through `/api/v1/ingest` using hashed API keys scoped to `account_id`.
 - **Platform operators** manage Railway services, Firebase/GCP deploy workflows, Infisical secrets, and the internal vulnerability Kanban.
 

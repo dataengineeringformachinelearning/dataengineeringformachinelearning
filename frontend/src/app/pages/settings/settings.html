@@ -679,53 +679,6 @@
           </div>
         </div>
 
-        <!-- Event Projections Verification -->
-        <div class="status-card-outlined mfa-settings-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
-              <mat-icon>speed</mat-icon>
-              Event Projections Verification
-            </h2>
-          </div>
-          <div class="card-body-clean">
-            <div>
-              <p class="embed-desc">
-                Test the end-to-end Event Projections flow (fast path): Angular -> Firebase Function
-                (ingestEvent) -> Redpanda (public SASL-authenticated endpoint) -> Django Worker ->
-                Firestore (deml DB) -> Angular via onSnapshot. For maximum speed use the public
-                authenticated Redpanda listener (no polling). Requires the Redpanda public listener
-                + SASL user configured and functions + Firestore "deml" DB + rules.
-              </p>
-
-              <div class="mfa-enrollment-form panel-clean">
-                <button
-                  mat-flat-button
-                  color="accent"
-                  (click)="verifyEventProjections()"
-                  [disabled]="isTestingArchitecture()"
-                  class="mfa-btn"
-                >
-                  @if (isTestingArchitecture()) {
-                  <span class="btn-spinner"></span>
-                  } @else { Test Event Projections }
-                </button>
-              </div>
-
-              @if (projectionResult() && !projectionResult().error) {
-              <div class="alert alert-success mt-3 u-style-c5a969">
-                <strong>Event Projections Success! Data from Firestore:</strong>
-                <pre>{{ projectionResult() | json }}</pre>
-              </div>
-              } @if (projectionResult() && projectionResult().error) {
-              <div class="alert alert-error mt-3">
-                <strong>Event Projections Error</strong>
-                <pre>{{ projectionResult() | json }}</pre>
-              </div>
-              }
-            </div>
-          </div>
-        </div>
-
         <!-- API Keys & Security Credentials -->
         <div class="status-card-outlined api-keys-card">
           <div class="card-header-clean">
