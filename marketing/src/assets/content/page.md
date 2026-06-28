@@ -119,7 +119,7 @@ flowchart TB
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; check the "Event Projections" component on platform-status                       |
 | **Degraded — Redpanda unreachable from Functions** | `ingestEvent` writes fallback rows to Firestore `events` collection; `telemetry_worker` still processes broker when Railway-internal path works | Confirm `REDPANDA_BROKERS` uses public endpoint for Functions or accept Firestore fallback; check `frontend-events-dlq` depth |
-| **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-outbox-relay`; inspect DLQ topic; replay idempotent keys                            |
+| **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-relay`; inspect DLQ topic; replay idempotent keys                                   |
 | **Maintenance**                                    | Migrations, dependency upgrades, model retraining                                                                                               | Railway rolling deploy on `main` merge; Firebase workflow deploys Functions/rules independently                               |
 | **Incident / public comms**                        | Outage or degradation visible to users                                                                                                          | Publish via Sanity; `platform-status` remains world-readable; unpublished customer pages stay private                         |
 
@@ -170,7 +170,7 @@ Production runs **14 Railway services** (see [Chapter 22](#chapter-22-production
 | `deml-postgres`                           | System of record                                                        |
 | `deml-queue`                              | Redpanda (`deml-queue.railway.internal:9092` for inter-service traffic) |
 | `deml-telemetry-worker`                   | Projection engine + pingers + analytics rollups                         |
-| `deml-outbox-relay`                       | Reliable outbox publisher                                               |
+| `deml-relay`                              | Reliable outbox publisher                                               |
 | `deml-ml-worker`                          | Training and inference jobs                                             |
 | `deml-security-worker`                    | Threat intel, retention, Stripe sync, key rotation                      |
 | `deml-clickhouse` + `deml-otel-collector` | Distributed tracing / CES inputs                                        |
@@ -1520,11 +1520,11 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 - `STRUCTURED_LOGS=true`
 - Threat-intel keys if enrichment is enabled
 
-### 4b. Outbox Relay (`deml-outbox-relay`)
+### 4b. Outbox Relay (`deml-relay`)
 
 Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable Django API → Kafka delivery (separate from the `ingestEvent` / `frontend-events` path used by client commands).
 
-**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-outbox-relay` Railway service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
+**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-relay` Railway service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
 
 **How to add the missing service in Railway:**
 

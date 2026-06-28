@@ -40,7 +40,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
 | [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
 
-**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path. The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
+**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-relay` runs `outbox_relay` to publish from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
 
 ---
 
@@ -63,7 +63,7 @@ The platform implements an **Event Projections** architecture for client-driven 
 - **Commands** (writes): Angular Client → Firebase Cloud Functions (`ingestEvent`) → Redpanda (topic: `frontend-events`) with Firestore fallback. Django API paths use a **Transactional Outbox** pattern (events written atomically to Postgres `OutboxEvent` table before returning).
 - **Projections**: Django `telemetry_worker` consumes from Redpanda, enriches data (e.g. active endpoint counts from Postgres), and writes to Firestore (named `deml` DB). Projections are **idempotent** (using stable message keys) and support a dead-letter queue (`frontend-events-dlq`) for failed messages.
 - **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/{uid}/data/stats`).
-- Events include a `version` field for schema governance. A dedicated `outbox_relay` management command ensures reliable publishing from the Outbox.
+- Events include a `version` field for schema governance. The `deml-relay` Railway service runs the `outbox_relay` management command to publish reliably from the Outbox.
 
 ```mermaid
 flowchart TB

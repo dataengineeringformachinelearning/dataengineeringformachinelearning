@@ -79,13 +79,13 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 
 ## 6. Operational modes
 
-| Mode                            | Indicators                               | Actions                                                                             |
-| ------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------- |
-| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                                  |
-| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; Railway internal broker unaffected  |
-| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-outbox-relay`; inspect `frontend-events-dlq` |
-| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                                |
-| **Maintenance**                 | Deploy in progress                       | Railway rolling deploy; expect brief projection lag                                 |
+| Mode                            | Indicators                               | Actions                                                                            |
+| ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                                 |
+| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; Railway internal broker unaffected |
+| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-relay`; inspect `frontend-events-dlq`       |
+| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                               |
+| **Maintenance**                 | Deploy in progress                       | Railway rolling deploy; expect brief projection lag                                |
 
 ## 7. Service matrix (Railway)
 
@@ -96,7 +96,7 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 | `deml-postgres`                    | OLTP database                  |
 | `deml-queue`                       | Redpanda broker                |
 | `deml-telemetry-worker`            | Projections, pingers, rollups  |
-| `deml-outbox-relay`                | Outbox publisher               |
+| `deml-relay`                       | Outbox publisher               |
 | `deml-ml-worker`                   | Training / inference           |
 | `deml-security-worker`             | Intel, retention, billing sync |
 | `deml-clickhouse`                  | OLAP                           |
@@ -111,7 +111,7 @@ Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-railway-depl
 
 | Cadence             | Job                                    | Owner                           |
 | ------------------- | -------------------------------------- | ------------------------------- |
-| 5s                  | `outbox_relay`                         | `deml-outbox-relay`             |
+| 5s                  | `outbox_relay`                         | `deml-relay`                    |
 | Continuous          | Kafka consumers                        | `telemetry_worker`, `ml_worker` |
 | 30s                 | Service pingers                        | `telemetry_worker`              |
 | 1h                  | Threat intel                           | `security_worker`               |

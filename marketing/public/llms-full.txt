@@ -40,7 +40,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
 | [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
 
-**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path. The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
+**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-relay` runs `outbox_relay` to publish from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
 
 ---
 
@@ -63,7 +63,7 @@ The platform implements an **Event Projections** architecture for client-driven 
 - **Commands** (writes): Angular Client → Firebase Cloud Functions (`ingestEvent`) → Redpanda (topic: `frontend-events`) with Firestore fallback. Django API paths use a **Transactional Outbox** pattern (events written atomically to Postgres `OutboxEvent` table before returning).
 - **Projections**: Django `telemetry_worker` consumes from Redpanda, enriches data (e.g. active endpoint counts from Postgres), and writes to Firestore (named `deml` DB). Projections are **idempotent** (using stable message keys) and support a dead-letter queue (`frontend-events-dlq`) for failed messages.
 - **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/{uid}/data/stats`).
-- Events include a `version` field for schema governance. A dedicated `outbox_relay` management command ensures reliable publishing from the Outbox.
+- Events include a `version` field for schema governance. The `deml-relay` Railway service runs the `outbox_relay` management command to publish reliably from the Outbox.
 
 ```mermaid
 flowchart TB
@@ -410,13 +410,13 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 
 ## 6. Operational modes
 
-| Mode                            | Indicators                               | Actions                                                                             |
-| ------------------------------- | ---------------------------------------- | ----------------------------------------------------------------------------------- |
-| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                                  |
-| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; Railway internal broker unaffected  |
-| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-outbox-relay`; inspect `frontend-events-dlq` |
-| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                                |
-| **Maintenance**                 | Deploy in progress                       | Railway rolling deploy; expect brief projection lag                                 |
+| Mode                            | Indicators                               | Actions                                                                            |
+| ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------- |
+| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                                 |
+| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; Railway internal broker unaffected |
+| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-relay`; inspect `frontend-events-dlq`       |
+| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                               |
+| **Maintenance**                 | Deploy in progress                       | Railway rolling deploy; expect brief projection lag                                |
 
 ## 7. Service matrix (Railway)
 
@@ -427,7 +427,7 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 | `deml-postgres`                    | OLTP database                  |
 | `deml-queue`                       | Redpanda broker                |
 | `deml-telemetry-worker`            | Projections, pingers, rollups  |
-| `deml-outbox-relay`                | Outbox publisher               |
+| `deml-relay`                       | Outbox publisher               |
 | `deml-ml-worker`                   | Training / inference           |
 | `deml-security-worker`             | Intel, retention, billing sync |
 | `deml-clickhouse`                  | OLAP                           |
@@ -442,7 +442,7 @@ Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-railway-depl
 
 | Cadence             | Job                                    | Owner                           |
 | ------------------- | -------------------------------------- | ------------------------------- |
-| 5s                  | `outbox_relay`                         | `deml-outbox-relay`             |
+| 5s                  | `outbox_relay`                         | `deml-relay`                    |
 | Continuous          | Kafka consumers                        | `telemetry_worker`, `ml_worker` |
 | 30s                 | Service pingers                        | `telemetry_worker`              |
 | 1h                  | Threat intel                           | `security_worker`               |
@@ -491,30 +491,6 @@ Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-
 | [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles |
 | [Appendix C](../BOOK.md#appendix-c-railway-deployment)               | Railway deploy                    |
 | [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                         |
-
-
-# PyTorch Integration
-
-_(Coming Soon)_
-
-This integration will detail how to use our custom PyTorch `DataLoader` and `Dataset` classes to fetch and stream training data from our platform, or run remote inference from within your PyTorch scripts.
-
-**Example Planned Usage:**
-
-```python
-import torch
-from our_platform_sdk.pytorch import PlatformDataLoader
-
-loader = PlatformDataLoader(
-    api_key="YOUR_API_KEY",  # pragma: allowlist secret
-    endpoint="https://your-domain.com/api/v1/ingest",
-    batch_size=64,
-    shuffle=True
-)
-
-for batch in loader:
-    predictions = model(batch)
-```
 
 
 # Kubernetes Integration
@@ -569,26 +545,27 @@ For the most robust integration, we recommend deploying a lightweight Sidecar Pr
 We are currently developing a native **Kubernetes Operator** (`MLPlatform CRD`) that will allow you to dynamically provision inference routes and data pipelines declaratively.
 
 
-# TensorFlow Integration
+# PyTorch Integration
 
 _(Coming Soon)_
 
-This integration will detail how to use our Python SDK to natively stream data from our platform directly into a `tf.data.Dataset` for highly optimized, batched training loops.
+This integration will detail how to use our custom PyTorch `DataLoader` and `Dataset` classes to fetch and stream training data from our platform, or run remote inference from within your PyTorch scripts.
 
 **Example Planned Usage:**
 
 ```python
-import tensorflow as tf
-from our_platform_sdk.tensorflow import PlatformDataset
+import torch
+from our_platform_sdk.pytorch import PlatformDataLoader
 
-# Initialize a high-throughput stream
-dataset = PlatformDataset(
+loader = PlatformDataLoader(
     api_key="YOUR_API_KEY",  # pragma: allowlist secret
     endpoint="https://your-domain.com/api/v1/ingest",
-    batch_size=32
+    batch_size=64,
+    shuffle=True
 )
 
-model.fit(dataset, epochs=10)
+for batch in loader:
+    predictions = model(batch)
 ```
 
 
@@ -615,6 +592,29 @@ df.writeStream
   .option("api_key", "YOUR_API_KEY")
   .option("endpoint", "https://your-domain.com/api/v1/ingest")
   .start()
+```
+
+
+# TensorFlow Integration
+
+_(Coming Soon)_
+
+This integration will detail how to use our Python SDK to natively stream data from our platform directly into a `tf.data.Dataset` for highly optimized, batched training loops.
+
+**Example Planned Usage:**
+
+```python
+import tensorflow as tf
+from our_platform_sdk.tensorflow import PlatformDataset
+
+# Initialize a high-throughput stream
+dataset = PlatformDataset(
+    api_key="YOUR_API_KEY",  # pragma: allowlist secret
+    endpoint="https://your-domain.com/api/v1/ingest",
+    batch_size=32
+)
+
+model.fit(dataset, epochs=10)
 ```
 
 
@@ -748,7 +748,7 @@ flowchart TB
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
 | **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; check the "Event Projections" component on platform-status                       |
 | **Degraded — Redpanda unreachable from Functions** | `ingestEvent` writes fallback rows to Firestore `events` collection; `telemetry_worker` still processes broker when Railway-internal path works | Confirm `REDPANDA_BROKERS` uses public endpoint for Functions or accept Firestore fallback; check `frontend-events-dlq` depth |
-| **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-outbox-relay`; inspect DLQ topic; replay idempotent keys                            |
+| **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-relay`; inspect DLQ topic; replay idempotent keys                                   |
 | **Maintenance**                                    | Migrations, dependency upgrades, model retraining                                                                                               | Railway rolling deploy on `main` merge; Firebase workflow deploys Functions/rules independently                               |
 | **Incident / public comms**                        | Outage or degradation visible to users                                                                                                          | Publish via Sanity; `platform-status` remains world-readable; unpublished customer pages stay private                         |
 
@@ -799,7 +799,7 @@ Production runs **14 Railway services** (see [Chapter 22](#chapter-22-production
 | `deml-postgres`                           | System of record                                                        |
 | `deml-queue`                              | Redpanda (`deml-queue.railway.internal:9092` for inter-service traffic) |
 | `deml-telemetry-worker`                   | Projection engine + pingers + analytics rollups                         |
-| `deml-outbox-relay`                       | Reliable outbox publisher                                               |
+| `deml-relay`                              | Reliable outbox publisher                                               |
 | `deml-ml-worker`                          | Training and inference jobs                                             |
 | `deml-security-worker`                    | Threat intel, retention, Stripe sync, key rotation                      |
 | `deml-clickhouse` + `deml-otel-collector` | Distributed tracing / CES inputs                                        |
@@ -2149,11 +2149,11 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 - `STRUCTURED_LOGS=true`
 - Threat-intel keys if enrichment is enabled
 
-### 4b. Outbox Relay (`deml-outbox-relay`)
+### 4b. Outbox Relay (`deml-relay`)
 
 Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable Django API → Kafka delivery (separate from the `ingestEvent` / `frontend-events` path used by client commands).
 
-**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-outbox-relay` Railway service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
+**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-relay` Railway service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
 
 **How to add the missing service in Railway:**
 
