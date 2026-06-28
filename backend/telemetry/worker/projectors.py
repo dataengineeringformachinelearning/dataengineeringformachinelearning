@@ -19,8 +19,7 @@ from utils.service_urls import get_normalized_service_info
 logger = logging.getLogger(__name__)
 
 
-@sync_to_async
-def process_frontend_event(
+def _project_frontend_event(
   stdout,
   stderr,
   uid: str,
@@ -28,6 +27,9 @@ def process_frontend_event(
   event_payload: dict,
   idempotency_key: str | None = None,
 ):
+  """Synchronous core projector. Callable directly from sync contexts (e.g. the
+  Firestore inbox poller) and via the `process_frontend_event` async wrapper from the
+  Kafka consume loop."""
   from firebase_admin import firestore
 
   db = firestore.client(database_id="deml")
@@ -68,6 +70,10 @@ def process_frontend_event(
     stderr.write(f"Error processing frontend event for user {uid}: {e}")
 
 
+# Async wrapper used by the Kafka consume loop (which is async and awaits it).
+process_frontend_event = sync_to_async(_project_frontend_event)
+
+
 @sync_to_async
 def process_pending_frontend_commands(stdout, stderr, style):
   """Poll the frontend_command_inbox (written by ingestEvent fallback) and project via same path.
@@ -95,8 +101,11 @@ def process_pending_frontend_commands(stdout, stderr, style):
           outer_payload.get("idempotency_key") if isinstance(outer_payload, dict) else None
         )
         if uid and action:
-          # Reuse the same projector (idempotent)
-          process_frontend_event(stdout, stderr, uid, action, outer_payload, idem)
+          # Call the SYNC core directly. This poller already runs in a sync context
+          # (@sync_to_async), so it must NOT call the async `process_frontend_event`
+          # wrapper — doing so returned an un-awaited coroutine and the projection
+          # silently never ran (inbox docs were deleted without writing stats).
+          _project_frontend_event(stdout, stderr, uid, action, outer_payload, idem)
           count += 1
         # Remove regardless to keep collection small (idempotency guards correctness)
         d.reference.delete()
