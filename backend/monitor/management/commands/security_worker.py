@@ -7,10 +7,20 @@ from asgiref.sync import sync_to_async
 from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+from utils.retention import DEK_ROTATION_MAX_AGE_DAYS, RAW_TELEMETRY_RETENTION_DAYS
 
 from monitor.models import DataEncryptionKey
 
 logger = logging.getLogger(__name__)
+
+# Stagger daily jobs so they do not hammer Postgres/Stripe at worker startup.
+DAILY_COMPLIANCE_OFFSET_SECONDS = 0
+DAILY_DARK_WEB_OFFSET_SECONDS = 3600
+DAILY_SUBSCRIPTION_OFFSET_SECONDS = 7200
+DAILY_VACUUM_OFFSET_SECONDS = 10800
+
+HOURLY_INTERVAL_SECONDS = 3600
+DAILY_INTERVAL_SECONDS = 86400
 
 
 class Command(BaseCommand):
@@ -18,56 +28,45 @@ class Command(BaseCommand):
 
   def __init__(self, *args: Any, **kwargs: Any) -> None:
     super().__init__(*args, **kwargs)
-    self.background_tasks = set()
+    self.background_tasks: set[asyncio.Task] = set()
 
   def handle(self, *args: Any, **options: Any) -> None:
     self.stdout.write(self.style.SUCCESS("Starting Security Worker..."))
     asyncio.run(self.run_worker())
 
   async def run_worker(self) -> None:
-    # Schedule periodic tasks
-    # 1. Threat Intel Sync: Hourly
-    # 2. Key Rotation & DB Cleanup check: Daily
-    task1 = asyncio.create_task(self.threat_intel_scheduler())
-    self.background_tasks.add(task1)
-    task1.add_done_callback(self.background_tasks.discard)
+    schedulers = (
+      self.threat_intel_scheduler(),
+      self.compliance_scheduler(),
+      self.dark_web_scheduler(),
+      self.subscription_sweep_scheduler(),
+      self.optimize_scheduler(),
+    )
+    for coro in schedulers:
+      task = asyncio.create_task(coro)
+      self.background_tasks.add(task)
+      task.add_done_callback(self.background_tasks.discard)
 
-    task2 = asyncio.create_task(self.compliance_scheduler())
-    self.background_tasks.add(task2)
-    task2.add_done_callback(self.background_tasks.discard)
-
-    task3 = asyncio.create_task(self.dark_web_scheduler())
-    self.background_tasks.add(task3)
-    task3.add_done_callback(self.background_tasks.discard)
-
-    task4 = asyncio.create_task(self.subscription_sweep_scheduler())
-    self.background_tasks.add(task4)
-    task4.add_done_callback(self.background_tasks.discard)
-
-    task5 = asyncio.create_task(self.optimize_scheduler())
-    self.background_tasks.add(task5)
-    task5.add_done_callback(self.background_tasks.discard)
-
-    # Keep worker alive
     while True:
-      await asyncio.sleep(3600)
+      await asyncio.sleep(HOURLY_INTERVAL_SECONDS)
 
-  async def threat_intel_scheduler(self) -> None:
+  @staticmethod
+  @sync_to_async
+  def run_sync_command(cmd_name: str, *cmd_args: Any) -> None:
     from django.db import close_old_connections
 
-    @sync_to_async
-    def run_sync_command(cmd_name):
+    close_old_connections()
+    try:
+      call_command(cmd_name, *cmd_args)
+    finally:
       close_old_connections()
-      try:
-        call_command(cmd_name)
-      finally:
-        close_old_connections()
 
+  async def threat_intel_scheduler(self) -> None:
     self.stdout.write(self.style.SUCCESS("Starting Threat Intel sync scheduler..."))
     while True:
       try:
         self.stdout.write("Security Worker: Syncing threat intelligence data...")
-        await run_sync_command("fetch_threat_intel")
+        await self.run_sync_command("fetch_threat_intel")
         self.stdout.write(
           self.style.SUCCESS("Security Worker: Threat intelligence sync completed.")
         )
@@ -76,85 +75,55 @@ class Command(BaseCommand):
           self.style.ERROR(f"Security Worker: Threat intelligence sync failed: {e}")
         )
 
-      # Sync hourly (3600 seconds)
-      await asyncio.sleep(3600)
+      await asyncio.sleep(HOURLY_INTERVAL_SECONDS)
 
   async def compliance_scheduler(self) -> None:
-    from django.db import close_old_connections
-
-    @sync_to_async
-    def run_sync_command(cmd_name):
-      close_old_connections()
-      try:
-        call_command(cmd_name)
-      finally:
-        close_old_connections()
-
     self.stdout.write(
-      self.style.SUCCESS("Starting Compliance (30-day rotation/cleanup) scheduler...")
+      self.style.SUCCESS(
+        f"Starting Compliance ({RAW_TELEMETRY_RETENTION_DAYS}-day retention/cleanup) scheduler..."
+      )
     )
+    await asyncio.sleep(DAILY_COMPLIANCE_OFFSET_SECONDS)
     while True:
       try:
-        # Check active DEK age
         await self.check_and_rotate_keys()
 
-        # Trigger DB logs/telemetry cleanup
         self.stdout.write(
-          "Security Worker: Cleaning up database telemetry and logs older than 30 days..."
+          f"Security Worker: Running db_cleanup "
+          f"(retention: {RAW_TELEMETRY_RETENTION_DAYS} days)..."
         )
-        await run_sync_command("db_cleanup")
+        await self.run_sync_command("db_cleanup")
         self.stdout.write(self.style.SUCCESS("Security Worker: Database cleanup completed."))
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Compliance task run failed: {e}"))
 
-      # Run once every 24 hours (86400 seconds)
-      await asyncio.sleep(86400)
+      await asyncio.sleep(DAILY_INTERVAL_SECONDS)
 
   async def dark_web_scheduler(self) -> None:
-    from django.db import close_old_connections
-
-    @sync_to_async
-    def run_sync_command(cmd_name):
-      close_old_connections()
-      try:
-        call_command(cmd_name)
-      finally:
-        close_old_connections()
-
     self.stdout.write(self.style.SUCCESS("Starting Dark Web Scanner scheduler..."))
+    await asyncio.sleep(DAILY_DARK_WEB_OFFSET_SECONDS)
     while True:
       try:
         self.stdout.write("Security Worker: Running Dark Web and OSINT scanner...")
-        await run_sync_command("scan_dark_web")
+        await self.run_sync_command("scan_dark_web")
         self.stdout.write(self.style.SUCCESS("Security Worker: Dark Web scan completed."))
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Dark Web scan failed: {e}"))
 
-      # Run once every 24 hours (86400 seconds)
-      await asyncio.sleep(86400)
+      await asyncio.sleep(DAILY_INTERVAL_SECONDS)
 
   async def subscription_sweep_scheduler(self) -> None:
-    from django.db import close_old_connections
-
-    @sync_to_async
-    def run_sync_command(cmd_name):
-      close_old_connections()
-      try:
-        call_command(cmd_name)
-      finally:
-        close_old_connections()
-
     self.stdout.write(self.style.SUCCESS("Starting Subscription Sweep scheduler..."))
+    await asyncio.sleep(DAILY_SUBSCRIPTION_OFFSET_SECONDS)
     while True:
       try:
         self.stdout.write("Security Worker: Running subscription sync sweep...")
-        await run_sync_command("sync_subscriptions")
+        await self.run_sync_command("sync_subscriptions")
         self.stdout.write(self.style.SUCCESS("Security Worker: Subscription sweep completed."))
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Subscription sweep failed: {e}"))
 
-      # Run once every 24 hours (86400 seconds)
-      await asyncio.sleep(86400)
+      await asyncio.sleep(DAILY_INTERVAL_SECONDS)
 
   @sync_to_async
   def check_and_rotate_keys(self) -> None:
@@ -175,10 +144,11 @@ class Command(BaseCommand):
         return
 
       age = timezone.now() - active_key.created_at
-      if age >= timedelta(days=30):
+      if age >= timedelta(days=DEK_ROTATION_MAX_AGE_DAYS):
         self.stdout.write(
           self.style.WARNING(
-            f"Active Data Encryption Key ({active_key.id}) is {age.days} days old (exceeds 30-day limit). Triggering key rotation..."
+            f"Active Data Encryption Key ({active_key.id}) is {age.days} days old "
+            f"(exceeds {DEK_ROTATION_MAX_AGE_DAYS}-day limit). Triggering key rotation..."
           )
         )
         call_command("rotate_keys")
@@ -193,14 +163,14 @@ class Command(BaseCommand):
 
   async def optimize_scheduler(self) -> None:
     self.stdout.write(self.style.SUCCESS("Starting Database Optimizer scheduler..."))
+    await asyncio.sleep(DAILY_VACUUM_OFFSET_SECONDS)
     while True:
       try:
         await self.optimize_database()
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Database optimization failed: {e}"))
 
-      # Run once every 24 hours (86400 seconds)
-      await asyncio.sleep(86400)
+      await asyncio.sleep(DAILY_INTERVAL_SECONDS)
 
   @sync_to_async
   def optimize_database(self) -> None:
@@ -213,7 +183,6 @@ class Command(BaseCommand):
       )
       if connection.vendor == "postgresql":
         with connection.cursor() as cursor:
-          # VACUUM cannot run in a transaction block
           connection.autocommit = True
           cursor.execute("VACUUM ANALYZE;")
           connection.autocommit = False

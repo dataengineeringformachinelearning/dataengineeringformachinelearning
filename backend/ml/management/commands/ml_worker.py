@@ -163,18 +163,16 @@ class Command(BaseCommand):
       close_old_connections()
 
   async def periodic_scheduler(self):
-    self.stdout.write(self.style.SUCCESS("Starting periodic daily training & cleanup scheduler..."))
+    self.stdout.write(self.style.SUCCESS("Starting periodic daily training scheduler..."))
     await asyncio.sleep(10)
     while True:
       try:
-        self.stdout.write("Periodic Scheduler: Triggering database cleanup and full retraining...")
+        self.stdout.write("Periodic Scheduler: Triggering full model retraining...")
         from django.core.management import call_command
 
         await sync_to_async(call_command)("train_all_models")
         self.stdout.write(
-          self.style.SUCCESS(
-            "Periodic Scheduler: Successfully completed daily training & cleanup run."
-          )
+          self.style.SUCCESS("Periodic Scheduler: Successfully completed daily training run.")
         )
 
         from utils.discord import send_discord_alert

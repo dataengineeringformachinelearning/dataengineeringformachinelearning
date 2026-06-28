@@ -853,7 +853,9 @@ Deep within my Django backend architecture, I deploy a fleet of long-lived, asyn
 
 - **Hourly:** The threat landscape changes by the minute. My `security_worker` awakens every hour to continuously fetch, parse, and integrate the latest global Indicators of Compromise (IoCs) and threat intelligence feeds. This ensures my API gateways are always armed with the most recent definitions required to block emerging zero-day botnets and malicious scrapers.
 - **Daily:** Telemetry data is only valuable if the models trained upon it are accurate. The `ml_worker` executes daily, automatically securely aggregating the previous 24 hours of global operational data across all tenants. It uses this anonymized, platform-wide data to retrain my predictive SLA forecasting algorithms and a single, unified global PyTorch threat model (`platform_threat_model.pt`). This continuous recalibration creates a "herd immunity" effect, ensuring the intelligence layer never stagnates while strictly preserving tenant privacy.
-- **Every 7 Days:** To enforce strict compliance and data minimization policies, the `security_worker` executes a weekly purge, cleanly archiving and destroying stale, low-resolution telemetry data from PostgreSQL. Simultaneously, it autonomously interacts with Google Cloud KMS to trigger the rotation of all active Data Encryption Keys (DEKs), re-enveloping my encrypted payloads and maintaining my zero-compromise cryptographic posture without any human intervention.
+- **Daily (30-Day Retention):** To enforce strict compliance and data minimization policies, the `security_worker` runs `db_cleanup` every 24 hours. This idempotent pass purges raw `Endpoints`, `AuditLog`, and `CookieConsent` records older than **30 days**, removes legacy duplicate `ThreatIntelligence` rows, and archives published `OutboxEvent` rows. High-value business objects (`BugReport`, `ThreatReport`, `TrainingRun`, tenant configuration) are retained indefinitely. Long-term OLAP telemetry is routed to ClickHouse (30-day TTL via the OTEL collector).
+- **Daily (Billing & Accounts):** The same `security_worker` runs `sync_subscriptions` to reconcile Stripe subscription state—downgrading lapsed Pro users and upgrading active subscribers. Account deletion is **on-demand** via `DELETE /api/v1/auth/delete-account` (Django `CASCADE`); there is no scheduled dormant-account purge.
+- **Daily (DEK Compliance):** The `security_worker` checks whether the active Data Encryption Key (DEK) exceeds its 30-day lifecycle. When rotation is required, it triggers `rotate_keys` to re-envelope encrypted third-party integration credentials (GA4, Microsoft Clarity, etc.).
 
 ### GitHub Actions Workflows
 
@@ -1492,60 +1494,66 @@ After any build-time variable change on `deml-frontend`, trigger a redeploy.
 - **Region**: US East (Virginia, USA)
 - **Replicas**: 1 replica per service.
 
-## Appendix D: Release Schedule & Roadmap
+## Appendix D: Maintenance & Automation Schedule
 
-This document outlines the concrete, implemented automations that are actively running in the repository via GitHub Actions workflows, Django management commands, and continuously running background workers.
+This appendix is the **single source of truth** for all scheduled maintenance: background workers, data retention, billing reconciliation, and GitHub Actions. Constants live in `backend/utils/retention.py`.
 
-## Continuous Background Workers
+### Continuous Background Workers
 
-**Focus:** Real-time stream processing, active health pinging, hourly aggregations, and asynchronous ML training.
-**Execution:** These run continuously as standalone services (e.g., via Docker Compose or Railway).
+| Service          | Command                             | Cadence                   | Responsibility                                                        |
+| ---------------- | ----------------------------------- | ------------------------- | --------------------------------------------------------------------- |
+| Outbox Relay     | `python manage.py outbox_relay`     | Every **5s**              | Publishes `OutboxEvent` rows to Redpanda                              |
+| Telemetry Worker | `python manage.py telemetry_worker` | Continuous                | Kafka stream consumption                                              |
+| Telemetry Worker | ↑                                   | Every **30s**             | Active service pinger (`pingers.py`)                                  |
+| Telemetry Worker | ↑                                   | Every **1h**              | `aggregate_analytics` rollups                                         |
+| Telemetry Worker | ↑                                   | Every **6h**              | Lighthouse quality scans                                              |
+| ML Worker        | `python manage.py ml_worker`        | Continuous                | Kafka `ml-training-events` consumer                                   |
+| ML Worker        | ↑                                   | Every **24h**             | `train_all_models` (SLA, Threat, CES models)                          |
+| Security Worker  | `python manage.py security_worker`  | Every **1h**              | `fetch_threat_intel`                                                  |
+| Security Worker  | ↑                                   | Every **24h** (staggered) | `db_cleanup`, `scan_dark_web`, `sync_subscriptions`, `VACUUM ANALYZE` |
 
-- **Telemetry Worker (`python manage.py telemetry_worker`)**
-  - **Stream Processing:** Continuously consumes and processes Redpanda Kafka streams (`app-events`, `user-issues`) in near real-time.
-  - **Active Pinger:** Automatically pings and records the health status/latency of all monitored services every **30 seconds**.
-  - **Analytics Aggregation:** Runs the `aggregate_analytics` command every **1 hour** to synthesize raw telemetry, threat intelligence, and widget signals into streamlined Postgres time-series buckets.
+Daily security jobs are **staggered** (compliance at T+0h, dark-web at T+1h, billing at T+2h, vacuum at T+3h) to avoid thundering-herd load on Postgres and Stripe.
 
-- **ML Worker (`python manage.py ml_worker`)**
-  - **Event-Driven Training:** Continuously listens for `ml-training-events` on Redpanda to trigger on-demand model training for specific tenants.
-  - **Daily Fallback/Cleanup:** Automatically triggers full `train_all_models` (which includes `db_cleanup.py`) every **24 hours** to ensure no tenant is left behind.
+### Data Retention (`db_cleanup`)
 
-## Daily Cycle: Models & Threat Intelligence
+Owned exclusively by `security_worker` (not `train_all_models`). Policy constants: `RAW_TELEMETRY_RETENTION_DAYS = 30`.
 
-**Focus:** Continuous Learning and Threat Protection.
-**Workflow:** `.github/workflows/daily-automation.yml` (Runs daily at midnight UTC)
+| Data Class                                 | Retention  | Action                         |
+| ------------------------------------------ | ---------- | ------------------------------ |
+| `Endpoints` (raw ping telemetry)           | 30 days    | Deleted                        |
+| `AuditLog`                                 | 30 days    | Deleted                        |
+| `CookieConsent`                            | 30 days    | Deleted                        |
+| `OutboxEvent` (published)                  | 30 days    | Deleted                        |
+| `OutboxEvent` (DLQ, ≥5 failed attempts)    | 7 days     | Deleted                        |
+| `ThreatIntelligence`                       | Indefinite | Legacy duplicates removed only |
+| `BugReport`, `ThreatReport`, `TrainingRun` | Indefinite | Kept as system of record       |
+| ClickHouse OLAP spans                      | 30 days    | TTL in OTEL collector config   |
+| GCS object storage                         | 30 days    | Terraform lifecycle rule       |
 
-- **Automations:**
-  - Execute `fetch_threat_intel.py`: Contacts Google, Microsoft Clarity, Cloudflare, AbuseIPDB, and AlienVault OTX APIs to fetch fresh threat data and IP blacklists.
-  - Execute `train_all_models.py`: Retrains the predictive scaling and anomaly detection ML models for all active tenants.
-  - _Note: `train_all_models.py` natively triggers `db_cleanup.py` internally, which prunes stale telemetry and log records older than 7 days._
+### Billing & Account Lifecycle
 
-## Weekly Cycle: Dependency Management
+| Mechanism                            | Type      | Schedule                | Details                                                                                                                            |
+| ------------------------------------ | --------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `sync_subscriptions`                 | Scheduled | Daily (security_worker) | Stripe sweep: upgrades active subs, downgrades lapsed Pro users; preserves manual Pro grants (`tier=Pro`, no `stripe_customer_id`) |
+| Stripe webhooks                      | Real-time | On event                | `checkout.session.completed`, `customer.subscription.updated/deleted`                                                              |
+| `POST /api/v1/billing/sync`          | On-demand | User-initiated          | Manual subscription reconciliation                                                                                                 |
+| `DELETE /api/v1/auth/delete-account` | On-demand | User-initiated          | Django `CASCADE` deletes tenant data; Firebase identity removed client-side                                                        |
 
-**Focus:** Proactive Dependency Updates.
-**Workflow:** `.github/workflows/renovate.yml` (Runs weekly on Sundays)
+There is **no** scheduled purge of dormant accounts or orphaned Stripe customers.
 
-- **Automations:**
-  - **Renovate Bot**: Automatically scans and creates Pull Requests to update outdated packages across the stack.
+### GitHub Actions (Repository Maintenance)
 
-## 30-Day Cycle: Security & Maintenance
+| Workflow                      | Cadence                         | Purpose                              |
+| ----------------------------- | ------------------------------- | ------------------------------------ |
+| `renovate.yml`                | Weekly (Sun 00:00 UTC)          | Dependency update PRs                |
+| `30-60-90-automation.yml`     | Monthly (1st)                   | Semgrep SAST, `npm audit`, `uv lock` |
+| `30-60-90-automation.yml`     | Quarterly (Jan/Apr/Jul/Oct 1st) | Frontend build audit, `ruff check`   |
+| `purge-cloudflare-cache.yml`  | On deploy                       | CDN cache invalidation               |
+| `firebase-backend-deploy.yml` | Push to `main`                  | Cloud Functions + Firestore rules    |
+| `firebase-hosting-*.yml`      | Push/PR to `main`               | Marketing site deploy                |
 
-**Focus:** Vulnerability Scanning and Secret Rotation.
-**Workflow:** `.github/workflows/30-60-90-automation.yml` (Runs on the 1st of every month)
-
-- **Automations:**
-  - Execute `rotate_keys.py`: Rotates active API keys and integrations to prevent long-lived credential leaks.
-  - **Semgrep Audit**: Runs a static analysis vulnerability scan across the codebase.
-  - **Dependency Audit**: Runs `npm audit` for the frontend and `uv lock` checks for the backend to flag insecure dependencies.
-
-## 90-Day Cycle: System & Performance Audits
-
-**Focus:** Codebase Minification and Integrity.
-**Workflow:** `.github/workflows/30-60-90-automation.yml` (Runs quarterly)
-
-- **Automations:**
-  - **Frontend Build Audit**: Triggers a clean `npm run build` using the esbuild AOT compiler to enforce strict bundle size budgets and verify lazy loading compilation.
-  - **Backend Static Analysis**: Runs `ruff check .` to catch newly introduced linting/formatting deviations or dead code.
+> [!NOTE]
+> Daily ML training and threat-intel fetch run in **Django workers**, not GitHub Actions. There is no `daily-automation.yml` workflow.
 
 ## Appendix E: Contributing Guidelines & Getting Started
 
@@ -1810,25 +1818,31 @@ Furthermore, critical business logic—such as billing, telemetry, and backgroun
 
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 
-The DEML Platform orchestrates several asynchronous background workers. These workers run continuously to process Redpanda events, trigger periodic machine learning pipelines, and enforce strict DevSecOps compliance.
+The DEML Platform orchestrates several asynchronous background workers. These workers run continuously to process Redpanda events, trigger periodic machine learning pipelines, and enforce strict DevSecOps compliance. See **Appendix D** for the consolidated schedule table.
 
-### 1. Telemetry Worker (telemetry_worker.py)
+### 1. Telemetry Worker (`telemetry_worker.py`)
 
-- **Data Aggregation (1 Hour)**: Triggers 'aggregate_analytics' every 3600 seconds to roll up raw OTLP traces into historical charts.
-- **Active Pinger (30 Seconds)**: Continuously pings all monitored services every 30 seconds to provide real-time uptime metrics.
-- **Quality Scanner (6 Hours)**: Runs Google PageSpeed (Lighthouse) audits on all Tenant target URLs every 21,600 seconds to gather performance, accessibility, and SEO metrics.
+- **Stream Processing (Continuous)**: Consumes Redpanda topics (`app-events`, `user-issues`) and projects events into Postgres + Firestore.
+- **Data Aggregation (1 Hour)**: Triggers `aggregate_analytics` every 3,600 seconds to roll up raw OTLP traces into historical charts.
+- **Active Pinger (30 Seconds)**: Pings all monitored services every 30 seconds for real-time uptime metrics.
+- **Quality Scanner (6 Hours)**: Runs Google PageSpeed (Lighthouse) audits on tenant target URLs every 21,600 seconds.
 
-### 2. Machine Learning Worker (ml_worker.py)
+### 2. Machine Learning Worker (`ml_worker.py`)
 
-- **Daily Training Cycle (24 Hours)**: Every 86,400 seconds, this scheduler executes 'train_all_models'. To ensure models only train on the correct sliding window of data, it natively triggers the 'db_cleanup' routine first. Once legacy data is purged, it sequentially iterates across all Tenants to train updated PyTorch SLA and Threat Forecasting models.
+- **Event-Driven Training (Continuous)**: Listens on `ml-training-events` for per-tenant `train_tenant` and platform-wide `train_all_tenants` actions.
+- **Daily Training Cycle (24 Hours)**: Executes `train_all_models` (SLA, Threat, and CES PyTorch models). Data retention is **not** run here — `security_worker` owns `db_cleanup`.
 
-### 3. Security & Compliance Worker (security_worker.py)
+### 3. Security & Compliance Worker (`security_worker.py`)
 
-- **Database Optimization (24 Hours)**: Every 86,400 seconds, this scheduler triggers a `VACUUM ANALYZE` operation on the core PostgreSQL database. This ensures that the query planner maintains highly accurate table statistics and automatically reclaims any storage space from aggressively scrubbed rows or deleted duplicate records, keeping API response times consistently fast.
+- **Threat Intelligence Sync (1 Hour)**: `fetch_threat_intel` — AbuseIPDB, AlienVault OTX, and related feeds.
+- **Compliance & Data Cleanup (24 Hours, T+0h)**: Checks DEK age (30-day limit → `rotate_keys`), then runs `db_cleanup` (30-day raw telemetry retention).
+- **Dark Web Scanner (24 Hours, T+1h)**: `scan_dark_web` — HIBP and Tor/Ahmia OSINT reconnaissance.
+- **Subscription Sweep (24 Hours, T+2h)**: `sync_subscriptions` — Stripe billing reconciliation and Pro tier downgrade for lapsed subscriptions.
+- **Database Optimization (24 Hours, T+3h)**: `VACUUM ANALYZE` on PostgreSQL after cleanup completes.
 
-- **Threat Intelligence Sync (1 Hour)**: Pulls updated indicators from external OSINT and Dark Web scanners every 3600 seconds, feeding them into the platform's STIX 2.1 mapping database.
+### 4. Outbox Relay (`outbox_relay.py`)
 
-- **Compliance Rotation (24 Hours)**: Every 86,400 seconds, this scheduler verifies the age of the active Data Encryption Key (DEK). If the key exceeds the 30-day lifecycle limit, it automatically triggers 'rotate_keys' to generate a new AES-256 key and re-encrypts all sensitive third-party integrations (e.g., GA4, Microsoft Clarity keys). It additionally triggers an idempotent 'db_cleanup' pass to guarantee adherence to the 30-day data retention policy.
+- **Event Publishing (5 Seconds)**: Polls unpublished `OutboxEvent` rows and publishes to Redpanda. Published rows are purged by `db_cleanup` after 30 days; exhausted retries (≥5 attempts) are purged after 7 days.
 
 ## Appendix I: API Rate Limiting, Tiered Pricing, and Usage Analytics
 

@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.core.management import call_command
 from django.core.management.base import BaseCommand
 from ml.ml_services import train_tenant_sla, train_threat_model
 
@@ -7,15 +6,12 @@ User = get_user_model()
 
 
 class Command(BaseCommand):
-  help = "Purges logs/telemetry older than 7 days and retrains SLA & Threat forecast models for all accounts."
+  help = (
+    "Retrains SLA, Threat, and CES forecast models for all accounts. "
+    "Data retention is handled by security_worker via db_cleanup."
+  )
 
   def handle(self, *args, **options):
-    self.stdout.write("Starting database telemetry/log cleanup...")
-    try:
-      call_command("db_cleanup")
-    except Exception as e:
-      self.stderr.write(self.style.ERROR(f"Database cleanup failed: {e}"))
-
     self.stdout.write("Starting SLA and Threat forecast model training for all users...")
     for user in User.objects.filter(profile__isnull=False).select_related("profile"):
       self.stdout.write(f"Training models for user '{user.username}'...")
@@ -72,4 +68,4 @@ class Command(BaseCommand):
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"  - CES model training failed: {e}"))
 
-    self.stdout.write(self.style.SUCCESS("All models trained and database cleaned successfully."))
+    self.stdout.write(self.style.SUCCESS("All models trained successfully."))
