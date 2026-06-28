@@ -17,6 +17,10 @@ def setup_test_db():
       "NAME": ":memory:",
     }
   }
+  # Explicit test-only site URLs (not silent production fallbacks).
+  settings.FRONTEND_URL = settings.FRONTEND_URL or "http://test-frontend.local"
+  settings.BACKEND_URL = settings.BACKEND_URL or "http://test-backend.local"
+  settings.MARKETING_URL = settings.MARKETING_URL or "http://test-marketing.local"
 
 
 @pytest.fixture(autouse=True)

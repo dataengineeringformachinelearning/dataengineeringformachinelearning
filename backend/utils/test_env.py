@@ -41,6 +41,15 @@ def test_validate_production_config_rejects_insecure_secret_on_railway(monkeypat
     env.validate_production_config()
 
 
-def test_tor_proxy_url_reads_env(monkeypatch):
-  monkeypatch.setenv("TOR_PROXY_URL", "socks5h://localhost:9050")
-  assert env.tor_proxy_url() == "socks5h://localhost:9050"
+def test_validate_site_urls_rejects_missing(monkeypatch):
+  for name in ("FRONTEND_URL", "BACKEND_URL", "MARKETING_URL"):
+    monkeypatch.delenv(name, raising=False)
+  with pytest.raises(RuntimeError, match="Missing required environment variable"):
+    env.validate_site_urls()
+
+
+def test_validate_site_urls_accepts_trio(monkeypatch):
+  monkeypatch.setenv("FRONTEND_URL", "https://deml.app")
+  monkeypatch.setenv("BACKEND_URL", "https://backend.deml.app")
+  monkeypatch.setenv("MARKETING_URL", "https://dataengineeringformachinelearning.com")
+  env.validate_site_urls()

@@ -212,6 +212,10 @@ For custom integrations or direct programmatic access, generate a dedicated API 
 Authorization: Bearer YOUR_API_KEY
 ```
 
+**Interactive API docs:** Public ingestion and inference endpoints (`/api/v1/ingest`, `/api/v1/predict`, `/api/v1/predict/llm`) are documented in Swagger at `{BACKEND_URL}/api/v1/docs` — authenticate with your API key via the `Authorization` header.
+
+**Local database inspection:** See [Appendix E in BOOK.md](BOOK.md#appendix-e-contributing-guidelines--getting-started) for the full dev setup. After `python manage.py migrate`, open `backend/db.sqlite3` with [DB Browser for SQLite](https://sqlitebrowser.org/) to inspect tenant-scoped tables locally.
+
 ---
 
 ## Hugging Face Integrations & Global Threat Intelligence
@@ -315,6 +319,30 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 ![GitHub license](https://img.shields.io/github/license/dataengineeringformachinelearning/dataengineeringformachinelearning)
 
 
+# PyTorch Integration
+
+_(Coming Soon)_
+
+This integration will detail how to use our custom PyTorch `DataLoader` and `Dataset` classes to fetch and stream training data from our platform, or run remote inference from within your PyTorch scripts.
+
+**Example Planned Usage:**
+
+```python
+import torch
+from our_platform_sdk.pytorch import PlatformDataLoader
+
+loader = PlatformDataLoader(
+    api_key="YOUR_API_KEY",  # pragma: allowlist secret
+    endpoint="https://your-domain.com/api/v1/ingest",
+    batch_size=64,
+    shuffle=True
+)
+
+for batch in loader:
+    predictions = model(batch)
+```
+
+
 # Kubernetes Integration
 
 Integrating our ML Platform natively into your Kubernetes cluster allows your existing microservices to easily stream data or request predictions via our API Gateway.
@@ -367,27 +395,26 @@ For the most robust integration, we recommend deploying a lightweight Sidecar Pr
 We are currently developing a native **Kubernetes Operator** (`MLPlatform CRD`) that will allow you to dynamically provision inference routes and data pipelines declaratively.
 
 
-# PyTorch Integration
+# TensorFlow Integration
 
 _(Coming Soon)_
 
-This integration will detail how to use our custom PyTorch `DataLoader` and `Dataset` classes to fetch and stream training data from our platform, or run remote inference from within your PyTorch scripts.
+This integration will detail how to use our Python SDK to natively stream data from our platform directly into a `tf.data.Dataset` for highly optimized, batched training loops.
 
 **Example Planned Usage:**
 
 ```python
-import torch
-from our_platform_sdk.pytorch import PlatformDataLoader
+import tensorflow as tf
+from our_platform_sdk.tensorflow import PlatformDataset
 
-loader = PlatformDataLoader(
+# Initialize a high-throughput stream
+dataset = PlatformDataset(
     api_key="YOUR_API_KEY",  # pragma: allowlist secret
     endpoint="https://your-domain.com/api/v1/ingest",
-    batch_size=64,
-    shuffle=True
+    batch_size=32
 )
 
-for batch in loader:
-    predictions = model(batch)
+model.fit(dataset, epochs=10)
 ```
 
 
@@ -414,29 +441,6 @@ df.writeStream
   .option("api_key", "YOUR_API_KEY")
   .option("endpoint", "https://your-domain.com/api/v1/ingest")
   .start()
-```
-
-
-# TensorFlow Integration
-
-_(Coming Soon)_
-
-This integration will detail how to use our Python SDK to natively stream data from our platform directly into a `tf.data.Dataset` for highly optimized, batched training loops.
-
-**Example Planned Usage:**
-
-```python
-import tensorflow as tf
-from our_platform_sdk.tensorflow import PlatformDataset
-
-# Initialize a high-throughput stream
-dataset = PlatformDataset(
-    api_key="YOUR_API_KEY",  # pragma: allowlist secret
-    endpoint="https://your-domain.com/api/v1/ingest",
-    batch_size=32
-)
-
-model.fit(dataset, epochs=10)
 ```
 
 
@@ -2031,6 +2035,8 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+**Local database inspection:** pytest and local dev use SQLite (`backend/db.sqlite3` after migrate). Install [DB Browser for SQLite](https://sqlitebrowser.org/) to inspect tables, indexes, and tenant-scoped rows without psql. Open `backend/db.sqlite3` after running migrations — useful for verifying `Endpoints`, `OutboxEvent`, and `UserProfile.account_id` isolation during development.
+
 ### Tab A: Django API Server
 
 ```bash
@@ -2236,7 +2242,7 @@ This architecture successfully decoupled the human-facing application from the m
 
 As the platform scaled, the necessity for uncompromising infrastructure security and UI/UX standardization became paramount. I initiated a comprehensive DevSecOps audit, focusing first on the frontend containerization. By transitioning the Angular UI deployment pipeline to leverage unprivileged multi-stage builds (specifically 'nginxinc/nginx-unprivileged'), I successfully eliminated all runtime shells and package managers. This drastically reduced the attack surface, ensuring the production image was strictly limited to serving static assets.
 
-Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1152px' maximum width aligned to a strict '9px' grid system. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
+Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1260px' maximum width aligned to a strict '9px' grid system. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
 
 Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 30-day telemetry retention and daily optimization policies without any risk of cross-tenant data bleed.
 
