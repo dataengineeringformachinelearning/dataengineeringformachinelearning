@@ -66,7 +66,7 @@ class CustomAPI(NinjaAPI):
     schema: dict[str, Any] = super().get_openapi_schema(*args, **kwargs)
     # Filter paths to only expose public APIs in docs
     paths: dict[str, Any] = schema.get("paths", {})
-    public_prefixes: Final[tuple[str, str]] = ("/api/v1/ingest", "/api/v1/predict")
+    public_prefixes: Final[tuple[str, ...]] = ("/api/v1/ingest", "/api/v1/predict")
     schema["paths"] = {k: v for k, v in paths.items() if k.startswith(public_prefixes)}
     return schema
 
@@ -100,8 +100,22 @@ def add_router_if_not_exists(prefix, router_instance):
     api.add_router(prefix, router_instance)
 
 
+def mount_public_integration_routes(router_instance) -> None:
+  """Merge public ingest/predict routes onto the root API router (prefix '' always exists)."""
+  api.add_router("", router_instance)
+
+
 add_router_if_not_exists("/system-status/", monitor_router)
 add_router_if_not_exists("/ml/", ml_router)
+
+from integrations.api import (
+  public_router as integrations_public_router,
+  router as integrations_router,
+)
+
+# Public ingest/predict must mount before @api.get("/model/latest") extends the root router.
+mount_public_integration_routes(integrations_public_router)
+add_router_if_not_exists("/integrations/", integrations_router)
 
 # Legacy alias: some monitors probe /api/v1/model/latest (OpenAPI model namespace typo)
 from ml.ml_api import LatestRunOut, get_latest_training
@@ -126,14 +140,6 @@ add_router_if_not_exists("/auth/", auth_router)
 from agent.api import router as agent_router
 
 add_router_if_not_exists("/agent/", agent_router)
-
-from integrations.api import (
-  public_router as integrations_public_router,
-  router as integrations_router,
-)
-
-add_router_if_not_exists("", integrations_public_router)
-add_router_if_not_exists("/integrations/", integrations_router)
 
 from billing.api import router as billing_router
 

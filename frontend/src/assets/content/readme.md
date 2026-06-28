@@ -212,6 +212,10 @@ For custom integrations or direct programmatic access, generate a dedicated API 
 Authorization: Bearer YOUR_API_KEY
 ```
 
+**Interactive API docs:** Public ingestion and inference endpoints (`/api/v1/ingest`, `/api/v1/predict`, `/api/v1/predict/llm`) are documented in Swagger at `{BACKEND_URL}/api/v1/docs` — authenticate with your API key via the `Authorization` header.
+
+**Local database inspection:** See [Appendix E in BOOK.md](BOOK.md#appendix-e-contributing-guidelines--getting-started) for the full dev setup. After `python manage.py migrate`, open `backend/db.sqlite3` with [DB Browser for SQLite](https://sqlitebrowser.org/) to inspect tenant-scoped tables locally.
+
 ---
 
 ## Hugging Face Integrations & Global Threat Intelligence
