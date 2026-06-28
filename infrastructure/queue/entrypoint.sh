@@ -13,12 +13,20 @@ INTERNAL_ADDR=${REDPANDA_INTERNAL_ADDR:-PLAINTEXT://0.0.0.0:9092}
 EXTERNAL_ADDR=${REDPANDA_EXTERNAL_ADDR:-SASL_SSL://0.0.0.0:9093}
 
 INTERNAL_ADV=${REDPANDA_INTERNAL_ADV:-PLAINTEXT://deml-queue.railway.internal:9092}
-# PUBLIC_REDPANDA_HOST must be set (Railway public domain for the exposed 9093 port)
-# Example: dem l-queue.up.railway.app   or your custom domain.
-# Do NOT include scheme or port here.
-EXTERNAL_ADV=${REDPANDA_EXTERNAL_ADV:-SASL_SSL://${PUBLIC_REDPANDA_HOST:-localhost}:9093}
+
+# PUBLIC_REDPANDA_HOST must be set to the public hostname only (no scheme, no port).
+# Examples: queue.deml.app   or your-queue.up.railway.app
+# We defensively strip any accidental http:// or https:// or port the user may have included.
+raw_host="${PUBLIC_REDPANDA_HOST:-localhost}"
+# strip scheme
+raw_host="${raw_host#http://}"
+raw_host="${raw_host#https://}"
+# strip any trailing port if someone included it
+raw_host="${raw_host%%:*}"
+EXTERNAL_ADV=${REDPANDA_EXTERNAL_ADV:-SASL_SSL://${raw_host}:9093}
 
 echo "Kafka addr: ${INTERNAL_ADDR},${EXTERNAL_ADDR}"
+echo "PUBLIC_REDPANDA_HOST (raw): ${PUBLIC_REDPANDA_HOST:-<unset>}"
 echo "Advertise:  ${INTERNAL_ADV},${EXTERNAL_ADV}"
 
 # Start Redpanda (foreground for container lifetime).
