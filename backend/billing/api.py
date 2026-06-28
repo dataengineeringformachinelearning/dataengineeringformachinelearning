@@ -24,6 +24,32 @@ if HAS_STRIPE:
 router = Router(tags=["Billing"])
 
 
+def _subscription_period_end(subscription: Any) -> int | None:
+  """Return a subscription's current period end (unix ts) across Stripe API versions.
+
+  Stripe's 2025-04 ("basil") API removed `current_period_end` from the Subscription
+  object and moved it onto each subscription item (`items.data[].current_period_end`).
+  Older API versions keep it on the subscription. Read both shapes safely so billing
+  sync does not fail with a KeyError/AttributeError on newer accounts.
+  """
+
+  def _get(obj: Any, key: str) -> Any:
+    if isinstance(obj, dict):
+      return obj.get(key)
+    return getattr(obj, key, None)
+
+  top_level = _get(subscription, "current_period_end")
+  if top_level:
+    return top_level
+
+  items = _get(subscription, "items")
+  data = _get(items, "data") if items is not None else None
+  if not data:
+    return None
+  ends = [e for e in (_get(item, "current_period_end") for item in data) if e]
+  return max(ends) if ends else None
+
+
 def _get_profile(request) -> UserProfile | None:
   if not hasattr(request.user, "profile"):
     return None
@@ -127,9 +153,11 @@ def stripe_webhook(request):
         # Fetch subscription to get current_period_end
         if subscription_id:
           sub = stripe.Subscription.retrieve(subscription_id)
-          profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
-            sub.current_period_end, tz=datetime.timezone.utc
-          )
+          period_end = _subscription_period_end(sub)
+          if period_end:
+            profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
+              period_end, tz=datetime.timezone.utc
+            )
 
         profile.save()
       except UserProfile.DoesNotExist:
@@ -147,11 +175,7 @@ def stripe_webhook(request):
       if isinstance(subscription, dict)
       else getattr(subscription, "status", None)
     )
-    period_end = (
-      subscription.get("current_period_end")
-      if isinstance(subscription, dict)
-      else getattr(subscription, "current_period_end", None)
-    )
+    period_end = _subscription_period_end(subscription)
 
     profiles = UserProfile.objects.filter(stripe_subscription_id=sub_id)
     for profile in profiles:
@@ -247,14 +271,16 @@ def sync_subscription(request: Any) -> Any:
             profile.stripe_customer_id = customer.id
             profile.stripe_subscription_id = sub.id
             profile.subscription_active = True
-            profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
-              sub.current_period_end, tz=datetime.timezone.utc
-            )
+            period_end = _subscription_period_end(sub)
+            if period_end:
+              profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
+                period_end, tz=datetime.timezone.utc
+              )
             profile.save()
             return {
               "status": "synced",
               "active": True,
-              "cancel_at_period_end": sub.cancel_at_period_end,
+              "cancel_at_period_end": getattr(sub, "cancel_at_period_end", False),
             }
         except Exception as err:
           logger.warning(f"Stripe subscription list failed: {err}")

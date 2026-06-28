@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+from billing.api import _subscription_period_end
 from django.core.management.base import BaseCommand
 
 from monitor.models import UserProfile
@@ -95,9 +96,11 @@ class Command(BaseCommand):
               profile.stripe_customer_id = customer.id
               profile.stripe_subscription_id = sub.id
               profile.subscription_active = True
-              profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
-                sub.current_period_end, tz=datetime.timezone.utc
-              )
+              period_end = _subscription_period_end(sub)
+              if period_end:
+                profile.subscription_current_period_end = datetime.datetime.fromtimestamp(
+                  period_end, tz=datetime.timezone.utc
+                )
               profile.save(
                 update_fields=[
                   "tier",
