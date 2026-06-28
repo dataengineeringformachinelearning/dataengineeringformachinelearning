@@ -1469,10 +1469,10 @@ To achieve the **fastest** client command path (Angular → `ingestEvent` → di
 
 1. In Railway → `deml-queue` → Settings → Networking, add a **TCP Proxy** targeting
    container port **9093**. Railway returns an address like `xxxx.proxy.rlwy.net:NNNNN`
-   (the current production proxy is `reseau.proxy.rlwy.net:20635`).
+   (the current production proxy is `zephyr.proxy.rlwy.net:32253`).
    - CLI equivalent: `railway tcp-proxy create --port 9093 --service deml-queue`
 2. Set service variables so the broker advertises that reachable address:
-   - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net` (e.g. `reseau.proxy.rlwy.net`)
+   - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net` (e.g. `zephyr.proxy.rlwy.net`)
    - `PUBLIC_REDPANDA_PORT=NNNNN` (the proxy's external port, e.g. `20635`; the container
      keeps listening on 9093, which is the proxy target)
    - `REDPANDA_SASL_USERNAME=admin` (or a dedicated user)
@@ -1487,7 +1487,7 @@ must be provided as **environment variables** (`process.env`) — the legacy
 `firebase functions:config:set` does not apply to v2 functions. The deploy workflow
 (`.github/workflows/firebase-backend-deploy.yml`) writes a `functions/.env` from these
 **GitHub repository secrets** before `firebase deploy`:
-- `REDPANDA_PUBLIC_BROKERS` → `REDPANDA_BROKERS`, e.g. `reseau.proxy.rlwy.net:20635`
+- `REDPANDA_PUBLIC_BROKERS` → `REDPANDA_BROKERS`, e.g. `zephyr.proxy.rlwy.net:32253`
 - `REDPANDA_PUBLIC_SASL_USERNAME` → `REDPANDA_SASL_USERNAME`, e.g. `admin`
 - `REDPANDA_PUBLIC_SASL_PASSWORD` → `REDPANDA_SASL_PASSWORD` (same value as the `deml-queue` service)
 - `REDPANDA_PUBLIC_SSL` (optional) → `REDPANDA_SSL`; **leave unset/false** for a Railway

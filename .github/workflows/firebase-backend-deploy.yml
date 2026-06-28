@@ -57,7 +57,7 @@ jobs:
         # the legacy `firebase functions:config:set` (gen1) does not apply to v2 functions.
         #
         # Set these GitHub repo secrets:
-        #   REDPANDA_PUBLIC_BROKERS        e.g. reseau.proxy.rlwy.net:20635 (Railway TCP Proxy)
+        #   REDPANDA_PUBLIC_BROKERS        e.g. zephyr.proxy.rlwy.net:32253 (Railway TCP Proxy)
         #   REDPANDA_PUBLIC_SASL_USERNAME  e.g. admin
         #   REDPANDA_PUBLIC_SASL_PASSWORD  (same value as the deml-queue service)
         #   REDPANDA_PUBLIC_SSL            optional; leave unset/false for a Railway TCP
