@@ -710,9 +710,14 @@
                 </button>
               </div>
 
-              @if (projectionResult()) {
+              @if (projectionResult() && !projectionResult().error) {
               <div class="alert alert-success mt-3 u-style-c5a969">
                 <strong>Event Projections Success! Data from Firestore:</strong>
+                <pre>{{ projectionResult() | json }}</pre>
+              </div>
+              } @if (projectionResult() && projectionResult().error) {
+              <div class="alert alert-error mt-3">
+                <strong>Event Projections Error</strong>
                 <pre>{{ projectionResult() | json }}</pre>
               </div>
               }
