@@ -8,7 +8,7 @@ Over the last ten years, my path has evolved from early web development, through
 
 For a brief summary of the platform's hypothesis, value add, architecture diagrams, and algorithms, please read the [Whitepaper](WHITEPAPER.md). For how the platform is **operated** in production (vendors, workflows, maintenance, contingencies), read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual slide-deck overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
-**Note on Recent Evolution (2026 updates):** The architecture now emphasizes **Event Projections** with production reliability features. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for events and Firestore (named "deml" database + dedicated security rules) for materialized read models. Django uses a **Transactional Outbox** (`OutboxEvent` + `outbox_relay` command) for reliable publishing. The `telemetry_worker` performs idempotent projections (with DLQ support). Firebase Functions and rules deploy via dedicated GitHub workflow. See updated diagrams and the in-app "Event Projections Verification" test.
+**Note on Recent Evolution (2026 updates):** The architecture now emphasizes **Event Projections** with production reliability features. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for events and Firestore (named "deml" database + dedicated security rules) for materialized read models. Django uses a **Transactional Outbox** (`OutboxEvent` + `outbox_relay` command) for reliable publishing. The `telemetry_worker` performs idempotent projections (with DLQ support). Firebase Functions and rules deploy via dedicated GitHub workflow. See updated diagrams; the loop is health-checked automatically by a synthetic probe in the telemetry worker and surfaced as the "Event Projections" component on the `platform-status` page.
 
 ## Quick Links
 
@@ -117,7 +117,7 @@ flowchart TB
 
 | Mode                                               | Description                                                                                                                                     | Operator actions                                                                                                              |
 | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; verify Event Projections panel in Settings                                       |
+| **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; check the "Event Projections" component on platform-status                       |
 | **Degraded — Redpanda unreachable from Functions** | `ingestEvent` writes fallback rows to Firestore `events` collection; `telemetry_worker` still processes broker when Railway-internal path works | Confirm `REDPANDA_BROKERS` uses public endpoint for Functions or accept Firestore fallback; check `frontend-events-dlq` depth |
 | **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-outbox-relay`; inspect DLQ topic; replay idempotent keys                            |
 | **Maintenance**                                    | Migrations, dependency upgrades, model retraining                                                                                               | Railway rolling deploy on `main` merge; Firebase workflow deploys Functions/rules independently                               |
@@ -193,7 +193,7 @@ Production runs **14 Railway services** (see [Chapter 22](#chapter-22-production
 
 | Signal                   | Source                                 | Operator use                                                                                           |
 | ------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Real-time user stats** | Firestore projections                  | Settings → Event Projections Verification                                                              |
+| **Real-time user stats** | Firestore projections                  | "Event Projections" component on platform-status (automated synthetic probe)                           |
 | **CES dashboard**        | ClickHouse + backend aggregates        | Threat / SLA / Stableness gauges ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) |
 | **Traces**               | OpenTelemetry → Collector → ClickHouse | Latency regressions, worker stalls                                                                     |
 | **Errors**               | Sentry (frontend + backend)            | Release regressions                                                                                    |
@@ -735,7 +735,7 @@ flowchart LR
 - **Queries**: Angular subscribes directly to Firestore projections via `onSnapshot`.
 - Events are versioned; projections support replay and snapshots for recovery.
 
-The data flow for client events begins at the perimeter via the Firebase Function (which handles auth context natively). For other telemetry and integrations, Django/Ninja endpoints still act as producers (via Outbox) to Redpanda. The function and worker (plus Outbox relay) enable the Event Projections verification loop (exposed in the Settings UI under "Event Projections Verification"). A relay ensures no events are lost on restarts, and projections are idempotent.
+The data flow for client events begins at the perimeter via the Firebase Function (which handles auth context natively). For other telemetry and integrations, Django/Ninja endpoints still act as producers (via Outbox) to Redpanda. The function and worker (plus Outbox relay) enable the Event Projections loop, whose health is continuously verified by a synthetic probe in the telemetry worker and surfaced as the "Event Projections" component on the public `platform-status` page. A relay ensures no events are lost on restarts, and projections are idempotent.
 
 Rather than interacting directly with PostgreSQL for every event, the system uses Redpanda + Firestore for high-throughput, non-blocking asynchronous execution. The backend (Django + Functions) acts as a lightweight proxy layer. It accepts the incoming payload, fires the event, and returns quickly.
 
@@ -1437,8 +1437,17 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Private Internal DNS**: `deml-queue.railway.internal:9092`
 - **Public URL**: None (Strictly internal for security)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data`.
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Persistent Storage**: You **MUST** attach a Railway Persistent Volume mounted to
+  `/var/lib/redpanda/data`. Without it, Redpanda runs on the container's ephemeral disk
+  and **loses all topics, messages, and consumer offsets on every restart/redeploy**.
+  This silently breaks Event Projections (events produced just before a restart never
+  reach the worker, and the in-app verification times out). Add it in Railway →
+  `deml-queue` → Variables/Settings → Volumes (the `railway volume add` CLI currently
+  panics with a project token, so use the dashboard).
+- **Deployment Trigger**: Scoped via `infrastructure/queue/railway.json`
+  `build.watchPatterns` to only redeploy when `infrastructure/queue/**` changes — so
+  unrelated merges to `main` don't restart (and, until a volume is attached, wipe) the
+  broker.
 - **Environment Variables**:
   - **REDPANDA_BROKERS**: Not strictly needed, but ensure port `9092` is exposed internally.
 
@@ -1459,11 +1468,13 @@ To achieve the **fastest** client command path (Angular → `ingestEvent` → di
 **Setup on the `deml-queue` service (production):**
 
 1. In Railway → `deml-queue` → Settings → Networking, add a **TCP Proxy** targeting
-   container port **9093**. Railway returns an address like `xxxx.proxy.rlwy.net:34567`.
+   container port **9093**. Railway returns an address like `xxxx.proxy.rlwy.net:NNNNN`
+   (the current production proxy is `zephyr.proxy.rlwy.net:32253`).
+   - CLI equivalent: `railway tcp-proxy create --port 9093 --service deml-queue`
 2. Set service variables so the broker advertises that reachable address:
-   - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net`
-   - `PUBLIC_REDPANDA_PORT=34567` (the proxy's external port; the container keeps
-     listening on 9093, which is the proxy target)
+   - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net` (e.g. `zephyr.proxy.rlwy.net`)
+   - `PUBLIC_REDPANDA_PORT=NNNNN` (the proxy's external port, e.g. `20635`; the container
+     keeps listening on 9093, which is the proxy target)
    - `REDPANDA_SASL_USERNAME=admin` (or a dedicated user)
    - `REDPANDA_SASL_PASSWORD=...`
 
@@ -1471,21 +1482,26 @@ The entrypoint (`infrastructure/queue/entrypoint.sh`) handles dual listeners, ad
 `PUBLIC_REDPANDA_HOST:PUBLIC_REDPANDA_PORT` on the external listener, and auto-creates the
 SASL user.
 
-**On the Firebase side** set these environment variables (or use functions config):
+**On the Firebase side**, `ingestEvent` is a 2nd-gen (Cloud Run) function, so its config
+must be provided as **environment variables** (`process.env`) — the legacy
+`firebase functions:config:set` does not apply to v2 functions. The deploy workflow
+(`.github/workflows/firebase-backend-deploy.yml`) writes a `functions/.env` from these
+**GitHub repository secrets** before `firebase deploy`:
 
-- `REDPANDA_BROKERS=xxxx.proxy.rlwy.net:34567`
-- `REDPANDA_SASL_USERNAME=...`
-- `REDPANDA_SASL_PASSWORD=...`
-- Leave `REDPANDA_SSL` unset/false (Railway TCP Proxy does not terminate TLS; SASL is
-  sent over plain TCP). Only set `REDPANDA_SSL=true` if TLS is terminated at the edge
-  (e.g. Cloudflare Spectrum).
+- `REDPANDA_PUBLIC_BROKERS` → `REDPANDA_BROKERS`, e.g. `zephyr.proxy.rlwy.net:32253`
+- `REDPANDA_PUBLIC_SASL_USERNAME` → `REDPANDA_SASL_USERNAME`, e.g. `admin`
+- `REDPANDA_PUBLIC_SASL_PASSWORD` → `REDPANDA_SASL_PASSWORD` (same value as the `deml-queue` service)
+- `REDPANDA_PUBLIC_SSL` (optional) → `REDPANDA_SSL`; **leave unset/false** for a Railway
+  TCP Proxy (plain TCP). Only `true` if TLS is terminated at the edge (e.g. Cloudflare Spectrum).
+
+Set those secrets, then re-run the "Deploy Firebase Backend" workflow. (For stricter
+secret handling you may instead bind `REDPANDA_SASL_PASSWORD` via Google Secret Manager /
+`firebase functions:secrets:set` and `defineSecret` in code.)
 
 If the public path is unavailable the system still works via the resilient fallback:
 `ingestEvent` writes to the Firestore `frontend_command_inbox` and the telemetry worker's
 `poll_firestore_inbox` task (every ~10s) projects it — slower, but the verification still
 passes.
-
-The deploy workflow supports GitHub secrets for this.
 
 ### 4. Telemetry Worker (`deml-telemetry-worker`)
 
