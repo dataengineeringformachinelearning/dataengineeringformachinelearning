@@ -45,11 +45,57 @@ const messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID ?? '870072971
 const sanityProjectId = process.env.SANITY_PROJECT_ID ?? 'hj5wtuct';
 const sanityDataset = process.env.SANITY_DATASET ?? 'production';
 
-// URL resolution is now strictly from environment variables (or empty string).
-// No hardcoded domain fallbacks. Set BACKEND_URL and MARKETING_URL in .env or Railway service vars.
-// The build bakes the value at generation time. Runtime hostname magic removed per requirements.
-const backendUrl = process.env.BACKEND_URL ?? '';
-const marketingUrl = process.env.MARKETING_URL ?? '';
+// URL resolution prefers build-time env (BACKEND_URL, MARKETING_URL from Railway etc).
+// If not provided (empty), falls back to runtime hostname logic for common deploys (localhost, Railway patterns).
+// This avoids broken API calls when build env not set.
+const buildBackendUrl = process.env.BACKEND_URL ?? '';
+const buildMarketingUrl = process.env.MARKETING_URL ?? '';
+
+const getBackendUrlCode = `
+const getBackendUrl = () => {
+  if (typeof window === 'undefined') {
+    const globalProcess = (globalThis as any).process;
+    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['BACKEND_URL']) {
+      return globalProcess.env['BACKEND_URL'];
+    }
+    return '${buildBackendUrl || 'https://backend.deml.app'}';
+  }
+  const host = window.location.hostname;
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return 'http://localhost:8000';
+  }
+  if (host.includes('up.railway.app')) {
+    if (host.includes('-frontend')) {
+      return \`https://\${host.replace('-frontend', '-backend')}\`;
+    }
+    if (host.includes('frontend-')) {
+      return \`https://\${host.replace('frontend-', 'backend-')}\`;
+    }
+    return \`https://backend-\${host}\`;
+  }
+  if (host === 'deml.app' || host.endsWith('.deml.app')) {
+    return 'https://backend.deml.app';
+  }
+  return 'https://backend.deml.app';
+};
+`;
+
+const getMarketingUrlCode = `
+const getMarketingUrl = () => {
+  if (typeof window === 'undefined') {
+    const globalProcess = (globalThis as any).process;
+    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['MARKETING_URL']) {
+      return globalProcess.env['MARKETING_URL'];
+    }
+    return '${buildMarketingUrl || 'https://dataengineeringformachinelearning.com'}';
+  }
+  const host = window.location.hostname;
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return 'http://localhost:4321';
+  }
+  return '${buildMarketingUrl || 'https://dataengineeringformachinelearning.com'}';
+};
+`;
 
 const envConfigFileProd = `
 const getFirebaseConfig = () => {
@@ -71,11 +117,14 @@ const getFirebaseConfig = () => {
   return defaultFirebase;
 };
 
+${getBackendUrlCode}
+${getMarketingUrlCode}
+
 export const environment = {
   production: true,
   version: '${appVersion}',
-  backendUrl: '${backendUrl}',
-  marketingUrl: '${marketingUrl}',
+  backendUrl: getBackendUrl(),
+  marketingUrl: getMarketingUrl(),
   firebase: getFirebaseConfig(),
   sanity: {
     projectId: '${sanityProjectId}',
@@ -104,11 +153,14 @@ const getFirebaseConfig = () => {
   return defaultFirebase;
 };
 
+${getBackendUrlCode}
+${getMarketingUrlCode}
+
 export const environment = {
   production: false,
   version: '${appVersion}',
-  backendUrl: '${backendUrl}',
-  marketingUrl: '${marketingUrl}',
+  backendUrl: getBackendUrl(),
+  marketingUrl: getMarketingUrl(),
   firebase: getFirebaseConfig(),
   sanity: {
     projectId: '${sanityProjectId}',

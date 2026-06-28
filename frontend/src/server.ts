@@ -35,7 +35,7 @@ app.use((req, res, next) => {
  * Route /api/v1/* requests to the Django backend via proxy.
  * Resolves API calls during SSR and client-side requests using runtime BACKEND_URL.
  */
-app.all('/api/v1/*', async (req, res) => {
+app.all('/api/v1/:splat*', async (req, res) => {
   const rawBackendUrl = process.env['BACKEND_URL'] ?? '';
   if (!rawBackendUrl) {
     console.error('Proxy error: BACKEND_URL environment variable is not defined.');
@@ -96,6 +96,31 @@ app.use(
     },
   }),
 );
+
+/**
+ * Special handler for /auth-status to ensure 200 response for cross-domain iframe (used by marketing for auth state sharing).
+ * Falls back to minimal HTML if Angular render fails.
+ */
+app.get('/auth-status', async (req, res) => {
+  try {
+    const response = await angularApp.handle(req);
+    if (response) {
+      writeResponseToNodeResponse(response, res);
+    } else {
+      res
+        .status(200)
+        .send(
+          '<!doctype html><html><head><title>Auth Status</title></head><body><div style="display:none;">Auth status checker</div></body></html>',
+        );
+    }
+  } catch (e) {
+    res
+      .status(200)
+      .send(
+        '<!doctype html><html><body><div style="display:none;">Auth status</div></body></html>',
+      );
+  }
+});
 
 /**
  * Handle all other requests by rendering the Angular application.

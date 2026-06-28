@@ -28,6 +28,8 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL ?? 'https://deml.app';
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
 		<meta name="generator" content={Astro.generator} />
+		<!-- Relaxed CSP to allow widgets from main app, analytics, and cross-origin scripts while keeping report-only for now. Update as needed. -->
+		<meta http-equiv="Content-Security-Policy-Report-Only" content="default-src 'self'; script-src 'self' https://deml.app https://www.googletagmanager.com https://www.clarity.ms https://static.cloudflareinsights.com https://cdn.jsdelivr.net 'unsafe-inline' 'unsafe-eval'; connect-src 'self' https://deml.app https://www.google-analytics.com https://k.clarity.ms https://dataengineeringformachinelearning.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://*.clarity.ms;" />
 		<title>{title}</title>
 		<meta name="description" content={description} />
 		<meta name="author" content="Joe Alongi" />
@@ -91,9 +93,9 @@ const APP_URL = import.meta.env.PUBLIC_APP_URL ?? 'https://deml.app';
 			})();
 		</script>
 
-		<!-- DEML Widgets Hosted by App -->
-		<script is:inline src={APP_URL + "/assets/widgets/cookie-consent.js"} defer></script>
-		<script is:inline type="module" src={APP_URL + "/assets/widgets/search-dialog.js"} defer></script>
+		<!-- DEML Widgets (served locally from marketing to avoid cross-origin/CORS; data attrs point to main app) -->
+		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>
+		<script is:inline type="module" src="/assets/widgets/search-dialog.js" defer></script>
 
 		<!-- Google tag (gtag.js) -->
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-MH3M99CQ80"></script>

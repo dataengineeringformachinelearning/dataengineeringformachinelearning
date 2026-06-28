@@ -60,14 +60,21 @@ EOF
 # Production stage (Secure Distroless Node.js)
 FROM gcr.io/distroless/nodejs22-debian12
 
+# Re-declare ARGs for runtime envs (Railway build args)
+ARG BACKEND_URL
+ARG MARKETING_URL
+
 WORKDIR /app
 
 # Copy built application from builder stage
 COPY --chown=nonroot:nonroot --from=builder /app/dist/frontend /app/dist/frontend
 
-# Expose port (Angular SSR default is 4000)
+# Set runtime envs for the SSR proxy (server.ts uses process.env.BACKEND_URL for /api proxy)
+ENV PORT=4000 \
+    BACKEND_URL=$BACKEND_URL \
+    MARKETING_URL=$MARKETING_URL
+
 EXPOSE 4000
-ENV PORT=4000
 
 USER nonroot
 
