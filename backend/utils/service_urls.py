@@ -45,23 +45,14 @@ _UUID_RE = re.compile(
 )
 
 
-def _required_setting(name: str) -> str:
-  value = (getattr(settings, name, "") or "").strip().rstrip("/")
-  if not value:
-    from django.core.exceptions import ImproperlyConfigured
-
-    raise ImproperlyConfigured(
-      f"{name} must be set in environment or backend/.env (see backend/.env.example)."
-    )
-  return value
-
-
 def _frontend_base() -> str:
-  return _required_setting("FRONTEND_URL")
+  return (getattr(settings, "FRONTEND_URL", "") or "https://deml.app").rstrip("/")
 
 
 def _marketing_base() -> str:
-  return _required_setting("MARKETING_URL")
+  return (
+    getattr(settings, "MARKETING_URL", "") or "https://dataengineeringformachinelearning.com"
+  ).rstrip("/")
 
 
 def get_normalized_service_info(url_str: str) -> tuple[str, str]:

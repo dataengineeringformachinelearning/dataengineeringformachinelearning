@@ -47,7 +47,6 @@ Thumbs.db
 .env
 .env.*
 !.env.example
-!.env.test
 
 # Local overrides
 src/assets/firebase-config.js

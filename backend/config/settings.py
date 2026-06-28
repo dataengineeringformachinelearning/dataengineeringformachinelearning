@@ -12,7 +12,6 @@ import json
 import logging
 import os
 import re
-import sys
 from pathlib import Path
 
 import dj_database_url
@@ -132,7 +131,7 @@ if not firebase_admin._apps:
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-from utils.env import get_bool, get_csv, get_str, validate_production_config, validate_site_urls
+from utils.env import get_bool, get_csv, get_str, validate_production_config
 
 # Fail fast on Railway/production if SECRET_KEY or DEBUG are insecure.
 validate_production_config()
@@ -308,9 +307,6 @@ from typing import Final
 FRONTEND_URL = get_str("FRONTEND_URL")
 BACKEND_URL = get_str("BACKEND_URL")
 MARKETING_URL: Final[str] = get_str("MARKETING_URL")
-
-if "pytest" not in sys.modules:
-  validate_site_urls()
 
 # Internal service URLs (env-driven; see BOOK.md Appendix C)
 from utils.env import cpe_guesser_url, scanner_service_url, tor_proxy_url

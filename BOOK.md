@@ -1589,8 +1589,6 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-**Local database inspection:** pytest and local dev use SQLite (`backend/db.sqlite3` after migrate). Install [DB Browser for SQLite](https://sqlitebrowser.org/) to inspect tables, indexes, and tenant-scoped rows without psql. Open `backend/db.sqlite3` after running migrations — useful for verifying `Endpoints`, `OutboxEvent`, and `UserProfile.account_id` isolation during development.
-
 ### Tab A: Django API Server
 
 ```bash
@@ -1796,7 +1794,7 @@ This architecture successfully decoupled the human-facing application from the m
 
 As the platform scaled, the necessity for uncompromising infrastructure security and UI/UX standardization became paramount. I initiated a comprehensive DevSecOps audit, focusing first on the frontend containerization. By transitioning the Angular UI deployment pipeline to leverage unprivileged multi-stage builds (specifically 'nginxinc/nginx-unprivileged'), I successfully eliminated all runtime shells and package managers. This drastically reduced the attack surface, ensuring the production image was strictly limited to serving static assets.
 
-Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1260px' maximum width aligned to a strict '9px' grid system. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
+Simultaneously, the frontend layout architecture required unification. I standardized all dashboard interfaces under a strict mobile-first '.page-inner-wrapper' container, enforcing an identical '1152px' maximum width aligned to a strict '9px' grid system. This zero-tolerance policy against Cumulative Layout Shift (CLS) guaranteed a seamless, clinical user experience as users navigated between Analytics, Vulnerabilities, and Settings views.
 
 Finally, absolute data isolation was enforced at the ML pipeline layer. The asynchronous machine learning workers were refactored to iterate strictly over verified 'Tenant' models rather than relying on disparate StatusPage records. This ensures that SLA and Threat forecast models are trained in perfectly isolated contexts, adhering strictly to our 30-day telemetry retention and daily optimization policies without any risk of cross-tenant data bleed.
 

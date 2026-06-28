@@ -1,127 +1,125 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = __dirname;
-const isTestEnv = process.env.DEML_ENV === 'test';
-
-const loadEnvFile = (filePath) => {
-  if (!fs.existsSync(filePath)) {
-    return false;
-  }
-  const envConfig = fs.readFileSync(filePath, 'utf8');
-  envConfig.split('\n').forEach((line) => {
+// Load environment variables from .env file if it exists
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  const envConfig = fs.readFileSync(envPath, 'utf8');
+  envConfig.split('\n').forEach(line => {
     const trimmed = line.trim();
     if (!trimmed || trimmed.startsWith('#')) return;
     const equalIdx = trimmed.indexOf('=');
     if (equalIdx === -1) return;
     const key = trimmed.slice(0, equalIdx).trim();
     let val = trimmed.slice(equalIdx + 1).trim();
+    // Strip surrounding quotes
     if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
       val = val.slice(1, -1);
     }
     process.env[key] = val;
   });
-  return true;
-};
-
-const envCandidates = isTestEnv
-  ? [path.join(ROOT, '.env.test'), path.join(ROOT, '.env')]
-  : [path.join(ROOT, '.env')];
-
-const loadedEnv = envCandidates.find((candidate) => loadEnvFile(candidate));
-if (!loadedEnv) {
-  const hint = isTestEnv
-    ? 'Ensure frontend/.env.test exists or copy frontend/.env.example to frontend/.env.'
-    : 'Copy frontend/.env.example to frontend/.env and set all required values.';
-  throw new Error(`Missing frontend environment file. ${hint}`);
 }
 
-const PLACEHOLDER_PATTERNS = [
-  /^your-/i,
-  /^placeholder/i,
-  /^change-?me/i,
-  /^replace-?me/i,
-  /^xxx+$/i,
-];
-
-const requireEnv = (name) => {
-  const raw = process.env[name];
-  const value = typeof raw === 'string' ? raw.trim() : '';
-  if (!value) {
-    throw new Error(
-      `Missing required env var ${name}. Set it in ${path.basename(loadedEnv)} (see frontend/.env.example).`,
-    );
-  }
-  if (PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(value))) {
-    throw new Error(
-      `Env var ${name} still uses a placeholder value ("${value}"). Set a real value in ${path.basename(loadedEnv)}.`,
-    );
-  }
-  return value;
-};
-
-const optionalEnv = (name) => {
-  const raw = process.env[name];
-  return typeof raw === 'string' ? raw.trim() : '';
-};
-
-const versionFilePath = path.join(ROOT, '..', 'version.txt');
-const localVersionFilePath = path.join(ROOT, 'version.txt');
+const versionFilePath = path.join(__dirname, '..', 'version.txt');
+const localVersionFilePath = path.join(__dirname, 'version.txt');
 const appVersion = fs.existsSync(versionFilePath)
   ? fs.readFileSync(versionFilePath, 'utf8').trim()
   : fs.existsSync(localVersionFilePath)
     ? fs.readFileSync(localVersionFilePath, 'utf8').trim()
     : '0.0.0-dev';
 
-const targetPath = path.join(ROOT, 'src', 'environments', 'environment.ts');
-const targetPathDev = path.join(ROOT, 'src', 'environments', 'environment.development.ts');
-const environmentsDir = path.join(ROOT, 'src', 'environments');
+const targetPath = path.join(__dirname, 'src', 'environments', 'environment.ts');
 
+const environmentsDir = path.join(__dirname, 'src', 'environments');
 if (!fs.existsSync(environmentsDir)) {
   fs.mkdirSync(environmentsDir, { recursive: true });
 }
 
-const apiKey = requireEnv('FIREBASE_API_KEY');
-const projectId = requireEnv('FIREBASE_PROJECT_ID');
-const appId = requireEnv('FIREBASE_APP_ID');
-const authDomain = requireEnv('FIREBASE_AUTH_DOMAIN');
-const storageBucket = requireEnv('FIREBASE_STORAGE_BUCKET');
-const messagingSenderId = requireEnv('FIREBASE_MESSAGING_SENDER_ID');
-const sanityProjectId = requireEnv('SANITY_PROJECT_ID');
-const sanityDataset = requireEnv('SANITY_DATASET');
-const sentryDsn = optionalEnv('SENTRY_DSN');
+// Read process.env variables matching logical grouping order
+const apiKey = process.env.FIREBASE_API_KEY ?? 'PLACEHOLDER_API_KEY';
+const projectId = process.env.FIREBASE_PROJECT_ID ?? 'demldotcom';
+const appId = process.env.FIREBASE_APP_ID ?? '1:870072971206:web:5231fde2822d750abfccc7';
+const authDomain = process.env.FIREBASE_AUTH_DOMAIN ?? 'demldotcom.firebaseapp.com';
+const storageBucket = process.env.FIREBASE_STORAGE_BUCKET ?? 'demldotcom.firebasestorage.app';
+const messagingSenderId = process.env.FIREBASE_MESSAGING_SENDER_ID ?? '870072971206';
+const sanityProjectId = process.env.SANITY_PROJECT_ID ?? 'hj5wtuct';
+const sanityDataset = process.env.SANITY_DATASET ?? 'production';
+const sentryDsn = process.env.SENTRY_DSN ?? '';
 
-const buildBackendUrl = requireEnv('BACKEND_URL');
-const buildMarketingUrl = requireEnv('MARKETING_URL');
-const buildFrontendUrl = requireEnv('FRONTEND_URL');
+// URL resolution prefers build-time env (BACKEND_URL, MARKETING_URL from Railway etc).
+// If not provided (empty), falls back to runtime hostname logic for common deploys (localhost, Railway patterns).
+// This avoids broken API calls when build env not set.
+const buildBackendUrl = process.env.BACKEND_URL ?? '';
+const buildMarketingUrl = process.env.MARKETING_URL ?? '';
+const buildFrontendUrl = process.env.FRONTEND_URL ?? '';
 
-const urlGuard = `
-const requireConfiguredUrl = (name: string, value: string): string => {
-  if (!value) {
-    throw new Error(
-      \`\${name} is not configured. Re-run node set-env.js after setting frontend/.env.\`,
-    );
+const getBackendUrlCode = `
+const getBackendUrl = () => {
+  if (typeof window === 'undefined') {
+    const globalProcess = (globalThis as any).process;
+    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['BACKEND_URL']) {
+      return globalProcess.env['BACKEND_URL'];
+    }
+    return '${buildBackendUrl || 'https://backend.deml.app'}';
   }
-  return value;
+  const host = window.location.hostname;
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return 'http://localhost:8000';
+  }
+  if (host.includes('up.railway.app')) {
+    if (host.includes('-frontend')) {
+      return \`https://\${host.replace('-frontend', '-backend')}\`;
+    }
+    if (host.includes('frontend-')) {
+      return \`https://\${host.replace('frontend-', 'backend-')}\`;
+    }
+    return \`https://backend-\${host}\`;
+  }
+  if (host === 'deml.app' || host.endsWith('.deml.app')) {
+    return 'https://backend.deml.app';
+  }
+  return 'https://backend.deml.app';
 };
 `;
 
-const getBackendUrlCode = `
-const BACKEND_URL = '${buildBackendUrl}';
-const getBackendUrl = () => requireConfiguredUrl('BACKEND_URL', BACKEND_URL);
-`;
-
 const getFrontendUrlCode = `
-const FRONTEND_URL = '${buildFrontendUrl}';
-const getFrontendUrl = () => requireConfiguredUrl('FRONTEND_URL', FRONTEND_URL);
+const getFrontendUrl = () => {
+  if (typeof window === 'undefined') {
+    const globalProcess = (globalThis as any).process;
+    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['FRONTEND_URL']) {
+      return globalProcess.env['FRONTEND_URL'];
+    }
+    return '${buildFrontendUrl || 'https://deml.app'}';
+  }
+  const host = window.location.hostname;
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return window.location.origin;
+  }
+  if (host === 'deml.app' || host.endsWith('.deml.app')) {
+    return 'https://deml.app';
+  }
+  return '${buildFrontendUrl || 'https://deml.app'}';
+};
 `;
 
 const getMarketingUrlCode = `
-const MARKETING_URL = '${buildMarketingUrl}';
-const getMarketingUrl = () => requireConfiguredUrl('MARKETING_URL', MARKETING_URL);
+const getMarketingUrl = () => {
+  if (typeof window === 'undefined') {
+    const globalProcess = (globalThis as any).process;
+    if (typeof globalProcess !== 'undefined' && globalProcess.env && globalProcess.env['MARKETING_URL']) {
+      return globalProcess.env['MARKETING_URL'];
+    }
+    return '${buildMarketingUrl || 'https://dataengineeringformachinelearning.com'}';
+  }
+  const host = window.location.hostname;
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    return 'http://localhost:4321';
+  }
+  return '${buildMarketingUrl || 'https://dataengineeringformachinelearning.com'}';
+};
 `;
 
-const buildEnvFile = (production) => `
+const envConfigFileProd = `
 const getFirebaseConfig = () => {
   const defaultFirebase = {
     apiKey: '${apiKey}',
@@ -141,13 +139,12 @@ const getFirebaseConfig = () => {
   return defaultFirebase;
 };
 
-${urlGuard}
 ${getBackendUrlCode}
 ${getFrontendUrlCode}
 ${getMarketingUrlCode}
 
 export const environment = {
-  production: ${production},
+  production: true,
   version: '${appVersion}',
   backendUrl: getBackendUrl(),
   frontendUrl: getFrontendUrl(),
@@ -161,24 +158,60 @@ export const environment = {
 };
 `;
 
-fs.writeFileSync(targetPath, buildEnvFile(true), 'utf8');
-console.log(`Angular environment.ts generated from ${path.basename(loadedEnv)}`);
+const envConfigFileDev = `
+const getFirebaseConfig = () => {
+  const defaultFirebase = {
+    apiKey: '${apiKey}',
+    authDomain: '${authDomain}',
+    projectId: '${projectId}',
+    storageBucket: '${storageBucket}',
+    messagingSenderId: '${messagingSenderId}',
+    appId: '${appId}'
+  };
 
-fs.writeFileSync(targetPathDev, buildEnvFile(false), 'utf8');
-console.log(`Angular environment.development.ts generated from ${path.basename(loadedEnv)}`);
-
-const firebaseConfigPath = path.join(ROOT, 'src', 'assets', 'firebase-config.js');
-fs.writeFileSync(
-  firebaseConfigPath,
-  `window.FIREBASE_CONFIG = {
-  apiKey: '${apiKey}',
-  authDomain: '${authDomain}',
-  projectId: '${projectId}',
-  storageBucket: '${storageBucket}',
-  messagingSenderId: '${messagingSenderId}',
-  appId: '${appId}'
+  if (typeof window !== 'undefined' && (window as any).FIREBASE_CONFIG) {
+    return {
+      ...defaultFirebase,
+      ...(window as any).FIREBASE_CONFIG
+    };
+  }
+  return defaultFirebase;
 };
-`,
-  'utf8',
-);
-console.log(`firebase-config.js generated at ${firebaseConfigPath}`);
+
+${getBackendUrlCode}
+${getFrontendUrlCode}
+${getMarketingUrlCode}
+
+export const environment = {
+  production: false,
+  version: '${appVersion}',
+  backendUrl: getBackendUrl(),
+  frontendUrl: getFrontendUrl(),
+  marketingUrl: getMarketingUrl(),
+  firebase: getFirebaseConfig(),
+  sanity: {
+    projectId: '${sanityProjectId}',
+    dataset: '${sanityDataset}'
+  },
+  sentryDsn: '${sentryDsn}'
+};
+`;
+
+const targetPathDev = path.join(__dirname, 'src', 'environments', 'environment.development.ts');
+
+fs.writeFileSync(targetPath, envConfigFileProd, 'utf8');
+console.log(`Angular environment.ts dynamically generated at ${targetPath}`);
+
+fs.writeFileSync(targetPathDev, envConfigFileDev, 'utf8');
+console.log(`Angular environment.development.ts dynamically generated at ${targetPathDev}`);
+
+// Ensure src/assets/firebase-config.js placeholder exists to prevent 404 errors
+const firebaseConfigPath = path.join(__dirname, 'src', 'assets', 'firebase-config.js');
+if (!fs.existsSync(firebaseConfigPath)) {
+  fs.writeFileSync(
+    firebaseConfigPath,
+    '// Local Firebase configuration override placeholder\n',
+    'utf8',
+  );
+  console.log(`Placeholder firebase-config.js created at ${firebaseConfigPath}`);
+}
