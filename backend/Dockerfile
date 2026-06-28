@@ -1,5 +1,5 @@
 # Builder stage
-FROM python:3.11-slim-bookworm AS builder
+FROM python:3.12-slim-bookworm AS builder
 
 WORKDIR /app
 
@@ -38,13 +38,13 @@ RUN ln -sf /usr/bin/python3 /opt/venv/bin/python && \
     ln -sf /usr/bin/python3 /opt/venv/bin/python3
 
 # Runtime stage
-FROM gcr.io/distroless/python3-debian12
+FROM gcr.io/distroless/python3.12-debian12
 
 # Copy the built liboqs shared libraries from the builder stage
 COPY --from=builder /opt/oqs /opt/oqs
 
 ENV PATH="/opt/venv/bin:$PATH" \
-    PYTHONPATH="/opt/venv/lib/python3.11/site-packages" \
+    PYTHONPATH="/opt/venv/lib/python3.12/site-packages" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     LD_LIBRARY_PATH="/opt/oqs/lib"
