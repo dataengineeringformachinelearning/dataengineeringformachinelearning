@@ -31,10 +31,12 @@ def custom_404(request: HttpRequest, exception: Exception) -> HttpResponse:
 
 
 def robots_txt(request: HttpRequest) -> HttpResponse:
+  """Serve robots.txt with sitemap reference. — Antigravity - Claude Opus 4.6"""
   sitemap_url = request.build_absolute_uri("/sitemap.xml")
   lines = [
     "User-agent: *",
     "Allow: /",
+    "Allow: /api/v1/docs",
     "Disallow: /api/",
     "",
     f"Sitemap: {sitemap_url}",

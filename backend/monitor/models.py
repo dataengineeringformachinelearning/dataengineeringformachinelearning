@@ -1,3 +1,4 @@
+import hashlib
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -282,6 +283,10 @@ class Vulnerability(models.Model):
   class Meta:
     db_table = "vulnerabilities"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["status"], name="vuln_status_idx"),
+      models.Index(fields=["severity"], name="vuln_severity_idx"),
+    ]
 
   def __str__(self):
     return f"{self.title} - {self.severity} ({self.status})"
@@ -296,7 +301,7 @@ class AuditLog(models.Model):
   user = models.ForeignKey(
     User, on_delete=models.SET_NULL, null=True, blank=True, related_name="audit_logs"
   )
-  action = models.CharField(max_length=255)  # e.g., "STATUS_PAGE_CREATE", "INCIDENT_UPDATE"
+  action = models.CharField(max_length=255)
   resource_id = models.CharField(max_length=255, blank=True, null=True)
   details = models.JSONField(default=dict, blank=True)
   ip_address = models.GenericIPAddressField(null=True, blank=True)
@@ -306,6 +311,9 @@ class AuditLog(models.Model):
   class Meta:
     db_table = "audit_logs"
     ordering = ["-timestamp"]
+    indexes = [
+      models.Index(fields=["action"], name="audit_action_idx"),
+    ]
 
   def __str__(self):
     user_str = self.user.username if self.user else "Anonymous"
@@ -436,9 +444,6 @@ class AggregatedAnalytics(models.Model):
   def __str__(self):
     scope = "platform" if self.is_platform else (self.user_id or "unknown")
     return f"Analytics {self.bucket_size} @ {self.timestamp} ({scope})"
-
-
-import hashlib
 
 
 class APIKey(models.Model):

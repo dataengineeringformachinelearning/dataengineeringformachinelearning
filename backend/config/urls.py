@@ -3,7 +3,7 @@ from django.urls import converters, path
 from telemetry import views as telemetry_views
 
 from . import views
-from .sitemaps import StaticViewSitemap
+from .sitemaps import APIDocsSitemap, StaticViewSitemap
 
 # Django 6 / Django-Ninja Workaround: Unregister 'uuid' path converter before importing Ninja
 if "uuid" in converters.DEFAULT_CONVERTERS:
@@ -16,6 +16,7 @@ from .api import api
 
 sitemaps = {
   "static": StaticViewSitemap,
+  "api_docs": APIDocsSitemap,
 }
 
 urlpatterns = [
