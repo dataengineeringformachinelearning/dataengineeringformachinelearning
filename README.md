@@ -66,7 +66,7 @@ flowchart TB
 
     subgraph "Event Broker & Processing"
         D[Redpanda Kafka Broker<br/>frontend-events topic]
-        TW[Django Telemetry Worker<br/>(Polars + ORM enrichment)]
+        TW["Django Telemetry Worker<br/>(Polars + ORM enrichment)"]
     end
 
     subgraph "Event Projections (Read Models)"
