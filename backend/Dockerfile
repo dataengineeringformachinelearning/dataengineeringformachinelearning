@@ -30,10 +30,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code for collectstatic
-# The three cross-site URLs are Railway runtime variables. We skip the strict
-# validation here so collectstatic can succeed in the builder stage.
 COPY . .
-ENV SKIP_SITE_URL_VALIDATION=true
 RUN python manage.py collectstatic --noinput --clear
 
 # Runtime stage
