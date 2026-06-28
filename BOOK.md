@@ -1446,8 +1446,17 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Private Internal DNS**: `deml-queue.railway.internal:9092`
 - **Public URL**: None (Strictly internal for security)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Persistent Storage**: Requires a persistent volume mounted to `/var/lib/redpanda/data`.
-- **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
+- **Persistent Storage**: You **MUST** attach a Railway Persistent Volume mounted to
+  `/var/lib/redpanda/data`. Without it, Redpanda runs on the container's ephemeral disk
+  and **loses all topics, messages, and consumer offsets on every restart/redeploy**.
+  This silently breaks Event Projections (events produced just before a restart never
+  reach the worker, and the in-app verification times out). Add it in Railway →
+  `deml-queue` → Variables/Settings → Volumes (the `railway volume add` CLI currently
+  panics with a project token, so use the dashboard).
+- **Deployment Trigger**: Scoped via `infrastructure/queue/railway.json`
+  `build.watchPatterns` to only redeploy when `infrastructure/queue/**` changes — so
+  unrelated merges to `main` don't restart (and, until a volume is attached, wipe) the
+  broker.
 - **Environment Variables**:
   - **REDPANDA_BROKERS**: Not strictly needed, but ensure port `9092` is exposed internally.
 
