@@ -109,9 +109,11 @@ export class App implements OnInit {
         this.isStandaloneStatusPage.set(isStandalone);
 
         const isDashboard = [
+          '/dashboard',
           '/explore',
           '/documentation',
           '/settings',
+          '/account',
           '/vulnerabilities',
           '/analytics',
         ].some(path => url.startsWith(path));

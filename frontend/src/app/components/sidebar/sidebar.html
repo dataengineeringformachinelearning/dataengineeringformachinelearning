@@ -16,8 +16,8 @@
     (keydown.enter)="toggleCollapse()"
     (keydown.space)="$event.preventDefault(); toggleCollapse()"
   >
-    <mat-icon class="brand-icon">analytics</mat-icon>
-    <h2 class="brand-title">Platform</h2>
+    <mat-icon class="brand-icon">shield</mat-icon>
+    <h2 class="brand-title">DEML</h2>
     <div class="collapse-toggle-btn" aria-hidden="true">
       <mat-icon aria-hidden="true">{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
     </div>
@@ -46,35 +46,13 @@
       @if (authService.isAuthenticated()) {
       <a
         class="nav-item"
-        routerLink="/explore"
+        routerLink="/dashboard"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact: true}"
-        title="Explore"
+        title="Dashboard"
       >
-        <mat-icon aria-hidden="true">explore</mat-icon>
-        <span class="nav-text">Explore</span>
-      </a>
-
-      <a
-        class="nav-item"
-        routerLink="/analytics"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Analytics"
-      >
-        <mat-icon aria-hidden="true">insert_chart</mat-icon>
-        <span class="nav-text">Analytics</span>
-      </a>
-
-      <a
-        class="nav-item"
-        routerLink="/vulnerabilities"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Vulnerabilities"
-      >
-        <mat-icon aria-hidden="true">security</mat-icon>
-        <span class="nav-text">Vulnerabilities</span>
+        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        <span class="nav-text">Dashboard</span>
       </a>
 
       <a
@@ -82,10 +60,21 @@
         routerLink="/settings"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact: true}"
-        title="Settings"
+        title="Site Setup"
       >
-        <mat-icon aria-hidden="true">settings</mat-icon>
-        <span class="nav-text">Settings</span>
+        <mat-icon aria-hidden="true">language</mat-icon>
+        <span class="nav-text">Sites</span>
+      </a>
+
+      <a
+        class="nav-item"
+        routerLink="/account"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        title="Account"
+      >
+        <mat-icon aria-hidden="true">person</mat-icon>
+        <span class="nav-text">Account</span>
       </a>
 
       @if (!isCollapsed() && isSettingsActive()) {
