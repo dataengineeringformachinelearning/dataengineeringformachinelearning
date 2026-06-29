@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from monitor.models import AggregatedAnalytics, Endpoints
+from utils.service_urls import endpoint_storage_url
 
 User = get_user_model()
 
@@ -42,7 +42,16 @@ class MetricsService:
     if not urls:
       return PageMetrics(uptime_history=[UptimeDay("no_data", 100.0) for _ in range(30)])
 
-    endpoint_qs = Endpoints.objects.filter(url__in=urls).exclude(status_code=0)
+    lookup_urls = list(
+      {
+        u
+        for raw in urls
+        for u in (raw, endpoint_storage_url(raw, is_platform=is_platform))
+        if u
+      }
+    )
+
+    endpoint_qs = Endpoints.objects.filter(url__in=lookup_urls).exclude(status_code=0)
     if is_platform:
       endpoint_qs = endpoint_qs.filter(is_platform=True, user__isnull=True)
     elif user:
@@ -136,7 +145,17 @@ class MetricsService:
       raw_start = max(a.timestamp for a in aggregated) + dt.timedelta(hours=1)
 
     raw_qs = Endpoints.objects.filter(
-      url__in=urls, last_tested__gte=raw_start, last_tested__lt=now, **ep_filter
+      url__in=list(
+        {
+          u
+          for raw in urls
+          for u in (raw, endpoint_storage_url(raw, is_platform=is_platform))
+          if u
+        }
+      ),
+      last_tested__gte=raw_start,
+      last_tested__lt=now,
+      **ep_filter,
     ).exclude(status_code=0)
     raw_count = raw_qs.count()
     total_requests = sum(a.total_requests for a in aggregated) + raw_count

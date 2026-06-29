@@ -14,7 +14,7 @@ from django.db import close_old_connections
 from monitor.models import Endpoints, MonitoredService
 from utils.service_urls import (
   ensure_platform_monitored_services,
-  get_normalized_service_info,
+  endpoint_storage_url,
   resolve_ping_url,
 )
 
@@ -45,11 +45,11 @@ def ping_services():
           "targets": {},
         }
       ping_url = resolve_ping_url(s.url, s.name)
-      canonical_url, _ = get_normalized_service_info(s.url)
-      scope_targets[scope_key]["targets"][ping_url] = canonical_url
+      store_url = endpoint_storage_url(s.url, is_platform=page.is_platform)
+      scope_targets[scope_key]["targets"][ping_url] = store_url
 
     for scope in scope_targets.values():
-      for ping_url, canonical_url in scope["targets"].items():
+      for ping_url, store_url in scope["targets"].items():
         start_time = time.time()
         status_code = 503
         is_active = False
@@ -80,7 +80,7 @@ def ping_services():
         Endpoints.objects.create(
           user=None if is_platform else user,
           is_platform=is_platform,
-          url=canonical_url,
+          url=store_url,
           status_code=status_code,
           response_time=duration,
           ip_address="127.0.0.1",

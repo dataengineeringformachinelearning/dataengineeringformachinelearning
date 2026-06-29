@@ -306,7 +306,7 @@ th,
 
 .nav-btn {
   font-size: 1rem !important;
-  color: var(--text-muted) !important;
+  color: var(--nav-link-color, var(--text-muted)) !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
@@ -333,7 +333,21 @@ th,
 
 .nav-btn:hover {
   color: var(--text-color) !important;
-  background-color: rgba(33, 118, 255, 0.05) !important;
+  background-color: color-mix(in srgb, var(--crayola-blue) 8%, transparent) !important;
+}
+
+html[data-theme=light] {
+  --nav-link-color: color-mix(in srgb, var(--jet-black) 88%, var(--white));
+}
+html[data-theme=light] .nav-btn,
+html[data-theme=light] .mobile-nav-btn,
+html[data-theme=light] .menu-toggle-btn,
+html[data-theme=light] .theme-toggle-btn {
+  color: var(--nav-link-color) !important;
+}
+html[data-theme=light] .nav-btn:hover,
+html[data-theme=light] .mobile-nav-btn:hover {
+  background-color: color-mix(in srgb, var(--crayola-blue) 10%, transparent) !important;
 }
 
 .nav-btn.active {
@@ -441,9 +455,9 @@ th,
 
 .auth-btn:hover {
   transform: translateY(-2px) !important;
-  background-color: var(--hover-color) !important;
+  background-color: var(--crayola-blue) !important;
   border-color: var(--crayola-blue) !important;
-  color: var(--text-color) !important;
+  color: var(--white) !important;
   box-shadow: var(--shadow-md) !important;
 }
 

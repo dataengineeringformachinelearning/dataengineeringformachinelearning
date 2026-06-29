@@ -1,5 +1,61 @@
 // Angular Material component overrides — DEML palette, 18px floor, 9px grid.
 
+// Angular Material component overrides — DEML palette, 18px floor, 9px grid.
+
+// Kill default Material purple — force THEME.md tokens globally.
+:root,
+html[data-theme='light'],
+html[data-theme='dark'] {
+  --mat-sys-primary: var(--crayola-blue);
+  --mat-sys-on-primary: var(--white);
+  --mat-sys-primary-container: var(--blue-bell);
+  --mat-sys-on-primary-container: var(--white);
+  --mat-sys-secondary: var(--blue-bell);
+  --mat-sys-tertiary: var(--golden-pollen);
+  --mat-sys-error: var(--carrot-orange);
+  --mat-sys-surface: var(--card-bg);
+  --mat-sys-on-surface: var(--text-color);
+  --mat-sys-background: var(--bg-color);
+  --mat-sys-on-background: var(--text-color);
+  --mat-sys-outline: var(--border);
+}
+
+// Navbar + auth buttons must match shared navbar.scss (not generic mat-button rules).
+.mat-mdc-button.nav-btn,
+a.nav-btn.mat-mdc-button,
+.mat-mdc-button.mobile-nav-btn,
+a.mobile-nav-btn.mat-mdc-button {
+  color: var(--nav-link-color, var(--text-muted)) !important;
+  background-color: transparent !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  padding: 0 16px !important;
+  border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important;
+}
+
+.mat-mdc-button.nav-btn:hover,
+a.nav-btn.mat-mdc-button:hover,
+.mat-mdc-button.mobile-nav-btn:hover {
+  color: var(--text-color) !important;
+  background-color: color-mix(in srgb, var(--crayola-blue) 8%, transparent) !important;
+}
+
+.mat-mdc-button.nav-btn.active,
+a.nav-btn.mat-mdc-button.active {
+  color: var(--text-color) !important;
+  background-color: color-mix(in srgb, var(--crayola-blue) 12%, transparent) !important;
+  box-shadow: inset 0 -2px 0 0 var(--crayola-blue) !important;
+}
+
+button.auth-btn,
+a.auth-btn {
+  background: var(--color-dark-grey-btn-bg) !important;
+  color: var(--color-dark-grey-btn-text) !important;
+}
+
 .mat-mdc-button.mat-primary,
 .mat-mdc-raised-button.mat-primary,
 .mat-mdc-unelevated-button.mat-primary,

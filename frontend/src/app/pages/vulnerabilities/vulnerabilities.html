@@ -413,6 +413,82 @@
           </div>
         </section>
       </div>
+
+      @if (actionMessage() || actionError()) {
+      <div
+        class="intel-feedback-banner"
+        [class.error]="!!actionError()"
+        role="status"
+        aria-live="polite"
+      >
+        <span>{{ actionError() || actionMessage() }}</span>
+        <button type="button" class="flux-btn flux-btn-ghost" (click)="clearActionFeedback()">
+          Dismiss
+        </button>
+      </div>
+      }
+
+      @if (selectedIncident() || selectedPlaybook()) {
+      <section class="intel-action-console panel-section">
+        <div class="panel-header">
+          <mat-icon class="panel-icon">bolt</mat-icon>
+          <h2>Threat Response Console</h2>
+        </div>
+        <div class="intel-action-body">
+          @if (selectedIncident(); as incident) {
+          <div class="intel-action-group">
+            <h3 class="intel-action-title">Incident: {{ incident.title }}</h3>
+            <p class="intel-action-desc">{{ incident.description || 'No description provided.' }}</p>
+            <div class="intel-action-buttons">
+              <button
+                type="button"
+                class="flux-btn flux-btn-primary"
+                (click)="resolveIncident(incident)"
+              >
+                Resolve
+              </button>
+              <button
+                type="button"
+                class="flux-btn flux-btn-subtle"
+                (click)="escalateIncident(incident)"
+              >
+                Escalate
+              </button>
+              <button
+                type="button"
+                class="flux-btn flux-btn-ghost"
+                (click)="dismissIncident(incident)"
+              >
+                False Positive
+              </button>
+            </div>
+          </div>
+          } @if (selectedPlaybook(); as playbook) {
+          <div class="intel-action-group">
+            <h3 class="intel-action-title">Playbook: {{ playbook.name }}</h3>
+            <p class="intel-action-desc">{{ playbook.description || 'Automated response workflow.' }}</p>
+            <div class="intel-action-buttons">
+              <button
+                type="button"
+                class="flux-btn flux-btn-primary"
+                (click)="runSelectedPlaybook()"
+                [disabled]="!playbook.is_active"
+              >
+                Run Playbook
+              </button>
+              <button
+                type="button"
+                class="flux-btn flux-btn-subtle"
+                (click)="togglePlaybook(playbook)"
+              >
+                {{ playbook.is_active ? 'Pause' : 'Activate' }}
+              </button>
+            </div>
+          </div>
+          }
+        </div>
+      </section>
+      }
     </div>
   </div>
 </div>
