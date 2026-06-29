@@ -68,6 +68,18 @@ export class MlService {
   public latestThreatReports = signal<Record<string, ThreatReportResponse | null>>({});
   public isTrainingThreat = signal<boolean>(false);
 
+  private normalizeThreatReport(data: ThreatReportResponse): ThreatReportResponse {
+    return {
+      status: data.status,
+      anomaly_score: data.anomaly_score ?? 0,
+      top_location: data.top_location ?? 'N/A',
+      location_weight: data.location_weight ?? 0,
+      suspicious_ratio: data.suspicious_ratio ?? 0,
+      created_at: data.created_at ?? null,
+      message: data.message,
+    };
+  }
+
   fetchThreatReport(statusPageId?: string): void {
     let url = API_ENDPOINTS.ML.LATEST.replace('/latest', '/threat-intel/report');
     if (statusPageId) {
@@ -75,11 +87,12 @@ export class MlService {
     }
     this.http.get<ThreatReportResponse>(url).subscribe({
       next: data => {
-        if (data && data.status === 'success' && data.anomaly_score !== null) {
+        if (data && data.status === 'success') {
+          const normalized = this.normalizeThreatReport(data);
           if (statusPageId) {
-            this.latestThreatReports.update(reports => ({ ...reports, [statusPageId]: data }));
+            this.latestThreatReports.update(reports => ({ ...reports, [statusPageId]: normalized }));
           } else {
-            this.latestThreatReport.set(data);
+            this.latestThreatReport.set(normalized);
           }
         }
       },
@@ -93,8 +106,8 @@ export class MlService {
     this.http.post<ThreatReportResponse>(url, {}).subscribe({
       next: res => {
         this.isTrainingThreat.set(false);
-        if (res && res.status === 'success' && res.anomaly_score !== null) {
-          this.latestThreatReport.set(res);
+        if (res && res.status === 'success') {
+          this.latestThreatReport.set(this.normalizeThreatReport(res));
         }
       },
       error: err => {

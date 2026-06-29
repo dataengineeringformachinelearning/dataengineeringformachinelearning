@@ -3,6 +3,8 @@ import {
   Input,
   ChangeDetectionStrategy,
   OnInit,
+  OnChanges,
+  SimpleChanges,
   inject,
   ChangeDetectorRef,
 } from '@angular/core';
@@ -32,7 +34,7 @@ import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
   styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StatusCard implements OnInit {
+export class StatusCard implements OnInit, OnChanges {
   @Input({ required: true }) page!: StatusPageData;
   @Input({ required: true }) services: MonitoredServiceData[] = [];
   @Input() predictedSla: number | null | undefined = null;
@@ -54,22 +56,24 @@ export class StatusCard implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
-    // Hydrate data cleanly as requested
-    setTimeout(
-      () => {
-        const baseSla = this.page.cumulative_sla ?? 99.9;
-        // Simulate real-ish data based on SLA
-        this.p99Latency = this.page.p99_latency ?? 0;
-        this.totalRequests = this.page.total_requests ?? 0;
-        this.uptimePercent = baseSla;
-        this.simulatedThreatReport = {
-          suspicious_ratio: 0,
-          anomaly_score: 0,
-        };
-        this.cdr.markForCheck();
-      },
-      800 + Math.random() * 700,
-    );
+    this.syncDerivedMetrics();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['page']) {
+      this.syncDerivedMetrics();
+    }
+  }
+
+  private syncDerivedMetrics() {
+    this.p99Latency = this.page?.p99_latency ?? 0;
+    this.totalRequests = this.page?.total_requests ?? 0;
+    this.uptimePercent = this.page?.cumulative_sla ?? 99.9;
+    this.simulatedThreatReport = {
+      suspicious_ratio: 0,
+      anomaly_score: 0,
+    };
+    this.cdr.markForCheck();
   }
 
   formatServiceName = formatServiceName;

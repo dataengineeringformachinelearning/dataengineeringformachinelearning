@@ -56,6 +56,10 @@ export class Vulnerabilities implements OnInit {
   selectedIncident = signal<IncidentCase | null>(null);
   selectedPlaybook = signal<Playbook | null>(null);
   incidentStatusOptions = ['Open', 'Investigating', 'Mitigated', 'Resolved', 'False Positive'];
+  incidentStatusSelectOptions: SelectOption[] = this.incidentStatusOptions.map(status => ({
+    value: status,
+    label: status,
+  }));
 
   selectedVuln = signal<Vulnerability | null>(null);
   filterStatus = signal<string>('All');
@@ -151,7 +155,7 @@ export class Vulnerabilities implements OnInit {
   loadAvailableSites() {
     let url = `${environment.backendUrl}/api/v1/analytics/overview`;
     if (this.selectedTenantId) {
-      url += `?tenant_id=${this.selectedTenantId}`;
+      url += `?account_id=${this.selectedTenantId}`;
     }
     this.http.get<any>(url).subscribe({
       next: response => {
@@ -236,7 +240,10 @@ export class Vulnerabilities implements OnInit {
         next: updated => {
           this.selectedVuln.set(updated);
           // Refresh full list to keep UI synchronized
-          this.vulnService.fetchVulnerabilities();
+          this.vulnService.fetchVulnerabilities(
+            this.selectedTenantId || undefined,
+            this.selectedSite || undefined,
+          );
           this.cdr.markForCheck();
         },
         error: err => console.error('Failed to update vulnerability matrix:', err),
@@ -271,6 +278,9 @@ export class Vulnerabilities implements OnInit {
   }
 
   updateIncidentStatus(incident: IncidentCase, status: string) {
+    if (incident.status === status) {
+      return;
+    }
     this.vulnService.updateIncident(incident.id, { status }).subscribe({
       next: () => {
         this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
@@ -287,6 +297,14 @@ export class Vulnerabilities implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  runIncidentQuery() {
+    this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+  }
+
+  refreshPlaybooks() {
+    this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
   }
 
   // Helpers to get matrix cell color label
