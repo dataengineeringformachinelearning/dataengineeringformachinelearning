@@ -32,7 +32,7 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 | Plane                 | Technology                               | Role                                                           |
 | --------------------- | ---------------------------------------- | -------------------------------------------------------------- |
-| Compute & persistence | Railway (14 services)                    | Django API, workers, Postgres, Redpanda, ClickHouse, caches    |
+| Compute & persistence | Google Cloud Run (14 services)           | Django API, workers, Postgres, Redpanda, ClickHouse, caches    |
 | Client gateway        | Firebase Cloud Functions (`ingestEvent`) | Authenticated command ingress to Redpanda (Firestore fallback) |
 | Identity              | Firebase Auth                            | JWT perimeter; MFA on mutations                                |
 | Read models           | Firestore (`deml` DB)                    | `users/{uid}/data/stats` projections                           |
@@ -45,16 +45,16 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 - **Anonymous visitors** read published status pages and the world-readable `platform-status` sentinel only (ABAC).
 - **Account owners** (`Operator` / `Security Admin`) authenticate via Firebase, manage status pages and integrations (MFA required for writes); the Event Projections loop is monitored automatically by a synthetic probe and shown on the public `platform-status` page.
 - **API integrators** stream data through `/api/v1/ingest` using hashed API keys scoped to `account_id`.
-- **Platform operators** manage Railway services, Firebase/GCP deploy workflows, Infisical secrets, and the internal vulnerability Kanban.
+- **Platform operators** manage Cloud Run services, Firebase/GCP deploy workflows, Infisical secrets, and the internal vulnerability Kanban.
 
 ### 2.4 Operational modes
 
-| Mode              | Trigger                         | Behavior                                                                          |
-| ----------------- | ------------------------------- | --------------------------------------------------------------------------------- |
-| Normal            | All services healthy            | Commands → Redpanda → worker → Firestore; outbox relay every 5s                   |
-| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; Railway-internal broker may still serve workers |
-| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts   |
-| Maintenance       | `main` merge                    | Railway rolling deploy; Firebase Functions/rules via GitHub Actions               |
+| Mode              | Trigger                         | Behavior                                                                        |
+| ----------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| Normal            | All services healthy            | Commands → Redpanda → worker → Firestore; outbox relay every 5s                 |
+| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers       |
+| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts |
+| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions           |
 
 ### 2.5 Maintenance cadence (summary)
 

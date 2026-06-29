@@ -31,7 +31,7 @@ For a brief summary of the platform's hypothesis, value add, architecture diagra
 
 ## Concept of Operations (CONOPS)
 
-This section is the **single operational narrative** for the DEML platform: who uses it, how it runs in production, which technologies execute each responsibility, and what operators do when things degrade. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models, Railway compute, GCP security controls). Detailed checklists live in [Appendix C](#appendix-c-railway-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
+This section is the **single operational narrative** for the DEML platform: who uses it, how it runs in production, which technologies execute each responsibility, and what operators do when things degrade. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models, Google Cloud compute, GCP security controls). Detailed checklists live in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
 
 ### 1. Purpose & Scope
 
@@ -40,7 +40,7 @@ The DEML platform is a multi-tenant observability and machine-learning SaaS. Ope
 - Normal steady-state operations across all production services
 - User-facing workflows (anonymous visitors, account owners, API integrators)
 - Internal data paths (commands, projections, queries, batch ML)
-- Deployment boundaries (Railway, Firebase, GCP, Hugging Face)
+- Deployment boundaries (Cloud Run, Firebase, GCP, Hugging Face)
 - Maintenance cadence, monitoring, and degraded-mode behavior
 
 Out of scope: local developer onboarding (see [Chapter 1](#chapter-1-the-fresh-install--environment-setup) and [Appendix E](#appendix-e-contributing-guidelines--getting-started)), and deep algorithmic derivations (see [Whitepaper](WHITEPAPER.md)).
@@ -110,7 +110,7 @@ flowchart TB
 
 | Layer                      | Provider                                                                  | Responsibility                                                                                                                 |
 | -------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Compute & data plane**   | [Railway](https://railway.app/)                                           | Django API, Angular SSR, Postgres, Redpanda, ClickHouse, Dragonfly, all background workers, scanner, OTEL collector, Tor proxy |
+| **Compute & data plane**   | [Cloud Run](https://cloud.google.com/run/)                                | Django API, Angular SSR, Postgres, Redpanda, ClickHouse, Dragonfly, all background workers, scanner, OTEL collector, Tor proxy |
 | **Client command gateway** | [Firebase Cloud Functions](https://firebase.google.com/docs/functions)    | `ingestEvent` callable with native Auth context                                                                                |
 | **Identity**               | [Firebase Authentication](https://firebase.google.com/products/auth)      | Email/OAuth/MFA; JWT verified by Django middleware                                                                             |
 | **Real-time read models**  | [Firestore](https://firebase.google.com/docs/firestore) (named DB `deml`) | Projected stats; security rules enforce per-user isolation                                                                     |
@@ -124,13 +124,13 @@ flowchart TB
 
 ### 5. Operational Modes
 
-| Mode                                               | Description                                                                                                                                     | Operator actions                                                                                                              |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| **Normal**                                         | All Railway services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                               | Monitor CES gauges, Sentry, Railway metrics; check the "Event Projections" component on platform-status                       |
-| **Degraded — Redpanda unreachable from Functions** | `ingestEvent` writes fallback rows to Firestore `events` collection; `telemetry_worker` still processes broker when Railway-internal path works | Confirm `REDPANDA_BROKERS` uses public endpoint for Functions or accept Firestore fallback; check `frontend-events-dlq` depth |
-| **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                                     | Restart `deml-telemetry-worker` and `deml-relay`; inspect DLQ topic; replay idempotent keys                                   |
-| **Maintenance**                                    | Migrations, dependency upgrades, model retraining                                                                                               | Railway rolling deploy on `main` merge; Firebase workflow deploys Functions/rules independently                               |
-| **Incident / public comms**                        | Outage or degradation visible to users                                                                                                          | Publish via Sanity; `platform-status` remains world-readable; unpublished customer pages stay private                         |
+| Mode                                               | Description                                                                                                                             | Operator actions                                                                                                              |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **Normal**                                         | All Cloud Run services healthy; Redpanda reachable from Functions; projections flowing to Firestore                                     | Monitor CES gauges, Sentry, GCP metrics; check the "Event Projections" component on platform-status                           |
+| **Degraded — Redpanda unreachable from Functions** | `ingestEvent` writes fallback rows to Firestore `events` collection; `telemetry_worker` still processes broker when internal path works | Confirm `REDPANDA_BROKERS` uses public endpoint for Functions or accept Firestore fallback; check `frontend-events-dlq` depth |
+| **Degraded — Worker stalled**                      | Firestore projections stale; Postgres/outbox may accumulate                                                                             | Restart `deml-telemetry-worker` and `deml-relay`; inspect DLQ topic; replay idempotent keys                                   |
+| **Maintenance**                                    | Migrations, dependency upgrades, model retraining                                                                                       | Cloud Run rolling deploy on `main` merge; Firebase workflow deploys Functions/rules independently                             |
+| **Incident / public comms**                        | Outage or degradation visible to users                                                                                                  | Publish via Sanity; `platform-status` remains world-readable; unpublished customer pages stay private                         |
 
 ### 6. User Roles & Operational Workflows
 
@@ -143,7 +143,7 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 | **Viewer**                     | Read-only Settings and dashboards; API returns `403` on mutations                                                                           |
 | **Security Admin**             | Platform bootstrap account; same write surface as Operator for owned resources                                                              |
 | **API integrator**             | `Authorization: Bearer <API_KEY>` on `/api/v1/ingest` and `/api/v1/predict`; scoped to `account_id`                                         |
-| **Platform operator (you)**    | Railway dashboard, Firebase console, GCP KMS/logs, GitHub Actions, Infisical, internal vulnerability Kanban                                 |
+| **Platform operator (you)**    | GCP dashboard, Firebase console, GCP KMS/logs, GitHub Actions, Infisical, internal vulnerability Kanban                                     |
 
 **Typical owner session:** Marketing site → auth handoff → Angular dashboard → client events fire `ingestEvent` → stats appear via Firestore subscription → REST calls for configuration and ML endpoints.
 
@@ -170,24 +170,24 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 ### 8. Deployment Topology & Service Matrix
 
-Production runs **14 Railway services** (see [Chapter 22](#chapter-22-production-deployment-on-railway)). Core operational paths:
+Production runs **14 Cloud Run services** (see [Chapter 22](#chapter-22-production-deployment-on-cloudrun)). Core operational paths:
 
-| Service                                   | Operational role                                                        |
-| ----------------------------------------- | ----------------------------------------------------------------------- |
-| `deml-frontend`                           | Angular app, widgets, public status UI                                  |
-| `deml-backend`                            | Django REST, auth middleware, billing, outbox writers                   |
-| `deml-postgres`                           | System of record                                                        |
-| `deml-queue`                              | Redpanda (`deml-queue.railway.internal:9092` for inter-service traffic) |
-| `deml-telemetry-worker`                   | Projection engine + pingers + analytics rollups                         |
-| `deml-relay`                              | Reliable outbox publisher                                               |
-| `deml-ml-worker`                          | Training and inference jobs                                             |
-| `deml-security-worker`                    | Threat intel, retention, Stripe sync, key rotation                      |
-| `deml-clickhouse` + `deml-otel-collector` | Distributed tracing / CES inputs                                        |
-| `deml-dragonfly`                          | Rate limiting and hot caches                                            |
-| `deml-scanner` + `deml-cpe-guesser`       | Vulnerability ledger enrichment                                         |
-| `deml-tor-proxy`                          | OSINT dark-web routing                                                  |
+| Service                                   | Operational role                                                |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| `deml-frontend`                           | Angular app, widgets, public status UI                          |
+| `deml-backend`                            | Django REST, auth middleware, billing, outbox writers           |
+| `deml-postgres`                           | System of record                                                |
+| `deml-queue`                              | Redpanda (`deml-queue.internal:9092` for inter-service traffic) |
+| `deml-telemetry-worker`                   | Projection engine + pingers + analytics rollups                 |
+| `deml-relay`                              | Reliable outbox publisher                                       |
+| `deml-ml-worker`                          | Training and inference jobs                                     |
+| `deml-security-worker`                    | Threat intel, retention, Stripe sync, key rotation              |
+| `deml-clickhouse` + `deml-otel-collector` | Distributed tracing / CES inputs                                |
+| `deml-dragonfly`                          | Rate limiting and hot caches                                    |
+| `deml-scanner` + `deml-cpe-guesser`       | Vulnerability ledger enrichment                                 |
+| `deml-tor-proxy`                          | OSINT dark-web routing                                          |
 
-**Firebase deploy path (separate from Railway):** `.github/workflows/firebase-backend-deploy.yml` ships Cloud Functions + Firestore rules; `firebase-hosting-*.yml` ships marketing. **Never** point Railway services at Railway public broker URLs for internal traffic—use `*.railway.internal` ([Appendix C](#appendix-c-railway-deployment)).
+**Firebase deploy path (separate from Cloud Run):** `.github/workflows/firebase-backend-deploy.yml` ships Cloud Functions + Firestore rules; `firebase-hosting-*.yml` ships marketing. **Never** point Cloud Run services at Public broker URLs for internal traffic—use `*.internal` ([Appendix C](#appendix-c-cloud-run-deployment)).
 
 ### 9. Security Operations
 
@@ -207,7 +207,7 @@ Production runs **14 Railway services** (see [Chapter 22](#chapter-22-production
 | **Traces**               | OpenTelemetry → Collector → ClickHouse | Latency regressions, worker stalls                                                                     |
 | **Errors**               | Sentry (frontend + backend)            | Release regressions                                                                                    |
 | **Synthetic uptime**     | `telemetry_worker` pingers (30s)       | Status page accuracy                                                                                   |
-| **Infrastructure**       | Railway metrics, GCP Logging           | Capacity, audit trail                                                                                  |
+| **Infrastructure**       | GCP metrics, GCP Logging               | Capacity, audit trail                                                                                  |
 
 ### 11. Maintenance & Automation Cadence
 
@@ -221,19 +221,19 @@ All schedules are canonical in [Appendix D](#appendix-d-maintenance--automation-
 
 ### 12. Contingency & Degraded Operations
 
-| Failure                          | System behavior                                                                 | Recovery                                                            |
-| -------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Redpanda unavailable (Functions) | Firestore fallback writes; worker may still consume via Railway internal broker | Restore broker; drain DLQ; verify projections catch up idempotently |
-| `outbox_relay` stopped           | Events accumulate in Postgres outbox                                            | Restart relay; backlog publishes in order                           |
-| Firestore rules mis-deployed     | Client reads/writes rejected                                                    | Re-run `firebase-backend-deploy.yml`                                |
-| Worker OOM on Polars batch       | Messages route to `frontend-events-dlq`                                         | Fix payload/enrichment; replay with stable keys                     |
-| Postgres outage                  | REST mutations fail; cached projections may stale                               | Railway restore from volume snapshot; run migrations                |
-| KMS unreachable                  | Cannot decrypt integration tokens                                               | Restore GCP credentials; verify `telemetry-app-sa` IAM              |
+| Failure                          | System behavior                                                         | Recovery                                                            |
+| -------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Redpanda unavailable (Functions) | Firestore fallback writes; worker may still consume via internal broker | Restore broker; drain DLQ; verify projections catch up idempotently |
+| `outbox_relay` stopped           | Events accumulate in Postgres outbox                                    | Restart relay; backlog publishes in order                           |
+| Firestore rules mis-deployed     | Client reads/writes rejected                                            | Re-run `firebase-backend-deploy.yml`                                |
+| Worker OOM on Polars batch       | Messages route to `frontend-events-dlq`                                 | Fix payload/enrichment; replay with stable keys                     |
+| Postgres outage                  | REST mutations fail; cached projections may stale                       | Cloud SQL restore from volume snapshot; run migrations              |
+| KMS unreachable                  | Cannot decrypt integration tokens                                       | Restore GCP credentials; verify `telemetry-app-sa` IAM              |
 
 ### 13. CI/CD & Release Operations
 
 1. Feature branch → pre-commit (Ruff, ESLint, Axe) → PR.
-2. Merge to `main` → Railway webhook builds affected services (watch paths per service).
+2. Merge to `main` → Cloud Build webhook builds affected services (watch paths per service).
 3. Same merge → Firebase workflows deploy Functions/rules/hosting when paths match.
 4. `scripts/sync_content.py` propagates BOOK/README to frontend and marketing assets.
 5. `purge-cloudflare-cache.yml` invalidates CDN after deploy.
@@ -248,7 +248,7 @@ Semantic versioning and release notes: `scripts/git_flow.py` ([Chapter 16](#chap
 | [`docs/conops.md`](docs/conops.md)                         | On-call engineers        | Checklists, modes, quick reference  |
 | [WHITEPAPER.md](WHITEPAPER.md) §2                          | Executives, reviewers    | Concise CONOPS + hypothesis         |
 | [README.md](README.md)                                     | Integrators              | API gateway, architecture diagram   |
-| [Appendix C](#appendix-c-railway-deployment)               | DevOps                   | Per-service Railway variables       |
+| [Appendix C](#appendix-c-cloud-run-deployment)             | DevOps                   | Per-service Cloud Run variables     |
 | [Appendix D](#appendix-d-maintenance--automation-schedule) | SRE                      | Schedules and retention             |
 | [AGENTS.md](AGENTS.md)                                     | AI agents / contributors | Coding principles aligned to CONOPS |
 
@@ -996,19 +996,19 @@ I completely overhauled the data fetching states, replacing generic spinning ind
 
 ---
 
-## Chapter 22: Production Deployment on Railway
+## Chapter 22: Production Deployment on Cloud Run
 
-The ultimate crucible for any software architecture is its transition from a controlled local development environment into the hostile, chaotic reality of the public internet. The "it works on my machine" paradigm is an unacceptable failure of engineering discipline. To guarantee that my platform performs with absolute consistency and resilience, deployment cannot be treated as a discrete, manual event. It must be codified, automated, and treated as a seamless extension of my Continuous Integration pipeline. To achieve this modern deployment topology, I host my entire infrastructure on Railway.
+The ultimate crucible for any software architecture is its transition from a controlled local development environment into the hostile, chaotic reality of the public internet. The "it works on my machine" paradigm is an unacceptable failure of engineering discipline. To guarantee that my platform performs with absolute consistency and resilience, deployment cannot be treated as a discrete, manual event. It must be codified, automated, and treated as a seamless extension of my Continuous Integration pipeline. To achieve this modern deployment topology, I host my entire infrastructure on Cloud Run.
 
-Railway provides the declarative infrastructure-as-code capabilities required to orchestrate my complex, multi-service architecture without the immense cognitive overhead of manually configuring Kubernetes clusters. I deploy the Angular Web Frontend, the Django REST API, my persistent PostgreSQL databases, the Redpanda event bus, and my specialized asynchronous Telemetry Workers as distinct, independently scalable services within a unified Railway environment.
+Google Cloud provides the declarative infrastructure-as-code capabilities required to orchestrate my complex, multi-service architecture without the immense cognitive overhead of manually configuring Kubernetes clusters. I deploy the Angular Web Frontend, the Django REST API, my persistent PostgreSQL databases, the Redpanda event bus, and my specialized asynchronous Telemetry Workers as distinct, independently scalable services within a unified Google Cloud environment.
 
-This topology allows me to scale my infrastructure surgically. If a massive influx of external traffic threatens to overwhelm the platform, Railway automatically provisions additional replica nodes for the Django API edge, while the Telemetry Workers continue to process the Redpanda queue at their own deliberate, uncompromised pace. The frontend static assets are distributed globally to edge nodes, ensuring rapid time-to-interactive for users regardless of their geographic location.
+This topology allows me to scale my infrastructure surgically. If a massive influx of external traffic threatens to overwhelm the platform, Cloud Run automatically provisions additional replica nodes for the Django API edge, while the Telemetry Workers continue to process the Redpanda queue at their own deliberate, uncompromised pace. The frontend static assets are distributed globally to edge nodes, ensuring rapid time-to-interactive for users regardless of their geographic location.
 
-Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Railway intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. The complete per-service setup checklist — env vars, workers, outbox relay, cross-site URL trio, and local `docker-compose` parity — lives in **Appendix C**. This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
+Crucially, the entire deployment lifecycle is governed by automated CI/CD triggers. When a developer merges a feature branch into `main` after passing the rigorous suite of automated tests and accessibility audits, Cloud Run intercepts the webhook. It autonomously pulls the latest repository commit, initiates the multi-stage Docker builds, executes the database migrations, and performs a zero-downtime rolling deployment. The complete per-service setup checklist — env vars, workers, outbox relay, cross-site URL trio, and local `docker-compose` parity — lives in **Appendix C**. This architecture ensures that my platform is not just ready for production release; it actively thrives in it, providing an unyielding foundation for my machine learning and telemetry operations.
 
 ### Infrastructure & Compute Resource Allocation
 
-To maintain a highly efficient, cost-optimized deployment footprint (particularly on platforms like Railway Pro or Kubernetes), the platform is designed to run extremely lean. By intentionally constraining CPU and memory limits, we force aggressive garbage collection and prevent unbounded caching.
+To maintain a highly efficient, cost-optimized deployment footprint (particularly on platforms like Cloud Run or Kubernetes), the platform is designed to run extremely lean. By intentionally constraining CPU and memory limits, we force aggressive garbage collection and prevent unbounded caching.
 
 The recommended replica limits for a production-grade deployment are:
 
@@ -1040,7 +1040,7 @@ Assuming 24/7 continuous utilization at the maximum 4 vCPU / 4 GB limits across 
 - **Total Compute (Theoretical Maximum):** **~$1,680 / month**
 
 **Actual Baseline Usage (Estimated):**
-Because Railway bills strictly on _consumed_ resources per minute rather than _provisioned_ limits, the actual monthly operational cost is drastically lower than the theoretical maximum. Extrapolating from current active development and testing telemetry (roughly $27 over 24 days), a realistic baseline full-month estimate is approximately **$35.00 per month**.
+Because Cloud Run bills strictly on _consumed_ resources per minute rather than _provisioned_ limits, the actual monthly operational cost is drastically lower than the theoretical maximum. Extrapolating from current active development and testing telemetry (roughly $27 over 24 days), a realistic baseline full-month estimate is approximately **$35.00 per month**.
 
 The primary drivers of this ~$35 baseline cost are the heavily utilized core services:
 
@@ -1050,7 +1050,7 @@ The primary drivers of this ~$35 baseline cost are the heavily utilized core ser
 - **deml-telemetry-worker:** ~$3.00/mo (Intermittent Polars processing)
 
 **Note on Persistent Volumes:**
-In addition to standard compute, this architecture provisions persistent disk volumes for **deml-postgres**, **deml-clickhouse**, and **deml-scanner**. Storage on Railway is billed at **$0.15 per GB / month**. However, because these volumes dynamically scale with data ingestion, their baseline cost footprint remains highly efficient—averaging only pennies during standard baseline operations, but capable of scaling to hundreds of gigabytes (e.g., ~$45/month for 300GB) if required.
+In addition to standard compute, this architecture provisions persistent disk volumes for **deml-postgres**, **deml-clickhouse**, and **deml-scanner**. Storage on Cloud Run is billed at **$0.15 per GB / month**. However, because these volumes dynamically scale with data ingestion, their baseline cost footprint remains highly efficient—averaging only pennies during standard baseline operations, but capable of scaling to hundreds of gigabytes (e.g., ~$45/month for 300GB) if required.
 
 ---
 
@@ -1209,7 +1209,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
@@ -1321,17 +1321,17 @@ Because we are processing potentially identifiable information (IP addresses, pr
 - **Data Minimization:** Once an IP is enriched to an ASN/Geo and its session concludes, we strive to drop the raw IP from long-term aggregate storage (using the `AggregatedAnalytics` roll-up buckets) to prevent unauthorized PII accumulation.
 - **Security by Design:** All third-party integrations (Google Analytics, Microsoft Clarity) are opt-in and handled via secure encrypted credential storage in `AnalyticsIntegration`.
 
-## Appendix C: Railway Deployment
+## Appendix C: Cloud Run Deployment
 
 **Env templates:** `backend/.env.example`, `frontend/.env.example`, `marketing/.env.example`.
 
-This appendix is the **complete setup checklist** for deploying the DEML platform on Railway (project: `deml`). Every hostname, broker address, and cross-site URL is **env-driven** — never hardcode domains in application code.
+This appendix is the **complete setup checklist** for deploying the DEML platform on Cloud Run (project: `deml`). Every hostname, broker address, and cross-site URL is **env-driven** — never hardcode domains in application code.
 
 ### Pre-Deploy Checklist
 
 Before creating services, prepare:
 
-1. **Secrets** in Railway Variables or [Infisical](https://infisical.com/) (recommended for SOC 2 / CMMC): `SECRET_KEY`, `FIREBASE_SERVICE_ACCOUNT_JSON`, `GCP_SERVICE_ACCOUNT_JSON`, Stripe, Resend, threat-intel API keys, `HF_TOKEN`, `SENTRY_DSN`.
+1. **Secrets** in Cloud Run Variables or [Infisical](https://infisical.com/) (recommended for SOC 2 / CMMC): `SECRET_KEY`, `FIREBASE_SERVICE_ACCOUNT_JSON`, `GCP_SERVICE_ACCOUNT_JSON`, Stripe, Resend, threat-intel API keys, `HF_TOKEN`, `SENTRY_DSN`.
 2. **Cross-site URL trio** (same names on backend, frontend, and marketing builds):
 
 | Variable        | Production value                                | Purpose                        |
@@ -1341,12 +1341,12 @@ Before creating services, prepare:
 | `MARKETING_URL` | `https://dataengineeringformachinelearning.com` | Astro site, auth handoff, CORS |
 
 3. **CORS / CSRF** must list every public origin (app + marketing + backend + local dev). Copy from `backend/.env.example` and extend for your domains.
-4. **Production guards**: `DEBUG=False`, unique `SECRET_KEY`. On Railway, the backend **fails fast** if these are insecure (`backend/utils/env.py`).
+4. **Production guards**: `DEBUG=False`, unique `SECRET_KEY`. On Cloud Run, the backend **fails fast** if these are insecure (`backend/utils/env.py`).
 5. **Privacy defaults**: `SENTRY_SEND_PII=false`, `STRUCTURED_LOGS=true` (JSON logs with correlation IDs).
 
 ### How to Deploy in One Project
 
-1. **Create a New Project**: Railway dashboard → **New Project** → **Empty Project** (name: `deml`).
+1. **Create a New Project**: GCP dashboard → **New Project** → **Empty Project** (name: `deml`).
 2. **Add Postgres**: **New** → **Database** → **PostgreSQL**. Note the internal `DATABASE_URL`.
 3. **Add Services**: For each component below, **New Service** → **GitHub Repo** → select this repository.
 4. **Configure each service** (Settings tab):
@@ -1355,15 +1355,15 @@ Before creating services, prepare:
    - **Watch Paths** (e.g. `/frontend/**`, `/backend/**`) so unrelated changes do not trigger rebuilds.
 5. **Variables tab**: Set env vars per service (see per-service sections). Workers share nearly the same bundle as `deml-backend`.
 6. **Redeploy frontend** after changing build-time vars (`FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`, `FIREBASE_*`, `SENTRY_DSN`) so `set-env.js` regenerates `environment.ts`.
-7. **Marketing site** (Astro) is hosted **outside** this Railway project (Firebase Hosting). Set the same URL trio at **build** time on that host.
-8. **Firebase** Cloud Functions + Firestore rules deploy via GitHub Actions (`.github/workflows/firebase-backend-deploy.yml`), not Railway.
+7. **Marketing site** (Astro) is hosted **outside** this Cloud Run project (Firebase Hosting). Set the same URL trio at **build** time on that host.
+8. **Firebase** Cloud Functions + Firestore rules deploy via GitHub Actions (`.github/workflows/firebase-backend-deploy.yml`), not Cloud Run.
 
 ## Infisical Integration
 
 To satisfy strict secret management guidelines (SOC 2, CMMC 2.0, NIST SP 800-171 Rev. 3 CC6.1/CC6.2), all secret keys, passwords, and API credentials are kept out of raw service settings and stored inside [Infisical](https://infisical.com/).
 
 1. Set up an Infisical organization and create a project for `dataengineeringformachinelearning`.
-2. Connect your Railway services to Infisical via the official Railway Infisical Integration.
+2. Connect your Cloud Run services to Infisical via the official Cloud Run Infisical Integration.
 3. For local development, run tasks using the Infisical CLI:
    ```bash
    infisical run -- python manage.py runserver
@@ -1379,7 +1379,7 @@ Angular SPA — dashboard, status pages, widgets.
 - **Builder**: Dockerfile (`nginxinc/nginx-unprivileged:alpine-slim`)
 - **Start Command**: `nginx -g "daemon off;"` (Dockerfile default)
 - **Public URL**: `https://deml.app`
-- **Private Internal DNS**: `deml-frontend.railway.internal`
+- **Private Internal DNS**: `deml-frontend.internal`
 - **Build step**: `set-env.js` runs at deploy and writes `src/environments/environment.ts`.
 
 **Required build-time variables** (see `frontend/.env.example`):
@@ -1407,7 +1407,7 @@ Django + Ninja API — auth, outbox writes, billing, monitor.
 - **Builder**: Dockerfile (`gcr.io/distroless/python3-debian12`)
 - **Start Command**: `/opt/venv/bin/python start.py`
 - **Public URL**: `https://backend.deml.app`
-- **Private Internal DNS**: `deml-backend.railway.internal`
+- **Private Internal DNS**: `deml-backend.internal`
 
 **Required variables** (see `backend/.env.example`):
 
@@ -1416,7 +1416,7 @@ Django + Ninja API — auth, outbox writes, billing, monitor.
 | **Core**            | `SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`, `DATABASE_URL`                                          |
 | **Cross-site URLs** | `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`                                                        |
 | **CORS / CSRF**     | `CORS_ALLOWED_ORIGINS`, `CSRF_TRUSTED_ORIGINS`, `CORS_ALLOW_CREDENTIALS=True`                         |
-| **Event bus**       | `REDPANDA_BROKERS=deml-queue.railway.internal:9092`, `DRAGONFLY_HOST=deml-dragonfly.railway.internal` |
+| **Event bus**       | `REDPANDA_BROKERS=deml-queue.internal:9092`, `DRAGONFLY_HOST=deml-dragonfly.internal`                 |
 | **Firebase**        | `FIREBASE_SERVICE_ACCOUNT_JSON`, `FIREBASE_PROJECT_ID`, `GOOGLE_CLOUD_PROJECT`                        |
 | **OAuth / AI**      | `GOOGLE_API_KEY`, `GOOGLE_OAUTH_CLIENT_ID`, `GOOGLE_OAUTH_CLIENT_SECRET`, `GOOGLE_OAUTH_REDIRECT_URI` |
 | **Threat intel**    | `ABUSEIPDB_API_KEY`, `IPINFO_API_KEY`, `OTX_API_KEY`, `ISAC_API_KEY`, `CISA_TAXII_ENDPOINT`           |
@@ -1425,7 +1425,7 @@ Django + Ninja API — auth, outbox writes, billing, monitor.
 | **Billing**         | `STRIPE_PUBLIC_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`                                     |
 | **ML / encryption** | `HF_TOKEN`, `HF_REPO_ID`, `GCP_KMS_*`, `GCP_SERVICE_ACCOUNT_JSON`                                     |
 | **CVE pipeline**    | `SCANNER_SERVICE_URL`, `CPE_GUESSER_URL`, `CLICKHOUSE_URI`, `CVE_DICT_DB_URL`                         |
-| **Dark web OSINT**  | `TOR_PROXY_URL=socks5h://deml-tor-proxy.railway.internal:9050`                                        |
+| **Dark web OSINT**  | `TOR_PROXY_URL=socks5h://deml-tor-proxy.internal:9050`                                                |
 
 **CORS example (production):**
 
@@ -1443,17 +1443,17 @@ This is the actual Redpanda message broker database that stores the streaming da
 - **Builder**: Dockerfile
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `9092` (Kafka API)
-- **Private Internal DNS**: `deml-queue.railway.internal:9092`
+- **Private Internal DNS**: `deml-queue.internal:9092`
 - **Public URL**: None (Strictly internal for security)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Persistent Storage**: You **MUST** attach a Railway Persistent Volume mounted to
+- **Persistent Storage**: You **MUST** attach a Cloud Run Persistent Volume mounted to
   `/var/lib/redpanda/data`. Without it, Redpanda runs on the container's ephemeral disk
   and **loses all topics, messages, and consumer offsets on every restart/redeploy**.
   This silently breaks Event Projections (events produced just before a restart never
-  reach the worker, and the in-app verification times out). Add it in Railway →
-  `deml-queue` → Variables/Settings → Volumes (the `railway volume add` CLI currently
+  reach the worker, and the in-app verification times out). Add it in Cloud Run →
+  `deml-queue` → Variables/Settings → Volumes (the `gcloud compute disks create` CLI currently
   panics with a project token, so use the dashboard).
-- **Deployment Trigger**: Scoped via `infrastructure/queue/railway.json`
+- **Deployment Trigger**: Scoped via `infrastructure/queue/cloudbuild.yaml`
   `build.watchPatterns` to only redeploy when `infrastructure/queue/**` changes — so
   unrelated merges to `main` don't restart (and, until a volume is attached, wipe) the
   broker.
@@ -1464,10 +1464,10 @@ This is the actual Redpanda message broker database that stores the streaming da
 
 To achieve the **fastest** client command path (Angular → `ingestEvent` → direct to Redpanda → worker consume → Firestore projection with **no polling**), the queue exposes a second listener:
 
-- Internal (9092, PLAINTEXT): used by all Railway services (backend, workers, outbox_relay).
+- Internal (9092, PLAINTEXT): used by all Cloud Run services (backend, workers, outbox_relay).
 - External (9093, SASL + SCRAM-SHA-256 over plain TCP): used **only** by Firebase Cloud Functions.
 
-> **Critical:** the public endpoint must be a Railway **TCP Proxy** (raw TCP), **not** an
+> **Critical:** the public endpoint must be a Cloud Run **TCP Proxy** (raw TCP), **not** an
 > HTTP custom domain (e.g. `queue.deml.app`). An HTTP/HTTPS domain terminates TLS and
 > speaks HTTP — it cannot carry the raw Kafka protocol, so the function connection is
 > reset and `ingestEvent` silently falls back to the Firestore inbox (slow polled
@@ -1476,10 +1476,10 @@ To achieve the **fastest** client command path (Angular → `ingestEvent` → di
 
 **Setup on the `deml-queue` service (production):**
 
-1. In Railway → `deml-queue` → Settings → Networking, add a **TCP Proxy** targeting
-   container port **9093**. Railway returns an address like `xxxx.proxy.rlwy.net:NNNNN`
+1. In Cloud Run → `deml-queue` → Settings → Networking, add a **TCP Proxy** targeting
+   container port **9093**. Cloud Run returns an address like `xxxx.proxy.rlwy.net:NNNNN`
    (the current production proxy is `zephyr.proxy.rlwy.net:32253`).
-   - CLI equivalent: `railway tcp-proxy create --port 9093 --service deml-queue`
+   - CLI equivalent: `gcloud compute target-tcp-proxies create --port 9093 --service deml-queue`
 2. Set service variables so the broker advertises that reachable address:
    - `PUBLIC_REDPANDA_HOST=xxxx.proxy.rlwy.net` (e.g. `zephyr.proxy.rlwy.net`)
    - `PUBLIC_REDPANDA_PORT=NNNNN` (the proxy's external port, e.g. `20635`; the container
@@ -1500,7 +1500,7 @@ must be provided as **environment variables** (`process.env`) — the legacy
 - `REDPANDA_PUBLIC_BROKERS` → `REDPANDA_BROKERS`, e.g. `zephyr.proxy.rlwy.net:32253`
 - `REDPANDA_PUBLIC_SASL_USERNAME` → `REDPANDA_SASL_USERNAME`, e.g. `admin`
 - `REDPANDA_PUBLIC_SASL_PASSWORD` → `REDPANDA_SASL_PASSWORD` (same value as the `deml-queue` service)
-- `REDPANDA_PUBLIC_SSL` (optional) → `REDPANDA_SSL`; **leave unset/false** for a Railway
+- `REDPANDA_PUBLIC_SSL` (optional) → `REDPANDA_SSL`; **leave unset/false** for a Cloud Run
   TCP Proxy (plain TCP). Only `true` if TLS is terminated at the edge (e.g. Cloudflare Spectrum).
 
 Set those secrets, then re-run the "Deploy Firebase Backend" workflow. (For stricter
@@ -1518,7 +1518,7 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 
 - **Root Directory**: `/backend`
 - **Start Command**: `python manage.py telemetry_worker`
-- **Private Internal DNS**: `deml-telemetry-worker.railway.internal`
+- **Private Internal DNS**: `deml-telemetry-worker.internal`
 - **Public URL**: None (internal only)
 
 **Variables:** Copy the **full backend bundle** (see §2). Minimum:
@@ -1533,25 +1533,25 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 
 Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable Django API → Kafka delivery (separate from the `ingestEvent` / `frontend-events` path used by client commands).
 
-**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-relay` Railway service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
+**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-relay` Cloud Run service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
 
-**How to add the missing service in Railway:**
+**How to add the missing service in Cloud Run:**
 
-1. In Railway dashboard → New Service → GitHub Repo (select this repo).
+1. In GCP dashboard → New Service → GitHub Repo (select this repo).
 2. Root Directory: `/backend`
 3. Start Command: `python manage.py outbox_relay`
 4. Give it the same variables as `deml-backend` (use shared variables if possible).
-5. It will use the internal `REDPANDA_BROKERS=deml-queue.railway.internal:9092`.
+5. It will use the internal `REDPANDA_BROKERS=deml-queue.internal:9092`.
 
 - **Start Command**: `python manage.py outbox_relay` (daemon; polls every 5s)
 - **Cron alternative**: `python manage.py outbox_relay --once` on a schedule
 - **Public URL**: None (internal only)
 
-**Variables:** Same core bundle as backend + `REDPANDA_BROKERS=deml-queue.railway.internal:9092`.
+**Variables:** Same core bundle as backend + `REDPANDA_BROKERS=deml-queue.internal:9092`.
 
 > [!WARNING]
-> Backend services, workers and `outbox_relay` **must** use the broker's internal TCP address (`deml-queue.railway.internal:9092`) for all inter-service traffic.
-> The only exception is Firebase Cloud Functions (`ingestEvent`), which live outside the Railway private network.
+> Backend services, workers and `outbox_relay` **must** use the broker's internal TCP address (`deml-queue.internal:9092`) for all inter-service traffic.
+> The only exception is Firebase Cloud Functions (`ingestEvent`), which live outside the Cloud Run private network.
 > For them, configure a **public SASL-authenticated listener** (see `infrastructure/queue/entrypoint.sh` + `Dockerfile`) and set the corresponding `REDPANDA_BROKERS`, `REDPANDA_SSL`, and SASL credentials in the Firebase Functions environment.
 > This enables the fast direct-to-Redpanda path with no polling.
 
@@ -1561,7 +1561,7 @@ Consumes `ml-training-events`, runs `train_all_models`, syncs to Hugging Face Hu
 
 - **Root Directory**: `/backend`
 - **Start Command**: `python manage.py ml_worker`
-- **Private Internal DNS**: `deml-machine-learning-worker.railway.internal`
+- **Private Internal DNS**: `deml-machine-learning-worker.internal`
 
 **Variables:** Backend bundle + `HF_TOKEN`, `HF_REPO_ID`, `REDPANDA_BROKERS`, `DRAGONFLY_HOST`.
 
@@ -1571,13 +1571,13 @@ Hourly threat intel, daily DEK rotation check, DB cleanup, dark-web scan, Stripe
 
 - **Root Directory**: `/backend`
 - **Start Command**: `python manage.py security_worker`
-- **Private Internal DNS**: `deml-security-worker.railway.internal`
+- **Private Internal DNS**: `deml-security-worker.internal`
 
 **Variables:** Backend bundle + threat-intel keys + `GCP_KMS_*` + `TOR_PROXY_URL`.
 
 ### Shared Worker Environment Bundle
 
-All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`) should inherit the same secrets as `deml-backend` unless a key is truly unused. Use Railway **shared variables** or Infisical to avoid drift. Centralized reads go through `backend/utils/env.py`.
+All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`) should inherit the same secrets as `deml-backend` unless a key is truly unused. Use Cloud Run **shared variables** or Infisical to avoid drift. Centralized reads go through `backend/utils/env.py`.
 
 **Event flow (for operators):**
 
@@ -1585,9 +1585,9 @@ All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`)
 2. Angular/Firebase → `frontend-events` topic → **telemetry_worker** → Postgres + Firestore
 3. Idempotency keys + DLQ handled inside `telemetry_worker` projectors
 
-**Firebase (separate from Railway):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. For the fastest path (direct publish, no polling) give the Functions a public SASL-authenticated Redpanda listener (port 9093, SCRAM-SHA-256). See `infrastructure/queue/`, the updated `REDPANDA_*` guidance, and `functions/src/index.ts`. The inbox fallback remains only as defence-in-depth.
+**Firebase (separate from Cloud Run):** Cloud Functions (`ingestEvent`) and Firestore rules deploy via `.github/workflows/firebase-backend-deploy.yml` using `FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM`. For the fastest path (direct publish, no polling) give the Functions a public SASL-authenticated Redpanda listener (port 9093, SCRAM-SHA-256). See `infrastructure/queue/`, the updated `REDPANDA_*` guidance, and `functions/src/index.ts`. The inbox fallback remains only as defence-in-depth.
 
-### Marketing Site (not a Railway service)
+### Marketing Site (not a Cloud Run service)
 
 Hosted separately (Firebase Hosting / static). Build with the same URL trio:
 
@@ -1608,10 +1608,10 @@ ClickHouse is used to securely store all high-volume OpenTelemetry data from the
 - **Builder**: Dockerfile (utilizes `clickhouse/clickhouse-server:24.3`)
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `8123` (HTTP) and `9000` (Native)
-- **Private Internal DNS**: `deml-clickhouse.railway.internal`
+- **Private Internal DNS**: `deml-clickhouse.internal`
 - **Public URL**: None (Strictly an internal database)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/var/lib/clickhouse`.
+- **Persistent Storage**: You MUST attach a Cloud Run Persistent Volume to `/var/lib/clickhouse`.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **CLICKHOUSE_USER**: Leave this variable **completely unset/deleted** on the ClickHouse service if you want to use the `default` user. If you define it as `default` explicitly, ClickHouse's entrypoint will skip setting the password, causing connection errors in other services.
@@ -1630,12 +1630,12 @@ The OpenTelemetry Collector receives all spans and metrics from the frontend wid
 - **Builder**: Dockerfile (utilizes secure `otel/opentelemetry-collector-contrib` distroless base)
 - **Start Command**: Uses default Docker entrypoint
 - **Target Port**: `4318` (OTLP HTTP)
-- **Private Internal DNS**: `deml-telemetry-collector.railway.internal`
+- **Private Internal DNS**: `deml-telemetry-collector.internal`
 - **Public URL**: `https://telemetry.deml.app`
 - **Compute Limits**: 24 vCPU / 24 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
-  - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g. `deml-clickhouse.railway.internal`).
+  - **CLICKHOUSE_HOST**: The internal TCP host of your ClickHouse service (e.g. `deml-clickhouse.internal`).
   - **CLICKHOUSE_USER**: Must match what you set in the ClickHouse service.
   - **CLICKHOUSE_PASSWORD**: Must match what you set in the ClickHouse service.
 
@@ -1648,17 +1648,17 @@ This microservice provides an offline, isolated environment for executing `osv-s
 - **Builder**: Dockerfile (utilizes `python:3.11-slim` with the official Google `osv-scanner` binary)
 - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port 8000` (Default in Dockerfile)
 - **Target Port**: `8000` (FastAPI)
-- **Private Internal DNS**: `deml-scanner.railway.internal:8000`
+- **Private Internal DNS**: `deml-scanner.internal:8000`
 - **Public URL**: None (Strictly an internal service)
 - **Compute Limits**: 24 vCPU / 24 GB Memory
-- **Persistent Storage**: You MUST attach a Railway Persistent Volume to `/data/osv` so the OSV database dump does not have to be repeatedly downloaded.
+- **Persistent Storage**: You MUST attach a Cloud Run Persistent Volume to `/data/osv` so the OSV database dump does not have to be repeatedly downloaded.
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**:
   - **OSV_DB_PATH**: `/data/osv` (The mounted volume path)
-  - **CPE_GUESSER_URL**: `http://deml-cpe-guesser.railway.internal:1323/unique`
+  - **CPE_GUESSER_URL**: `http://deml-cpe-guesser.internal:1323/unique`
   - **NVD_API_KEY**: Your National Vulnerability Database API Key (optional but highly recommended to bypass rate limits)
 
-**Consumers** (`deml-backend`, workers) set `SCANNER_SERVICE_URL=http://deml-scanner.railway.internal:8000`.
+**Consumers** (`deml-backend`, workers) set `SCANNER_SERVICE_URL=http://deml-scanner.internal:8000`.
 
 ### 10. CPE Guesser Service
 
@@ -1669,13 +1669,13 @@ This service converts raw technology strings into CPE 2.3 identifiers. It is req
 - **Builder**: Dockerfile (Builds from source using Python 3.11 with an internal Valkey/Redis cache)
 - **Start Command**: `/app/start.sh` (Default in Dockerfile)
 - **Target Port**: `1323`
-- **Private Internal DNS**: `deml-cpe-guesser.railway.internal`
+- **Private Internal DNS**: `deml-cpe-guesser.internal`
 - **Public URL**: None (Strictly an internal service)
 - **Compute Limits**: 1 vCPU / 1 GB Memory
 - **Deployment Trigger**: Auto-deploys when changes are pushed to GitHub.
 - **Environment Variables**: None required by default.
 
-_(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vulnerability Scanner Engine** points to this internal DNS, e.g., `http://deml-cpe-guesser.railway.internal:1323/unique`)_
+_(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vulnerability Scanner Engine** points to this internal DNS, e.g., `http://deml-cpe-guesser.internal:1323/unique`)_
 
 ### 11. Dependency-Track API Server
 
@@ -1684,13 +1684,13 @@ This service manages the Software Bill of Materials (SBOM) and tracks vulnerabil
 - **Source**: GitHub repository (`main` branch)
 - **Root Directory**: `/infrastructure/dependency-track`
 - **Builder**: Dockerfile (Multi-stage build using Google Distroless `java17-debian11:nonroot` for maximum security)
-- **Start Command**: Managed via `railway.json`
+- **Start Command**: Managed via `cloudbuild.yaml`
 - **Target Port**: `8080`
-- **Private Internal DNS**: `deml-dtrack-api.railway.internal`
+- **Private Internal DNS**: `deml-dtrack-api.internal`
 - **Public URL**: None (Strictly an internal service)
 - **Environment Variables**:
   - **ALPINE_DATABASE_MODE**: `external`
-  - **ALPINE_DATABASE_URL**: `jdbc:postgresql://deml-postgres.railway.internal:5432/railway`
+  - **ALPINE_DATABASE_URL**: `jdbc:postgresql://deml-postgres.internal:5432/cloudrun`
   - **ALPINE_DATABASE_USERNAME**: Database username
   - **ALPINE_DATABASE_PASSWORD**: Database password
 
@@ -1702,13 +1702,13 @@ A lightweight proxy that allows the security worker to anonymously scrape dark w
 - **Root Directory**: `/infrastructure/tor-proxy`
 - **Builder**: Dockerfile (Minimal `alpine` image running as non-root `tor` user)
 - **Target Port**: `9050`
-- **Private Internal DNS**: `deml-tor-proxy.railway.internal`
+- **Private Internal DNS**: `deml-tor-proxy.internal`
 - **Environment Variables**: None on the proxy itself.
 
 **Consumers** (`deml-backend`, `deml-security-worker`) must set:
 
 ```
-TOR_PROXY_URL=socks5h://deml-tor-proxy.railway.internal:9050
+TOR_PROXY_URL=socks5h://deml-tor-proxy.internal:9050
 ```
 
 ### 13. Dragonfly (Redis Replacement for WebSockets)
@@ -1719,27 +1719,27 @@ This service provides the in-memory pub/sub message broker required by Django Ch
 - **Root Directory**: `/infrastructure/dragonfly`
 - **Builder**: Dockerfile (Multi-stage build using Google Distroless `cc-debian12:nonroot`)
 - **Target Port**: `6379`
-- **Private Internal DNS**: `deml-dragonfly.railway.internal`
+- **Private Internal DNS**: `deml-dragonfly.internal`
 - **Public URL**: None (Strictly an internal service)
 - **Environment Variables**: None required by default.
 
-_(Once deployed, set `DRAGONFLY_HOST=deml-dragonfly.railway.internal` on **deml-backend**, all workers, and any service using Channels or rate limiting.)_
+_(Once deployed, set `DRAGONFLY_HOST=deml-dragonfly.internal` on **deml-backend**, all workers, and any service using Channels or rate limiting.)_
 
 ## Internal Networking
 
-All inter-service traffic uses Railway private DNS (`*.railway.internal`). **Never** route broker, database, or cache traffic over public URLs.
+All inter-service traffic uses Cloud Run private DNS (`*.internal`). **Never** route broker, database, or cache traffic over public URLs.
 
-| Service     | Internal address                                             |
-| ----------- | ------------------------------------------------------------ |
-| Backend API | `deml-backend.railway.internal:8080`                         |
-| Frontend    | `deml-frontend.railway.internal:8080`                        |
-| Postgres    | Via `DATABASE_URL` (internal connection string from Railway) |
-| Redpanda    | `deml-queue.railway.internal:9092`                           |
-| Dragonfly   | `deml-dragonfly.railway.internal:6379`                       |
-| ClickHouse  | `deml-clickhouse.railway.internal:8123`                      |
-| Scanner     | `deml-scanner.railway.internal:8000`                         |
-| CPE Guesser | `deml-cpe-guesser.railway.internal:1323`                     |
-| Tor proxy   | `deml-tor-proxy.railway.internal:9050`                       |
+| Service     | Internal address                                               |
+| ----------- | -------------------------------------------------------------- |
+| Backend API | `deml-backend.internal:8080`                                   |
+| Frontend    | `deml-frontend.internal:8080`                                  |
+| Postgres    | Via `DATABASE_URL` (internal connection string from Cloud Run) |
+| Redpanda    | `deml-queue.internal:9092`                                     |
+| Dragonfly   | `deml-dragonfly.internal:6379`                                 |
+| ClickHouse  | `deml-clickhouse.internal:8123`                                |
+| Scanner     | `deml-scanner.internal:8000`                                   |
+| CPE Guesser | `deml-cpe-guesser.internal:1323`                               |
+| Tor proxy   | `deml-tor-proxy.internal:9050`                                 |
 
 ## Local Development (`docker-compose.yml`)
 
@@ -1758,25 +1758,25 @@ Run `docker compose up` from the repo root. Frontend: `cd frontend && npm start`
 
 ## Updating Environment Variables
 
-1. Prefer setting in Railway dashboard (Variables tab per service) or via CLI.
+1. Prefer setting in GCP dashboard (Variables tab per service) or via CLI.
 2. After changing build-time vars (`MARKETING_URL`, `BACKEND_URL`, `FIREBASE_*`) for frontend, trigger a new deploy so `set-env.js` runs.
 3. Keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` in sync with reality.
 
 ## Security Notes
 
 - Never commit real `.env`.
-- Secrets (Stripe, Resend, Firebase SA, KMS, HF) should use Railway secret variables or Infisical integration.
+- Secrets (Stripe, Resend, Firebase SA, KMS, HF) should use Cloud Run secret variables or Infisical integration.
 - CORS/CSRF lists are the primary control for cross-origin auth handoff.
 
 See also: `backend/.env.example`, `frontend/.env.example`, `marketing/.env.example`, BOOK.md (Event Projections chapter), and AGENTS.md (CORS rule: never hardcode domains).
 
-## Railway CLI Quick Reference
+## Cloud Run CLI Quick Reference
 
 ```bash
-railway link
-railway variables --service deml-backend --set "MARKETING_URL=https://dataengineeringformachinelearning.com"
-railway variables --service deml-frontend --set "SENTRY_DSN=<your-dsn>"
-railway variables --service deml-backend
+gcloud config set project
+gcloud run services update deml-backend --set "MARKETING_URL=https://dataengineeringformachinelearning.com"
+gcloud run services update deml-frontend --set "SENTRY_DSN=<your-dsn>"
+gcloud run services update deml-backend
 ```
 
 After any build-time variable change on `deml-frontend`, trigger a redeploy.
@@ -1786,7 +1786,7 @@ After any build-time variable change on `deml-frontend`, trigger a redeploy.
 - All services are linked to the `main` branch of the `dataengineeringformachinelearning` repository.
 - Pushes to the `main` branch will automatically trigger new builds and deployments for the affected services.
 - Automated security testing via **Socket.dev** and **Checkov** pre-commit hooks runs on every push.
-- **Watch Paths**: You can set gitignore-style rules (e.g., `/frontend/**` or `/backend/**`) in the Railway settings to ensure that a service only rebuilds when its specific directory changes.
+- **Watch Paths**: You can set gitignore-style rules (e.g., `/frontend/**` or `/backend/**`) in the Cloud Run settings to ensure that a service only rebuilds when its specific directory changes.
 
 ## Reliability and Scaling
 

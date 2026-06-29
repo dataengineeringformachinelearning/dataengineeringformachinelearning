@@ -538,7 +538,7 @@
 
 :host-context(html[data-theme='light']) {
   .paper-section {
-    background: #ffffff;
+    background: var(--white);
     border-color: rgba(0, 0, 0, 0.1);
     box-shadow: var(--shadow-sm);
 

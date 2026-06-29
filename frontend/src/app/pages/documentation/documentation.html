@@ -3,9 +3,9 @@
     <div class="page-inner-wrapper">
       <!-- Hero Section -->
       <header class="docs-hero">
-        <div class="u-style-4d3ef5">
+        <div class="hero-badge">
           <span class="badge-dot" aria-hidden="true"></span>
-          <span class="u-style-b94f9d">Developer Portal</span>
+          <span>Developer Portal</span>
         </div>
         <h1 class="docs-title">API Gateway & Integrations</h1>
         <p class="docs-subtitle">
@@ -22,7 +22,7 @@
             <mat-icon>vpn_key</mat-icon>
             <h2>Authentication & Access</h2>
           </div>
-          <p class="u-style-7f7d6d">
+          <p class="card-description">
             Secure access to our high-throughput pipelines requires an API key. Register an account,
             generate a secure token in your user profile, and pass it in the Authorization header.
           </p>
@@ -38,7 +38,7 @@
             <mat-icon>input</mat-icon>
             <h2>Data Ingestion</h2>
           </div>
-          <p class="u-style-efd290">
+          <p class="card-description">
             High-throughput endpoint optimized for receiving batched or streaming data from
             distributed pipelines like Apache Spark or Databricks.
           </p>
@@ -46,7 +46,7 @@
             <span class="method">POST</span>
             <span class="path">/api/v1/ingest</span>
           </div>
-          <div class="code-block-premium u-style-5ab468">
+          <div class="code-block-premium">
             <div class="code-header">cURL Request</div>
             <pre><code>curl -X POST https://backend.deml.app/api/v1/ingest \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -61,7 +61,7 @@
             <mat-icon>model_training</mat-icon>
             <h2>Real-time Inference</h2>
           </div>
-          <p class="u-style-efd290">
+          <p class="card-description">
             Low-latency endpoint for model inference, ideal for Kubernetes sidecars or deep learning
             services calling models directly.
           </p>
@@ -69,7 +69,7 @@
             <span class="method">POST</span>
             <span class="path">/api/v1/predict</span>
           </div>
-          <div class="code-block-premium u-style-5ab468">
+          <div class="code-block-premium">
             <div class="code-header">cURL Request</div>
             <pre><code>curl -X POST https://backend.deml.app/api/v1/predict \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -84,11 +84,11 @@
             <mat-icon>terminal</mat-icon>
             <h2>Native Integrations</h2>
           </div>
-          <p class="u-style-efd290">
+          <p class="card-description">
             We provide native support and documentation for integrating with the industry's leading
             tools, including:
           </p>
-          <ul class="u-style-490bad">
+          <ul class="integration-list">
             <li><strong>Kubernetes:</strong> Connect via CRDs or sidecar proxies.</li>
             <li><strong>TensorFlow:</strong> Stream using <code>tf.data.Dataset</code>.</li>
             <li><strong>Apache Spark:</strong> Write DataFrames directly.</li>
@@ -101,7 +101,7 @@
             <mat-icon>security</mat-icon>
             <h2>Enterprise Security</h2>
           </div>
-          <p class="u-style-efd290">
+          <p class="card-description">
             All tenant data is cryptographically isolated using strict multi-tenancy rules. Raw
             telemetry records (endpoints, audit logs, and cookie consents) are cleared after 30 days
             via our automated db_cleanup worker, while high-value intelligence reports, training

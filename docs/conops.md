@@ -24,15 +24,15 @@ This document tells operators **how DEML runs in production**: vendors, services
 
 ## 3. Vendor & deployment map
 
-| Component                               | Host                    | Deploy trigger                                  |
-| --------------------------------------- | ----------------------- | ----------------------------------------------- |
-| Angular app (`deml.app`)                | Railway `deml-frontend` | Push to `main` (watch `/frontend/**`)           |
-| Django API                              | Railway `deml-backend`  | Push to `main` (watch `/backend/**`)            |
-| Postgres, Redpanda, ClickHouse, workers | Railway (12+ services)  | Push to `main`                                  |
-| `ingestEvent` + Firestore rules         | Firebase / GCP          | `.github/workflows/firebase-backend-deploy.yml` |
-| Marketing site                          | Firebase Hosting        | `firebase-hosting-merge.yml`                    |
-| KMS + audit logs                        | GCP (Terraform)         | Manual / CI Terraform apply                     |
-| Model weights                           | Hugging Face Hub        | `ml_worker` + `huggingface-space.yml`           |
+| Component                               | Host                      | Deploy trigger                                  |
+| --------------------------------------- | ------------------------- | ----------------------------------------------- |
+| Angular app (`deml.app`)                | Cloud Run `deml-frontend` | Push to `main` (watch `/frontend/**`)           |
+| Django API                              | Cloud Run `deml-backend`  | Push to `main` (watch `/backend/**`)            |
+| Postgres, Redpanda, ClickHouse, workers | Cloud Run (12+ services)  | Push to `main`                                  |
+| `ingestEvent` + Firestore rules         | Firebase / GCP            | `.github/workflows/firebase-backend-deploy.yml` |
+| Marketing site                          | Firebase Hosting          | `firebase-hosting-merge.yml`                    |
+| KMS + audit logs                        | GCP (Terraform)           | Manual / CI Terraform apply                     |
+| Model weights                           | Hugging Face Hub          | `ml_worker` + `huggingface-space.yml`           |
 
 **Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
 
@@ -79,15 +79,15 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 
 ## 6. Operational modes
 
-| Mode                            | Indicators                               | Actions                                                                            |
-| ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------------- |
-| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                                 |
-| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; Railway internal broker unaffected |
-| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-relay`; inspect `frontend-events-dlq`       |
-| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                               |
-| **Maintenance**                 | Deploy in progress                       | Railway rolling deploy; expect brief projection lag                                |
+| Mode                            | Indicators                               | Actions                                                                      |
+| ------------------------------- | ---------------------------------------- | ---------------------------------------------------------------------------- |
+| **Normal**                      | Event Projections test passes; DLQ empty | Routine monitoring                                                           |
+| **Broker degraded (Functions)** | Function logs show Firestore fallback    | Verify public `REDPANDA_BROKERS` for Functions; internal broker unaffected   |
+| **Worker degraded**             | Stale Firestore stats; growing outbox    | Restart `deml-telemetry-worker`, `deml-relay`; inspect `frontend-events-dlq` |
+| **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                         |
+| **Maintenance**                 | Deploy in progress                       | Cloud Run rolling deploy; expect brief projection lag                        |
 
-## 7. Service matrix (Railway)
+## 7. Service matrix (Cloud Run)
 
 | Service                            | Role                           |
 | ---------------------------------- | ------------------------------ |
@@ -105,7 +105,7 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 | `deml-scanner`, `deml-cpe-guesser` | Vulnerability ledger           |
 | `deml-tor-proxy`                   | OSINT routing                  |
 
-Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-railway-deployment).
+Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
 
 ## 8. Maintenance schedule
 
@@ -134,7 +134,7 @@ Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-
 - [ ] Settings → **Event Projections Verification** succeeds
 - [ ] `platform-status` loads for anonymous users
 - [ ] Sentry error rate baseline
-- [ ] Railway CPU/memory on `deml-backend`, `deml-telemetry-worker`
+- [ ] Cloud Run CPU/memory on `deml-backend`, `deml-telemetry-worker`
 - [ ] DLQ topic depth (`frontend-events-dlq`)
 - [ ] Outbox unpublished row count (Postgres)
 - [ ] CES gauges responding (ClickHouse path)
@@ -146,7 +146,7 @@ Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-
 | Stale realtime stats        | Restart telemetry worker + outbox relay                                 |
 | Function publish errors     | Check Redpanda public endpoint; confirm fallback events in Firestore    |
 | DLQ growth                  | Inspect worker logs; fix enrichment error; replay with idempotency keys |
-| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Railway backend        |
+| KMS decrypt errors          | Verify `GCP_SERVICE_ACCOUNT_JSON` and KMS IAM on Cloud Run backend      |
 | Firestore permission denied | Redeploy `firestore.rules` via Firebase workflow                        |
 
 ## 12. Related documents
@@ -158,5 +158,5 @@ Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-
 | [README.md](../README.md)                                            | API integration gateway           |
 | [features.md](features.md)                                           | Feature catalog                   |
 | [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles |
-| [Appendix C](../BOOK.md#appendix-c-railway-deployment)               | Railway deploy                    |
+| [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                  |
 | [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                         |

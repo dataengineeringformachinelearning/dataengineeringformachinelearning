@@ -554,7 +554,7 @@
 /* Yellow Accent Post Incident Button (Theme-compliant Warning button) */
 .post-incident-btn {
   background-color: var(--color-warning) !important;
-  color: #000000 !important; /* High contrast dark forest green on yellow background */
+  color: var(--black) !important; /* High contrast dark forest green on yellow background */
   font-weight: 600 !important;
   border-radius: 8px !important;
   height: 56px !important;
@@ -677,14 +677,14 @@
     align-items: center;
 
     .card-title-main {
-      color: #ef4444 !important;
+      color: var(--color-error) !important;
       display: flex;
       align-items: center;
       gap: 8px;
       margin: 0;
 
       mat-icon {
-        color: #ef4444 !important;
+        color: var(--color-error) !important;
         margin: 0;
       }
     }
@@ -711,7 +711,7 @@
     }
 
     button {
-      background-color: #ef4444 !important;
+      background-color: var(--color-error) !important;
       color: white !important;
       border-radius: 16px !important;
       width: 100%;

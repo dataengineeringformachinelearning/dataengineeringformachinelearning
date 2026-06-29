@@ -771,8 +771,8 @@
 
 .header-action-btn {
   margin-left: auto;
-  background-color: var(--crayola-blue, #2176ff);
-  color: #fff;
+  background-color: var(--crayola-blue);
+  color: var(--white);
   border-radius: 4px;
   padding: 8px 16px;
   font-family: 'Inter', sans-serif;
@@ -782,7 +782,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: var(--blue-bell, #33a1fd);
+    background-color: var(--blue-bell);
   }
 }
 

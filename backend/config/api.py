@@ -66,7 +66,7 @@ class CustomAPI(NinjaAPI):
     schema: dict[str, Any] = super().get_openapi_schema(*args, **kwargs)
     # Filter paths to only expose public APIs in docs
     paths: dict[str, Any] = schema.get("paths", {})
-    public_prefixes: Final[tuple[str, str]] = ("/api/v1/ingest", "/api/v1/predict")
+    public_prefixes: Final[tuple[str, ...]] = ("/api/v1/ingest", "/api/v1/predict")
     schema["paths"] = {k: v for k, v in paths.items() if k.startswith(public_prefixes)}
     return schema
 
@@ -132,7 +132,7 @@ from integrations.api import (
   router as integrations_router,
 )
 
-add_router_if_not_exists("", integrations_public_router)
+api.add_router("", integrations_public_router)
 add_router_if_not_exists("/integrations/", integrations_router)
 
 from billing.api import router as billing_router

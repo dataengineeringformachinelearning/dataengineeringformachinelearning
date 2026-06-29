@@ -35,11 +35,16 @@ export class Footer {
 
     import('canvas-confetti').then(confettiModule => {
       const confetti = confettiModule.default;
+      const computedStyle = getComputedStyle(document.documentElement);
+      const color1 = computedStyle.getPropertyValue('--crayola-blue').trim() || '#2176ff';
+      const color2 = computedStyle.getPropertyValue('--white').trim() || '#ffffff';
+      const color3 = computedStyle.getPropertyValue('--golden-pollen').trim() || '#fdca40';
+
       confetti({
         particleCount: 50,
         spread: 60,
         origin: { x, y },
-        colors: ['#FF0000', '#FFFFFF', '#0000FF'],
+        colors: [color1, color2, color3],
         disableForReducedMotion: true,
         zIndex: 9999,
       });

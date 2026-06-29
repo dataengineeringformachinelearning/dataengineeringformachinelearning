@@ -181,7 +181,7 @@
     left: 0px;
     width: 16px;
     height: 16px;
-    background-color: #ffffff;
+    background-color: var(--white);
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
@@ -256,11 +256,11 @@
 
       .accept-btn {
         background-color: var(--color-primary) !important;
-        color: #ffffff !important;
+        color: var(--white) !important;
         box-shadow: 0 2px 8px color-mix(in srgb, var(--color-surface) 30%, transparent) !important;
 
         &:hover {
-          background-color: #ffffff !important;
+          background-color: var(--white) !important;
           color: var(--color-primary) !important;
         }
       }

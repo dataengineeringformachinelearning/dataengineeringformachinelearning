@@ -40,7 +40,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 | [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops) | Executive summary for reviewers                                        |
 | [docs/conops.md](docs/conops.md)                                 | On-call checklists and quick reference                                 |
 
-**Operational summary:** Railway hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-relay` runs `outbox_relay` to publish from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
+**Operational summary:** Google Cloud Run hosts the compute and data plane (Django, workers, Postgres, Redpanda, ClickHouse). Firebase provides Auth, the `ingestEvent` command gateway, Firestore read models, and marketing hosting. GCP (Terraform) provides KMS and immutable audit logging. Client commands flow **Angular → Firebase Functions → Redpanda → telemetry_worker → Firestore**; API integrators use the **Transactional Outbox** path (`deml-relay` runs `outbox_relay` to publish from Postgres). The Event Projections loop is health-checked automatically (synthetic probe in the telemetry worker) and shown as the "Event Projections" component on the public `platform-status` sentinel.
 
 ---
 
@@ -63,7 +63,7 @@ The platform implements an **Event Projections** architecture for client-driven 
 - **Commands** (writes): Angular Client → Firebase Cloud Functions (`ingestEvent`) → Redpanda (topic: `frontend-events`) with Firestore fallback. Django API paths use a **Transactional Outbox** pattern (events written atomically to Postgres `OutboxEvent` table before returning).
 - **Projections**: Django `telemetry_worker` consumes from Redpanda, enriches data (e.g. active endpoint counts from Postgres), and writes to Firestore (named `deml` DB). Projections are **idempotent** (using stable message keys) and support a dead-letter queue (`frontend-events-dlq`) for failed messages.
 - **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/{uid}/data/stats`).
-- Events include a `version` field for schema governance. The `deml-relay` Railway service runs the `outbox_relay` management command to publish reliably from the Outbox.
+- Events include a `version` field for schema governance. The `deml-relay` Cloud Run service runs the `outbox_relay` management command to publish reliably from the Outbox.
 
 ```mermaid
 flowchart TB
@@ -238,7 +238,7 @@ The DEML Platform natively integrates with Hugging Face to automate the sharing 
 
 **Requirements:**
 
-- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Railway). See [Appendix C in BOOK.md](BOOK.md#appendix-c-railway-deployment) and the `*.env.example` files for the complete, up-to-date list (including `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL` for cross-site handoff, Outbox/Redpanda/Dragonfly, etc.).
+- Add `HF_TOKEN` and `HF_REPO_ID` to your backend environment variables (e.g., in Cloud Run). See [Appendix C in BOOK.md](BOOK.md#appendix-c-cloud-run-deployment) and the `*.env.example` files for the complete, up-to-date list (including `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL` for cross-site handoff, Outbox/Redpanda/Dragonfly, etc.).
 - Add `HF_TOKEN` and `HF_SPACE_REPO` as GitHub Repository Secrets to enable the Spaces sync action.
 
 ---
@@ -296,7 +296,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Railway](https://railway.app/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
@@ -308,9 +308,9 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 
 ---
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/deml?referralCode=BpTk0g&utm_medium=integration&utm_source=template&utm_campaign=generic)
+[![Deploy on Google Cloud](https://deploy.cloud.run/button.svg)](#)
 
-> Full Railway service + environment variable reference: [Appendix C in BOOK.md](BOOK.md#appendix-c-railway-deployment). Always keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` as the source of truth.
+> Full Cloud Run service + environment variable reference: [Appendix C in BOOK.md](BOOK.md#appendix-c-cloud-run-deployment). Always keep `backend/.env.example`, `frontend/.env.example`, and `marketing/.env.example` as the source of truth.
 
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdataengineeringformachinelearning%2Fdataengineeringformachinelearning?ref=badge_large&issueType=license)
 

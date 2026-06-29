@@ -255,7 +255,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     const tooltipTheme = this.isDarkMode ? 'dark' : 'light';
     const textColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)';
     const gridColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.06)';
-    const surfaceColor = this.isDarkMode ? '#1e1e1e' : '#ffffff';
+    const surfaceColor = 'var(--color-surface)';
     const shadowOpacity = this.isDarkMode ? 0.3 : 0.15;
     const fillAreaOpacityFrom = this.isDarkMode ? 0.2 : 0.12;
     const fillBarOpacity = this.isDarkMode ? 0.15 : 0.08;
@@ -308,7 +308,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           chartOpts.plotOptions.pie.donut.labels.show = true;
           chartOpts.plotOptions.pie.donut.labels.name = { color: textColor };
           chartOpts.plotOptions.pie.donut.labels.value = {
-            color: this.isDarkMode ? '#ffffff' : '#000000',
+            color: 'var(--text-color)',
           };
           chartOpts.plotOptions.pie.donut.labels.total = {
             show: true,

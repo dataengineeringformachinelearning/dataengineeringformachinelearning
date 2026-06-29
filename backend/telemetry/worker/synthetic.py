@@ -38,11 +38,7 @@ def _read_stats_last_updated():
 
   db = firestore.client(database_id="deml")
   snap = (
-    db.collection("users")
-    .document(SYNTHETIC_HEALTH_UID)
-    .collection("data")
-    .document("stats")
-    .get()
+    db.collection("users").document(SYNTHETIC_HEALTH_UID).collection("data").document("stats").get()
   )
   if not snap.exists:
     return None

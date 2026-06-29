@@ -59,7 +59,7 @@
     align-items: center;
     justify-content: center;
     background-color: var(--color-success);
-    color: #fff;
+    color: var(--white);
     padding: 8px 32px;
     font-size: 1rem;
     font-weight: 600;
@@ -72,7 +72,7 @@
     box-shadow: 0 4px 14px color-mix(in srgb, var(--color-success) 40%, transparent);
 
     &:hover {
-      background-color: #3d8b40;
+      background-color: var(--color-success);
       transform: translateY(-1px);
       box-shadow: 0 6px 20px color-mix(in srgb, var(--color-success) 60%, transparent);
     }

@@ -1,3 +1,25 @@
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  margin-bottom: 24px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-color);
+
+  .badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    box-shadow: 0 0 8px var(--color-primary);
+  }
+}
+
 .docs-hero {
   position: relative;
   margin: 0 auto 56px auto;
@@ -77,6 +99,43 @@
       letter-spacing: -0.02em;
     }
   }
+
+  .card-description {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .integration-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    li {
+      position: relative;
+      padding-left: 24px;
+      color: var(--text-muted);
+      line-height: 1.5;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--color-primary);
+      }
+
+      strong {
+        color: var(--text-color);
+      }
+    }
+  }
 }
 
 .docs-bento-full {
@@ -84,7 +143,7 @@
 }
 
 .code-block-premium {
-  background: var(--jet-black, #121212);
+  background: var(--jet-black);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
@@ -93,7 +152,7 @@
     background: rgba(255, 255, 255, 0.05);
     padding: 8px 16px;
     font-size: 1rem;
-    color: var(--carrot-orange, #ff9100);
+    color: var(--carrot-orange);
     font-family: monospace;
     font-weight: 600;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -107,8 +166,8 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--carrot-orange, #ff9100);
-      box-shadow: 0 0 9px var(--carrot-orange, #ff9100);
+      background: var(--carrot-orange);
+      box-shadow: 0 0 9px var(--carrot-orange);
     }
   }
 
@@ -118,7 +177,7 @@
     overflow-x: auto;
 
     code {
-      color: #e0e0e0;
+      color: var(--white);
       font-family: monospace;
       font-size: 1rem;
       line-height: 1.6;
@@ -139,7 +198,7 @@
   width: fit-content;
 
   .method {
-    color: var(--success-color, #4caf50);
+    color: var(--color-success);
     font-weight: 800;
     font-family: monospace;
     font-size: 1rem;
