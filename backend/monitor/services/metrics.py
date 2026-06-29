@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from monitor.models import AggregatedAnalytics, Endpoints
 from utils.service_urls import endpoint_storage_url
 
 User = get_user_model()
