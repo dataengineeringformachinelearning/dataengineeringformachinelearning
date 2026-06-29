@@ -94,6 +94,19 @@ export class MlService {
           } else {
             this.latestThreatReport.set(normalized);
           }
+        } else if (statusPageId) {
+          this.latestThreatReports.update(reports => ({
+            ...reports,
+            [statusPageId]: this.normalizeThreatReport({
+              status: 'success',
+              suspicious_ratio: 0,
+              anomaly_score: 0,
+              top_location: 'N/A',
+              location_weight: 0,
+              created_at: null,
+              message: data?.message ?? 'Pending telemetry',
+            }),
+          }));
         }
       },
       error: err => console.error('Error fetching threat report:', err),
