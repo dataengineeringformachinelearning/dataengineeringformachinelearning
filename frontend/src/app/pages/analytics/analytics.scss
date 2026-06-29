@@ -1,5 +1,49 @@
 @use '../status/status.scss' as *;
 
+.page-back-nav {
+  margin-bottom: 8px;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted) !important;
+  text-decoration: none !important;
+  border-bottom: none !important;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--color-primary) !important;
+    transform: translateX(-2px);
+
+    mat-icon {
+      transform: translateX(-2px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-container);
+    outline-offset: 4px;
+    border-radius: var(--border-radius-sm);
+  }
+}
+
 :host-context(html[data-theme='light']) {
   .gauge-card {
     background-color: rgba(255, 255, 255, 0.65);

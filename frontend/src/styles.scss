@@ -287,10 +287,10 @@ main.main {
 }
 
 // ====================== MATERIAL BUTTONS (ACCESSIBLE) ======================
-.mdc-button,
-.mat-mdc-button,
-.mat-mdc-raised-button,
-.mat-mdc-unelevated-button {
+.mdc-button:not(.nav-btn):not(.mobile-nav-btn),
+.mat-mdc-button:not(.nav-btn):not(.mobile-nav-btn),
+.mat-mdc-raised-button:not(.nav-btn):not(.mobile-nav-btn),
+.mat-mdc-unelevated-button:not(.nav-btn):not(.mobile-nav-btn) {
   border-radius: 96px !important; /* Pill shape like homepage */
   text-transform: none !important;
   font-weight: 600 !important;
