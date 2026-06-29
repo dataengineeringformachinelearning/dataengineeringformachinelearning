@@ -55,6 +55,7 @@ export class Vulnerabilities implements OnInit {
 
   actionMessage = signal<string | null>(null);
   actionError = signal<string | null>(null);
+  selectedIncident = signal<IncidentCase | null>(null);
   selectedPlaybook = signal<Playbook | null>(null);
   incidentStatusOptions = ['Open', 'Investigating', 'Mitigated', 'Resolved', 'False Positive'];
   incidentStatusSelectOptions: SelectOption[] = this.incidentStatusOptions.map(status => ({
