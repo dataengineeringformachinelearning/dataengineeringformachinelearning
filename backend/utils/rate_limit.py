@@ -42,6 +42,29 @@ if HAS_REDIS:
 else:
   redis_client = None
 
+BLOCKLIST_PREFIX = "deml:blocked_ip:"
+
+
+def block_ip(ip: str, ttl_seconds: int = 86400) -> bool:
+  """Add IP to edge blocklist (Dragonfly/Redis). Best-effort."""
+  if not redis_client or not ip:
+    return False
+  try:
+    redis_client.setex(f"{BLOCKLIST_PREFIX}{ip}", ttl_seconds, "1")
+    return True
+  except Exception as exc:
+    logger.error("Failed to block IP %s: %s", ip, exc)
+    return False
+
+
+def is_ip_blocked(ip: str) -> bool:
+  if not redis_client or not ip:
+    return False
+  try:
+    return bool(redis_client.exists(f"{BLOCKLIST_PREFIX}{ip}"))
+  except Exception:
+    return False
+
 
 def get_user_rate_limit(user):
   """Return max requests per minute based on user profile tier."""

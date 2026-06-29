@@ -27,6 +27,12 @@ class Command(BaseCommand):
     threat_dupes_deleted = self._purge_legacy_threat_intel_dupes()
 
     endpoints_deleted, _ = Endpoints.objects.filter(last_tested__lt=cutoff).delete()
+
+    stale_audit_logs = list(AuditLog.objects.filter(timestamp__lt=cutoff)[:5000])
+    if stale_audit_logs:
+      from telemetry.services.security_events import archive_audit_logs
+
+      archive_audit_logs(stale_audit_logs)
     audit_logs_deleted, _ = AuditLog.objects.filter(timestamp__lt=cutoff).delete()
     cookie_consents_deleted, _ = CookieConsent.objects.filter(created_at__lt=cutoff).delete()
 

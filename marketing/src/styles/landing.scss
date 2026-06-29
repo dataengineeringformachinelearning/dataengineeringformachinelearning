@@ -431,6 +431,15 @@
   &:hover {
     color: var(--blue-bell) !important;
   }
+
+  &.muted-link {
+    color: var(--text-muted) !important;
+    font-weight: 600;
+
+    &:hover {
+      color: var(--crayola-blue) !important;
+    }
+  }
 }
 
 .visual-panel {
@@ -728,7 +737,10 @@
 /* ── Whitepaper band ── */
 .whitepaper-band {
   padding: 56px 0;
-  border-bottom: 1px solid var(--border);
+
+  &.no-bottom-rule {
+    border-bottom: none;
+  }
 }
 
 .whitepaper-band-inner {

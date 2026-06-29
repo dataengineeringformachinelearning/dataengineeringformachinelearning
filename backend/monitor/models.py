@@ -541,6 +541,14 @@ class IncidentCase(models.Model):
   assigned_to = models.ForeignKey(
     User, on_delete=models.SET_NULL, null=True, blank=True, related_name="assigned_cases"
   )
+  status_incident = models.ForeignKey(
+    "Incident",
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name="security_cases",
+    help_text="Optional public status-page incident linked from this SOC case.",
+  )
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
 

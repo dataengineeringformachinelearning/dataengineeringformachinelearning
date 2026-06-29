@@ -220,7 +220,11 @@
         </div>
 
         <div class="detail-actions">
-          <a class="link-btn" routerLink="/analytics">Full analytics view</a>
+          <a class="action-btn" routerLink="/analytics">
+            <mat-icon aria-hidden="true">insights</mat-icon>
+            <span>Full analytics view</span>
+            <mat-icon class="action-arrow" aria-hidden="true">arrow_forward</mat-icon>
+          </a>
         </div>
 
         <section class="panel-card chart-panel">
@@ -312,14 +316,23 @@
 
         <section class="panel-card security-panel">
           <div class="panel-header">
-            <h2>Threat Queue</h2>
-            <a class="link-btn" routerLink="/vulnerabilities">Advanced triage</a>
+            <div class="panel-title-group">
+              <mat-icon class="panel-title-icon" aria-hidden="true">shield</mat-icon>
+              <h2>Threat Queue</h2>
+            </div>
+            <a class="action-btn compact" routerLink="/vulnerabilities">
+              <mat-icon aria-hidden="true">troubleshoot</mat-icon>
+              <span>Advanced triage</span>
+              <mat-icon class="action-arrow" aria-hidden="true">arrow_forward</mat-icon>
+            </a>
           </div>
           @if (vulnService.isLoading()) {
           <div class="panel-loading"><span class="spinner"></span> Ingesting threat feed...</div>
           } @else if (recentThreats().length === 0) {
-          <div class="panel-empty">
-            <mat-icon>verified_user</mat-icon>
+          <div class="panel-empty threat-clear">
+            <div class="clear-icon-ring">
+              <mat-icon>verified_user</mat-icon>
+            </div>
             <h3>All clear</h3>
             <p>No vulnerabilities or threats require your attention right now.</p>
           </div>
@@ -341,17 +354,29 @@
           }
         </section>
 
-        <section class="panel-card insight-panel">
-          <h2>How threats are detected</h2>
+        <section class="panel-card insight-panel detection-panel">
+          <div class="detection-header">
+            <mat-icon aria-hidden="true">psychology</mat-icon>
+            <h2>How threats are detected</h2>
+          </div>
           <p>
             DEML continuously evaluates your telemetry against platform-wide ML models and automated
             security scanners. Critical findings surface here automatically — no manual
             configuration required.
           </p>
           <ul class="insight-list">
-            <li><mat-icon>auto_awesome</mat-icon> ML anomaly detection on live traffic</li>
-            <li><mat-icon>policy</mat-icon> Automated Semgrep & Trivy scan ingestion</li>
-            <li><mat-icon>hub</mat-icon> STIX 2.1 threat intel correlation</li>
+            <li>
+              <span class="insight-icon"><mat-icon>auto_awesome</mat-icon></span>
+              <span>ML anomaly detection on live traffic</span>
+            </li>
+            <li>
+              <span class="insight-icon"><mat-icon>policy</mat-icon></span>
+              <span>Automated Semgrep & Trivy scan ingestion</span>
+            </li>
+            <li>
+              <span class="insight-icon"><mat-icon>hub</mat-icon></span>
+              <span>STIX 2.1 threat intel correlation</span>
+            </li>
           </ul>
         </section>
       </section>

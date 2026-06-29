@@ -140,6 +140,90 @@ async def ingest_data(request, payload: IngestPayload):
   }
 
 
+class SecurityAlertPayload(Schema):
+  source: str = "edr_webhook"
+  severity: str = "Medium"
+  title: str
+  description: str | None = None
+  ip_address: str | None = None
+  indicator_type: str | None = None
+  raw: dict[str, Any] | None = None
+
+
+class SecurityAlertResponse(Schema):
+  status: str
+  message: str
+  incident_id: str | None = None
+
+
+@public_router.post(
+  "/ingest/security-alert",
+  response=SecurityAlertResponse,
+  auth=IntegrationAPIKeyAuth(),
+  summary="EDR / SIEM Alert Ingestion",
+)
+@rate_limit()
+async def ingest_security_alert(request, payload: SecurityAlertPayload):
+  """Normalize CrowdStrike/SentinelOne-style alerts into the SOC pipeline."""
+  import json
+  import logging
+
+  from account.context import account_id_for_user
+  from asgiref.sync import sync_to_async
+  from utils.kafka import get_kafka_producer
+
+  user = request.auth
+  account_id = account_id_for_user(user)
+  is_malicious = payload.severity in ("Critical", "High")
+
+  event_payload = {
+    "source": f"{payload.source}_threat_intel",
+    "account_id": account_id,
+    "user_id": user.id,
+    "ip": payload.ip_address,
+    "location": payload.title,
+    "abuse_confidence_score": 100 if is_malicious else 50,
+    "is_malicious": is_malicious,
+    "raw_payload": payload.raw or payload.dict(),
+    "event_type": "edr_alert",
+    "severity": payload.severity,
+  }
+
+  async def _send_to_kafka() -> None:
+    try:
+      producer = await get_kafka_producer()
+      await producer.send("app-events", json.dumps(event_payload).encode("utf-8"))
+    except Exception as exc:
+      logging.getLogger(__name__).error("EDR alert Kafka publish failed: %s", exc)
+
+  import asyncio
+
+  task = asyncio.create_task(_send_to_kafka())
+  background_tasks.add(task)
+  task.add_done_callback(background_tasks.discard)
+
+  @sync_to_async
+  def _process_soc() -> str | None:
+    from telemetry.services.soc_orchestrator import process_security_signal
+
+    result = process_security_signal(
+      {
+        **event_payload,
+        "user": user,
+        "force_process": is_malicious,
+      }
+    )
+    return result.get("case_id") if result else None
+
+  case_id = await _process_soc()
+
+  return {
+    "status": "success",
+    "message": "Security alert ingested and correlated.",
+    "incident_id": case_id,
+  }
+
+
 class PredictPayload(Schema):
   model_version: str
   inputs: list[float]

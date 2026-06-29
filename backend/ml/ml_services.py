@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import Any
+from typing import Any, Final
 
 logger = logging.getLogger(__name__)
 
@@ -68,11 +68,72 @@ def query_teacher_model(prompt: str) -> float:
   return random.uniform(0.0, 1.0)
 
 
+def extract_fused_threat_features(
+  user: Any = None,
+  *,
+  is_platform: bool = False,
+  location_weight: float = 0.35,
+) -> list[float]:
+  """Six-feature vector: traffic + threat intel + behavioral + incident labels."""
+  import datetime as dt
+
+  from django.db.models import Q
+  from django.utils import timezone
+  from monitor.models import AggregatedAnalytics, Endpoints, IncidentCase, ThreatIntelligence
+
+  cutoff = timezone.now() - dt.timedelta(days=90)
+  day_cutoff = timezone.now() - dt.timedelta(hours=24)
+
+  if is_platform:
+    endpoints = Endpoints.objects.filter(is_platform=True, user__isnull=True, last_tested__gte=cutoff)
+    threats = ThreatIntelligence.objects.filter(is_platform=True, timestamp__gte=day_cutoff)
+    analytics = AggregatedAnalytics.objects.filter(is_platform=True, timestamp__gte=day_cutoff)
+    cases = IncidentCase.objects.filter(user__isnull=True, created_at__gte=cutoff)
+  else:
+    endpoints = Endpoints.objects.filter(user=user, is_platform=False, last_tested__gte=cutoff)
+    threats = ThreatIntelligence.objects.filter(user=user, is_platform=False, timestamp__gte=day_cutoff)
+    analytics = AggregatedAnalytics.objects.filter(user=user, is_platform=False, timestamp__gte=day_cutoff)
+    cases = IncidentCase.objects.filter(user=user, created_at__gte=cutoff)
+
+  total = endpoints.count()
+  if total > 0:
+    failure_rate = endpoints.filter(Q(status_code__gte=500) | Q(is_active=False)).count() / total
+    suspicious_ratio = endpoints.filter(status_code__in=[400, 401, 403, 429]).count() / total
+  else:
+    failure_rate = 0.02
+    suspicious_ratio = 0.05
+
+  threat_velocity = min(1.0, threats.count() / 100.0)
+  malicious_count = threats.filter(is_malicious=True).count()
+  if malicious_count:
+    location_weight = min(1.0, 0.35 + malicious_count * 0.1)
+
+  latest_analytics = analytics.order_by("-timestamp").first()
+  widget_hits = latest_analytics.widget_interactions if latest_analytics else 0
+  visitors = max(1, latest_analytics.unique_visitors if latest_analytics else 1)
+  behavioral_score = min(1.0, widget_hits / (visitors * 5))
+
+  resolved = cases.filter(status__in=["Resolved", "Mitigated"]).count()
+  total_cases = max(1, cases.count())
+  incident_confidence = resolved / total_cases
+
+  return [
+    max(0.0, min(1.0, location_weight)),
+    max(0.0, min(1.0, suspicious_ratio)),
+    max(0.0, min(1.0, failure_rate)),
+    max(0.0, min(1.0, threat_velocity)),
+    max(0.0, min(1.0, behavioral_score)),
+    max(0.0, min(1.0, incident_confidence)),
+  ]
+
+
 class ThreatModel(nn.Module):
-  def __init__(self):
+  FEATURE_DIM: Final[int] = 6
+
+  def __init__(self, in_features: int = FEATURE_DIM):
     super().__init__()
-    self.fc1 = nn.Linear(3, 8)
-    self.fc2 = nn.Linear(8, 1)
+    self.fc1 = nn.Linear(in_features, 12)
+    self.fc2 = nn.Linear(12, 1)
     self.sigmoid = nn.Sigmoid()
 
   def forward(self, x):
@@ -249,18 +310,24 @@ def train_platform_threat_model() -> dict:
     global_failure_rate = 0.02
     global_suspicious_ratio = 0.05
 
-  # Platform-wide integration insights
-  total_integrations = AnalyticsIntegration.objects.filter(active=True).count()
-  global_location_weight = 0.35 if total_integrations > 0 else 0.0
+  # Platform-wide integration insights inform fused feature extraction via extract_fused_threat_features
 
   x_data = []
   y_data = []
-  for _ in range(100):  # Larger batch for platform model
-    lw = max(0.0, min(1.0, global_location_weight + random.uniform(-0.2, 0.2)))
-    sr = max(0.0, min(1.0, global_suspicious_ratio + random.uniform(-0.1, 0.1)))
-    fr = max(0.0, min(1.0, global_failure_rate + random.uniform(-0.05, 0.05)))
-    x_data.append([lw, sr, fr])
-    prompt = f"Given a tenant with a location_weight of {lw:.2f}, a {sr*100:.1f}% suspicious request ratio, and a {fr*100:.1f}% failure rate, what is the probability (0.0 to 1.0) that this is an active cyber attack?"
+  base_features = extract_fused_threat_features(is_platform=True)
+  for _ in range(100):
+    features = [
+      max(0.0, min(1.0, base_features[i] + random.uniform(-0.1, 0.1)))
+      for i in range(ThreatModel.FEATURE_DIM)
+    ]
+    x_data.append(features)
+    lw, sr, fr = features[0], features[1], features[2]
+    prompt = (
+      f"Given fused telemetry: location_weight={lw:.2f}, suspicious_ratio={sr*100:.1f}%, "
+      f"failure_rate={fr*100:.1f}%, threat_velocity={features[3]:.2f}, "
+      f"behavioral={features[4]:.2f}, incident_confidence={features[5]:.2f}. "
+      f"What is the probability (0.0 to 1.0) of an active cyber attack?"
+    )
     target = query_teacher_model(prompt)
     y_data.append([target])
 
@@ -357,22 +424,28 @@ def train_threat_model(user: Any = None, *, is_platform: bool = False) -> Threat
   location_weight = 0.35
   top_location = "United States"
 
-  # If integrations exist, pull real details (or simulate based on them)
+  fused = extract_fused_threat_features(user, is_platform=is_platform, location_weight=location_weight)
+  location_weight, suspicious_ratio, failure_rate = fused[0], fused[1], fused[2]
+
   if integrations.exists():
     if is_platform:
-      location_weight = 0.35
       top_location = "United States"
-      failure_rate = 0.02
-      suspicious_ratio = 0.05
-
       for integ in integrations:
         if integ.provider == "google":
-          location_weight = 0.62
+          location_weight = max(location_weight, 0.62)
           top_location = "China"
         elif integ.provider == "microsoft":
           failure_rate = max(failure_rate, 0.08)
           suspicious_ratio = max(suspicious_ratio, 0.22)
           top_location = "Russia"
+      fused = [
+        location_weight,
+        suspicious_ratio,
+        failure_rate,
+        fused[3],
+        fused[4],
+        fused[5],
+      ]
     else:
       from monitor.models import ThreatIntelligence
 
@@ -397,13 +470,15 @@ def train_threat_model(user: Any = None, *, is_platform: bool = False) -> Threat
 
         if not top_location:
           top_location = latest_threat.ip_address or latest_threat.source
-        location_weight = 0.1
+        location_weight = fused[0]
       else:
         top_location = "No Connected Integration"
         location_weight = 0.0
+      fused = extract_fused_threat_features(user, is_platform=False, location_weight=location_weight)
   else:
     top_location = "No Connected Integration"
     location_weight = 0.0
+    fused = extract_fused_threat_features(user, is_platform=is_platform, location_weight=0.0)
 
   # Load the global platform model
   import os
@@ -413,14 +488,15 @@ def train_threat_model(user: Any = None, *, is_platform: bool = False) -> Threat
     train_platform_threat_model()
 
   model = ThreatModel()
-  model.load_state_dict(torch.load(model_path, weights_only=True))
+  try:
+    model.load_state_dict(torch.load(model_path, weights_only=True))
+  except RuntimeError:
+    train_platform_threat_model()
+    model.load_state_dict(torch.load(model_path, weights_only=True))
   model.eval()
 
   with torch.no_grad():
-    # Evaluate model prediction on user's exact parameters
-    current_x = torch.tensor(
-      [[location_weight, suspicious_ratio, failure_rate]], dtype=torch.float32
-    )
+    current_x = torch.tensor([fused], dtype=torch.float32)
     prediction = model(current_x).item()
 
   report = ThreatReport.objects.create(
