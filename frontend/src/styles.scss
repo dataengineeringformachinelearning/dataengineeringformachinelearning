@@ -7,6 +7,7 @@
 @use 'components/material-overrides' as *;
 @use 'components/utilities' as *;
 @use 'components/extracted-utilities' as *;
+@use 'components/flux-inspired' as *;
 
 /* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
    as the form field container handles focus state visually at the border level.
