@@ -39,7 +39,7 @@ main.main {
   min-height: 100vh;
   margin: 0 auto;
   padding: 4rem 1.5rem;
-  max-width: 1152px;
+  max-width: var(--container-max-width, 1260px);
   display: flex;
   flex-direction: column;
   position: relative;

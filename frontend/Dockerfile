@@ -16,7 +16,7 @@ RUN npm install --legacy-peer-deps && npm cache clean --force
 # Copy source code
 COPY . .
 
-# Set build arguments for Firebase (supplied by Railway during build time)
+# Set build arguments for Firebase (supplied at Cloud Run build time)
 ARG FIREBASE_API_KEY
 ARG FIREBASE_AUTH_DOMAIN
 ARG FIREBASE_PROJECT_ID
@@ -60,7 +60,7 @@ EOF
 # Production stage (Secure Distroless Node.js)
 FROM gcr.io/distroless/nodejs22-debian12
 
-# Re-declare ARGs for runtime envs (Railway build args)
+# Re-declare ARGs for runtime envs (Cloud Run build args)
 ARG BACKEND_URL
 ARG MARKETING_URL
 
