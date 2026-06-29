@@ -13,67 +13,70 @@ const widgetEmbedSnippetHtml = widgetEmbedSnippet
   .replaceAll('>', '&gt;');
 const version = '2.0.0';
 
-const pipelineSteps = [
+const capabilities = [
   {
-    id: 'ingest',
-    name: 'Widget Telemetry Streaming',
-    icon: 'sync_alt',
-    tag: 'CLIENT-SIDE EMBED',
+    tag: 'TELEMETRY',
+    title: 'Real-Time Analytics',
     description:
-      "The embedded status widget securely streams real-time, zero-dependency telemetry (visitor logs, anomalies) directly from the tenant's site into our ingestion pipeline.",
-    codeSnippet: widgetEmbedSnippet,
+      'OpenTelemetry traces, ClickHouse rollups, and Firestore projections deliver sub-second dashboard updates across every tenant.',
+    icon: 'analytics',
+    metrics: [
+      { label: 'P99 Latency', value: '42ms', trend: 'down' },
+      { label: 'Uptime', value: '99.97%', trend: 'stable' },
+      { label: 'Requests/min', value: '12.4K', trend: 'up' },
+    ],
   },
   {
-    id: 'clean',
-    name: 'Transformation',
-    icon: 'cleaning_services',
-    tag: 'DATAFORM ELT',
+    tag: 'SECURITY',
+    title: 'Threat Intelligence',
     description:
-      'Cleanse and model raw events using Dataform. Transform raw telemetry into structured, queryable data warehouse tables.',
-    codeSnippet:
-      'config { type: "table" }\nSELECT\n  timestamp,\n  geo_network.country as country,\n  COUNT(DISTINCT session_id) as active_users\nFROM ${ref("raw_events")}',
+      'PyTorch MLP models score anomalies in real time. Semgrep and Trivy findings flow into a unified vulnerability triage board.',
+    icon: 'security',
+    metrics: [
+      { label: 'Threat Score', value: '12%', trend: 'down' },
+      { label: 'Open CVEs', value: '3', trend: 'down' },
+      { label: 'Blocked', value: '847', trend: 'up' },
+    ],
   },
   {
-    id: 'analyze',
-    name: 'Warehouse & Analysis',
-    icon: 'storage',
-    tag: 'BIGQUERY ML',
+    tag: 'PIPELINE',
+    title: 'Event Projections',
     description:
-      'Query massive datasets with sub-second latency. Analyze patterns and monitor SLA parameters across global instances.',
-    codeSnippet:
-      'SELECT\n  service_name,\n  AVG(latency_ms) as avg_latency,\n  percentile_99 as p99\nFROM `data_warehouse.telemetry_metrics`\nGROUP BY 1',
+      'Commands via Firebase, transactional Outbox to Redpanda, idempotent workers materialize into Firestore for live queries.',
+    icon: 'hub',
+    metrics: [
+      { label: 'Events/sec', value: '8.2K', trend: 'up' },
+      { label: 'DLQ Rate', value: '0.01%', trend: 'down' },
+      { label: 'Tenants', value: 'Symmetrical', trend: 'stable' },
+    ],
   },
-  {
-    id: 'predict',
-    name: 'Deep Learning Pipeline',
-    icon: 'psychology',
-    tag: 'PYTORCH PIPELINE',
-    description:
-      'Orchestrate a PyTorch-based deep learning pipeline currently running two core modules (SLA and TA), designed to support additional forecasting modules in the future.',
-    codeSnippet:
-      'class DeepLearningPipeline(nn.Module):\n  def __init__(self):\n    super().__init__()\n    self.sla_module = SLAModule()\n    self.ta_module = TAModule()\n    self.future_extensions = nn.ModuleList()\n\n  def forward(self, x):\n    return self.sla_module(x), self.ta_module(x)',
-  },
+];
+
+const integrations = [
+  { name: 'Kubernetes', icon: 'hub' },
+  { name: 'TensorFlow', icon: 'memory' },
+  { name: 'PyTorch', icon: 'psychology' },
+  { name: 'Apache Spark', icon: 'bolt' },
+  { name: 'Databricks', icon: 'cloud' },
 ];
 ---
 
 <Layout title="DEML (DATA ENGINEERING FOR MACHINE LEARNING)">
-  <div class="landing-container platform-theme bento-layout page-inner-wrapper">
+  <div class="landing-container platform-theme showcase-layout">
     <div class="ambient-ripple"></div>
 
-    <header class="hero-section">
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        <span class="badge-text">Version {version}</span>
-      </div>
-
-      <div class="hero-content">
+    <!-- Hero: split layout with mock dashboard -->
+    <section class="hero-showcase" aria-labelledby="main-title">
+      <div class="hero-copy">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          <span class="badge-text">Version {version}</span>
+        </div>
         <h1 class="title" id="main-title">Data Engineering<br />for Machine Learning</h1>
         <p class="subtitle">
-          An advanced architectural paradigm for streaming zero-dependency telemetry into deep
-          learning pipelines. Engineered for precision, protecting infrastructure with autonomous
-          anomaly forecasting and enduring excellence.
+          Stream zero-dependency telemetry into deep learning pipelines. Autonomous anomaly
+          forecasting, symmetrical multi-tenant architecture, and production-grade observability.
         </p>
-
         <div class="cta-group">
           <a href="/documentation" class="cta-button primary-btn">
             <span class="material-icons" aria-hidden="true">menu_book</span>
@@ -84,183 +87,182 @@ const pipelineSteps = [
           </a>
         </div>
       </div>
-    </header>
 
-    <section class="trusted-by-section" aria-label="Seamlessly integrates with modern infrastructure">
-      <p class="trusted-label">INTEGRATES WITH MODERN INFRASTRUCTURE</p>
-      <div class="trusted-logos">
-        <span class="logo-placeholder">KUBERNETES</span>
-        <span class="logo-placeholder">TENSORFLOW</span>
-        <span class="logo-placeholder">PYTORCH</span>
-        <span class="logo-placeholder">APACHE SPARK</span>
-        <span class="logo-placeholder">DATABRICKS</span>
+      <div class="hero-mockup" aria-hidden="true">
+        <div class="mockup-window">
+          <div class="mockup-titlebar">
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+            <span class="mockup-dot"></span>
+            <span class="mockup-title">deml.app / analytics</span>
+          </div>
+          <div class="mockup-body">
+            <div class="mockup-sidebar">
+              <span class="mockup-nav-item active"></span>
+              <span class="mockup-nav-item"></span>
+              <span class="mockup-nav-item"></span>
+            </div>
+            <div class="mockup-main">
+              <div class="mockup-gauges">
+                <div class="mockup-gauge"><span class="gauge-label">Threat</span><span class="gauge-val">12%</span></div>
+                <div class="mockup-gauge primary"><span class="gauge-label">CES</span><span class="gauge-val">94</span></div>
+                <div class="mockup-gauge"><span class="gauge-label">Stability</span><span class="gauge-val">99%</span></div>
+              </div>
+              <div class="mockup-chart">
+                <div class="chart-bar" style="height: 45%"></div>
+                <div class="chart-bar" style="height: 72%"></div>
+                <div class="chart-bar" style="height: 58%"></div>
+                <div class="chart-bar" style="height: 85%"></div>
+                <div class="chart-bar" style="height: 63%"></div>
+                <div class="chart-bar" style="height: 91%"></div>
+                <div class="chart-bar" style="height: 78%"></div>
+                <div class="chart-bar" style="height: 55%"></div>
+              </div>
+              <div class="mockup-stats-row">
+                <div class="mockup-stat"><span>P99</span><strong>42ms</strong></div>
+                <div class="mockup-stat"><span>Requests</span><strong>12.4K</strong></div>
+                <div class="mockup-stat"><span>Incidents</span><strong>0</strong></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <div class="bento-grid-container">
-      <section class="bento-item pipeline-bento" aria-labelledby="simulator-title">
-        <div class="bento-header">
-          <h2 id="simulator-title">Real-time Telemetry Architecture</h2>
-          <p>
-            Observe high-velocity data streams passing through predictive neural models in real-time,
-            built for absolute structural safety.
-          </p>
+    <!-- Integrations strip -->
+    <section class="integrations-strip" aria-label="Integrates with modern infrastructure">
+      <p class="strip-label">INTEGRATES WITH</p>
+      <div class="integration-logos">
+        {integrations.map((item) => (
+          <a href="/documentation" class="integration-logo-item">
+            <span class="material-icons" aria-hidden="true">{item.icon}</span>
+            <span>{item.name}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Wide capability showcases -->
+    {capabilities.map((cap, idx) => (
+      <section class={`showcase-band ${idx % 2 === 1 ? 'reversed' : ''}`} aria-labelledby={`cap-${idx}`}>
+        <div class="showcase-band-copy">
+          <span class="section-tag">{cap.tag}</span>
+          <h2 id={`cap-${idx}`}>{cap.title}</h2>
+          <p>{cap.description}</p>
+          <a href="/documentation" class="showcase-link">View integration docs →</a>
         </div>
-
-        <div class="simulator-grid">
-          <div class="steps-nav" role="tablist" aria-label="Pipeline Stages">
-            {pipelineSteps.map((step, idx) => (
-              <button
-                role="tab"
-                aria-selected={idx === 0 ? "true" : "false"}
-                aria-controls={`step-panel-${step.id}`}
-                id={`step-tab-${step.id}`}
-                class={`step-nav-item ${idx === 0 ? 'active' : ''}`}
-                data-step-index={idx}
-              >
-                <div class="step-nav-icon">
-                  <span class="material-icons" aria-hidden="true">{step.icon}</span>
+        <div class="showcase-band-visual" aria-hidden="true">
+          <div class="visual-panel">
+            <div class="visual-panel-header">
+              <span class="material-icons">{cap.icon}</span>
+              <span>{cap.title}</span>
+            </div>
+            <div class="visual-metrics">
+              {cap.metrics.map((m) => (
+                <div class="visual-metric">
+                  <span class="metric-label">{m.label}</span>
+                  <span class="metric-value">{m.value}</span>
+                  <span class={`metric-trend trend-${m.trend}`} aria-hidden="true">
+                    {m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '—'}
+                  </span>
                 </div>
-                <div class="step-nav-info">
-                  <span class="step-nav-name">{step.name}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          <div class="step-display-panel">
-            {pipelineSteps.map((step, idx) => (
-              <div
-                id={`step-panel-${step.id}`}
-                role="tabpanel"
-                aria-labelledby={`step-tab-${step.id}`}
-                class={`step-content-box${idx === 0 ? ' is-visible-block' : ' is-hidden'}`}
-              >
-                <div class="step-text-content">
-                  <h3>{step.name}</h3>
-                  <p>{step.description}</p>
-                </div>
-                <div class="step-code-visual">
-                  <div class="code-header">
-                    <span class="file-name">
-                      {step.id === 'predict' ? 'threat_model.py' : step.id === 'clean' ? 'events.sqlx' : step.id === 'analyze' ? 'query.sql' : 'embed.html'}
-                    </span>
-                  </div>
-                  <pre><code>{step.codeSnippet}</code></pre>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <div class="bento-item widget-bento">
-        <div class="showcase-content">
-          <div class="bento-header">
-            <span class="showcase-tag">LIVE TELEMETRY WIDGET</span>
-            <div class="embed-code">
-              <code set:html={widgetEmbedSnippetHtml} />
+              ))}
+            </div>
+            <div class="visual-sparkline">
+              <svg viewBox="0 0 200 48" preserveAspectRatio="none" aria-hidden="true">
+                <polyline
+                  points="0,40 25,32 50,36 75,20 100,28 125,12 150,18 175,8 200,14"
+                  fill="none"
+                  stroke="var(--crayola-blue)"
+                  stroke-width="2"
+                />
+              </svg>
             </div>
           </div>
-          <div class="widget-mount-point" id="hero-widget-mount">
-            <script
-              src={WIDGET_SCRIPT_PATH}
-              data-backend-url={BACKEND_URL}
-              data-frontend-url={FRONTEND_URL}
-              data-page-id={WIDGET_PAGE_ID}
-              async
-              defer
-            ></script>
-          </div>
-        </div>
-      </div>
-
-      <section class="bento-item features-bento" aria-labelledby="features-title">
-        <div class="bento-header">
-          <span class="section-tag">CAPABILITIES</span>
-          <h2 id="features-title">Engineered for Reliability</h2>
-        </div>
-
-        <div class="bento-features-grid">
-          <div class="feature-card">
-            <span class="material-icons primary-icon" aria-hidden="true">explore</span>
-            <h3>Data Discovery</h3>
-            <p>
-              Traverse massive databanks and identify key metrics with surgical precision, fueled by
-              modern paradigms.
-            </p>
-          </div>
-          <div class="feature-card">
-            <span class="material-icons primary-icon" aria-hidden="true">analytics</span>
-            <h3>Telemetry Analytics</h3>
-            <p>
-              Monitor real-time health and isolate anomalies before they compound, ensuring
-              uncompromised quality.
-            </p>
-          </div>
-          <div class="feature-card">
-            <span class="material-icons primary-icon" aria-hidden="true">security</span>
-            <h3>Threat Mitigation</h3>
-            <p>
-              Detect rogue models and scan for infrastructure flaws autonomously with mathematically
-              rigorous assessments.
-            </p>
-          </div>
         </div>
       </section>
+    ))}
 
-      <section class="bento-item whitepaper-cta-bento" aria-labelledby="whitepaper-cta-title">
-        <div class="bento-header">
+    <!-- Live widget — full width -->
+    <section class="widget-showcase" aria-labelledby="widget-title">
+      <div class="widget-showcase-inner">
+        <div class="widget-copy">
+          <span class="section-tag">EMBED ANYWHERE</span>
+          <h2 id="widget-title">Live Status Widget</h2>
+          <p>
+            One script tag streams real-time telemetry from any site. Zero dependencies, full
+            OpenTelemetry enrichment, and automatic tenant isolation.
+          </p>
+          <div class="embed-code">
+            <code set:html={widgetEmbedSnippetHtml} />
+          </div>
+        </div>
+        <div class="widget-mount-point" id="hero-widget-mount">
+          <script
+            src={WIDGET_SCRIPT_PATH}
+            data-backend-url={BACKEND_URL}
+            data-frontend-url={FRONTEND_URL}
+            data-page-id={WIDGET_PAGE_ID}
+            async
+            defer
+          ></script>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing — wide cards -->
+    <section class="pricing-showcase" aria-labelledby="pricing-title">
+      <header class="pricing-header">
+        <span class="section-tag">API ACCESS</span>
+        <h2 id="pricing-title">Simple, Transparent Pricing</h2>
+        <p>Choose the tier that fits your telemetry throughput needs.</p>
+      </header>
+      <div class="pricing-cards-container">
+        <div class="pricing-card standard-tier">
+          <h3>Standard Tier</h3>
+          <div class="price">Free</div>
+          <ul class="features-list">
+            <li><span class="material-icons" aria-hidden="true">check</span> 60 requests / minute</li>
+            <li><span class="material-icons" aria-hidden="true">check</span> Core Analytics</li>
+            <li><span class="material-icons" aria-hidden="true">check</span> Community Support</li>
+          </ul>
+          <a href={FRONTEND_URL + '/login'} class="cta-button secondary-btn">Get Started</a>
+        </div>
+        <div class="pricing-card pro-tier">
+          <div class="recommended-badge">RECOMMENDED</div>
+          <h3>Pro Tier</h3>
+          <div class="price">$39<span>/mo</span></div>
+          <ul class="features-list">
+            <li><span class="material-icons" aria-hidden="true">check</span> 1,000 requests / minute</li>
+            <li><span class="material-icons" aria-hidden="true">check</span> Advanced Threat Detection</li>
+            <li><span class="material-icons" aria-hidden="true">check</span> Priority Support</li>
+          </ul>
+          <a href={FRONTEND_URL + '/login?action=checkout'} class="cta-button primary-btn pro-btn">
+            Upgrade to Pro
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Whitepaper CTA -->
+    <section class="whitepaper-band" aria-labelledby="whitepaper-cta-title">
+      <div class="whitepaper-band-inner">
+        <div>
           <span class="section-tag">RESEARCH & ARCHITECTURE</span>
           <h2 id="whitepaper-cta-title">The Whitepaper</h2>
           <p>
-            Review the comprehensive architecture, scalable telemetry patterns, and automated threat
-            mitigation strategies powering the platform.
+            Architecture diagrams, event projection patterns, and automated threat mitigation
+            strategies powering the platform.
           </p>
         </div>
-        <div class="cta-group u-style-9150aa" >
-          <a href="/whitepaper" class="cta-button primary-btn whitepaper-btn">
-            <span class="material-icons" aria-hidden="true">description</span>
-            <span>Read Whitepaper</span>
-          </a>
-        </div>
-      </section>
+        <a href="/whitepaper" class="cta-button primary-btn whitepaper-btn">
+          <span class="material-icons" aria-hidden="true">description</span>
+          <span>Read Whitepaper</span>
+        </a>
+      </div>
+    </section>
 
-      <section class="bento-item pricing-bento" aria-labelledby="pricing-title">
-        <div class="bento-header">
-          <span class="section-tag">API ACCESS</span>
-          <h2 id="pricing-title">Simple, Transparent Pricing</h2>
-          <p>Choose the tier that fits your telemetry throughput needs.</p>
-        </div>
-        <div class="pricing-cards-container">
-          <div class="pricing-card standard-tier">
-            <h3>Standard Tier</h3>
-            <div class="price">Free</div>
-            <ul class="features-list">
-              <li><span class="material-icons" aria-hidden="true">check</span> 60 requests / minute</li>
-              <li><span class="material-icons" aria-hidden="true">check</span> Core Analytics</li>
-              <li><span class="material-icons" aria-hidden="true">check</span> Community Support</li>
-            </ul>
-            <a href={FRONTEND_URL + '/login'} class="cta-button secondary-btn">Get Started</a>
-          </div>
-
-          <div class="pricing-card pro-tier">
-            <div class="recommended-badge">RECOMMENDED</div>
-            <h3>Pro Tier</h3>
-            <div class="price">$39<span>/mo</span></div>
-            <ul class="features-list">
-              <li><span class="material-icons" aria-hidden="true">check</span> 1,000 requests / minute</li>
-              <li><span class="material-icons" aria-hidden="true">check</span> Advanced Threat Detection</li>
-              <li><span class="material-icons" aria-hidden="true">check</span> Priority Support</li>
-            </ul>
-            <a href={FRONTEND_URL + '/login?action=checkout'} class="cta-button primary-btn pro-btn">
-              Upgrade to Pro
-            </a>
-          </div>
-        </div>
-      </section>
-    </div>
-
+    <!-- Compliance -->
     <section class="transparency-atmospheric" aria-labelledby="transparency-title">
       <div class="atmospheric-header">
         <span class="section-tag">COMPLIANCE PROTOCOL</span>
@@ -286,54 +288,3 @@ const pipelineSteps = [
     </section>
   </div>
 </Layout>
-
-<script>
-  // Handle Interactive Pipeline Steps
-  document.addEventListener('DOMContentLoaded', () => {
-    const tabs = document.querySelectorAll('.step-nav-item');
-    const panels = document.querySelectorAll('.step-content-box');
-    let activeIndex = 0;
-    let intervalId = null;
-
-    function setStep(index) {
-      activeIndex = index;
-
-      tabs.forEach((tab, i) => {
-        if (i === index) {
-          tab.classList.add('active');
-          tab.setAttribute('aria-selected', 'true');
-        } else {
-          tab.classList.remove('active');
-          tab.setAttribute('aria-selected', 'false');
-        }
-      });
-
-      panels.forEach((panel, i) => {
-        if (i === index) {
-          panel.classList.add('is-visible-block');
-          panel.classList.remove('is-hidden');
-        } else {
-          panel.classList.add('is-hidden');
-          panel.classList.remove('is-visible-block');
-        }
-      });
-
-      startCycle();
-    }
-
-    function startCycle() {
-      if (intervalId) clearInterval(intervalId);
-      intervalId = setInterval(() => {
-        setStep((activeIndex + 1) % tabs.length);
-      }, 4500);
-    }
-
-    tabs.forEach((tab, index) => {
-      tab.addEventListener('click', () => {
-        setStep(index);
-      });
-    });
-
-    startCycle();
-  });
-</script>

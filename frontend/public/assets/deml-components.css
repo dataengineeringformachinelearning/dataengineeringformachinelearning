@@ -214,7 +214,8 @@ th,
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-layout);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   padding: 9px 24px;
   box-sizing: border-box;
 }

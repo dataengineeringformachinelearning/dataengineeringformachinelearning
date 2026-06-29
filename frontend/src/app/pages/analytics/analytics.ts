@@ -9,6 +9,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import { MatIconModule } from '@angular/material/icon';
@@ -41,7 +42,7 @@ export interface ChartOptions {
 @Component({
   selector: 'app-analytics',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule, MatIconModule, UnifiedSelect],
+  imports: [CommonModule, RouterLink, NgApexchartsModule, MatIconModule, UnifiedSelect],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
 })

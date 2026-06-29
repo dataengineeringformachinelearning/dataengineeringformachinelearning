@@ -7,9 +7,9 @@ import Layout from '../layouts/Layout.astro';
     <div class="dashboard-content-area">
       <div class="page-inner-wrapper">
         <header class="docs-hero">
-          <div  class="u-style-58adc5">
+          <div class="u-style-58adc5">
             <span class="badge-dot" aria-hidden="true"></span>
-            <span  class="u-style-486a44">Developer Portal</span>
+            <span class="u-style-486a44">Developer Portal</span>
           </div>
           <h1 class="docs-title">API Gateway & Integrations</h1>
           <p class="docs-subtitle">
@@ -19,13 +19,13 @@ import Layout from '../layouts/Layout.astro';
           </p>
         </header>
 
-        <div class="docs-bento-grid page-inner-wrapper">
+        <div class="docs-bento-grid">
           <div class="docs-bento-card docs-bento-full">
             <div class="bento-header">
               <span class="material-icons" aria-hidden="true">vpn_key</span>
               <h2>Authentication & Access</h2>
             </div>
-            <p  class="u-style-7f7d6d">
+            <p class="u-style-7f7d6d">
               Secure access to our high-throughput pipelines requires an API key. Register an account,
               generate a secure token in your user profile, and pass it in the Authorization header.
             </p>
@@ -40,7 +40,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="material-icons" aria-hidden="true">input</span>
               <h2>Data Ingestion</h2>
             </div>
-            <p  class="u-style-efd290">
+            <p class="u-style-efd290">
               High-throughput endpoint optimized for receiving batched or streaming data from
               distributed pipelines like Apache Spark or Databricks.
             </p>
@@ -48,7 +48,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="method">POST</span>
               <span class="path">/api/v1/ingest</span>
             </div>
-            <div class="code-block-premium u-style-5ab468" >
+            <div class="code-block-premium u-style-5ab468">
               <div class="code-header">cURL Request</div>
               <pre><code>curl -X POST https://backend.deml.app/api/v1/ingest \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -62,7 +62,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="material-icons" aria-hidden="true">model_training</span>
               <h2>Real-time Inference</h2>
             </div>
-            <p  class="u-style-efd290">
+            <p class="u-style-efd290">
               Low-latency endpoint for model inference, ideal for Kubernetes sidecars or deep learning
               services calling models directly.
             </p>
@@ -70,7 +70,7 @@ import Layout from '../layouts/Layout.astro';
               <span class="method">POST</span>
               <span class="path">/api/v1/predict</span>
             </div>
-            <div class="code-block-premium u-style-5ab468" >
+            <div class="code-block-premium u-style-5ab468">
               <div class="code-header">cURL Request</div>
               <pre><code>curl -X POST https://backend.deml.app/api/v1/predict \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -81,38 +81,141 @@ import Layout from '../layouts/Layout.astro';
 
           <div class="docs-bento-card">
             <div class="bento-header">
-              <span class="material-icons" aria-hidden="true">terminal</span>
-              <h2>Native Integrations</h2>
-            </div>
-            <p  class="u-style-efd290">
-              We provide native support and documentation for integrating with the industry's leading
-              tools, including:
-            </p>
-            <ul  class="u-style-358aff">
-              <li><strong>Kubernetes:</strong> Connect via CRDs or sidecar proxies.</li>
-              <li><strong>TensorFlow:</strong> Stream using <code>tf.data.Dataset</code>.</li>
-              <li><strong>Apache Spark:</strong> Write DataFrames directly.</li>
-            </ul>
-          </div>
-
-          <div class="docs-bento-card">
-            <div class="bento-header">
               <span class="material-icons" aria-hidden="true">security</span>
               <h2>Enterprise Security</h2>
             </div>
-            <p  class="u-style-efd290">
+            <p class="u-style-efd290">
               All tenant data is cryptographically isolated using strict multi-tenancy rules and
               enforced via our strict 30-day data retention policy.
               <strong>API Keys</strong> can only be managed exclusively through the user interface
               under your Settings panel. For ultimate security, keys are displayed only once upon
-              creation and are immediately hashed in the database using SHA-256. <br /><br />
-              Our infrastructure leverages strict Google Distroless-like multi-stage deployments
-              (e.g., chainguard nginx) to eliminate shell-based attack surfaces. Data sent to our
-              ingestion endpoints feeds directly into Redpanda message brokers, ensuring your
-              analytics dashboard displays a fully unified, multi-tenant view of your infrastructure.
+              creation and are immediately hashed in the database using SHA-256.
             </p>
           </div>
         </div>
+
+        <section class="integrations-section" aria-labelledby="integrations-title">
+          <header class="integrations-header">
+            <span class="section-tag">NATIVE INTEGRATIONS</span>
+            <h2 id="integrations-title">Connect Your Stack</h2>
+            <p>
+              First-class guides for Kubernetes, TensorFlow, PyTorch, Apache Spark, and Databricks.
+              Each integration uses the same API key and health-check endpoints.
+            </p>
+          </header>
+
+          <div class="integration-cards">
+            <article class="integration-card">
+              <div class="integration-card-header">
+                <span class="material-icons" aria-hidden="true">hub</span>
+                <h3>Kubernetes</h3>
+              </div>
+              <p>
+                Deploy a sidecar proxy or cluster gateway to inject credentials and route traffic to
+                <code>/api/v1/predict</code> and <code>/api/v1/ingest</code> without exposing keys in
+                application code.
+              </p>
+              <div class="code-block-premium compact">
+                <div class="code-header">Sidecar env</div>
+                <pre><code>DEML_UPSTREAM_URL=https://backend.deml.app/api/v1
+DEML_API_KEY=&lt;from Secret&gt;</code></pre>
+              </div>
+              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/kubernetes.md" class="integration-link">
+                Read Kubernetes guide →
+              </a>
+            </article>
+
+            <article class="integration-card">
+              <div class="integration-card-header">
+                <span class="material-icons" aria-hidden="true">memory</span>
+                <h3>TensorFlow</h3>
+              </div>
+              <p>
+                Stream training batches into <code>tf.data.Dataset</code> pipelines with prefetch and
+                autotune for high-throughput training loops.
+              </p>
+              <div class="code-block-premium compact">
+                <div class="code-header">Dataset</div>
+                <pre><code>dataset = tf.data.Dataset.from_generator(...)
+dataset.batch(32).prefetch(AUTOTUNE)</code></pre>
+              </div>
+              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/tensorflow.md" class="integration-link">
+                Read TensorFlow guide →
+              </a>
+            </article>
+
+            <article class="integration-card">
+              <div class="integration-card-header">
+                <span class="material-icons" aria-hidden="true">psychology</span>
+                <h3>PyTorch</h3>
+              </div>
+              <p>
+                Back custom <code>Dataset</code> and <code>DataLoader</code> classes with remote ingest.
+                Models ship as secure <code>state_dict</code> checkpoints — no pickle.
+              </p>
+              <div class="code-block-premium compact">
+                <div class="code-header">DataLoader</div>
+                <pre><code>loader = DataLoader(DemlRemoteDataset(), batch_size=64)
+for features, labels in loader: ...</code></pre>
+              </div>
+              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/pytorch.md" class="integration-link">
+                Read PyTorch guide →
+              </a>
+            </article>
+
+            <article class="integration-card">
+              <div class="integration-card-header">
+                <span class="material-icons" aria-hidden="true">bolt</span>
+                <h3>Apache Spark</h3>
+              </div>
+              <p>
+                Push batch and Structured Streaming micro-batches directly to ingestion endpoints from
+                PySpark or Scala jobs.
+              </p>
+              <div class="code-block-premium compact">
+                <div class="code-header">Streaming</div>
+                <pre><code>payload.writeStream
+  .foreachBatch(write_batch)
+  .start()</code></pre>
+              </div>
+              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/apache-spark.md" class="integration-link">
+                Read Spark guide →
+              </a>
+            </article>
+
+            <article class="integration-card">
+              <div class="integration-card-header">
+                <span class="material-icons" aria-hidden="true">cloud</span>
+                <h3>Databricks</h3>
+              </div>
+              <p>
+                Store API keys in Secret Scopes, ingest from notebooks, and schedule jobs that push
+                hourly rollups to your analytics dashboard.
+              </p>
+              <div class="code-block-premium compact">
+                <div class="code-header">Secret Scope</div>
+                <pre><code>api_key = dbutils.secrets.get(
+  scope="deml", key="api-key")</code></pre>
+              </div>
+              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/databricks.md" class="integration-link">
+                Read Databricks guide →
+              </a>
+            </article>
+          </div>
+
+          <div class="health-check-block">
+            <h3>Integration Health Checks</h3>
+            <p>Verify connectivity from any environment:</p>
+            <div class="code-block-premium">
+              <div class="code-header">Health endpoints</div>
+              <pre><code>GET /api/v1/integrations/kubernetes
+GET /api/v1/integrations/tensorflow
+GET /api/v1/integrations/pytorch
+GET /api/v1/integrations/apache-spark
+GET /api/v1/integrations/databricks</code></pre>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -210,11 +313,146 @@ import Layout from '../layouts/Layout.astro';
   grid-column: 1 / -1;
 }
 
+.integrations-section {
+  max-width: var(--container-max-width, 1260px);
+  margin: 0 auto 72px auto;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.integrations-header {
+  text-align: center;
+  margin-bottom: 48px;
+
+  .section-tag {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--crayola-blue);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 16px;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-size: 1.125rem;
+  }
+}
+
+.integration-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.integration-card {
+  background: var(--color-surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    border-color: var(--crayola-blue);
+    box-shadow: var(--shadow-hover);
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.55;
+    font-size: 1rem;
+  }
+
+  code {
+    font-size: 0.9rem;
+  }
+}
+
+.integration-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .material-icons {
+    color: var(--crayola-blue);
+    font-size: 28px;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+}
+
+.integration-link {
+  margin-top: auto;
+  font-weight: 600;
+  color: var(--crayola-blue) !important;
+  text-decoration: none !important;
+  font-size: 0.95rem;
+  letter-spacing: 0.04em;
+
+  &:hover {
+    color: var(--blue-bell) !important;
+  }
+}
+
+.health-check-block {
+  margin-top: 48px;
+  padding: 32px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--crayola-blue) 6%, var(--color-surface));
+
+  h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  p {
+    margin: 0 0 20px 0;
+    color: var(--text-muted);
+  }
+}
+
 .code-block-premium {
   background: var(--jet-black, #121212);
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   overflow: hidden;
+
+  &.compact pre {
+    padding: 1rem 1.25rem;
+  }
 
   .code-header {
     background: rgba(255, 255, 255, 0.05);

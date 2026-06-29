@@ -1,5 +1,16 @@
 // Angular Material overrides — base navbar styles live in @deml/design-system.
 
+:host {
+  display: block;
+  width: 100%;
+}
+
+.navbar {
+  flex-direction: column;
+  align-items: stretch;
+  position: sticky;
+}
+
 .nav-btn {
   mat-icon {
     margin: 0;
@@ -9,7 +20,8 @@
   }
 }
 
-.theme-toggle-btn {
+.theme-toggle-btn,
+.menu-toggle-btn {
   color: var(--text-muted) !important;
 
   &:hover {

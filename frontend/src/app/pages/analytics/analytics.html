@@ -2,6 +2,18 @@
   <!-- Glow Spheres for Homepage Unity -->
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
+      <nav class="page-back-nav" aria-label="Return to dashboard">
+        <a
+          class="back-link"
+          routerLink="/dashboard"
+          [queryParams]="{ tab: 'performance' }"
+          aria-label="Back to Dashboard performance view"
+        >
+          <mat-icon aria-hidden="true">arrow_back</mat-icon>
+          <span>Back to Dashboard</span>
+        </a>
+      </nav>
+
       <header class="hud-header">
         <div class="title-group">
           <div class="section-tag-row">
