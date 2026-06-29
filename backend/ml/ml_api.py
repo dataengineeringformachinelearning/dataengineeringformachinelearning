@@ -188,7 +188,15 @@ def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
       "created_at": report.created_at,
     }
   else:
-    return {"status": "success", "message": "No threat intelligence reports available"}
+    return {
+      "status": "success",
+      "anomaly_score": 0.0,
+      "top_location": "N/A",
+      "location_weight": 0.0,
+      "suspicious_ratio": 0.0,
+      "created_at": None,
+      "message": "No threat intelligence reports available",
+    }
 
 
 # STIX 2.1 Formatted Threat Report schemas

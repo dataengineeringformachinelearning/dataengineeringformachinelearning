@@ -99,7 +99,8 @@ export class IsolatedStatus implements OnInit {
     const activeIncidents = incs.filter(i => i.status !== 'Resolved');
 
     const services = this.servicesMap()[pageId] || [];
-    const outages = services.filter(s => s.status === 'Outage');
+    const httpServices = services.filter(s => s.name !== 'Event Projections');
+    const outages = httpServices.filter(s => s.status === 'Outage');
     const degraded = services.filter(s => s.status === 'Degraded');
 
     if (activeIncidents.length > 0 || outages.length > 0) {
@@ -108,6 +109,16 @@ export class IsolatedStatus implements OnInit {
       return 'Degraded';
     }
     return 'Operational';
+  });
+
+  threatReportsByPage = computed(() => {
+    const reports = this.mlService.latestThreatReports();
+    const simulated = this.simulatedThreatReportMap();
+    const result: Record<string, ThreatReportResponse> = {};
+    for (const page of this.statusPages()) {
+      result[page.id] = reports[page.id] || simulated[page.id];
+    }
+    return result;
   });
 
   login() {
@@ -208,7 +219,7 @@ export class IsolatedStatus implements OnInit {
   }
 
   getThreatReport(pageId: string) {
-    return this.mlService.latestThreatReports()[pageId] || this.simulatedThreatReportMap()[pageId];
+    return this.threatReportsByPage()[pageId];
   }
 
   isRetrying = signal<boolean>(false);

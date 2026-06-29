@@ -204,7 +204,7 @@
             </div>
             <div class="stat-value-container">
               <span class="stat-value">
-                {{ ((getThreatReport(page.id)?.suspicious_ratio ?? 0) * 100) | number:'1.1-2' }}%
+                {{ ((threatReportsByPage()[page.id]?.suspicious_ratio ?? 0) * 100) | number:'1.1-2' }}%
               </span>
             </div>
           </div>
@@ -218,7 +218,7 @@
             </div>
             <div class="stat-value-container">
               <span class="stat-value">
-                {{ ((getThreatReport(page.id)?.anomaly_score ?? 0) * 100) | number:'1.1-2' }}%
+                {{ ((threatReportsByPage()[page.id]?.anomaly_score ?? 0) * 100) | number:'1.1-2' }}%
               </span>
             </div>
           </div>
@@ -232,7 +232,7 @@
               <h3>ML Threat Analysis</h3>
             </div>
             <span class="threat-status-text">
-              Status: {{ (getThreatReport(page.id)?.anomaly_score ?? 0) > 0.5 ? 'Active Investigation
+              Status: {{ (threatReportsByPage()[page.id]?.anomaly_score ?? 0) > 0.5 ? 'Active Investigation
               Recommended' : 'Low Threat Indicators' }}
             </span>
           </div>
@@ -240,19 +240,19 @@
             <div class="threat-metric-card">
               <span class="threat-metric-label">Top Location Contribution</span>
               <strong class="threat-metric-value">
-                {{ getThreatReport(page.id)?.top_location || 'N/A' }}
+                {{ threatReportsByPage()[page.id]?.top_location || 'N/A' }}
               </strong>
             </div>
             <div class="threat-metric-card">
               <span class="threat-metric-label">Traffic Weight</span>
               <strong class="threat-metric-value">
-                {{ ((getThreatReport(page.id)?.location_weight ?? 0) * 100) | number:'1.0-1' }}%
+                {{ ((threatReportsByPage()[page.id]?.location_weight ?? 0) * 100) | number:'1.0-1' }}%
               </strong>
             </div>
             <div class="threat-metric-card">
               <span class="threat-metric-label">Suspicious Request Ratio</span>
               <strong class="threat-metric-value">
-                {{ ((getThreatReport(page.id)?.suspicious_ratio ?? 0) * 100) | number:'1.0-1' }}%
+                {{ ((threatReportsByPage()[page.id]?.suspicious_ratio ?? 0) * 100) | number:'1.0-1' }}%
               </strong>
             </div>
           </div>

@@ -317,12 +317,19 @@ def list_services(request, page_id: str):
 
     ensure_platform_monitored_services()
   services = page.services.order_by("name")
-  from utils.service_urls import metrics_url_for_service
+  from utils.service_urls import endpoint_storage_url, metrics_url_for_service
 
   out = []
   for s in services:
     metrics_url = metrics_url_for_service(s.url, is_platform=is_platform)
-    endpoint_qs = Endpoints.objects.filter(url=metrics_url).exclude(status_code=0)
+    lookup_urls = list(
+      {
+        metrics_url,
+        endpoint_storage_url(metrics_url, is_platform=is_platform),
+        endpoint_storage_url(s.url, is_platform=is_platform),
+      }
+    )
+    endpoint_qs = Endpoints.objects.filter(url__in=lookup_urls).exclude(status_code=0)
     if is_platform:
       endpoint_qs = endpoint_qs.filter(is_platform=True, user__isnull=True)
     elif page.user_id:
@@ -356,12 +363,13 @@ def list_services(request, page_id: str):
 
     from monitor.models import SyntheticMonitor
 
-    # If the worker stops reporting, the loop is effectively down.
+    # If the worker stops reporting, the loop is degraded — not a full platform outage.
     stale_after = datetime.timedelta(minutes=5)
     for sm in SyntheticMonitor.objects.all():
       sm_status = sm.status
-      if timezone.now() - sm.checked_at > stale_after:
-        sm_status = "Outage"
+      is_stale = timezone.now() - sm.checked_at > stale_after
+      if is_stale:
+        sm_status = "Degraded" if sm.status != "Outage" else "Outage"
       sla = 100.0 if sm_status == "Operational" else (95.0 if sm_status == "Degraded" else 0.0)
       out.append(
         MonitoredServiceOut(

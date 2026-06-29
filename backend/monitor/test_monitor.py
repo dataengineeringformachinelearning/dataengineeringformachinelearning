@@ -173,6 +173,50 @@ def test_list_services(client: Client, test_user: User) -> None:
 
 
 @pytest.mark.django_db
+def test_list_services_matches_trailing_slash_endpoint(client: Client, test_user: User) -> None:
+  page = StatusPage.objects.create(
+    user=test_user, title="Joe Status", slug="joealongi", is_published=True
+  )
+  MonitoredService.objects.create(
+    status_page=page, name="Personal Site", url="https://joealongi.dev"
+  )
+  Endpoints.objects.create(
+    user=test_user,
+    is_platform=False,
+    url="https://joealongi.dev/",
+    status_code=200,
+    response_time=datetime.timedelta(milliseconds=50),
+    is_active=True,
+  )
+  response = client.get(f"/api/v1/system-status/status_pages/{page.id}/services")
+  assert response.status_code == 200
+  data = response.json()
+  assert len(data) == 1
+  assert data[0]["status"] == "Operational"
+  assert data[0]["sla"] == 100.0
+
+
+@pytest.mark.django_db
+def test_stale_synthetic_monitor_reports_degraded_not_outage(client: Client) -> None:
+  from account.platform import ensure_platform_status_page
+  from django.utils import timezone
+
+  from monitor.models import SyntheticMonitor
+
+  page = ensure_platform_status_page()
+  SyntheticMonitor.objects.create(
+    name="Event Projections",
+    status="Operational",
+    checked_at=timezone.now() - datetime.timedelta(minutes=10),
+  )
+  response = client.get(f"/api/v1/system-status/status_pages/{page.id}/services")
+  assert response.status_code == 200
+  synthetic = next(row for row in response.json() if row["name"] == "Event Projections")
+  assert synthetic["status"] == "Degraded"
+  assert synthetic["sla"] == 95.0
+
+
+@pytest.mark.django_db
 def test_create_and_list_incidents(
   client: Client, authenticated_client: Client, test_user: User
 ) -> None:

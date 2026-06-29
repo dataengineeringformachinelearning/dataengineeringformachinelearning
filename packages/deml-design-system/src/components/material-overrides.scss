@@ -20,6 +20,20 @@ html[data-theme='dark'] {
   --mat-sys-outline: var(--border);
 }
 
+// Kill Material ripple/state-layer purple on all buttons.
+.mat-mdc-button,
+.mat-mdc-outlined-button,
+.mat-mdc-stroked-button,
+.mat-mdc-raised-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-icon-button {
+  --mat-text-button-ripple-color: color-mix(in srgb, var(--crayola-blue) 22%, transparent);
+  --mat-filled-button-ripple-color: color-mix(in srgb, var(--crayola-blue) 22%, transparent);
+  --mat-outlined-button-ripple-color: color-mix(in srgb, var(--crayola-blue) 22%, transparent);
+  --mat-protected-button-ripple-color: color-mix(in srgb, var(--crayola-blue) 22%, transparent);
+  --mat-icon-button-ripple-color: color-mix(in srgb, var(--crayola-blue) 22%, transparent);
+}
+
 // Navbar + auth buttons must match shared navbar.scss (not generic mat-button rules).
 .mat-mdc-button.nav-btn,
 a.nav-btn.mat-mdc-button,
@@ -34,6 +48,8 @@ a.mobile-nav-btn.mat-mdc-button {
   line-height: 40px !important;
   padding: 0 16px !important;
   border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important;
+  --mat-text-button-ripple-color: color-mix(in srgb, var(--crayola-blue) 28%, transparent);
+  --mat-text-button-state-layer-color: color-mix(in srgb, var(--crayola-blue) 12%, transparent);
 }
 
 .mat-mdc-button.nav-btn:hover,
@@ -86,8 +102,23 @@ a.auth-btn {
   --mdc-outlined-button-label-text-color: var(--carrot-orange);
   --mat-filled-button-state-layer-color: var(--white);
   --mat-outlined-button-state-layer-color: var(--carrot-orange);
+  --mat-text-button-state-layer-color: var(--carrot-orange);
+  --mat-outlined-button-ripple-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
+  --mat-text-button-ripple-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
+  --mat-filled-button-ripple-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
   font-size: max(18px, var(--base-font-size));
   border-radius: var(--border-radius-sm);
+}
+
+.mat-mdc-outlined-button.mat-warn:not(:disabled),
+.mat-mdc-stroked-button.mat-warn:not(:disabled) {
+  border-color: var(--carrot-orange) !important;
+  color: var(--carrot-orange) !important;
+}
+
+.mat-mdc-outlined-button.mat-warn:not(:disabled):hover,
+.mat-mdc-stroked-button.mat-warn:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--carrot-orange) 10%, transparent) !important;
 }
 
 .mat-mdc-form-field,
