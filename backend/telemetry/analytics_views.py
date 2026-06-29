@@ -28,10 +28,16 @@ def get_user_accounts(request):
 
 
 @router.get("/overview")
-def get_analytics_overview(request, account_id: str | None = None, site_url: str | None = None):
+def get_analytics_overview(
+  request,
+  account_id: str | None = None,
+  tenant_id: str | None = None,
+  site_url: str | None = None,
+):
   user = require_auth(request)
+  scoped_account_id = account_id or tenant_id
   try:
-    data = OverviewService.build(user, account_id=account_id, site_url=site_url)
+    data = OverviewService.build(user, account_id=scoped_account_id, site_url=site_url)
   except PermissionError:
     raise HttpError(403, "Access denied to this account") from None
   except ValueError as exc:
@@ -67,12 +73,17 @@ class PlaybookUpdate(Schema):
 
 
 @router.get("/incidents", response=list[IncidentCaseOut])
-def get_incidents(request, account_id: str | None = None):
+def get_incidents(
+  request,
+  account_id: str | None = None,
+  tenant_id: str | None = None,
+):
   user = require_auth(request)
   from monitor.models import IncidentCase
 
+  scoped_account_id = account_id or tenant_id
   profile = getattr(user, "profile", None)
-  if account_id and profile and str(account_id) != str(profile.account_id):
+  if scoped_account_id and profile and str(scoped_account_id) != str(profile.account_id):
     return []
 
   cases = list(IncidentCase.objects.filter(user=user).order_by("-created_at"))
@@ -116,12 +127,17 @@ def update_incident(request, incident_id: str, payload: IncidentCaseUpdate):
 
 
 @router.get("/playbooks", response=list[PlaybookOut])
-def get_playbooks(request, account_id: str | None = None):
+def get_playbooks(
+  request,
+  account_id: str | None = None,
+  tenant_id: str | None = None,
+):
   user = require_auth(request)
   from monitor.models import Playbook
 
+  scoped_account_id = account_id or tenant_id
   profile = getattr(user, "profile", None)
-  if account_id and profile and str(account_id) != str(profile.account_id):
+  if scoped_account_id and profile and str(scoped_account_id) != str(profile.account_id):
     return []
 
   playbooks = list(Playbook.objects.filter(user=user).order_by("name"))

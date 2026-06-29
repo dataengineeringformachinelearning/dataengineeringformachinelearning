@@ -701,9 +701,18 @@
   margin-top: 32px;
 }
 
+.incident-list,
+.playbook-list {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 240px;
+}
+
 .siem-item,
 .playbook-item {
-  margin-bottom: 12px;
+  margin-bottom: 0;
   transition: var(--transition-smooth);
 
   &:hover,
@@ -749,14 +758,17 @@
 
 .siem-item-footer {
   flex-direction: column;
-  align-items: flex-start !important;
-  gap: 12px;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
 }
 
-.siem-status-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.siem-status-field {
+  width: 100%;
+  max-width: 280px;
+}
+
+.siem-status-select {
   width: 100%;
 }
 
@@ -771,18 +783,23 @@
 
 .header-action-btn {
   margin-left: auto;
-  background-color: var(--crayola-blue);
-  color: var(--white);
+  background-color: var(--crayola-blue, #2176ff);
+  color: var(--white, #ffffff);
   border-radius: 4px;
-  padding: 8px 16px;
+  padding: 8px 14px;
   font-family: 'Inter', sans-serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   border: none;
   cursor: pointer;
 
   &:hover {
-    background-color: var(--blue-bell);
+    background-color: var(--blue-bell, #33a1fd);
+  }
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
   }
 }
 
@@ -871,9 +888,7 @@
 }
 
 .playbook-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .playbook-item {
@@ -919,4 +934,11 @@
 .btn-small {
   padding: 8px 16px;
   font-size: 1rem;
+}
+
+.siem-item-selectable:focus-visible,
+.playbook-item .playbook-info[role='button']:focus-visible {
+  outline: 2px solid var(--crayola-blue, #2176ff);
+  outline-offset: 2px;
+  border-radius: 6px;
 }

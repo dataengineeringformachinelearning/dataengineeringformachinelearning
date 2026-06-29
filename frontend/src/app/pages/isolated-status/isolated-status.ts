@@ -14,7 +14,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
-import { MlService } from '../../services/ml.service';
+import { MlService, ThreatReportResponse } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -62,22 +62,15 @@ export class IsolatedStatus implements OnInit {
 
   p99LatencyMap = signal<Record<string, number>>({ 'mock-id': 0 });
   totalRequestsMap = signal<Record<string, number>>({ 'mock-id': 0 });
-  simulatedThreatReportMap = signal<
-    Record<
-      string,
-      {
-        suspicious_ratio: number;
-        anomaly_score: number;
-        top_location: string;
-        location_weight: number;
-      }
-    >
-  >({
+  simulatedThreatReportMap = signal<Record<string, ThreatReportResponse>>({
     'mock-id': {
+      status: 'success',
       suspicious_ratio: 0,
       anomaly_score: 0,
-      top_location: 'Loading...',
+      top_location: 'N/A',
       location_weight: 0,
+      created_at: null,
+      message: 'Pending telemetry',
     },
   });
 
@@ -163,49 +156,28 @@ export class IsolatedStatus implements OnInit {
       .pipe(timeout(15000))
       .subscribe({
         next: page => {
-          // Start with 0 values for animation effect
-          const initialPage = { ...page, cumulative_sla: 0, overall_uptime: 0 };
-          this.statusPages.set([initialPage]);
-
-          this.p99LatencyMap.update(m => ({ ...m, [page.id]: 0 }));
-          this.totalRequestsMap.update(m => ({ ...m, [page.id]: 0 }));
-          const simThreat = {
-            suspicious_ratio: 0,
-            anomaly_score: 0,
-            top_location: 'Loading...',
-            location_weight: 0,
-          };
-          this.simulatedThreatReportMap.update(m => ({ ...m, [page.id]: simThreat }));
+          this.statusPages.set([page]);
+          this.p99LatencyMap.update(m => ({ ...m, [page.id]: page.p99_latency ?? 0 }));
+          this.totalRequestsMap.update(m => ({ ...m, [page.id]: page.total_requests ?? 0 }));
+          this.simulatedThreatReportMap.update(m => ({
+            ...m,
+            [page.id]: {
+              status: 'success',
+              suspicious_ratio: 0,
+              anomaly_score: 0,
+              top_location: 'N/A',
+              location_weight: 0,
+              created_at: null,
+              message: 'Pending telemetry',
+            },
+          }));
 
           this.monitorService.fetchAllIncidents([page]);
           this.monitorService.fetchAllServices([page]);
-
-          setTimeout(
-            () => {
-              runInInjectionContext(this.injector, () => {
-                this.statusPages.set([page]); // Populate real values
-
-                const p99 = page.p99_latency ?? 0;
-                const totalReqs = page.total_requests ?? 0;
-                this.p99LatencyMap.update(m => ({ ...m, [page.id]: p99 }));
-                this.totalRequestsMap.update(m => ({ ...m, [page.id]: totalReqs }));
-
-                const simThreat = {
-                  suspicious_ratio: 0,
-                  anomaly_score: 0,
-                  top_location: 'N/A',
-                  location_weight: 0,
-                };
-                this.simulatedThreatReportMap.update(m => ({ ...m, [page.id]: simThreat }));
-
-                this.mlService.fetchLatestStat(page.id);
-                this.mlService.fetchThreatReport(page.id);
-
-                this.cdr.markForCheck();
-              });
-            },
-            800 + Math.random() * 700,
-          );
+          runInInjectionContext(this.injector, () => {
+            this.mlService.fetchLatestStat(page.id);
+            this.mlService.fetchThreatReport(page.id);
+          });
 
           this.titleService.setTitle(`${page.title} Status - DEML APP`);
           this.metaService.updateTag({

@@ -282,10 +282,22 @@
           <div class="panel-header">
             <mat-icon class="panel-icon">warning</mat-icon>
             <h2>Active Incident Cases (SIEM)</h2>
-            <button mat-button class="header-action-btn">Run Query</button>
+            <button
+              mat-button
+              class="header-action-btn"
+              (click)="runIncidentQuery()"
+              [disabled]="vulnService.incidentsLoading()"
+            >
+              {{ vulnService.incidentsLoading() ? 'Refreshing...' : 'Refresh' }}
+            </button>
           </div>
           <div class="incident-list">
-            @if (incidents().length === 0) {
+            @if (vulnService.incidentsLoading()) {
+            <div class="loader-state">
+              <span class="spinner"></span>
+              <p>Loading SIEM incidents...</p>
+            </div>
+            } @else if (incidents().length === 0) {
             <div class="empty-state siem-empty-state">
               <mat-icon>verified_user</mat-icon>
               <h3 class="empty-title">NO ACTIVE INCIDENTS</h3>
@@ -316,17 +328,15 @@
                 <p class="profile-desc siem-desc">{{ incident.description }}</p>
               </div>
               <div class="item-footer siem-item-footer">
-                <div class="siem-status-actions">
-                  @for (status of incidentStatusOptions; track status) {
-                  <button
-                    type="button"
-                    class="btn-triage btn-small"
-                    [class.active]="incident.status === status"
-                    (click)="updateIncidentStatus(incident, status)"
-                  >
-                    {{ status }}
-                  </button>
-                  }
+                <div class="siem-status-field">
+                  <app-unified-select
+                    [id]="'incident-status-' + incident.id"
+                    label="Case Status"
+                    [options]="incidentStatusSelectOptions"
+                    [value]="incident.status"
+                    (valueChange)="updateIncidentStatus(incident, $event)"
+                    class="siem-status-select"
+                  ></app-unified-select>
                 </div>
                 <span class="client-id siem-client-id"
                   >{{ incident.created_at | date:'short' }}</span
@@ -342,10 +352,22 @@
           <div class="panel-header">
             <mat-icon class="panel-icon">book</mat-icon>
             <h2>Response Playbooks (SOAR)</h2>
-            <button mat-button class="header-action-btn">Create</button>
+            <button
+              mat-button
+              class="header-action-btn"
+              (click)="refreshPlaybooks()"
+              [disabled]="vulnService.playbooksLoading()"
+            >
+              {{ vulnService.playbooksLoading() ? 'Refreshing...' : 'Refresh' }}
+            </button>
           </div>
           <div class="playbook-list">
-            @if (playbooks().length === 0) {
+            @if (vulnService.playbooksLoading()) {
+            <div class="loader-state">
+              <span class="spinner"></span>
+              <p>Loading SOAR playbooks...</p>
+            </div>
+            } @else if (playbooks().length === 0) {
             <div class="empty-state siem-empty-state">
               <mat-icon>menu_book</mat-icon>
               <h3 class="empty-title">NO PLAYBOOKS CONFIGURED</h3>

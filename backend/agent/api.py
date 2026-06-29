@@ -121,21 +121,25 @@ def report_vulnerability(request: Any, payload: VulnerabilityReportPayload) -> A
 
 @router.get("/vulnerabilities", response=list[VulnerabilityOut])
 def list_vulnerabilities(
-  request: Any, account_id: str | None = None, site_url: str | None = None
+  request: Any,
+  account_id: str | None = None,
+  tenant_id: str | None = None,
+  site_url: str | None = None,
 ) -> Any:
   from django.db.models import Q
   from monitor.models import Vulnerability
 
+  scoped_account_id = account_id or tenant_id
   if request.user.is_authenticated:
     profile = getattr(request.user, "profile", None)
     user_account_id = str(profile.account_id) if profile and profile.account_id else None
 
-    if account_id and user_account_id and str(account_id) != user_account_id:
-      account_id = None
+    if scoped_account_id and user_account_id and str(scoped_account_id) != user_account_id:
+      scoped_account_id = None
 
-    if account_id:
+    if scoped_account_id:
       vulns = Vulnerability.objects.filter(
-        Q(user=request.user) | Q(customer_id=str(account_id))
+        Q(user=request.user) | Q(customer_id=str(scoped_account_id))
       ).order_by("-created_at")
     else:
       filters = Q(user=request.user)
