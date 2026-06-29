@@ -116,7 +116,7 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item) {
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;

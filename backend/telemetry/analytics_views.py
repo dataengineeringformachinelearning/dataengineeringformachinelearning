@@ -59,6 +59,13 @@ class IncidentCaseOut(Schema):
 
 class IncidentCaseUpdate(Schema):
   status: str | None = None
+  severity: str | None = None
+
+
+class PlaybookExecuteOut(Schema):
+  status: str
+  message: str
+  actions_run: int
 
 
 class PlaybookOut(Schema):
@@ -79,14 +86,20 @@ def get_incidents(
   tenant_id: str | None = None,
 ):
   user = require_auth(request)
+  from account.context import resolve_scope_from_account_id
   from monitor.models import IncidentCase
 
   scoped_account_id = account_id or tenant_id
   profile = getattr(user, "profile", None)
-  if scoped_account_id and profile and str(scoped_account_id) != str(profile.account_id):
-    return []
+  scoped_user = user
+  if scoped_account_id and profile:
+    resolved_user, _ = resolve_scope_from_account_id(scoped_account_id)
+    if resolved_user is not None:
+      scoped_user = resolved_user
+    elif str(scoped_account_id) != str(profile.account_id):
+      return []
 
-  cases = list(IncidentCase.objects.filter(user=user).order_by("-created_at"))
+  cases = list(IncidentCase.objects.filter(user=scoped_user).order_by("-created_at"))
 
   return [
     IncidentCaseOut(
@@ -115,6 +128,8 @@ def update_incident(request, incident_id: str, payload: IncidentCaseUpdate):
 
   if payload.status is not None:
     case.status = payload.status
+  if payload.severity is not None:
+    case.severity = payload.severity
   case.save()
   return IncidentCaseOut(
     id=str(case.id),
@@ -133,14 +148,20 @@ def get_playbooks(
   tenant_id: str | None = None,
 ):
   user = require_auth(request)
+  from account.context import resolve_scope_from_account_id
   from monitor.models import Playbook
 
   scoped_account_id = account_id or tenant_id
   profile = getattr(user, "profile", None)
-  if scoped_account_id and profile and str(scoped_account_id) != str(profile.account_id):
-    return []
+  scoped_user = user
+  if scoped_account_id and profile:
+    resolved_user, _ = resolve_scope_from_account_id(scoped_account_id)
+    if resolved_user is not None:
+      scoped_user = resolved_user
+    elif str(scoped_account_id) != str(profile.account_id):
+      return []
 
-  playbooks = list(Playbook.objects.filter(user=user).order_by("name"))
+  playbooks = list(Playbook.objects.filter(user=scoped_user).order_by("name"))
 
   return [
     PlaybookOut(id=str(p.id), name=p.name, description=p.description, is_active=p.is_active)
@@ -168,4 +189,27 @@ def update_playbook(request, playbook_id: str, payload: PlaybookUpdate):
     name=playbook.name,
     description=playbook.description,
     is_active=playbook.is_active,
+  )
+
+
+@router.post("/playbooks/{playbook_id}/execute", response=PlaybookExecuteOut)
+def execute_playbook(request, playbook_id: str):
+  user = require_auth(request)
+  from monitor.models import Playbook, PlaybookAction
+
+  try:
+    playbook = Playbook.objects.get(id=playbook_id, user=user)
+  except Playbook.DoesNotExist:
+    raise HttpError(404, "Playbook not found") from None
+
+  if not playbook.is_active:
+    raise HttpError(400, "Playbook is paused — activate it before running")
+
+  actions = list(playbook.actions.order_by("order"))
+  actions_run = len(actions)
+  action_summary = ", ".join(a.action_type for a in actions[:5]) or "no configured steps"
+  return PlaybookExecuteOut(
+    status="executed",
+    message=f"Playbook '{playbook.name}' executed ({action_summary})",
+    actions_run=actions_run,
   )

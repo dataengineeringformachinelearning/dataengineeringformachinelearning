@@ -4,6 +4,7 @@ from django.test import override_settings
 from monitor.models import MonitoredService
 
 from utils.service_urls import (
+  endpoint_storage_url,
   ensure_platform_monitored_services,
   get_normalized_service_info,
   metrics_url_for_service,
@@ -118,3 +119,10 @@ def test_metrics_url_for_service_normalizes_platform_only():
   assert (
     metrics_url_for_service("http://backend.local", is_platform=False) == "http://backend.local"
   )
+
+
+@override_settings(FRONTEND_URL="https://deml.app")
+def test_endpoint_storage_url_preserves_customer_domain():
+  customer = "https://joealongi.dev/"
+  assert endpoint_storage_url(customer, is_platform=False) == "https://joealongi.dev/"
+  assert endpoint_storage_url(customer, is_platform=True) == "https://deml.app/"

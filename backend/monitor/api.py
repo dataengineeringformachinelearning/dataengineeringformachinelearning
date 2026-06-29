@@ -362,6 +362,7 @@ def list_services(request, page_id: str):
       sm_status = sm.status
       if timezone.now() - sm.checked_at > stale_after:
         sm_status = "Outage"
+      sla = 100.0 if sm_status == "Operational" else (95.0 if sm_status == "Degraded" else 0.0)
       out.append(
         MonitoredServiceOut(
           id=str(sm.id),
@@ -370,7 +371,7 @@ def list_services(request, page_id: str):
           status_page_id=str(page.id),
           created_at=sm.checked_at,
           status=sm_status,
-          sla=100.0 if sm_status == "Operational" else 0.0,
+          sla=sla,
         )
       )
   return out

@@ -152,6 +152,21 @@ def metrics_url_for_service(url_str: str, *, is_platform: bool) -> str:
   return canonical
 
 
+def endpoint_storage_url(url_str: str, *, is_platform: bool) -> str:
+  """URL written to ``Endpoints`` rows — platform rows are canonicalized; tenant rows keep their domain."""
+  if is_platform:
+    canonical, _ = get_normalized_service_info(url_str)
+    return canonical
+  ping_target = resolve_ping_url(url_str)
+  parsed = urlparse(ping_target or url_str or "")
+  if not parsed.netloc:
+    return ping_target or url_str
+  path = parsed.path or "/"
+  if path != "/" and not path.endswith("/"):
+    path = f"{path}/"
+  return f"{parsed.scheme}://{parsed.netloc}{path}"
+
+
 def _platform_canonical_rows() -> list[tuple[str, str]]:
   frontend = _frontend_base()
   marketing = _marketing_base()
