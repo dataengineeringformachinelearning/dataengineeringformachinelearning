@@ -262,6 +262,9 @@
         super();
         this.attachShadow({ mode: 'open' });
         this.clientIp = '127.0.0.1';
+        // Prevent unstyled flash on hard refresh before connectedCallback completes.
+        this.shadowRoot.innerHTML =
+          '<style>:host{display:flex;justify-content:center;width:100%;margin:18px auto;min-height:44px;opacity:0;transition:opacity .12s ease}:host(.deml-ready){opacity:1}</style>';
       }
 
       async connectedCallback() {
@@ -304,37 +307,50 @@
             display: flex;
             justify-content: center;
             width: 100%;
-            margin: 16px auto;
-          }
-          :root {
-            --color-primary: #2176ff;
-            --card-bg: #1a1a1a;
+            margin: 18px auto;
+            --jet-black: #31393c;
+            --crayola-blue: #2176ff;
+            --blue-bell: #33a1fd;
+            --golden-pollen: #fdca40;
+            --carrot-orange: #f79824;
+            --white: #ffffff;
+            --black: #000000;
+            --color-primary: var(--crayola-blue);
+            --color-success: var(--blue-bell);
+            --color-warning: var(--golden-pollen);
+            --color-error: var(--carrot-orange);
+            --card-bg: #121212;
+            --bg-color: #121212;
             --border: rgba(255, 255, 255, 0.12);
-            --text-color: #f8fafc;
-            --text-muted: rgba(255, 255, 255, 0.7);
+            --text-color: var(--white);
+            --text-muted: rgba(255, 255, 255, 0.72);
+            --space-1: 9px;
+            --space-2: 18px;
+            --base-font-size: 18px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
           }
           .widget-container {
             display: inline-flex;
             align-items: center;
-            padding: 8px 16px;
-            background: rgba(15, 23, 42, 0.45);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: var(--space-1) var(--space-2);
+            background: var(--jet-black);
+            border: 1px solid var(--border);
             border-radius: 10000px;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            font-size: 14px;
+            font-size: var(--base-font-size);
             font-weight: 500;
-            color: #f8fafc;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            color: var(--text-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition-smooth);
             width: fit-content;
-            gap: 8px;
+            gap: var(--space-1);
           }
           .widget-container:hover {
-            background: rgba(15, 23, 42, 0.7);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+            background: var(--card-bg);
+            border-color: var(--blue-bell);
+            box-shadow: var(--shadow-md);
             transform: translateY(-1px);
           }
           .widget-link {
@@ -653,6 +669,8 @@
           </div>
         </div>
       `;
+
+        this.classList.add('deml-ready');
 
         const widgetLink = this.shadowRoot.querySelector('.widget-link');
         const dot = this.shadowRoot.querySelector('.status-dot');

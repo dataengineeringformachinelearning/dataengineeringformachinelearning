@@ -7,6 +7,8 @@
 
   /* Set up theme-driven variables following THEME.md */
   --settings-accent: var(--color-primary-container);
+  --manage-accent: var(--color-primary-container);
+  --manage-active-gradient: var(--settings-active-gradient);
   --settings-highlight: var(--color-primary-container);
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
   --new-page-hover-border: var(--color-primary-container);
@@ -21,7 +23,7 @@
 /* Light theme overrides matching THEME.md */
 :host-context(html[data-theme='light']) {
   --settings-accent: var(--color-primary);
-  --settings-highlight: var(--color-primary);
+  --manage-accent: var(--color-primary);
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
   --new-page-hover-border: var(--color-primary);
   --new-page-border: color-mix(in srgb, var(--color-surface) 15%, transparent);
@@ -403,13 +405,14 @@
 }
 
 .add-service-btn {
-  background: var(--color-dark-grey-btn-bg) !important;
-  color: var(--color-dark-grey-btn-text) !important;
+  background: var(--crayola-blue) !important;
+  color: var(--white) !important;
   font-weight: 600 !important;
-  border-radius: 8px !important;
+  border-radius: var(--border-radius-sm) !important;
   height: 48px !important;
   padding: 0 24px !important;
-  transition: all 0.2s ease !important;
+  border: 1px solid var(--blue-bell) !important;
+  transition: var(--transition-smooth) !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
@@ -589,14 +592,14 @@
 
 /* Copy button styling using the theme dark grey buttons */
 .copy-btn {
-  background-color: var(--color-dark-grey-btn-bg) !important;
-  color: var(--color-dark-grey-btn-text) !important;
+  background-color: var(--jet-black) !important;
+  color: var(--white) !important;
   font-weight: 600 !important;
-  border-radius: 8px !important;
+  border-radius: var(--border-radius-sm) !important;
   height: 56px !important;
   padding: 0 24px !important;
-  border: none !important;
-  transition: all 0.2s ease !important;
+  border: 1px solid var(--blue-bell) !important;
+  transition: var(--transition-smooth) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -879,13 +882,14 @@
 }
 
 .add-service-btn {
-  background: var(--color-dark-grey-btn-bg) !important;
-  color: var(--color-dark-grey-btn-text) !important;
+  background: var(--crayola-blue) !important;
+  color: var(--white) !important;
   font-weight: 600 !important;
-  border-radius: 8px !important;
+  border-radius: var(--border-radius-sm) !important;
   height: 48px !important;
   padding: 0 24px !important;
-  transition: all 0.2s ease !important;
+  border: 1px solid var(--blue-bell) !important;
+  transition: var(--transition-smooth) !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;

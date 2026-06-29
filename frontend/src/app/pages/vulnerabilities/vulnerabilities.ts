@@ -53,6 +53,8 @@ export class Vulnerabilities implements OnInit {
   incidents = this.vulnService.incidents;
   playbooks = this.vulnService.playbooks;
 
+  actionMessage = signal<string | null>(null);
+  actionError = signal<string | null>(null);
   selectedIncident = signal<IncidentCase | null>(null);
   selectedPlaybook = signal<Playbook | null>(null);
   incidentStatusOptions = ['Open', 'Investigating', 'Mitigated', 'Resolved', 'False Positive'];
@@ -305,6 +307,58 @@ export class Vulnerabilities implements OnInit {
 
   refreshPlaybooks() {
     this.vulnService.fetchPlaybooks(this.selectedTenantId || undefined);
+  }
+
+  resolveIncident(incident: IncidentCase) {
+    this.patchIncident(incident, { status: 'Resolved' });
+  }
+
+  dismissIncident(incident: IncidentCase) {
+    this.patchIncident(incident, { status: 'False Positive' });
+  }
+
+  escalateIncident(incident: IncidentCase) {
+    this.patchIncident(incident, { status: 'Investigating', severity: 'Critical' });
+  }
+
+  private patchIncident(incident: IncidentCase, updates: { status: string; severity?: string }) {
+    this.actionError.set(null);
+    this.vulnService.updateIncident(incident.id, updates).subscribe({
+      next: () => {
+        this.actionMessage.set(`Incident updated: ${updates.status}`);
+        this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        console.error('Failed to update incident:', err);
+        this.actionError.set('Failed to update incident.');
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  runSelectedPlaybook() {
+    const playbook = this.selectedPlaybook();
+    if (!playbook) {
+      return;
+    }
+    this.actionError.set(null);
+    this.vulnService.executePlaybook(playbook.id).subscribe({
+      next: res => {
+        this.actionMessage.set(res.message);
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        console.error('Failed to execute playbook:', err);
+        this.actionError.set('Failed to execute playbook.');
+        this.cdr.markForCheck();
+      },
+    });
+  }
+
+  clearActionFeedback() {
+    this.actionMessage.set(null);
+    this.actionError.set(null);
   }
 
   // Helpers to get matrix cell color label

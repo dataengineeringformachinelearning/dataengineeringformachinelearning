@@ -123,6 +123,27 @@
       rel="stylesheet"
     />
 
+    <!-- Critical theme tokens — prevent Material default purple flash before bundles load -->
+    <style>
+      :root,
+      html[data-theme='light'] {
+        --crayola-blue: #2176ff;
+        --blue-bell: #33a1fd;
+        --golden-pollen: #fdca40;
+        --carrot-orange: #f79824;
+        --jet-black: #31393c;
+        --white: #ffffff;
+        --mat-sys-primary: #2176ff;
+        --mat-sys-on-primary: #ffffff;
+        --mat-sys-primary-container: #33a1fd;
+        --mat-sys-tertiary: #fdca40;
+        --mat-sys-error: #f79824;
+      }
+      html[data-theme='dark'] {
+        --mat-sys-on-primary-container: #ffffff;
+      }
+    </style>
+
     <!-- Critical skip-link styles: axe pre-commit scans this file without Angular bundles. -->
     <style>
       /* Critical skip-link: clipped when idle, high-contrast when focused. */

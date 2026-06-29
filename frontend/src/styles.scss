@@ -7,6 +7,7 @@
 @use 'components/material-overrides' as *;
 @use 'components/utilities' as *;
 @use 'components/extracted-utilities' as *;
+@use 'components/flux-inspired' as *;
 
 /* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
    as the form field container handles focus state visually at the border level.
@@ -194,7 +195,7 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item) {
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;
@@ -366,15 +367,15 @@ main.main {
   opacity: 0.9 !important;
 }
 
-/* Standard/Navbar Text Buttons */
-.mat-mdc-button {
+/* Standard/Navbar Text Buttons — nav uses shared .nav-btn rules in material-overrides */
+.mat-mdc-button:not(.nav-btn):not(.mobile-nav-btn):not(.auth-btn) {
   color: var(--text-color) !important;
   background-color: transparent !important;
 }
 
-.mat-mdc-button:hover,
-.mat-mdc-button:focus-visible {
-  background-color: rgba(255, 255, 255, 0.08) !important; /* WCAG visual indicator */
+.mat-mdc-button:not(.nav-btn):not(.mobile-nav-btn):not(.auth-btn):hover,
+.mat-mdc-button:not(.nav-btn):not(.mobile-nav-btn):not(.auth-btn):focus-visible {
+  background-color: color-mix(in srgb, var(--crayola-blue) 10%, transparent) !important;
 }
 
 /* Exception for primary text buttons */
