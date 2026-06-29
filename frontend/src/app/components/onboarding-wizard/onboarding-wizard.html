@@ -1,0 +1,126 @@
+<div class="wizard-shell" role="dialog" aria-labelledby="onboarding-title">
+  <div class="wizard-progress">
+    <mat-progress-bar mode="determinate" [value]="progressPercent()"></mat-progress-bar>
+    <span class="progress-label">Step {{ stepIndex() + 1 }} of {{ steps.length }}</span>
+  </div>
+
+  @switch (currentStep()) { @case ('welcome') {
+  <div class="wizard-step">
+    <mat-icon class="wizard-icon" aria-hidden="true">rocket_launch</mat-icon>
+    <h2 id="onboarding-title">Welcome to DEML</h2>
+    <p>
+      We'll walk you through creating your first monitoring site. In about two minutes you'll have
+      uptime checks, a status page, and a live dashboard.
+    </p>
+    <ul class="wizard-benefits">
+      <li><mat-icon aria-hidden="true">check_circle</mat-icon> Automatic threat detection</li>
+      <li><mat-icon aria-hidden="true">check_circle</mat-icon> Real-time performance analytics</li>
+      <li><mat-icon aria-hidden="true">check_circle</mat-icon> Embeddable status widget</li>
+    </ul>
+  </div>
+  } @case ('site') {
+  <div class="wizard-step">
+    <mat-icon class="wizard-icon" aria-hidden="true">language</mat-icon>
+    <h2 id="onboarding-title">Name your site</h2>
+    <p>Give your status page a friendly name and a short URL slug.</p>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Site name</mat-label>
+      <input matInput [(ngModel)]="newPageTitle" placeholder="e.g. Acme API" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>URL slug</mat-label>
+      <input matInput [(ngModel)]="newPageSlug" placeholder="e.g. acme-api" />
+    </mat-form-field>
+  </div>
+  } @case ('endpoint') {
+  <div class="wizard-step">
+    <mat-icon class="wizard-icon" aria-hidden="true">monitor_heart</mat-icon>
+    <h2 id="onboarding-title">Add a health check</h2>
+    <p>Point us at an endpoint we can ping to track uptime and latency.</p>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Service name</mat-label>
+      <input matInput [(ngModel)]="newServiceName" placeholder="e.g. API Gateway" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Health check URL</mat-label>
+      <input matInput [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health" />
+    </mat-form-field>
+  </div>
+  } @case ('publish') {
+  <div class="wizard-step">
+    <mat-icon class="wizard-icon" aria-hidden="true">public</mat-icon>
+    <h2 id="onboarding-title">Go live</h2>
+    <p>Publish your status page so customers can see service health.</p>
+    <mat-checkbox [(ngModel)]="publishPage" color="primary"> Publish my status page </mat-checkbox>
+    @if (createdPage()) {
+    <div class="widget-preview">
+      <p class="widget-label">Optional: embed this widget on your site</p>
+      <pre class="widget-code">{{ getWidgetCode() }}</pre>
+      <button mat-stroked-button type="button" (click)="copyWidget()">
+        <mat-icon>{{ copiedWidget() ? 'check' : 'content_copy' }}</mat-icon>
+        {{ copiedWidget() ? 'Copied' : 'Copy widget code' }}
+      </button>
+    </div>
+    }
+  </div>
+  } @case ('done') {
+  <div class="wizard-step wizard-step-center">
+    <mat-icon class="wizard-icon success" aria-hidden="true">celebration</mat-icon>
+    <h2 id="onboarding-title">You're all set!</h2>
+    <p>
+      Your site is configured. Head to your dashboard to review analytics, threats, and
+      vulnerabilities as data flows in.
+    </p>
+  </div>
+  } } @if (errorMessage()) {
+  <div class="wizard-error" role="alert">{{ errorMessage() }}</div>
+  }
+
+  <div class="wizard-actions">
+    @if (currentStep() !== 'welcome' && currentStep() !== 'done') {
+    <button mat-button type="button" (click)="goBack()" [disabled]="isBusy()">Back</button>
+    }
+
+    <div class="wizard-actions-right">
+      @if (currentStep() === 'welcome') {
+      <button mat-button type="button" (click)="skip()">Skip for now</button>
+      <button mat-flat-button color="primary" type="button" (click)="goNext()">Get started</button>
+      } @if (currentStep() === 'site') {
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="createSite()"
+        [disabled]="isBusy()"
+      >
+        @if (isBusy()) { <span class="btn-spinner"></span> } Create site
+      </button>
+      } @if (currentStep() === 'endpoint') {
+      <button mat-button type="button" (click)="skipEndpoint()" [disabled]="isBusy()">Skip</button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="addEndpoint()"
+        [disabled]="isBusy()"
+      >
+        @if (isBusy()) { <span class="btn-spinner"></span> } Add endpoint
+      </button>
+      } @if (currentStep() === 'publish') {
+      <button
+        mat-flat-button
+        color="primary"
+        type="button"
+        (click)="saveAndPublish()"
+        [disabled]="isBusy()"
+      >
+        @if (isBusy()) { <span class="btn-spinner"></span> } Finish setup
+      </button>
+      } @if (currentStep() === 'done') {
+      <button mat-flat-button color="primary" type="button" (click)="finish()">
+        Open dashboard
+      </button>
+      }
+    </div>
+  </div>
+</div>

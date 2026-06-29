@@ -15,11 +15,19 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Client,
   },
   {
+    path: 'dashboard',
+    renderMode: RenderMode.Client,
+  },
+  {
     path: 'explore',
     renderMode: RenderMode.Client,
   },
   {
     path: 'settings',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'account',
     renderMode: RenderMode.Client,
   },
   {

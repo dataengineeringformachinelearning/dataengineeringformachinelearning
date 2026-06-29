@@ -60,11 +60,11 @@ export class Login implements OnInit, OnDestroy {
                 if (res.checkout_url) {
                   window.location.href = res.checkout_url;
                 } else {
-                  this.router.navigate(['/settings']);
+                  this.router.navigate(['/account']);
                 }
               },
               error: () => {
-                this.router.navigate(['/settings']);
+                this.router.navigate(['/account']);
               },
             });
         } else {
@@ -259,7 +259,7 @@ export class Login implements OnInit, OnDestroy {
     if (action === 'checkout') {
       return; // The effect will catch this and handle the redirect
     }
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/settings';
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
     this.router.navigateByUrl(returnUrl);
   }
 

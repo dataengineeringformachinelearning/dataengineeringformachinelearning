@@ -1,0 +1,361 @@
+<div class="dashboard-page-container">
+  <div class="dashboard-content-area">
+    <div class="page-inner-wrapper">
+      <header class="product-header">
+        <div class="title-group">
+          <span class="product-badge">Security & Observability</span>
+          <h1 class="product-title">Command Center</h1>
+          <p class="product-subtitle">
+            Monitor performance, review threats, and triage vulnerabilities — all in one place.
+          </p>
+        </div>
+
+        @if (tenantOptions.length > 0) {
+        <div class="scope-filters">
+          <app-unified-select
+            id="dashboardTenant"
+            label="Workspace"
+            [options]="tenantOptions"
+            [value]="selectedTenantId"
+            (valueChange)="onTenantChange($event)"
+          ></app-unified-select>
+          @if (siteOptions.length > 1) {
+          <app-unified-select
+            id="dashboardSite"
+            label="Site"
+            [options]="siteOptions"
+            [value]="selectedSite || 'All'"
+            (valueChange)="onSiteChange($event)"
+          ></app-unified-select>
+          }
+        </div>
+        }
+      </header>
+
+      <nav class="tab-bar" aria-label="Dashboard views">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'overview'"
+          (click)="setTab('overview')"
+        >
+          <mat-icon aria-hidden="true">dashboard</mat-icon>
+          Overview
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'performance'"
+          (click)="setTab('performance')"
+        >
+          <mat-icon aria-hidden="true">monitoring</mat-icon>
+          Performance
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab() === 'security'"
+          (click)="setTab('security')"
+        >
+          <mat-icon aria-hidden="true">shield</mat-icon>
+          Security @if (openVulnCount() > 0) {
+          <span class="tab-badge">{{ openVulnCount() }}</span>
+          }
+        </button>
+      </nav>
+
+      @if (activeTab() === 'overview') {
+      <section class="overview-grid">
+        @if (!setupComplete()) {
+        <div class="setup-banner col-span-full">
+          <div class="setup-banner-content">
+            <mat-icon aria-hidden="true">rocket_launch</mat-icon>
+            <div>
+              <strong>Finish setting up your workspace</strong>
+              <p>
+                Walk through a quick guided setup to connect monitoring and unlock your dashboard.
+              </p>
+            </div>
+          </div>
+          <button mat-flat-button color="primary" type="button" (click)="openOnboardingWizard()">
+            Continue setup
+          </button>
+        </div>
+        }
+
+        <div class="health-card">
+          <div class="health-ring" [attr.data-status]="healthLabel()">
+            <svg viewBox="0 0 120 120" aria-hidden="true">
+              <circle class="ring-bg" cx="60" cy="60" r="52" />
+              <circle
+                class="ring-fill"
+                cx="60"
+                cy="60"
+                r="52"
+                [style.stroke-dasharray]="getGaugeStroke(healthScore(), 327)"
+              />
+            </svg>
+            <div class="health-center">
+              <span class="health-value">{{ healthScore() }}</span>
+              <span class="health-label">{{ healthLabel() }}</span>
+            </div>
+          </div>
+          <p class="health-caption">
+            Composite health score across uptime, threats, and vulnerabilities.
+          </p>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card" [class.alert]="threatLevel > 50">
+            <mat-icon>security</mat-icon>
+            <span class="kpi-label">Threat Exposure</span>
+            <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
+          </div>
+          <div class="kpi-card" [class.alert]="openVulnCount() > 0">
+            <mat-icon>bug_report</mat-icon>
+            <span class="kpi-label">Open Issues</span>
+            <span class="kpi-value">{{ openVulnCount() }}</span>
+          </div>
+          <div class="kpi-card">
+            <mat-icon>speed</mat-icon>
+            <span class="kpi-label">Uptime</span>
+            <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
+          </div>
+          <div class="kpi-card" [class.alert]="activeIncidents > 0">
+            <mat-icon>report</mat-icon>
+            <span class="kpi-label">Active Incidents</span>
+            <span class="kpi-value">{{ activeIncidents }}</span>
+          </div>
+        </div>
+
+        <section class="panel-card threats-panel">
+          <div class="panel-header">
+            <h2>Recent Threats</h2>
+            <button type="button" class="link-btn" (click)="setTab('security')">View all</button>
+          </div>
+          @if (vulnService.isLoading()) {
+          <div class="panel-loading"><span class="spinner"></span> Scanning...</div>
+          } @else if (recentThreats().length === 0) {
+          <div class="panel-empty">
+            <mat-icon>verified_user</mat-icon>
+            <p>No active threats detected. Your perimeter looks clear.</p>
+          </div>
+          } @else {
+          <div class="threat-list" role="list">
+            @for (threat of recentThreats(); track trackThreat($index, threat)) {
+            <div class="threat-item" role="listitem">
+              <span class="severity-pill" [ngClass]="severityClass(threat.severity)"
+                >{{ threat.severity }}</span
+              >
+              <div class="threat-info">
+                <strong>{{ threat.title }}</strong>
+                <span>{{ threat.status }}</span>
+              </div>
+            </div>
+            }
+          </div>
+          }
+        </section>
+
+        <section class="panel-card metrics-panel">
+          <div class="panel-header">
+            <h2>Performance Snapshot</h2>
+            <button type="button" class="link-btn" (click)="setTab('performance')">Details</button>
+          </div>
+          <div class="snapshot-stats">
+            <div class="snapshot-stat">
+              <span class="snapshot-label">P99 Latency</span>
+              <span class="snapshot-value">{{ p99Latency | number:'1.0-0' }} ms</span>
+            </div>
+            <div class="snapshot-stat">
+              <span class="snapshot-label">Requests (24h)</span>
+              <span class="snapshot-value">{{ totalRequests | number }}</span>
+            </div>
+            <div class="snapshot-stat">
+              <span class="snapshot-label">Visitors</span>
+              <span class="snapshot-value">{{ uniqueVisitors | number }}</span>
+            </div>
+            <div class="snapshot-stat">
+              <span class="snapshot-label">Platform Score</span>
+              <span class="snapshot-value">{{ cesLevel | number:'1.0-0' }}</span>
+            </div>
+          </div>
+          <div class="mini-chart">
+            @if (hasData(chartOptions)) {
+            <apx-chart
+              [series]="chartOptions.series"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              [yaxis]="chartOptions.yaxis"
+              [stroke]="chartOptions.stroke"
+              [colors]="chartOptions.colors"
+              [grid]="chartOptions.grid"
+              [tooltip]="chartOptions.tooltip"
+              [dataLabels]="chartOptions.dataLabels"
+            ></apx-chart>
+            } @else {
+            <div class="panel-empty compact">
+              <mat-icon>satellite_alt</mat-icon>
+              <p>Telemetry will appear once your site is connected.</p>
+            </div>
+            }
+          </div>
+        </section>
+      </section>
+      } @if (activeTab() === 'performance') {
+      <section class="detail-grid">
+        <div class="detail-kpis">
+          <div class="kpi-card wide">
+            <span class="kpi-label">Network Stability</span>
+            <span class="kpi-value">{{ stabilityLevel | number:'1.0-0' }}%</span>
+          </div>
+          <div class="kpi-card wide">
+            <span class="kpi-label">SLA Forecast</span>
+            <span class="kpi-value">{{ slaLevel | number:'1.0-0' }}%</span>
+          </div>
+          <div class="kpi-card wide">
+            <span class="kpi-label">P99 Latency</span>
+            <span class="kpi-value">{{ p99Latency | number:'1.0-0' }} ms</span>
+          </div>
+        </div>
+
+        <div class="detail-actions">
+          <a class="link-btn" routerLink="/analytics">Full analytics view</a>
+        </div>
+
+        <section class="panel-card chart-panel">
+          <h2>Latency Trend (24h)</h2>
+          <div class="chart-container">
+            @if (hasData(chartOptions)) {
+            <apx-chart
+              [series]="chartOptions.series"
+              [chart]="chartOptions.chart"
+              [xaxis]="chartOptions.xaxis"
+              [yaxis]="chartOptions.yaxis"
+              [stroke]="chartOptions.stroke"
+              [colors]="chartOptions.colors"
+              [fill]="chartOptions.fill"
+              [grid]="chartOptions.grid"
+              [tooltip]="chartOptions.tooltip"
+              [dataLabels]="chartOptions.dataLabels"
+            ></apx-chart>
+            } @else {
+            <div class="panel-empty">
+              <mat-icon>timeline</mat-icon>
+              <p>No latency data yet. Add a monitored endpoint in Site Setup.</p>
+              <a mat-flat-button color="primary" routerLink="/settings">Go to Site Setup</a>
+            </div>
+            }
+          </div>
+        </section>
+
+        <section class="panel-card chart-panel half">
+          <h2>Threat Severity Distribution</h2>
+          <div class="chart-container short">
+            @if (hasData(threatSeverityChartOptions)) {
+            <apx-chart
+              [series]="threatSeverityChartOptions.series"
+              [chart]="threatSeverityChartOptions.chart"
+              [labels]="threatSeverityChartOptions.labels"
+              [colors]="threatSeverityChartOptions.colors"
+              [legend]="threatSeverityChartOptions.legend"
+              [plotOptions]="threatSeverityChartOptions.plotOptions"
+              [dataLabels]="threatSeverityChartOptions.dataLabels"
+              [tooltip]="threatSeverityChartOptions.tooltip"
+            ></apx-chart>
+            } @else {
+            <div class="panel-empty compact">
+              <p>No threat severity data available.</p>
+            </div>
+            }
+          </div>
+        </section>
+
+        <section class="panel-card chart-panel half">
+          <h2>Security Anomalies (24h)</h2>
+          <div class="chart-container short">
+            @if (hasData(securityAlertsChartOptions)) {
+            <apx-chart
+              [series]="securityAlertsChartOptions.series"
+              [chart]="securityAlertsChartOptions.chart"
+              [xaxis]="securityAlertsChartOptions.xaxis"
+              [yaxis]="securityAlertsChartOptions.yaxis"
+              [colors]="securityAlertsChartOptions.colors"
+              [grid]="securityAlertsChartOptions.grid"
+              [tooltip]="securityAlertsChartOptions.tooltip"
+              [dataLabels]="securityAlertsChartOptions.dataLabels"
+            ></apx-chart>
+            } @else {
+            <div class="panel-empty compact">
+              <p>No anomaly signals detected.</p>
+            </div>
+            }
+          </div>
+        </section>
+      </section>
+      } @if (activeTab() === 'security') {
+      <section class="detail-grid">
+        <div class="detail-kpis">
+          <div class="kpi-card wide alert">
+            <span class="kpi-label">Open Threats</span>
+            <span class="kpi-value">{{ openVulnCount() }}</span>
+          </div>
+          <div class="kpi-card wide critical">
+            <span class="kpi-label">Critical</span>
+            <span class="kpi-value">{{ criticalVulnCount() }}</span>
+          </div>
+          <div class="kpi-card wide">
+            <span class="kpi-label">Threat Level</span>
+            <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+
+        <section class="panel-card security-panel">
+          <div class="panel-header">
+            <h2>Threat Queue</h2>
+            <a class="link-btn" routerLink="/vulnerabilities">Advanced triage</a>
+          </div>
+          @if (vulnService.isLoading()) {
+          <div class="panel-loading"><span class="spinner"></span> Ingesting threat feed...</div>
+          } @else if (recentThreats().length === 0) {
+          <div class="panel-empty">
+            <mat-icon>verified_user</mat-icon>
+            <h3>All clear</h3>
+            <p>No vulnerabilities or threats require your attention right now.</p>
+          </div>
+          } @else {
+          <div class="security-queue" role="list">
+            @for (threat of vulnService.vulnerabilities(); track threat.id) {
+            <div class="security-item" role="listitem">
+              <div class="security-item-header">
+                <span class="severity-pill" [ngClass]="severityClass(threat.severity)"
+                  >{{ threat.severity }}</span
+                >
+                <span class="status-pill">{{ threat.status }}</span>
+              </div>
+              <strong>{{ threat.title }}</strong>
+              <span class="security-meta">{{ threat.customer_id }}</span>
+            </div>
+            }
+          </div>
+          }
+        </section>
+
+        <section class="panel-card insight-panel">
+          <h2>How threats are detected</h2>
+          <p>
+            DEML continuously evaluates your telemetry against platform-wide ML models and automated
+            security scanners. Critical findings surface here automatically — no manual
+            configuration required.
+          </p>
+          <ul class="insight-list">
+            <li><mat-icon>auto_awesome</mat-icon> ML anomaly detection on live traffic</li>
+            <li><mat-icon>policy</mat-icon> Automated Semgrep & Trivy scan ingestion</li>
+            <li><mat-icon>hub</mat-icon> STIX 2.1 threat intel correlation</li>
+          </ul>
+        </section>
+      </section>
+      }
+    </div>
+  </div>
+</div>

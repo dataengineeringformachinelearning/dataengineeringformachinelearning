@@ -15,6 +15,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/isolated-status/isolated-status').then(m => m.IsolatedStatus),
   },
+  {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard),
+  },
   { path: 'explore', loadComponent: () => import('./pages/explore/explore').then(m => m.Explore) },
   {
     path: 'vulnerabilities',
@@ -30,6 +35,11 @@ export const routes: Routes = [
   {
     path: 'settings',
     loadComponent: () => import('./pages/settings/settings').then(m => m.Settings),
+  },
+  {
+    path: 'account',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/account/account').then(m => m.Account),
   },
 
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },

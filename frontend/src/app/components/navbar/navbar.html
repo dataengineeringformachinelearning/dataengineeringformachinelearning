@@ -19,35 +19,13 @@
       @if (authService.isAuthenticated()) {
       <a
         mat-button
-        routerLink="/explore"
+        routerLink="/dashboard"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon aria-hidden="true">explore</mat-icon>
-        <span>Explore</span>
-      </a>
-
-      <a
-        mat-button
-        routerLink="/analytics"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        class="nav-btn"
-      >
-        <mat-icon aria-hidden="true">analytics</mat-icon>
-        <span>Analytics</span>
-      </a>
-
-      <a
-        mat-button
-        routerLink="/vulnerabilities"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        class="nav-btn"
-      >
-        <mat-icon aria-hidden="true">security</mat-icon>
-        <span>Vulnerabilities</span>
+        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        <span>Dashboard</span>
       </a>
 
       <a
@@ -57,8 +35,19 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon aria-hidden="true">settings</mat-icon>
-        <span>Settings</span>
+        <mat-icon aria-hidden="true">language</mat-icon>
+        <span>Sites</span>
+      </a>
+
+      <a
+        mat-button
+        routerLink="/account"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        class="nav-btn"
+      >
+        <mat-icon aria-hidden="true">person</mat-icon>
+        <span>Account</span>
       </a>
       } @else {
       <a
@@ -71,7 +60,6 @@
         <mat-icon aria-hidden="true">explore</mat-icon>
         <span>Explore</span>
       </a>
-
       }
     </div>
 
@@ -120,38 +108,14 @@
     @if (authService.isAuthenticated()) {
     <a
       mat-button
-      routerLink="/explore"
+      routerLink="/dashboard"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{exact: true}"
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon aria-hidden="true">explore</mat-icon>
-      <span>Explore</span>
-    </a>
-
-    <a
-      mat-button
-      routerLink="/analytics"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      class="mobile-nav-btn"
-      (click)="closeMobileMenu()"
-    >
-      <mat-icon aria-hidden="true">analytics</mat-icon>
-      <span>Analytics</span>
-    </a>
-
-    <a
-      mat-button
-      routerLink="/vulnerabilities"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      class="mobile-nav-btn"
-      (click)="closeMobileMenu()"
-    >
-      <mat-icon aria-hidden="true">security</mat-icon>
-      <span>Vulnerabilities</span>
+      <mat-icon aria-hidden="true">dashboard</mat-icon>
+      <span>Dashboard</span>
     </a>
 
     <a
@@ -162,8 +126,20 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon aria-hidden="true">settings</mat-icon>
-      <span>Settings</span>
+      <mat-icon aria-hidden="true">language</mat-icon>
+      <span>Sites</span>
+    </a>
+
+    <a
+      mat-button
+      routerLink="/account"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact: true}"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
+      <mat-icon aria-hidden="true">person</mat-icon>
+      <span>Account</span>
     </a>
     } @else {
     <a
@@ -177,7 +153,6 @@
       <mat-icon aria-hidden="true">explore</mat-icon>
       <span>Explore</span>
     </a>
-
     }
 
     <div class="mobile-divider"></div>
