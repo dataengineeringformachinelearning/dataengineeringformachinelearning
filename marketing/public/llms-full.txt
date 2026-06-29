@@ -302,7 +302,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
   - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
   - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
-  - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
+  - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Gemini 3.5 (High)](https://deepmind.google/technologies/gemini/) (used for end-of-day hardening/optimization passes), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
   - [Grok Build](https://x.ai/) (Beta)
   - [Cursor](https://cursor.com/) — Grok 4.3, Grok Build 0.1 (xAI)
 

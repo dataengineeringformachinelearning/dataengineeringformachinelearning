@@ -173,6 +173,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
   "corsheaders.middleware.CorsMiddleware",
   "django.middleware.security.SecurityMiddleware",
+  "config.csp_middleware.ContentSecurityPolicyMiddleware",
   "whitenoise.middleware.WhiteNoiseMiddleware",
   "config.correlation_middleware.CorrelationIdMiddleware",
   "django.middleware.common.CommonMiddleware",

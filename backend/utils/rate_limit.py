@@ -100,13 +100,17 @@ def rate_limit():
 
       @sync_to_async
       def check_redis():
-        pipe = redis_client.pipeline()
-        pipe.zremrangebyscore(key, 0, window_start)
-        pipe.zcard(key)
-        pipe.zadd(key, {str(current_time): current_time})
-        pipe.expire(key, 60)
-        results = pipe.execute()
-        return results[1]
+        try:
+          pipe = redis_client.pipeline()
+          pipe.zremrangebyscore(key, 0, window_start)
+          pipe.zcard(key)
+          pipe.zadd(key, {str(current_time): current_time})
+          pipe.expire(key, 60)
+          results = pipe.execute()
+          return results[1]
+        except Exception as e:
+          logger.error(f"Redis rate limit check failed: {e}")
+          return 0
 
       request_count = await check_redis()
 
@@ -141,14 +145,17 @@ def rate_limit():
       current_time = int(time.time())
       window_start = current_time - 60
 
-      pipe = redis_client.pipeline()
-      pipe.zremrangebyscore(key, 0, window_start)
-      pipe.zcard(key)
-      pipe.zadd(key, {str(current_time): current_time})
-      pipe.expire(key, 60)
-      results = pipe.execute()
-
-      request_count = results[1]
+      try:
+        pipe = redis_client.pipeline()
+        pipe.zremrangebyscore(key, 0, window_start)
+        pipe.zcard(key)
+        pipe.zadd(key, {str(current_time): current_time})
+        pipe.expire(key, 60)
+        results = pipe.execute()
+        request_count = results[1]
+      except Exception as e:
+        logger.error(f"Redis rate limit check failed: {e}")
+        request_count = 0
 
       if request_count >= limit:
         return JsonResponse(

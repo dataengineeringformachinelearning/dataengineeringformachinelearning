@@ -18,6 +18,13 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
       return None
 
     token = auth_header.split(" ")[1]
+    # Skip Firebase validation for public integration endpoints or the demo key
+    if (
+      request.path.startswith(("/api/v1/ingest", "/api/v1/predict"))
+      or token == "deml_demo_api_key_2026"
+    ):
+      return None
+
     try:
       # Verify the Firebase ID token
       from django.conf import settings

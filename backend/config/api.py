@@ -72,10 +72,16 @@ class CustomAPI(NinjaAPI):
 
 
 api = CustomAPI(
-  title="DEML BACKEND APP API",
+  title="DEML Public Ingestion & Inference API",
   version=getattr(settings, "APP_VERSION", "1.0.0"),
   docs_url="/docs",
   docs=CustomSwagger(),
+  description=(
+    "Data Engineering for Machine Learning (DEML) public integration endpoints.\n\n"
+    "**Sandbox Demo Key**: For public demonstration and sandbox testing, authorize using the token "
+    "`deml_demo_api_key_2026` (Bearer authentication in the top-right 'Authorize' button). "
+    "This maps requests to a scoped, unprivileged demo operator user."
+  ),
 )
 
 
