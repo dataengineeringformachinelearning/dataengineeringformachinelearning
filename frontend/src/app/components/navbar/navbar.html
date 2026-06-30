@@ -25,7 +25,12 @@
         <span>Explore</span>
       </a>
 
-      <a [href]="docsUrl" class="nav-btn" rel="noopener">
+      <a
+        routerLink="/documentation"
+        routerLinkActive="active"
+        class="nav-btn"
+        (click)="closeMobileMenu()"
+      >
         <mat-icon aria-hidden="true">description</mat-icon>
         <span>Documentation</span>
       </a>
@@ -108,7 +113,12 @@
       <span>Explore</span>
     </a>
 
-    <a [href]="docsUrl" class="mobile-nav-btn" rel="noopener" (click)="closeMobileMenu()">
+    <a
+      routerLink="/documentation"
+      routerLinkActive="active"
+      class="mobile-nav-btn"
+      (click)="closeMobileMenu()"
+    >
       <mat-icon aria-hidden="true">description</mat-icon>
       <span>Documentation</span>
     </a>

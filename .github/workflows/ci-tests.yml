@@ -1,0 +1,72 @@
+# Continuous integration — backend pytest + frontend vitest
+# Cursor - Grok 4.3 (2026-06-30): automated test matrix for PRs and main.
+
+name: CI Tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - '.github/workflows/ci-tests.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'scripts/**'
+      - '.github/workflows/ci-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  backend-pytest:
+    name: Backend (pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run pytest
+        env:
+          DATABASE_URL: sqlite:///:memory:
+        run: pytest --tb=short -q
+
+  frontend-vitest:
+    name: Frontend (vitest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Run vitest
+        run: npm test
