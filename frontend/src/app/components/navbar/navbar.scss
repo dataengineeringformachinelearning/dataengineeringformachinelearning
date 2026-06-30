@@ -1,4 +1,4 @@
-// Angular Material overrides — base navbar styles live in @deml/design-system.
+// Angular overrides — base navbar styles live in @deml/design-system.
 
 :host {
   display: block;
@@ -11,21 +11,48 @@
   position: sticky;
 }
 
+// Prevent Material ripple / focus overlay bleed on plain nav links
+.nav-btn,
+.mobile-nav-btn,
+.theme-toggle-btn,
+.menu-toggle-btn,
+.auth-btn {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .nav-btn {
   mat-icon {
     margin: 0;
     font-size: var(--base-font-size);
     width: 16px;
     height: 16px;
+    pointer-events: none;
+  }
+
+  span {
+    pointer-events: none;
+  }
+
+  &:hover {
+    transform: none !important;
   }
 }
 
 .theme-toggle-btn,
 .menu-toggle-btn {
-  color: var(--text-muted) !important;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  isolation: isolate;
+
+  mat-icon {
+    pointer-events: none;
+  }
 
   &:hover {
-    color: var(--text-color) !important;
+    color: var(--text-color);
   }
 }
 
@@ -36,6 +63,7 @@
     width: 16px;
     height: 16px;
     transition: transform 0.3s ease;
+    pointer-events: none;
   }
 
   &:hover mat-icon {
@@ -49,5 +77,20 @@
     font-size: 20px;
     width: 20px;
     height: 20px;
+    pointer-events: none;
+  }
+}
+
+// Glow only the icon — not the whole brand link (avoids navbar flash on hover)
+.navbar-brand {
+  filter: none !important;
+
+  .glowing-icon-sm {
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));
+    transition: filter 0.3s ease;
+  }
+
+  &:hover .glowing-icon-sm {
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent));
   }
 }
