@@ -196,8 +196,9 @@ def update_playbook(request, playbook_id: str, payload: PlaybookUpdate):
 def execute_playbook(request, playbook_id: str):
   user = require_auth(request)
   from monitor.models import Playbook
-  from telemetry.services.playbook_runner import execute_playbook as run_playbook
   from utils.audit import log_audit_event
+
+  from telemetry.services.playbook_runner import execute_playbook as run_playbook
 
   try:
     playbook = Playbook.objects.get(id=playbook_id, user=user)
@@ -214,9 +215,10 @@ def execute_playbook(request, playbook_id: str):
     resource_id=str(playbook.id),
     details={"actions_run": result.get("actions_run", 0), "name": playbook.name},
   )
-  action_summary = ", ".join(
-    r.get("action_type", "") for r in result.get("results", [])[:5]
-  ) or "no configured steps"
+  action_summary = (
+    ", ".join(r.get("action_type", "") for r in result.get("results", [])[:5])
+    or "no configured steps"
+  )
   return PlaybookExecuteOut(
     status="executed",
     message=f"Playbook '{playbook.name}' executed ({action_summary})",

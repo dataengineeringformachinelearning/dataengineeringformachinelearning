@@ -45,7 +45,7 @@ jobs:
 
       - name: Run pytest
         env:
-          DATABASE_URL: sqlite:///:memory:
+          DATABASE_URL: "sqlite:///:memory:"
         run: pytest --tb=short -q
 
   frontend-vitest:

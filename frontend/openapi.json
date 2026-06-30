@@ -40,6 +40,41 @@
         ]
       }
     },
+    "/api/v1/ingest/security-alert": {
+      "post": {
+        "operationId": "integrations_api_ingest_security_alert",
+        "summary": "EDR / SIEM Alert Ingestion",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SecurityAlertResponse"
+                }
+              }
+            }
+          }
+        },
+        "description": "Normalize CrowdStrike/SentinelOne-style alerts into the SOC pipeline.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SecurityAlertPayload"
+              }
+            }
+          },
+          "required": true
+        },
+        "security": [
+          {
+            "IntegrationAPIKeyAuth": []
+          }
+        ]
+      }
+    },
     "/api/v1/predict": {
       "post": {
         "operationId": "integrations_api_predict",
@@ -1177,6 +1212,17 @@
               }
             ],
             "title": "Status"
+          },
+          "severity": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Severity"
           }
         },
         "title": "IncidentCaseUpdate",
@@ -1227,6 +1273,25 @@
           }
         },
         "title": "PlaybookUpdate",
+        "type": "object"
+      },
+      "PlaybookExecuteOut": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "actions_run": {
+            "title": "Actions Run",
+            "type": "integer"
+          }
+        },
+        "required": ["status", "message", "actions_run"],
+        "title": "PlaybookExecuteOut",
         "type": "object"
       },
       "SuccessSchema": {
@@ -1580,6 +1645,98 @@
         },
         "required": ["batch_id", "records"],
         "title": "IngestPayload",
+        "type": "object"
+      },
+      "SecurityAlertResponse": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "incident_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incident Id"
+          }
+        },
+        "required": ["status", "message"],
+        "title": "SecurityAlertResponse",
+        "type": "object"
+      },
+      "SecurityAlertPayload": {
+        "properties": {
+          "source": {
+            "default": "edr_webhook",
+            "title": "Source",
+            "type": "string"
+          },
+          "severity": {
+            "default": "Medium",
+            "title": "Severity",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "ip_address": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ip Address"
+          },
+          "indicator_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Indicator Type"
+          },
+          "raw": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw"
+          }
+        },
+        "required": ["title"],
+        "title": "SecurityAlertPayload",
         "type": "object"
       },
       "PredictResponse": {

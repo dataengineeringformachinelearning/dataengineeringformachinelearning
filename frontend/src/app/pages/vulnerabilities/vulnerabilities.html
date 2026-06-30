@@ -319,7 +319,7 @@
             } @else {
             <div class="soc-card-list">
               @for (incident of incidents(); track incident.id) {
-              <article
+              <div
                 class="soc-card incident-card"
                 [class.selected]="selectedIncident()?.id === incident.id"
                 tabindex="0"
@@ -350,7 +350,7 @@
                   </div>
                   <time class="soc-timestamp">{{ incident.created_at | date:'short' }}</time>
                 </div>
-              </article>
+              </div>
               }
             </div>
             }
@@ -395,7 +395,7 @@
             } @else {
             <div class="soc-card-list">
               @for (playbook of playbooks(); track playbook.id) {
-              <article
+              <div
                 class="soc-card playbook-card"
                 [class.selected]="selectedPlaybook()?.id === playbook.id"
                 [class.inactive]="!playbook.is_active"
@@ -431,9 +431,11 @@
                     />
                     <span class="toggle-track" aria-hidden="true"></span>
                   </label>
-                  <span class="toggle-label">{{ playbook.is_active ? 'Enabled' : 'Disabled' }}</span>
+                  <span class="toggle-label"
+                    >{{ playbook.is_active ? 'Enabled' : 'Disabled' }}</span
+                  >
                 </div>
-              </article>
+              </div>
               }
             </div>
             }
@@ -453,9 +455,7 @@
           Dismiss
         </button>
       </div>
-      }
-
-      @if (selectedIncident() || selectedPlaybook()) {
+      } @if (selectedIncident() || selectedPlaybook()) {
       <section class="intel-action-console panel-section">
         <div class="panel-header">
           <mat-icon class="panel-icon">bolt</mat-icon>
@@ -465,7 +465,9 @@
           @if (selectedIncident(); as incident) {
           <div class="intel-action-group">
             <h3 class="intel-action-title">Incident: {{ incident.title }}</h3>
-            <p class="intel-action-desc">{{ incident.description || 'No description provided.' }}</p>
+            <p class="intel-action-desc">
+              {{ incident.description || 'No description provided.' }}
+            </p>
             <div class="intel-action-buttons">
               <button
                 type="button"
@@ -493,7 +495,9 @@
           } @if (selectedPlaybook(); as playbook) {
           <div class="intel-action-group">
             <h3 class="intel-action-title">Playbook: {{ playbook.name }}</h3>
-            <p class="intel-action-desc">{{ playbook.description || 'Automated response workflow.' }}</p>
+            <p class="intel-action-desc">
+              {{ playbook.description || 'Automated response workflow.' }}
+            </p>
             <div class="intel-action-buttons">
               <button
                 type="button"

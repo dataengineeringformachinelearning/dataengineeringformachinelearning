@@ -4,11 +4,11 @@ Integrating the DEML platform into your Kubernetes cluster lets microservices st
 
 ## Architecture Options
 
-| Pattern | Best for | Latency | Ops overhead |
-|---------|----------|---------|--------------|
-| **Sidecar proxy** | Per-pod inference + ingest | Lowest | Medium |
-| **Cluster gateway** | Shared ingress for many services | Low | Low |
-| **CRD / Operator** _(roadmap)_ | Declarative pipeline provisioning | Low | Lowest at scale |
+| Pattern                        | Best for                          | Latency | Ops overhead    |
+| ------------------------------ | --------------------------------- | ------- | --------------- |
+| **Sidecar proxy**              | Per-pod inference + ingest        | Lowest  | Medium          |
+| **Cluster gateway**            | Shared ingress for many services  | Low     | Low             |
+| **CRD / Operator** _(roadmap)_ | Declarative pipeline provisioning | Low     | Lowest at scale |
 
 ## Sidecar Proxy Pattern (Recommended)
 

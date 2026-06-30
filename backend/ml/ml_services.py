@@ -85,14 +85,20 @@ def extract_fused_threat_features(
   day_cutoff = timezone.now() - dt.timedelta(hours=24)
 
   if is_platform:
-    endpoints = Endpoints.objects.filter(is_platform=True, user__isnull=True, last_tested__gte=cutoff)
+    endpoints = Endpoints.objects.filter(
+      is_platform=True, user__isnull=True, last_tested__gte=cutoff
+    )
     threats = ThreatIntelligence.objects.filter(is_platform=True, timestamp__gte=day_cutoff)
     analytics = AggregatedAnalytics.objects.filter(is_platform=True, timestamp__gte=day_cutoff)
     cases = IncidentCase.objects.filter(user__isnull=True, created_at__gte=cutoff)
   else:
     endpoints = Endpoints.objects.filter(user=user, is_platform=False, last_tested__gte=cutoff)
-    threats = ThreatIntelligence.objects.filter(user=user, is_platform=False, timestamp__gte=day_cutoff)
-    analytics = AggregatedAnalytics.objects.filter(user=user, is_platform=False, timestamp__gte=day_cutoff)
+    threats = ThreatIntelligence.objects.filter(
+      user=user, is_platform=False, timestamp__gte=day_cutoff
+    )
+    analytics = AggregatedAnalytics.objects.filter(
+      user=user, is_platform=False, timestamp__gte=day_cutoff
+    )
     cases = IncidentCase.objects.filter(user=user, created_at__gte=cutoff)
 
   total = endpoints.count()
@@ -293,7 +299,7 @@ def train_platform_threat_model() -> dict:
   import torch.optim as optim
   from django.db.models import Q
   from django.utils import timezone
-  from monitor.models import AnalyticsIntegration, Endpoints
+  from monitor.models import Endpoints
 
   # ThreatModel is now defined globally
   # Platform-wide data aggregation
@@ -424,7 +430,9 @@ def train_threat_model(user: Any = None, *, is_platform: bool = False) -> Threat
   location_weight = 0.35
   top_location = "United States"
 
-  fused = extract_fused_threat_features(user, is_platform=is_platform, location_weight=location_weight)
+  fused = extract_fused_threat_features(
+    user, is_platform=is_platform, location_weight=location_weight
+  )
   location_weight, suspicious_ratio, failure_rate = fused[0], fused[1], fused[2]
 
   if integrations.exists():
@@ -474,7 +482,9 @@ def train_threat_model(user: Any = None, *, is_platform: bool = False) -> Threat
       else:
         top_location = "No Connected Integration"
         location_weight = 0.0
-      fused = extract_fused_threat_features(user, is_platform=False, location_weight=location_weight)
+      fused = extract_fused_threat_features(
+        user, is_platform=False, location_weight=location_weight
+      )
   else:
     top_location = "No Connected Integration"
     location_weight = 0.0

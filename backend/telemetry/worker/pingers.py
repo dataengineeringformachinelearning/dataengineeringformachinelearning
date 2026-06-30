@@ -13,8 +13,8 @@ from asgiref.sync import sync_to_async
 from django.db import close_old_connections
 from monitor.models import Endpoints, MonitoredService
 from utils.service_urls import (
-  ensure_platform_monitored_services,
   endpoint_storage_url,
+  ensure_platform_monitored_services,
   resolve_ping_url,
 )
 

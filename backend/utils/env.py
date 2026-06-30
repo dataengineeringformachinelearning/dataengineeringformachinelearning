@@ -127,13 +127,9 @@ def validate_production_config() -> None:
         "Attach a Postgres plugin or set DATABASE_URL on this service."
       )
     if db_url.startswith("sqlite://"):
-      raise RuntimeError(
-        "SQLite is not supported on Railway; set DATABASE_URL to PostgreSQL."
-      )
+      raise RuntimeError("SQLite is not supported on Railway; set DATABASE_URL to PostgreSQL.")
     if not db_url.startswith(_POSTGRES_SCHEMES):
-      raise RuntimeError(
-        "DATABASE_URL on Railway must use postgres:// or postgresql:// scheme."
-      )
+      raise RuntimeError("DATABASE_URL on Railway must use postgres:// or postgresql:// scheme.")
 
 
 def tor_proxy_url() -> str:

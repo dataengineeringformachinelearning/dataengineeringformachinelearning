@@ -191,13 +191,13 @@ curl -X POST https://your-domain.com/api/v1/predict \
 
 DEML provides first-class integration paths for the tools that power modern ML infrastructure. Each guide includes setup steps, code samples, and health-check endpoints.
 
-| Platform | Integration pattern | Primary endpoint | Guide |
-|----------|----------------------|------------------|-------|
-| **Kubernetes** | Sidecar proxy, cluster gateway, CRD operator _(roadmap)_ | `/api/v1/predict`, `/api/v1/ingest` | [kubernetes.md](docs/integrations/kubernetes.md) |
-| **TensorFlow** | `tf.data.Dataset` streaming, remote inference | `/api/v1/ingest`, `/api/v1/predict` | [tensorflow.md](docs/integrations/tensorflow.md) |
-| **PyTorch** | Custom `DataLoader`, Hugging Face `state_dict` models | `/api/v1/ingest`, `/api/v1/predict` | [pytorch.md](docs/integrations/pytorch.md) |
-| **Apache Spark** | Batch + Structured Streaming sinks | `/api/v1/ingest` | [apache-spark.md](docs/integrations/apache-spark.md) |
-| **Databricks** | Secret Scopes, scheduled jobs, notebook ingest | `/api/v1/ingest`, `/api/v1/predict` | [databricks.md](docs/integrations/databricks.md) |
+| Platform         | Integration pattern                                      | Primary endpoint                    | Guide                                                |
+| ---------------- | -------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------- |
+| **Kubernetes**   | Sidecar proxy, cluster gateway, CRD operator _(roadmap)_ | `/api/v1/predict`, `/api/v1/ingest` | [kubernetes.md](docs/integrations/kubernetes.md)     |
+| **TensorFlow**   | `tf.data.Dataset` streaming, remote inference            | `/api/v1/ingest`, `/api/v1/predict` | [tensorflow.md](docs/integrations/tensorflow.md)     |
+| **PyTorch**      | Custom `DataLoader`, Hugging Face `state_dict` models    | `/api/v1/ingest`, `/api/v1/predict` | [pytorch.md](docs/integrations/pytorch.md)           |
+| **Apache Spark** | Batch + Structured Streaming sinks                       | `/api/v1/ingest`                    | [apache-spark.md](docs/integrations/apache-spark.md) |
+| **Databricks**   | Secret Scopes, scheduled jobs, notebook ingest           | `/api/v1/ingest`, `/api/v1/predict` | [databricks.md](docs/integrations/databricks.md)     |
 
 ### Authentication (all integrations)
 

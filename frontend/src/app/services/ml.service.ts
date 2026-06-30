@@ -90,7 +90,10 @@ export class MlService {
         if (data && data.status === 'success') {
           const normalized = this.normalizeThreatReport(data);
           if (statusPageId) {
-            this.latestThreatReports.update(reports => ({ ...reports, [statusPageId]: normalized }));
+            this.latestThreatReports.update(reports => ({
+              ...reports,
+              [statusPageId]: normalized,
+            }));
           } else {
             this.latestThreatReport.set(normalized);
           }

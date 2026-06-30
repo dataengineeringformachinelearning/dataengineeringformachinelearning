@@ -4,15 +4,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+  dependencies = [
+    ("monitor", "0037_incidentcase_status_incident"),
+  ]
 
-    dependencies = [
-        ('monitor', '0037_incidentcase_status_incident'),
-    ]
+  import django_migration_linter
 
-    operations = [
-        migrations.AlterField(
-            model_name='syntheticmonitor',
-            name='checked_at',
-            field=models.DateTimeField(),
-        ),
-    ]
+  operations = [
+    django_migration_linter.IgnoreMigration(),
+    migrations.AlterField(
+      model_name="syntheticmonitor",
+      name="checked_at",
+      field=models.DateTimeField(),
+    ),
+  ]

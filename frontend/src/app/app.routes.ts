@@ -23,8 +23,7 @@ export const routes: Routes = [
   { path: 'explore', loadComponent: () => import('./pages/explore/explore').then(m => m.Explore) },
   {
     path: 'documentation',
-    loadComponent: () =>
-      import('./pages/documentation/documentation').then(m => m.Documentation),
+    loadComponent: () => import('./pages/documentation/documentation').then(m => m.Documentation),
   },
   {
     path: 'book',

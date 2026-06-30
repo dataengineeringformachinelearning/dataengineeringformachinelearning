@@ -6,7 +6,16 @@ import logging
 from typing import Any
 
 from django.contrib.auth import get_user_model
-from monitor.models import Incident, IncidentCase, Playbook, PlaybookAction, StatusPage, ThreatIntelligence
+from monitor.models import (
+  Incident,
+  IncidentCase,
+  Playbook,
+  PlaybookAction,
+  StatusPage,
+  ThreatIntelligence,
+)
+from utils.rate_limit import block_ip
+
 from telemetry.services.correlation_engine import (
   CorrelationMatch,
   evaluate_correlation_rules,
@@ -14,7 +23,6 @@ from telemetry.services.correlation_engine import (
 )
 from telemetry.services.playbook_runner import execute_playbook
 from telemetry.services.security_events import write_security_event
-from utils.rate_limit import block_ip
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +117,9 @@ def _create_or_update_case(
   severity = _pick_severity(matches)
   primary = matches[0]
   open_case = (
-    IncidentCase.objects.filter(user=user, status__in=["Open", "Investigating"], title=primary.title)
+    IncidentCase.objects.filter(
+      user=user, status__in=["Open", "Investigating"], title=primary.title
+    )
     .order_by("-created_at")
     .first()
   )
@@ -168,7 +178,9 @@ def process_security_signal(context: dict[str, Any]) -> dict[str, Any] | None:
     ensure_default_playbooks(user)
 
   account_id = context.get("account_id") or context.get("tenant_id")
-  correlation_id = context.get("correlation_id") or str(context.get("ip") or context.get("ip_address") or "")
+  correlation_id = context.get("correlation_id") or str(
+    context.get("ip") or context.get("ip_address") or ""
+  )
 
   for match in matches:
     write_security_event(
@@ -251,7 +263,9 @@ def process_endpoint_batch(
   """Hook after endpoint telemetry with malicious IP flags."""
   for item in account_contexts:
     ip = item.get("ip_address")
-    if ip not in malicious_ips and not item.get("telemetry_context", {}).get("malicious_ip_detected"):
+    if ip not in malicious_ips and not item.get("telemetry_context", {}).get(
+      "malicious_ip_detected"
+    ):
       continue
     ctx = {
       **item,

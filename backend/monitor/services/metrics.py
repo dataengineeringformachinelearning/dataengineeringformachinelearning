@@ -8,9 +8,9 @@ from dataclasses import dataclass, field
 
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from utils.service_urls import endpoint_storage_url
 
 from monitor.models import AggregatedAnalytics, Endpoints
-from utils.service_urls import endpoint_storage_url
 
 User = get_user_model()
 
@@ -44,12 +44,7 @@ class MetricsService:
       return PageMetrics(uptime_history=[UptimeDay("no_data", 100.0) for _ in range(30)])
 
     lookup_urls = list(
-      {
-        u
-        for raw in urls
-        for u in (raw, endpoint_storage_url(raw, is_platform=is_platform))
-        if u
-      }
+      {u for raw in urls for u in (raw, endpoint_storage_url(raw, is_platform=is_platform)) if u}
     )
 
     endpoint_qs = Endpoints.objects.filter(url__in=lookup_urls).exclude(status_code=0)
@@ -147,12 +142,7 @@ class MetricsService:
 
     raw_qs = Endpoints.objects.filter(
       url__in=list(
-        {
-          u
-          for raw in urls
-          for u in (raw, endpoint_storage_url(raw, is_platform=is_platform))
-          if u
-        }
+        {u for raw in urls for u in (raw, endpoint_storage_url(raw, is_platform=is_platform)) if u}
       ),
       last_tested__gte=raw_start,
       last_tested__lt=now,

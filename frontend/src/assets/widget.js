@@ -933,7 +933,7 @@
           );
           const behavioralEntropy = Math.min(
             1,
-            scrollDepthPct / 100 * 0.5 + clickEntropy * 0.3 + (sessionDurationS > 10 ? 0.2 : 0),
+            (scrollDepthPct / 100) * 0.5 + clickEntropy * 0.3 + (sessionDurationS > 10 ? 0.2 : 0),
           );
           try {
             const [navigation] = window.performance.getEntriesByType('navigation');

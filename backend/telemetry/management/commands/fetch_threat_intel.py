@@ -113,7 +113,11 @@ class Command(BaseCommand):
             active = int(metrics[0].get("value", 0)) if metrics else 0
             country = dims[0] if dims else "Unknown"
             city = dims[1] if len(dims) > 1 else "Unknown"
-            suspicious = 1 if active < 20 and country not in ("United States", "Canada", "United Kingdom") else 0
+            suspicious = (
+              1
+              if active < 20 and country not in ("United States", "Canada", "United Kingdom")
+              else 0
+            )
             rows.append(
               {
                 "country": country,

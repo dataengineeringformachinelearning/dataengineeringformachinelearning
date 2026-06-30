@@ -1,3 +1,1 @@
-# .gitleaksignore
 .secrets.baseline
-.secrets.baseline:generic-api-key:177

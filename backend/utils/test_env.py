@@ -39,7 +39,9 @@ def test_validate_production_config_rejects_insecure_secret_on_railway(monkeypat
   monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
   monkeypatch.setenv("DEBUG", "False")
   monkeypatch.setenv("SECRET_KEY", env._INSECURE_SECRET_KEY)
-  monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
+  monkeypatch.setenv(
+    "DATABASE_URL", "postgresql://user:pass@host:5432/db"
+  )  # pragma: allowlist secret
   with pytest.raises(RuntimeError, match="SECRET_KEY"):
     env.validate_production_config()
 

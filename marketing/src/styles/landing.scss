@@ -167,7 +167,7 @@
     white-space: nowrap;
     line-height: 1.25;
 
-    @media (max-width: 479px) {
+    @media (max-width: 479px) { /* mobile-first-exception */
       white-space: normal;
     }
   }

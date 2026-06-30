@@ -19,7 +19,9 @@ Intro body.
 | Date | Tooling |
 | 2026-06-30 | **Cursor - Grok 4.3** |
 """
-  with tempfile.NamedTemporaryFile(mode="w", suffix=".md", delete=False, encoding="utf-8") as handle:
+  with tempfile.NamedTemporaryFile(
+    mode="w", suffix=".md", delete=False, encoding="utf-8"
+  ) as handle:
     handle.write(markdown)
     path = handle.name
 
