@@ -1530,11 +1530,11 @@ Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required
 
 1. In GCP dashboard → New Service → GitHub Repo (select this repo).
 2. Root Directory: `/backend`
-3. Start Command: `python manage.py outbox_relay`
+3. Start Command: `/opt/venv/bin/python relay_start.py`
 4. Give it the same variables as `deml-backend` (use shared variables if possible).
 5. It will use the internal `REDPANDA_BROKERS=deml-queue.internal:9092`.
 
-- **Start Command**: `python manage.py outbox_relay` (daemon; polls every 5s)
+- **Start Command**: `/opt/venv/bin/python relay_start.py` (runs `migrate --noinput` then `outbox_relay` daemon; polls every 5s)
 - **Cron alternative**: `python manage.py outbox_relay --once` on a schedule
 - **Public URL**: None (internal only)
 
@@ -1793,7 +1793,7 @@ This appendix is the **single source of truth** for all scheduled maintenance: b
 
 | Service          | Command                             | Cadence                   | Responsibility                                                        |
 | ---------------- | ----------------------------------- | ------------------------- | --------------------------------------------------------------------- |
-| Outbox Relay     | `python manage.py outbox_relay`     | Every **5s**              | Publishes `OutboxEvent` rows to Redpanda                              |
+| Outbox Relay     | `/opt/venv/bin/python relay_start.py` | Every **5s**              | Publishes `OutboxEvent` rows to Redpanda                              |
 | Telemetry Worker | `python manage.py telemetry_worker` | Continuous                | Kafka stream consumption                                              |
 | Telemetry Worker | ↑                                   | Every **30s**             | Active service pinger (`pingers.py`)                                  |
 | Telemetry Worker | ↑                                   | Every **1h**              | `aggregate_analytics` rollups                                         |

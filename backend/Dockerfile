@@ -31,6 +31,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code for collectstatic
 COPY . .
+ENV DATABASE_URL=sqlite:////tmp/collectstatic.db \
+    SECRET_KEY=collectstatic-build-only \
+    DEBUG=false
 RUN python manage.py collectstatic --noinput --clear
 
 # Re-link python symlinks to /usr/bin/python3 (distroless python path)

@@ -11,28 +11,20 @@ def main():
 
   # Run migrations
   print("Running migrations...", flush=True)
-  subprocess.run([python_bin, "manage.py", "migrate"], check=True)
+  subprocess.run([python_bin, "manage.py", "migrate", "--noinput"], check=True)
 
   # Start Daphne ASGI server (required for Channels/WebSocket support)
   print("Starting Daphne ASGI server...", flush=True)
   port = os.getenv("PORT", "8000")
 
-  # Prefer the virtualenv's daphne binary
-  daphne_bin = "/opt/venv/bin/daphne"
-  if not os.path.exists(daphne_bin):
-    daphne_bin = os.path.join(os.path.dirname(python_bin), "daphne")
+  daphne_args = ["-b", "0.0.0.0", "-p", port, "config.asgi:application"]
 
-  subprocess.run(
-    [
-      daphne_bin,
-      "-b",
-      "0.0.0.0",
-      "-p",
-      port,
-      "config.asgi:application",
-    ],
-    check=True,
-  )
+  # Prefer venv daphne binary; fall back to python -m daphne (distroless-safe).
+  daphne_bin = "/opt/venv/bin/daphne"
+  if os.path.exists(daphne_bin):
+    subprocess.run([daphne_bin, *daphne_args], check=True)
+  else:
+    subprocess.run([python_bin, "-m", "daphne", *daphne_args], check=True)
 
 
 if __name__ == "__main__":

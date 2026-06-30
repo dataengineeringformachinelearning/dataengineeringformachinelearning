@@ -31,3 +31,4 @@ gcp-service-account.json
 .pytest_cache/
 .coverage
 htmlcov/
+*.db

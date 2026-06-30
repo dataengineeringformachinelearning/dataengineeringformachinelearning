@@ -1,5 +1,7 @@
 """Tests for centralized environment helpers."""
 
+import os
+
 import pytest
 
 from utils import env
@@ -38,6 +40,24 @@ def test_validate_production_config_rejects_insecure_secret_on_railway(monkeypat
   monkeypatch.setenv("DEBUG", "False")
   monkeypatch.setenv("SECRET_KEY", env._INSECURE_SECRET_KEY)
   with pytest.raises(RuntimeError, match="SECRET_KEY"):
+    env.validate_production_config()
+
+
+def test_validate_production_config_defaults_debug_false_on_railway(monkeypatch):
+  """Railway injects RAILWAY_SERVICE_NAME; unset DEBUG must not crash boot."""
+  monkeypatch.setenv("RAILWAY_SERVICE_NAME", "deml-relay")
+  monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
+  monkeypatch.delenv("DEBUG", raising=False)
+  monkeypatch.setenv("SECRET_KEY", "railway-test-secret-key")
+  env.validate_production_config()
+  assert os.getenv("DEBUG") == "False"
+
+
+def test_validate_production_config_rejects_debug_true_on_railway(monkeypatch):
+  monkeypatch.setenv("RAILWAY_SERVICE_NAME", "deml-backend")
+  monkeypatch.setenv("DEBUG", "True")
+  monkeypatch.setenv("SECRET_KEY", "railway-test-secret-key")
+  with pytest.raises(RuntimeError, match="DEBUG must be False"):
     env.validate_production_config()
 
 
