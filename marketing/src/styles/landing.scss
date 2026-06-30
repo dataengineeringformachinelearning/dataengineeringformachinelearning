@@ -120,46 +120,56 @@
   }
 }
 
+// Hero/pricing CTAs — Flux-inspired patterns (https://fluxui.dev/) mapped to THEME.md tokens.
+// Cursor - Grok 4.3 (2026-06-30): tightened icon–label gap; flex parity vs grid stretch.
 .cta-group {
   display: flex;
-  gap: 16px;
-  flex-direction: column;
-  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: var(--space-2, 12px);
+  align-items: stretch;
 
   @media (min-width: 600px) {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    flex-direction: row;
   }
 }
 
 .cta-button {
-  padding: 16px 20px;
-  border-radius: 16px;
-  font-size: 0.95rem;
+  padding: var(--space-2, 12px) var(--space-3, 18px);
+  border-radius: var(--border-radius-md, 12px);
+  font-size: max(18px, var(--base-font-size, 18px));
   font-weight: 600;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  transition: all 0.25s ease;
-  width: 100%;
+  gap: 6px;
+  transition: var(--transition-smooth, all 0.25s ease);
+  flex: 1 1 0;
+  min-width: min(100%, 200px);
   box-sizing: border-box;
-  min-height: 52px;
+  min-height: 44px;
   text-align: center;
+  letter-spacing: 0.01em;
 
+  .cta-icon,
   .material-icons {
-    font-size: 20px;
+    font-size: 18px;
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+    line-height: 1;
+    margin: 0;
+    padding: 0;
     overflow: visible;
   }
 
-  span:last-child {
-    white-space: normal;
-    line-height: 1.2;
+  .cta-label {
+    white-space: nowrap;
+    line-height: 1.25;
+
+    @media (max-width: 479px) {
+      white-space: normal;
+    }
   }
 }
 

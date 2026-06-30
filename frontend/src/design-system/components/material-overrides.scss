@@ -150,8 +150,7 @@ a.auth-btn {
   --mdc-snackbar-supporting-text-color: var(--white);
 }
 
-/* Prevent mat-icon / material icon ligatures from being clipped by default overflow:hidden in Angular Material.
-   Icons must remain fully visible at all sizes (pola.rs-inspired clean minimal iconography). */
+/* Prevent mat-icon / material icon ligatures from being clipped by default overflow:hidden in Angular Material. */
 mat-icon,
 .material-icons,
 .material-symbols-outlined,
