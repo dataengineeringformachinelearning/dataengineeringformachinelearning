@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CookieConsentService } from '../../services/cookie-consent.service';
+import { environment } from '../../../environments/environment';
 
 import { MatIconModule } from '@angular/material/icon';
 
@@ -13,6 +14,8 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class Footer {
   private consentService = inject(CookieConsentService);
+
+  public readonly marketingUrl = environment.marketingUrl;
 
   getCurrentYear() {
     return new Date().getFullYear();

@@ -1,7 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { AuthService } from '../../services/auth.service';
@@ -10,7 +8,7 @@ import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, MatToolbarModule, MatButtonModule, MatIconModule],
+  imports: [RouterLink, RouterLinkActive, MatIconModule],
   templateUrl: './navbar.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './navbar.scss',
@@ -29,6 +27,12 @@ export class Navbar {
 
   closeMobileMenu() {
     this.isMobileMenuOpen.set(false);
+  }
+
+  onThemeToggle(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.themeService.toggleTheme();
   }
 
   login() {
