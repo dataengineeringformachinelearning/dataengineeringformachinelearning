@@ -14,9 +14,8 @@
       </a>
     </div>
 
-    <div class="navbar-center desktop-nav">
+    <nav class="navbar-center desktop-nav" aria-label="Main navigation">
       <a
-        mat-button
         routerLink="/explore"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{exact: true}"
@@ -26,7 +25,7 @@
         <span>Explore</span>
       </a>
 
-      <a mat-button [href]="docsUrl" class="nav-btn" rel="noopener">
+      <a [href]="docsUrl" class="nav-btn" rel="noopener">
         <mat-icon aria-hidden="true">description</mat-icon>
         <span>Documentation</span>
       </a>
@@ -42,11 +41,7 @@
         <span>Dashboard</span>
       </a>
 
-      <a
-        routerLink="/settings"
-        routerLinkActive="active"
-        class="nav-btn"
-      >
+      <a routerLink="/settings" routerLinkActive="active" class="nav-btn">
         <mat-icon aria-hidden="true">language</mat-icon>
         <span>Setup</span>
       </a>
@@ -83,7 +78,6 @@
         (click)="onThemeToggle($event)"
         class="theme-toggle-btn"
         aria-label="Toggle light and dark theme"
-        type="button"
       >
         <mat-icon aria-hidden="true"
           >{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon
@@ -95,7 +89,6 @@
         (click)="toggleMobileMenu()"
         class="menu-toggle-btn"
         aria-label="Toggle navigation menu"
-        type="button"
         [attr.aria-expanded]="isMobileMenuOpen()"
       >
         <mat-icon aria-hidden="true">{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
@@ -103,25 +96,7 @@
     </div>
   </div>
 
-  <div class="mobile-menu" [class.open]="isMobileMenuOpen()">
-    <a
-      mat-button
-      routerLink="/explore"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      class="mobile-nav-btn"
-      (click)="closeMobileMenu()"
-    >
-      <mat-icon aria-hidden="true">explore</mat-icon>
-      <span>Explore</span>
-    </a>
-
-    <a mat-button [href]="docsUrl" class="mobile-nav-btn" rel="noopener" (click)="closeMobileMenu()">
-      <mat-icon aria-hidden="true">description</mat-icon>
-      <span>Documentation</span>
-    </a>
-
-    @if (authService.isAuthenticated()) {
+  <nav class="mobile-menu" [class.open]="isMobileMenuOpen()" aria-label="Mobile navigation">
     <a
       routerLink="/explore"
       routerLinkActive="active"
