@@ -39,6 +39,7 @@ def test_validate_production_config_rejects_insecure_secret_on_railway(monkeypat
   monkeypatch.setenv("RAILWAY_ENVIRONMENT", "production")
   monkeypatch.setenv("DEBUG", "False")
   monkeypatch.setenv("SECRET_KEY", env._INSECURE_SECRET_KEY)
+  monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
   with pytest.raises(RuntimeError, match="SECRET_KEY"):
     env.validate_production_config()
 
@@ -49,6 +50,7 @@ def test_validate_production_config_defaults_debug_false_on_railway(monkeypatch)
   monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
   monkeypatch.delenv("DEBUG", raising=False)
   monkeypatch.setenv("SECRET_KEY", "railway-test-secret-key")
+  monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
   env.validate_production_config()
   assert os.getenv("DEBUG") == "False"
 
@@ -57,8 +59,43 @@ def test_validate_production_config_rejects_debug_true_on_railway(monkeypatch):
   monkeypatch.setenv("RAILWAY_SERVICE_NAME", "deml-backend")
   monkeypatch.setenv("DEBUG", "True")
   monkeypatch.setenv("SECRET_KEY", "railway-test-secret-key")
+  monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
   with pytest.raises(RuntimeError, match="DEBUG must be False"):
     env.validate_production_config()
+
+
+def test_validate_production_config_rejects_missing_database_url_on_railway(monkeypatch):
+  monkeypatch.setenv("RAILWAY_SERVICE_NAME", "deml-backend")
+  monkeypatch.setenv("DEBUG", "False")
+  monkeypatch.setenv("SECRET_KEY", "railway-test-secret-key")
+  monkeypatch.delenv("DATABASE_URL", raising=False)
+  with pytest.raises(RuntimeError, match="DATABASE_URL must be set"):
+    env.validate_production_config()
+
+
+def test_validate_production_config_rejects_sqlite_on_railway(monkeypatch):
+  monkeypatch.setenv("RAILWAY_SERVICE_NAME", "deml-backend")
+  monkeypatch.setenv("DEBUG", "False")
+  monkeypatch.setenv("SECRET_KEY", "railway-test-secret-key")
+  monkeypatch.setenv("DATABASE_URL", "sqlite:////tmp/collectstatic.db")
+  with pytest.raises(RuntimeError, match="SQLite is not supported"):
+    env.validate_production_config()
+
+
+def test_configure_database_url_falls_back_to_sqlite_locally(monkeypatch):
+  monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
+  monkeypatch.delenv("RAILWAY_SERVICE_NAME", raising=False)
+  monkeypatch.delenv("DATABASE_URL", raising=False)
+  env.configure_database_url()
+  assert os.getenv("DATABASE_URL", "").startswith("sqlite:///")
+
+
+def test_configure_database_url_keeps_postgres_when_set(monkeypatch):
+  monkeypatch.delenv("RAILWAY_ENVIRONMENT", raising=False)
+  monkeypatch.delenv("RAILWAY_SERVICE_NAME", raising=False)
+  monkeypatch.setenv("DATABASE_URL", "postgresql://user:pass@host:5432/db")
+  env.configure_database_url()
+  assert os.getenv("DATABASE_URL") == "postgresql://user:pass@host:5432/db"
 
 
 def test_tor_proxy_url_reads_env(monkeypatch):

@@ -131,10 +131,11 @@ if not firebase_admin._apps:
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-from utils.env import get_bool, get_csv, get_str, validate_production_config
+from utils.env import configure_database_url, get_bool, get_csv, get_str, validate_production_config
 
-# Fail fast on Railway/production if SECRET_KEY or DEBUG are insecure.
+# Fail fast on Railway/production if SECRET_KEY, DEBUG, or DATABASE_URL are insecure.
 validate_production_config()
+configure_database_url()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = get_str(
@@ -216,21 +217,6 @@ CHANNEL_LAYERS = {
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
-# Gracefully fall back to local SQLite if DATABASE_URL is empty or does not start with a valid scheme
-db_url = os.getenv("DATABASE_URL", "")
-valid_schemes = (
-  "sqlite://",
-  "postgres://",
-  "postgresql://",
-  "mysql://",
-  "cockroach://",
-  "oracle://",
-  "redshift://",
-  "mssql://",
-)
-if not db_url or not any(db_url.startswith(scheme) for scheme in valid_schemes):
-  os.environ["DATABASE_URL"] = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
 
 DATABASES = {
   "default": dj_database_url.config(

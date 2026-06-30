@@ -60,6 +60,46 @@ def is_production() -> bool:
   return not get_bool("DEBUG", default=True) and is_railway_deploy()
 
 
+_POSTGRES_SCHEMES: tuple[str, ...] = ("postgres://", "postgresql://")
+
+_VALID_DB_SCHEMES: tuple[str, ...] = (
+  "sqlite://",
+  *_POSTGRES_SCHEMES,
+  "mysql://",
+  "cockroach://",
+  "oracle://",
+  "redshift://",
+  "mssql://",
+)
+
+
+def configure_database_url() -> None:
+  """
+  Ensure DATABASE_URL is set for Django.
+
+  Local development may fall back to SQLite. Railway/production require PostgreSQL.
+  """
+  db_url = get_str("DATABASE_URL")
+  if db_url and any(db_url.startswith(scheme) for scheme in _VALID_DB_SCHEMES):
+    return
+
+  if is_railway_deploy():
+    if not db_url:
+      raise RuntimeError(
+        "DATABASE_URL must be set on Railway (PostgreSQL required). "
+        "Attach a Postgres plugin or set DATABASE_URL on this service."
+      )
+    raise RuntimeError(
+      f"DATABASE_URL has an unsupported scheme on Railway: {db_url.split(':', 1)[0]}:. "
+      "Use postgres:// or postgresql://."
+    )
+
+  from pathlib import Path
+
+  base_dir = Path(__file__).resolve().parent.parent
+  os.environ["DATABASE_URL"] = f"sqlite:///{base_dir / 'db.sqlite3'}"
+
+
 def validate_production_config() -> None:
   """
   Fail fast when production/Railway deploy uses insecure defaults.
@@ -78,6 +118,22 @@ def validate_production_config() -> None:
 
   if is_railway_deploy() and get_bool("DEBUG", default=False):
     raise RuntimeError("DEBUG must be False in production/Railway.")
+
+  db_url = get_str("DATABASE_URL")
+  if is_railway_deploy():
+    if not db_url:
+      raise RuntimeError(
+        "DATABASE_URL must be set on Railway (PostgreSQL required). "
+        "Attach a Postgres plugin or set DATABASE_URL on this service."
+      )
+    if db_url.startswith("sqlite://"):
+      raise RuntimeError(
+        "SQLite is not supported on Railway; set DATABASE_URL to PostgreSQL."
+      )
+    if not db_url.startswith(_POSTGRES_SCHEMES):
+      raise RuntimeError(
+        "DATABASE_URL on Railway must use postgres:// or postgresql:// scheme."
+      )
 
 
 def tor_proxy_url() -> str:
