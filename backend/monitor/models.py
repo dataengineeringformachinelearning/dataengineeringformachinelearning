@@ -621,7 +621,7 @@ class SyntheticMonitor(models.Model):
   status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Operational")
   latency_ms = models.IntegerField(null=True, blank=True)
   detail = models.CharField(max_length=500, blank=True, default="")
-  checked_at = models.DateTimeField(auto_now=True)
+  checked_at = models.DateTimeField()
 
   class Meta:
     db_table = "synthetic_monitors"

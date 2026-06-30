@@ -1,5 +1,5 @@
 #!/bin/bash
-# Workspace Hygiene & Local Pruning — Antigravity - Claude Opus 4.6
+# Workspace Hygiene & Local Pruning — Cursor - Grok 4.3 (2026-06-30)
 set -euo pipefail
 
 echo "=== Starting Workspace Hygiene & Local Pruning ==="

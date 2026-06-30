@@ -57,7 +57,12 @@ def _record_health(status: str, latency_ms: int | None, detail: str) -> None:
 
     SyntheticMonitor.objects.update_or_create(
       name=EVENT_PROJECTIONS_SERVICE_NAME,
-      defaults={"status": status, "latency_ms": latency_ms, "detail": (detail or "")[:500]},
+      defaults={
+        "status": status,
+        "latency_ms": latency_ms,
+        "detail": (detail or "")[:500],
+        "checked_at": datetime.datetime.now(datetime.timezone.utc),
+      },
     )
   finally:
     close_old_connections()
