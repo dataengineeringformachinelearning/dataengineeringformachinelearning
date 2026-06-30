@@ -14,6 +14,7 @@ from __future__ import annotations
 import asyncio
 import datetime
 import json
+import os
 import time
 
 from asgiref.sync import sync_to_async
@@ -34,7 +35,8 @@ DIRECT_PROJECTION_FALLBACK_SECONDS = 12
 
 
 @sync_to_async
-def _read_stats_last_updated():
+def _read_stats_probe_marker():
+  """Return (last_updated, probe_nonce) for exact verification of this run's projection."""
   from firebase_admin import firestore
 
   db = firestore.client(database_id="deml")
@@ -42,8 +44,9 @@ def _read_stats_last_updated():
     db.collection("users").document(SYNTHETIC_HEALTH_UID).collection("data").document("stats").get()
   )
   if not snap.exists:
-    return None
-  return (snap.to_dict() or {}).get("last_updated")
+    return (None, None)
+  data = snap.to_dict() or {}
+  return (data.get("last_updated"), data.get("probe_nonce"))
 
 
 @sync_to_async
@@ -64,13 +67,15 @@ async def _run_probe() -> tuple[str, int | None, str]:
   """Publish a synthetic event and wait for the projection. Returns (status, latency_ms, detail)."""
   from telemetry.worker.projectors import _project_frontend_event
 
-  baseline = await _read_stats_last_updated()
+  baseline_marker = await _read_stats_probe_marker()
+  baseline_nonce = baseline_marker[1] if baseline_marker else None
   start = time.monotonic()
+  probe_nonce = f"probe_{int(time.time()*1000)}_{os.urandom(3).hex()}"
   event = {
     "uid": SYNTHETIC_HEALTH_UID,
     "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     "version": "1.0",
-    "payload": {"action": "get_stats", "source": "synthetic_monitor"},
+    "payload": {"action": "get_stats", "source": "synthetic_monitor", "probe_nonce": probe_nonce},
   }
 
   kafka_ok = False
@@ -93,8 +98,8 @@ async def _run_probe() -> tuple[str, int | None, str]:
         event["payload"],
         None,
       )
-      current = await _read_stats_last_updated()
-      if current is not None and current != baseline:
+      _, current_nonce = await _read_stats_probe_marker()
+      if current_nonce and current_nonce == probe_nonce:
         latency_ms = int((time.monotonic() - start) * 1000)
         return (
           "Degraded",
@@ -108,8 +113,8 @@ async def _run_probe() -> tuple[str, int | None, str]:
   direct_fallback_used = False
   while time.monotonic() < deadline:
     await asyncio.sleep(PROBE_POLL_SECONDS)
-    current = await _read_stats_last_updated()
-    if current is not None and current != baseline:
+    _, current_nonce = await _read_stats_probe_marker()
+    if current_nonce and current_nonce == probe_nonce:
       latency_ms = int((time.monotonic() - start) * 1000)
       if direct_fallback_used:
         return (

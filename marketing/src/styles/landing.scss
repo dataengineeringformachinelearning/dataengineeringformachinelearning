@@ -127,14 +127,16 @@
   margin-top: 8px;
 
   @media (min-width: 600px) {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
   }
 }
 
 .cta-button {
-  padding: 16px 32px;
+  padding: 16px 20px;
   border-radius: 16px;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
   display: inline-flex;
@@ -142,9 +144,22 @@
   justify-content: center;
   gap: 8px;
   transition: all 0.25s ease;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 52px;
+  text-align: center;
 
-  @media (max-width: 599px) {
-    width: 100%;
+  .material-icons {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    overflow: visible;
+  }
+
+  span:last-child {
+    white-space: normal;
+    line-height: 1.2;
   }
 }
 
@@ -364,6 +379,20 @@
   padding: 56px 0 64px;
   margin-bottom: 32px;
   border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+/* pola.rs-inspired minimal geometric rule (subtle, high-contrast, works in light/dark) */
+.quick-start-band::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--crayola-blue), transparent);
+  opacity: 0.35;
 }
 
 .quick-start-header {
@@ -454,6 +483,20 @@
 .security-pillars-band {
   padding: 72px 0;
   border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+/* pola.rs minimal accent line */
+.security-pillars-band::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--crayola-blue), transparent);
+  opacity: 0.25;
 }
 
 .security-pillars-header {
@@ -1091,4 +1134,16 @@
   letter-spacing: 0.15em;
   color: var(--crayola-blue);
   text-transform: uppercase;
+}
+
+/* Icons must not clip in marketing pages (consistent with app) */
+.material-icons,
+.material-symbols-outlined {
+  overflow: visible;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  vertical-align: middle;
 }
