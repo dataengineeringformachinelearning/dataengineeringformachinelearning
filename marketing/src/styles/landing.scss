@@ -582,6 +582,20 @@
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   text-align: center;
+  position: relative;
+}
+
+/* pola.rs-inspired double divider accent (border + subtle gradient line) */
+.integrations-strip::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--crayola-blue), transparent);
+  opacity: 0.3;
 }
 
 .strip-label {
@@ -629,11 +643,25 @@
   align-items: center;
   padding: 56px 0;
   border-bottom: 1px solid var(--border);
+  position: relative;
 
   @media (min-width: 900px) {
     grid-template-columns: 1fr 1fr;
     gap: 64px;
     padding: 72px 0;
+  }
+
+  /* double divider accent for each capability showcase */
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--crayola-blue), transparent);
+    opacity: 0.2;
   }
 
   &.reversed {
@@ -783,6 +811,20 @@
 .widget-showcase {
   padding: 72px 0;
   border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+/* pola.rs-inspired double divider accent */
+.widget-showcase::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--crayola-blue), transparent);
+  opacity: 0.25;
 }
 
 .widget-showcase-inner {
@@ -854,6 +896,21 @@
 .pricing-showcase {
   padding: 72px 0;
   text-align: center;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+/* pola.rs-inspired double divider accent */
+.pricing-showcase::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--crayola-blue), transparent);
+  opacity: 0.25;
 }
 
 .pricing-header {

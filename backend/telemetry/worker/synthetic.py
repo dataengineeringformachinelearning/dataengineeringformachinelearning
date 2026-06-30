@@ -67,10 +67,8 @@ async def _run_probe() -> tuple[str, int | None, str]:
   """Publish a synthetic event and wait for the projection. Returns (status, latency_ms, detail)."""
   from telemetry.worker.projectors import _project_frontend_event
 
-  baseline_marker = await _read_stats_probe_marker()
-  baseline_nonce = baseline_marker[1] if baseline_marker else None
   start = time.monotonic()
-  probe_nonce = f"probe_{int(time.time()*1000)}_{os.urandom(3).hex()}"
+  probe_nonce = f"probe_{int(time.time() * 1000)}_{os.urandom(3).hex()}"
   event = {
     "uid": SYNTHETIC_HEALTH_UID,
     "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
