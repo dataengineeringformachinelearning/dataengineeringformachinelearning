@@ -1,5 +1,29 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { siteEnv } from '../lib/site-env';
+
+const { FRONTEND_URL } = siteEnv();
+
+const quickStartSteps = [
+  {
+    icon: 'person_add',
+    title: 'Create an account',
+    description: 'Sign up free — no credit card required for the Standard tier.',
+    href: FRONTEND_URL + '/login',
+  },
+  {
+    icon: 'vpn_key',
+    title: 'Generate an API key',
+    description: 'One key in Settings unlocks ingest, predict, and health endpoints.',
+    href: FRONTEND_URL + '/login',
+  },
+  {
+    icon: 'send',
+    title: 'Send your first event',
+    description: 'Copy a cURL snippet below and watch telemetry appear in seconds.',
+    href: '#data-ingestion',
+  },
+];
 ---
 
 <Layout title="Documentation - DEML Platform">
@@ -8,16 +32,52 @@ import Layout from '../layouts/Layout.astro';
       <div class="page-inner-wrapper">
         <header class="docs-hero">
           <div class="u-style-58adc5">
-            <span class="badge-dot" aria-hidden="true"></span>
-            <span class="u-style-486a44">Developer Portal</span>
+            <span class="badge-dot pulse-dot" aria-hidden="true"></span>
+            <span class="u-style-486a44">Developer Portal · Secured</span>
           </div>
-          <h1 class="docs-title">API Gateway & Integrations</h1>
+          <h1 class="docs-title">Build Secure ML Pipelines in Minutes</h1>
           <p class="docs-subtitle">
-            The central nervous system for your MLOps workflows. Seamlessly connect your
-            infrastructure, stream telemetry, and interface with powerful models through our secure
-            endpoints.
+            One API key. Zero-trust auth on every call. Stream telemetry, run inference, and monitor
+            threats — all through the same hardened gateway your production stack already trusts.
           </p>
+          <div class="docs-hero-actions">
+            <a href={FRONTEND_URL + '/login'} class="docs-cta primary">
+              <span class="material-icons" aria-hidden="true">rocket_launch</span>
+              Create Free Account
+            </a>
+            <a href="#quick-start" class="docs-cta secondary">
+              <span class="material-icons" aria-hidden="true">play_circle</span>
+              Quick Start Guide
+            </a>
+          </div>
         </header>
+
+        <section class="docs-quick-start" id="quick-start" aria-labelledby="docs-quick-start-title">
+          <h2 id="docs-quick-start-title" class="visually-hidden">Quick start</h2>
+          <ol class="docs-quick-start-steps">
+            {quickStartSteps.map((step, idx) => (
+              <li>
+                <a href={step.href} class="docs-quick-start-card">
+                  <span class="step-index" aria-hidden="true">{String(idx + 1).padStart(2, '0')}</span>
+                  <span class="material-icons" aria-hidden="true">{step.icon}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <aside class="docs-security-banner" aria-label="Security highlights">
+          <span class="material-icons" aria-hidden="true">security</span>
+          <div>
+            <strong>Security-first by default</strong>
+            <p>
+              Bearer tokens are hashed with SHA-256 at rest. Every tenant is UUID-scoped. Keys are
+              shown once at creation — copy them immediately.
+            </p>
+          </div>
+        </aside>
 
         <div class="docs-bento-grid">
           <div class="docs-bento-card docs-bento-full">
@@ -35,7 +95,7 @@ import Layout from '../layouts/Layout.astro';
             </div>
           </div>
 
-          <div class="docs-bento-card">
+          <div class="docs-bento-card" id="data-ingestion">
             <div class="bento-header">
               <span class="material-icons" aria-hidden="true">input</span>
               <h2>Data Ingestion</h2>
@@ -251,9 +311,182 @@ GET /api/v1/integrations/databricks</code></pre>
     font-size: 1.25rem;
     color: var(--text-muted);
     max-width: 704px;
-    margin: 0 auto;
+    margin: 0 auto 28px auto;
     line-height: 1.6;
   }
+}
+
+.docs-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+}
+
+.docs-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+
+  &.primary {
+    background: var(--crayola-blue);
+    color: var(--white) !important;
+    border: 1px solid var(--crayola-blue);
+
+    &:hover {
+      background: var(--blue-bell);
+      border-color: var(--blue-bell);
+    }
+  }
+
+  &.secondary {
+    background: transparent;
+    color: var(--text-color) !important;
+    border: 1px solid var(--border);
+
+    &:hover {
+      border-color: var(--crayola-blue);
+      color: var(--crayola-blue) !important;
+    }
+  }
+}
+
+.pulse-dot {
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--crayola-blue) 60%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--crayola-blue) 0%, transparent);
+  }
+}
+
+.docs-quick-start {
+  max-width: var(--container-max-width, 1260px);
+  margin: 0 auto 40px auto;
+}
+
+.docs-quick-start-steps {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.docs-quick-start-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 28px 24px;
+  border-radius: 18px;
+  background: var(--color-surface);
+  border: 1px solid var(--border);
+  text-decoration: none !important;
+  color: inherit !important;
+  position: relative;
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  height: 100%;
+
+  &:hover {
+    border-color: var(--crayola-blue);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .step-index {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--crayola-blue);
+    letter-spacing: 0.08em;
+  }
+
+  .material-icons {
+    font-size: 32px;
+    color: var(--crayola-blue);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-color);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+}
+
+.docs-security-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: var(--container-max-width, 1260px);
+  margin: 0 auto 40px auto;
+  padding: 24px 28px;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--crayola-blue) 8%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--crayola-blue) 22%, transparent);
+
+  .material-icons {
+    font-size: 36px;
+    color: var(--crayola-blue);
+    flex-shrink: 0;
+  }
+
+  strong {
+    display: block;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+    color: var(--text-color);
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.55;
+    font-size: 1rem;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .docs-bento-grid {

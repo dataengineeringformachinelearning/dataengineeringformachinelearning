@@ -18,38 +18,69 @@ const capabilities = [
     tag: 'TELEMETRY',
     title: 'Real-Time Analytics',
     description:
-      'OpenTelemetry traces, ClickHouse rollups, and Firestore projections deliver sub-second dashboard updates across every tenant.',
+      'Every request is traced, enriched, and projected in under a second. OpenTelemetry flows into ClickHouse rollups and Firestore dashboards — so you spot drift before it becomes downtime.',
     icon: 'analytics',
     metrics: [
       { label: 'P99 Latency', value: '42ms', trend: 'down' },
       { label: 'Uptime', value: '99.97%', trend: 'stable' },
       { label: 'Requests/min', value: '12.4K', trend: 'up' },
     ],
+    link: { href: '/documentation', label: 'View integration docs →', muted: false },
   },
   {
     tag: 'SECURITY',
     title: 'Threat Intelligence',
     description:
-      'PyTorch MLP models score anomalies in real time. Semgrep and Trivy findings flow into a unified vulnerability triage board.',
+      'ML models score anomalies the moment they appear. Semgrep and Trivy findings land in a unified triage board — no more chasing alerts across five different tools.',
     icon: 'security',
     metrics: [
       { label: 'Threat Score', value: '12%', trend: 'down' },
       { label: 'Open CVEs', value: '3', trend: 'down' },
       { label: 'Blocked', value: '847', trend: 'up' },
     ],
+    link: { href: FRONTEND_URL + '/login', label: 'Start threat monitoring →', muted: true },
   },
   {
     tag: 'PIPELINE',
     title: 'Event Projections',
     description:
-      'Commands via Firebase, transactional Outbox to Redpanda, idempotent workers materialize into Firestore for live queries.',
+      'Commands enter through Firebase, commit to a transactional Outbox, and stream to Redpanda. Idempotent workers materialize live views in Firestore — reliable by design, not by hope.',
     icon: 'hub',
     metrics: [
       { label: 'Events/sec', value: '8.2K', trend: 'up' },
       { label: 'DLQ Rate', value: '0.01%', trend: 'down' },
       { label: 'Tenants', value: 'Symmetrical', trend: 'stable' },
     ],
+    link: { href: FRONTEND_URL + '/status/platform-status', label: 'See live projections →', muted: true },
   },
+];
+
+const quickStartSteps = [
+  {
+    step: '01',
+    title: 'Connect',
+    description: 'Drop in one script tag or API key. No agents to babysit.',
+    icon: 'link',
+  },
+  {
+    step: '02',
+    title: 'Observe',
+    description: 'Telemetry, threat scores, and CVEs surface in real time.',
+    icon: 'visibility',
+  },
+  {
+    step: '03',
+    title: 'Act',
+    description: 'Triage incidents, block anomalies, and ship with confidence.',
+    icon: 'shield',
+  },
+];
+
+const securityPillars = [
+  { icon: 'lock', label: 'AES-256-GCM at rest', detail: 'Field-level encryption with KMS rotation' },
+  { icon: 'fingerprint', label: 'UUID isolation', detail: 'No sequential IDs, no cross-tenant leaks' },
+  { icon: 'gpp_maybe', label: 'Behavioral intel', detail: 'ASN, ISP, and biometrics enrichment' },
+  { icon: 'verified_user', label: 'Zero-trust auth', detail: 'Firebase JWT + ABAC on every endpoint' },
 ];
 
 const integrations = [
@@ -69,21 +100,36 @@ const integrations = [
     <section class="hero-showcase" aria-labelledby="main-title">
       <div class="hero-copy">
         <div class="hero-badge">
-          <span class="badge-dot"></span>
-          <span class="badge-text">Version {version}</span>
+          <span class="badge-dot pulse-dot"></span>
+          <span class="badge-text">Secured · Version {version}</span>
         </div>
-        <h1 class="title" id="main-title">Data Engineering<br />for Machine Learning</h1>
+        <h1 class="title" id="main-title">Secure Your Data<br />Pipeline. Ship ML Faster.</h1>
         <p class="subtitle">
-          Stream zero-dependency telemetry into deep learning pipelines. Autonomous anomaly
-          forecasting, symmetrical multi-tenant architecture, and production-grade observability.
+          DEML fuses rigorous data engineering with predictive security. Stream telemetry, catch
+          threats in real time, and keep every tenant isolated — without slowing your team down.
         </p>
+        <div class="hero-stats" aria-label="Platform highlights">
+          <div class="hero-stat-pill">
+            <span class="material-icons" aria-hidden="true">shield</span>
+            <span>847 threats blocked today</span>
+          </div>
+          <div class="hero-stat-pill">
+            <span class="material-icons" aria-hidden="true">speed</span>
+            <span>42ms P99 latency</span>
+          </div>
+          <div class="hero-stat-pill">
+            <span class="material-icons" aria-hidden="true">verified_user</span>
+            <span>Zero-trust by default</span>
+          </div>
+        </div>
         <div class="cta-group">
           <a href="/documentation" class="cta-button primary-btn">
-            <span class="material-icons" aria-hidden="true">menu_book</span>
-            <span>Explore Documentation</span>
+            <span class="material-icons" aria-hidden="true">rocket_launch</span>
+            <span>Get Started in 5 Minutes</span>
           </a>
           <a href={FRONTEND_URL + '/status/platform-status'} class="cta-button secondary-btn">
-            <span>View Platform Status</span>
+            <span class="material-icons" aria-hidden="true">monitoring</span>
+            <span>See Live Security Posture</span>
           </a>
         </div>
       </div>
@@ -94,7 +140,7 @@ const integrations = [
             <span class="mockup-dot"></span>
             <span class="mockup-dot"></span>
             <span class="mockup-dot"></span>
-            <span class="mockup-title">deml.app / analytics</span>
+            <span class="mockup-title">deml.app / security-ops</span>
           </div>
           <div class="mockup-body">
             <div class="mockup-sidebar">
@@ -129,6 +175,25 @@ const integrations = [
       </div>
     </section>
 
+    <!-- Quick start -->
+    <section class="quick-start-band" aria-labelledby="quick-start-title">
+      <header class="quick-start-header">
+        <span class="section-tag">SIMPLE BY DESIGN</span>
+        <h2 id="quick-start-title">Up and Running in Three Steps</h2>
+        <p>No sprawling setup guides. Connect, observe, and act — the platform handles the rest.</p>
+      </header>
+      <ol class="quick-start-steps">
+        {quickStartSteps.map((item) => (
+          <li class="quick-start-step">
+            <span class="step-number" aria-hidden="true">{item.step}</span>
+            <span class="material-icons step-icon" aria-hidden="true">{item.icon}</span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+
     <!-- Integrations strip -->
     <section class="integrations-strip" aria-label="Integrates with modern infrastructure">
       <p class="strip-label">INTEGRATES WITH</p>
@@ -149,13 +214,12 @@ const integrations = [
           <span class="section-tag">{cap.tag}</span>
           <h2 id={`cap-${idx}`}>{cap.title}</h2>
           <p>{cap.description}</p>
-          @if (idx === 0) {
-          <a href="/documentation" class="showcase-link">View integration docs →</a>
-          } @else if (idx === 1) {
-          <a href={FRONTEND_URL + '/login'} class="showcase-link muted-link">Start threat monitoring →</a>
-          } @else {
-          <a href={FRONTEND_URL + '/status/platform-status'} class="showcase-link muted-link">See live projections →</a>
-          }
+          <a
+            href={cap.link.href}
+            class={`showcase-link ${cap.link.muted ? 'muted-link' : ''}`}
+          >
+            {cap.link.label}
+          </a>
         </div>
         <div class="showcase-band-visual" aria-hidden="true">
           <div class="visual-panel">
@@ -216,6 +280,27 @@ const integrations = [
       </div>
     </section>
 
+    <!-- Security pillars -->
+    <section class="security-pillars-band" aria-labelledby="security-pillars-title">
+      <header class="security-pillars-header">
+        <span class="section-tag">DEFENSE IN DEPTH</span>
+        <h2 id="security-pillars-title">Security That Works While You Sleep</h2>
+        <p>
+          Every layer — from ingestion to projection — is encrypted, isolated, and audited. You
+          focus on models; we guard the perimeter.
+        </p>
+      </header>
+      <ul class="security-pillars-grid">
+        {securityPillars.map((pillar) => (
+          <li class="security-pillar">
+            <span class="material-icons" aria-hidden="true">{pillar.icon}</span>
+            <strong>{pillar.label}</strong>
+            <span>{pillar.detail}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+
     <!-- Pricing — wide cards -->
     <section class="pricing-showcase" aria-labelledby="pricing-title">
       <header class="pricing-header">
@@ -272,22 +357,36 @@ const integrations = [
     <section class="transparency-atmospheric" aria-labelledby="transparency-title">
       <div class="atmospheric-header">
         <span class="section-tag">COMPLIANCE PROTOCOL</span>
-        <h2 id="transparency-title">Rigorous Transparency</h2>
-        <p>Guarantees the integrity of the underlying infrastructure.</p>
+        <h2 id="transparency-title">Built for Auditors and Engineers Alike</h2>
+        <p>Transparent telemetry, strict tenancy, and automated retention — no black boxes.</p>
       </div>
       <ul class="purpose-list">
         <li>
           <span class="material-icons" aria-hidden="true">shield</span>
           <div class="purpose-text">
             <strong>System Telemetry</strong>
-            Aggregates anonymized parameters.
+            Aggregates anonymized parameters with full audit trails.
           </div>
         </li>
         <li>
           <span class="material-icons" aria-hidden="true">vpn_key</span>
           <div class="purpose-text">
             <strong>Data Tenancy</strong>
-            Enforces strict isolation across pipeline boundaries.
+            UUID-scoped isolation across every pipeline boundary.
+          </div>
+        </li>
+        <li>
+          <span class="material-icons" aria-hidden="true">policy</span>
+          <div class="purpose-text">
+            <strong>30-Day Retention</strong>
+            Automated purge policies keep you compliant by default.
+          </div>
+        </li>
+        <li>
+          <span class="material-icons" aria-hidden="true">bug_report</span>
+          <div class="purpose-text">
+            <strong>Vuln Triage</strong>
+            Semgrep and Trivy findings auto-ticketed to your Kanban.
           </div>
         </li>
       </ul>
