@@ -1095,8 +1095,14 @@
   }
 
   .whitepaper-btn {
-    white-space: nowrap;
+    width: auto;
+    max-width: 100%;
     flex-shrink: 0;
+    align-self: flex-start;
+
+    @media (min-width: 768px) {
+      align-self: center;
+    }
   }
 }
 

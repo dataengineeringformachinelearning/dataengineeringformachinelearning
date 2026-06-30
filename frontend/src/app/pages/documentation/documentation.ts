@@ -1,11 +1,12 @@
 import { Component, ChangeDetectionStrategy, inject, OnInit } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { Title, Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-documentation',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, RouterLink],
   templateUrl: './documentation.html',
   styleUrl: './documentation.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

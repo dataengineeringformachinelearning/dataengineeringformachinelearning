@@ -1,7 +1,6 @@
 <div class="dashboard-page-container">
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
-      <!-- Hero Section -->
       <header class="docs-hero">
         <div class="hero-badge">
           <span class="badge-dot" aria-hidden="true"></span>
@@ -9,22 +8,58 @@
         </div>
         <h1 class="docs-title">API Gateway & Integrations</h1>
         <p class="docs-subtitle">
-          The central nervous system for your MLOps workflows. Seamlessly connect your
-          infrastructure, stream telemetry, and interface with powerful models through our secure
-          endpoints.
+          One API key. Stream telemetry, run inference, and monitor threats through the same hardened
+          gateway your production stack already trusts.
         </p>
       </header>
 
-      <div class="docs-bento-grid">
-        <!-- API Key Management -->
-        <div class="docs-bento-card docs-bento-full">
+      <section class="docs-quick-start" aria-labelledby="docs-quick-start-title">
+        <h2 id="docs-quick-start-title" class="visually-hidden">Quick start</h2>
+        <ol class="docs-quick-start-steps grid-layout">
+          <li class="col-span-12 col-span-md-3">
+            <a routerLink="/login" class="docs-quick-start-card">
+              <span class="step-index" aria-hidden="true">01</span>
+              <mat-icon aria-hidden="true">person_add</mat-icon>
+              <h3>Create an account</h3>
+              <p>Sign up free — no credit card required for the Standard tier.</p>
+            </a>
+          </li>
+          <li class="col-span-12 col-span-md-3">
+            <a routerLink="/account" class="docs-quick-start-card">
+              <span class="step-index" aria-hidden="true">02</span>
+              <mat-icon aria-hidden="true">vpn_key</mat-icon>
+              <h3>Generate an API key</h3>
+              <p>One key in Account unlocks ingest, predict, and health endpoints.</p>
+            </a>
+          </li>
+          <li class="col-span-12 col-span-md-3">
+            <a href="#data-ingestion" class="docs-quick-start-card">
+              <span class="step-index" aria-hidden="true">03</span>
+              <mat-icon aria-hidden="true">send</mat-icon>
+              <h3>Send your first event</h3>
+              <p>Copy a cURL snippet below and watch telemetry appear in seconds.</p>
+            </a>
+          </li>
+          <li class="col-span-12 col-span-md-3">
+            <a routerLink="/dashboard" class="docs-quick-start-card">
+              <span class="step-index" aria-hidden="true">04</span>
+              <mat-icon aria-hidden="true">monitoring</mat-icon>
+              <h3>Monitor & improve</h3>
+              <p>Watch live projections and tune models from production signals.</p>
+            </a>
+          </li>
+        </ol>
+      </section>
+
+      <div class="docs-bento-grid grid-layout">
+        <div class="docs-bento-card docs-bento-full col-span-12">
           <div class="bento-header">
             <mat-icon>vpn_key</mat-icon>
             <h2>Authentication & Access</h2>
           </div>
           <p class="card-description">
             Secure access to our high-throughput pipelines requires an API key. Register an account,
-            generate a secure token in your user profile, and pass it in the Authorization header.
+            generate a secure token in your profile, and pass it in the Authorization header.
           </p>
           <div class="code-block-premium">
             <div class="code-header">HTTP Header</div>
@@ -32,8 +67,7 @@
           </div>
         </div>
 
-        <!-- Data Ingestion Endpoint -->
-        <div class="docs-bento-card">
+        <div class="docs-bento-card col-span-12 col-span-md-6" id="data-ingestion">
           <div class="bento-header">
             <mat-icon>input</mat-icon>
             <h2>Data Ingestion</h2>
@@ -55,8 +89,7 @@
           </div>
         </div>
 
-        <!-- Inference Endpoint -->
-        <div class="docs-bento-card">
+        <div class="docs-bento-card col-span-12 col-span-md-6">
           <div class="bento-header">
             <mat-icon>model_training</mat-icon>
             <h2>Real-time Inference</h2>
@@ -78,45 +111,50 @@
           </div>
         </div>
 
-        <!-- Official SDKs -->
-        <div class="docs-bento-card">
+        <div class="docs-bento-card col-span-12 col-span-md-6">
           <div class="bento-header">
             <mat-icon>terminal</mat-icon>
             <h2>Native Integrations</h2>
           </div>
           <p class="card-description">
-            We provide native support and documentation for integrating with the industry's leading
-            tools, including:
+            First-class guides for Kubernetes, TensorFlow, PyTorch, Apache Spark, and Databricks.
           </p>
           <ul class="integration-list">
-            <li><strong>Kubernetes:</strong> Connect via CRDs or sidecar proxies.</li>
+            <li><strong>Kubernetes:</strong> Sidecar proxy or cluster gateway routing.</li>
             <li><strong>TensorFlow:</strong> Stream using <code>tf.data.Dataset</code>.</li>
-            <li><strong>Apache Spark:</strong> Write DataFrames directly.</li>
+            <li><strong>Apache Spark:</strong> Write DataFrames directly to ingest.</li>
           </ul>
         </div>
 
-        <!-- Security -->
-        <div class="docs-bento-card">
+        <div class="docs-bento-card col-span-12 col-span-md-6">
           <div class="bento-header">
             <mat-icon>security</mat-icon>
             <h2>Enterprise Security</h2>
           </div>
           <p class="card-description">
-            All tenant data is cryptographically isolated using strict multi-tenancy rules. Raw
-            telemetry records (endpoints, audit logs, and cookie consents) are cleared after 30 days
-            via our automated db_cleanup worker, while high-value intelligence reports, training
-            runs, and user configurations are retained indefinitely.
-            <strong>API Keys</strong> can only be managed exclusively through the user interface
-            under your Settings panel. For ultimate security, keys are displayed only once upon
-            creation and are immediately hashed in the database using SHA-256. <br /><br />
-            Our infrastructure leverages strict Google Distroless multi-stage container builds
-            (specifically <code>gcr.io/distroless/python3</code> and <code>nodejs</code> base
-            layers) to eliminate shell-based attack surfaces. Data sent to our ingestion endpoints
-            feeds directly into Redpanda message brokers, ensuring your analytics dashboard displays
-            a fully unified, multi-tenant view of your infrastructure.
+            All tenant data is cryptographically isolated using strict multi-tenancy rules. API keys
+            are shown once at creation and hashed with SHA-256 at rest. Infrastructure uses Google
+            Distroless multi-stage container builds to eliminate shell-based attack surfaces.
           </p>
         </div>
       </div>
+
+      <section class="whitepaper-band" aria-labelledby="whitepaper-cta-title">
+        <div class="whitepaper-band-inner">
+          <div class="whitepaper-band-copy">
+            <span class="section-tag">Research & Architecture</span>
+            <h2 id="whitepaper-cta-title">The Whitepaper</h2>
+            <p>
+              Architecture diagrams, event projection patterns, and automated threat mitigation
+              strategies powering the platform.
+            </p>
+          </div>
+          <a routerLink="/whitepaper" class="whitepaper-cta-btn">
+            <mat-icon aria-hidden="true">description</mat-icon>
+            <span>Read Whitepaper</span>
+          </a>
+        </div>
+      </section>
     </div>
   </div>
 </div>

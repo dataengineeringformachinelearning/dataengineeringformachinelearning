@@ -1268,24 +1268,18 @@
 
 /* Tenant Selector Group (Mobile First) */
 .tenant-selector-group {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
   width: 100%;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 
   .selector-input {
     width: 100%;
-  }
-
-  @media (min-width: 768px) {
-    flex-direction: row;
-    align-items: center;
-    margin-left: auto;
-    width: auto;
-
-    .selector-input {
-      width: 200px;
-    }
+    min-width: 0;
   }
 }
 
