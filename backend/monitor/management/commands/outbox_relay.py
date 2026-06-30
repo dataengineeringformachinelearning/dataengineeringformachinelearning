@@ -58,7 +58,15 @@ class Command(BaseCommand):
 
   async def daemon_loop(self, max_age_hours: int, batch_size: int, poll_interval: int):
     while True:
-      await self.run_once(max_age_hours, batch_size)
+      try:
+        await self.run_once(max_age_hours, batch_size)
+      except Exception as exc:
+        log_event(
+          logger,
+          logging.ERROR,
+          "outbox_relay_poll_error",
+          error=str(exc)[:500],
+        )
       await asyncio.sleep(poll_interval)
 
   async def run_once(self, max_age_hours: int, batch_size: int):

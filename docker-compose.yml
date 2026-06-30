@@ -164,7 +164,7 @@ services:
       redpanda:
         condition: service_healthy
     command: >
-      sh -c "python manage.py outbox_relay"
+      sh -c "python relay_start.py"
 
   clickhouse:
     build:

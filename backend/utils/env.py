@@ -65,6 +65,10 @@ def validate_production_config() -> None:
   Fail fast when production/Railway deploy uses insecure defaults.
   Called from settings.py before the app boots.
   """
+  # Railway auto-injects RAILWAY_SERVICE_NAME; treat unset DEBUG as production-safe False.
+  if is_railway_deploy() and os.getenv("DEBUG") is None:
+    os.environ["DEBUG"] = "False"
+
   if not is_railway_deploy() and get_bool("DEBUG", default=True):
     return
 
@@ -72,7 +76,7 @@ def validate_production_config() -> None:
   if not secret or secret == _INSECURE_SECRET_KEY:
     raise RuntimeError("SECRET_KEY must be set to a unique value in production/Railway.")
 
-  if get_bool("DEBUG", default=True):
+  if is_railway_deploy() and get_bool("DEBUG", default=False):
     raise RuntimeError("DEBUG must be False in production/Railway.")
 
 
