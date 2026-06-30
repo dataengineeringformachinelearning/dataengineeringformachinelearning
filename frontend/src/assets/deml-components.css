@@ -214,7 +214,8 @@ th,
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-layout);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   padding: 9px 24px;
   box-sizing: border-box;
 }
@@ -1198,4 +1199,246 @@ html[data-theme=light] .mobile-nav-btn:hover {
 .chart-custom-title,
 .chart-custom-trend {
   font-size: max(18px, var(--base-font-size, 18px));
+}
+
+.flux-btn,
+button.flux-btn,
+a.flux-btn {
+  font-family: "Inter", sans-serif;
+  font-size: max(18px, var(--base-font-size));
+  font-weight: 600;
+  letter-spacing: 0.25px;
+  border-radius: var(--border-radius-sm);
+  padding: 0 18px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  transition: var(--transition-smooth);
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.flux-btn-subtle {
+  background-color: transparent;
+  color: var(--text-color);
+  border-color: var(--border);
+}
+.flux-btn-subtle:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--hover-color) 15%, transparent);
+  border-color: var(--color-primary-container);
+}
+.flux-btn-subtle:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.flux-btn-ghost {
+  background-color: transparent;
+  color: var(--text-muted);
+  border-color: transparent;
+}
+.flux-btn-ghost:hover:not(:disabled) {
+  color: var(--text-color);
+  background-color: color-mix(in srgb, var(--hover-color) 10%, transparent);
+}
+.flux-btn-ghost:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.flux-btn-primary {
+  background-color: var(--crayola-blue);
+  color: var(--white);
+  border-color: var(--crayola-blue);
+}
+.flux-btn-primary:hover:not(:disabled) {
+  background-color: var(--blue-bell);
+  border-color: var(--blue-bell);
+  color: var(--white);
+}
+.flux-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.flux-btn-danger {
+  background-color: var(--carrot-orange);
+  color: var(--white);
+  border-color: var(--carrot-orange);
+}
+.flux-btn-danger:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.flux-button-group {
+  display: inline-flex;
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.flux-button-group > .flux-btn,
+.flux-button-group > button,
+.flux-button-group > a {
+  border-radius: 0;
+  border-right: 1px solid var(--border);
+  margin: 0;
+}
+.flux-button-group > .flux-btn:last-child,
+.flux-button-group > button:last-child,
+.flux-button-group > a:last-child {
+  border-right: none;
+}
+.flux-button-group > .flux-btn:hover:not(:disabled),
+.flux-button-group > button:hover:not(:disabled),
+.flux-button-group > a:hover:not(:disabled) {
+  z-index: 1;
+}
+
+.flux-field {
+  display: block;
+  width: 100%;
+}
+
+.flux-field-label {
+  display: block;
+  font-size: max(18px, var(--base-font-size));
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: var(--space-1);
+}
+
+.flux-field-description {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.flux-input-group {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+}
+.flux-input-group input,
+.flux-input-group select,
+.flux-input-group button,
+.flux-input-group .flux-btn {
+  border-radius: 0;
+}
+.flux-input-group > :first-child {
+  border-top-left-radius: var(--border-radius-md);
+  border-bottom-left-radius: var(--border-radius-md);
+}
+.flux-input-group > :last-child {
+  border-top-right-radius: var(--border-radius-md);
+  border-bottom-right-radius: var(--border-radius-md);
+}
+.flux-input-group > * + * {
+  margin-left: -1px;
+}
+
+.flux-input-prefix,
+.flux-input-suffix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  background-color: var(--color-surface-variant);
+  color: var(--text-muted);
+  font-size: max(18px, var(--base-font-size));
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.flux-input-affix-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+.flux-input-affix-btn:hover:not(:disabled) {
+  color: var(--text-color);
+  background-color: color-mix(in srgb, var(--hover-color) 12%, transparent);
+}
+
+.flux-input {
+  width: 100%;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-1) var(--space-2);
+  font-size: max(18px, var(--base-font-size));
+  font-family: "Inter", sans-serif;
+  line-height: 1.4;
+  min-height: 44px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.flux-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+.flux-input:hover {
+  border-color: var(--color-primary-container);
+}
+.flux-input:focus, .flux-input:focus-visible {
+  outline: none;
+  border-color: var(--color-primary-container);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-container) 35%, transparent);
+}
+.flux-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.flux-select-trigger {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-1) var(--space-2);
+  font-size: max(18px, var(--base-font-size));
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.flux-select-trigger:hover {
+  border-color: var(--color-primary-container);
+}
+.flux-select-trigger:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.flux-select-dropdown {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.flux-select-option {
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-color);
+  cursor: pointer;
+}
+.flux-select-option:hover {
+  background-color: color-mix(in srgb, var(--hover-color) 18%, transparent);
+}
+.flux-select-option.selected, .flux-select-option[aria-selected=true] {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+  font-weight: 600;
 }
