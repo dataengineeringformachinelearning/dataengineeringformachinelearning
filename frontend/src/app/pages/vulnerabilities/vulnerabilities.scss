@@ -6,6 +6,29 @@
   color: var(--color-on-background);
 }
 
+.back-dashboard-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: var(--text-color);
+    text-decoration: underline;
+  }
+}
+
 .hud-metrics {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -300,6 +300,30 @@
           } catch {}
         });
 
+        if (!window.__demlBehavioralBound) {
+          window.__demlBehavioralBound = true;
+          document.addEventListener('click', () => {
+            const count = Number(sessionStorage.getItem('deml_click_count') || 0) + 1;
+            sessionStorage.setItem('deml_click_count', String(count));
+          });
+          window.addEventListener(
+            'scroll',
+            () => {
+              const pct = Math.min(
+                100,
+                Math.round(
+                  ((window.scrollY + window.innerHeight) /
+                    Math.max(document.documentElement.scrollHeight, 1)) *
+                    100,
+                ),
+              );
+              const prev = Number(sessionStorage.getItem('deml_scroll_pct') || 0);
+              if (pct > prev) sessionStorage.setItem('deml_scroll_pct', String(pct));
+            },
+            { passive: true },
+          );
+        }
+
         // Set up Shadow DOM structure including status indicators and vulnerability modal triggers
         this.shadowRoot.innerHTML = `
         <style>
@@ -890,6 +914,27 @@
           let responseTimeMs = 250; // Fallback default
           let fcpTime = 0;
           let protocol = 'unknown';
+          const sessionStart = Number(sessionStorage.getItem('deml_session_start') || Date.now());
+          if (!sessionStorage.getItem('deml_session_start')) {
+            sessionStorage.setItem('deml_session_start', String(sessionStart));
+          }
+          const clickCount = Number(sessionStorage.getItem('deml_click_count') || 0);
+          const maxScrollPct = Number(sessionStorage.getItem('deml_scroll_pct') || 0);
+          const sessionDurationS = Math.max(1, Math.round((Date.now() - sessionStart) / 1000));
+          const clickEntropy = Math.min(1, clickCount / Math.max(sessionDurationS, 1));
+          const scrollDepthPct = Math.min(
+            100,
+            Math.round(
+              maxScrollPct ||
+                ((window.scrollY + window.innerHeight) /
+                  Math.max(document.documentElement.scrollHeight, 1)) *
+                  100,
+            ),
+          );
+          const behavioralEntropy = Math.min(
+            1,
+            scrollDepthPct / 100 * 0.5 + clickEntropy * 0.3 + (sessionDurationS > 10 ? 0.2 : 0),
+          );
           try {
             const [navigation] = window.performance.getEntriesByType('navigation');
             if (navigation && navigation.loadEventEnd > 0) {
@@ -919,6 +964,12 @@
               performance_metrics: {
                 first_contentful_paint_ms: fcpTime,
                 next_hop_protocol: protocol,
+              },
+              behavioral: {
+                session_duration_s: sessionDurationS,
+                scroll_depth_pct: scrollDepthPct,
+                click_count: clickCount,
+                entropy: behavioralEntropy,
               },
               threat_indicators: getBrowserThreatIndicators(),
               global_agent_data: globalAgentData,

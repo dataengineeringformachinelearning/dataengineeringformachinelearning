@@ -149,7 +149,13 @@ const integrations = [
           <span class="section-tag">{cap.tag}</span>
           <h2 id={`cap-${idx}`}>{cap.title}</h2>
           <p>{cap.description}</p>
+          @if (idx === 0) {
           <a href="/documentation" class="showcase-link">View integration docs →</a>
+          } @else if (idx === 1) {
+          <a href={FRONTEND_URL + '/login'} class="showcase-link muted-link">Start threat monitoring →</a>
+          } @else {
+          <a href={FRONTEND_URL + '/status/platform-status'} class="showcase-link muted-link">See live projections →</a>
+          }
         </div>
         <div class="showcase-band-visual" aria-hidden="true">
           <div class="visual-panel">
@@ -245,7 +251,7 @@ const integrations = [
     </section>
 
     <!-- Whitepaper CTA -->
-    <section class="whitepaper-band" aria-labelledby="whitepaper-cta-title">
+    <section class="whitepaper-band no-bottom-rule" aria-labelledby="whitepaper-cta-title">
       <div class="whitepaper-band-inner">
         <div>
           <span class="section-tag">RESEARCH & ARCHITECTURE</span>

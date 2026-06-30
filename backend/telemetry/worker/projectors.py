@@ -189,6 +189,9 @@ def save_threat_intel_to_db(threat_data_list: list):
 
   if objects_to_create:
     ThreatIntelligence.objects.bulk_create(objects_to_create, ignore_conflicts=True)
+    from telemetry.services.soc_orchestrator import process_threat_intel_batch
+
+    process_threat_intel_batch(threat_data_list)
 
 
 @sync_to_async
@@ -221,6 +224,7 @@ def save_to_db(df: pl.DataFrame):
   ip_enrichment = get_ip_enrichment_batch(df["ip_address"].to_list())
 
   objects_to_create = []
+  security_contexts: list[dict] = []
   for row in df.iter_rows(named=True):
     duration = timedelta(seconds=row["response_time"])
     ip = row.get("ip_address")
@@ -240,6 +244,18 @@ def save_to_db(df: pl.DataFrame):
     if ip in malicious_ips:
       telemetry_context["malicious_ip_detected"] = True
       telemetry_context["threat_match"] = True
+      account_key = row.get("account_id") or row.get("tenant_id") or PLATFORM_ACCOUNT_ID
+      security_contexts.append(
+        {
+          "ip_address": ip,
+          "account_id": account_key,
+          "user_id": user_obj.id if user_obj else None,
+          "source": "endpoint_telemetry",
+          "telemetry_context": telemetry_context,
+          "behavioral": telemetry_context.get("behavioral"),
+          "behavioral_entropy": (telemetry_context.get("behavioral") or {}).get("entropy"),
+        }
+      )
 
     objects_to_create.append(
       Endpoints(
@@ -263,6 +279,11 @@ def save_to_db(df: pl.DataFrame):
 
   if objects_to_create:
     Endpoints.objects.bulk_create(objects_to_create, ignore_conflicts=True)
+
+  if security_contexts:
+    from telemetry.services.soc_orchestrator import process_endpoint_batch
+
+    process_endpoint_batch(malicious_ips, security_contexts)
 
 
 async def consume_kafka_batch(consumer, stdout, stderr, style):

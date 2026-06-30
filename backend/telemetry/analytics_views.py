@@ -195,7 +195,9 @@ def update_playbook(request, playbook_id: str, payload: PlaybookUpdate):
 @router.post("/playbooks/{playbook_id}/execute", response=PlaybookExecuteOut)
 def execute_playbook(request, playbook_id: str):
   user = require_auth(request)
-  from monitor.models import Playbook, PlaybookAction
+  from monitor.models import Playbook
+  from telemetry.services.playbook_runner import execute_playbook as run_playbook
+  from utils.audit import log_audit_event
 
   try:
     playbook = Playbook.objects.get(id=playbook_id, user=user)
@@ -205,11 +207,18 @@ def execute_playbook(request, playbook_id: str):
   if not playbook.is_active:
     raise HttpError(400, "Playbook is paused — activate it before running")
 
-  actions = list(playbook.actions.order_by("order"))
-  actions_run = len(actions)
-  action_summary = ", ".join(a.action_type for a in actions[:5]) or "no configured steps"
+  result = run_playbook(playbook, {"user_id": user.id}, triggered_by="manual")
+  log_audit_event(
+    request,
+    "playbook.executed",
+    resource_id=str(playbook.id),
+    details={"actions_run": result.get("actions_run", 0), "name": playbook.name},
+  )
+  action_summary = ", ".join(
+    r.get("action_type", "") for r in result.get("results", [])[:5]
+  ) or "no configured steps"
   return PlaybookExecuteOut(
     status="executed",
     message=f"Playbook '{playbook.name}' executed ({action_summary})",
-    actions_run=actions_run,
+    actions_run=result.get("actions_run", 0),
   )

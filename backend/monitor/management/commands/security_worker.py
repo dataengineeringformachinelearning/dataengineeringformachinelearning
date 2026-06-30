@@ -37,6 +37,7 @@ class Command(BaseCommand):
   async def run_worker(self) -> None:
     schedulers = (
       self.threat_intel_scheduler(),
+      self.taxii_scheduler(),
       self.compliance_scheduler(),
       self.dark_web_scheduler(),
       self.subscription_sweep_scheduler(),
@@ -74,6 +75,34 @@ class Command(BaseCommand):
         self.stderr.write(
           self.style.ERROR(f"Security Worker: Threat intelligence sync failed: {e}")
         )
+
+      await asyncio.sleep(HOURLY_INTERVAL_SECONDS)
+
+  async def taxii_scheduler(self) -> None:
+    """Poll configured TAXII feeds hourly (skips quietly when unconfigured)."""
+    import os
+
+    self.stdout.write(self.style.SUCCESS("Starting TAXII ingest scheduler..."))
+    while True:
+      collection_url = os.getenv("TAXII_COLLECTION_URL")
+      if collection_url:
+        try:
+          from telemetry.tasks.taxii_client import TAXIIClient
+
+          client = TAXIIClient(
+            discovery_url=os.getenv("TAXII_DISCOVERY_URL", collection_url),
+            username=os.getenv("TAXII_USERNAME"),
+            password=os.getenv("TAXII_PASSWORD"),
+          )
+          indicators = await client.fetch_indicators(collection_url)
+          await client.ingest_to_db(
+            indicators, source_name=os.getenv("TAXII_SOURCE_NAME", "taxii_feed")
+          )
+          self.stdout.write(
+            self.style.SUCCESS(f"TAXII ingest completed ({len(indicators)} indicators).")
+          )
+        except Exception as e:
+          self.stderr.write(self.style.ERROR(f"TAXII ingest failed: {e}"))
 
       await asyncio.sleep(HOURLY_INTERVAL_SECONDS)
 
