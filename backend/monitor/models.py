@@ -103,6 +103,7 @@ class Endpoints(models.Model):
     indexes = [
       models.Index(fields=["url", "last_tested"]),
       models.Index(fields=["last_tested"]),
+      models.Index(fields=["user", "is_platform", "last_tested"]),
     ]
 
   def __str__(self):
@@ -130,6 +131,9 @@ class Incident(models.Model):
   class Meta:
     db_table = "incidents"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["created_at"]),
+    ]
 
   def __str__(self):
     return f"{self.title} - {self.status}"
@@ -151,6 +155,9 @@ class CookieConsent(models.Model):
   class Meta:
     db_table = "cookie_consents"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["created_at"]),
+    ]
 
   def __str__(self):
     return f"CookieConsent {self.id} (analytical={self.analytical}, marketing={self.marketing})"
@@ -169,6 +176,9 @@ class BugReport(models.Model):
   class Meta:
     db_table = "bug_reports"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["created_at"]),
+    ]
 
   def __str__(self):
     return f"BugReport {self.id} (created: {self.created_at})"
@@ -286,6 +296,7 @@ class Vulnerability(models.Model):
     indexes = [
       models.Index(fields=["status"], name="vuln_status_idx"),
       models.Index(fields=["severity"], name="vuln_severity_idx"),
+      models.Index(fields=["created_at"]),
     ]
 
   def __str__(self):
@@ -313,6 +324,7 @@ class AuditLog(models.Model):
     ordering = ["-timestamp"]
     indexes = [
       models.Index(fields=["action"], name="audit_action_idx"),
+      models.Index(fields=["timestamp"]),
     ]
 
   def __str__(self):
@@ -374,6 +386,8 @@ class ThreatIntelligence(models.Model):
     indexes = [
       models.Index(fields=["ip_address"]),
       models.Index(fields=["source"]),
+      models.Index(fields=["timestamp"]),
+      models.Index(fields=["user", "is_platform", "timestamp"]),
     ]
     constraints = [
       models.UniqueConstraint(
@@ -555,6 +569,10 @@ class IncidentCase(models.Model):
   class Meta:
     db_table = "incident_cases"
     ordering = ["-created_at"]
+    indexes = [
+      models.Index(fields=["created_at"]),
+      models.Index(fields=["status"]),
+    ]
 
   def __str__(self):
     return f"{self.title} ({self.status})"
