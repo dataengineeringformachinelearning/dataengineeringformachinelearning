@@ -232,12 +232,14 @@ const { FRONTEND_URL } = siteEnv();
 <script>
   import confetti from 'canvas-confetti';
 
+  const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
+
   function fireUsaConfetti(target: HTMLElement) {
     const rect = target.getBoundingClientRect();
     confetti({
       particleCount: 50,
       spread: 60,
-      colors: ['#FF0000', '#FFFFFF', '#0000FF'],
+      colors: USA_CONFETTI_COLORS,
       disableForReducedMotion: true,
       zIndex: 9999,
       origin: {

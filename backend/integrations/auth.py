@@ -5,25 +5,28 @@ from django.core.exceptions import ObjectDoesNotExist
 from monitor.models import APIKey
 from ninja.security import APIKeyHeader, HttpBearer
 
+from .constants import SWAGGER_DEMO_API_KEY
+
 
 class IntegrationAPIKeyAuth(HttpBearer):
-  async def authenticate(self, request, token):
+  async def authenticate(self, request, token: str | None):
     # We handle Bearer <token> here
     if not token:
       return None
 
-    if token == "deml_demo_api_key_2026":
+    if token == SWAGGER_DEMO_API_KEY:
       from django.contrib.auth.models import User
       from monitor.models import UserProfile
 
       @sync_to_async
-      def get_or_create_demo_user():
+      def get_or_create_demo_user() -> User:
         user, _ = User.objects.get_or_create(
           username="demo_user", defaults={"email": "demo@deml.app", "first_name": "Demo User"}
         )
         UserProfile.objects.get_or_create(user=user, defaults={"role": "Operator"})
         return user
 
+      request.deml_is_swagger_demo_key = True
       return await get_or_create_demo_user()
 
     try:

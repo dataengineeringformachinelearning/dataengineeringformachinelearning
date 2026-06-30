@@ -22,7 +22,7 @@ exporters:
     endpoint: http://${env:CLICKHOUSE_HOST}:${env:CLICKHOUSE_PORT}?dial_timeout=10s&compress=true
     username: ${env:CLICKHOUSE_USER}
     password: "${env:CLICKHOUSE_PASSWORD}"
-    database: otel
+    database: ${env:CLICKHOUSE_DB}
     ttl: 720h # 30 days
 
 service:

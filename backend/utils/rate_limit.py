@@ -4,6 +4,7 @@ from functools import wraps
 
 from django.conf import settings
 from django.http import JsonResponse
+from integrations.constants import SWAGGER_DEMO_RATE_LIMIT_PER_MINUTE
 
 try:
   import redis
@@ -100,8 +101,11 @@ def rate_limit():
         return await func(request, *args, **kwargs)
 
       user = getattr(request, "auth", None)
-      if not user:
-        client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      if getattr(request, "deml_is_swagger_demo_key", False):
+        key = f"rate_limit:swagger_demo:{client_ip}"
+        limit = SWAGGER_DEMO_RATE_LIMIT_PER_MINUTE
+      elif not user:
         key = f"rate_limit:ip:{client_ip}"
         limit = 60
       else:
@@ -152,8 +156,11 @@ def rate_limit():
         return func(request, *args, **kwargs)
 
       user = getattr(request, "auth", None)
-      if not user:
-        client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      if getattr(request, "deml_is_swagger_demo_key", False):
+        key = f"rate_limit:swagger_demo:{client_ip}"
+        limit = SWAGGER_DEMO_RATE_LIMIT_PER_MINUTE
+      elif not user:
         key = f"rate_limit:ip:{client_ip}"
         limit = 60
       else:

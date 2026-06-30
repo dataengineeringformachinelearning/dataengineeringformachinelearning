@@ -1,6 +1,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import Client
+from integrations.constants import SWAGGER_DEMO_API_KEY
 
 User = get_user_model()
 
@@ -13,7 +14,7 @@ def test_demo_api_key_authentication(client: Client) -> None:
     "/api/v1/ingest",
     data={"batch_id": "test-batch", "records": []},
     content_type="application/json",
-    HTTP_AUTHORIZATION="Bearer deml_demo_api_key_2026",
+    HTTP_AUTHORIZATION=f"Bearer {SWAGGER_DEMO_API_KEY}",
   )
   assert response.status_code == 200
   data = response.json()
