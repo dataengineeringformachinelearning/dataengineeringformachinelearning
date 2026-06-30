@@ -61,6 +61,16 @@ def _project_frontend_event(
       active_count = Endpoints.objects.filter(is_active=True).count()
       result_data["active_endpoints"] = active_count
       result_data["message"] = "Real-time stats updated from Django worker."
+      # Echo probe_nonce for the synthetic health check to verify exact projection round-trip.
+      if uid == SYNTHETIC_HEALTH_UID:
+        try:
+          nonce = None
+          if isinstance(event_payload, dict):
+            nonce = event_payload.get("probe_nonce")
+          if nonce:
+            result_data["probe_nonce"] = nonce
+        except Exception:
+          pass
 
     doc_ref = db.collection("users").document(uid).collection("data").document("stats")
     doc_ref.set(result_data, merge=True)

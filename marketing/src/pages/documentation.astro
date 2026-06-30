@@ -23,6 +23,12 @@ const quickStartSteps = [
     description: 'Copy a cURL snippet below and watch telemetry appear in seconds.',
     href: '#data-ingestion',
   },
+  {
+    icon: 'monitoring',
+    title: 'Monitor & improve',
+    description: 'Watch live projections and tune models from production signals.',
+    href: FRONTEND_URL + '/dashboard',
+  },
 ];
 ---
 
@@ -259,6 +265,25 @@ for features, labels in loader: ...</code></pre>
               </div>
               <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/databricks.md" class="integration-link">
                 Read Databricks guide →
+              </a>
+            </article>
+
+            <article class="integration-card">
+              <div class="integration-card-header">
+                <span class="material-icons" aria-hidden="true">auto_awesome</span>
+                <h3>Hugging Face</h3>
+              </div>
+              <p>
+                Host teacher models namespaced by tenant. Distill to on-prem PyTorch state_dicts
+                without ever shipping pickles.
+              </p>
+              <div class="code-block-premium compact">
+                <div class="code-header">Inference</div>
+                <pre><code>from huggingface_hub import InferenceClient
+client = InferenceClient(token=...)</code></pre>
+              </div>
+              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/huggingface.md" class="integration-link">
+                Read Hugging Face guide →
               </a>
             </article>
           </div>

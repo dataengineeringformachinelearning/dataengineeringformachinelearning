@@ -8,6 +8,7 @@ import {
   ElementRef,
   ViewChild,
   AfterViewInit,
+  NgZone,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -32,6 +33,7 @@ export class SearchDialog implements AfterViewInit {
   private settingsService = inject(SettingsService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
+  private zone = inject(NgZone);
 
   searchQuery = signal<string>('');
   searchResults = signal<SearchItem[]>([]);
@@ -142,18 +144,25 @@ export class SearchDialog implements AfterViewInit {
   }
 
   handleResultClick(result: SearchItem) {
-    if (result.type === 'chapter') {
-      const pageIndex = parseInt(result.id, 10);
-      this.bookService.goToPage(pageIndex);
-      this.router.navigate(['/book']);
-    } else if (result.type === 'status-page') {
-      const page = this.settingsService.statusPages().find(p => p.id === result.id);
-      if (page) {
-        this.settingsService.selectPage(page);
-        this.router.navigate(['/settings']);
+    this.zone.run(() => {
+      if (result.type === 'chapter') {
+        const pageIndex = parseInt(result.id, 10);
+        this.bookService.goToPage(pageIndex);
+        // Avoid unnecessary navigation if already on the book; signal drives the view.
+        const current = this.router.url || '';
+        if (!current.startsWith('/book')) {
+          this.router.navigate(['/book']);
+        }
+      } else if (result.type === 'status-page') {
+        const page = this.settingsService.statusPages().find(p => p.id === result.id);
+        if (page) {
+          this.settingsService.selectPage(page);
+          this.router.navigate(['/settings']);
+        }
       }
-    }
-    this.close();
+      this.cdr.markForCheck();
+      this.close();
+    });
   }
 
   close() {

@@ -39,6 +39,15 @@
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  /* Prevent layout shift ("slide") when Workspace/Site labels have long text (e.g. "joe's Workspace").
+     Constrain select widths; inner text already ellipsizes. Icons never clip. */
+  align-items: flex-end;
+
+  app-unified-select {
+    min-width: 148px;
+    max-width: 210px;
+    flex: 0 0 auto;
+  }
 }
 
 .tab-bar {
