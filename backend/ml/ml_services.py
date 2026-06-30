@@ -256,7 +256,9 @@ def train_tenant_sla(user: Any = None, *, is_platform: bool = False) -> Training
   preds = best_estimator.predict(X_np)
   avg_predicted_sla = max(0.0, min(100.0, float(np.mean(preds)) * 100.0))
 
+  import hashlib
   import os
+  import tempfile
 
   hf_token = os.environ.get("HF_TOKEN")
   hf_repo = os.environ.get("HF_REPO_ID")
@@ -264,20 +266,23 @@ def train_tenant_sla(user: Any = None, *, is_platform: bool = False) -> Training
     try:
       from huggingface_hub import HfApi
 
-      # Serialize securely using torch.save
-      torch.save(best_estimator.model.state_dict(), "/tmp/sla_model.pt")
-      api = HfApi(token=hf_token)
-      import hashlib
-
       identifier = "platform" if is_platform else getattr(user, "username", "default")
       safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
       model_name = f"{safe_identifier}_sla_model.pt"
-      api.upload_file(
-        path_or_fileobj="/tmp/sla_model.pt",
-        path_in_repo=f"sla_models/{model_name}",
-        repo_id=hf_repo,
-        repo_type="model",
-      )
+      # Use a secure named temp file; delete=False so HF can stream it before cleanup
+      with tempfile.NamedTemporaryFile(suffix=".pt", delete=False) as tmp:
+        torch.save(best_estimator.model.state_dict(), tmp.name)
+        tmp_path = tmp.name
+      try:
+        api = HfApi(token=hf_token)
+        api.upload_file(
+          path_or_fileobj=tmp_path,
+          path_in_repo=f"sla_models/{model_name}",
+          repo_id=hf_repo,
+          repo_type="model",
+        )
+      finally:
+        os.unlink(tmp_path)
     except Exception as e:
       logger.error("Failed to push SLA model to Hugging Face: %s", e)
 

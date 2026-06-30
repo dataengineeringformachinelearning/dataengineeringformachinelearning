@@ -81,8 +81,10 @@ if gcp_sa_json:
   parsed_gcp = _parse_service_account(gcp_sa_json)
   if parsed_gcp:
     try:
-      temp_credentials_path = "/tmp/gcp-service-account.json"
-      with open(temp_credentials_path, "w") as f:
+      import tempfile
+
+      fd, temp_credentials_path = tempfile.mkstemp(suffix=".json", prefix="gcp-sa-")
+      with os.fdopen(fd, "w") as f:
         json.dump(parsed_gcp, f)
       os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_credentials_path
     except Exception as e:

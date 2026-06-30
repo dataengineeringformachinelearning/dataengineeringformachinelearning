@@ -4,7 +4,7 @@ import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { environment } from './environments/environment';
 
-// Sentry DSN comes from SENTRY_DSN at build time (set-env.js / Railway).
+// Sentry DSN injected at build time via SENTRY_DSN environment variable (set-env.js).
 if (environment.sentryDsn) {
   Sentry.init({
     dsn: environment.sentryDsn,

@@ -17,7 +17,13 @@ def main():
   print("Starting Daphne ASGI server...", flush=True)
   port = os.getenv("PORT", "8000")
 
-  daphne_args = ["-b", "0.0.0.0", "-p", port, "config.asgi:application"]
+  daphne_args = [
+    "-b",
+    "0.0.0.0",
+    "-p",
+    port,
+    "config.asgi:application",
+  ]  # — intentional container bind
 
   # Prefer venv daphne binary; fall back to python -m daphne (distroless-safe).
   daphne_bin = "/opt/venv/bin/daphne"
