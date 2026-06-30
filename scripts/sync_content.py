@@ -128,11 +128,21 @@ def sync_version():
 def sync_search_index():
   script_dir = os.path.dirname(os.path.abspath(__file__))
   root_dir = os.path.dirname(script_dir)
+  page_md = os.path.join(root_dir, "frontend", "src", "assets", "content", "page.md")
   src = os.path.join(root_dir, "frontend", "src", "assets", "content", "search-index.json")
   dest_dir = os.path.join(root_dir, "marketing", "public", "assets", "content")
   dest = os.path.join(dest_dir, "search-index.json")
 
-  if not os.path.exists(src):
+  if os.path.exists(page_md):
+    import sys
+
+    if script_dir not in sys.path:
+      sys.path.insert(0, script_dir)
+    from build_search_index import write_search_index
+
+    count = write_search_index(page_md, src)
+    print(f"Rebuilt search-index.json ({count} sections)")
+  elif not os.path.exists(src):
     print(f"search-index source missing: {src}")
     return
 

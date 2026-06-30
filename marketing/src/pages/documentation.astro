@@ -410,7 +410,11 @@ GET /api/v1/integrations/databricks</code></pre>
   margin: 0;
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -521,12 +525,13 @@ GET /api/v1/integrations/databricks</code></pre>
   max-width: var(--container-max-width, 1260px);
   margin: 0 auto 56px auto;
 
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(12, 1fr);
   }
 }
 
 .docs-bento-card {
+  grid-column: span 1;
   background: var(--color-surface);
   border: 1px solid var(--border);
   border-radius: 24px;
@@ -538,9 +543,14 @@ GET /api/v1/integrations/databricks</code></pre>
   transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
   position: relative;
+  min-height: 100%;
+
+  @media (min-width: 768px) {
+    grid-column: span 6;
+  }
 
   &:hover {
-    transform: translateY(-8px);
+    transform: translateY(-4px);
     border-color: var(--crayola-blue);
     box-shadow: var(--shadow-hover);
   }
@@ -555,6 +565,7 @@ GET /api/v1/integrations/databricks</code></pre>
       width: 32px;
       height: 32px;
       color: var(--crayola-blue);
+      flex-shrink: 0;
     }
 
     h2 {
@@ -568,7 +579,9 @@ GET /api/v1/integrations/databricks</code></pre>
 }
 
 .docs-bento-full {
-  grid-column: 1 / -1;
+  @media (min-width: 768px) {
+    grid-column: span 12;
+  }
 }
 
 .integrations-section {

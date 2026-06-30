@@ -17,7 +17,7 @@
   --status-badge-bg: color-mix(in srgb, var(--color-surface) 8%, transparent);
   --status-badge-text: var(--color-primary);
   --status-badge-border: color-mix(in srgb, var(--color-surface) 20%, transparent);
-  --timeline-warning: #ffc107;
+  --timeline-warning: var(--color-warning);
 }
 
 .card-title-row {

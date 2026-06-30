@@ -4,7 +4,6 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -18,7 +17,6 @@ export class Navbar {
   public themeService = inject(ThemeService);
   private router = inject(Router);
 
-  public readonly docsUrl = `${environment.marketingUrl}/documentation`;
   public isMobileMenuOpen = signal(false);
 
   toggleMobileMenu() {

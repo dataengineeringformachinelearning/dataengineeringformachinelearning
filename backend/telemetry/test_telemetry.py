@@ -92,10 +92,13 @@ async def test_telemetry_worker_normalization() -> None:
     ]
   )
 
-  from django.conf import settings
+  from utils.service_urls import get_normalized_service_info
 
-  frontend_url = (getattr(settings, "FRONTEND_URL", "") or "").rstrip("/")
-  expected_url = f"{frontend_url}/status"
+  sample_url = (
+    "http://localhost:8000/api/v1/monitor/status_pages/"
+    "4753b71e-1234-5678-abcd-ef0123456789/services"
+  )
+  expected_url, _ = get_normalized_service_info(sample_url)
 
   await cmd.save_to_db(df)
 

@@ -137,17 +137,11 @@
   .hud-header {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 24px;
+    align-items: stretch;
+    gap: 20px;
     padding-bottom: 24px;
     border-bottom: 1px solid var(--border-layout);
     margin-bottom: var(--grid-gap);
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      align-items: center;
-    }
 
     .title-group {
       .section-tag-row {

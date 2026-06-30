@@ -189,13 +189,101 @@ curl -X POST https://your-domain.com/api/v1/predict \
 
 ## Official Integrations
 
-We provide native support and documentation for integrating with the industry's leading tools:
+DEML provides first-class integration paths for the tools that power modern ML infrastructure. Each guide includes setup steps, code samples, and health-check endpoints.
 
-- **[Kubernetes](docs/integrations/kubernetes.md):** Connect via Custom Resource Definitions (CRDs) or sidecar proxies. _(Primary target)_
-- **[TensorFlow](docs/integrations/tensorflow.md):** Stream data directly using `tf.data.Dataset`.
-- **[PyTorch](docs/integrations/pytorch.md):** Integrate with custom DataLoaders.
-- **[Apache Spark](docs/integrations/apache-spark.md):** Write streaming DataFrames directly to our ingestion endpoints.
-- **[Databricks](docs/integrations/databricks.md):** Seamless notebook integration and cluster connectivity.
+| Platform | Integration pattern | Primary endpoint | Guide |
+|----------|----------------------|------------------|-------|
+| **Kubernetes** | Sidecar proxy, cluster gateway, CRD operator _(roadmap)_ | `/api/v1/predict`, `/api/v1/ingest` | [kubernetes.md](docs/integrations/kubernetes.md) |
+| **TensorFlow** | `tf.data.Dataset` streaming, remote inference | `/api/v1/ingest`, `/api/v1/predict` | [tensorflow.md](docs/integrations/tensorflow.md) |
+| **PyTorch** | Custom `DataLoader`, Hugging Face `state_dict` models | `/api/v1/ingest`, `/api/v1/predict` | [pytorch.md](docs/integrations/pytorch.md) |
+| **Apache Spark** | Batch + Structured Streaming sinks | `/api/v1/ingest` | [apache-spark.md](docs/integrations/apache-spark.md) |
+| **Databricks** | Secret Scopes, scheduled jobs, notebook ingest | `/api/v1/ingest`, `/api/v1/predict` | [databricks.md](docs/integrations/databricks.md) |
+
+### Authentication (all integrations)
+
+Every integration uses the same bearer token. Generate an API key in **Settings → API Keys** (shown once, SHA-256 hashed at rest):
+
+```http
+Authorization: Bearer YOUR_API_KEY
+```
+
+### Kubernetes
+
+Deploy a lightweight sidecar alongside your pods to inject credentials and proxy traffic locally:
+
+```yaml
+- name: deml-sidecar
+  env:
+    - name: DEML_UPSTREAM_URL
+      value: "https://backend.deml.app/api/v1"
+    - name: DEML_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: deml-platform-credentials
+          key: api-key
+```
+
+See [docs/integrations/kubernetes.md](docs/integrations/kubernetes.md) for full Pod specs, cluster gateway patterns, and operator roadmap.
+
+### TensorFlow
+
+Stream batched training data into `tf.data.Dataset`:
+
+```python
+dataset = tf.data.Dataset.from_generator(record_generator, ...)
+dataset = dataset.batch(32).prefetch(tf.data.AUTOTUNE)
+model.fit(dataset, epochs=10)
+```
+
+See [docs/integrations/tensorflow.md](docs/integrations/tensorflow.md).
+
+### PyTorch
+
+Use a remote `Dataset` backed by `/api/v1/ingest`:
+
+```python
+loader = DataLoader(DemlRemoteDataset(page_size=64), batch_size=32, shuffle=True)
+for features, labels in loader:
+    loss = criterion(model(features), labels)
+```
+
+See [docs/integrations/pytorch.md](docs/integrations/pytorch.md).
+
+### Apache Spark
+
+Push micro-batches from Structured Streaming:
+
+```python
+def write_batch(batch_df, batch_id):
+    records = [row.asDict() for row in batch_df.collect()]
+    requests.post(INGEST_URL, headers=headers, json={"records": records})
+payload.writeStream.foreachBatch(write_batch).start()
+```
+
+See [docs/integrations/apache-spark.md](docs/integrations/apache-spark.md).
+
+### Databricks
+
+Store keys in Secret Scopes and ingest from notebooks or scheduled jobs:
+
+```python
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+requests.post(INGEST_URL, headers={"Authorization": f"Bearer {api_key}"}, json={...})
+```
+
+See [docs/integrations/databricks.md](docs/integrations/databricks.md).
+
+### Integration health checks
+
+Verify connectivity per platform:
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/kubernetes -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/tensorflow   -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/pytorch        -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/apache-spark -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/databricks     -H "Authorization: Bearer YOUR_API_KEY"
+```
 
 ---
 

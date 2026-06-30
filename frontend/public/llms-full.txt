@@ -189,13 +189,101 @@ curl -X POST https://your-domain.com/api/v1/predict \
 
 ## Official Integrations
 
-We provide native support and documentation for integrating with the industry's leading tools:
+DEML provides first-class integration paths for the tools that power modern ML infrastructure. Each guide includes setup steps, code samples, and health-check endpoints.
 
-- **[Kubernetes](docs/integrations/kubernetes.md):** Connect via Custom Resource Definitions (CRDs) or sidecar proxies. _(Primary target)_
-- **[TensorFlow](docs/integrations/tensorflow.md):** Stream data directly using `tf.data.Dataset`.
-- **[PyTorch](docs/integrations/pytorch.md):** Integrate with custom DataLoaders.
-- **[Apache Spark](docs/integrations/apache-spark.md):** Write streaming DataFrames directly to our ingestion endpoints.
-- **[Databricks](docs/integrations/databricks.md):** Seamless notebook integration and cluster connectivity.
+| Platform | Integration pattern | Primary endpoint | Guide |
+|----------|----------------------|------------------|-------|
+| **Kubernetes** | Sidecar proxy, cluster gateway, CRD operator _(roadmap)_ | `/api/v1/predict`, `/api/v1/ingest` | [kubernetes.md](docs/integrations/kubernetes.md) |
+| **TensorFlow** | `tf.data.Dataset` streaming, remote inference | `/api/v1/ingest`, `/api/v1/predict` | [tensorflow.md](docs/integrations/tensorflow.md) |
+| **PyTorch** | Custom `DataLoader`, Hugging Face `state_dict` models | `/api/v1/ingest`, `/api/v1/predict` | [pytorch.md](docs/integrations/pytorch.md) |
+| **Apache Spark** | Batch + Structured Streaming sinks | `/api/v1/ingest` | [apache-spark.md](docs/integrations/apache-spark.md) |
+| **Databricks** | Secret Scopes, scheduled jobs, notebook ingest | `/api/v1/ingest`, `/api/v1/predict` | [databricks.md](docs/integrations/databricks.md) |
+
+### Authentication (all integrations)
+
+Every integration uses the same bearer token. Generate an API key in **Settings → API Keys** (shown once, SHA-256 hashed at rest):
+
+```http
+Authorization: Bearer YOUR_API_KEY
+```
+
+### Kubernetes
+
+Deploy a lightweight sidecar alongside your pods to inject credentials and proxy traffic locally:
+
+```yaml
+- name: deml-sidecar
+  env:
+    - name: DEML_UPSTREAM_URL
+      value: "https://backend.deml.app/api/v1"
+    - name: DEML_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: deml-platform-credentials
+          key: api-key
+```
+
+See [docs/integrations/kubernetes.md](docs/integrations/kubernetes.md) for full Pod specs, cluster gateway patterns, and operator roadmap.
+
+### TensorFlow
+
+Stream batched training data into `tf.data.Dataset`:
+
+```python
+dataset = tf.data.Dataset.from_generator(record_generator, ...)
+dataset = dataset.batch(32).prefetch(tf.data.AUTOTUNE)
+model.fit(dataset, epochs=10)
+```
+
+See [docs/integrations/tensorflow.md](docs/integrations/tensorflow.md).
+
+### PyTorch
+
+Use a remote `Dataset` backed by `/api/v1/ingest`:
+
+```python
+loader = DataLoader(DemlRemoteDataset(page_size=64), batch_size=32, shuffle=True)
+for features, labels in loader:
+    loss = criterion(model(features), labels)
+```
+
+See [docs/integrations/pytorch.md](docs/integrations/pytorch.md).
+
+### Apache Spark
+
+Push micro-batches from Structured Streaming:
+
+```python
+def write_batch(batch_df, batch_id):
+    records = [row.asDict() for row in batch_df.collect()]
+    requests.post(INGEST_URL, headers=headers, json={"records": records})
+payload.writeStream.foreachBatch(write_batch).start()
+```
+
+See [docs/integrations/apache-spark.md](docs/integrations/apache-spark.md).
+
+### Databricks
+
+Store keys in Secret Scopes and ingest from notebooks or scheduled jobs:
+
+```python
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+requests.post(INGEST_URL, headers={"Authorization": f"Bearer {api_key}"}, json={...})
+```
+
+See [docs/integrations/databricks.md](docs/integrations/databricks.md).
+
+### Integration health checks
+
+Verify connectivity per platform:
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/kubernetes -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/tensorflow   -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/pytorch        -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/apache-spark -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/databricks     -H "Authorization: Bearer YOUR_API_KEY"
+```
 
 ---
 
@@ -493,128 +581,551 @@ Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-
 | [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                         |
 
 
+# Apache Spark Integration
+
+Write Spark streaming and batch DataFrames directly to DEML ingestion endpoints for unified telemetry and ML feature pipelines.
+
+## Prerequisites
+
+- Apache Spark 3.4+ (Structured Streaming or batch)
+- Network egress to `https://backend.deml.app`
+- DEML API key stored in your cluster secrets manager
+
+## Batch Write Pattern
+
+Transform your DataFrame and POST batches via a `mapPartitions` sink:
+
+```python
+import json
+import requests
+from pyspark.sql import SparkSession
+
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+
+spark = SparkSession.builder.appName("deml-ingest").getOrCreate()
+df = spark.read.parquet("s3://datalake/events/")
+
+def send_partition(rows):
+    records = [row.asDict() for row in rows]
+    if not records:
+        return
+    requests.post(
+        INGEST_URL,
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"source": "spark", "records": records},
+        timeout=60,
+    ).raise_for_status()
+
+df.foreachPartition(send_partition)
+```
+
+## Structured Streaming
+
+Stream micro-batches to DEML as they arrive:
+
+```python
+from pyspark.sql.functions import col, struct, to_json
+
+stream = (
+    spark.readStream.format("kafka")
+    .option("kafka.bootstrap.servers", "broker:9092")
+    .option("subscribe", "telemetry")
+    .load()
+)
+
+payload = stream.select(
+    to_json(struct(col("value").alias("payload"))).alias("record")
+)
+
+def write_batch(batch_df, batch_id):
+    rows = [row.record for row in batch_df.collect()]
+    if rows:
+        requests.post(
+            INGEST_URL,
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"source": "spark-stream", "batch_id": batch_id, "records": rows},
+            timeout=60,
+        ).raise_for_status()
+
+query = payload.writeStream.foreachBatch(write_batch).start()
+```
+
+## Scala Alternative
+
+```scala
+df.writeStream
+  .format("org.apache.spark.sql.kafka010.KafkaSourceProvider")
+  .option("checkpointLocation", "/checkpoints/deml")
+  .foreachBatch { (batchDF: DataFrame, batchId: Long) =>
+    val records = batchDF.collect().map(_.getAs[String]("payload"))
+    // POST records to https://backend.deml.app/api/v1/ingest
+  }
+  .start()
+```
+
+## Planned Native Spark Connector
+
+A first-class `deml` format will simplify writes:
+
+```scala
+df.writeStream
+  .format("deml")
+  .option("api_key", sys.env("DEML_API_KEY"))
+  .option("endpoint", "https://backend.deml.app/api/v1/ingest")
+  .start()
+```
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/apache-spark \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+
+# Databricks Integration
+
+Connect Databricks notebooks and jobs to DEML for secure telemetry ingest, model inference, and cross-platform analytics.
+
+## Prerequisites
+
+- Databricks Runtime 13.3+ (Python or Scala)
+- DEML API key
+- Outbound HTTPS to `backend.deml.app`
+
+## Store Credentials in Databricks Secrets
+
+Never hardcode API keys in notebooks. Use a Secret Scope:
+
+```bash
+databricks secrets create-scope --scope deml
+databricks secrets put --scope deml --key api-key --string-value YOUR_API_KEY
+```
+
+In a notebook:
+
+```python
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+```
+
+## Ingest from a Notebook
+
+```python
+import requests
+
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+
+df = spark.table("analytics.telemetry_events")
+records = [row.asDict() for row in df.limit(1000).collect()]
+
+response = requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"source": "databricks", "records": records},
+    timeout=60,
+)
+response.raise_for_status()
+print(f"Ingested {len(records)} records")
+```
+
+## Scheduled Job Pattern
+
+1. Create a Databricks Job with a Python task.
+2. Mount the `deml` secret scope on the cluster.
+3. Run on a schedule (e.g., every 5 minutes) to push aggregated features.
+
+```python
+# Databricks job: push hourly rollups to DEML
+rollup = spark.sql("""
+  SELECT tenant_id, AVG(latency_ms) AS avg_latency, COUNT(*) AS requests
+  FROM delta.`/mnt/telemetry/raw`
+  WHERE event_time > current_timestamp() - INTERVAL 1 HOUR
+  GROUP BY tenant_id
+""")
+
+records = rollup.collect()
+requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"source": "databricks-job", "records": [r.asDict() for r in records]},
+).raise_for_status()
+```
+
+## Real-time Inference from Databricks
+
+```python
+PREDICT_URL = "https://backend.deml.app/api/v1/predict"
+
+def predict_row(features: list[float]) -> float:
+    result = requests.post(
+        PREDICT_URL,
+        headers={"Authorization": f"Bearer {api_key}"},
+        json={"model_version": "v2", "inputs": features},
+        timeout=10,
+    )
+    result.raise_for_status()
+    return result.json()["outputs"][0]
+
+# Apply to a Spark UDF or driver-side batch calls
+scores = [predict_row(row.features) for row in df.limit(100).collect()]
+```
+
+## Unity Catalog & Multi-Tenancy
+
+Map Databricks workspace catalogs to DEML tenant UUIDs in your job metadata so analytics remain isolated per customer.
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/databricks \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+
 # Kubernetes Integration
 
-Integrating our ML Platform natively into your Kubernetes cluster allows your existing microservices to easily stream data or request predictions via our API Gateway.
+Integrating the DEML platform into your Kubernetes cluster lets microservices stream telemetry and request predictions through our API Gateway without leaving your cluster boundary.
 
-## Architecture: The Sidecar Proxy Pattern
+## Architecture Options
 
-For the most robust integration, we recommend deploying a lightweight Sidecar Proxy (e.g., Envoy or a custom lightweight Go binary) alongside your pods. This proxy handles the API key injection, rate limiting backoff, and secure connection to our `/api/v1/predict` and `/api/v1/ingest` endpoints.
+| Pattern | Best for | Latency | Ops overhead |
+|---------|----------|---------|--------------|
+| **Sidecar proxy** | Per-pod inference + ingest | Lowest | Medium |
+| **Cluster gateway** | Shared ingress for many services | Low | Low |
+| **CRD / Operator** _(roadmap)_ | Declarative pipeline provisioning | Low | Lowest at scale |
 
-### Setup Instructions
+## Sidecar Proxy Pattern (Recommended)
 
-1. **Store your API Key in a Secret:**
+Deploy a lightweight sidecar alongside your application pods. The sidecar injects your API key, handles rate-limit backoff, and forwards traffic to `/api/v1/predict` and `/api/v1/ingest`.
 
-   ```yaml
-   apiVersion: v1
-   kind: Secret
-   metadata:
-     name: ml-platform-credentials
-   type: Opaque
-   data:
-     api-key: <base64-encoded-key>
-   ```
+### 1. Store your API key in a Secret
 
-2. **Deploy the Sidecar (Example Pod Spec):**
-   ```yaml
-   apiVersion: v1
-   kind: Pod
-   metadata:
-     name: my-app
-   spec:
-     containers:
-       - name: my-app-container
-         image: my-app-image
-         env:
-           - name: ML_GATEWAY_URL
-             value: "http://localhost:8001" # Talks to sidecar
-       - name: ml-platform-sidecar
-         image: ml-platform-sidecar:latest
-         env:
-           - name: UPSTREAM_URL
-             value: "https://your-domain.com/api/v1"
-           - name: API_KEY
-             valueFrom:
-               secretKeyRef:
-                 name: ml-platform-credentials
-                 key: api-key
-   ```
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: deml-platform-credentials
+  namespace: production
+type: Opaque
+stringData:
+  api-key: YOUR_API_KEY
+```
 
-### Future Enhancements
+### 2. Configure the sidecar in your Pod spec
 
-We are currently developing a native **Kubernetes Operator** (`MLPlatform CRD`) that will allow you to dynamically provision inference routes and data pipelines declaratively.
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ml-inference-service
+  labels:
+    app: ml-inference
+spec:
+  containers:
+    - name: app
+      image: your-registry/inference-app:latest
+      env:
+        - name: DEML_GATEWAY_URL
+          value: "http://127.0.0.1:8080"
+    - name: deml-sidecar
+      image: ghcr.io/deml/sidecar-proxy:latest
+      ports:
+        - containerPort: 8080
+      env:
+        - name: DEML_UPSTREAM_URL
+          value: "https://backend.deml.app/api/v1"
+        - name: DEML_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: deml-platform-credentials
+              key: api-key
+```
+
+Your application calls `http://127.0.0.1:8080/predict` locally; the sidecar adds authentication and forwards to DEML.
+
+### 3. Verify connectivity
+
+```bash
+kubectl exec -it ml-inference-service -c app -- \
+  curl -s http://127.0.0.1:8080/health
+```
+
+Check integration status from your cluster (optional health endpoint):
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/kubernetes \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Cluster Gateway Pattern
+
+For shared access across namespaces, expose a single internal Service that proxies to DEML:
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: deml-gateway
+  namespace: platform
+spec:
+  selector:
+    app: deml-gateway
+  ports:
+    - port: 443
+      targetPort: 8443
+```
+
+Point workloads at `https://deml-gateway.platform.svc.cluster.local` and mount the API key via External Secrets or GCP Secret Manager.
+
+## Telemetry Ingest from Kubernetes
+
+Stream pod metrics, request logs, or custom events to `/api/v1/ingest`:
+
+```bash
+curl -X POST https://backend.deml.app/api/v1/ingest \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "source": "kubernetes",
+    "cluster_id": "prod-us-east-1",
+    "records": [
+      {"pod": "inference-7f8b", "latency_ms": 42, "status": 200}
+    ]
+  }'
+```
+
+Events flow through Redpanda → telemetry workers → your analytics dashboard in real time.
+
+## Roadmap: Kubernetes Operator
+
+We are developing a native **MLPlatform CRD** so you can declare inference routes and ingestion pipelines in Git:
+
+```yaml
+apiVersion: deml.app/v1
+kind: InferenceRoute
+metadata:
+  name: sla-model
+spec:
+  modelVersion: v2
+  replicas: 3
+  tenantId: YOUR_TENANT_UUID
+```
+
+Subscribe to release notes for operator availability.
 
 
 # PyTorch Integration
 
-_(Coming Soon)_
+Use DEML as a remote data source and inference backend from PyTorch training scripts, DataLoaders, and deployment pipelines.
 
-This integration will detail how to use our custom PyTorch `DataLoader` and `Dataset` classes to fetch and stream training data from our platform, or run remote inference from within your PyTorch scripts.
+## Prerequisites
 
-**Example Planned Usage:**
+- Python 3.11+
+- PyTorch 2.x
+- A DEML API key (Settings → API Keys)
+
+## Custom DataLoader (Available Today)
 
 ```python
+from __future__ import annotations
+
+import requests
 import torch
-from our_platform_sdk.pytorch import PlatformDataLoader
+from torch.utils.data import Dataset, DataLoader
+
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+PREDICT_URL = "https://backend.deml.app/api/v1/predict"
+
+
+class DemlRemoteDataset(Dataset):
+    def __init__(self, page_size: int = 64) -> None:
+        self.page_size = page_size
+        self._cache: list[tuple[torch.Tensor, torch.Tensor]] = []
+        self._index = 0
+        self._refresh()
+
+    def _refresh(self) -> None:
+        response = requests.post(
+            INGEST_URL,
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"batch_size": self.page_size, "format": "pytorch"},
+            timeout=30,
+        )
+        response.raise_for_status()
+        records = response.json()["records"]
+        self._cache = [
+            (torch.tensor(r["features"], dtype=torch.float32), torch.tensor(r["label"]))
+            for r in records
+        ]
+        self._index = 0
+
+    def __len__(self) -> int:
+        return len(self._cache)
+
+    def __getitem__(self, idx: int) -> tuple[torch.Tensor, torch.Tensor]:
+        if idx >= len(self._cache):
+            self._refresh()
+        return self._cache[idx % len(self._cache)]
+
+
+loader = DataLoader(DemlRemoteDataset(page_size=64), batch_size=32, shuffle=True)
+
+for features, labels in loader:
+    outputs = model(features)
+    loss = criterion(outputs, labels)
+    loss.backward()
+```
+
+## Remote Inference
+
+```python
+import requests
+import torch
+
+payload = {"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}
+response = requests.post(
+    PREDICT_URL,
+    headers={"Authorization": f"Bearer {API_KEY}"},
+    json=payload,
+    timeout=5,
+)
+outputs = torch.tensor(response.json()["outputs"])
+```
+
+DEML hosts tenant-namespaced PyTorch `state_dict` checkpoints on Hugging Face — no pickle, security-first.
+
+## Planned SDK
+
+```python
+from deml.pytorch import PlatformDataLoader
 
 loader = PlatformDataLoader(
-    api_key="YOUR_API_KEY",  # pragma: allowlist secret
-    endpoint="https://your-domain.com/api/v1/ingest",
+    api_key="YOUR_API_KEY",
     batch_size=64,
-    shuffle=True
+    shuffle=True,
 )
 
 for batch in loader:
     predictions = model(batch)
 ```
 
+## Integration Health Check
 
-# Databricks Integration
-
-_(Coming Soon)_
-
-This integration will guide you on how to store your API keys securely in Databricks Secret Scopes and access our platform from within your Databricks notebooks.
-
-
-# Apache Spark Integration
-
-_(Coming Soon)_
-
-This integration will detail how to configure your Spark cluster to write streaming DataFrames directly into our ingestion endpoints.
-
-**Example Planned Usage:**
-
-```scala
-val df = spark.readStream...
-
-df.writeStream
-  .format("our_platform")
-  .option("api_key", "YOUR_API_KEY")
-  .option("endpoint", "https://your-domain.com/api/v1/ingest")
-  .start()
+```bash
+curl https://backend.deml.app/api/v1/integrations/pytorch \
+  -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 
 # TensorFlow Integration
 
-_(Coming Soon)_
+Stream training data from DEML directly into a `tf.data.Dataset` for batched, high-throughput TensorFlow training loops.
 
-This integration will detail how to use our Python SDK to natively stream data from our platform directly into a `tf.data.Dataset` for highly optimized, batched training loops.
+## Prerequisites
 
-**Example Planned Usage:**
+- Python 3.11+
+- TensorFlow 2.15+
+- A DEML API key (Settings → API Keys in the dashboard)
+
+## Quick Start
+
+### Install the SDK _(planned package)_
+
+```bash
+pip install deml-tensorflow
+```
+
+Until the package ships, use the REST ingest endpoint with a custom generator (see below).
+
+### Stream via `tf.data.Dataset`
 
 ```python
+import json
 import tensorflow as tf
-from our_platform_sdk.tensorflow import PlatformDataset
+import requests
 
-# Initialize a high-throughput stream
-dataset = PlatformDataset(
-    api_key="YOUR_API_KEY",  # pragma: allowlist secret
-    endpoint="https://your-domain.com/api/v1/ingest",
-    batch_size=32
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+PREDICT_URL = "https://backend.deml.app/api/v1/predict"
+
+
+def fetch_batch(batch_size: int = 32) -> list[dict]:
+    response = requests.post(
+        INGEST_URL,
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"batch_size": batch_size, "format": "tensorflow"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    return response.json()["records"]
+
+
+def record_generator():
+    while True:
+        for record in fetch_batch():
+            yield record["features"], record["label"]
+
+
+def build_dataset(batch_size: int = 32) -> tf.data.Dataset:
+    dataset = tf.data.Dataset.from_generator(
+        record_generator,
+        output_signature=(
+            tf.TensorSpec(shape=(None,), dtype=tf.float32),
+            tf.TensorSpec(shape=(), dtype=tf.int32),
+        ),
+    )
+    return dataset.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+
+
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(64, activation="relu"),
+    tf.keras.layers.Dense(1, activation="sigmoid"),
+])
+
+model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
+model.fit(build_dataset(), steps_per_epoch=100, epochs=10)
+```
+
+## Real-time Inference
+
+Call `/api/v1/predict` from TensorFlow Serving sidecars or directly in training callbacks:
+
+```python
+import requests
+
+payload = {"model_version": "v2", "inputs": [0.5, 0.2, 0.9]}
+result = requests.post(
+    PREDICT_URL,
+    headers={"Authorization": f"Bearer {API_KEY}"},
+    json=payload,
+    timeout=5,
 )
+prediction = result.json()["outputs"]
+```
 
+## Planned SDK API
+
+When `deml-tensorflow` ships, the interface will simplify to:
+
+```python
+from deml.tensorflow import PlatformDataset
+
+dataset = PlatformDataset(
+    api_key="YOUR_API_KEY",
+    batch_size=32,
+    prefetch=True,
+)
 model.fit(dataset, epochs=10)
+```
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/tensorflow \
+  -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 
@@ -2901,6 +3412,7 @@ Canonical record of end-of-day workspace sync, hardening, and polish passes. Eac
 | Date       | Tooling             | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ---------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 2026-06-28 | **Grok Build Beta** | PASS 0–5: cache purge (`deml-cleanup.sh`); 85 pytest + 28 vitest green; unified `1260px` container (`THEME.md` / `--container-max-width`); Distroless Docker audit (backend, frontend, scanner); Firebase v2 `functions/.env` Redpanda config in CI; Swagger public `/api/v1/ingest` + `/api/v1/predict` with demo key `deml_demo_api_key_2026`; copyright/footer hardening (no Railway, no stray `\|`); DB Browser for SQLite in Ch.1 setup; doc sync via `scripts/sync_content.py`. |
+| 2026-06-30 | **Cursor - Grok 4.3** | PASS 0–5: cache purge (`deml-cleanup.sh`); **88 pytest + 33 vitest** green; fixed `SyntheticMonitor.checked_at` stale-degradation (`auto_now` → explicit worker timestamp, migration `0038`); telemetry normalization test aligned to `get_normalized_service_info`; THEME token fixes (`--color-error`, `--color-warning`, `--white`); vitest preflight via `set-env.js`; npm `typescript` override fix (`$typescript` → `~6.0.3`); dead footer CSS pruned; Distroless Docker audit confirmed (backend `python3-debian12`, frontend `nodejs22-debian12`); `scripts/build_search_index.py` + Appendix K in search-index; Angular routes for `/documentation`, `/book`, `/whitepaper`, `/compliance`, `/terms`, `/privacy`; unified in-app footer/nav links; GitHub Actions `ci-tests.yml` (pytest + vitest). |
 
 > [!NOTE]
 > **Grok Build Beta** annotations in source (e.g. footer comments, this appendix) mark maintenance performed during automated end-of-day pipelines. Re-run `./scripts/deml-cleanup.sh` before each session and consult [Appendix D](#appendix-d-maintenance--automation-schedule) for scheduled worker cadence.

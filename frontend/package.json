@@ -6,7 +6,7 @@
     "start": "node set-env.js && ng serve",
     "build": "node set-env.js && ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "vitest run",
+    "test": "node set-env.js && vitest run",
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
     "lint": "ng lint",
     "check:mobile-first": "node scripts/check_mobile_first.js",
@@ -66,6 +66,6 @@
   },
   "overrides": {
     "esbuild": "0.28.1",
-    "typescript": "$typescript"
+    "typescript": "~6.0.3"
   }
 }
