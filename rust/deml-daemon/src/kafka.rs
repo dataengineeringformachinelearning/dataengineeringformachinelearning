@@ -28,7 +28,10 @@ pub fn build_producer(cfg: &Config) -> Result<FutureProducer> {
         .set("retries", "5")
         .set("retry.backoff.ms", "500")
         // Reduce latency for the relay — we're not batching for throughput.
-        .set("linger.ms", "5");
+        .set("linger.ms", "5")
+        // Force IPv4 address resolution to avoid connection failures when connecting to IPv6 aliases
+        // of containers that are only listening on IPv4 (0.0.0.0).
+        .set("broker.address.family", "v4");
 
     if let (Some(user), Some(pass)) = (&cfg.sasl_username, &cfg.sasl_password) {
         let protocol = if cfg.sasl_ssl {
