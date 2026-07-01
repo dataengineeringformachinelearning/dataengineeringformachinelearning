@@ -79,21 +79,12 @@
   font-size: var(--base-font-size);
   cursor: pointer;
   transition: var(--transition-smooth);
+  white-space: normal;
+  text-align: center;
   box-sizing: border-box;
 
-  .tab-btn-content {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    flex: 0 0 auto;
-    max-width: 100%;
-    white-space: normal;
-    text-align: left;
-
-    @media (min-width: 600px) {
-      white-space: nowrap;
-    }
+  @media (min-width: 600px) {
+    white-space: nowrap;
   }
 
   mat-icon {
