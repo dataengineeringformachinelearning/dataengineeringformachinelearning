@@ -8,7 +8,6 @@ const SCAN_DIRS = [
   path.resolve(__dirname, '../../marketing/src/pages'),
   path.resolve(__dirname, '../../marketing/src/layouts'),
 ];
-const ALLOWED_EXCEPTIONS = ['/* mobile-first-exception */', '/* mobile-first-override */'];
 
 function getFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
@@ -35,19 +34,14 @@ for (const file of files) {
   const lines = content.split('\n');
 
   lines.forEach((line, index) => {
-    // Check if line contains a media query with max-width
     if (line.includes('@media') && line.includes('max-width')) {
-      // Check if this line has an exception comment
-      const hasException = ALLOWED_EXCEPTIONS.some(exc => line.includes(exc));
-      if (!hasException) {
-        const relativePath = path.relative(path.resolve(__dirname, '..'), file);
-        console.error(`\x1b[31mViolation found in ${relativePath}:${index + 1}\x1b[0m`);
-        console.error(`  Line: ${line.trim()}`);
-        console.error(
-          `  Hint: Avoid desktop-first 'max-width' media queries. Design mobile-first using default styles for mobile and '@media (min-width: ...)' to scale up to larger screens.\n`,
-        );
-        violationsCount++;
-      }
+      const relativePath = path.relative(path.resolve(__dirname, '..'), file);
+      console.error(`\x1b[31mViolation found in ${relativePath}:${index + 1}\x1b[0m`);
+      console.error(`  Line: ${line.trim()}`);
+      console.error(
+        `  Hint: Avoid desktop-first 'max-width' media queries. Design mobile-first using default styles for mobile and '@media (min-width: ...)' to scale up to larger screens.\n`,
+      );
+      violationsCount++;
     }
   });
 }
@@ -55,7 +49,7 @@ for (const file of files) {
 if (violationsCount > 0) {
   console.error(`\x1b[31mTotal violations found: ${violationsCount}\x1b[0m`);
   console.error(
-    "Please refactor these styles to be mobile-first or add '/* mobile-first-exception */' to the line if it is a necessary override.",
+    'Please refactor these styles to be mobile-first. Desktop-first max-width breakpoints are not permitted.',
   );
   process.exit(1);
 } else {
