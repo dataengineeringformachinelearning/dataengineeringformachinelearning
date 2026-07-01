@@ -57,6 +57,28 @@ module.exports = defineConfig([
     },
   },
   {
+    // Flux-Material UI library uses the `flux` selector prefix.
+    files: ['projects/flux-material/**/*.ts'],
+    rules: {
+      '@angular-eslint/directive-selector': [
+        'error',
+        {
+          type: 'attribute',
+          prefix: 'flux',
+          style: 'camelCase',
+        },
+      ],
+      '@angular-eslint/component-selector': [
+        'error',
+        {
+          type: 'element',
+          prefix: 'flux',
+          style: 'kebab-case',
+        },
+      ],
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {

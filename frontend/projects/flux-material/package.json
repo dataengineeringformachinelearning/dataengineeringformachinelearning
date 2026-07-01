@@ -1,0 +1,23 @@
+{
+  "name": "@deml/flux-material",
+  "version": "0.1.0",
+  "description": "Flux-Material: DEML UI kit. Flux UI (fluxui.dev) component styles blended with Angular Material design tokens, THEME.md palette only.",
+  "keywords": [
+    "angular",
+    "ui",
+    "flux",
+    "material",
+    "design-system",
+    "deml"
+  ],
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

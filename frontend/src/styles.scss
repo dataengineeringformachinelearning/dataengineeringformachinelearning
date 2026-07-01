@@ -8,6 +8,7 @@
 @use 'components/utilities' as *;
 @use 'components/extracted-utilities' as *;
 @use 'components/flux-inspired' as *;
+@use '../projects/flux-material/src/styles/flux-material' as *;
 
 /* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
    as the form field container handles focus state visually at the border level.
@@ -195,7 +196,9 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn) {
+a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(
+    .auth-btn
+  ):not(.mobile-nav-btn) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;

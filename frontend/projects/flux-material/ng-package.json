@@ -1,0 +1,8 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/flux-material",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "assets": ["./src/styles/**/*.scss", "./flux.manifest.json", "./README.md"]
+}
