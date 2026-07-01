@@ -137,7 +137,7 @@
   }
 }
 
-.cta-button {
+a.cta-button {
   padding: var(--space-2, 12px) var(--space-3, 18px);
   border-radius: var(--border-radius-md, 12px);
   font-size: max(18px, var(--base-font-size, 18px));
@@ -146,14 +146,13 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--grid-unit, 9px);
+  gap: 0;
   transition: var(--transition-smooth, all 0.25s ease);
   width: 100%;
   flex: 1 1 auto;
   min-width: 0;
   box-sizing: border-box;
   min-height: 44px;
-  text-align: center;
   letter-spacing: 0.01em;
 
   @media (min-width: 600px) {
@@ -163,9 +162,9 @@
   }
 
   .cta-icon,
-  .material-icons {
+  .material-icons.cta-icon {
     font-size: 20px;
-    flex-shrink: 0;
+    flex: 0 0 auto;
     width: 20px;
     height: 20px;
     line-height: 1;

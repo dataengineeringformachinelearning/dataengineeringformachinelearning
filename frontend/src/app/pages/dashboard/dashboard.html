@@ -39,8 +39,10 @@
           [class.active]="activeTab() === 'overview'"
           (click)="setTab('overview')"
         >
-          <mat-icon aria-hidden="true">dashboard</mat-icon>
-          Overview
+          <span class="tab-btn-content">
+            <mat-icon aria-hidden="true">dashboard</mat-icon>
+            <span>Overview</span>
+          </span>
         </button>
         <button
           type="button"
@@ -48,8 +50,10 @@
           [class.active]="activeTab() === 'performance'"
           (click)="setTab('performance')"
         >
-          <mat-icon aria-hidden="true">monitoring</mat-icon>
-          Performance
+          <span class="tab-btn-content">
+            <mat-icon aria-hidden="true">monitoring</mat-icon>
+            <span>Performance</span>
+          </span>
         </button>
         <button
           type="button"
@@ -57,10 +61,13 @@
           [class.active]="activeTab() === 'security'"
           (click)="setTab('security')"
         >
-          <mat-icon aria-hidden="true">shield</mat-icon>
-          Security @if (openVulnCount() > 0) {
-          <span class="tab-badge">{{ openVulnCount() }}</span>
-          }
+          <span class="tab-btn-content">
+            <mat-icon aria-hidden="true">shield</mat-icon>
+            <span>Security</span>
+            @if (openVulnCount() > 0) {
+            <span class="tab-badge">{{ openVulnCount() }}</span>
+            }
+          </span>
         </button>
       </nav>
 
