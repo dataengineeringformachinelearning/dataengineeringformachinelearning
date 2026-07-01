@@ -508,35 +508,36 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 
 ## 7. Service matrix (Cloud Run)
 
-| Service                            | Role                           |
-| ---------------------------------- | ------------------------------ |
-| `deml-frontend`                    | Angular UI                     |
-| `deml-backend`                     | Django API                     |
-| `deml-postgres`                    | OLTP database                  |
-| `deml-queue`                       | Redpanda broker                |
-| `deml-telemetry-worker`            | Projections, pingers, rollups  |
-| `deml-relay`                       | Outbox publisher               |
-| `deml-ml-worker`                   | Training / inference           |
-| `deml-security-worker`             | Intel, retention, billing sync |
-| `deml-clickhouse`                  | OLAP                           |
-| `deml-otel-collector`              | Trace pipeline                 |
-| `deml-dragonfly`                   | Cache / rate limits            |
-| `deml-scanner`, `deml-cpe-guesser` | Vulnerability ledger           |
-| `deml-tor-proxy`                   | OSINT routing                  |
+| Service                 | Role                                                    |
+| ----------------------- | ------------------------------------------------------- |
+| `deml-frontend`         | Angular UI                                              |
+| `deml-backend`          | Django API                                              |
+| `deml-postgres`         | OLTP database                                           |
+| `deml-queue`            | Redpanda broker                                         |
+| `deml-telemetry-worker` | Projections, pingers, rollups                           |
+| `deml-relay`            | Outbox publisher                                        |
+| `deml-workers`          | Consolidated ML training, threat intel, and task runner |
+
+| `deml-clickhouse` | OLAP |
+| `deml-otel-collector` | Trace pipeline |
+| `deml-dragonfly` | Cache / rate limits |
+| `deml-scanner`, `deml-cpe-guesser` | Vulnerability ledger |
+| `deml-tor-proxy` | OSINT routing |
 
 Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
 
 ## 8. Maintenance schedule
 
-| Cadence             | Job                                    | Owner                           |
-| ------------------- | -------------------------------------- | ------------------------------- |
-| 5s                  | `outbox_relay`                         | `deml-relay`                    |
-| Continuous          | Kafka consumers                        | `telemetry_worker`, `ml_worker` |
-| 30s                 | Service pingers                        | `telemetry_worker`              |
-| 1h                  | Threat intel                           | `security_worker`               |
-| 24h                 | ML training, `db_cleanup`, Stripe sync | `ml_worker`, `security_worker`  |
-| Weekly              | Renovate PRs                           | GitHub Actions                  |
-| Monthly / Quarterly | Semgrep, audits                        | GitHub Actions                  |
+| Cadence    | Job                                    | Owner                                          |
+| ---------- | -------------------------------------- | ---------------------------------------------- |
+| 5s         | `outbox_relay`                         | `deml-relay`                                   |
+| Continuous | Kafka consumers                        | `telemetry_worker`, `deml-workers` (ML thread) |
+| 30s        | Service pingers                        | `telemetry_worker`                             |
+| 1h         | Threat intel                           | `deml-workers` (Security thread)               |
+| 24h        | ML training, `db_cleanup`, Stripe sync | `deml-workers`                                 |
+
+| Weekly | Renovate PRs | GitHub Actions |
+| Monthly / Quarterly | Semgrep, audits | GitHub Actions |
 
 Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule).
 
@@ -1303,20 +1304,19 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 Production runs **14 Cloud Run services** (see [Chapter 22](#chapter-22-production-deployment-on-cloudrun)). Core operational paths:
 
-| Service                                   | Operational role                                                |
-| ----------------------------------------- | --------------------------------------------------------------- |
-| `deml-frontend`                           | Angular app, widgets, public status UI                          |
-| `deml-backend`                            | Django REST, auth middleware, billing, outbox writers           |
-| `deml-postgres`                           | System of record                                                |
-| `deml-queue`                              | Redpanda (`deml-queue.internal:9092` for inter-service traffic) |
-| `deml-telemetry-worker`                   | Projection engine + pingers + analytics rollups                 |
-| `deml-relay`                              | Reliable outbox publisher                                       |
-| `deml-ml-worker`                          | Training and inference jobs                                     |
-| `deml-security-worker`                    | Threat intel, retention, Stripe sync, key rotation              |
-| `deml-clickhouse` + `deml-otel-collector` | Distributed tracing / CES inputs                                |
-| `deml-dragonfly`                          | Rate limiting and hot caches                                    |
-| `deml-scanner` + `deml-cpe-guesser`       | Vulnerability ledger enrichment                                 |
-| `deml-tor-proxy`                          | OSINT dark-web routing                                          |
+| Service                             | Operational role                                                |
+| ----------------------------------- | --------------------------------------------------------------- |
+| `deml-frontend`                     | Angular app, widgets, public status UI                          |
+| `deml-backend`                      | Django REST, auth middleware, billing, outbox writers           |
+| `deml-postgres`                     | System of record (supports Neon serverless PostgreSQL)          |
+| `deml-queue`                        | Redpanda (`deml-queue.internal:9092` for inter-service traffic) |
+| `deml-telemetry-worker`             | Projection engine + pingers + analytics rollups                 |
+| `deml-relay`                        | Reliable outbox publisher                                       |
+| `deml-workers`                      | Consolidated ML training, threat intel, and cron task consumers |
+| `deml-clickhouse`                   | OLAP analytics and historical telemetry storage                 |
+| `deml-dragonfly`                    | Rate limiting and hot caches                                    |
+| `deml-scanner` + `deml-cpe-guesser` | Vulnerability ledger enrichment                                 |
+| `deml-tor-proxy`                    | OSINT dark-web routing                                          |
 
 **Firebase deploy path (separate from Cloud Run):** `.github/workflows/firebase-backend-deploy.yml` ships Cloud Functions + Firestore rules; `firebase-hosting-*.yml` ships marketing. **Never** point Cloud Run services at Public broker URLs for internal traffic—use `*.internal` ([Appendix C](#appendix-c-cloud-run-deployment)).
 
@@ -1584,7 +1584,11 @@ This specific pattern—securely exposing JSON payloads, rigorously validating C
 
 ## Chapter 4: Designing the Database
 
-In the realm of AI-native environments, the underlying data architecture is not merely a storage mechanism; it is the absolute foundation upon which all machine intelligence is built. A robust, structurally sound database is essential for capturing and retaining the historical telemetry required to train my predictive models. When analyzing massive streams of operational data, standard ad-hoc storage solutions often buckle under the weight of relational complexity. Therefore, I anchor my transactional architecture on PostgreSQL. Renowned for its rigorous ACID compliance, exceptional JSONB support for semi-structured payloads, and unmatched reliability in distributed systems, PostgreSQL provides the data integrity necessary for precision engineering. Before writing a single line of schema definition, I strongly recommend utilizing DBeaver to visualize and architect your data models. A visual understanding of table relationships prevents devastating architectural flaws early in the design lifecycle.
+In the realm of AI-native environments, the underlying data architecture is not merely a storage mechanism; it is the absolute foundation upon which all machine intelligence is built. A robust, structurally sound database is essential for capturing and retaining the historical telemetry required to train my predictive models. When analyzing massive streams of operational data, standard ad-hoc storage solutions often buckle under the weight of relational complexity. Therefore, I anchor my transactional architecture on PostgreSQL. Renowned for its rigorous ACID compliance, exceptional JSONB support for semi-structured payloads, and unmatched reliability in distributed systems, PostgreSQL provides the data integrity necessary for precision engineering.
+
+To support serverless operational profiles with high elasticity and branch-based deployment isolation, the platform officially integrates with **Neon Serverless PostgreSQL** as the primary transactional storage alternative to self-hosted database engines. Neon's architecture decouples compute and storage, providing instant branch creation (perfect for isolated staging environments and migration dry runs) and autoscaling compute cores that scale down to zero when idle to minimize operational overhead. When integrating Neon, the backend configures `DATABASE_URL` to point to Neon's connection pooled endpoint (typically port `6543` using PgBouncer for transaction-level pooling) to prevent serverless functions and background workers from exhausting connection limits. Additionally, connection parameters include `sslmode=require` and a persistent connection timeout limit.
+
+Before writing a single line of schema definition, I strongly recommend utilizing DBeaver to visualize and architect your data models. A visual understanding of table relationships prevents devastating architectural flaws early in the design lifecycle.
 
 ```mermaid
 erDiagram
@@ -2152,23 +2156,20 @@ The recommended replica limits for a production-grade deployment are:
 | **deml-queue** (Redpanda)     | 4 vCPU    | 4 GB      | Pre-allocates memory for the Seastar framework. |
 | **deml-dragonfly**            | 4 vCPU    | 4 GB      | Ultra-fast in-memory cache operations.          |
 | **deml-telemetry-worker**     | 4 vCPU    | 4 GB      | High-speed Polars batch processing.             |
-| **deml-ml-worker**            | 4 vCPU    | 4 GB      | Unconstrained PyTorch / ML inference.           |
-| **deml-security-worker**      | 4 vCPU    | 4 GB      | Concurrent OSINT intelligence gathering.        |
+| **deml-workers**              | 4 vCPU    | 4 GB      | PyTorch ML training + OSINT intel gathering.    |
 | **deml-scanner**              | 4 vCPU    | 4 GB      | Heavy vulnerability database parsing.           |
-| **deml-dtrack-api**           | 4 vCPU    | 4 GB      | Deep JVM memory headroom for Spring Boot.       |
-| **deml-otel-collector**       | 4 vCPU    | 4 GB      | Massive scale Go-based trace ingestion.         |
 | **deml-cpe-guesser**          | 4 vCPU    | 4 GB      | CPU-intensive NLP heuristics at scale.          |
 | **deml-tor-proxy**            | 4 vCPU    | 4 GB      | High-bandwidth, encrypted network routing.      |
 
-This complete 14-service architecture peaks at a combined maximum footprint of **56 vCPU and 56 GB RAM**.
+This complete 11-service architecture peaks at a combined maximum footprint of **44 vCPU and 44 GB RAM**.
 
 ### Estimated Monthly Infrastructure Costs
 
 Assuming 24/7 continuous utilization at the maximum 4 vCPU / 4 GB limits across all services:
 
-- **CPU Compute:** 56 vCPUs × $20/vCPU = **$1,120 / month**
-- **RAM Compute:** 56 GB × $10/GB = **$560 / month**
-- **Total Compute (Theoretical Maximum):** **~$1,680 / month**
+- **CPU Compute:** 44 vCPUs × $20/vCPU = **$880 / month**
+- **RAM Compute:** 44 GB × $10/GB = **$440 / month**
+- **Total Compute (Theoretical Maximum):** **~$1,320 / month**
 
 **Actual Baseline Usage (Estimated):**
 Because Cloud Run bills strictly on _consumed_ resources per minute rather than _provisioned_ limits, the actual monthly operational cost is drastically lower than the theoretical maximum. Extrapolating from current active development and testing telemetry (roughly $27 over 24 days), a realistic baseline full-month estimate is approximately **$35.00 per month**.
@@ -2177,7 +2178,7 @@ The primary drivers of this ~$35 baseline cost are the heavily utilized core ser
 
 - **deml-backend:** ~$11.50/mo (High memory utilization)
 - **deml-clickhouse:** ~$8.00/mo (Heavy memory and volume I/O)
-- **deml-ml-worker:** ~$4.50/mo (CPU/RAM spikes during inference)
+- **deml-workers:** ~$6.00/mo (Spikes during periodic ML training and OSINT sync)
 - **deml-telemetry-worker:** ~$3.00/mo (Intermittent Polars processing)
 
 **Note on Persistent Volumes:**
@@ -3258,18 +3259,19 @@ The DEML Platform orchestrates several asynchronous background workers. These wo
 - **Active Pinger (30 Seconds)**: Pings all monitored services every 30 seconds for real-time uptime metrics.
 - **Quality Scanner (6 Hours)**: Runs Google PageSpeed (Lighthouse) audits on tenant target URLs every 21,600 seconds.
 
-### 2. Machine Learning Worker (`ml_worker.py`)
+### 2. Consolidated Background Workers (`deml_workers_start.py`)
 
-- **Event-Driven Training (Continuous)**: Listens on `ml-training-events` for per-tenant `train_tenant` and platform-wide `train_all_tenants` actions.
-- **Daily Training Cycle (24 Hours)**: Executes `train_all_models` (SLA, Threat, and CES PyTorch models). Data retention is **not** run here — `security_worker` owns `db_cleanup`.
+To minimize deployment footprint, operational complexity, and resource overhead, the **Machine Learning Worker** and **Security Worker** have been consolidated into a single background service (`deml-workers`). This unified runner spawns dedicated threads to execute background tasks concurrently and consumes scheduled event triggers from Redpanda:
 
-### 3. Security & Compliance Worker (`security_worker.py`)
-
-- **Threat Intelligence Sync (1 Hour)**: `fetch_threat_intel` — AbuseIPDB, AlienVault OTX, and related feeds.
-- **Compliance & Data Cleanup (24 Hours, T+0h)**: Checks DEK age (30-day limit → `rotate_keys`), then runs `db_cleanup` (30-day raw telemetry retention).
-- **Dark Web Scanner (24 Hours, T+1h)**: `scan_dark_web` — HIBP and Tor/Ahmia OSINT reconnaissance.
-- **Subscription Sweep (24 Hours, T+2h)**: `sync_subscriptions` — Stripe billing reconciliation and Pro tier downgrade for lapsed subscriptions.
-- **Database Optimization (24 Hours, T+3h)**: `VACUUM ANALYZE` on PostgreSQL after cleanup completes.
+- **ML Worker Thread (`ml_worker` command)**:
+  - Listens on `ml-training-events` for per-tenant (`train_tenant`) and platform-wide (`train_all_tenants`) actions.
+  - Runs daily `train_all_models` cycles to retrain the PyTorch SLA and Threat models.
+- **Security Worker Thread (`security_worker` command)**:
+  - Synchronizes AbuseIPDB and AlienVault OTX threat intelligence feeds hourly (`fetch_threat_intel`).
+  - Audits Data Encryption Key age (DEK rotation limit of 30 days) and runs compliance data purges (`db_cleanup`).
+  - Conducts OSINT dark web scans daily.
+  - Sweeps active Stripe subscriptions daily (`sync_subscriptions`) to enforce pricing tiers.
+  - Optimizes PostgreSQL storage nightly via `VACUUM ANALYZE`.
 
 ### 4. Outbox Relay (`outbox_relay.py`)
 
@@ -3411,7 +3413,7 @@ Canonical record of end-of-day workspace sync, hardening, and polish passes. Eac
 
 | Date       | Tooling                           | Scope                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ---------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 2026-06-28 | **Grok Build Beta**               | PASS 0–5: cache purge (`deml-cleanup.sh`); 85 pytest + 28 vitest green; unified `1260px` container (`THEME.md` / `--container-max-width`); Distroless Docker audit (backend, frontend, scanner); Firebase v2 `functions/.env` Redpanda config in CI; Swagger public `/api/v1/ingest` + `/api/v1/predict` with demo key `deml_swagger_api_key`; copyright/footer hardening (no Railway, no stray `\|`); DB Browser for SQLite in Ch.1 setup; doc sync via `scripts/sync_content.py`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 2026-06-28 | **Grok Build Beta**               | PASS 0–5: cache purge (`deml-cleanup.sh`); 85 pytest + 28 vitest green; unified `1260px` container (`THEME.md` / `--container-max-width`); Distroless Docker audit (backend, frontend, scanner); Firebase v2 `functions/.env` Redpanda config in CI; Swagger public `/api/v1/ingest` + `/api/v1/predict` with demo key `deml_swagger_api_key`; copyright/footer hardening (no Railway, no stray `\|`); DB Browser for SQLite in Ch.1 setup; doc sync via `scripts/sync_content.py`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | 2026-06-30 | **Cursor - Grok 4.3**             | PASS 0–5: cache purge (`deml-cleanup.sh`); **88 pytest + 33 vitest** green; hero CTA spacing fix (Flux-inspired `flux-btn` classes, tighter icon–label gap, flex parity); Flux UI visual patterns synced via `@deml/design-system` (`flux-inspired.scss` in `deml-components.css`); Flux attribution in unified footers; CSP verified (`test_csp_and_demo_auth.py`, `firebase.json` unchanged); fixed `SyntheticMonitor.checked_at` stale-degradation (`auto_now` → explicit worker timestamp, migration `0038`); telemetry normalization test aligned to `get_normalized_service_info`; THEME token fixes (`--color-error`, `--color-warning`, `--white`); vitest preflight via `set-env.js`; npm `typescript` override fix (`$typescript` → `~6.0.3`); dead footer CSS pruned; Distroless Docker audit confirmed (backend `python3-debian12`, frontend `nodejs22-debian12`); `scripts/build_search_index.py` + Appendix K in search-index; Angular routes for `/documentation`, `/book`, `/whitepaper`, `/compliance`, `/terms`, `/privacy`; unified in-app footer/nav links; GitHub Actions `ci-tests.yml` (pytest + vitest). |
 | 2026-06-30 | **Cursor - Grok 4.3 (Session 3)** | Multi-pass hardening: removed dead `up.railway.app` hostname detection from `environment.ts` + `environment.development.ts` (app fully migrated to `deml.app`); sanitized `main.ts` Sentry DSN comment (removed "Railway" deployment-provider branding); replaced hardcoded `/tmp/sla_model.pt` in `ml/ml_services.py` with `tempfile.NamedTemporaryFile` + `os.unlink` teardown (S108 fix, prevents temp file leakage); replaced hardcoded `/tmp/gcp-service-account.json` in `config/settings.py` with `tempfile.mkstemp` (S108 fix, OS-secure path allocation); added `# noqa: S104` on intentional container `0.0.0.0` bind in `start.py` (Daphne Cloud Run entrypoint false positive suppression); `scripts/sync_content.py` re-ran → search-index 72 sections synced; **94 pytest** green across all modules post-fix; TypeScript `npx tsc --noEmit` clean; Ruff S-rules audit documented (false positives annotated).                                                                                                                                                                                                     |
 

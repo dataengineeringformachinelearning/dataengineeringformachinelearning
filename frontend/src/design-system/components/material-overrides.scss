@@ -130,25 +130,6 @@ a.auth-btn {
   font-size: max(18px, var(--base-font-size));
 }
 
-.mat-mdc-form-field {
-  --mdc-outlined-text-field-caret-color: var(--crayola-blue);
-  --mdc-outlined-text-field-focus-outline-color: var(--crayola-blue);
-  --mdc-outlined-text-field-focus-label-text-color: var(--crayola-blue);
-  --mdc-outlined-text-field-hover-outline-color: var(--blue-bell);
-  --mdc-outlined-text-field-label-text-color: var(--text-muted);
-  --mdc-filled-text-field-caret-color: var(--crayola-blue);
-  --mdc-filled-text-field-focus-active-indicator-color: var(--crayola-blue);
-  --mdc-filled-text-field-focus-label-text-color: var(--crayola-blue);
-  --mdc-filled-text-field-hover-active-indicator-color: var(--blue-bell);
-  --mat-form-field-focus-select-arrow-color: var(--crayola-blue);
-}
-
-.mat-mdc-form-field.mat-focused,
-.mat-mdc-form-field:focus-within {
-  --mdc-outlined-text-field-outline-color: var(--crayola-blue);
-  --mdc-filled-text-field-active-indicator-color: var(--crayola-blue);
-}
-
 .mat-mdc-checkbox .mdc-label,
 .mat-mdc-radio-button .mdc-label {
   font-size: max(18px, var(--base-font-size));

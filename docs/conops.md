@@ -89,35 +89,36 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 
 ## 7. Service matrix (Cloud Run)
 
-| Service                            | Role                           |
-| ---------------------------------- | ------------------------------ |
-| `deml-frontend`                    | Angular UI                     |
-| `deml-backend`                     | Django API                     |
-| `deml-postgres`                    | OLTP database                  |
-| `deml-queue`                       | Redpanda broker                |
-| `deml-telemetry-worker`            | Projections, pingers, rollups  |
-| `deml-relay`                       | Outbox publisher               |
-| `deml-ml-worker`                   | Training / inference           |
-| `deml-security-worker`             | Intel, retention, billing sync |
-| `deml-clickhouse`                  | OLAP                           |
-| `deml-otel-collector`              | Trace pipeline                 |
-| `deml-dragonfly`                   | Cache / rate limits            |
-| `deml-scanner`, `deml-cpe-guesser` | Vulnerability ledger           |
-| `deml-tor-proxy`                   | OSINT routing                  |
+| Service                 | Role                                                    |
+| ----------------------- | ------------------------------------------------------- |
+| `deml-frontend`         | Angular UI                                              |
+| `deml-backend`          | Django API                                              |
+| `deml-postgres`         | OLTP database                                           |
+| `deml-queue`            | Redpanda broker                                         |
+| `deml-telemetry-worker` | Projections, pingers, rollups                           |
+| `deml-relay`            | Outbox publisher                                        |
+| `deml-workers`          | Consolidated ML training, threat intel, and task runner |
+
+| `deml-clickhouse` | OLAP |
+| `deml-otel-collector` | Trace pipeline |
+| `deml-dragonfly` | Cache / rate limits |
+| `deml-scanner`, `deml-cpe-guesser` | Vulnerability ledger |
+| `deml-tor-proxy` | OSINT routing |
 
 Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
 
 ## 8. Maintenance schedule
 
-| Cadence             | Job                                    | Owner                           |
-| ------------------- | -------------------------------------- | ------------------------------- |
-| 5s                  | `outbox_relay`                         | `deml-relay`                    |
-| Continuous          | Kafka consumers                        | `telemetry_worker`, `ml_worker` |
-| 30s                 | Service pingers                        | `telemetry_worker`              |
-| 1h                  | Threat intel                           | `security_worker`               |
-| 24h                 | ML training, `db_cleanup`, Stripe sync | `ml_worker`, `security_worker`  |
-| Weekly              | Renovate PRs                           | GitHub Actions                  |
-| Monthly / Quarterly | Semgrep, audits                        | GitHub Actions                  |
+| Cadence    | Job                                    | Owner                                          |
+| ---------- | -------------------------------------- | ---------------------------------------------- |
+| 5s         | `outbox_relay`                         | `deml-relay`                                   |
+| Continuous | Kafka consumers                        | `telemetry_worker`, `deml-workers` (ML thread) |
+| 30s        | Service pingers                        | `telemetry_worker`                             |
+| 1h         | Threat intel                           | `deml-workers` (Security thread)               |
+| 24h        | ML training, `db_cleanup`, Stripe sync | `deml-workers`                                 |
+
+| Weekly | Renovate PRs | GitHub Actions |
+| Monthly / Quarterly | Semgrep, audits | GitHub Actions |
 
 Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule).
 

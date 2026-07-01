@@ -13,7 +13,8 @@ import { Title, Meta } from '@angular/platform-browser';
 export class Documentation implements OnInit {
   private titleService = inject(Title);
   private metaService = inject(Meta);
-  protected readonly marketingDocsUrl = 'https://dataengineeringformachinelearning.com/documentation/';
+  protected readonly marketingDocsUrl =
+    'https://dataengineeringformachinelearning.com/documentation/';
 
   ngOnInit(): void {
     this.titleService.setTitle('Documentation - DEML APP');
