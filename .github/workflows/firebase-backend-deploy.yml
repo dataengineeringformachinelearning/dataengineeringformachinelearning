@@ -65,15 +65,23 @@ jobs:
         #                                  terminated in front of the broker.
         # If REDPANDA_PUBLIC_BROKERS is not set, ingestEvent uses the resilient Firestore
         # inbox fallback (slower, polled) instead of the direct path.
-        if: ${{ secrets.REDPANDA_PUBLIC_BROKERS != '' }}
+        env:
+          REDPANDA_PUBLIC_BROKERS: ${{ secrets.REDPANDA_PUBLIC_BROKERS }}
+          REDPANDA_PUBLIC_SASL_USERNAME: ${{ secrets.REDPANDA_PUBLIC_SASL_USERNAME }}
+          REDPANDA_PUBLIC_SASL_PASSWORD: ${{ secrets.REDPANDA_PUBLIC_SASL_PASSWORD }}
+          REDPANDA_PUBLIC_SSL: ${{ secrets.REDPANDA_PUBLIC_SSL }}
         run: |
-          {
-            echo "REDPANDA_BROKERS=${{ secrets.REDPANDA_PUBLIC_BROKERS }}"
-            echo "REDPANDA_SASL_USERNAME=${{ secrets.REDPANDA_PUBLIC_SASL_USERNAME }}"
-            echo "REDPANDA_SASL_PASSWORD=${{ secrets.REDPANDA_PUBLIC_SASL_PASSWORD }}"
-            echo "REDPANDA_SSL=${{ secrets.REDPANDA_PUBLIC_SSL || 'false' }}"
-          } > functions/.env
-          echo "Wrote functions/.env (REDPANDA_BROKERS + SASL; REDPANDA_SSL=${{ secrets.REDPANDA_PUBLIC_SSL || 'false' }})"
+          if [ -n "$REDPANDA_PUBLIC_BROKERS" ]; then
+            {
+              echo "REDPANDA_BROKERS=${REDPANDA_PUBLIC_BROKERS}"
+              echo "REDPANDA_SASL_USERNAME=${REDPANDA_PUBLIC_SASL_USERNAME}"
+              echo "REDPANDA_SASL_PASSWORD=${REDPANDA_PUBLIC_SASL_PASSWORD}"
+              echo "REDPANDA_SSL=${REDPANDA_PUBLIC_SSL:-false}"
+            } > functions/.env
+            echo "Wrote functions/.env (REDPANDA_BROKERS + SASL; REDPANDA_SSL=${REDPANDA_PUBLIC_SSL:-false})"
+          else
+            echo "REDPANDA_PUBLIC_BROKERS not configured; ingestEvent will use Firestore inbox fallback"
+          fi
 
       - name: Deploy Functions and Firestore (rules + indexes)
         run: |
