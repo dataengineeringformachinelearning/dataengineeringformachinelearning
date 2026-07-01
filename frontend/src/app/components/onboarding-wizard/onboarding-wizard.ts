@@ -209,7 +209,7 @@ export class OnboardingWizard {
     const statusAppUrl =
       environment.frontendUrl ?? (typeof window !== 'undefined' ? window.location.origin : '');
     const backendUrl = environment.backendUrl;
-    return `<script src="${statusAppUrl}/assets/widget.js" data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
+    return `<script src="${statusAppUrl}/assets/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
   }
 
   async copyWidget() {

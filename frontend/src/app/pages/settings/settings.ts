@@ -168,7 +168,7 @@ export class Settings implements OnInit {
     if (!page) return '';
     const statusAppUrl = this.getStatusAppUrl();
     const backendUrl = environment.backendUrl;
-    return `<script src="${statusAppUrl}/assets/widget.js" data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
+    return `<script src="${statusAppUrl}/assets/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
   }
 
   /** Angular app origin — status pages and widget deep links (FRONTEND_URL). */
