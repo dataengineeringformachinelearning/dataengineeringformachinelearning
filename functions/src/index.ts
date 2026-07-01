@@ -12,15 +12,15 @@ const fcfg = functionsConfig();
 // Initialize Kafka/Redpanda client
 // For fastest Event Projections (no polling):
 //   - Point Firebase Functions at the PUBLIC SASL-authenticated Redpanda listener
-//     exposed via a Railway TCP Proxy (e.g. REDPANDA_BROKERS=<proxy-host>:<proxy-port>,
-//     REDPANDA_SASL_USERNAME/REDPANDA_SASL_PASSWORD). The Railway TCP Proxy forwards
+//     exposed via a Edge TCP Proxy (e.g. REDPANDA_BROKERS=<proxy-host>:<proxy-port>,
+//     REDPANDA_SASL_USERNAME/REDPANDA_SASL_PASSWORD). The Edge TCP Proxy forwards
 //     raw TCP and does NOT terminate TLS, so leave REDPANDA_SSL unset (plain SASL).
 //     Only set REDPANDA_SSL=true if TLS is terminated at the edge (e.g. Cloudflare Spectrum).
-//   - Internal services continue to use the private Railway DNS (no SASL).
+//   - Internal services continue to use the private Internal DNS (no SASL).
 // See infrastructure/queue/Dockerfile + entrypoint.sh and backend/.env.example.
 const kafkaBrokers = process.env.REDPANDA_BROKERS || "localhost:19092";
 // TLS must be OPT-IN. The Redpanda broker's public listener serves SASL over plain
-// TCP (e.g. behind a Railway TCP Proxy, which does not terminate TLS). Auto-forcing
+// TCP (e.g. behind a Edge TCP Proxy, which does not terminate TLS). Auto-forcing
 // ssl:true for any non-local host made the TLS handshake fail against that plaintext
 // listener, so every publish fell through to the Firestore fallback. Only enable TLS
 // when REDPANDA_SSL=true (e.g. when an edge such as Cloudflare Spectrum terminates TLS).
