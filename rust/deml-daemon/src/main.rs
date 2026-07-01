@@ -1,7 +1,7 @@
 use anyhow::Result;
 use sqlx::postgres::PgPoolOptions;
-use tracing::info;
-use tracing_subscriber::{fmt, EnvFilter};
+use tracing::{error, info};
+use tracing_subscriber::EnvFilter;
 
 mod config;
 mod db;
