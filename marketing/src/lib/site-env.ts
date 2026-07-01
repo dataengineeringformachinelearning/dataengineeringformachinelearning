@@ -1,5 +1,5 @@
 /**
- * Cross-site URLs — same env names as backend (Django) and frontend (Angular) on Railway.
+ * Cross-site URLs — same env names as backend (Django) and frontend (Angular).
  * Legacy PUBLIC_* names are accepted during migration.
  */
 
