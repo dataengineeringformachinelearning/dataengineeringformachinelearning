@@ -361,8 +361,8 @@ def train_platform_threat_model() -> dict:
     x_data.append(features)
     lw, sr, fr = features[0], features[1], features[2]
     prompt = (
-      f"Given fused telemetry: location_weight={lw:.2f}, suspicious_ratio={sr*100:.1f}%, "
-      f"failure_rate={fr*100:.1f}%, threat_velocity={features[3]:.2f}, "
+      f"Given fused telemetry: location_weight={lw:.2f}, suspicious_ratio={sr * 100:.1f}%, "
+      f"failure_rate={fr * 100:.1f}%, threat_velocity={features[3]:.2f}, "
       f"behavioral={features[4]:.2f}, incident_confidence={features[5]:.2f}. "
       f"What is the probability (0.0 to 1.0) of an active cyber attack?"
     )
@@ -601,7 +601,7 @@ def train_ces_model() -> dict:
     inc = max(0, global_incidents + random.randint(-1, 2))
 
     x_data.append([fr, sr, float(inc)])
-    prompt = f"The global platform has a {fr*100:.1f}% failure rate, {sr*100:.1f}% suspicious requests, and {inc} active incidents. What is the Countermeasure Effectiveness Score (0.0 to 1.0) of our security rules?"
+    prompt = f"The global platform has a {fr * 100:.1f}% failure rate, {sr * 100:.1f}% suspicious requests, and {inc} active incidents. What is the Countermeasure Effectiveness Score (0.0 to 1.0) of our security rules?"
     target = query_teacher_model(prompt)
     y_data.append([target])
 

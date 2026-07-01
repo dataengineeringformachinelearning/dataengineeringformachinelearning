@@ -118,8 +118,7 @@ class Command(BaseCommand):
         await self.check_and_rotate_keys()
 
         self.stdout.write(
-          f"Security Worker: Running db_cleanup "
-          f"(retention: {RAW_TELEMETRY_RETENTION_DAYS} days)..."
+          f"Security Worker: Running db_cleanup (retention: {RAW_TELEMETRY_RETENTION_DAYS} days)..."
         )
         await self.run_sync_command("db_cleanup")
         self.stdout.write(self.style.SUCCESS("Security Worker: Database cleanup completed."))

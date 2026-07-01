@@ -174,7 +174,7 @@ def handle_tag_history(args: argparse.Namespace) -> None:
         print(f"Tag {ms['tag']} already exists. Skipping.")
       else:
         print(f"Tagging {ms['commit']} as {ms['tag']} - {ms['msg']}")
-        run_cmd(f"git tag -a {ms['tag']} {ms['commit']} -m \"{ms['msg']}\"")
+        run_cmd(f'git tag -a {ms["tag"]} {ms["commit"]} -m "{ms["msg"]}"')
     else:
       print(f"Warning: Commit {ms['commit']} not found. Skipping tag {ms['tag']}.")
 
