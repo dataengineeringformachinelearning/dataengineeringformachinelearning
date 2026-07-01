@@ -1521,63 +1521,42 @@ Consumes Redpanda topics (`app-events`, `frontend-events`, `user-issues`), proje
 - **Private Internal DNS**: `deml-telemetry-worker.internal`
 - **Public URL**: None (internal only)
 
-**Variables:** Copy the **full backend bundle** (see §2). Minimum:
+### 4b. Background Daemon (`deml-daemon`)
 
-- `DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`
-- `REDPANDA_BROKERS`, `DRAGONFLY_HOST`
-- `FIREBASE_SERVICE_ACCOUNT_JSON`
-- `STRUCTURED_LOGS=true`
-- Threat-intel keys if enrichment is enabled
+The background daemon is a high-performance compiled Rust service that manages the outbox relay, health pinger cycles, and cron scheduler tasks. It connects directly to the PostgreSQL database and Redpanda event queue.
 
-### 4b. Outbox Relay (`deml-relay`)
-
-Publishes transactional `OutboxEvent` rows from Postgres to Redpanda. **Required** for reliable Django API → Kafka delivery (separate from the `ingestEvent` / `frontend-events` path used by client commands).
-
-**Current production note (audit Jun 2026):** As of the latest full service audit, there is no dedicated `deml-relay` Cloud Run service. If you rely on Django endpoints that write to `OutboxEvent` (most telemetry ingestion), you should add one.
-
-**How to add the missing service in Cloud Run:**
-
-1. In GCP dashboard → New Service → GitHub Repo (select this repo).
-2. Root Directory: `/backend`
-3. Start Command: `/opt/venv/bin/python relay_start.py`
-4. Give it the same variables as `deml-backend` (use shared variables if possible).
-5. It will use the internal `REDPANDA_BROKERS=deml-queue.internal:9092`.
-
-- **Start Command**: `/opt/venv/bin/python relay_start.py` (runs `migrate --noinput` then `outbox_relay` daemon; polls every 5s)
-- **Cron alternative**: `python manage.py outbox_relay --once` on a schedule
+- **Root Directory**: `/rust`
+- **Docker File**: `deml-daemon/Dockerfile`
+- **Start Command**: Runs the compiled binary natively (configured as ENTRYPOINT)
+- **Private Internal DNS**: `deml-daemon.internal`
 - **Public URL**: None (internal only)
 
-**Variables:** Same core bundle as backend + `REDPANDA_BROKERS=deml-queue.internal:9092`.
+**Variables:**
 
-> [!WARNING]
-> Backend services, workers and `outbox_relay` **must** use the broker's internal TCP address (`deml-queue.internal:9092`) for all inter-service traffic.
-> The only exception is Firebase Cloud Functions (`ingestEvent`), which live outside the Cloud Run private network.
-> For them, configure a **public SASL-authenticated listener** (see `infrastructure/queue/entrypoint.sh` + `Dockerfile`) and set the corresponding `REDPANDA_BROKERS`, `REDPANDA_SSL`, and SASL credentials in the Firebase Functions environment.
-> This enables the fast direct-to-Redpanda path with no polling.
+- `DATABASE_URL` (standard Postgres / Neon connection string)
+- `REDPANDA_BROKERS` (e.g. `deml-queue.internal:9092`)
+- `BACKEND_INTERNAL_URL` (points to the backend container, e.g. `http://deml-backend.internal:8080`)
+- `INTERNAL_SECRET` (matching backend's validation header)
+- `BATCH_SIZE=100`, `POLL_INTERVAL_SECS=5`, `PINGER_INTERVAL_SECS=30`
 
-### 5. ML Training Worker (`deml-machine-learning-worker`)
+### 5. Consolidated Background Workers (`deml-workers`)
 
-Consumes `ml-training-events`, runs `train_all_models`, syncs to Hugging Face Hub.
-
-- **Root Directory**: `/backend`
-- **Start Command**: `python manage.py ml_worker`
-- **Private Internal DNS**: `deml-machine-learning-worker.internal`
-
-**Variables:** Backend bundle + `HF_TOKEN`, `HF_REPO_ID`, `REDPANDA_BROKERS`, `DRAGONFLY_HOST`.
-
-### 6. Security Worker (`deml-security-worker`)
-
-Hourly threat intel, daily DEK rotation check, DB cleanup, dark-web scan, Stripe subscription sync.
+Consolidates the machine learning and security execution logic into a single Python container. It spawns the ML thread, the security execution thread, and the internal-tasks Redpanda consumer concurrently.
 
 - **Root Directory**: `/backend`
-- **Start Command**: `python manage.py security_worker`
-- **Private Internal DNS**: `deml-security-worker.internal`
+- **Start Command**: `python deml_workers_start.py`
+- **Private Internal DNS**: `deml-workers.internal`
 
-**Variables:** Backend bundle + threat-intel keys + `GCP_KMS_*` + `TOR_PROXY_URL`.
+**Variables:**
+
+- Core backend bundle (`DATABASE_URL`, `SECRET_KEY`, `DEBUG=False`)
+- `REDPANDA_BROKERS`, `DRAGONFLY_HOST`
+- `HF_TOKEN`, `HF_REPO_ID`
+- Threat intelligence API keys, `GCP_KMS_*` credentials, and `TOR_PROXY_URL` (Socks5 Tor bridge)
 
 ### Shared Worker Environment Bundle
 
-All workers (`telemetry_worker`, `outbox_relay`, `ml_worker`, `security_worker`) should inherit the same secrets as `deml-backend` unless a key is truly unused. Use Cloud Run **shared variables** or Infisical to avoid drift. Centralized reads go through `backend/utils/env.py`.
+All background tasks (`deml-telemetry-worker`, `deml-workers`) inherit environment configurations from the core `deml-backend` settings. Use Cloud Run **shared variables** or Infisical to avoid drift. Centralized reads go through `backend/utils/env.py`.
 
 **Event flow (for operators):**
 
@@ -1677,24 +1656,7 @@ This service converts raw technology strings into CPE 2.3 identifiers. It is req
 
 _(Once deployed, ensure the `CPE_GUESSER_URL` environment variable on the **Vulnerability Scanner Engine** points to this internal DNS, e.g., `http://deml-cpe-guesser.internal:1323/unique`)_
 
-### 11. Dependency-Track API Server
-
-This service manages the Software Bill of Materials (SBOM) and tracks vulnerabilities across your third-party dependencies.
-
-- **Source**: GitHub repository (`main` branch)
-- **Root Directory**: `/infrastructure/dependency-track`
-- **Builder**: Dockerfile (Multi-stage build using Google Distroless `java17-debian11:nonroot` for maximum security)
-- **Start Command**: Managed via `cloudbuild.yaml`
-- **Target Port**: `8080`
-- **Private Internal DNS**: `deml-dtrack-api.internal`
-- **Public URL**: None (Strictly an internal service)
-- **Environment Variables**:
-  - **ALPINE_DATABASE_MODE**: `external`
-  - **ALPINE_DATABASE_URL**: `jdbc:postgresql://deml-postgres.internal:5432/cloudrun`
-  - **ALPINE_DATABASE_USERNAME**: Database username
-  - **ALPINE_DATABASE_PASSWORD**: Database password
-
-### 12. Tor Proxy (Dark Web Scanner)
+### 11. Tor Proxy (Dark Web Scanner)
 
 A lightweight proxy that allows the security worker to anonymously scrape dark web search engines (e.g., Ahmia) for brand mentions.
 
