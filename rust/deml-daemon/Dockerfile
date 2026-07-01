@@ -17,8 +17,8 @@ WORKDIR /build
 # ── Dependency cache layer ────────────────────────────────────────────────────
 # Copy only manifests first so Docker can cache the `cargo build` dependency
 # compilation step independently from source changes.
-COPY Cargo.toml Cargo.lock* ./
-COPY deml-daemon/Cargo.toml deml-daemon/Cargo.toml
+COPY rust/Cargo.toml rust/Cargo.lock* ./
+COPY rust/deml-daemon/Cargo.toml deml-daemon/Cargo.toml
 
 # Build a stub binary to pre-compile all dependencies.
 RUN mkdir -p deml-daemon/src \
@@ -28,7 +28,7 @@ RUN mkdir -p deml-daemon/src \
     && rm -f target/release/deml-daemon target/release/deps/deml_daemon*
 
 # ── Application build ─────────────────────────────────────────────────────────
-COPY deml-daemon/src deml-daemon/src
+COPY rust/deml-daemon/src deml-daemon/src
 RUN cargo build --release -p deml-daemon
 
 # ── Stage 2: minimal runtime ─────────────────────────────────────────────────
