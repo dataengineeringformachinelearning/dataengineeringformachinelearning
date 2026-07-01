@@ -124,12 +124,16 @@
 // Cursor - Grok 4.3 (2026-06-30): tightened icon–label gap; flex parity vs grid stretch.
 .cta-group {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  flex-wrap: nowrap;
   gap: var(--space-2, 12px);
   align-items: stretch;
+  width: 100%;
 
   @media (min-width: 600px) {
     flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
   }
 }
 
@@ -144,12 +148,19 @@
   justify-content: center;
   gap: var(--grid-unit, 9px);
   transition: var(--transition-smooth, all 0.25s ease);
-  flex: 0 1 auto;
-  min-width: min(100%, 200px);
+  width: 100%;
+  flex: 1 1 auto;
+  min-width: 0;
   box-sizing: border-box;
   min-height: 44px;
   text-align: center;
   letter-spacing: 0.01em;
+
+  @media (min-width: 600px) {
+    width: auto;
+    flex: 0 1 auto;
+    min-width: min(100%, 200px);
+  }
 
   .cta-icon,
   .material-icons {
@@ -164,11 +175,11 @@
   }
 
   .cta-label {
-    white-space: nowrap;
+    white-space: normal;
     line-height: 1.25;
 
-    @media (max-width: 479px) { /* mobile-first-exception */
-      white-space: normal;
+    @media (min-width: 480px) {
+      white-space: nowrap;
     }
   }
 }
@@ -290,8 +301,12 @@
 
 .mockup-gauges {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 12px;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .mockup-gauge {
@@ -360,8 +375,12 @@
 
 .mockup-stats-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 12px;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   .mockup-stat {
     background: var(--card-bg);
@@ -767,9 +786,18 @@
 
 .visual-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+  grid-template-columns: 1fr;
+  gap: 12px;
   margin-bottom: 24px;
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  @media (min-width: 900px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .visual-metric {
@@ -964,9 +992,10 @@
   margin: 0 auto;
 
   .pricing-card {
-    flex: 1;
-    min-width: 260px;
-    max-width: 360px;
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
     padding: 2.5rem 2rem;
     border-radius: 1.5rem;
     background: var(--color-surface);
@@ -975,6 +1004,13 @@
     display: flex;
     flex-direction: column;
     text-align: left;
+
+    @media (min-width: 600px) {
+      flex: 1;
+      min-width: 260px;
+      max-width: 360px;
+      width: auto;
+    }
 
     &:hover {
       transform: translateY(-8px);

@@ -47,9 +47,14 @@
   border: 1px solid var(--border);
   padding: 16px 24px;
   border-radius: 8px;
-  min-width: 160px;
+  min-width: 0;
   align-items: flex-end;
+  box-sizing: border-box;
   box-shadow: var(--shadow-sm);
+
+  @media (min-width: 481px) {
+    min-width: 160px;
+  }
 
   .metric-label {
     font-size: 1rem;
@@ -745,11 +750,18 @@
 
 .soc-panel-header {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   padding: 20px 20px 12px;
   border-bottom: 1px solid var(--border);
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
 }
 
 .soc-panel-title {
@@ -1301,12 +1313,17 @@
 
 .playbook-item {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 16px;
   padding: 16px;
-  flex-wrap: nowrap;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
 
   .playbook-info {
     flex: 1;
@@ -1318,7 +1335,11 @@
   margin: 0 0 8px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+
+  @media (min-width: 768px) {
+    white-space: nowrap;
+  }
 }
 
 .playbook-desc {
@@ -1327,16 +1348,23 @@
   font-size: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+
+  @media (min-width: 768px) {
+    white-space: nowrap;
+  }
 }
 
 .playbook-actions {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  gap: 12px;
-  align-items: center;
   gap: 16px;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: auto;
+  }
 }
 
 .btn-small {
