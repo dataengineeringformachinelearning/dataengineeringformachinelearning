@@ -5,9 +5,8 @@ from __future__ import annotations
 import asyncio
 
 from asgiref.sync import sync_to_async
-from django.contrib.auth import get_user_model
 from django.db import close_old_connections
-from monitor.models import AggregatedAnalytics, Endpoints, MonitoredService, StatusPage
+from monitor.models import AggregatedAnalytics, Endpoints, StatusPage
 
 
 @sync_to_async
@@ -50,25 +49,24 @@ def run_lighthouse_scans(stdout, style):
 
   from telemetry.tasks.lighthouse_scanner import LighthouseScanner
 
-  User = get_user_model()
   close_old_connections()
   try:
     scan_targets: list[tuple[str, object | None, bool]] = []
-    for page in StatusPage.objects.filter(is_platform=True):
+    # Fully Symmetrical Multi-Tenant Loop (Tenant0 / Platform + Users)
+    pages = (
+      StatusPage.objects.all().select_related("user", "user__profile").prefetch_related("services")
+    )
+    for page in pages:
       service = page.services.first()
       if service and service.url:
-        scan_targets.append((service.url, None, True))
-
-    for user in User.objects.filter(profile__isnull=False).select_related("profile"):
-      page = StatusPage.objects.filter(user=user, is_platform=False).first()
-      if not page:
-        continue
-      service = MonitoredService.objects.filter(status_page=page).first()
-      if service and service.url:
-        scan_targets.append((service.url, user, False))
+        scan_targets.append((service.url, page.user, page.is_platform))
 
     for url, user, is_platform in scan_targets:
-      account_id = "platform" if is_platform else str(user.profile.account_id)
+      account_id = (
+        "platform"
+        if is_platform
+        else (str(user.profile.account_id) if user and hasattr(user, "profile") else None)
+      )
       scores = LighthouseScanner.scan_url(url, account_id=account_id)
       if not scores:
         continue
