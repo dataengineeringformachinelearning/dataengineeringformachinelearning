@@ -1,5 +1,5 @@
 # Use the full Bookworm image so we have cmake, libssl-dev, etc. for rdkafka.
-FROM rust:1.85-bookworm AS builder
+FROM rust:latest-bookworm AS builder
 
 # librdkafka build requirements (cmake-build feature compiles librdkafka from source).
 # ca-certificates is needed for crates.io TLS during `cargo fetch`.
