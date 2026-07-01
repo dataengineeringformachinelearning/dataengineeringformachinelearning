@@ -122,10 +122,10 @@ def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
       "loss": run.loss,
       "created_at": run.created_at,
     }
+    cache.set(_cache_key, result, 300)  # 5 min in Dragonfly
   else:
     result = {"status": "success", "average_sla": None, "message": "No training runs available"}
 
-  cache.set(_cache_key, result, 300)  # 5 min in Dragonfly
   return result
 
 
