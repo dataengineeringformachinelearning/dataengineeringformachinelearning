@@ -145,7 +145,7 @@ async fn tick(
 // ── DB query ──────────────────────────────────────────────────────────────────
 
 async fn fetch_services(pool: &PgPool) -> Result<Vec<MonitoredService>> {
-    // Join monitored_service → status_page → user → profile to get account_id.
+    // Join monitored_services → status_pages → user_profiles to get account_id.
     // This mirrors the Django ORM query in pingers.py.
     let rows = sqlx::query_as::<_, MonitoredService>(
         r#"
@@ -153,9 +153,9 @@ async fn fetch_services(pool: &PgPool) -> Result<Vec<MonitoredService>> {
             ms.url,
             sp.is_platform,
             p.account_id::text AS account_id
-        FROM   monitor_monitoredservice  ms
-        JOIN   monitor_statuspage        sp ON sp.id = ms.status_page_id
-        LEFT   JOIN account_profile      p  ON p.user_id = sp.user_id
+        FROM   monitored_services        ms
+        JOIN   status_pages              sp ON sp.id = ms.status_page_id
+        LEFT   JOIN user_profiles        p  ON p.user_id = sp.user_id
         WHERE  ms.url IS NOT NULL
           AND  ms.url <> ''
         "#,
