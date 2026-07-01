@@ -145,3 +145,9 @@ add_router_if_not_exists("/integrations/", integrations_router)
 from billing.api import router as billing_router
 
 add_router_if_not_exists("/billing/", billing_router)
+
+# Internal endpoints for deml-daemon (Rust). Protected by X-Internal-Secret header.
+# Kept out of public schema — never expose these in Swagger docs.
+from .internal_api import router as internal_router
+
+add_router_if_not_exists("/internal/", internal_router)

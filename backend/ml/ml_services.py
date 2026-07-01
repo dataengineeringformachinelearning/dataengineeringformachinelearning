@@ -25,10 +25,24 @@ def get_ces_model_path():
 
 
 def query_teacher_model(prompt: str) -> float:
-  """Query an external teacher model (Gemini 2.5 Flash); falls back to random on any error (with logging)."""
+  """Query an external teacher model (Gemini 2.5 Flash); falls back to random on any error (with logging).
+
+  Result is cached in Dragonfly for 1 hour keyed by a SHA-256 hash of the prompt.
+  Identical feature-vector prompts generated during the same training batch hit cache
+  instead of issuing redundant API calls to Gemini.
+  """
+  import hashlib
   import random
 
   import requests
+  from django.core.cache import cache
+
+  prompt_hash = hashlib.sha256(prompt.encode()).hexdigest()[:32]
+  cache_key = f"teacher_model:{prompt_hash}"
+  cached = cache.get(cache_key)
+  if cached is not None:
+    logger.debug("query_teacher_model: cache hit for %s", cache_key)
+    return float(cached)
 
   google_api_key = os.environ.get("GOOGLE_API_KEY")
   if not google_api_key:
@@ -56,7 +70,9 @@ def query_teacher_model(prompt: str) -> float:
         if parts:
           text = parts[0].get("text", "").strip()
           try:
-            return min(1.0, max(0.0, float(text)))
+            score = min(1.0, max(0.0, float(text)))
+            cache.set(cache_key, score, 3600)  # 1h in Dragonfly
+            return score
           except ValueError:
             logger.warning(
               "Teacher model returned non-numeric output: '%s'; using random fallback", text
@@ -292,6 +308,17 @@ def train_tenant_sla(user: Any = None, *, is_platform: bool = False) -> Training
     average_sla=avg_predicted_sla,
     loss=final_loss,
   )
+
+  # Invalidate Dragonfly cache so the ML API serves fresh results immediately.
+  from django.core.cache import cache as _cache
+
+  _cache.delete("ml:latest_run:platform")
+  if not is_platform and user:
+    from monitor.models import StatusPage as _SP
+
+    for _page in _SP.objects.filter(user=user):
+      _cache.delete(f"ml:latest_run:{_page.id}")
+
   return run
 
 
@@ -522,6 +549,17 @@ def train_threat_model(user: Any = None, *, is_platform: bool = False) -> Threat
     location_weight=location_weight,
     suspicious_ratio=suspicious_ratio,
   )
+
+  # Invalidate Dragonfly cache for the threat report endpoint.
+  from django.core.cache import cache as _cache
+
+  _cache.delete("ml:threat_report:platform")
+  if not is_platform and user:
+    from monitor.models import StatusPage as _SP
+
+    for _page in _SP.objects.filter(user=user):
+      _cache.delete(f"ml:threat_report:{_page.id}")
+
   return report
 
 

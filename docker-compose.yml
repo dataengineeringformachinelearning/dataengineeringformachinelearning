@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:15
@@ -77,6 +75,7 @@ services:
       - BACKEND_URL=http://localhost:8000
       - MARKETING_URL=http://localhost:4321
       - TOR_PROXY_URL=socks5h://tor-proxy:9050
+      - INTERNAL_SECRET=${INTERNAL_SECRET:-dev-internal-secret}
       - STRUCTURED_LOGS=true
     depends_on:
       postgres:
@@ -108,7 +107,13 @@ services:
     command: >
       sh -c "python manage.py telemetry_worker"
 
-  ml_worker:
+  # ── deml-workers: merged ML + Security + cron-task consumer ─────────────────
+  # Replaces: ml_worker, security_worker (Phase 3 consolidation).
+  # Runs deml_workers_start.py which asyncio.gather()'s:
+  #   - security_worker management command (thread)
+  #   - ml_worker management command (thread)
+  #   - internal-tasks Redpanda consumer (async, cron triggers from deml-daemon)
+  deml-workers:
     build:
       context: ./backend
     volumes:
@@ -125,46 +130,44 @@ services:
       - TOR_PROXY_URL=socks5h://tor-proxy:9050
       - SCANNER_SERVICE_URL=http://scanner:8000
       - CPE_GUESSER_URL=http://cpe-guesser:1323/unique
+      - STRUCTURED_LOGS=true
     depends_on:
       backend:
         condition: service_started
     command: >
-      sh -c "python manage.py ml_worker"
+      sh -c "python deml_workers_start.py"
+    restart: unless-stopped
 
-  security_worker:
+  # ── deml-daemon: Rust multi-task background daemon ────────────────────────
+  # Phase 1: outbox relay (Postgres → Redpanda).
+  # Phase 2+: telemetry consumer, health pinger, cron publisher.
+  # Build context is ./rust (workspace root); Dockerfile is inside deml-daemon/.
+  deml-daemon:
     build:
-      context: ./backend
-    volumes:
-      - ./backend:/app
+      context: ./rust
+      dockerfile: deml-daemon/Dockerfile
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
       - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
       - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
-      - DRAGONFLY_HOST=dragonfly
-      - TOR_PROXY_URL=socks5h://tor-proxy:9050
+      # Leave SASL vars unset for local dev (plain TCP). Set in Railway for production.
+      - REDPANDA_SASL_USERNAME=${REDPANDA_SASL_USERNAME:-}
+      - REDPANDA_SASL_PASSWORD=${REDPANDA_SASL_PASSWORD:-}
+      - REDPANDA_SSL=${REDPANDA_SSL:-false}
+      - BATCH_SIZE=100
+      - POLL_INTERVAL_SECS=5
+      - MAX_ATTEMPTS=5
+      - STRUCTURED_LOGS=true
+      - BACKEND_INTERNAL_URL=http://backend:8000
+      - INTERNAL_SECRET=${INTERNAL_SECRET:-dev-internal-secret}
+      - PINGER_INTERVAL_SECS=30
     depends_on:
-      backend:
-        condition: service_started
-    command: >
-      sh -c "python manage.py security_worker"
-
-  outbox_relay:
-    build:
-      context: ./backend
-    volumes:
-      - ./backend:/app
-    environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
-      - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
-      - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}
-      - DRAGONFLY_HOST=dragonfly
-    depends_on:
-      backend:
-        condition: service_started
+      postgres:
+        condition: service_healthy
       redpanda:
         condition: service_healthy
-    command: >
-      sh -c "python relay_start.py"
+      backend:
+        condition: service_started  # health_pinger POSTs to backend — wait for it to start
+    restart: unless-stopped
 
   clickhouse:
     build:
@@ -190,27 +193,12 @@ services:
       - /tmp
     restart: unless-stopped
 
-  otel-collector:
-    build:
-      context: ./infrastructure/otel-collector
-    container_name: otel-collector
-    environment:
-      - CLICKHOUSE_HOST=${CLICKHOUSE_HOST:-clickhouse}
-      - CLICKHOUSE_PORT=${CLICKHOUSE_PORT:-8123}
-      - CLICKHOUSE_USER=${CLICKHOUSE_USER:-default}
-      - CLICKHOUSE_PASSWORD=${CLICKHOUSE_PASSWORD:-password}
-    ports:
-      - "4317:4317" # OTLP gRPC
-      - "4318:4318" # OTLP HTTP
-    depends_on:
-      clickhouse:
-        condition: service_healthy
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    tmpfs:
-      - /tmp
-    restart: unless-stopped
+  # otel-collector removed — the Django backend was never instrumented with the
+  # opentelemetry-sdk (no OTEL_EXPORTER_OTLP_ENDPOINT set, no otel imports in Python
+  # code) and the Angular frontend was not sending to it either. The container was
+  # running idle. When OpenTelemetry tracing is added to Django, deploy a fresh
+  # otel-collector (or use the Grafana Alloy / Uptrace sidecar) and point
+  # OTEL_EXPORTER_OTLP_ENDPOINT at it. ClickHouse does NOT natively receive OTLP.
 
   cpe-guesser:
     build:
@@ -223,23 +211,9 @@ services:
     read_only: true
     restart: unless-stopped
 
-  dependency-track-apiserver:
-    build:
-      context: ./infrastructure/dependency-track
-      dockerfile: Dockerfile
-    container_name: dependency-track-apiserver
-    environment:
-      - ALPINE_DATABASE_MODE=external
-      - ALPINE_DATABASE_URL=jdbc:postgresql://postgres:5432/machinelearning
-      - ALPINE_DATABASE_DRIVER=org.postgresql.Driver
-      - ALPINE_DATABASE_USERNAME=admin
-      - ALPINE_DATABASE_PASSWORD=password
-    ports:
-      - "8081:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-    restart: unless-stopped
+  # dependency-track-apiserver removed — the API was never called from application
+  # code (no Python file referenced it). CVE/SBOM scanning is handled by the
+  # deml-daemon cpe_intel task (Phase 3) via direct NVD + OSV.dev API calls.
 
   tor-proxy:
     build:

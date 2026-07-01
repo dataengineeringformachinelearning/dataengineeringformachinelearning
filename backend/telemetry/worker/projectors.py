@@ -10,6 +10,7 @@ import polars as pl
 from account.context import resolve_scope_from_account_id
 from account.platform import PLATFORM_ACCOUNT_ID
 from asgiref.sync import sync_to_async
+from django.core.cache import cache
 from monitor.models import BugReport, Endpoints, ThreatIntelligence
 from utils.enrichment import get_ip_enrichment_batch, parse_user_agent
 from utils.kafka import get_kafka_producer
@@ -199,6 +200,9 @@ def save_threat_intel_to_db(threat_data_list: list):
 
   if objects_to_create:
     ThreatIntelligence.objects.bulk_create(objects_to_create, ignore_conflicts=True)
+    # Invalidate the Dragonfly malicious-IP cache so the next Kafka batch
+    # picks up newly classified IPs within the next projection cycle.
+    cache.delete("threat:malicious_ips")
     from telemetry.services.soc_orchestrator import process_threat_intel_batch
 
     process_threat_intel_batch(threat_data_list)
@@ -224,11 +228,18 @@ def save_to_db(df: pl.DataFrame):
   unique_ips = [ip for ip in df["ip_address"].to_list() if ip]
   malicious_ips: set[str] = set()
   if unique_ips:
-    malicious_ips = set(
-      ThreatIntelligence.objects.filter(ip_address__in=unique_ips, is_malicious=True).values_list(
-        "ip_address", flat=True
+    # Cache the malicious IP set in Dragonfly — this query fires on every Kafka batch.
+    # ThreatIntelligence is written rarely but read on every telemetry row.
+    _mal_cache_key = "threat:malicious_ips"
+    _cached_ips = cache.get(_mal_cache_key)
+    if _cached_ips is not None:
+      malicious_ips = set(_cached_ips) & set(unique_ips)
+    else:
+      all_malicious = set(
+        ThreatIntelligence.objects.filter(is_malicious=True).values_list("ip_address", flat=True)
       )
-    )
+      cache.set(_mal_cache_key, list(all_malicious), 300)  # 5 min in Dragonfly
+      malicious_ips = all_malicious & set(unique_ips)
 
   # Batch enrichment: one cache lookup per unique IP, not per row.
   ip_enrichment = get_ip_enrichment_batch(df["ip_address"].to_list())

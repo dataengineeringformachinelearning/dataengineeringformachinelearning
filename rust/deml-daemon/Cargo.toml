@@ -1,0 +1,49 @@
+[package]
+name = "deml-daemon"
+version = "0.1.0"
+edition = "2021"
+description = "DEML platform background daemon — outbox relay, telemetry consumer, health pinger, cron scheduler"
+license = "MIT"
+
+[[bin]]
+name = "deml-daemon"
+path = "src/main.rs"
+
+[dependencies]
+# Async runtime
+tokio = { version = "1", features = ["full"] }
+
+# Postgres
+sqlx = { version = "0.8", features = [
+  "postgres",
+  "uuid",
+  "time",
+  "json",
+  "runtime-tokio-rustls",
+] }
+
+# Kafka / Redpanda
+rdkafka = { version = "0.36", features = ["cmake-build", "ssl", "sasl"] }
+
+# HTTP client — health probes + Django internal API calls
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+
+# Concurrent futures (join_all for parallel probes)
+futures = "0.3"
+
+# Timestamps for cron trigger payloads
+chrono = { version = "0.4", features = ["serde"] }
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Logging / tracing
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+
+# Error handling
+anyhow = "1"
+
+# UUIDs (matches Postgres uuid columns)
+uuid = { version = "1", features = ["v4"] }

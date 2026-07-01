@@ -1,6 +1,7 @@
 import datetime
 from typing import Any
 
+from django.core.cache import cache
 from monitor.models import StatusPage
 from ninja import Router, Schema
 from ninja.errors import HttpError
@@ -78,6 +79,13 @@ def train_model(request: Any, status_page_id: str | None = None) -> Any:
 
 @router.get("/latest", response=LatestRunOut)
 def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
+  # ── Dragonfly cache (5 min) ──────────────────────────────────────────────
+  _cache_key = f"ml:latest_run:{status_page_id or 'platform'}"
+  _cached = cache.get(_cache_key)
+  if _cached is not None:
+    return _cached
+  # ─────────────────────────────────────────────────────────────────────────
+
   status_page = None
   if status_page_id:
     try:
@@ -108,14 +116,17 @@ def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
       run = None
 
   if run:
-    return {
+    result = {
       "status": "success",
       "average_sla": run.average_sla,
       "loss": run.loss,
       "created_at": run.created_at,
     }
   else:
-    return {"status": "success", "average_sla": None, "message": "No training runs available"}
+    result = {"status": "success", "average_sla": None, "message": "No training runs available"}
+
+  cache.set(_cache_key, result, 300)  # 5 min in Dragonfly
+  return result
 
 
 from ml.ml_services import train_threat_model
@@ -149,6 +160,13 @@ def train_threat_intel(request: Any) -> Any:
 
 @router.get("/threat-intel/report", response=ThreatReportOut)
 def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
+  # ── Dragonfly cache (5 min) ──────────────────────────────────────────────
+  _cache_key = f"ml:threat_report:{status_page_id or 'platform'}"
+  _cached = cache.get(_cache_key)
+  if _cached is not None:
+    return _cached
+  # ─────────────────────────────────────────────────────────────────────────
+
   status_page = None
   if status_page_id:
     try:
@@ -179,7 +197,7 @@ def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
       report = None
 
   if report:
-    return {
+    result = {
       "status": "success",
       "anomaly_score": report.anomaly_score,
       "top_location": report.top_location,
@@ -188,7 +206,7 @@ def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
       "created_at": report.created_at,
     }
   else:
-    return {
+    result = {
       "status": "success",
       "anomaly_score": 0.0,
       "top_location": "N/A",
@@ -197,6 +215,9 @@ def get_threat_report(request: Any, status_page_id: str | None = None) -> Any:
       "created_at": None,
       "message": "No threat intelligence reports available",
     }
+
+  cache.set(_cache_key, result, 300)  # 5 min in Dragonfly
+  return result
 
 
 # STIX 2.1 Formatted Threat Report schemas
