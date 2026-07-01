@@ -64,7 +64,6 @@ pub async fn run(pool: PgPool, cfg: Config) {
     // local dev only when probing endpoints with self-signed certificates.
     let mut probe_builder = Client::builder()
         .timeout(Duration::from_secs(8))
-        .ip_resolve(reqwest::IpResolve::V4)
         .user_agent("PlatformStatusAutoPinger/2.0 (deml-daemon)");
     if cfg.skip_tls_verify {
         warn!("health_pinger: TLS verification disabled via HEALTH_PINGER_SKIP_TLS_VERIFY — do NOT use in production");
@@ -77,7 +76,6 @@ pub async fn run(pool: PgPool, cfg: Config) {
     // Separate client for the Django ingest POST (LAN call, short timeout).
     let ingest_client = Client::builder()
         .timeout(Duration::from_secs(10))
-        .ip_resolve(reqwest::IpResolve::V4)
         .build()
         .expect("failed to build ingest http client");
 

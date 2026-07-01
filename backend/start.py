@@ -20,10 +20,12 @@ def main():
   daphne_args = [
     "-b",
     "0.0.0.0",
+    "-b",
+    "::",
     "-p",
     port,
     "config.asgi:application",
-  ]  # — intentional container bind
+  ]  # — intentional container bind (dual-stack IPv4/IPv6 support)
 
   # Prefer venv daphne binary; fall back to python -m daphne (distroless-safe).
   daphne_bin = "/opt/venv/bin/daphne"
