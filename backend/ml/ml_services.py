@@ -4,8 +4,15 @@ from typing import Any, Final
 
 logger = logging.getLogger(__name__)
 
-import torch
-import torch.nn as nn
+# Lazy/optional torch: allows full test matrix and non-ML paths without the heavy dep.
+# Production deploys (and ML workers) always have torch; tests/CI use sqlite + mocks.
+try:
+  import torch
+  import torch.nn as nn
+except ImportError:
+  torch = None  # type: ignore
+  nn = None  # type: ignore
+
 from django.conf import settings
 from monitor.models import Endpoints
 
