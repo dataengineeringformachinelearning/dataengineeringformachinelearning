@@ -9,7 +9,12 @@ from collections import Counter, defaultdict
 from datetime import timedelta
 from typing import Any
 
-import torch
+# Optional torch for CES analytics (heavy ML path); guarded for test matrix without ML extras.
+try:
+  import torch
+except ImportError:
+  torch = None  # type: ignore
+
 from account.platform import PLATFORM_ACCOUNT_ID
 from django.contrib.auth import get_user_model
 from django.utils import timezone
