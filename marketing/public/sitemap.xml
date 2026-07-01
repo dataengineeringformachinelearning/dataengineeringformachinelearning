@@ -66,12 +66,7 @@
       <changefreq>monthly</changefreq>
       <priority>0.8</priority>
    </url>
-   <url>
-      <loc>https://dataengineeringformachinelearning.com/login</loc>
-      <lastmod>2026-06-18</lastmod>
-      <changefreq>monthly</changefreq>
-      <priority>0.5</priority>
-   </url>
+   <!-- /login omitted: redirects cross-domain to app auth (domain-pure sitemap requirement) -->
    <url>
       <loc>https://dataengineeringformachinelearning.com/security-benefits</loc>
       <lastmod>2026-06-20</lastmod>
