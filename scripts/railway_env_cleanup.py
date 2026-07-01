@@ -98,7 +98,16 @@ DTRACK_KEEP: Final[frozenset[str]] = frozenset(
   }
 )
 
-OTEL_KEEP: Final[frozenset[str]] = frozenset({"PORT"})
+OTEL_KEEP: Final[frozenset[str]] = frozenset(
+  {
+    "CLICKHOUSE_DB",
+    "CLICKHOUSE_HOST",
+    "CLICKHOUSE_PASSWORD",
+    "CLICKHOUSE_PORT",
+    "CLICKHOUSE_USER",
+    "PORT",
+  }
+)
 
 INFRA_EMPTY: Final[frozenset[str]] = frozenset()  # dragonfly, tor-proxy, cpe-guesser
 

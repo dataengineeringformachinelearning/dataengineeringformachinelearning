@@ -142,9 +142,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--grid-unit, 9px);
   transition: var(--transition-smooth, all 0.25s ease);
-  flex: 1 1 0;
+  flex: 0 1 auto;
   min-width: min(100%, 200px);
   box-sizing: border-box;
   min-height: 44px;
@@ -153,10 +153,10 @@
 
   .cta-icon,
   .material-icons {
-    font-size: 18px;
+    font-size: 20px;
     flex-shrink: 0;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     line-height: 1;
     margin: 0;
     padding: 0;
@@ -435,7 +435,7 @@
   margin: 0;
 
   @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 32px;
   }
 }
@@ -589,23 +589,29 @@
   width: 100%;
   padding: 32px 0;
   margin-bottom: 64px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+  border: 0;
   text-align: center;
   position: relative;
 }
 
-/* pola.rs-inspired double divider accent (border + subtle gradient line) */
+.integrations-strip::before,
 .integrations-strip::after {
   content: '';
   position: absolute;
-  bottom: -1px;
   left: 50%;
   transform: translateX(-50%);
   width: 100px;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--crayola-blue), transparent);
   opacity: 0.3;
+}
+
+.integrations-strip::before {
+  top: 0;
+}
+
+.integrations-strip::after {
+  bottom: 0;
 }
 
 .strip-label {

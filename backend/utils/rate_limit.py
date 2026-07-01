@@ -4,6 +4,7 @@ from functools import wraps
 
 from django.conf import settings
 from django.http import JsonResponse
+from integrations.constants import SWAGGER_DEMO_RATE_LIMIT_PER_MINUTE
 
 try:
   import redis
@@ -100,8 +101,11 @@ def rate_limit():
         return await func(request, *args, **kwargs)
 
       user = getattr(request, "auth", None)
-      if not user:
-        client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      if getattr(request, "deml_is_swagger_demo_key", False):
+        key = f"rate_limit:swagger_demo:{client_ip}"
+        limit = SWAGGER_DEMO_RATE_LIMIT_PER_MINUTE
+      elif not user:
         key = f"rate_limit:ip:{client_ip}"
         limit = 60
       else:
@@ -116,8 +120,9 @@ def rate_limit():
 
         limit, key = await get_limit_and_key(user)
 
-      current_time = int(time.time())
+      current_time = time.time()
       window_start = current_time - 60
+      request_member = str(time.time_ns())
 
       from asgiref.sync import sync_to_async
 
@@ -127,7 +132,7 @@ def rate_limit():
           pipe = redis_client.pipeline()
           pipe.zremrangebyscore(key, 0, window_start)
           pipe.zcard(key)
-          pipe.zadd(key, {str(current_time): current_time})
+          pipe.zadd(key, {request_member: current_time})
           pipe.expire(key, 60)
           results = pipe.execute()
           return results[1]
@@ -152,8 +157,11 @@ def rate_limit():
         return func(request, *args, **kwargs)
 
       user = getattr(request, "auth", None)
-      if not user:
-        client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      client_ip = request.META.get("REMOTE_ADDR", "unknown")
+      if getattr(request, "deml_is_swagger_demo_key", False):
+        key = f"rate_limit:swagger_demo:{client_ip}"
+        limit = SWAGGER_DEMO_RATE_LIMIT_PER_MINUTE
+      elif not user:
         key = f"rate_limit:ip:{client_ip}"
         limit = 60
       else:
@@ -165,14 +173,15 @@ def rate_limit():
           limit = 60
           key = f"rate_limit:user:{user.id}"
 
-      current_time = int(time.time())
+      current_time = time.time()
       window_start = current_time - 60
+      request_member = str(time.time_ns())
 
       try:
         pipe = redis_client.pipeline()
         pipe.zremrangebyscore(key, 0, window_start)
         pipe.zcard(key)
-        pipe.zadd(key, {str(current_time): current_time})
+        pipe.zadd(key, {request_member: current_time})
         pipe.expire(key, 60)
         results = pipe.execute()
         request_count = results[1]

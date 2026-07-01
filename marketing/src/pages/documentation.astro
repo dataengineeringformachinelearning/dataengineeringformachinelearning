@@ -49,11 +49,11 @@ const quickStartSteps = [
           <div class="docs-hero-actions">
             <a href={FRONTEND_URL + '/login'} class="docs-cta primary">
               <span class="material-icons" aria-hidden="true">rocket_launch</span>
-              Create Free Account
+              <span>Create Free Account</span>
             </a>
             <a href="#quick-start" class="docs-cta secondary">
               <span class="material-icons" aria-hidden="true">play_circle</span>
-              Quick Start Guide
+              <span>Quick Start Guide</span>
             </a>
           </div>
         </header>
@@ -142,6 +142,28 @@ const quickStartSteps = [
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '&#123; "model_version": "v2", "inputs": [0.5, 0.2] &#125;'</code></pre>
+            </div>
+          </div>
+
+          <div class="docs-bento-card">
+            <div class="bento-header">
+              <span class="material-icons" aria-hidden="true">shield</span>
+              <h2>Threat Monitoring</h2>
+            </div>
+            <p class="u-style-efd290">
+              Send SIEM or EDR alerts through the same gateway. DEML correlates severity, IP
+              indicators, and tenant context before surfacing actionable cases.
+            </p>
+            <div class="endpoint-badge">
+              <span class="method">POST</span>
+              <span class="path">/api/v1/ingest/security-alert</span>
+            </div>
+            <div class="code-block-premium u-style-5ab468">
+              <div class="code-header">cURL Request</div>
+              <pre><code>curl -X POST https://backend.deml.app/api/v1/ingest/security-alert \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '&#123; "title": "Suspicious login", "severity": "High" &#125;'</code></pre>
             </div>
           </div>
 
@@ -346,18 +368,29 @@ GET /api/v1/integrations/databricks</code></pre>
   flex-wrap: wrap;
   gap: 16px;
   justify-content: center;
+  overflow: visible;
 }
 
 .docs-cta {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  gap: 9px;
   padding: 14px 28px;
   border-radius: 14px;
   font-weight: 600;
   font-size: 1rem;
   text-decoration: none !important;
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  min-height: 48px;
+  box-sizing: border-box;
+  white-space: nowrap;
+
+  .material-icons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
 
   &.primary {
     background: var(--crayola-blue);
@@ -371,13 +404,14 @@ GET /api/v1/integrations/databricks</code></pre>
   }
 
   &.secondary {
-    background: transparent;
-    color: var(--text-color) !important;
-    border: 1px solid var(--border);
+    background: var(--color-surface);
+    color: var(--crayola-blue) !important;
+    border: 1px solid color-mix(in srgb, var(--crayola-blue) 35%, var(--border));
+    box-shadow: var(--shadow-sm);
 
     &:hover {
       border-color: var(--crayola-blue);
-      color: var(--crayola-blue) !important;
+      background: color-mix(in srgb, var(--crayola-blue) 8%, var(--color-surface));
     }
   }
 }
@@ -413,9 +447,6 @@ GET /api/v1/integrations/databricks</code></pre>
     grid-template-columns: repeat(2, 1fr);
   }
 
-  @media (min-width: 1100px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 .docs-quick-start-card {

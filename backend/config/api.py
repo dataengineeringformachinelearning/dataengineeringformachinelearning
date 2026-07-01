@@ -10,6 +10,7 @@ from typing import Any, Final
 
 from django.http import HttpRequest, HttpResponse
 from django.middleware.csrf import get_token
+from integrations.constants import SWAGGER_DEMO_API_KEY
 from ninja.openapi.docs import Swagger
 
 
@@ -79,7 +80,7 @@ api = CustomAPI(
   description=(
     "Data Engineering for Machine Learning (DEML) public integration endpoints.\n\n"
     "**Sandbox Demo Key**: For public demonstration and sandbox testing, authorize using the token "
-    "`deml_demo_api_key_2026` (Bearer authentication in the top-right 'Authorize' button). "
+    f"`{SWAGGER_DEMO_API_KEY}` (Bearer authentication in the top-right 'Authorize' button). "
     "This maps requests to a scoped, unprivileged demo operator user."
   ),
 )
