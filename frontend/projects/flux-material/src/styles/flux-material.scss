@@ -38,6 +38,10 @@
   --flux-warning: var(--color-warning, #fdca40);
   --flux-danger: var(--color-error, #f79824);
   --flux-info: var(--color-info, #2176ff);
+  /* Danger-tinted TEXT on light surfaces needs deepening for WCAG AA. */
+  --flux-danger-text: color-mix(in srgb, var(--flux-danger) 50%, var(--jet-black, #31393c));
+  /* Text placed ON danger-filled surfaces (carrot orange requires dark text). */
+  --flux-on-danger: var(--jet-black, #31393c);
 
   /* Shape (9px grid) */
   --flux-radius: var(--border-radius-md, 9px);
@@ -81,4 +85,15 @@
   --flux-z-overlay: 1000;
   --flux-z-toast: 1100;
   --flux-z-tooltip: 1200;
+}
+
+/* Dark surfaces give the raw danger orange sufficient contrast already. */
+html[data-theme='dark'] {
+  --flux-danger-text: var(--flux-danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --flux-danger-text: var(--flux-danger);
+  }
 }

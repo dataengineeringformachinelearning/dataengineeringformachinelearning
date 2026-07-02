@@ -36,7 +36,14 @@ export class FluxCarouselSlide {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { 'aria-roledescription': 'carousel' },
   template: `
-    <div class="flux-carousel-viewport" #viewport (scroll)="onScroll()">
+    <div
+      class="flux-carousel-viewport"
+      #viewport
+      tabindex="0"
+      role="group"
+      aria-label="Carousel slides"
+      (scroll)="onScroll()"
+    >
       <ng-content />
     </div>
     <div class="flux-carousel-controls">
@@ -89,6 +96,10 @@ export class FluxCarouselSlide {}
       }
       .flux-carousel-viewport::-webkit-scrollbar {
         display: none;
+      }
+      .flux-carousel-viewport:focus-visible {
+        outline: var(--flux-ring-width) solid var(--flux-ring);
+        outline-offset: var(--flux-ring-offset);
       }
       .flux-carousel-controls {
         display: flex;

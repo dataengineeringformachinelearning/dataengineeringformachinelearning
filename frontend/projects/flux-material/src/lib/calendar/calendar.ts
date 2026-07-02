@@ -54,9 +54,9 @@ const toIso = (date: Date): string =>
           <flux-icon name="chevron-right" [size]="18" />
         </button>
       </div>
-      <div class="flux-calendar-grid" role="grid">
+      <div class="flux-calendar-grid" role="group" [attr.aria-label]="title()">
         @for (weekday of weekdays; track weekday) {
-          <span class="flux-calendar-weekday" role="columnheader">{{ weekday }}</span>
+          <span class="flux-calendar-weekday" aria-hidden="true">{{ weekday }}</span>
         }
         @for (day of days(); track day.iso) {
           <button
@@ -151,7 +151,6 @@ const toIso = (date: Date): string =>
       }
       .flux-outside {
         color: var(--flux-text-muted);
-        opacity: 0.55;
       }
       .flux-today {
         border-color: var(--flux-accent-strong);

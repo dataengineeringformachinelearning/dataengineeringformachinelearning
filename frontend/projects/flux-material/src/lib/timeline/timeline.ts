@@ -10,15 +10,11 @@ import { FluxTone } from '../core/types';
 @Component({
   selector: 'flux-timeline',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `<ol class="flux-timeline">
-    <ng-content />
-  </ol>`,
+  host: { role: 'list' },
+  template: `<ng-content />`,
   styles: [
     `
-      .flux-timeline {
-        list-style: none;
-        margin: 0;
-        padding: 0;
+      :host {
         display: flex;
         flex-direction: column;
       }
@@ -32,8 +28,9 @@ export class FluxTimeline {}
   selector: 'flux-timeline-item',
   imports: [FluxIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { role: 'listitem' },
   template: `
-    <li class="flux-timeline-item">
+    <div class="flux-timeline-item">
       <div class="flux-timeline-rail" aria-hidden="true">
         <span class="flux-timeline-marker" [class]="'flux-marker-' + tone()">
           @if (icon()) {
@@ -51,7 +48,7 @@ export class FluxTimeline {}
         </div>
         <div class="flux-timeline-body"><ng-content /></div>
       </div>
-    </li>
+    </div>
   `,
   styles: [
     `

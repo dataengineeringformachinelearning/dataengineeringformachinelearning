@@ -91,9 +91,10 @@ export class FluxNavbar {
         outline-offset: -2px;
       }
       .flux-current {
-        color: var(--flux-accent);
-        font-weight: 600;
+        color: var(--flux-text);
+        font-weight: 700;
         background: var(--flux-accent-soft);
+        box-shadow: inset 0 -2px 0 var(--flux-accent);
       }
     `,
   ],

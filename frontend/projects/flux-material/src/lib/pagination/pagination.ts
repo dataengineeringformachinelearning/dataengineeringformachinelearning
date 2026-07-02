@@ -87,7 +87,9 @@ import { FluxIcon } from '../icon/icon';
         background: var(--flux-accent);
         border-color: var(--flux-accent);
         color: var(--flux-accent-content);
-        font-weight: 600;
+        /* >= 18.67px bold qualifies as WCAG large text (3:1 on accent fill). */
+        font-size: calc(var(--flux-font-size) * 1.05);
+        font-weight: 700;
       }
       .flux-page-ellipsis {
         color: var(--flux-text-muted);

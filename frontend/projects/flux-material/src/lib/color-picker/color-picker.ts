@@ -92,6 +92,8 @@ import { FluxIcon } from '../icon/icon';
       .flux-color-value {
         font-size: var(--flux-font-size);
         color: var(--flux-text-muted);
+        background: transparent;
+        padding: 0;
         font-variant-numeric: tabular-nums;
       }
     `,

@@ -86,7 +86,7 @@ const TONE_ICONS: Record<string, FluxIconName> = {
         font-weight: 600;
       }
       .flux-callout-text {
-        color: var(--flux-text-muted);
+        color: var(--flux-text);
         line-height: 1.55;
       }
       .flux-callout-close {

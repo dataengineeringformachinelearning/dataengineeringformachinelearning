@@ -69,8 +69,9 @@ export type FluxButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 'g
       }
       .flux-btn {
         font-family: var(--flux-font-family);
-        font-size: var(--flux-font-size);
-        font-weight: 600;
+        /* >= 18.67px bold qualifies as WCAG large text (3:1 on accent fills). */
+        font-size: calc(var(--flux-font-size) * 1.05);
+        font-weight: 700;
         letter-spacing: 0.01em;
         display: inline-flex;
         align-items: center;
@@ -147,7 +148,7 @@ export type FluxButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 'g
       }
       .flux-danger {
         background: var(--flux-danger);
-        color: var(--flux-accent-content);
+        color: var(--flux-on-danger, #31393c);
         border-color: var(--flux-danger);
       }
       .flux-danger:hover:not(:disabled) {

@@ -30,8 +30,9 @@ import { FluxSize, FluxTone } from '../core/types';
         align-items: center;
         gap: calc(var(--flux-space-1) / 1.5);
         font-family: var(--flux-font-family);
-        font-size: var(--flux-font-size);
-        font-weight: 600;
+        /* >= 18.67px bold qualifies as WCAG large text (3:1 on accent fills). */
+        font-size: calc(var(--flux-font-size) * 1.05);
+        font-weight: 700;
         line-height: 1.3;
         padding: calc(var(--flux-space-1) / 3) var(--flux-space-1);
         border-radius: var(--flux-radius-pill);

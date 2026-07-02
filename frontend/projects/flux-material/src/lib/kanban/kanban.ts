@@ -12,11 +12,11 @@ import { FluxKanbanCard, FluxKanbanColumn, FluxKanbanMove } from '../core/types'
   imports: [FluxIcon, FluxBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="flux-kanban" role="list" aria-label="Kanban board">
+    <div class="flux-kanban" role="group" aria-label="Kanban board" tabindex="0">
       @for (column of columns(); track column.id) {
         <section
           class="flux-kanban-column"
-          role="listitem"
+          [attr.aria-label]="column.title"
           [class.flux-drop-target]="dropColumnId() === column.id"
           (dragover)="onDragOver($event, column.id)"
           (dragleave)="dropColumnId.set(null)"
@@ -51,6 +51,10 @@ import { FluxKanbanCard, FluxKanbanColumn, FluxKanbanMove } from '../core/types'
   `,
   styles: [
     `
+      .flux-kanban:focus-visible {
+        outline: var(--flux-ring-width) solid var(--flux-ring);
+        outline-offset: var(--flux-ring-offset);
+      }
       .flux-kanban {
         display: grid;
         grid-auto-flow: column;

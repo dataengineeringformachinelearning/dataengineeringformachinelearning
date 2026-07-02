@@ -60,8 +60,8 @@ import { fluxUid } from '../core/uid';
         color: var(--flux-text-muted);
       }
       .flux-field-error {
-        color: var(--flux-danger);
-        font-weight: 500;
+        color: var(--flux-danger-text, var(--flux-danger));
+        font-weight: 600;
       }
       :host(.flux-field-invalid) ::ng-deep .flux-control {
         border-color: var(--flux-danger);

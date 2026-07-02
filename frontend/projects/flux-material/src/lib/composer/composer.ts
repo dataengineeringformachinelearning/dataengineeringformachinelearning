@@ -117,8 +117,9 @@ import { FluxIcon } from '../icon/icon';
         background: var(--flux-accent);
         color: var(--flux-accent-content);
         font-family: var(--flux-font-family);
-        font-size: var(--flux-font-size);
-        font-weight: 600;
+        /* >= 18.67px bold qualifies as WCAG large text (3:1 on accent fill). */
+        font-size: calc(var(--flux-font-size) * 1.05);
+        font-weight: 700;
         padding: calc(var(--flux-space-1) / 1.5) var(--flux-space-2);
         border-radius: var(--flux-radius);
         cursor: pointer;
