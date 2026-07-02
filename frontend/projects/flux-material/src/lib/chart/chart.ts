@@ -40,10 +40,10 @@ const TONE_VARS: Record<FluxTone, string> = {
 const WIDTH = 720;
 const HEIGHT_DEFAULT = 260;
 const HEIGHT_COMPACT = 200;
-const PAD_TOP = 14;
-const PAD_RIGHT = 16;
-const PAD_BOTTOM = 36;
-const PAD_LEFT = 48;
+const PAD_TOP = 12;
+const PAD_RIGHT = 20;
+const PAD_BOTTOM = 32;
+const PAD_LEFT = 44;
 
 const formatTick = (value: number): string => {
   if (value >= 1_000_000) {
@@ -98,6 +98,16 @@ const truncateLabel = (label: string, max = 10): string =>
             </text>
           }
         } @else {
+          <defs>
+            <clipPath id="flux-plot-clip">
+              <rect
+                [attr.x]="padLeft"
+                [attr.y]="plotTop()"
+                [attr.width]="width - padLeft - padRight"
+                [attr.height]="plotBottom() - plotTop()"
+              />
+            </clipPath>
+          </defs>
           @for (line of gridLines(); track line) {
             <line
               class="flux-chart-grid"
@@ -141,6 +151,7 @@ const truncateLabel = (label: string, max = 10): string =>
               />
             }
           } @else {
+            <g clip-path="url(#flux-plot-clip)">
             @for (path of paths(); track path.name) {
               @if (showArea()) {
                 <path
@@ -155,6 +166,7 @@ const truncateLabel = (label: string, max = 10): string =>
                 [style.stroke]="toneVar(path.tone)"
               ></path>
             }
+            </g>
           }
         }
       </svg>
@@ -218,7 +230,7 @@ const truncateLabel = (label: string, max = 10): string =>
         display: block;
         width: 100%;
         height: auto;
-        min-height: 180px;
+        min-height: 160px;
         background: var(--flux-surface);
         border: 1px solid var(--flux-border);
         border-radius: var(--flux-radius);
@@ -227,7 +239,7 @@ const truncateLabel = (label: string, max = 10): string =>
       .flux-chart-fill svg {
         flex: 1 1 auto;
         height: 100%;
-        min-height: 240px;
+        min-height: 200px;
         max-height: none;
       }
       .flux-chart-compact svg {
@@ -241,7 +253,7 @@ const truncateLabel = (label: string, max = 10): string =>
       .flux-chart-axis-y,
       .flux-chart-axis-x {
         fill: var(--flux-text-muted);
-        font-size: 11px;
+        font-size: var(--flux-chart-axis-size, 13px);
         font-family: var(--flux-font-family);
       }
       .flux-chart-line {
@@ -454,8 +466,10 @@ export class FluxChart {
     }
     const cx = WIDTH / 2;
     const cy = this.plotCy();
-    const outer = Math.min(WIDTH, this.height()) / 2 - PAD_TOP - 4;
-    const inner = outer * 0.55;
+    const plotH = this.plotBottom() - this.plotTop();
+    const plotW = WIDTH - PAD_LEFT - PAD_RIGHT;
+    const outer = Math.min(plotW, plotH) / 2 - 6;
+    const inner = outer * 0.58;
     let cursor = -Math.PI / 2;
 
     return items.map(item => {

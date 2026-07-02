@@ -194,6 +194,7 @@
               [series]="latencySeries()"
               label="Latency snapshot"
               [showArea]="true"
+              [fill]="true"
             />
             } @else {
             <div class="panel-empty compact">
@@ -238,6 +239,7 @@
               [series]="latencySeries()"
               label="Latency Trend (24h)"
               [showArea]="true"
+              [fill]="true"
             />
             } @else {
             <div class="panel-empty">
@@ -259,6 +261,7 @@
               kind="donut"
               [segments]="threatDonutSegments()"
               label="Threat Severity Distribution"
+              [fill]="true"
             />
             } @else {
             <div class="panel-empty compact">
@@ -276,6 +279,7 @@
               kind="bar"
               [series]="securityAlertSeries()"
               label="Security Anomalies (24h)"
+              [fill]="true"
             />
             } @else {
             <div class="panel-empty compact">

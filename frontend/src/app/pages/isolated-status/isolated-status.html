@@ -373,14 +373,13 @@
               <flux-button
                 variant="primary"
                 type="button"
-                class="promo-btn-primary"
                 icon="plus"
                 (pressed)="login()"
               >
                 Create Your Status Page
               </flux-button>
               } @if (authService.isAuthenticated()) {
-              <flux-button variant="primary" href="/manage" class="promo-btn-primary" icon="plus">
+              <flux-button variant="primary" href="/manage" icon="plus">
                 Build Your Status Page
               </flux-button>
               }

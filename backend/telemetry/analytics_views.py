@@ -99,7 +99,12 @@ def get_incidents(
     elif str(scoped_account_id) != str(profile.account_id):
       return []
 
-  cases = list(IncidentCase.objects.filter(user=scoped_user).order_by("-created_at"))
+  cases = list(
+    IncidentCase.objects.filter(
+      user=scoped_user,
+      status__in=["Open", "Investigating", "Mitigated"],
+    ).order_by("-created_at")
+  )
 
   return [
     IncidentCaseOut(

@@ -51,6 +51,9 @@ export class Vulnerabilities implements OnInit {
   public selectedSite: string | null = null;
 
   incidents = this.vulnService.incidents;
+  activeIncidents = computed(() =>
+    this.incidents().filter(i => i.status !== 'Resolved' && i.status !== 'False Positive'),
+  );
   playbooks = this.vulnService.playbooks;
 
   actionMessage = signal<string | null>(null);
@@ -326,6 +329,9 @@ export class Vulnerabilities implements OnInit {
     this.vulnService.updateIncident(incident.id, updates).subscribe({
       next: () => {
         this.actionMessage.set(`Incident updated: ${updates.status}`);
+        if (updates.status === 'Resolved' || updates.status === 'False Positive') {
+          this.selectedIncident.set(null);
+        }
         this.vulnService.fetchIncidents(this.selectedTenantId || undefined);
         this.cdr.markForCheck();
       },
