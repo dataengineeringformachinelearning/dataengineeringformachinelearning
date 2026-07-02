@@ -23,7 +23,7 @@ from utils.kafka import get_kafka_producer
 
 # Reserved, non-real user id used only by the synthetic probe. The projector skips
 # idempotency dedup for this uid so every probe re-projects (see projectors.py).
-SYNTHETIC_HEALTH_UID = "__deml_projection_healthcheck__"
+SYNTHETIC_HEALTH_UID = "deml_projection_healthcheck"
 
 # Name of the component shown on the platform status page.
 EVENT_PROJECTIONS_SERVICE_NAME = "Event Projections"
