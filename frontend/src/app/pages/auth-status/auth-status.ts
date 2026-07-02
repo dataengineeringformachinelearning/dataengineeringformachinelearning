@@ -4,7 +4,7 @@ import { AuthService } from '../../services/auth.service';
 @Component({
   selector: 'app-auth-status',
   standalone: true,
-  template: ` <div style="display:none;">Auth status checker for cross-site iframe</div> `,
+  template: ` <div hidden aria-hidden="true">Auth status checker for cross-site iframe</div> `,
   styles: [],
 })
 export class AuthStatus implements OnInit {

@@ -66,15 +66,6 @@ const getBackendUrl = () => {
   if (host.includes('localhost') || host.includes('127.0.0.1')) {
     return 'http://localhost:8000';
   }
-  if (host.includes('up.railway.app')) {
-    if (host.includes('-frontend')) {
-      return \`https://\${host.replace('-frontend', '-backend')}\`;
-    }
-    if (host.includes('frontend-')) {
-      return \`https://\${host.replace('frontend-', 'backend-')}\`;
-    }
-    return \`https://backend-\${host}\`;
-  }
   if (host === 'deml.app' || host.endsWith('.deml.app')) {
     return 'https://backend.deml.app';
   }

@@ -112,14 +112,14 @@ app.get('/auth-status', async (req, res) => {
       res
         .status(200)
         .send(
-          '<!doctype html><html><head><title>Auth Status</title></head><body><div style="display:none;">Auth status checker</div></body></html>',
+          '<!doctype html><html><head><title>Auth Status</title></head><body><div hidden>Auth status checker</div></body></html>',
         );
     }
   } catch (e) {
     res
       .status(200)
       .send(
-        '<!doctype html><html><body><div style="display:none;">Auth status</div></body></html>',
+        '<!doctype html><html><body><div hidden>Auth status</div></body></html>',
       );
   }
 });

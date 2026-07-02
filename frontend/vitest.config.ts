@@ -1,6 +1,12 @@
+import path from 'node:path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@deml/flux-material': path.resolve(__dirname, 'projects/flux-material/src/public-api.ts'),
+    },
+  },
   plugins: [
     {
       name: 'mock-angular-resources',
