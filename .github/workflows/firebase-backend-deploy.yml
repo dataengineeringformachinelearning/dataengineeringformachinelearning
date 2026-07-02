@@ -95,3 +95,11 @@ jobs:
           echo "   - Functions: ingestEvent (and any other)"
           echo "   - Firestore: rules from firestore.rules (for deml named DB + users data)"
           echo "   - To enable fast direct Redpanda publish from Functions: set the REDPANDA_PUBLIC_* GitHub secrets and re-run this workflow"
+
+  purge-cloudflare-cache:
+    needs: deploy
+    uses: ./.github/workflows/purge-cloudflare-cache.yml
+    secrets:
+      CLOUDFLARE_TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
+      CLOUDFLARE_ZONE_ID_DEML_MARKETING: ${{ secrets.CLOUDFLARE_ZONE_ID_DEML_MARKETING }}
+      CLOUDFLARE_ZONE_ID_DEML_APP: ${{ secrets.CLOUDFLARE_ZONE_ID_DEML_APP }}

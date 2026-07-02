@@ -41,8 +41,7 @@ def get_all_endpoints(request):
   if not request.user.is_authenticated:
     return []
 
-  user_pages = StatusPage.objects.filter(user=request.user)
-  user_urls = MonitoredService.objects.filter(status_page__in=user_pages).values_list(
+  user_urls = MonitoredService.objects.filter(status_page__user=request.user).values_list(
     "url", flat=True
   )
   endpoints = Endpoints.objects.filter(url__in=user_urls)

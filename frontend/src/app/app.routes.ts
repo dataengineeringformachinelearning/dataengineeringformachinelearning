@@ -22,35 +22,6 @@ export const routes: Routes = [
   },
   { path: 'explore', loadComponent: () => import('./pages/explore/explore').then(m => m.Explore) },
   {
-    path: 'flux',
-    loadComponent: () => import('./pages/flux-showcase/flux-showcase').then(m => m.FluxShowcase),
-  },
-  {
-    path: 'documentation',
-    loadComponent: () => import('./pages/documentation/documentation').then(m => m.Documentation),
-  },
-  {
-    path: 'book',
-    loadComponent: () => import('./pages/book/book').then(m => m.Book),
-  },
-  {
-    path: 'whitepaper',
-    loadComponent: () => import('./pages/whitepaper/whitepaper').then(m => m.Whitepaper),
-  },
-  {
-    path: 'compliance',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/compliance/compliance').then(m => m.Compliance),
-  },
-  {
-    path: 'terms',
-    loadComponent: () => import('./pages/terms/terms').then(m => m.Terms),
-  },
-  {
-    path: 'privacy',
-    loadComponent: () => import('./pages/privacy/privacy').then(m => m.Privacy),
-  },
-  {
     path: 'vulnerabilities',
     canActivate: [authGuard],
     loadComponent: () =>

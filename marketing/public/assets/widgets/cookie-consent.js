@@ -1,7 +1,7 @@
-(function () {
+(() => {
   const PREFS_KEY = "deml_cookie_preferences";
 
-  function getPreferences() {
+  const getPreferences = () => {
     try {
       const stored = localStorage.getItem(PREFS_KEY);
       if (stored) {
@@ -11,11 +11,11 @@
       console.error("Failed to read cookie preferences", e);
     }
     return null;
-  }
+  };
 
-  function setPreferences(prefs) {
+  const setPreferences = (prefs) => {
     localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  }
+  };
 
   const css = `
     .deml-cookie-overlay {
@@ -207,6 +207,18 @@
       transition: transform 0.3s ease;
     }
 
+    .deml-toggle-switch:focus-visible {
+      outline: 2px solid var(--color-primary, #2563eb);
+      outline-offset: 2px;
+    }
+
+    .deml-primary-actions button:focus-visible,
+    .deml-settings-btn:focus-visible,
+    .deml-cookie-close-btn:focus-visible {
+      outline: 2px solid var(--color-primary, #2563eb);
+      outline-offset: 2px;
+    }
+
     .deml-cookie-footer {
       margin-top: 8px;
     }
@@ -340,7 +352,7 @@
 
   let overlayEl = null;
 
-  function renderDialog() {
+  const renderDialog = () => {
     if (overlayEl) {
       overlayEl.remove();
     }
@@ -489,19 +501,19 @@
       setPreferences({ analytical: true, marketing: true });
       closeBanner();
     });
-  }
+  };
 
-  function closeBanner() {
+  const closeBanner = () => {
     if (overlayEl) {
       overlayEl.remove();
       overlayEl = null;
     }
     // Update currentPrefs to reflect the recent save, so we can render the close button
     currentPrefs = getPreferences();
-  }
+  };
 
   window.DemlWidgets = window.DemlWidgets || {};
-  window.DemlWidgets.openCookieSettings = function () {
+  window.DemlWidgets.openCookieSettings = () => {
     currentPrefs = getPreferences();
     if (currentPrefs) {
       analyticalConsent = currentPrefs.analytical;

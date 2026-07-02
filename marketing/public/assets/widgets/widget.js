@@ -53,6 +53,63 @@
     }
   };
 
+  // Shared: collect browser threat indicators (used by vuln reports + analytics)
+  const getBrowserThreatIndicators = () => {
+    const indicators = {
+      referrer: document.referrer || "Direct",
+      language: navigator.language,
+      platform: navigator.platform,
+      cores: navigator.hardwareConcurrency || "N/A",
+      memory_gb: navigator.deviceMemory || "N/A",
+      webdriver: !!navigator.webdriver,
+      plugins_count: navigator.plugins ? navigator.plugins.length : 0,
+      visibility_state: document.visibilityState || "visible",
+      screen_color_depth: window.screen ? window.screen.colorDepth : "N/A",
+      network_connection: {},
+    };
+    try {
+      if (navigator.connection) {
+        const conn = navigator.connection;
+        indicators.network_connection = {
+          effective_type: conn.effectiveType,
+          rtt_ms: conn.rtt,
+          downlink_mbps: conn.downlink,
+        };
+      }
+    } catch {}
+    return indicators;
+  };
+
+  // Shared: collect page performance metrics (FCP, load time, protocol)
+  const collectPerformanceMetrics = () => {
+    let pageLoadTime = 0;
+    let domInteractive = 0;
+    let dnsLookup = 0;
+    let fcpTime = 0;
+    let protocol = "unknown";
+    try {
+      const [navigation] = window.performance.getEntriesByType("navigation");
+      if (navigation) {
+        pageLoadTime = Math.round(
+          navigation.loadEventEnd - navigation.startTime,
+        );
+        domInteractive = Math.round(
+          navigation.domInteractive - navigation.startTime,
+        );
+        dnsLookup = Math.round(
+          navigation.domainLookupEnd - navigation.domainLookupStart,
+        );
+        protocol = navigation.nextHopProtocol || "unknown";
+      }
+      const paints = window.performance.getEntriesByType("paint");
+      const fcp = paints.find((p) => p.name === "first-contentful-paint");
+      if (fcp) {
+        fcpTime = Math.round(fcp.startTime);
+      }
+    } catch {}
+    return { pageLoadTime, domInteractive, dnsLookup, fcpTime, protocol };
+  };
+
   const DEFAULT_STATUS_APP = "https://deml.app";
 
   const isMarketingHost = (hostname) =>
@@ -365,6 +422,9 @@
             justify-content: center;
             width: 100%;
             margin: 18px auto;
+            /* Prevent FOUC: start invisible, fade in once .deml-ready is applied */
+            opacity: 0;
+            transition: opacity 0.15s ease;
             --jet-black: #31393c;
             --crayola-blue: #2176ff;
             --blue-bell: #33a1fd;
@@ -387,6 +447,9 @@
             --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
             --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          :host(.deml-ready) {
+            opacity: 1;
           }
           .widget-container {
             display: inline-flex;
@@ -413,8 +476,9 @@
           .widget-link {
             display: inline-flex;
             align-items: center;
+            gap: 6px;
             text-decoration: none;
-            color: inherit;
+            color: var(--white, #ffffff);
           }
           .status-dot {
             width: 8px;
@@ -423,6 +487,13 @@
             background-color: #94a3b8;
             margin-right: 8px;
             display: inline-block;
+            flex-shrink: 0;
+          }
+          .status-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 220px;
           }
           .divider {
             color: rgba(255, 255, 255, 0.2);
@@ -431,9 +502,9 @@
           .report-trigger {
             background: none;
             border: none;
-            color: #ef4444;
+            color: var(--carrot-orange, #f79824);
             cursor: pointer;
-            padding: 0px;
+            padding: 4px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -441,7 +512,7 @@
             transition: background-color 0.2s;
           }
           .report-trigger:hover {
-            background-color: #fee2e2;
+            background-color: rgba(247, 152, 36, 0.18);
           }
           .report-icon {
             width: 16px;
@@ -452,12 +523,14 @@
           }
           .modal-overlay {
             position: fixed;
+            overflow-y: auto;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             background-color: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -523,6 +596,11 @@
             flex-direction: column;
             gap: 16px;
           }
+          @media (max-width: 480px) {
+            .modal-body {
+              padding: 16px;
+            }
+          }
           .helper-text {
             font-size: 14px;
             color: #94a3b8;
@@ -545,7 +623,7 @@
             padding: 10px 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             outline: none;
             background-color: rgba(0, 0, 0, 0.2);
             color: #f8fafc;
@@ -560,9 +638,11 @@
           .form-row {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
           }
           .form-row .form-field {
             flex: 1;
+            min-width: 140px;
           }
           .modal-footer {
             padding: 16px 20px;
@@ -792,7 +872,7 @@
               inputDesc,
               btnCancel,
               btnSubmit,
-            ];
+            ].filter(Boolean);
             const first = focusables[0];
             const last = focusables[focusables.length - 1];
             const activeEl = this.shadowRoot.activeElement;
@@ -811,34 +891,7 @@
           }
         });
 
-        const getBrowserThreatIndicators = () => {
-          const indicators = {
-            referrer: document.referrer || "Direct",
-            language: navigator.language,
-            platform: navigator.platform,
-            cores: navigator.hardwareConcurrency || "N/A",
-            memory_gb: navigator.deviceMemory || "N/A",
-            webdriver: navigator.webdriver ? true : false,
-            plugins_count: navigator.plugins ? navigator.plugins.length : 0,
-            visibility_state: document.visibilityState || "visible",
-            screen_color_depth: window.screen
-              ? window.screen.colorDepth
-              : "N/A",
-            network_connection: {},
-          };
-
-          try {
-            if (navigator.connection) {
-              const conn = navigator.connection;
-              indicators.network_connection = {
-                effective_type: conn.effectiveType,
-                rtt_ms: conn.rtt,
-                downlink_mbps: conn.downlink,
-              };
-            }
-          } catch {}
-          return indicators;
-        };
+        // getBrowserThreatIndicators is now a top-level shared helper
 
         btnSubmit.addEventListener("click", async () => {
           const title = inputTitle.value.trim();
@@ -875,32 +928,8 @@
 
           btnSubmit.disabled = true;
 
-          let pageLoadTime = 0;
-          let domInteractive = 0;
-          let dnsLookup = 0;
-          let fcpTime = 0;
-          let protocol = "unknown";
-          try {
-            const [navigation] =
-              window.performance.getEntriesByType("navigation");
-            if (navigation) {
-              pageLoadTime = Math.round(
-                navigation.loadEventEnd - navigation.startTime,
-              );
-              domInteractive = Math.round(
-                navigation.domInteractive - navigation.startTime,
-              );
-              dnsLookup = Math.round(
-                navigation.domainLookupEnd - navigation.domainLookupStart,
-              );
-              protocol = navigation.nextHopProtocol || "unknown";
-            }
-            const paints = window.performance.getEntriesByType("paint");
-            const fcp = paints.find((p) => p.name === "first-contentful-paint");
-            if (fcp) {
-              fcpTime = Math.round(fcp.startTime);
-            }
-          } catch {}
+          const { pageLoadTime, domInteractive, dnsLookup, fcpTime, protocol } =
+            collectPerformanceMetrics();
 
           const payload = {
             title,
@@ -959,8 +988,7 @@
         // Automatically report client performance analytics to feed the Threat Analysis (TA) model
         const reportAnalyticsToTa = async () => {
           let responseTimeMs = 250; // Fallback default
-          let fcpTime = 0;
-          let protocol = "unknown";
+
           const sessionStart = Number(
             sessionStorage.getItem("deml_session_start") || Date.now(),
           );
@@ -996,26 +1024,12 @@
               clickEntropy * 0.3 +
               (sessionDurationS > 10 ? 0.2 : 0),
           );
-          try {
-            const [navigation] =
-              window.performance.getEntriesByType("navigation");
-            if (navigation && navigation.loadEventEnd > 0) {
-              responseTimeMs = Math.round(
-                navigation.loadEventEnd - navigation.startTime,
-              );
-              protocol = navigation.nextHopProtocol || "unknown";
-            } else if (window.performance.timing) {
-              const t = window.performance.timing;
-              if (t.loadEventEnd > 0 && t.navigationStart > 0) {
-                responseTimeMs = t.loadEventEnd - t.navigationStart;
-              }
-            }
-            const paints = window.performance.getEntriesByType("paint");
-            const fcp = paints.find((p) => p.name === "first-contentful-paint");
-            if (fcp) {
-              fcpTime = Math.round(fcp.startTime);
-            }
-          } catch {}
+          const perfMetrics = collectPerformanceMetrics();
+          const fcpTime = perfMetrics.fcpTime;
+          const protocol = perfMetrics.protocol;
+          if (perfMetrics.pageLoadTime > 0) {
+            responseTimeMs = perfMetrics.pageLoadTime;
+          }
 
           const telemetryPayload = {
             tenant_id: pageId,
@@ -1048,36 +1062,36 @@
               body: JSON.stringify(telemetryPayload),
             });
 
-            // Dynamically load OpenTelemetry SDK via ESM to send traces to OTel Collector
+            // Dynamically load OpenTelemetry SDK via ESM to send traces to OTel Collector.
+            // Only runs when data-otel-url is explicitly set on the script tag — skipping it
+            // prevents spurious OPTIONS/POST requests to the page origin (e.g. 404 on telemetry.deml.app).
             try {
-              const { WebTracerProvider } =
-                await import("https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1");
-              const { OTLPTraceExporter } =
-                await import("https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1");
-              const { BatchSpanProcessor } =
-                await import("https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1");
-
-              const provider = new WebTracerProvider();
-
-              // Dynamically read the collector URL from the script tag's data attribute, default to production domain
               const scriptTag =
                 document.currentScript ||
                 document.querySelector('script[src*="widget.js"]');
               const otelUrl = scriptTag?.getAttribute("data-otel-url") ?? "";
 
-              const exporter = new OTLPTraceExporter({
-                url: otelUrl,
-              });
+              if (otelUrl) {
+                const { WebTracerProvider } =
+                  await import("https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1");
+                const { OTLPTraceExporter } =
+                  await import("https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1");
+                const { BatchSpanProcessor } =
+                  await import("https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1");
 
-              provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-              provider.register();
+                const provider = new WebTracerProvider();
 
-              const tracer = provider.getTracer("widget-telemetry");
-              const span = tracer.startSpan("page_load");
-              span.setAttribute("fcp_ms", fcpTime);
-              span.setAttribute("response_time_ms", responseTimeMs);
-              span.setAttribute("client_ip", this.clientIp);
-              span.end();
+                const exporter = new OTLPTraceExporter({ url: otelUrl });
+                provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+                provider.register();
+
+                const tracer = provider.getTracer("widget-telemetry");
+                const span = tracer.startSpan("page_load");
+                span.setAttribute("fcp_ms", fcpTime);
+                span.setAttribute("response_time_ms", responseTimeMs);
+                span.setAttribute("client_ip", this.clientIp);
+                span.end();
+              }
             } catch (otelErr) {
               console.warn("Failed to initialize OpenTelemetry", otelErr);
             }
@@ -1140,7 +1154,7 @@
               const href = statusPageUrl(frontendHost, page.slug);
               widgetLink.href = href;
 
-              let color = "var(--color-success, #10b981)";
+              let color = "#10b981";
               let textContent = "All Systems Operational";
 
               try {

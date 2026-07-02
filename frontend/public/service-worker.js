@@ -1,4 +1,4 @@
-const CACHE_NAME = 'deml-cache-v4';
+const CACHE_NAME = 'deml-cache-v5';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -6,7 +6,6 @@ const ASSETS_TO_CACHE = [
   '/favicon.ico',
   '/favicon.svg',
   '/apple-touch-icon.png',
-  '/assets/content/page.md',
 ];
 
 self.addEventListener('install', event => {

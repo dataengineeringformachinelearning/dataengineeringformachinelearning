@@ -47,7 +47,7 @@ def test_csp_and_security_headers_middleware(client: Client) -> None:
   assert "Referrer-Policy" in response
   assert "Permissions-Policy" in response
 
-  assert response["X-Frame-Options"] == "SAMEORIGIN"
+  assert response["X-Frame-Options"] == "DENY"
   assert response["X-Content-Type-Options"] == "nosniff"
   assert "default-src 'self'" in response["Content-Security-Policy"]
 

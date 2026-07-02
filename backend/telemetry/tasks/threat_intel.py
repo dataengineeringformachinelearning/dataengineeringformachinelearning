@@ -16,7 +16,7 @@ class ThreatIntelFetcher:
   @classmethod
   def fetch_bad_ips(cls, account_id=None):
     try:
-      logger.info(f"[Account: {account_id}] Fetching threat intel from abuse.ch...")
+      logger.info("[Account: %s] Fetching threat intel from abuse.ch...", account_id)
       response = requests.get(cls.ABUSE_CH_URL, timeout=10)
       response.raise_for_status()
 
@@ -25,7 +25,7 @@ class ThreatIntelFetcher:
         if line and not line.startswith("#"):
           bad_ips.append(line.strip())
 
-      logger.info(f"Successfully fetched {len(bad_ips)} bad IPs.")
+      logger.info("Successfully fetched %d bad IPs.", len(bad_ips))
 
       if account_id:
         from account.context import resolve_scope_from_account_id
@@ -51,7 +51,7 @@ class ThreatIntelFetcher:
           ).delete()
           ThreatIntelligence.objects.bulk_create(records, batch_size=5000)
 
-        logger.info(f"Saved {len(records)} threat intel records to the database.")
+        logger.info("Saved %d threat intel records to the database.", len(records))
 
       return bad_ips
 

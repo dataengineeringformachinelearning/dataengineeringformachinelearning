@@ -332,6 +332,9 @@
             justify-content: center;
             width: 100%;
             margin: 18px auto;
+            /* Prevent FOUC: start invisible, fade in once .deml-ready is applied */
+            opacity: 0;
+            transition: opacity 0.15s ease;
             --jet-black: #31393c;
             --crayola-blue: #2176ff;
             --blue-bell: #33a1fd;
@@ -354,6 +357,9 @@
             --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
             --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          :host(.deml-ready) {
+            opacity: 1;
           }
           .widget-container {
             display: inline-flex;
@@ -380,8 +386,10 @@
           .widget-link {
             display: inline-flex;
             align-items: center;
+            gap: 6px;
             text-decoration: none;
-            color: inherit;
+            color: var(--white, #ffffff);
+            gap: 0;
           }
           .status-dot {
             width: 8px;
@@ -398,9 +406,9 @@
           .report-trigger {
             background: none;
             border: none;
-            color: #ef4444;
+            color: var(--carrot-orange, #f79824);
             cursor: pointer;
-            padding: 0px;
+            padding: 4px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -408,7 +416,7 @@
             transition: background-color 0.2s;
           }
           .report-trigger:hover {
-            background-color: #fee2e2;
+            background-color: rgba(247, 152, 36, 0.18);
           }
           .report-icon {
             width: 16px;
@@ -984,35 +992,35 @@
               body: JSON.stringify(telemetryPayload),
             });
 
-            // Dynamically load OpenTelemetry SDK via ESM to send traces to OTel Collector
+            // Dynamically load OpenTelemetry SDK via ESM to send traces to OTel Collector.
+            // Only runs when data-otel-url is explicitly set on the script tag — skipping it
+            // prevents spurious OPTIONS/POST requests to the page origin (e.g. 404 on telemetry.deml.app).
             try {
-              const { WebTracerProvider } =
-                await import('https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1');
-              const { OTLPTraceExporter } =
-                await import('https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1');
-              const { BatchSpanProcessor } =
-                await import('https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1');
-
-              const provider = new WebTracerProvider();
-
-              // Dynamically read the collector URL from the script tag's data attribute, default to production domain
               const scriptTag =
                 document.currentScript || document.querySelector('script[src*="widget.js"]');
               const otelUrl = scriptTag?.getAttribute('data-otel-url') ?? '';
 
-              const exporter = new OTLPTraceExporter({
-                url: otelUrl,
-              });
+              if (otelUrl) {
+                const { WebTracerProvider } =
+                  await import('https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1');
+                const { OTLPTraceExporter } =
+                  await import('https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1');
+                const { BatchSpanProcessor } =
+                  await import('https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1');
 
-              provider.addSpanProcessor(new BatchSpanProcessor(exporter));
-              provider.register();
+                const provider = new WebTracerProvider();
 
-              const tracer = provider.getTracer('widget-telemetry');
-              const span = tracer.startSpan('page_load');
-              span.setAttribute('fcp_ms', fcpTime);
-              span.setAttribute('response_time_ms', responseTimeMs);
-              span.setAttribute('client_ip', this.clientIp);
-              span.end();
+                const exporter = new OTLPTraceExporter({ url: otelUrl });
+                provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+                provider.register();
+
+                const tracer = provider.getTracer('widget-telemetry');
+                const span = tracer.startSpan('page_load');
+                span.setAttribute('fcp_ms', fcpTime);
+                span.setAttribute('response_time_ms', responseTimeMs);
+                span.setAttribute('client_ip', this.clientIp);
+                span.end();
+              }
             } catch (otelErr) {
               console.warn('Failed to initialize OpenTelemetry', otelErr);
             }

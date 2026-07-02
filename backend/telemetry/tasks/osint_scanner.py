@@ -19,7 +19,7 @@ class OSINTScanner:
 
       from account.context import resolve_scope_from_account_id
 
-      logger.info(f"[Account: {account_id}] Running OSINT scan for domain: {domain}")
+      logger.info("[Account: %s] Running OSINT scan for domain: %s", account_id, domain)
       url = f"https://crt.sh/?q={domain}&output=json"
       response = requests.get(url, timeout=15)
       response.raise_for_status()
@@ -31,7 +31,7 @@ class OSINTScanner:
           if name.endswith(domain) and "*" not in name:
             subdomains.add(name.strip())
 
-      logger.info(f"Discovered {len(subdomains)} subdomains for {domain}.")
+      logger.info("Discovered %d subdomains for %s.", len(subdomains), domain)
 
       if account_id:
         from monitor.models import Endpoints

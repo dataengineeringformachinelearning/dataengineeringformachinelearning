@@ -12,13 +12,12 @@ import {
   withNoIncrementalHydration,
 } from '@angular/platform-browser';
 
-// Markdown parsing libraries
-import { provideHttpClient, withFetch, withInterceptors, HttpClient } from '@angular/common/http';
+// API client imports
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { credentialsInterceptor } from './interceptors/credentials.interceptor';
 import { cacheInterceptor } from './interceptors/cache.interceptor';
 import { telemetryInterceptor } from './core/interceptors/telemetry.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
-import { provideMarkdown } from 'ngx-markdown';
 
 import { routes } from './app.routes';
 import { GlobalErrorHandler } from './core/handlers/global-error.handler';
@@ -37,7 +36,6 @@ export const appConfig: ApplicationConfig = {
         errorInterceptor,
       ]),
     ),
-    provideMarkdown({ loader: HttpClient }),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     {
       provide: Sentry.TraceService,

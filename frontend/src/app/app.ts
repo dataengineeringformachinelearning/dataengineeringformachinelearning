@@ -15,7 +15,6 @@ import { IssueReporter } from './components/issue-reporter/issue-reporter';
 import { CookieBanner } from './components/cookie-banner/cookie-banner';
 import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
-import { BookService } from './services/book.service';
 import { SettingsService } from './services/settings.service';
 import { OramaSearchService, SearchItem } from './services/orama-search.service';
 import { MonitorService } from './services/monitor.service';
@@ -35,7 +34,6 @@ export class App implements OnInit {
   public authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
-  public bookService = inject(BookService);
   public settingsService = inject(SettingsService);
   private searchService = inject(OramaSearchService);
   private monitorService = inject(MonitorService);
@@ -45,26 +43,13 @@ export class App implements OnInit {
 
   constructor() {
     effect(() => {
-      const chapters = this.bookService.chapters();
       const pages = this.settingsService.statusPages();
-      this.indexSearchItems(chapters, pages);
+      this.indexSearchItems(pages);
     });
   }
 
-  private async indexSearchItems(chapters: any[], pages: any[]) {
+  private async indexSearchItems(pages: any[]) {
     const items: SearchItem[] = [];
-
-    if (Array.isArray(chapters)) {
-      chapters.forEach((chapter, index) => {
-        items.push({
-          id: String(index),
-          title: chapter.title,
-          content: chapter.content || '',
-          type: 'chapter',
-          url: String(index),
-        });
-      });
-    }
 
     if (Array.isArray(pages)) {
       pages.forEach(page => {
@@ -111,10 +96,6 @@ export class App implements OnInit {
         const isDashboard = [
           '/dashboard',
           '/explore',
-          '/documentation',
-          '/book',
-          '/whitepaper',
-          '/compliance',
           '/settings',
           '/account',
           '/vulnerabilities',

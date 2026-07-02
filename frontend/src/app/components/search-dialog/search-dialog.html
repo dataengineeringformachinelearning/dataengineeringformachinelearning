@@ -4,7 +4,7 @@
     <input
       #searchInput
       type="text"
-      placeholder="Search documentation, components, status pages..."
+      placeholder="Search status pages..."
       aria-label="Search site content"
       class="dialog-search-input"
       [value]="searchQuery()"
@@ -29,15 +29,13 @@
         (mouseenter)="selectedIndex.set(i)"
       >
         <div class="result-icon-wrapper">
-          <mat-icon>{{ result.type === 'chapter' ? 'menu_book' : 'dns' }}</mat-icon>
+          <mat-icon>dns</mat-icon>
         </div>
         <div class="result-content">
           <div class="result-title" [innerHTML]="getHighlightedTitle(result)"></div>
           <div class="result-snippet" [innerHTML]="getHighlightedSnippet(result)"></div>
         </div>
-        <span class="status-badge-premium neutral status-badge-premium--compact"
-          >{{ result.type === 'chapter' ? 'Doc' : 'Status' }}</span
-        >
+        <span class="status-badge-premium neutral status-badge-premium--compact">Status</span>
       </div>
       } @if (searchResults().length === 0) {
       <div class="no-results-state">

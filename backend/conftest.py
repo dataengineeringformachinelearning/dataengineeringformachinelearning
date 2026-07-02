@@ -10,7 +10,7 @@ User = get_user_model()
 
 
 @pytest.fixture(autouse=True, scope="session")
-def setup_test_db():
+def setup_test_db() -> None:
   settings.DATABASES = {
     "default": {
       "ENGINE": "django.db.backends.sqlite3",
@@ -20,7 +20,7 @@ def setup_test_db():
 
 
 @pytest.fixture(autouse=True)
-def enable_db_access_for_all_tests(db):
+def enable_db_access_for_all_tests(db: Any) -> None:
   pass
 
 

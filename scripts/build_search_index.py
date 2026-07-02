@@ -72,8 +72,8 @@ def write_search_index(page_md_path: str, output_path: str) -> int:
 def main() -> None:
   script_dir = os.path.dirname(os.path.abspath(__file__))
   root_dir = os.path.dirname(script_dir)
-  page_md = os.path.join(root_dir, "frontend", "src", "assets", "content", "page.md")
-  output = os.path.join(root_dir, "frontend", "src", "assets", "content", "search-index.json")
+  page_md = os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md")
+  output = os.path.join(root_dir, "marketing", "public", "assets", "content", "search-index.json")
 
   if not os.path.exists(page_md):
     raise SystemExit(f"page.md missing: {page_md}")

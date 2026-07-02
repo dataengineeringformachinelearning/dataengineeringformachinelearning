@@ -13,7 +13,7 @@ const css = `
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: 10vh;
+  padding-top: max(10vh, 40px);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s, visibility 0.2s;
@@ -96,16 +96,7 @@ const css = `
   flex-direction: column;
   gap: 8px;
 }
-.deml-search-result-item {
-  display: flex;
-  align-items: center;
-  padding: 8px 16px;
-  border-radius: var(--border-radius-sm, 6px);
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid transparent;
-  cursor: pointer;
-  gap: 8px;
-}
+
 .deml-search-result-item.selected,
 .deml-search-result-item:hover {
   background: rgba(255, 255, 255, 0.05);
@@ -202,6 +193,14 @@ mark.deml-search-highlight {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
+}
+@media (max-width: 480px) {
+  .deml-suggestions-grid {
+    grid-template-columns: 1fr;
+  }
+  .deml-search-footer {
+    display: none;
+  }
 }
 .deml-suggestion-item {
   display: flex;

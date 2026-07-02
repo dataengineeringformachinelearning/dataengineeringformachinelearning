@@ -1,3 +1,11 @@
+/**
+ * widget.css — Reference/external stylesheet for the DEML Platform Widget.
+ *
+ * NOTE: The platform-widget Web Component self-contains its styles via Shadow DOM
+ * (inline <style> block inside widget.js). This file exists for reference and for
+ * consumers who want to override widget styles via ::part() or external linking.
+ * Token values here should stay in sync with the Shadow DOM inline styles.
+ */
 :host {
   display: flex;
   justify-content: center;
@@ -82,7 +90,7 @@
   border: none;
   color: var(--color-error);
   cursor: pointer;
-  padding: 0;
+  padding: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

@@ -11,7 +11,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { BookService } from '../../services/book.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OramaSearchService } from '../../services/orama-search.service';
@@ -31,7 +30,6 @@ export class Sidebar implements OnInit {
   private searchService = inject(OramaSearchService);
   private monitorService = inject(MonitorService);
   private cdr = inject(ChangeDetectorRef);
-  public bookService = inject(BookService);
   public settingsService = inject(SettingsService);
   private router = inject(Router);
 

@@ -91,8 +91,12 @@
     font-size: 18px;
     width: 18px;
     height: 18px;
+    line-height: 1;
     flex: 0 0 auto;
     margin: 0;
+    overflow: hidden;
+    // Force ligature font metrics to baseline — fixes extra gap on 'monitoring' glyph.
+    vertical-align: middle;
   }
 
   &:hover {
@@ -106,6 +110,16 @@
     background: var(--color-primary-container);
     box-shadow: var(--shadow-sm);
   }
+}
+
+// Inner flex wrapper for icon + label + optional badge.
+// Without this the unstyled <span> causes icon baseline gaps.
+.tab-btn-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1;
 }
 
 .tab-badge {
@@ -129,6 +143,20 @@
 
 .overview-grid {
   grid-template-columns: 1fr;
+  grid-template-areas:
+    'setup'
+    'health'
+    'kpis'
+    'threats'
+    'metrics';
+
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      'setup setup'
+      'health kpis'
+      'threats metrics';
+  }
 
   @media (min-width: 900px) {
     grid-template-columns: 280px 1fr 1fr;
@@ -271,7 +299,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 
-  @media (min-width: 600px) {
+  @media (min-width: 480px) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
@@ -289,7 +317,10 @@
     var(--card-bg) 100%
   );
   box-shadow: var(--shadow-sm);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   position: relative;
   overflow: hidden;
 
@@ -731,9 +762,13 @@
 
 .detail-kpis {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 12px;
   grid-column: 1 / -1;
+
+  @media (min-width: 480px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .detail-actions {
