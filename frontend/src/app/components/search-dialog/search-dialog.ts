@@ -15,7 +15,6 @@ import { RouterModule, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { OramaSearchService, SearchItem } from '../../services/orama-search.service';
-import { BookService } from '../../services/book.service';
 import { SettingsService } from '../../services/settings.service';
 
 @Component({
@@ -29,7 +28,6 @@ import { SettingsService } from '../../services/settings.service';
 export class SearchDialog implements AfterViewInit {
   private dialogRef = inject(MatDialogRef<SearchDialog>);
   private searchService = inject(OramaSearchService);
-  private bookService = inject(BookService);
   private settingsService = inject(SettingsService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
@@ -145,15 +143,7 @@ export class SearchDialog implements AfterViewInit {
 
   handleResultClick(result: SearchItem) {
     this.zone.run(() => {
-      if (result.type === 'chapter') {
-        const pageIndex = parseInt(result.id, 10);
-        this.bookService.goToPage(pageIndex);
-        // Avoid unnecessary navigation if already on the book; signal drives the view.
-        const current = this.router.url || '';
-        if (!current.startsWith('/book')) {
-          this.router.navigate(['/book']);
-        }
-      } else if (result.type === 'status-page') {
+      if (result.type === 'status-page') {
         const page = this.settingsService.statusPages().find(p => p.id === result.id);
         if (page) {
           this.settingsService.selectPage(page);

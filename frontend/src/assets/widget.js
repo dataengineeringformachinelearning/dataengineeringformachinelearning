@@ -332,6 +332,9 @@
             justify-content: center;
             width: 100%;
             margin: 18px auto;
+            /* Prevent FOUC: start invisible, fade in once .deml-ready is applied */
+            opacity: 0;
+            transition: opacity 0.15s ease;
             --jet-black: #31393c;
             --crayola-blue: #2176ff;
             --blue-bell: #33a1fd;
@@ -354,6 +357,9 @@
             --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
             --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          :host(.deml-ready) {
+            opacity: 1;
           }
           .widget-container {
             display: inline-flex;

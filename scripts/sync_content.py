@@ -1,6 +1,5 @@
 import glob
 import os
-import shutil
 
 
 def sync_readme():
@@ -15,8 +14,12 @@ def sync_readme():
   llms_path = os.path.join(root_dir, "frontend", "public", "llms.txt")
   llms_full_path = os.path.join(root_dir, "frontend", "public", "llms-full.txt")
 
-  page_md_path = os.path.join(root_dir, "frontend", "src", "assets", "content", "page.md")
-  readme_md_path = os.path.join(root_dir, "frontend", "src", "assets", "content", "readme.md")
+  marketing_page_md_path = os.path.join(
+    root_dir, "marketing", "src", "assets", "content", "page.md"
+  )
+  marketing_readme_md_path = os.path.join(
+    root_dir, "marketing", "src", "assets", "content", "readme.md"
+  )
 
   try:
     # --- 1. Process BOOK.md for page.md ---
@@ -32,25 +35,18 @@ def sync_readme():
 
     book_content = "".join(book_lines[start_idx:])
 
-    marketing_page_md_path = os.path.join(
-      root_dir, "marketing", "src", "assets", "content", "page.md"
-    )
     os.makedirs(os.path.dirname(marketing_page_md_path), exist_ok=True)
 
-    for path in [page_md_path, marketing_page_md_path]:
-      with open(path, "w", encoding="utf-8") as f:
-        f.write(book_content)
+    with open(marketing_page_md_path, "w", encoding="utf-8") as f:
+      f.write(book_content)
 
     # --- 2. Process README.md for readme.md ---
     with open(readme_path, encoding="utf-8") as f:
       readme_content = f.read()
 
-    marketing_readme_md_path = os.path.join(
-      root_dir, "marketing", "src", "assets", "content", "readme.md"
-    )
-    for path in [readme_md_path, marketing_readme_md_path]:
-      with open(path, "w", encoding="utf-8") as f:
-        f.write(readme_content)
+    os.makedirs(os.path.dirname(marketing_readme_md_path), exist_ok=True)
+    with open(marketing_readme_md_path, "w", encoding="utf-8") as f:
+      f.write(readme_content)
 
     # --- 3. Process LLMS-full.txt ---
     llms_full_content = readme_content + "\n\n"
@@ -79,8 +75,8 @@ def sync_readme():
 
     print("Successfully synced markdown content to:")
     print(f" - {llms_full_path} & {marketing_llms_full_path}")
-    print(f" - {page_md_path} & {marketing_page_md_path}")
-    print(f" - {readme_md_path} & {marketing_readme_md_path}")
+    print(f" - {marketing_page_md_path}")
+    print(f" - {marketing_readme_md_path}")
 
     # Also sync llms.txt description if present
     if os.path.exists(llms_path):
@@ -128,8 +124,7 @@ def sync_version():
 def sync_search_index():
   script_dir = os.path.dirname(os.path.abspath(__file__))
   root_dir = os.path.dirname(script_dir)
-  page_md = os.path.join(root_dir, "frontend", "src", "assets", "content", "page.md")
-  src = os.path.join(root_dir, "frontend", "src", "assets", "content", "search-index.json")
+  page_md = os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md")
   dest_dir = os.path.join(root_dir, "marketing", "public", "assets", "content")
   dest = os.path.join(dest_dir, "search-index.json")
 
@@ -140,15 +135,11 @@ def sync_search_index():
       sys.path.insert(0, script_dir)
     from build_search_index import write_search_index
 
-    count = write_search_index(page_md, src)
-    print(f"Rebuilt search-index.json ({count} sections)")
-  elif not os.path.exists(src):
-    print(f"search-index source missing: {src}")
+    count = write_search_index(page_md, dest)
+    print(f"Rebuilt search-index.json ({count} sections) at {dest}")
+  else:
+    print(f"search-index source missing: {page_md}")
     return
-
-  os.makedirs(dest_dir, exist_ok=True)
-  shutil.copy2(src, dest)
-  print(f"Synced search-index.json to {dest}")
 
 
 if __name__ == "__main__":
