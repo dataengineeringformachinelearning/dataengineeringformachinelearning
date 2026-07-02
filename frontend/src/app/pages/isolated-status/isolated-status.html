@@ -14,10 +14,10 @@
         <!-- Dynamic Global Health Status Banner (Cloudflare-style) -->
         <div class="global-status-banner" [ngClass]="globalPageStatus().toLowerCase()">
           <div class="status-banner-content">
-            <mat-icon class="status-banner-icon">
-              {{ globalPageStatus() === 'Operational' ? 'check_circle' : (globalPageStatus() ===
-              'Degraded' ? 'warning' : 'error') }}
-            </mat-icon>
+            <flux-app-icon
+              [name]="globalPageStatus() === 'Operational' ? 'check_circle' : (globalPageStatus() === 'Degraded' ? 'warning' : 'error')"
+              hostClass="status-banner-icon"
+            />
             <div class="status-banner-text">
               <div class="status-title-row">
                 <h2>{{ page.title }}</h2>
@@ -48,13 +48,13 @@
         sanityService.error()) {
         <div class="announcements-container isolated-status-extracted-2">
           <h2 class="section-title-premium">
-            <mat-icon>campaign</mat-icon>
+            <flux-app-icon name="campaign" />
             Latest System Announcements
           </h2>
 
           @if (sanityService.error()) {
           <div class="announcements-error">
-            <mat-icon>error_outline</mat-icon>
+            <flux-app-icon name="error_outline" />
             <span>{{ sanityService.error() }}</span>
           </div>
           } @else {
@@ -93,7 +93,7 @@
         <!-- Analytics Overview -->
         <div class="metrics-overview-header">
           <h3 class="section-title-premium">
-            <mat-icon>monitoring</mat-icon>
+            <flux-app-icon name="monitoring" />
             Analytics & Traffic
           </h3>
           <p class="section-description-premium">
@@ -105,7 +105,7 @@
         <div class="ml-stat-panels-row">
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <mat-icon class="stat-icon">timer</mat-icon>
+              <flux-app-icon name="timer" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">P99 Latency</span>
                 <span class="stat-subtitle">Last 24h</span>
@@ -120,7 +120,7 @@
           </div>
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <mat-icon class="stat-icon">bar_chart</mat-icon>
+              <flux-app-icon name="bar_chart" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Total Requests</span>
                 <span class="stat-subtitle">Last 24h</span>
@@ -138,7 +138,7 @@
         <!-- SLA Metrics Overview -->
         <div class="metrics-overview-header isolated-status-extracted-1">
           <h3 class="section-title-premium">
-            <mat-icon>analytics</mat-icon>
+            <flux-app-icon name="analytics" />
             Service Level Agreement (SLA)
           </h3>
           <p class="section-description-premium">
@@ -151,7 +151,7 @@
         <div class="ml-stat-panels-row">
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <mat-icon class="stat-icon">dns</mat-icon>
+              <flux-app-icon name="dns" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Cumulative SLA</span>
                 <span class="stat-subtitle">Based on real telemetry</span>
@@ -165,7 +165,7 @@
           </div>
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <mat-icon class="stat-icon">online_prediction</mat-icon>
+              <flux-app-icon name="online_prediction" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Predicted SLA</span>
                 <span class="stat-subtitle">30-day forecast via ML</span>
@@ -184,7 +184,7 @@
         <!-- Threat Intelligence Metrics Overview -->
         <div class="metrics-overview-header isolated-status-extracted-1">
           <h3 class="section-title-premium">
-            <mat-icon>security</mat-icon>
+            <flux-app-icon name="security" />
             Threat Intelligence
           </h3>
           <p class="section-description-premium">
@@ -196,7 +196,7 @@
         <div class="ml-stat-panels-row">
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <mat-icon class="stat-icon">security</mat-icon>
+              <flux-app-icon name="security" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Cumulative TA</span>
                 <span class="stat-subtitle">Based on real telemetry</span>
@@ -211,7 +211,7 @@
           </div>
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <mat-icon class="stat-icon">online_prediction</mat-icon>
+              <flux-app-icon name="online_prediction" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Predicted TA</span>
                 <span class="stat-subtitle">30-day threat forecast via ML</span>
@@ -229,7 +229,7 @@
         <section class="standalone-services-section threat-analysis-section">
           <div class="section-title-wrapper">
             <div class="threat-title-container">
-              <mat-icon>security</mat-icon>
+              <flux-app-icon name="security" />
               <h3>ML Threat Analysis</h3>
             </div>
             <span class="threat-status-text">
@@ -264,7 +264,7 @@
         <!-- Service Performance List -->
         <section class="standalone-services-section">
           <div class="section-title-wrapper">
-            <mat-icon>dashboard</mat-icon>
+            <flux-app-icon name="dashboard" />
             <h3>Active Monitored Services</h3>
           </div>
           <div class="services-list-container">
@@ -278,7 +278,7 @@
                 <div class="service-names">
                   <a [href]="s.url" target="_blank" class="service-name-link">
                     <span>{{ formatServiceName(s.name) }}</span>
-                    <mat-icon>open_in_new</mat-icon>
+                    <flux-app-icon name="open_in_new" />
                   </a>
                 </div>
               </div>
@@ -331,7 +331,7 @@
         @if (incidentsMap()[page.id]?.length) {
         <section class="standalone-incidents-section">
           <div class="section-title-wrapper">
-            <mat-icon>history</mat-icon>
+            <flux-app-icon name="history" />
             <h3>Recent Incidents & Maintenance</h3>
           </div>
           <div class="incidents-stack-standalone">
@@ -360,7 +360,7 @@
           <div class="promo-glow"></div>
           <div class="promo-content">
             <div class="promo-header">
-              <mat-icon class="promo-icon">insights</mat-icon>
+              <flux-app-icon name="insights" hostClass="promo-icon" />
               <h4>Predictive Status Pages for Your Own Products</h4>
             </div>
             <p class="promo-desc">
@@ -370,15 +370,19 @@
             </p>
             <div class="promo-actions">
               @if (!authService.isAuthenticated()) {
-              <button mat-raised-button class="promo-btn-primary" (click)="login()">
-                <mat-icon>add_circle</mat-icon>
-                <span>Create Your Status Page</span>
-              </button>
+              <flux-button
+                variant="primary"
+                type="button"
+                class="promo-btn-primary"
+                icon="plus"
+                (pressed)="login()"
+              >
+                Create Your Status Page
+              </flux-button>
               } @if (authService.isAuthenticated()) {
-              <a mat-raised-button class="promo-btn-primary" routerLink="/manage">
-                <mat-icon>add_circle</mat-icon>
-                <span>Build Your Status Page</span>
-              </a>
+              <flux-button variant="primary" href="/manage" class="promo-btn-primary" icon="plus">
+                Build Your Status Page
+              </flux-button>
               }
             </div>
           </div>
@@ -389,26 +393,23 @@
       <!-- Error/Offline State Fallback -->
       @if (loadFailed()) {
       <div class="status-error-state">
-        <mat-icon class="error-state-icon">cloud_off</mat-icon>
+        <flux-app-icon name="cloud_off" hostClass="error-state-icon" />
         <h2 class="error-title">Unable to Connect</h2>
         <p class="error-subtitle">
           We couldn't connect to the status service. Please check that the backend is running and
           try again.
         </p>
-        <button
-          mat-raised-button
-          color="primary"
+        <flux-button
+          variant="primary"
+          type="button"
           class="retry-btn"
-          (click)="retryLoad()"
+          icon="refresh"
+          [loading]="isRetrying()"
           [disabled]="isRetrying()"
+          (pressed)="retryLoad()"
         >
-          @if (!isRetrying()) {
-          <mat-icon>refresh</mat-icon>
-          } @if (isRetrying()) {
-          <span class="btn-spinner"></span>
-          }
-          <span>Retry Connection</span>
-        </button>
+          Retry Connection
+        </flux-button>
       </div>
       }
     </div>

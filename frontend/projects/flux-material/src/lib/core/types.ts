@@ -45,6 +45,14 @@ export interface FluxChartSeries {
   tone?: FluxTone;
 }
 
+export type FluxChartKind = 'line' | 'bar' | 'donut';
+
+export interface FluxDonutSegment {
+  label: string;
+  value: number;
+  tone?: FluxTone;
+}
+
 export interface FluxToastOptions {
   heading?: string;
   text: string;

@@ -1,6 +1,8 @@
-<div class="search-dialog-container">
+@if (open()) {
+<div class="search-dialog-overlay" role="presentation" (click)="close()">
+<div class="search-dialog-container" (click)="$event.stopPropagation()">
   <div class="search-input-wrapper">
-    <mat-icon class="search-icon">search</mat-icon>
+    <flux-app-icon name="search" hostClass="search-icon" />
     <input
       #searchInput
       type="text"
@@ -11,7 +13,7 @@
       (input)="onSearch($event)"
     />
     <button class="close-btn" (click)="close()" aria-label="Close search">
-      <mat-icon>close</mat-icon>
+      <flux-app-icon name="close" />
     </button>
   </div>
 
@@ -29,7 +31,7 @@
         (mouseenter)="selectedIndex.set(i)"
       >
         <div class="result-icon-wrapper">
-          <mat-icon>dns</mat-icon>
+          <flux-app-icon name="dns" />
         </div>
         <div class="result-content">
           <div class="result-title" [innerHTML]="getHighlightedTitle(result)"></div>
@@ -39,7 +41,7 @@
       </div>
       } @if (searchResults().length === 0) {
       <div class="no-results-state">
-        <mat-icon class="state-icon">search_off</mat-icon>
+        <flux-app-icon name="search_off" hostClass="state-icon" />
         <p>No results found for "<strong>{{ searchQuery() }}</strong>"</p>
         <span>Try searching for something else, like "SLA", "Neural Network", or "Kafka".</span>
       </div>
@@ -56,7 +58,7 @@
           tabindex="0"
           (keydown.enter)="onSuggestionClick('SLA')"
         >
-          <mat-icon>speed</mat-icon>
+          <flux-app-icon name="speed" />
           <span>SLA Monitoring</span>
         </div>
         <div
@@ -65,7 +67,7 @@
           tabindex="0"
           (keydown.enter)="onSuggestionClick('neural')"
         >
-          <mat-icon>psychology</mat-icon>
+          <flux-app-icon name="psychology" />
           <span>Neural Networks</span>
         </div>
         <div
@@ -74,7 +76,7 @@
           tabindex="0"
           (keydown.enter)="onSuggestionClick('kafka')"
         >
-          <mat-icon>lan</mat-icon>
+          <flux-app-icon name="lan" />
           <span>Kafka Streams</span>
         </div>
         <div
@@ -83,7 +85,7 @@
           tabindex="0"
           (keydown.enter)="onSuggestionClick('vulnerabilities')"
         >
-          <mat-icon>security</mat-icon>
+          <flux-app-icon name="security" />
           <span>Security Reports</span>
         </div>
       </div>
@@ -97,3 +99,5 @@
     <div class="shortcut-tip"><kbd>esc</kbd> <span>Close</span></div>
   </div>
 </div>
+</div>
+}

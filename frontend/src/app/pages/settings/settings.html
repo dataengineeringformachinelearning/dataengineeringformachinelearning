@@ -20,7 +20,7 @@
       <div class="settings-stack grid-layout">
         @if (isViewer) {
         <div class="alert alert-warning alert-viewer-banner col-span-4 col-span-md-12">
-          <mat-icon>lock</mat-icon>
+          <flux-app-icon name="lock" />
           <span
             ><strong>Read-Only Access:</strong> Your user profile is assigned the
             <strong>Viewer</strong> role. You cannot perform administrative modifications to status
@@ -33,24 +33,23 @@
           <div class="card-header-clean">
             @if (selectedPage()) {
             <h2 class="card-title-main">
-              <mat-icon>wysiwyg</mat-icon>
+              <flux-app-icon name="wysiwyg" />
               {{ selectedPage()!.title }}
             </h2>
             } @if (selectedPage()) {
-            <button
-              mat-icon-button
-              color="warn"
-              (click)="deleteStatusPage(selectedPage()!.id)"
-              title="Delete status page"
-              aria-label="Delete status page"
+            <flux-button
+              variant="ghost"
+              type="button"
+              [square]="true"
+              icon="trash"
+              label="Delete status page"
+              (pressed)="deleteStatusPage(selectedPage()!.id)"
               class="delete-page-btn"
               [disabled]="isViewer"
-            >
-              <mat-icon>delete_forever</mat-icon>
-            </button>
+            />
             } @if (!selectedPage()) {
             <h2 class="card-title-main">
-              <mat-icon>add_box</mat-icon>
+              <flux-app-icon name="add_box" />
               Create Status Page
             </h2>
             }
@@ -67,38 +66,31 @@
                 >
                 as a live example of layout, services, and incident configurations.
               </p>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Title</mat-label>
-                <input
-                  matInput
+              <flux-field label="Title" class="full-width">
+                <flux-input
                   [(ngModel)]="newPageTitle"
                   placeholder="e.g. My API Status"
                   [disabled]="isViewer"
                 />
-              </mat-form-field>
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Slug</mat-label>
-                <input
-                  matInput
+              </flux-field>
+              <flux-field label="Slug" class="full-width">
+                <flux-input
                   [(ngModel)]="newPageSlug"
                   placeholder="e.g. my-api"
                   [disabled]="isViewer"
                 />
-              </mat-form-field>
-              <button
-                mat-raised-button
-                color="primary"
-                (click)="createStatusPage()"
+              </flux-field>
+              <flux-button
+                variant="primary"
+                type="button"
+                (pressed)="createStatusPage()"
                 [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || isViewer"
+                [loading]="isCreatingPage()"
+                icon="plus"
                 class="create-page-btn"
               >
-                @if (!isCreatingPage()) {
-                <mat-icon>add_circle</mat-icon>
-                } @if (isCreatingPage()) {
-                <span class="btn-spinner"></span>
-                }
-                <span>Create Page</span>
-              </button>
+                Create Page
+              </flux-button>
             </div>
             }
 
@@ -108,7 +100,7 @@
               @if (selectedPage()?.slug === 'platform-status') {
               <div class="alert alert-info alert-fallback-banner u-style-315505">
                 <div class="u-style-0f195f">
-                  <mat-icon class="u-style-6784e6">info</mat-icon>
+                  <flux-app-icon name="info" hostClass="u-style-6784e6" />
                   <div>
                     <strong class="u-style-04b067">Platform Status Fallback:</strong>
                     <span class="u-style-39bd7e">
@@ -121,98 +113,81 @@
                   <h3 class="u-style-4d9a87">Create Your Own Custom Status Page</h3>
                   <div class="u-style-bb5495">
                     <div class="u-style-eb2b00">
-                      <mat-form-field appearance="outline" class="u-style-a7e5d2">
-                        <mat-label>Title</mat-label>
-                        <input
-                          matInput
+                      <flux-field label="Title" class="u-style-a7e5d2">
+                        <flux-input
                           [(ngModel)]="newPageTitle"
                           placeholder="e.g. My API Status"
                           [disabled]="isViewer"
                         />
-                      </mat-form-field>
-                      <mat-form-field appearance="outline" class="u-style-a7e5d2">
-                        <mat-label>Slug</mat-label>
-                        <input
-                          matInput
+                      </flux-field>
+                      <flux-field label="Slug" class="u-style-a7e5d2">
+                        <flux-input
                           [(ngModel)]="newPageSlug"
                           placeholder="e.g. my-api"
                           [disabled]="isViewer"
                         />
-                      </mat-form-field>
+                      </flux-field>
                     </div>
-                    <button
-                      mat-raised-button
-                      color="primary"
-                      (click)="createStatusPage()"
+                    <flux-button
+                      variant="primary"
+                      type="button"
+                      (pressed)="createStatusPage()"
                       [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || isViewer"
+                      [loading]="isCreatingPage()"
+                      icon="plus"
                       class="u-style-a1ae42"
                     >
-                      @if (!isCreatingPage()) {
-                      <mat-icon>add_circle</mat-icon>
-                      } @if (isCreatingPage()) {
-                      <span class="btn-spinner"></span>
-                      }
-                      <span>Create Custom Page</span>
-                    </button>
+                      Create Custom Page
+                    </flux-button>
                   </div>
                 </div>
               </div>
               }
               <!-- Page Settings Section -->
               <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>settings</mat-icon> Page Settings</h3>
+                <h3 class="section-heading"><flux-app-icon name="settings" /> Page Settings</h3>
                 <div class="settings-form-panel panel-clean">
                   <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Title</mat-label>
-                      <input
-                        matInput
+                    <flux-field label="Title">
+                      <flux-input
                         [(ngModel)]="editTitle"
                         placeholder="e.g. My API Status"
                         [disabled]="isViewer"
                       />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Slug</mat-label>
-                      <input
-                        matInput
+                    </flux-field>
+                    <flux-field label="Slug">
+                      <flux-input
                         [(ngModel)]="editSlug"
                         placeholder="e.g. my-api"
                         [disabled]="isViewer"
                       />
-                    </mat-form-field>
+                    </flux-field>
                   </div>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Description</mat-label>
-                    <textarea
-                      matInput
+                  <flux-field label="Description" class="full-width">
+                    <flux-textarea
                       [(ngModel)]="editDescription"
-                      rows="2"
+                      [rows]="2"
                       placeholder="Description of this status page..."
                       [disabled]="isViewer"
-                    ></textarea>
-                  </mat-form-field>
+                    />
+                  </flux-field>
                   <div class="settings-actions">
-                    <mat-checkbox
-                      [(ngModel)]="editIsPublished"
-                      color="primary"
-                      [disabled]="isViewer"
-                    >
+                    <flux-checkbox [(ngModel)]="editIsPublished" [disabled]="isViewer">
                       Publish Status Page (makes it visible in the public Explore directory)
-                    </mat-checkbox>
-                    <button
-                      mat-flat-button
+                    </flux-checkbox>
+                    <flux-button
+                      variant="primary"
+                      type="button"
                       class="save-settings-btn"
-                      (click)="updateStatusPage()"
+                      (pressed)="updateStatusPage()"
                       [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
+                      [loading]="isUpdatingPage()"
                     >
                       @if (!isUpdatingPage()) {
-                      <mat-icon>save</mat-icon>
-                      } @if (isUpdatingPage()) {
-                      <span class="btn-spinner"></span>
+                      <flux-app-icon name="save" />
                       }
-                      <span>Save Settings</span>
-                    </button>
+                      Save Settings
+                    </flux-button>
                   </div>
                 </div>
               </div>
@@ -220,7 +195,7 @@
               <!-- Telemetry Tracking IDs Section -->
               <div class="panel-section">
                 <h3 class="section-heading">
-                  <mat-icon>analytics</mat-icon> Telemetry Tracking IDs
+                  <flux-app-icon name="analytics" /> Telemetry Tracking IDs
                 </h3>
                 <div class="settings-form-panel panel-clean">
                   <p class="embed-desc">
@@ -229,88 +204,77 @@
                     monitor visitor traffic and telemetry.
                   </p>
                   <div class="form-row">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Google Analytics ID</mat-label>
-                      <input
-                        matInput
+                    <flux-field label="Google Analytics ID">
+                      <flux-input
                         [(ngModel)]="editGoogleAnalyticsId"
                         placeholder="e.g. G-XXXXXXX"
                         [disabled]="isViewer"
                       />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Microsoft Clarity ID</mat-label>
-                      <input
-                        matInput
+                    </flux-field>
+                    <flux-field label="Microsoft Clarity ID">
+                      <flux-input
                         [(ngModel)]="editMicrosoftClarityId"
                         placeholder="e.g. xxxxxxxx"
                         [disabled]="isViewer"
                       />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline">
-                      <mat-label>Cloudflare Analytics ID</mat-label>
-                      <input
-                        matInput
+                    </flux-field>
+                    <flux-field label="Cloudflare Analytics ID">
+                      <flux-input
                         [(ngModel)]="editCloudflareAnalyticsId"
                         placeholder="e.g. xxxxxxxx"
                         [disabled]="isViewer"
                       />
-                    </mat-form-field>
+                    </flux-field>
                   </div>
                   <div class="settings-actions justify-end">
-                    <button
-                      mat-flat-button
+                    <flux-button
+                      variant="primary"
+                      type="button"
                       class="save-settings-btn"
-                      (click)="updateStatusPage()"
+                      (pressed)="updateStatusPage()"
                       [disabled]="!editTitle || !editSlug || isUpdatingPage() || isViewer"
+                      [loading]="isUpdatingPage()"
                     >
                       @if (!isUpdatingPage()) {
-                      <mat-icon>save</mat-icon>
-                      } @if (isUpdatingPage()) {
-                      <span class="btn-spinner"></span>
+                      <flux-app-icon name="save" />
                       }
-                      <span>Save Tracking IDs</span>
-                    </button>
+                      Save Tracking IDs
+                    </flux-button>
                   </div>
                 </div>
               </div>
 
               <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>dns</mat-icon> Monitored Services</h3>
+                <h3 class="section-heading"><flux-app-icon name="dns" /> Monitored Services</h3>
                 <div class="service-form-panel panel-clean">
                   <div class="service-inputs-row">
-                    <mat-form-field appearance="outline" class="flex-1">
-                      <mat-label>Service Name</mat-label>
-                      <input
-                        matInput
+                    <flux-field label="Service Name" class="flex-1">
+                      <flux-input
                         [(ngModel)]="newServiceName"
                         placeholder="e.g. Auth API"
                         [disabled]="isViewer"
                       />
-                    </mat-form-field>
-                    <mat-form-field appearance="outline" class="flex-2">
-                      <mat-label>Health Check URL</mat-label>
-                      <input
-                        matInput
+                    </flux-field>
+                    <flux-field label="Health Check URL" class="flex-2">
+                      <flux-input
                         [(ngModel)]="newServiceUrl"
                         placeholder="https://api.example.com/health"
+                        icon="globe"
                         [disabled]="isViewer"
                       />
-                    </mat-form-field>
+                    </flux-field>
                   </div>
-                  <button
-                    mat-flat-button
+                  <flux-button
+                    variant="primary"
+                    type="button"
                     class="add-service-btn"
-                    (click)="addService()"
+                    icon="plus"
+                    (pressed)="addService()"
                     [disabled]="!newServiceName || !newServiceUrl || isAddingService() || isViewer"
+                    [loading]="isAddingService()"
                   >
-                    @if (!isAddingService()) {
-                    <mat-icon>add</mat-icon>
-                    } @if (isAddingService()) {
-                    <span class="btn-spinner"></span>
-                    }
-                    <span>Add Service</span>
-                  </button>
+                    Add Service
+                  </flux-button>
                 </div>
                 <div class="data-list-outlined">
                   @for (service of services(); track service) {
@@ -319,15 +283,15 @@
                       <span class="data-title">{{ service.name }}</span>
                       <span class="data-subtitle">{{ service.url }}</span>
                     </div>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      (click)="deleteService(service.id)"
-                      aria-label="Delete service"
+                    <flux-button
+                      variant="ghost"
+                      type="button"
+                      [square]="true"
+                      icon="trash"
+                      label="Delete service"
+                      (pressed)="deleteService(service.id)"
                       [disabled]="isViewer"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
+                    />
                   </div>
                   } @if (services().length === 0) {
                   <div class="empty-data-text">No services monitored yet. Add one above!</div>
@@ -335,27 +299,23 @@
                 </div>
               </div>
               <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>error_outline</mat-icon> Report Incident</h3>
+                <h3 class="section-heading"><flux-app-icon name="error_outline" /> Report Incident</h3>
                 <div class="incident-form panel-clean">
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Incident Title</mat-label>
-                    <input
-                      matInput
+                  <flux-field label="Incident Title" class="full-width">
+                    <flux-input
                       [(ngModel)]="newIncidentTitle"
                       placeholder="e.g. API Degraded Performance"
                       [disabled]="isViewer"
                     />
-                  </mat-form-field>
-                  <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Message / Update</mat-label>
-                    <textarea
-                      matInput
+                  </flux-field>
+                  <flux-field label="Message / Update" class="full-width">
+                    <flux-textarea
                       [(ngModel)]="newIncidentMessage"
-                      rows="2"
+                      [rows]="2"
                       placeholder="Describe what is happening and what actions are being taken..."
                       [disabled]="isViewer"
-                    ></textarea>
-                  </mat-form-field>
+                    />
+                  </flux-field>
                   <div class="form-row-actions">
                     <div class="select-wrapper">
                       <app-unified-select
@@ -366,19 +326,17 @@
                         [disabled]="isViewer"
                       ></app-unified-select>
                     </div>
-                    <button
-                      mat-flat-button
+                    <flux-button
+                      variant="primary"
+                      type="button"
                       class="post-incident-btn"
-                      (click)="addIncident()"
+                      icon="bell"
+                      (pressed)="addIncident()"
                       [disabled]="!newIncidentTitle || !newIncidentMessage || isAddingIncident() || isViewer"
+                      [loading]="isAddingIncident()"
                     >
-                      @if (!isAddingIncident()) {
-                      <mat-icon>notification_important</mat-icon>
-                      } @if (isAddingIncident()) {
-                      <span class="btn-spinner"></span>
-                      }
-                      <span>Post Incident</span>
-                    </button>
+                      Post Incident
+                    </flux-button>
                   </div>
                 </div>
                 <div class="data-list-outlined">
@@ -390,15 +348,15 @@
                         >{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span
                       >
                     </div>
-                    <button
-                      mat-icon-button
-                      color="warn"
-                      (click)="deleteIncident(incident.id)"
-                      aria-label="Delete incident"
+                    <flux-button
+                      variant="ghost"
+                      type="button"
+                      [square]="true"
+                      icon="trash"
+                      label="Delete incident"
+                      (pressed)="deleteIncident(incident.id)"
                       [disabled]="isViewer"
-                    >
-                      <mat-icon>delete</mat-icon>
-                    </button>
+                    />
                   </div>
                   } @if (incidents().length === 0) {
                   <div class="empty-data-text">No incidents reported yet.</div>
@@ -406,7 +364,7 @@
                 </div>
               </div>
               <div class="panel-section">
-                <h3 class="section-heading"><mat-icon>code</mat-icon> Embeddable Widget</h3>
+                <h3 class="section-heading"><flux-app-icon name="code" /> Embeddable Widget</h3>
                 <p class="embed-desc">
                   Copy and paste this script tag onto your website to display a live status badge.
                 </p>
@@ -414,15 +372,20 @@
                   <div class="code-block-outlined">
                     <code>{{ getWidgetCode() }}</code>
                   </div>
-                  <button mat-flat-button class="copy-btn" (click)="copyWidgetCode()">
-                    <mat-icon>{{ copied() ? 'check' : 'content_copy' }}</mat-icon>
-                    <span>{{ copied() ? 'Copied' : 'Copy' }}</span>
-                  </button>
+                  <flux-button
+                    variant="primary"
+                    type="button"
+                    class="copy-btn"
+                    [icon]="copied() ? 'check' : 'copy'"
+                    (pressed)="copyWidgetCode()"
+                  >
+                    {{ copied() ? 'Copied' : 'Copy' }}
+                  </flux-button>
                 </div>
               </div>
               <div class="panel-section">
                 <h3 class="section-heading">
-                  <mat-icon>analytics</mat-icon> Threat Intel & API Integrations
+                  <flux-app-icon name="analytics" /> Threat Intel & API Integrations
                 </h3>
                 <p class="embed-desc">
                   Link your analytics providers to securely sync geolocation and visitor access
@@ -442,23 +405,24 @@
                     </div>
                     <div class="integration-action">
                       @if (integrations().find(i => i.provider === 'google' && i.active)) {
-                      <button
-                        mat-flat-button
-                        color="warn"
-                        (click)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
+                      <flux-button
+                        variant="danger"
+                        type="button"
+                        (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
                         [disabled]="isViewer"
                       >
                         Disconnect
-                      </button>
+                      </flux-button>
                       } @else {
-                      <button
-                        mat-flat-button
-                        color="primary"
-                        (click)="connectGoogleAnalytics()"
+                      <flux-button
+                        variant="primary"
+                        type="button"
+                        (pressed)="connectGoogleAnalytics()"
                         [disabled]="isConnectingGoogle() || isViewer"
+                        [loading]="isConnectingGoogle()"
                       >
                         Connect GA4 API
-                      </button>
+                      </flux-button>
                       }
                     </div>
                   </div>
@@ -475,48 +439,45 @@
                       </div>
                       @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
                       <div class="integration-action">
-                        <button
-                          mat-flat-button
-                          color="warn"
-                          (click)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
+                        <flux-button
+                          variant="danger"
+                          type="button"
+                          (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
                           [disabled]="isViewer"
                         >
                           Disconnect
-                        </button>
+                        </flux-button>
                       </div>
                       }
                     </div>
                     @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
                     <div class="clarity-form-row">
                       <div class="inputs-group">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Clarity Project ID</mat-label>
-                          <input
-                            matInput
+                        <flux-field label="Clarity Project ID">
+                          <flux-input
                             [(ngModel)]="clarityProjectId"
                             placeholder="Project ID"
                             [disabled]="isViewer"
                           />
-                        </mat-form-field>
-                        <mat-form-field appearance="outline">
-                          <mat-label>API Token / Key</mat-label>
-                          <input
-                            matInput
+                        </flux-field>
+                        <flux-field label="API Token / Key">
+                          <flux-input
                             [(ngModel)]="clarityApiKey"
                             type="password"
                             placeholder="Clarity API Key"
                             [disabled]="isViewer"
                           />
-                        </mat-form-field>
+                        </flux-field>
                       </div>
-                      <button
-                        mat-flat-button
-                        color="primary"
-                        (click)="connectMicrosoftClarity()"
+                      <flux-button
+                        variant="primary"
+                        type="button"
+                        (pressed)="connectMicrosoftClarity()"
                         [disabled]="!clarityProjectId || !clarityApiKey || isConnectingClarity() || isViewer"
+                        [loading]="isConnectingClarity()"
                       >
                         Connect API
-                      </button>
+                      </flux-button>
                     </div>
                     }
                   </div>
@@ -533,48 +494,45 @@
                       </div>
                       @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
                       <div class="integration-action">
-                        <button
-                          mat-flat-button
-                          color="warn"
-                          (click)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
+                        <flux-button
+                          variant="danger"
+                          type="button"
+                          (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
                           [disabled]="isViewer"
                         >
                           Disconnect
-                        </button>
+                        </flux-button>
                       </div>
                       }
                     </div>
                     @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
                     <div class="cloudflare-form-row">
                       <div class="inputs-group">
-                        <mat-form-field appearance="outline">
-                          <mat-label>Cloudflare Account ID</mat-label>
-                          <input
-                            matInput
+                        <flux-field label="Cloudflare Account ID">
+                          <flux-input
                             [(ngModel)]="cloudflareProjectId"
                             placeholder="Account ID"
                             [disabled]="isViewer"
                           />
-                        </mat-form-field>
-                        <mat-form-field appearance="outline">
-                          <mat-label>API Token / Key</mat-label>
-                          <input
-                            matInput
+                        </flux-field>
+                        <flux-field label="API Token / Key">
+                          <flux-input
                             [(ngModel)]="cloudflareApiKey"
                             type="password"
                             placeholder="Cloudflare API Token"
                             [disabled]="isViewer"
                           />
-                        </mat-form-field>
+                        </flux-field>
                       </div>
-                      <button
-                        mat-flat-button
-                        color="primary"
-                        (click)="connectCloudflare()"
+                      <flux-button
+                        variant="primary"
+                        type="button"
+                        (pressed)="connectCloudflare()"
                         [disabled]="!cloudflareProjectId || !cloudflareApiKey || isConnectingCloudflare() || isViewer"
+                        [loading]="isConnectingCloudflare()"
                       >
                         Connect API
-                      </button>
+                      </flux-button>
                     </div>
                     }
                   </div>

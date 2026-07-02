@@ -18,40 +18,37 @@ import {
 } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import {
+  FluxButton,
+  FluxField,
+  FluxInput,
+  FluxTextarea,
+  FluxCheckbox,
+} from '@deml/flux-material';
+import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { FormsModule } from '@angular/forms';
-import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { ConfirmDialog } from '../../components/confirm-dialog/confirm-dialog';
+import { FluxDialogService } from '../../services/flux-dialog.service';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
 import {
   UnifiedSelect,
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
+
 @Component({
   selector: 'app-settings',
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    MatProgressSpinnerModule,
-    MatInputModule,
-    MatFormFieldModule,
+    FluxButton,
+    FluxField,
+    FluxInput,
+    FluxTextarea,
+    FluxCheckbox,
+    FluxAppIcon,
     FormsModule,
-    MatListModule,
     RouterModule,
-    MatCheckboxModule,
-    MatDialogModule,
     UnifiedSelect,
   ],
   templateUrl: './settings.html',
@@ -64,7 +61,7 @@ export class Settings implements OnInit {
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  private dialog = inject(MatDialog);
+  private fluxDialog = inject(FluxDialogService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public settingsService = inject(SettingsService);
@@ -267,48 +264,40 @@ export class Settings implements OnInit {
             this.selectPage(page);
             this.isCreatingPage.set(false);
           },
-          error: err => {
+          error: async err => {
             console.error('Error creating page:', err);
             this.isCreatingPage.set(false);
-            this.dialog.open(ConfirmDialog, {
-              width: '400px',
-              data: {
-                title: 'Creation Failed',
-                message: 'Failed to create status page. The slug may already be in use.',
-                type: 'alert',
-                confirmBtnText: 'OK',
-                confirmBtnColor: 'warn',
-              },
+            await this.fluxDialog.openConfirm({
+              title: 'Creation Failed',
+              message: 'Failed to create status page. The slug may already be in use.',
+              type: 'alert',
+              confirmBtnText: 'OK',
+              confirmBtnColor: 'warn',
             });
           },
         });
     }
   }
 
-  deleteStatusPage(pageId: string) {
-    const dialogRef = this.dialog.open(ConfirmDialog, {
-      width: '450px',
-      data: {
-        title: 'Delete Status Page',
-        message:
-          'Are you sure you want to delete this status page? All monitored services and incidents will be removed.',
-        type: 'confirm',
-        confirmBtnText: 'Delete',
-        confirmBtnColor: 'warn',
-      },
+  async deleteStatusPage(pageId: string) {
+    const ok = await this.fluxDialog.openConfirm({
+      title: 'Delete Status Page',
+      message:
+        'Are you sure you want to delete this status page? All monitored services and incidents will be removed.',
+      type: 'confirm',
+      confirmBtnText: 'Delete',
+      confirmBtnColor: 'warn',
     });
 
-    dialogRef.afterClosed().subscribe(confirmed => {
-      if (confirmed) {
-        this.monitorService.deleteStatusPage(pageId).subscribe({
-          next: () => {
-            this.selectedPage.set(null);
-            this.loadStatusPages();
-          },
-          error: err => console.error('Error deleting page:', err),
-        });
-      }
-    });
+    if (ok) {
+      this.monitorService.deleteStatusPage(pageId).subscribe({
+        next: () => {
+          this.selectedPage.set(null);
+          this.loadStatusPages();
+        },
+        error: err => console.error('Error deleting page:', err),
+      });
+    }
   }
 
   selectPage(page: StatusPageData | null) {
@@ -330,32 +319,26 @@ export class Settings implements OnInit {
           cloudflare_analytics_id: this.editCloudflareAnalyticsId || undefined,
         })
         .subscribe({
-          next: updated => {
+          next: async updated => {
             this.selectedPage.set(updated);
             this.loadStatusPages();
             this.isUpdatingPage.set(false);
-            this.dialog.open(ConfirmDialog, {
-              width: '400px',
-              data: {
-                title: 'Settings Saved',
-                message: 'Status page settings saved successfully.',
-                type: 'alert',
-                confirmBtnText: 'OK',
-              },
+            await this.fluxDialog.openConfirm({
+              title: 'Settings Saved',
+              message: 'Status page settings saved successfully.',
+              type: 'alert',
+              confirmBtnText: 'OK',
             });
           },
-          error: err => {
+          error: async err => {
             console.error('Error updating status page:', err);
             this.isUpdatingPage.set(false);
-            this.dialog.open(ConfirmDialog, {
-              width: '400px',
-              data: {
-                title: 'Update Failed',
-                message: 'Failed to update status page. Slug may already be taken.',
-                type: 'alert',
-                confirmBtnText: 'OK',
-                confirmBtnColor: 'warn',
-              },
+            await this.fluxDialog.openConfirm({
+              title: 'Update Failed',
+              message: 'Failed to update status page. Slug may already be taken.',
+              type: 'alert',
+              confirmBtnText: 'OK',
+              confirmBtnColor: 'warn',
             });
           },
         });
@@ -382,7 +365,7 @@ export class Settings implements OnInit {
     });
   }
 
-  addService() {
+  async addService() {
     const page = this.selectedPage();
     if (page && this.newServiceName && this.newServiceUrl) {
       // Check if URL is already used in current services
@@ -390,15 +373,12 @@ export class Settings implements OnInit {
         s => s.url.toLowerCase() === this.newServiceUrl.toLowerCase(),
       );
       if (urlExists) {
-        this.dialog.open(ConfirmDialog, {
-          width: '400px',
-          data: {
-            title: 'Duplicate Endpoint',
-            message: 'This health check URL is already being monitored on this page.',
-            type: 'alert',
-            confirmBtnText: 'OK',
-            confirmBtnColor: 'warn',
-          },
+        await this.fluxDialog.openConfirm({
+          title: 'Duplicate Endpoint',
+          message: 'This health check URL is already being monitored on this page.',
+          type: 'alert',
+          confirmBtnText: 'OK',
+          confirmBtnColor: 'warn',
         });
         return;
       }
@@ -413,19 +393,16 @@ export class Settings implements OnInit {
             this.newServiceUrl = '';
             this.isAddingService.set(false);
           },
-          error: err => {
+          error: async err => {
             console.error('Error adding service:', err);
             this.isAddingService.set(false);
-            this.dialog.open(ConfirmDialog, {
-              width: '400px',
-              data: {
-                title: 'Failed to Add Service',
-                message:
-                  'An error occurred while adding the monitored service. Please verify the URL and try again.',
-                type: 'alert',
-                confirmBtnText: 'OK',
-                confirmBtnColor: 'warn',
-              },
+            await this.fluxDialog.openConfirm({
+              title: 'Failed to Add Service',
+              message:
+                'An error occurred while adding the monitored service. Please verify the URL and try again.',
+              type: 'alert',
+              confirmBtnText: 'OK',
+              confirmBtnColor: 'warn',
             });
           },
         });

@@ -1,14 +1,13 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { OnboardingWizard } from '../components/onboarding-wizard/onboarding-wizard';
+import { FluxDialogService } from './flux-dialog.service';
 
 const SKIP_KEY = 'deml_onboarding_skipped';
 const COMPLETE_KEY = 'deml_onboarding_complete';
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingService {
-  private dialog = inject(MatDialog);
+  private readonly fluxDialog = inject(FluxDialogService);
   private platformId = inject(PLATFORM_ID);
 
   private get storage(): Storage | null {
@@ -43,15 +42,8 @@ export class OnboardingService {
     return !this.isSkipped();
   }
 
-  openWizard(force = false): MatDialogRef<OnboardingWizard> | null {
+  openWizard(force = false): Promise<boolean | undefined> | null {
     if (!isPlatformBrowser(this.platformId)) return null;
-    return this.dialog.open(OnboardingWizard, {
-      width: '560px',
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      disableClose: force,
-      panelClass: 'onboarding-wizard-panel',
-      autoFocus: true,
-    });
+    return this.fluxDialog.openOnboarding(force);
   }
 }

@@ -18,7 +18,7 @@
         <div class="status-card-outlined mfa-settings-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <mat-icon>security</mat-icon>
+              <flux-app-icon name="security" />
               Multi-Factor Authentication (MFA)
             </h2>
           </div>
@@ -33,13 +33,15 @@
               @if (isMfaEnrolled()) {
               <div class="mfa-status-enrolled panel-clean">
                 <div class="mfa-info-group">
-                  <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
+                  <flux-app-icon name="check_circle" hostClass="status-icon success mfa-icon-inline" />
                   <div class="mfa-info mfa-info-inline">
                     <strong>MFA Enrolled & Enforced</strong>
                     <div class="mfa-status-desc">SMS verification is active for your account.</div>
                   </div>
                 </div>
-                <button mat-stroked-button color="warn" (click)="disableMfa()">Disable MFA</button>
+                <flux-button variant="danger" type="button" (pressed)="disableMfa()">
+                  Disable MFA
+                </flux-button>
               </div>
               } @else {
               <div class="mfa-enrollment-form panel-clean">
@@ -50,26 +52,23 @@
                   >
                 </p>
                 <div class="mfa-inline-form">
-                  <mat-form-field appearance="outline" class="mfa-input-full">
-                    <mat-label>Phone Number</mat-label>
-                    <input
-                      matInput
+                  <flux-field label="Phone Number" class="mfa-input-full">
+                    <flux-input
                       [(ngModel)]="mfaPhoneNumber"
                       placeholder="+11234567890"
                       [disabled]="mfaVerificationId !== null"
                     />
-                  </mat-form-field>
-                  <button
-                    mat-flat-button
-                    color="primary"
-                    (click)="sendMfaCode()"
+                  </flux-field>
+                  <flux-button
+                    variant="primary"
+                    type="button"
+                    (pressed)="sendMfaCode()"
                     [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
+                    [loading]="isSendingMfaCode()"
                     class="mfa-btn"
                   >
-                    @if (isSendingMfaCode()) {
-                    <span class="btn-spinner"></span>
-                    } @else { Send SMS Code }
-                  </button>
+                    Send SMS Code
+                  </flux-button>
                 </div>
 
                 @if (mfaVerificationId) {
@@ -78,21 +77,19 @@
                     <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
                   </p>
                   <div class="mfa-inline-form">
-                    <mat-form-field appearance="outline" class="mfa-input-full">
-                      <mat-label>Verification Code</mat-label>
-                      <input matInput [(ngModel)]="mfaVerificationCode" placeholder="123456" />
-                    </mat-form-field>
-                    <button
-                      mat-flat-button
-                      color="accent"
-                      (click)="verifyMfaCode()"
+                    <flux-field label="Verification Code" class="mfa-input-full">
+                      <flux-input [(ngModel)]="mfaVerificationCode" placeholder="123456" />
+                    </flux-field>
+                    <flux-button
+                      variant="primary"
+                      type="button"
+                      (pressed)="verifyMfaCode()"
                       [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
+                      [loading]="isVerifyingMfaCode()"
                       class="mfa-btn"
                     >
-                      @if (isVerifyingMfaCode()) {
-                      <span class="btn-spinner"></span>
-                      } @else { Verify & Enroll }
-                    </button>
+                      Verify & Enroll
+                    </flux-button>
                   </div>
                 </div>
                 }
@@ -115,7 +112,7 @@
         <div class="status-card-outlined api-keys-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <mat-icon>vpn_key</mat-icon>
+              <flux-app-icon name="vpn_key" />
               API Keys & Integrations
             </h2>
           </div>
@@ -134,40 +131,40 @@
                   <div class="code-block-outlined">
                     <code>{{ newlyGeneratedKey() }}</code>
                   </div>
-                  <button mat-flat-button class="copy-btn" (click)="copyApiKey()">
-                    <mat-icon>{{ copiedApiKey() ? 'check' : 'content_copy' }}</mat-icon>
-                    <span>{{ copiedApiKey() ? 'Copied' : 'Copy' }}</span>
-                  </button>
+                  <flux-button
+                    variant="primary"
+                    type="button"
+                    class="copy-btn"
+                    [icon]="copiedApiKey() ? 'check' : 'copy'"
+                    (pressed)="copyApiKey()"
+                  >
+                    {{ copiedApiKey() ? 'Copied' : 'Copy' }}
+                  </flux-button>
                 </div>
               </div>
               }
 
               <div class="service-form-panel panel-clean mt-3">
                 <div class="service-inputs-row">
-                  <mat-form-field appearance="outline" class="u-style-be70d9">
-                    <mat-label>New Key Name</mat-label>
-                    <input
-                      matInput
+                  <flux-field label="New Key Name" class="u-style-be70d9">
+                    <flux-input
                       [(ngModel)]="newApiKeyName"
                       placeholder="e.g. Databricks Ingestion Pipeline"
                       [disabled]="isGeneratingApiKey() || isViewer"
                     />
-                  </mat-form-field>
+                  </flux-field>
                 </div>
-                <button
-                  mat-flat-button
-                  color="primary"
+                <flux-button
+                  variant="primary"
+                  type="button"
                   class="add-service-btn"
-                  (click)="generateApiKey()"
+                  icon="plus"
+                  (pressed)="generateApiKey()"
                   [disabled]="!newApiKeyName || isGeneratingApiKey() || isViewer"
+                  [loading]="isGeneratingApiKey()"
                 >
-                  @if (!isGeneratingApiKey()) {
-                  <mat-icon>add_circle</mat-icon>
-                  } @if (isGeneratingApiKey()) {
-                  <span class="btn-spinner"></span>
-                  }
-                  <span>Generate Key</span>
-                </button>
+                  Generate Key
+                </flux-button>
               </div>
 
               <div class="data-list-outlined mt-3">
@@ -180,16 +177,15 @@
                       }}
                     </span>
                   </div>
-                  <button
-                    mat-icon-button
-                    color="warn"
-                    (click)="revokeApiKey(key.id)"
+                  <flux-button
+                    variant="ghost"
+                    type="button"
+                    [square]="true"
+                    icon="trash"
+                    label="Revoke API Key"
+                    (pressed)="revokeApiKey(key.id)"
                     [disabled]="isViewer"
-                    title="Revoke Key"
-                    aria-label="Revoke API Key"
-                  >
-                    <mat-icon>delete_forever</mat-icon>
-                  </button>
+                  />
                 </div>
                 } @if (apiKeys().length === 0) {
                 <div class="empty-data-text">No active API keys found.</div>
@@ -203,7 +199,7 @@
         <div class="status-card-outlined mfa-settings-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <mat-icon>link</mat-icon>
+              <flux-app-icon name="link" />
               Connected Accounts
             </h2>
           </div>
@@ -252,13 +248,13 @@
                   </div>
                   <div class="integration-action">
                     @if (isGoogleLinked()) {
-                    <button mat-flat-button color="warn" (click)="unlinkGoogle()">
+                    <flux-button variant="danger" type="button" (pressed)="unlinkGoogle()">
                       Disconnect
-                    </button>
+                    </flux-button>
                     } @else {
-                    <button mat-flat-button color="primary" (click)="linkGoogle()">
+                    <flux-button variant="primary" type="button" (pressed)="linkGoogle()">
                       Link Google
-                    </button>
+                    </flux-button>
                     }
                   </div>
                 </div>
@@ -287,11 +283,13 @@
                   </div>
                   <div class="integration-action">
                     @if (isAppleLinked()) {
-                    <button mat-flat-button color="warn" (click)="unlinkApple()">Disconnect</button>
+                    <flux-button variant="danger" type="button" (pressed)="unlinkApple()">
+                      Disconnect
+                    </flux-button>
                     } @else {
-                    <button mat-flat-button color="primary" (click)="linkApple()">
+                    <flux-button variant="primary" type="button" (pressed)="linkApple()">
                       Link Apple
-                    </button>
+                    </flux-button>
                     }
                   </div>
                 </div>
@@ -310,7 +308,7 @@
         <div class="status-card-outlined">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <mat-icon>manage_accounts</mat-icon>
+              <flux-app-icon name="manage_accounts" />
               Account & Billing Settings
             </h2>
           </div>
@@ -318,48 +316,50 @@
             <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
 
             <div class="panel-section mt-3">
-              <h3 class="section-heading"><mat-icon>email</mat-icon> Update Email</h3>
+              <h3 class="section-heading"><flux-app-icon name="email" /> Update Email</h3>
               <div class="settings-form-panel panel-clean simple-inline-form">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>New Email Address</mat-label>
-                  <input matInput [(ngModel)]="updateEmailInput" placeholder="Enter new email..." />
-                </mat-form-field>
+                <flux-field label="New Email Address" class="full-width">
+                  <flux-input
+                    [(ngModel)]="updateEmailInput"
+                    placeholder="Enter new email..."
+                    icon="mail"
+                  />
+                </flux-field>
                 <div class="settings-actions justify-end">
-                  <button
-                    mat-flat-button
-                    color="primary"
-                    (click)="updateEmail()"
+                  <flux-button
+                    variant="primary"
+                    type="button"
+                    (pressed)="updateEmail()"
                     [disabled]="!updateEmailInput || isUpdatingEmail()"
+                    [loading]="isUpdatingEmail()"
                   >
-                    @if (isUpdatingEmail()) { <span class="btn-spinner"></span> }
-                    <span>Update Email</span>
-                  </button>
+                    Update Email
+                  </flux-button>
                 </div>
               </div>
             </div>
 
             <div class="panel-section mt-3">
-              <h3 class="section-heading"><mat-icon>lock</mat-icon> Update Password</h3>
+              <h3 class="section-heading"><flux-app-icon name="lock" /> Update Password</h3>
               <div class="settings-form-panel panel-clean simple-inline-form">
-                <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>New Password</mat-label>
-                  <input
-                    matInput
+                <flux-field label="New Password" class="full-width">
+                  <flux-input
                     type="password"
                     [(ngModel)]="updatePasswordInput"
                     placeholder="Enter new password..."
+                    icon="lock"
                   />
-                </mat-form-field>
+                </flux-field>
                 <div class="settings-actions justify-end">
-                  <button
-                    mat-flat-button
-                    color="primary"
-                    (click)="updatePassword()"
+                  <flux-button
+                    variant="primary"
+                    type="button"
+                    (pressed)="updatePassword()"
                     [disabled]="!updatePasswordInput || isUpdatingPassword()"
+                    [loading]="isUpdatingPassword()"
                   >
-                    @if (isUpdatingPassword()) { <span class="btn-spinner"></span> }
-                    <span>Update Password</span>
-                  </button>
+                    Update Password
+                  </flux-button>
                 </div>
               </div>
               @if (accountError()) {
@@ -372,32 +372,33 @@
             @if (!isViewer) {
             <div class="panel-section mt-3">
               <h3 class="section-heading">
-                <mat-icon>credit_card</mat-icon> Subscription Management
+                <flux-app-icon name="credit_card" /> Subscription Management
               </h3>
               <div class="settings-form-panel panel-clean">
                 @if (isBillingLoading()) {
                 <div class="loading-state">
-                  <mat-spinner diameter="30"></mat-spinner>
+                  <flux-progress [indeterminate]="true" label="Loading subscription" />
                 </div>
                 } @else { @if (!subscriptionActive()) {
                 <div class="mfa-status-enrolled panel-clean u-style-ab4518">
                   <div class="mfa-info-group">
-                    <mat-icon class="status-icon info mfa-icon-inline u-style-fa919b"
-                      >info</mat-icon
-                    >
+                    <flux-app-icon
+                      name="info"
+                      hostClass="status-icon info mfa-icon-inline u-style-fa919b"
+                    />
                     <div class="mfa-info mfa-info-inline">
                       <strong>Standard Plan</strong>
                       <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
                     </div>
                   </div>
-                  <button mat-flat-button color="primary" (click)="subscribeToPro()">
+                  <flux-button variant="primary" type="button" (pressed)="subscribeToPro()">
                     Subscribe to Pro
-                  </button>
+                  </flux-button>
                 </div>
                 } @else {
                 <div class="mfa-status-enrolled panel-clean">
                   <div class="mfa-info-group">
-                    <mat-icon class="status-icon success mfa-icon-inline">check_circle</mat-icon>
+                    <flux-app-icon name="check_circle" hostClass="status-icon success mfa-icon-inline" />
                     <div class="mfa-info mfa-info-inline">
                       <strong>Pro Plan Active</strong>
                       <div class="mfa-status-desc">
@@ -408,13 +409,13 @@
                     </div>
                   </div>
                   @if (subscriptionCancelAtPeriodEnd()) {
-                  <button mat-stroked-button color="primary" (click)="resumeSubscription()">
+                  <flux-button variant="outline" type="button" (pressed)="resumeSubscription()">
                     Resume Subscription
-                  </button>
+                  </flux-button>
                   } @else {
-                  <button mat-stroked-button color="warn" (click)="cancelSubscription()">
+                  <flux-button variant="danger" type="button" (pressed)="cancelSubscription()">
                     Cancel Subscription
-                  </button>
+                  </flux-button>
                   }
                 </div>
                 } } @if (billingError()) {
@@ -432,7 +433,7 @@
         <div class="status-card-outlined danger-zone-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <mat-icon>warning</mat-icon>
+              <flux-app-icon name="warning" />
               Danger Zone
             </h2>
           </div>
@@ -444,17 +445,15 @@
                 associated data. This action is irreversible.
               </p>
             </div>
-            <button
-              mat-flat-button
-              color="warn"
-              (click)="deleteAccount()"
+            <flux-button
+              variant="danger"
+              type="button"
+              (pressed)="deleteAccount()"
               [disabled]="isDeletingAccount()"
+              [loading]="isDeletingAccount()"
             >
-              @if (isDeletingAccount()) {
-              <span class="btn-spinner"></span>
-              }
-              <span>Delete Account</span>
-            </button>
+              Delete Account
+            </flux-button>
           </div>
         </div>
       </div>

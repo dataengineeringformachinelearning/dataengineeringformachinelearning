@@ -9,46 +9,33 @@ import {
   ChangeDetectorRef,
   afterNextRender,
   PLATFORM_ID,
-  effect,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Title, Meta } from '@angular/platform-browser';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { NgApexchartsModule } from 'ng-apexcharts';
+import { FluxChart, FluxButton, FluxBadge, FluxChartSeries } from '@deml/flux-material';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { MonitorService } from '../../services/monitor.service';
-import { ThemeService } from '../../services/theme.service';
 import { OnboardingService } from '../../services/onboarding.service';
-import { MatDialogModule } from '@angular/material/dialog';
 import {
   UnifiedSelect,
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
+import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+import {
+  FluxDonutSegment,
+  hasChartValues,
+  hasDonutValues,
+  toFluxBarSeries,
+  toFluxDonutSegments,
+  toFluxLineSeries,
+} from '../../core/chart-data.util';
 
 type DashboardTab = 'overview' | 'performance' | 'security';
-
-interface ChartOptions {
-  series: any;
-  chart: any;
-  xaxis?: any;
-  yaxis?: any;
-  dataLabels?: any;
-  grid?: any;
-  stroke?: any;
-  plotOptions?: any;
-  labels?: any;
-  colors?: any;
-  legend?: any;
-  fill?: any;
-  tooltip?: any;
-  noData?: any;
-}
 
 @Component({
   selector: 'app-dashboard',
@@ -56,11 +43,11 @@ interface ChartOptions {
   imports: [
     CommonModule,
     RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    NgApexchartsModule,
     UnifiedSelect,
-    MatDialogModule,
+    FluxChart,
+    FluxButton,
+    FluxBadge,
+    FluxAppIcon,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -74,7 +61,6 @@ export class Dashboard implements OnInit, OnDestroy {
   private metaService = inject(Meta);
   private cdr = inject(ChangeDetectorRef);
   private isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
-  private themeService = inject(ThemeService);
   public vulnService = inject(VulnerabilityService);
   public settingsService = inject(SettingsService);
   public authService = inject(AuthService);
@@ -83,6 +69,10 @@ export class Dashboard implements OnInit, OnDestroy {
 
   activeTab = signal<DashboardTab>('overview');
   isLoading = signal(true);
+
+  latencySeries = signal<FluxChartSeries[]>(toFluxLineSeries('Latency (ms)', []));
+  securityAlertSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Anomalies', [], 'warning'));
+  threatDonutSegments = signal<FluxDonutSegment[]>([]);
 
   // Analytics metrics
   threatLevel = 0;
@@ -99,10 +89,6 @@ export class Dashboard implements OnInit, OnDestroy {
   selectedSite: string | null = null;
   tenantOptions: SelectOption[] = [];
   siteOptions: SelectOption[] = [{ value: 'All', label: 'All Sites' }];
-
-  chartOptions: ChartOptions;
-  threatSeverityChartOptions: ChartOptions;
-  securityAlertsChartOptions: ChartOptions;
 
   private intervalId: ReturnType<typeof setInterval> | undefined;
 
@@ -153,20 +139,17 @@ export class Dashboard implements OnInit, OnDestroy {
 
   setupComplete = computed(() => this.myPages().length > 0);
 
-  get isDarkMode(): boolean {
-    return this.themeService.theme() === 'dark';
-  }
+  hasLatencyData = computed(() =>
+    hasChartValues(this.latencySeries().flatMap(series => series.data)),
+  );
+
+  hasSecurityAlertData = computed(() =>
+    hasChartValues(this.securityAlertSeries().flatMap(series => series.data)),
+  );
+
+  hasThreatDonutData = computed(() => hasDonutValues(this.threatDonutSegments()));
 
   constructor() {
-    this.chartOptions = this.getEmptyAreaChart('var(--crayola-blue)', 'Latency (ms)');
-    this.threatSeverityChartOptions = this.getEmptyDonutChart();
-    this.securityAlertsChartOptions = this.getEmptyBarChart('var(--carrot-orange)', 'Anomalies');
-
-    effect(() => {
-      this.themeService.theme();
-      this.updateChartTheme();
-    });
-
     afterNextRender(() => {
       if (this.isBrowser) {
         this.loadTenants();
@@ -213,12 +196,14 @@ export class Dashboard implements OnInit, OnDestroy {
   }
 
   openOnboardingWizard() {
-    const ref = this.onboardingService.openWizard();
-    if (!ref) return;
-    ref.afterClosed().subscribe(() => {
+    void this.onboardingService.openWizard()?.then(() => {
       this.loadUserPages(false);
       this.cdr.markForCheck();
     });
+  }
+
+  goToSettings() {
+    void this.router.navigate(['/settings']);
   }
 
   private loadUserPages(autoOpenWizard = true) {
@@ -306,22 +291,29 @@ export class Dashboard implements OnInit, OnDestroy {
           }
 
           const timeSeries = user_metrics?.time_series || [];
-          this.chartOptions.series = [
-            { name: 'Latency (ms)', data: timeSeries.map((d: any) => d.latency) },
-          ];
-          this.chartOptions.xaxis.categories = timeSeries.map((d: any) => d.time);
+          this.latencySeries.set(
+            toFluxLineSeries(
+              'Latency (ms)',
+              timeSeries.map((d: { latency: number }) => d.latency ?? 0),
+            ),
+          );
 
           const threats = user_metrics?.threat_severity || [];
-          this.threatSeverityChartOptions.series = threats.map((d: any) => d.count);
-          this.threatSeverityChartOptions.labels = threats.map((d: any) => d.severity);
+          this.threatDonutSegments.set(
+            toFluxDonutSegments(
+              threats.map((d: { severity: string }) => d.severity),
+              threats.map((d: { count: number }) => d.count ?? 0),
+            ),
+          );
 
           const alerts = user_metrics?.security_alerts || [];
-          this.securityAlertsChartOptions.series = [
-            { name: 'Anomalies', data: alerts.map((d: any) => d.count) },
-          ];
-          this.securityAlertsChartOptions.xaxis.categories = alerts.map((d: any) => d.time);
-
-          this.updateChartTheme();
+          this.securityAlertSeries.set(
+            toFluxBarSeries(
+              'Anomalies',
+              alerts.map((d: { count: number }) => d.count ?? 0),
+              'warning',
+            ),
+          );
         }
         this.isLoading.set(false);
         this.cdr.markForCheck();
@@ -349,103 +341,11 @@ export class Dashboard implements OnInit, OnDestroy {
     return `${dash} ${circumference}`;
   }
 
-  hasData(options: ChartOptions): boolean {
-    if (!options?.series) return false;
-    if (options.chart?.type === 'donut') {
-      return (options.series as number[]).some(v => v > 0);
-    }
-    return options.series.length > 0;
-  }
-
   severityClass(severity: string): string {
     return severity.toLowerCase();
   }
 
   trackThreat(_index: number, threat: Vulnerability): string {
     return threat.id;
-  }
-
-  private getEmptyAreaChart(color: string, seriesName: string): ChartOptions {
-    const zeroData = Array(24).fill(0);
-    const now = new Date();
-    const categories = Array(24)
-      .fill('')
-      .map((_, i) => {
-        const d = new Date(now.getTime() - (23 - i) * 60 * 60 * 1000);
-        return d.getHours() + ':00';
-      });
-
-    return {
-      series: [{ name: seriesName, data: zeroData }],
-      chart: {
-        type: 'area',
-        height: '100%',
-        width: '100%',
-        toolbar: { show: false },
-        background: 'transparent',
-      },
-      colors: [color],
-      dataLabels: { enabled: false },
-      stroke: { curve: 'smooth', width: 2 },
-      xaxis: { type: 'category', categories },
-      yaxis: {},
-      grid: { show: true },
-      tooltip: {},
-      noData: { text: 'No data yet' },
-    };
-  }
-
-  private getEmptyBarChart(color: string, seriesName: string): ChartOptions {
-    return {
-      series: [{ name: seriesName, data: Array(24).fill(0) }],
-      chart: {
-        type: 'bar',
-        height: '100%',
-        width: '100%',
-        toolbar: { show: false },
-        background: 'transparent',
-      },
-      colors: [color],
-      dataLabels: { enabled: false },
-      xaxis: { type: 'category', categories: [] },
-      yaxis: {},
-      grid: { show: true },
-      tooltip: {},
-      noData: { text: 'No data yet' },
-    };
-  }
-
-  private getEmptyDonutChart(): ChartOptions {
-    return {
-      series: [0, 0, 0, 0],
-      chart: { type: 'donut', height: '100%', width: '100%', background: 'transparent' },
-      labels: ['Low', 'Medium', 'High', 'Critical'],
-      colors: [
-        'var(--crayola-blue)',
-        'var(--blue-bell)',
-        'var(--golden-pollen)',
-        'var(--carrot-orange)',
-      ],
-      plotOptions: { pie: { donut: { size: '70%' } } },
-      dataLabels: { enabled: false },
-      legend: { position: 'bottom' },
-      tooltip: {},
-      noData: { text: 'No data yet' },
-    };
-  }
-
-  private updateChartTheme() {
-    const textColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(15, 23, 42, 0.4)';
-    const gridColor = this.isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(15, 23, 42, 0.06)';
-
-    [this.chartOptions, this.securityAlertsChartOptions, this.threatSeverityChartOptions].forEach(
-      opts => {
-        if (opts.xaxis) opts.xaxis.labels = { style: { colors: textColor } };
-        if (opts.yaxis) opts.yaxis.labels = { style: { colors: textColor } };
-        if (opts.grid) opts.grid.borderColor = gridColor;
-        if (opts.tooltip) opts.tooltip.theme = this.isDarkMode ? 'dark' : 'light';
-        if (opts.legend) opts.legend.labels = { colors: textColor };
-      },
-    );
   }
 }

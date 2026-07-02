@@ -20,12 +20,27 @@ import { OramaSearchService, SearchItem } from './services/orama-search.service'
 import { MonitorService } from './services/monitor.service';
 import { effect, HostListener } from '@angular/core';
 
-import { MatIconModule } from '@angular/material/icon';
 import { FluxToaster } from '@deml/flux-material';
+import { FluxAppIcon } from './components/flux-app-icon/flux-app-icon';
+import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
+import { SearchDialog } from './components/search-dialog/search-dialog';
+import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Sidebar, Footer, IssueReporter, CookieBanner, MatIconModule, FluxToaster],
+  imports: [
+    RouterOutlet,
+    Navbar,
+    Sidebar,
+    Footer,
+    IssueReporter,
+    CookieBanner,
+    FluxAppIcon,
+    FluxToaster,
+    ConfirmDialog,
+    SearchDialog,
+    OnboardingWizard,
+  ],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',

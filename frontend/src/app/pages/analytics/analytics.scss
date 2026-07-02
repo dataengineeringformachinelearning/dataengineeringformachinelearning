@@ -20,7 +20,7 @@
     color 0.2s ease,
     transform 0.2s ease;
 
-  mat-icon {
+  flux-app-icon {
     font-size: 20px;
     width: 20px;
     height: 20px;
@@ -32,7 +32,7 @@
     color: var(--color-primary) !important;
     transform: translateX(-2px);
 
-    mat-icon {
+    flux-app-icon {
       transform: translateX(-2px);
     }
   }
@@ -54,7 +54,7 @@
   height: 400px;
   width: 100%;
 
-  apx-chart {
+  flux-chart {
     width: 100%;
     height: 100%;
     display: block;
@@ -164,7 +164,7 @@
       margin: 0;
     }
 
-    mat-icon {
+    flux-app-icon {
       color: var(--text-muted);
       font-size: 20px;
       width: 20px;
@@ -184,7 +184,7 @@
     justify-content: center;
     gap: 8px;
 
-    mat-icon {
+    flux-app-icon {
       font-size: 18px;
       width: 16px;
       height: 16px;
@@ -274,6 +274,12 @@
 .chart-container-medium {
   min-height: 304px;
   position: relative;
+
+  flux-chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .dashboard-grid-responsive {
@@ -333,7 +339,7 @@
   color: var(--text-muted);
 }
 
-.apx-chart-large {
+.flux-chart-large {
   width: 100%;
   height: 400px;
   display: block;
@@ -342,6 +348,12 @@
 .chart-container-large {
   min-height: 400px;
   position: relative;
+
+  flux-chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 }
 
 .dashboard-grid-single {
@@ -351,7 +363,7 @@
   margin-bottom: var(--grid-gap, 27px);
 }
 
-.apx-chart-medium {
+.flux-chart-medium {
   width: 100%;
   height: 304px;
   display: block;
@@ -409,13 +421,6 @@
   font-size: 18px;
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-}
-
-/* Global Tooltip Polish for Dribbble Aesthetic */
-::ng-deep .apexcharts-tooltip {
-  border-radius: 8px !important;
-  border: 1px solid var(--border-layout) !important;
-  box-shadow: var(--shadow-sm) !important;
 }
 
 /* Custom Filter Stylings */

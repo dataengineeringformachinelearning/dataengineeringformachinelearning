@@ -1,60 +1,38 @@
-<div class="modal-header">
-  <div class="title-wrapper">
-    <mat-icon
-      class="header-icon"
-      [ngClass]="data.confirmBtnColor === 'warn' ? 'color-warn' : 'color-primary'"
+@if (data(); as dialogData) {
+<flux-modal [open]="open()" [heading]="heading()" (openChange)="onOpenChange($event)">
+  <div class="confirm-body">
+    <div class="title-row">
+      <flux-icon [name]="iconName()" [size]="24" />
+      <flux-text>{{ dialogData.message }}</flux-text>
+    </div>
+
+    @if (dialogData.type === 'prompt' && dialogData.confirmText) {
+    <flux-field
+      label="Verification text"
+      [description]="'Type ' + dialogData.confirmText + ' to proceed'"
     >
-      {{ data.type === 'alert' ? 'info' : data.confirmBtnColor === 'warn' ? 'warning' : 'help' }}
-    </mat-icon>
-    <h3>
-      {{ data.title || (data.type === 'alert' ? 'Notice' : data.type === 'prompt' ? 'Verification
-      Required' : 'Confirm Action') }}
-    </h3>
-  </div>
-  <button class="close-btn" (click)="onCancel()" aria-label="Close dialog">
-    <mat-icon>close</mat-icon>
-  </button>
-</div>
-
-<div class="modal-body">
-  <p class="message-text">{{ data.message }}</p>
-
-  @if (data.type === 'prompt' && data.confirmText) {
-  <div class="prompt-container">
-    <p class="prompt-label">Please type <strong>{{ data.confirmText }}</strong> to proceed:</p>
-    <mat-form-field appearance="fill" class="full-width">
-      <mat-label>Verification text</mat-label>
-      <input
-        matInput
+      <flux-input
         [ngModel]="inputValue()"
         (ngModelChange)="inputValue.set($event)"
-        required
         autocomplete="off"
-        aria-label="Verification text"
         (keyup.enter)="onConfirm()"
       />
-    </mat-form-field>
+    </flux-field>
+    }
   </div>
-  }
-</div>
 
-<div class="modal-footer">
-  @if (data.type !== 'alert') {
-  <button class="btn-cancel" (click)="onCancel()">
-    <mat-icon class="btn-icon">cancel</mat-icon>
-    <span>Cancel</span>
-  </button>
-  }
-  <button
-    class="btn-submit"
-    [disabled]="!isValid"
-    (click)="onConfirm()"
-    [ngClass]="data.confirmBtnColor === 'warn' ? 'btn-warn' : 'btn-primary'"
-  >
-    <mat-icon class="btn-icon">
-      {{ data.type === 'alert' ? 'check_circle' : data.confirmBtnColor === 'warn' ? 'delete_forever'
-      : 'check' }}
-    </mat-icon>
-    <span> {{ data.confirmBtnText || (data.type === 'alert' ? 'OK' : 'Confirm') }} </span>
-  </button>
-</div>
+  <div fluxModalActions>
+    @if (dialogData.type !== 'alert') {
+    <flux-button variant="ghost" icon="x" (pressed)="onCancel()">Cancel</flux-button>
+    }
+    <flux-button
+      [variant]="dialogData.confirmBtnColor === 'warn' ? 'danger' : 'primary'"
+      [disabled]="!isValid()"
+      [icon]="dialogData.type === 'alert' ? 'check-circle' : dialogData.confirmBtnColor === 'warn' ? 'trash' : 'check'"
+      (pressed)="onConfirm()"
+    >
+      {{ dialogData.confirmBtnText || (dialogData.type === 'alert' ? 'OK' : 'Confirm') }}
+    </flux-button>
+  </div>
+</flux-modal>
+}

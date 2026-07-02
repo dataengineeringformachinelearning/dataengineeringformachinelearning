@@ -16,9 +16,8 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService, ThreatReportResponse } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { FluxButton } from '@deml/flux-material';
+import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
@@ -31,9 +30,8 @@ import { timeout } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
+    FluxButton,
+    FluxAppIcon,
     RouterModule,
     ProVerifiedBadge,
   ],
