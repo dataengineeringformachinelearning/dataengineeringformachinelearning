@@ -1,0 +1,99 @@
+// ============================================================================
+// Flux-Material design tokens
+// ----------------------------------------------------------------------------
+// Flux UI (https://fluxui.dev) visual language mapped onto the DEML Material
+// theme. Every color resolves to a THEME.md semantic token; the hex fallbacks
+// (used only when the app tokens are absent, e.g. standalone npm consumers)
+// are the THEME.md palette values themselves.
+// 9px grid. 18px font floor. No colors outside THEME.md.
+// ============================================================================
+
+:root {
+  /* Accent (Flux "accent" concept -> Material primary) */
+  --flux-accent: var(--color-primary, #2176ff);
+  --flux-accent-content: var(--color-on-primary, #ffffff);
+  --flux-accent-soft: color-mix(in srgb, var(--flux-accent) 12%, transparent);
+  --flux-accent-strong: var(--color-primary-container, #33a1fd);
+
+  /* Surfaces */
+  --flux-bg: var(--bg-color, #ffffff);
+  --flux-surface: var(--card-bg, #ffffff);
+  --flux-surface-alt: var(--color-surface-variant, color-mix(in srgb, #31393c 5%, #ffffff));
+  --flux-overlay-backdrop: color-mix(in srgb, var(--jet-black, #31393c) 55%, transparent);
+
+  /* Text */
+  --flux-text: var(--text-color, #31393c);
+  --flux-text-muted: var(--text-muted, color-mix(in srgb, #31393c 72%, #ffffff));
+  --flux-text-inverted: var(--color-on-primary, #ffffff);
+
+  /* Borders / focus */
+  --flux-border: var(--border, color-mix(in srgb, #31393c 15%, transparent));
+  --flux-border-strong: var(--border-layout, color-mix(in srgb, #31393c 25%, transparent));
+  --flux-ring: var(--focus-ring-color, #2176ff);
+  --flux-ring-width: var(--focus-ring-width, 3px);
+  --flux-ring-offset: var(--focus-ring-offset, 2px);
+
+  /* Status (THEME.md semantic map) */
+  --flux-success: var(--color-success, #33a1fd);
+  --flux-warning: var(--color-warning, #fdca40);
+  --flux-danger: var(--color-error, #f79824);
+  --flux-info: var(--color-info, #2176ff);
+  /* Danger-tinted TEXT on light surfaces needs deepening for WCAG AA. */
+  --flux-danger-text: color-mix(in srgb, var(--flux-danger) 50%, var(--jet-black, #31393c));
+  /* Text placed ON danger-filled surfaces (carrot orange requires dark text). */
+  --flux-on-danger: var(--jet-black, #31393c);
+
+  /* Shape (9px grid) */
+  --flux-radius: var(--border-radius-md, 9px);
+  --flux-radius-lg: var(--border-radius-lg, 18px);
+  --flux-radius-pill: var(--border-radius-pill, 999px);
+
+  /* Elevation — sharp and clinical, no diffuse glows */
+  --flux-shadow-sm: var(
+    --shadow-sm,
+    0 1px 2px color-mix(in srgb, #31393c 5%, transparent),
+    0 1px 3px color-mix(in srgb, #31393c 10%, transparent)
+  );
+  --flux-shadow-md: var(
+    --shadow-md,
+    0 4px 6px -1px color-mix(in srgb, #31393c 10%, transparent),
+    0 2px 4px -1px color-mix(in srgb, #31393c 6%, transparent)
+  );
+
+  /* Typography — 18px floor across all UI text */
+  --flux-font-family: 'Inter', sans-serif;
+  --flux-font-size: max(18px, var(--base-font-size, 18px));
+  --flux-font-size-lg: calc(var(--flux-font-size) * 1.2);
+  --flux-font-size-xl: calc(var(--flux-font-size) * 1.55);
+
+  /* Controls (9px grid heights) */
+  --flux-control-height: 45px;
+  --flux-control-height-sm: 36px;
+  --flux-control-height-xs: 27px;
+  --flux-control-padding-x: var(--space-2, 18px);
+
+  /* Spacing */
+  --flux-space-1: var(--space-1, 9px);
+  --flux-space-2: var(--space-2, 18px);
+  --flux-space-3: var(--space-3, 27px);
+  --flux-space-4: var(--space-4, 36px);
+
+  /* Motion */
+  --flux-transition: var(--transition-smooth, all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+
+  /* Layering */
+  --flux-z-overlay: 1000;
+  --flux-z-toast: 1100;
+  --flux-z-tooltip: 1200;
+}
+
+/* Dark surfaces give the raw danger orange sufficient contrast already. */
+html[data-theme='dark'] {
+  --flux-danger-text: var(--flux-danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --flux-danger-text: var(--flux-danger);
+  }
+}

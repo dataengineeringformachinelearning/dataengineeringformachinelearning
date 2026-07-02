@@ -117,6 +117,38 @@
           }
         }
       }
+    },
+    "flux-material": {
+      "projectType": "library",
+      "root": "projects/flux-material",
+      "sourceRoot": "projects/flux-material/src",
+      "prefix": "flux",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "options": {
+            "project": "projects/flux-material/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/flux-material/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/flux-material/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/flux-material/src/**/*.ts",
+              "projects/flux-material/src/**/*.html"
+            ]
+          }
+        }
+      }
     }
   }
 }

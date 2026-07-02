@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/flux-material-spec",
+    "types": ["vitest/globals"],
+    "moduleResolution": "bundler"
+  },
+  "include": ["src/**/*.ts"]
+}

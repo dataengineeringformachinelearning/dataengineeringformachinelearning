@@ -1,0 +1,373 @@
+<div class="flux-showcase">
+  <header class="showcase-header">
+    <flux-brand name="Flux-Material" />
+    <flux-heading size="xl" [level]="1">Flux-Material UI Kit</flux-heading>
+    <flux-text variant="muted">
+      Every free Flux UI component style, rebuilt as zero-dependency Angular components and themed
+      with the DEML Material tokens. Imported from
+      <code>&#64;deml/flux-material</code>.
+    </flux-text>
+    <flux-breadcrumbs [items]="breadcrumbs" />
+  </header>
+
+  <div class="demo-grid">
+    <section class="demo" id="demo-button">
+      <flux-heading size="lg" [level]="2">Button</flux-heading>
+      <div class="demo-row">
+        <flux-button>Default</flux-button>
+        <flux-button variant="primary">Primary</flux-button>
+        <flux-button variant="filled">Filled</flux-button>
+        <flux-button variant="danger">Danger</flux-button>
+        <flux-button variant="ghost">Ghost</flux-button>
+        <flux-button variant="subtle">Subtle</flux-button>
+      </div>
+      <div class="demo-row">
+        <flux-button variant="primary" icon="download">Export</flux-button>
+        <flux-button iconTrailing="chevron-down">Open</flux-button>
+        <flux-button [loading]="true">Saving</flux-button>
+        <flux-button [square]="true" icon="settings" label="Settings" />
+        <flux-button size="sm">Small</flux-button>
+        <flux-button size="xs">Extra small</flux-button>
+      </div>
+      <div class="demo-row">
+        <flux-button-group>
+          <flux-button>Oldest</flux-button>
+          <flux-button>Newest</flux-button>
+          <flux-button>Top</flux-button>
+        </flux-button-group>
+        <flux-button kbd="⌘K" icon="search">Search</flux-button>
+      </div>
+    </section>
+
+    <section class="demo" id="demo-badge">
+      <flux-heading size="lg" [level]="2">Badge, Avatar &amp; Brand</flux-heading>
+      <div class="demo-row">
+        <flux-badge>Neutral</flux-badge>
+        <flux-badge tone="accent">Accent</flux-badge>
+        <flux-badge tone="success" icon="check-circle">Healthy</flux-badge>
+        <flux-badge tone="warning">Degraded</flux-badge>
+        <flux-badge tone="danger">Incident</flux-badge>
+        <flux-badge [removable]="true">Removable</flux-badge>
+      </div>
+      <div class="demo-row">
+        <flux-avatar name="Ada Lovelace" [size]="45" status="success" />
+        <flux-avatar name="Grace Hopper" [size]="45" status="warning" />
+        <flux-avatar name="Tenant Zero" [size]="45" [square]="true" />
+        <flux-avatar name="DEML Platform" [size]="63" status="accent" />
+      </div>
+      <div class="demo-row">
+        <flux-brand name="DEML" />
+      </div>
+    </section>
+
+    <section class="demo" id="demo-callout">
+      <flux-heading size="lg" [level]="2">Callout</flux-heading>
+      <flux-callout tone="accent" heading="Event projections">
+        Commands flow through the transactional outbox before materializing in Firestore.
+      </flux-callout>
+      <flux-callout tone="warning" heading="Key rotation due" [dismissible]="true">
+        Tenant0 AES-256-GCM keys rotate in 3 days via the KMS worker.
+      </flux-callout>
+      <flux-callout tone="danger" heading="DLQ growth">
+        frontend-events-dlq received 14 events in the last hour.
+      </flux-callout>
+    </section>
+
+    <section class="demo" id="demo-card">
+      <flux-heading size="lg" [level]="2">Card, Profile &amp; Separator</flux-heading>
+      <flux-card [interactive]="true">
+        <flux-card-header>
+          <flux-heading [level]="3">Telemetry worker</flux-heading>
+          <flux-badge tone="success" size="sm">Running</flux-badge>
+        </flux-card-header>
+        <flux-text variant="muted">
+          Consumes frontend-events, enriches from Postgres, projects into the deml Firestore
+          database.
+        </flux-text>
+        <flux-card-footer>
+          <flux-button size="sm" variant="primary">Inspect</flux-button>
+          <flux-button size="sm" variant="ghost">Logs</flux-button>
+        </flux-card-footer>
+      </flux-card>
+      <flux-separator text="operators on call" />
+      <flux-profile name="Ada Lovelace" detail="Security Admin — Tenant0" status="success">
+        <flux-button size="sm" variant="subtle" icon="mail" label="Contact" [square]="true" />
+      </flux-profile>
+    </section>
+
+    <section class="demo" id="demo-inputs">
+      <flux-heading size="lg" [level]="2">Field, Input &amp; Textarea</flux-heading>
+      <flux-field
+        label="Endpoint URL"
+        description="Health checks run every 60 seconds."
+        [required]="true"
+      >
+        <flux-input placeholder="https://api.example.com/health" icon="globe" [clearable]="true" />
+      </flux-field>
+      <flux-field label="API key" error="This key was revoked by the KMS rotation worker.">
+        <flux-input type="password" placeholder="deml_live_…" icon="lock" />
+      </flux-field>
+      <flux-field label="Incident notes">
+        <flux-textarea placeholder="What happened during the deploy?" [rows]="3" />
+      </flux-field>
+    </section>
+
+    <section class="demo" id="demo-selection">
+      <flux-heading size="lg" [level]="2">Select, Autocomplete &amp; Pillbox</flux-heading>
+      <flux-field label="Deployment region">
+        <flux-select [options]="regionOptions" placeholder="Choose region" />
+      </flux-field>
+      <flux-field label="Worker pipeline">
+        <flux-autocomplete [suggestions]="pipelineSuggestions" placeholder="Search workers…" />
+      </flux-field>
+      <flux-field label="Alert channels">
+        <flux-pillbox [values]="['pagerduty', 'status-page']" placeholder="Add channel…" />
+      </flux-field>
+    </section>
+
+    <section class="demo" id="demo-toggles">
+      <flux-heading size="lg" [level]="2">Checkbox, Radio, Switch &amp; Slider</flux-heading>
+      <flux-checkbox [checked]="true" description="Publish uptime metrics on the public page.">
+        Public status page
+      </flux-checkbox>
+      <flux-checkbox [indeterminate]="true">Select all monitors</flux-checkbox>
+      <flux-radio-group
+        label="Data retention"
+        orientation="horizontal"
+        [options]="retentionOptions"
+        [value]="60"
+      />
+      <flux-switch [checked]="true" description="Route suspicious traffic to the threat model.">
+        Behavioral threat intel
+      </flux-switch>
+      <flux-slider label="Sampling rate" [value]="35" [min]="0" [max]="100" />
+    </section>
+
+    <section class="demo" id="demo-pickers">
+      <flux-heading size="lg" [level]="2">Date, Time &amp; Color Pickers</flux-heading>
+      <flux-field label="Maintenance window date">
+        <flux-date-picker />
+      </flux-field>
+      <flux-field label="Maintenance window start">
+        <flux-time-picker [stepMinutes]="30" />
+      </flux-field>
+      <flux-field label="Series color" description="Presets are the THEME.md palette.">
+        <flux-color-picker />
+      </flux-field>
+    </section>
+
+    <section class="demo" id="demo-calendar">
+      <flux-heading size="lg" [level]="2">Calendar &amp; OTP Input</flux-heading>
+      <flux-calendar />
+      <flux-field label="Verification code" description="Paste the 6-digit code from your email.">
+        <flux-otp-input [length]="6" />
+      </flux-field>
+    </section>
+
+    <section class="demo" id="demo-overlays">
+      <flux-heading size="lg" [level]="2">Dropdown, Popover, Tooltip &amp; Context</flux-heading>
+      <div class="demo-row">
+        <flux-dropdown>
+          <flux-button fluxTrigger iconTrailing="chevron-down">Actions</flux-button>
+          <flux-menu-item icon="refresh" kbd="R">Replay events</flux-menu-item>
+          <flux-menu-item icon="copy">Duplicate monitor</flux-menu-item>
+          <flux-menu-item icon="trash" [danger]="true">Delete monitor</flux-menu-item>
+        </flux-dropdown>
+        <flux-popover>
+          <flux-button fluxTrigger variant="filled" icon="info">Popover</flux-button>
+          <flux-heading [level]="3">Projection lag</flux-heading>
+          <flux-text variant="muted">Firestore projections are 220ms behind Redpanda.</flux-text>
+        </flux-popover>
+        <flux-button
+          variant="subtle"
+          icon="shield"
+          fluxTooltip="Semgrep and Trivy scans passed on the last push"
+          >Security</flux-button
+        >
+      </div>
+      <flux-context>
+        <div class="context-zone">
+          <flux-icon name="dots-horizontal" [size]="20" />
+          <flux-text variant="muted" [inline]="true">Right-click this panel for actions</flux-text>
+        </div>
+        <div fluxMenu>
+          <flux-menu-item icon="pencil">Rename</flux-menu-item>
+          <flux-menu-item icon="copy">Copy UUID</flux-menu-item>
+          <flux-menu-item icon="trash" [danger]="true">Archive</flux-menu-item>
+        </div>
+      </flux-context>
+    </section>
+
+    <section class="demo" id="demo-feedback">
+      <flux-heading size="lg" [level]="2">Modal, Toast &amp; Command</flux-heading>
+      <div class="demo-row">
+        <flux-button variant="primary" (pressed)="modalOpen.set(true)">Open modal</flux-button>
+        <flux-button variant="filled" icon="check-circle" (pressed)="showToast('success')"
+          >Success toast</flux-button
+        >
+        <flux-button variant="danger" icon="alert-circle" (pressed)="showToast('danger')"
+          >Danger toast</flux-button
+        >
+        <flux-button icon="terminal" kbd="⌘K" (pressed)="commandOpen.set(true)"
+          >Command palette</flux-button
+        >
+      </div>
+      <flux-modal heading="Confirm key rotation" [(open)]="modalOpen">
+        Rotating the tenant KMS key re-encrypts all secrets. Workers stay online during the
+        rotation.
+        <div fluxModalActions>
+          <flux-button variant="ghost" (pressed)="modalOpen.set(false)">Cancel</flux-button>
+          <flux-button variant="primary" icon="lock" (pressed)="modalOpen.set(false)"
+            >Rotate keys</flux-button
+          >
+        </div>
+      </flux-modal>
+      <flux-command [items]="commandItems" [(open)]="commandOpen" />
+    </section>
+
+    <section class="demo" id="demo-progress">
+      <flux-heading size="lg" [level]="2">Progress &amp; Skeleton</flux-heading>
+      <flux-progress label="Model training" [value]="72" />
+      <flux-progress label="Snapshot compaction" tone="warning" [value]="41" />
+      <flux-progress label="Replaying DLQ" [indeterminate]="true" />
+      <div class="skeleton-row">
+        <flux-skeleton shape="circle" width="45px" height="45px" />
+        <div class="skeleton-lines">
+          <flux-skeleton width="60%" />
+          <flux-skeleton width="90%" />
+        </div>
+      </div>
+    </section>
+
+    <section class="demo" id="demo-navigation">
+      <flux-heading size="lg" [level]="2">Navbar &amp; Pagination</flux-heading>
+      <flux-navbar label="Showcase navigation">
+        <flux-navbar-item icon="home" [current]="true">Overview</flux-navbar-item>
+        <flux-navbar-item icon="bar-chart">Analytics</flux-navbar-item>
+        <flux-navbar-item icon="shield">Security</flux-navbar-item>
+        <flux-navbar-item icon="settings">Settings</flux-navbar-item>
+      </flux-navbar>
+      <flux-pagination [page]="4" [totalPages]="12" />
+    </section>
+
+    <section class="demo" id="demo-upload">
+      <flux-heading size="lg" [level]="2">File Upload &amp; Icons</flux-heading>
+      <flux-file-upload
+        heading="Drop model artifacts here"
+        hint="state_dict only — pickle files are rejected"
+        accept=".pt,.safetensors,.json"
+      />
+      <div class="demo-row icon-row">
+        <flux-icon name="search" />
+        <flux-icon name="calendar" />
+        <flux-icon name="bell" />
+        <flux-icon name="shield" />
+        <flux-icon name="bar-chart" />
+        <flux-icon name="sparkle" />
+        <flux-icon name="terminal" />
+        <flux-icon name="lock" />
+        <flux-icon name="globe" />
+        <flux-icon name="heart" />
+      </div>
+    </section>
+
+    <section class="demo demo-wide" id="demo-chart">
+      <flux-heading size="lg" [level]="2">Chart</flux-heading>
+      <flux-text variant="muted"
+        >Zero-dependency native SVG, per the DEML telemetry principle.</flux-text
+      >
+      <flux-chart [series]="chartSeries" label="Endpoint latency over the last 12 hours" />
+    </section>
+
+    <section class="demo demo-wide" id="demo-kanban">
+      <flux-heading size="lg" [level]="2">Kanban</flux-heading>
+      <flux-text variant="muted">Drag cards between columns.</flux-text>
+      <flux-kanban [(columns)]="kanbanColumns" />
+    </section>
+
+    <section class="demo" id="demo-accordion">
+      <flux-heading size="lg" [level]="2">Accordion</flux-heading>
+      <flux-accordion [exclusive]="true">
+        <flux-accordion-item heading="What is the transactional outbox?" [expanded]="true">
+          Django writes OutboxEvent rows atomically with business data; the outbox_relay command
+          publishes them to Redpanda for reliable delivery.
+        </flux-accordion-item>
+        <flux-accordion-item heading="How are projections kept idempotent?">
+          The telemetry worker de-duplicates by idempotency_key and dead-letters poison events to
+          frontend-events-dlq.
+        </flux-accordion-item>
+        <flux-accordion-item heading="Where do real-time queries read from?">
+          Angular subscribes directly to Firestore documents such as the per-user stats projection.
+        </flux-accordion-item>
+      </flux-accordion>
+    </section>
+
+    <section class="demo" id="demo-timeline">
+      <flux-heading size="lg" [level]="2">Timeline</flux-heading>
+      <flux-timeline>
+        <flux-timeline-item heading="Deploy v2.4.1" timestamp="09:12" tone="success" icon="check">
+          Zero-downtime rolling deploy to Cloud Run completed.
+        </flux-timeline-item>
+        <flux-timeline-item
+          heading="Latency regression"
+          timestamp="10:45"
+          tone="warning"
+          icon="alert-triangle"
+        >
+          p95 crossed 90ms on europe-west1; SLA model flagged the anomaly.
+        </flux-timeline-item>
+        <flux-timeline-item
+          heading="Auto-remediation"
+          timestamp="10:47"
+          tone="accent"
+          icon="sparkle"
+        >
+          Traffic shifted to the healthy revision; incident auto-resolved.
+        </flux-timeline-item>
+      </flux-timeline>
+    </section>
+
+    <section class="demo demo-wide" id="demo-carousel">
+      <flux-heading size="lg" [level]="2">Carousel</flux-heading>
+      <flux-carousel>
+        <flux-carousel-slide>
+          <div class="slide-body">
+            <flux-heading [level]="3">Collect</flux-heading>
+            <flux-text variant="muted">Events ingested via Firebase callable functions.</flux-text>
+          </div>
+        </flux-carousel-slide>
+        <flux-carousel-slide>
+          <div class="slide-body">
+            <flux-heading [level]="3">Enhance</flux-heading>
+            <flux-text variant="muted"
+              >Enrichment from Postgres, threat intel and ASN data.</flux-text
+            >
+          </div>
+        </flux-carousel-slide>
+        <flux-carousel-slide>
+          <div class="slide-body">
+            <flux-heading [level]="3">Showcase</flux-heading>
+            <flux-text variant="muted"
+              >Materialized projections power real-time dashboards.</flux-text
+            >
+          </div>
+        </flux-carousel-slide>
+      </flux-carousel>
+    </section>
+
+    <section class="demo demo-wide" id="demo-composer">
+      <flux-heading size="lg" [level]="2">Editor &amp; Composer</flux-heading>
+      <flux-field label="Runbook entry">
+        <flux-editor placeholder="Document the remediation steps…" />
+      </flux-field>
+      <flux-field label="Incident channel">
+        <flux-composer placeholder="Message the on-call channel…" (sent)="onMessage($event)" />
+      </flux-field>
+      @if (lastMessage()) {
+      <flux-text variant="muted">Last message: {{ lastMessage() }}</flux-text>
+      }
+    </section>
+  </div>
+
+  <flux-toaster />
+</div>
