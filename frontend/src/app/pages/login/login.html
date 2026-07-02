@@ -1,6 +1,4 @@
 <div class="dashboard-page-container">
-  <!-- Glow Spheres for Homepage Unity -->
-
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper login-extracted-2">
       <header class="hud-header login-extracted-3">
@@ -8,222 +6,145 @@
           <div class="section-tag-row">
             <span class="section-tag">Access Portal</span>
           </div>
-          <h1 class="hud-title">
+          <flux-heading [level]="1" size="xl" class="hud-title">
             {{ isForgotMode() ? 'Reset Password' : isResetMode() ? 'Set New Password' :
             mfaRequired() ? 'Two-Factor verification' : isPhoneMode() ? 'Sign In with Phone' :
             isRegisterMode() ? 'Sign Up' : 'Sign In' }}
-          </h1>
-          <p class="hud-subtitle">
+          </flux-heading>
+          <flux-text variant="muted" class="hud-subtitle">
             Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING).
-          </p>
+          </flux-text>
         </div>
       </header>
 
       <div class="modal-body login-extracted-1">
         @if (successMessage()) {
-        <div class="success-text" role="status" aria-live="polite">{{ successMessage() }}</div>
+        <flux-callout tone="success" [heading]="successMessage()!" />
         } @if (mfaRequired() && !successMessage()) {
-        <div class="info-text" role="status" aria-live="polite">
+        <flux-callout tone="accent">
           Two-factor authentication is required. An SMS verification code has been sent to your
           registered phone number.
-        </div>
+        </flux-callout>
         } @if (!successMessage() || isResetMode()) {
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-          <!-- Username / Email (not shown in forgot/reset/phone/mfa modes) -->
           @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>{{ isRegisterMode() ? 'Username' : 'Email Address' }}</mat-label>
-            <mat-icon matPrefix aria-hidden="true"
-              >{{ isRegisterMode() ? 'person' : 'email' }}</mat-icon
-            >
-            <input
-              matInput
+          <flux-field [label]="isRegisterMode() ? 'Username' : 'Email Address'" [required]="true">
+            <flux-input
               [type]="isRegisterMode() ? 'text' : 'email'"
               formControlName="username"
               [placeholder]="isRegisterMode() ? '' : 'email@example.com'"
-              aria-label="Username or Email Address"
-              required
+              [icon]="isRegisterMode() ? 'user' : 'mail'"
             />
-          </mat-form-field>
-          }
-          <!-- Email Address (shown in register/forgot modes) -->
-          @if (isRegisterMode() || isForgotMode()) {
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Email Address</mat-label>
-            <mat-icon matPrefix aria-hidden="true">email</mat-icon>
-            <input
-              matInput
+          </flux-field>
+          } @if (isRegisterMode() || isForgotMode()) {
+          <flux-field label="Email Address" [required]="isForgotMode()">
+            <flux-input
               type="email"
               formControlName="email"
               placeholder="email@example.com"
-              aria-label="Email Address"
-              [required]="isForgotMode()"
+              icon="mail"
             />
-          </mat-form-field>
-          }
-          <!-- Password / New Password (not shown in forgot/phone/mfa modes) -->
-          @if (!isForgotMode() && !isPhoneMode() && !mfaRequired()) {
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>{{ isResetMode() ? 'New Password' : 'Password' }}</mat-label>
-            <mat-icon matPrefix aria-hidden="true">lock</mat-icon>
-            <input
-              matInput
-              type="password"
-              formControlName="password"
-              aria-label="Password"
-              required
-            />
-          </mat-form-field>
-          }
-          <!-- Phone Number (only shown in Phone Sign-in Mode before code is sent) -->
-          @if (isPhoneMode() && !codeSent() && !mfaRequired()) {
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Phone Number</mat-label>
-            <mat-icon matPrefix aria-hidden="true">phone</mat-icon>
-            <input
-              matInput
+          </flux-field>
+          } @if (!isForgotMode() && !isPhoneMode() && !mfaRequired()) {
+          <flux-field [label]="isResetMode() ? 'New Password' : 'Password'" [required]="true">
+            <flux-input type="password" formControlName="password" icon="lock" />
+          </flux-field>
+          } @if (isPhoneMode() && !codeSent() && !mfaRequired()) {
+          <flux-field label="Phone Number" [required]="true">
+            <flux-input
               type="tel"
               formControlName="phone"
               placeholder="+11234567890"
-              aria-label="Phone Number"
-              required
+              icon="phone"
             />
-          </mat-form-field>
-          }
-          <!-- Verification SMS Code (shown in Phone Sign-in or MFA Mode after code is sent) -->
-          @if (codeSent()) {
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Verification Code</mat-label>
-            <mat-icon matPrefix aria-hidden="true">sms</mat-icon>
-            <input
-              matInput
+          </flux-field>
+          } @if (codeSent()) {
+          <flux-field label="Verification Code" [required]="true">
+            <flux-input
               type="text"
               formControlName="verificationCode"
               placeholder="123456"
-              aria-label="Verification Code"
-              required
+              icon="mail"
             />
-          </mat-form-field>
+          </flux-field>
           } @if (error()) {
-          <div class="error-text" role="alert" aria-live="assertive">{{ error() }}</div>
+          <flux-callout tone="danger" [heading]="error()!" />
           }
+
           <div class="toggle-link">
             @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
-            <button type="button" class="text-link-btn" (click)="toggleMode()">
+            <flux-button variant="ghost" type="button" (pressed)="toggleMode()">
               {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account?
               Sign Up" }}
-            </button>
+            </flux-button>
             } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
             !mfaRequired()) {
-            <button type="button" class="text-link-btn" (click)="switchToPhone()">
+            <flux-button variant="ghost" type="button" (pressed)="switchToPhone()">
               Sign In with Phone Number
-            </button>
+            </flux-button>
             } @if (isPhoneMode() && !codeSent()) {
-            <button type="button" class="text-link-btn" (click)="switchToLogin()">
+            <flux-button variant="ghost" type="button" (pressed)="switchToLogin()">
               Sign In with Email
-            </button>
+            </flux-button>
             } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
             !mfaRequired()) {
-            <button type="button" class="text-link-btn" (click)="switchToForgot()">
+            <flux-button variant="ghost" type="button" (pressed)="switchToForgot()">
               Forgot password?
-            </button>
+            </flux-button>
             } @if (isForgotMode() || isResetMode() || (isPhoneMode() && codeSent())) {
-            <button type="button" class="text-link-btn" (click)="switchToLogin()">
+            <flux-button variant="ghost" type="button" (pressed)="switchToLogin()">
               Back to Sign In
-            </button>
+            </flux-button>
             }
           </div>
 
           @if (!isForgotMode() && !isResetMode() && !mfaRequired() && !codeSent()) {
-          <div class="social-login-separator">
-            <span>or</span>
-          </div>
+          <flux-separator text="or" />
           <div class="social-buttons-container">
-            <button
+            <flux-button
+              variant="outline"
               type="button"
-              class="google-signin-btn"
-              (click)="signInWithGoogle()"
+              [loading]="isLoading()"
               [disabled]="isLoading()"
+              (pressed)="signInWithGoogle()"
             >
-              <svg
-                class="google-icon"
-                viewBox="0 0 48 48"
-                width="18"
-                height="18"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M46.5 24c0-1.55-.15-3.24-.47-4.77H24v9.03h12.75c-.55 2.83-2.13 5.23-4.53 6.82l7.02 5.44C43.35 36.56 46.5 30.82 46.5 24z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M10.54 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24s.92 7.54 2.56 10.78l7.98-6.19z"
-                />
-                <path
-                  fill="currentColor"
-                  d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.02-5.44c-1.99 1.33-4.51 2.15-7.87 2.15-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
-                />
-              </svg>
-              <span>Sign In with Google</span>
-            </button>
-
-            <button
+              Sign In with Google
+            </flux-button>
+            <flux-button
+              variant="outline"
               type="button"
-              class="apple-signin-btn"
-              (click)="signInWithApple()"
+              [loading]="isLoading()"
               [disabled]="isLoading()"
+              (pressed)="signInWithApple()"
             >
-              <svg
-                class="apple-icon"
-                viewBox="0 0 170 170"
-                width="18"
-                height="18"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.34.25-9.3-.9-14.86-3.47-5.56-2.57-9.9-6.93-13.01-13.06-7.72-14.88-11.58-30.82-11.58-47.81 0-14.93 3.33-27.07 9.99-36.42 6.66-9.35 15.26-14.07 25.81-14.17 5.11-.1 10.13 1.54 15.06 4.9 4.93 3.37 8.52 4.9 10.77 4.58 2.05-.32 5.56-1.92 10.53-4.78 4.96-2.87 9.87-4.22 14.72-4.05 15.2.85 26.68 6.58 34.41 17.2-12.18 7.37-18.15 17.51-17.9 30.4.25 10.3 4.18 18.91 11.78 25.8 7.6 6.89 16.48 10.5 26.63 10.82-1.95 5.66-4.66 11.45-8.12 17.38zm-30.34-114.7c0 8.16-2.92 15.53-8.76 21.09-5.84 5.56-12.79 8.78-20.85 9.68-.2-1.63-.3-3.23-.3-4.79 0-8.41 3.12-16.14 9.35-23.19 6.23-7.05 13.68-11.02 22.37-11.9.1.86.19 2.06.19 3.61z"
-                />
-              </svg>
-              <span>Sign In with Apple</span>
-            </button>
+              Sign In with Apple
+            </flux-button>
           </div>
           }
         </form>
         }
 
         <div class="modal-footer">
-          <div class="footer-divider"></div>
-          <button
-            class="btn-submit"
+          <flux-separator />
+          <flux-button
+            variant="primary"
+            type="button"
+            [loading]="isLoading()"
             [disabled]="(loginForm.invalid && !successMessage()) || isLoading()"
-            (click)="onSubmit()"
+            [icon]="submitIcon()"
+            (pressed)="onSubmit()"
           >
-            @if (!isLoading()) {
-            <mat-icon class="btn-icon" aria-hidden="true">
-              {{ isForgotMode() ? 'send' : isResetMode() ? 'lock_reset' : mfaRequired() ?
-              'verified_user' : (isPhoneMode() && !codeSent()) ? 'send' : (isPhoneMode() &&
-              codeSent()) ? 'login' : isRegisterMode() ? 'person_add' : 'login' }}
-            </mat-icon>
-            } @if (isLoading()) {
-            <span class="btn-spinner" aria-hidden="true"></span>
-            }
-            <span>
-              {{ isForgotMode() ? 'Send Link' : isResetMode() ? 'Reset' : mfaRequired() ? 'Verify' :
-              (isPhoneMode() && !codeSent()) ? 'Send OTP' : (isPhoneMode() && codeSent()) ? 'Login'
-              : isRegisterMode() ? 'Sign Up' : 'Login' }}
-            </span>
-          </button>
-
-          <button class="btn-cancel" (click)="onCancel()" [disabled]="isLoading()">
-            <mat-icon class="btn-icon" aria-hidden="true">cancel</mat-icon>
-            <span>Cancel</span>
-          </button>
+            {{ submitLabel() }}
+          </flux-button>
+          <flux-button
+            variant="ghost"
+            type="button"
+            icon="x"
+            [disabled]="isLoading()"
+            (pressed)="onCancel()"
+          >
+            Cancel
+          </flux-button>
         </div>
       </div>
     </div>

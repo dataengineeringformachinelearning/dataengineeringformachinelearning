@@ -43,8 +43,14 @@ Toasts need a single outlet near the app root:
 inject(FluxToastService).show({ heading: 'Saved', text: 'All good.', tone: 'success' });
 ```
 
-A live gallery of every component is available at the `/flux` route
-(`src/app/pages/flux-showcase`).
+A live component gallery ships as a **separate Angular app** (not on deml.app):
+
+```bash
+npm run serve:flux-material-showcase   # dev gallery
+npm run build:flux-material-system     # library + gallery bundle
+```
+
+See `projects/flux-material-showcase/README.md`.
 
 ## Building an npm package
 

@@ -1,10 +1,10 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
+import { FluxButton, FluxCard, FluxHeading, FluxText } from '@deml/flux-material';
 
 @Component({
   selector: 'app-not-found',
-  imports: [RouterLink],
+  imports: [FluxButton, FluxCard, FluxHeading, FluxText],
   templateUrl: './not-found.html',
   styleUrl: './not-found.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
