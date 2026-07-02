@@ -10,9 +10,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { FluxButton } from '@deml/flux-material';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
 import { ThreatReportResponse } from '../../services/ml.service';
@@ -22,14 +21,7 @@ import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
 @Component({
   selector: 'app-status-card',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule,
-    ProVerifiedBadge,
-  ],
+  imports: [CommonModule, RouterModule, FluxButton, FluxAppIcon, ProVerifiedBadge],
   templateUrl: './status-card.html',
   styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

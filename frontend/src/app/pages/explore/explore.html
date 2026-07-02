@@ -31,26 +31,23 @@
         ></app-status-card>
         } @if (loadFailed()) {
         <div class="status-error-state col-span-4 col-span-md-12">
-          <mat-icon class="error-state-icon" aria-hidden="true">cloud_off</mat-icon>
+          <flux-app-icon name="cloud_off" [ariaHidden]="true" hostClass="error-state-icon" />
           <h2 class="error-title">Unable to Connect</h2>
           <p class="error-subtitle">
             We couldn't connect to the status service. Please check that the backend is running and
             try again.
           </p>
-          <button
-            mat-raised-button
-            color="primary"
+          <flux-button
+            variant="primary"
+            type="button"
             class="retry-btn"
-            (click)="retryLoad()"
+            icon="refresh"
+            [loading]="isRetrying()"
             [disabled]="isRetrying()"
+            (pressed)="retryLoad()"
           >
-            @if (!isRetrying()) {
-            <mat-icon aria-hidden="true">refresh</mat-icon>
-            } @if (isRetrying()) {
-            <span class="btn-spinner"></span>
-            }
-            <span>Retry Connection</span>
-          </button>
+            Retry Connection
+          </flux-button>
         </div>
         } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
         <app-status-cta

@@ -8,9 +8,7 @@
         aria-label="Go to homepage"
         (click)="closeMobileMenu()"
       >
-        <mat-icon class="brand-icon navbar-logo glowing-icon-sm" aria-hidden="true"
-          >analytics</mat-icon
-        >
+        <flux-app-icon name="analytics" hostClass="brand-icon navbar-logo glowing-icon-sm" [ariaHidden]="true" />
       </a>
     </div>
 
@@ -21,7 +19,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon aria-hidden="true">explore</mat-icon>
+        <flux-app-icon name="explore" [ariaHidden]="true" />
         <span>Explore</span>
       </a>
 
@@ -32,7 +30,7 @@
         class="nav-btn"
         (click)="closeMobileMenu()"
       >
-        <mat-icon aria-hidden="true">description</mat-icon>
+        <flux-app-icon name="description" [ariaHidden]="true" />
         <span>Documentation</span>
       </a>
 
@@ -43,12 +41,12 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        <flux-app-icon name="dashboard" [ariaHidden]="true" />
         <span>Dashboard</span>
       </a>
 
       <a routerLink="/settings" routerLinkActive="active" class="nav-btn">
-        <mat-icon aria-hidden="true">language</mat-icon>
+        <flux-app-icon name="language" [ariaHidden]="true" />
         <span>Setup</span>
       </a>
 
@@ -58,7 +56,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         class="nav-btn"
       >
-        <mat-icon aria-hidden="true">person</mat-icon>
+        <flux-app-icon name="person" [ariaHidden]="true" />
         <span>Account</span>
       </a>
       }
@@ -68,12 +66,12 @@
       <div class="desktop-auth">
         @if (!authService.isAuthenticated()) {
         <button type="button" class="auth-btn" (click)="login()">
-          <mat-icon aria-hidden="true">login</mat-icon>
+          <flux-app-icon name="login" [ariaHidden]="true" />
           <span>Sign In</span>
         </button>
         } @if (authService.isAuthenticated()) {
         <button type="button" class="auth-btn" (click)="logout()">
-          <mat-icon aria-hidden="true">logout</mat-icon>
+          <flux-app-icon name="logout" [ariaHidden]="true" />
           <span>Sign Out</span>
         </button>
         }
@@ -85,9 +83,10 @@
         class="theme-toggle-btn"
         aria-label="Toggle light and dark theme"
       >
-        <mat-icon aria-hidden="true"
-          >{{ themeService.theme() === 'light' ? 'dark_mode' : 'light_mode' }}</mat-icon
-        >
+        <flux-app-icon
+          [name]="themeService.theme() === 'light' ? 'dark_mode' : 'light_mode'"
+          [ariaHidden]="true"
+        />
       </button>
 
       <button
@@ -97,7 +96,7 @@
         aria-label="Toggle navigation menu"
         [attr.aria-expanded]="isMobileMenuOpen()"
       >
-        <mat-icon aria-hidden="true">{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        <flux-app-icon [name]="isMobileMenuOpen() ? 'close' : 'menu'" [ariaHidden]="true" />
       </button>
     </div>
   </div>
@@ -110,7 +109,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon aria-hidden="true">explore</mat-icon>
+      <flux-app-icon name="explore" [ariaHidden]="true" />
       <span>Explore</span>
     </a>
 
@@ -121,7 +120,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon aria-hidden="true">description</mat-icon>
+      <flux-app-icon name="description" [ariaHidden]="true" />
       <span>Documentation</span>
     </a>
 
@@ -133,7 +132,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon aria-hidden="true">dashboard</mat-icon>
+      <flux-app-icon name="dashboard" [ariaHidden]="true" />
       <span>Dashboard</span>
     </a>
 
@@ -143,7 +142,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon aria-hidden="true">language</mat-icon>
+      <flux-app-icon name="language" [ariaHidden]="true" />
       <span>Setup</span>
     </a>
 
@@ -154,7 +153,7 @@
       class="mobile-nav-btn"
       (click)="closeMobileMenu()"
     >
-      <mat-icon aria-hidden="true">person</mat-icon>
+      <flux-app-icon name="person" [ariaHidden]="true" />
       <span>Account</span>
     </a>
     }
@@ -163,12 +162,12 @@
 
     @if (!authService.isAuthenticated()) {
     <button type="button" class="mobile-auth-btn" (click)="login(); closeMobileMenu()">
-      <mat-icon aria-hidden="true">login</mat-icon>
+      <flux-app-icon name="login" [ariaHidden]="true" />
       <span>Sign In</span>
     </button>
     } @if (authService.isAuthenticated()) {
     <button type="button" class="mobile-auth-btn" (click)="logout(); closeMobileMenu()">
-      <mat-icon aria-hidden="true">logout</mat-icon>
+      <flux-app-icon name="logout" [ariaHidden]="true" />
       <span>Sign Out</span>
     </button>
     }

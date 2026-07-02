@@ -18,10 +18,9 @@
         </div>
         @if (authService.isAuthenticated()) {
         <div class="topbar-right">
-          <a mat-flat-button class="manage-btn" routerLink="/manage">
-            <mat-icon>settings</mat-icon>
+          <flux-button variant="filled" class="manage-btn" href="/manage" icon="settings">
             Manage Pages
-          </a>
+          </flux-button>
         </div>
         }
       </header>
@@ -33,13 +32,13 @@
           sanityService.error()) {
           <div class="announcements-container">
             <h2 class="section-title-premium">
-              <mat-icon>campaign</mat-icon>
+              <flux-app-icon name="campaign" />
               Latest System Announcements
             </h2>
 
             @if (sanityService.error()) {
             <div class="announcements-error">
-              <mat-icon>error_outline</mat-icon>
+              <flux-app-icon name="error_outline" />
               <span>{{ sanityService.error() }}</span>
             </div>
             } @else {
@@ -79,14 +78,14 @@
           <div class="analytics-cta-container panel-clean status-extracted-2">
             <div>
               <h2 class="section-title-premium status-extracted-3">
-                <mat-icon>analytics</mat-icon>
+                <flux-app-icon name="analytics" />
                 System Telemetry
               </h2>
               <p class="embed-desc status-extracted-1">
                 View detailed real-time metrics, latency charts, and traffic analysis.
               </p>
             </div>
-            <a mat-flat-button color="primary" routerLink="/dashboard"> View Dashboard </a>
+            <flux-button variant="primary" href="/dashboard">View Dashboard</flux-button>
           </div>
 
           <div class="status-stack">
@@ -101,26 +100,23 @@
             ></app-status-card>
             } @if (loadFailed()) {
             <div class="status-error-state">
-              <mat-icon class="error-state-icon">cloud_off</mat-icon>
+              <flux-app-icon name="cloud_off" hostClass="error-state-icon" />
               <h2 class="error-title">Unable to Connect</h2>
               <p class="error-subtitle">
                 We couldn't connect to the status service. Please check that the backend is running
                 and try again.
               </p>
-              <button
-                mat-raised-button
-                color="primary"
+              <flux-button
+                variant="primary"
+                type="button"
                 class="retry-btn"
-                (click)="retryLoad()"
+                icon="refresh"
+                [loading]="isRetrying()"
                 [disabled]="isRetrying()"
+                (pressed)="retryLoad()"
               >
-                @if (!isRetrying()) {
-                <mat-icon>refresh</mat-icon>
-                } @if (isRetrying()) {
-                <span class="btn-spinner"></span>
-                }
-                <span>Retry Connection</span>
-              </button>
+                Retry Connection
+              </flux-button>
             </div>
             } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
             <app-status-cta></app-status-cta>

@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 
 @Component({
   selector: 'app-pro-verified-badge',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [FluxAppIcon],
   template: `
     @if (show) {
       <span
@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
         title="Pro subscriber — verified status page"
         aria-label="Pro verified status page"
       >
-        <mat-icon aria-hidden="true">verified</mat-icon>
+        <flux-app-icon name="verified" [ariaHidden]="true" />
         <span>Pro Verified</span>
       </span>
     }

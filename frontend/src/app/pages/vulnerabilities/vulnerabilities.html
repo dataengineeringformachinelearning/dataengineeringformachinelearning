@@ -6,7 +6,7 @@
       <header class="hud-header">
         <div class="title-group">
           <a class="back-dashboard-link" routerLink="/dashboard">
-            <mat-icon aria-hidden="true">arrow_back</mat-icon>
+            <flux-app-icon name="arrow_back" [ariaHidden]="true" />
             Back to dashboard
           </a>
           <div class="section-tag-row">
@@ -61,7 +61,7 @@
         <!-- Left Triage Queue Panel -->
         <section class="panel-section queue-panel col-span-4 col-span-md-4">
           <div class="panel-header">
-            <mat-icon class="panel-icon">sort</mat-icon>
+            <flux-app-icon name="sort" hostClass="panel-icon" />
             <h2>Ingestion Queue</h2>
             <span class="status-badge-premium primary">{{ filteredVulnerabilities().length }}</span>
           </div>
@@ -95,7 +95,7 @@
             </div>
             } @else if (filteredVulnerabilities().length === 0) {
             <div class="empty-state">
-              <mat-icon>verified_user</mat-icon>
+              <flux-app-icon name="verified_user" />
               <h3 class="empty-title">SYSTEM SECURE</h3>
               <p>No active threats detected matching current filter parameters.</p>
             </div>
@@ -119,7 +119,7 @@
               </div>
               <h3 class="item-title">{{ v.title }}</h3>
               <div class="item-footer">
-                <span class="client-id"><mat-icon>dns</mat-icon> {{ v.customer_id }}</span>
+                <span class="client-id"><flux-app-icon name="dns" /> {{ v.customer_id }}</span>
                 <span
                   class="status-indicator"
                   [attr.data-status]="v.status.toLowerCase().replace(' ', '-')"
@@ -136,7 +136,7 @@
         <section class="panel-section detail-panel col-span-4 col-span-md-8">
           @if (selectedVuln()) {
           <div class="panel-header border-b">
-            <mat-icon class="panel-icon">assessment</mat-icon>
+            <flux-app-icon name="assessment" hostClass="panel-icon" />
             <h2>Vulnerability Profile & Prioritization</h2>
           </div>
 
@@ -156,7 +156,7 @@
             <!-- Interactive Risk Matrix Grid -->
             <div class="prioritization-section">
               <div class="section-title">
-                <mat-icon>grid_view</mat-icon>
+                <flux-app-icon name="grid_view" />
                 <h3>3x3 Risk Prioritization Matrix</h3>
               </div>
               <p class="section-subtitle">
@@ -208,7 +208,7 @@
             <!-- Status Action Triage Bar -->
             <div class="triage-action-bar">
               <div class="action-title">
-                <mat-icon>tune</mat-icon>
+                <flux-app-icon name="tune" />
                 <h3>Update Status</h3>
               </div>
               <div class="btn-group">
@@ -258,7 +258,7 @@
             <!-- Diagnostic Telemetry Code Section -->
             <div class="telemetry-section">
               <div class="section-title">
-                <mat-icon>terminal</mat-icon>
+                <flux-app-icon name="terminal" />
                 <h3>Diagnostic Telemetry Context</h3>
               </div>
               <pre class="telemetry-code"><code>{{ getTelemetryJson(selectedVuln()!) }}</code></pre>
@@ -267,7 +267,7 @@
           @} @else {
           <div class="no-selection-state">
             <div class="radar-scan">
-              <mat-icon class="huge-icon">radar</mat-icon>
+              <flux-app-icon name="radar" hostClass="huge-icon" />
             </div>
             <h2>Awaiting Threat Selection</h2>
             <p>
@@ -285,7 +285,7 @@
         <section class="soc-panel">
           <div class="soc-panel-header">
             <div class="soc-panel-title">
-              <mat-icon aria-hidden="true">shield</mat-icon>
+              <flux-app-icon name="shield" [ariaHidden]="true" />
               <div>
                 <span class="soc-panel-tag">SIEM</span>
                 <h2>Active Incident Cases</h2>
@@ -297,7 +297,7 @@
               (click)="runIncidentQuery()"
               [disabled]="vulnService.incidentsLoading()"
             >
-              <mat-icon aria-hidden="true">refresh</mat-icon>
+              <flux-app-icon name="refresh" [ariaHidden]="true" />
               {{ vulnService.incidentsLoading() ? 'Refreshing…' : 'Refresh' }}
             </button>
           </div>
@@ -311,7 +311,7 @@
             } @else if (incidents().length === 0) {
             <div class="soc-empty-state clear">
               <div class="soc-empty-icon">
-                <mat-icon aria-hidden="true">verified_user</mat-icon>
+                <flux-app-icon name="verified_user" [ariaHidden]="true" />
               </div>
               <h3>All clear</h3>
               <p>No active incidents. New cases appear here automatically when detected.</p>
@@ -361,7 +361,7 @@
         <section class="soc-panel">
           <div class="soc-panel-header">
             <div class="soc-panel-title">
-              <mat-icon aria-hidden="true">bolt</mat-icon>
+              <flux-app-icon name="bolt" [ariaHidden]="true" />
               <div>
                 <span class="soc-panel-tag">SOAR</span>
                 <h2>Response Playbooks</h2>
@@ -373,7 +373,7 @@
               (click)="refreshPlaybooks()"
               [disabled]="vulnService.playbooksLoading()"
             >
-              <mat-icon aria-hidden="true">refresh</mat-icon>
+              <flux-app-icon name="refresh" [ariaHidden]="true" />
               {{ vulnService.playbooksLoading() ? 'Refreshing…' : 'Refresh' }}
             </button>
           </div>
@@ -387,7 +387,7 @@
             } @else if (playbooks().length === 0) {
             <div class="soc-empty-state">
               <div class="soc-empty-icon">
-                <mat-icon aria-hidden="true">menu_book</mat-icon>
+                <flux-app-icon name="menu_book" [ariaHidden]="true" />
               </div>
               <h3>No playbooks yet</h3>
               <p>Default response playbooks seed automatically when threats are detected.</p>
@@ -451,14 +451,14 @@
         aria-live="polite"
       >
         <span>{{ actionError() || actionMessage() }}</span>
-        <button type="button" class="flux-btn flux-btn-ghost" (click)="clearActionFeedback()">
+        <flux-button variant="ghost" type="button" (pressed)="clearActionFeedback()">
           Dismiss
-        </button>
+        </flux-button>
       </div>
       } @if (selectedIncident() || selectedPlaybook()) {
       <section class="intel-action-console panel-section">
         <div class="panel-header">
-          <mat-icon class="panel-icon">bolt</mat-icon>
+          <flux-app-icon name="bolt" hostClass="panel-icon" />
           <h2>Threat Response Console</h2>
         </div>
         <div class="intel-action-body">
@@ -469,27 +469,15 @@
               {{ incident.description || 'No description provided.' }}
             </p>
             <div class="intel-action-buttons">
-              <button
-                type="button"
-                class="flux-btn flux-btn-primary"
-                (click)="resolveIncident(incident)"
-              >
+              <flux-button variant="primary" type="button" (pressed)="resolveIncident(incident)">
                 Resolve
-              </button>
-              <button
-                type="button"
-                class="flux-btn flux-btn-subtle"
-                (click)="escalateIncident(incident)"
-              >
+              </flux-button>
+              <flux-button variant="subtle" type="button" (pressed)="escalateIncident(incident)">
                 Escalate
-              </button>
-              <button
-                type="button"
-                class="flux-btn flux-btn-ghost"
-                (click)="dismissIncident(incident)"
-              >
+              </flux-button>
+              <flux-button variant="ghost" type="button" (pressed)="dismissIncident(incident)">
                 False Positive
-              </button>
+              </flux-button>
             </div>
           </div>
           } @if (selectedPlaybook(); as playbook) {
@@ -499,21 +487,17 @@
               {{ playbook.description || 'Automated response workflow.' }}
             </p>
             <div class="intel-action-buttons">
-              <button
+              <flux-button
+                variant="primary"
                 type="button"
-                class="flux-btn flux-btn-primary"
-                (click)="runSelectedPlaybook()"
+                (pressed)="runSelectedPlaybook()"
                 [disabled]="!playbook.is_active"
               >
                 Run Playbook
-              </button>
-              <button
-                type="button"
-                class="flux-btn flux-btn-subtle"
-                (click)="togglePlaybook(playbook)"
-              >
+              </flux-button>
+              <flux-button variant="subtle" type="button" (pressed)="togglePlaybook(playbook)">
                 {{ playbook.is_active ? 'Pause' : 'Activate' }}
-              </button>
+              </flux-button>
             </div>
           </div>
           }

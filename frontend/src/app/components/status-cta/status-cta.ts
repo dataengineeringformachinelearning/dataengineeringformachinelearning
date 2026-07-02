@@ -1,14 +1,14 @@
 import { Component, inject, ChangeDetectionStrategy, Input } from '@angular/core';
 
-import { RouterModule, Router } from '@angular/router';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
+import { FluxButton } from '@deml/flux-material';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-status-cta',
   standalone: true,
-  imports: [RouterModule, MatButtonModule, MatIconModule],
+  imports: [FluxButton, FluxAppIcon],
   templateUrl: './status-cta.html',
   styleUrl: './status-cta.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,12 +1,12 @@
 import { Component, inject, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { FluxButton, FluxSwitch } from '@deml/flux-material';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 
 @Component({
   selector: 'app-cookie-banner',
-  imports: [MatButtonModule, MatIconModule],
+  imports: [FluxButton, FluxSwitch, FluxAppIcon],
   templateUrl: './cookie-banner.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './cookie-banner.scss',
@@ -37,12 +37,12 @@ export class CookieBanner implements OnInit {
     this.consentService.rejectAll();
   }
 
-  toggleAnalytical() {
-    this.analyticalConsent.update(val => !val);
+  toggleAnalytical(checked: boolean) {
+    this.analyticalConsent.set(checked);
   }
 
-  toggleMarketing() {
-    this.marketingConsent.update(val => !val);
+  toggleMarketing(checked: boolean) {
+    this.marketingConsent.set(checked);
   }
 
   savePreferences() {

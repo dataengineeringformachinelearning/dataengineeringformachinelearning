@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OramaSearchService } from '../../services/orama-search.service';
@@ -20,7 +20,7 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, FluxAppIcon],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
