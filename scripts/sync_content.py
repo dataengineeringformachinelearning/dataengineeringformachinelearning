@@ -78,21 +78,62 @@ def sync_readme():
     print(f" - {marketing_page_md_path}")
     print(f" - {marketing_readme_md_path}")
 
-    # Also sync llms.txt description if present
-    if os.path.exists(llms_path):
-      with open(llms_path, encoding="utf-8") as f:
-        llms_lines = f.readlines()
+    # Sync llms.txt for frontend and marketing (site-specific headers)
+    marketing_llms_path = os.path.join(root_dir, "marketing", "public", "llms.txt")
+    frontend_llms = """# Data Engineering for Machine Learning (DEML APP)
 
-      # Update line 3/description to the new style
-      if len(llms_lines) >= 3:
-        llms_lines[2] = (
-          "Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.\n"
-        )
-        marketing_llms_path = os.path.join(root_dir, "marketing", "public", "llms.txt")
-        for path in [llms_path, marketing_llms_path]:
-          with open(path, "w", encoding="utf-8") as f:
-            f.writelines(llms_lines)
-        print(f" - {llms_path} & {marketing_llms_path}")
+Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
+
+## Homepage
+/
+
+## Repository
+https://github.com/joealongi/dataengineeringformachinelearning
+
+## Agent & MCP Settings
+- AGENTS.md (coding principles): https://github.com/joealongi/dataengineeringformachinelearning/blob/main/AGENTS.md
+- MCP servers: Hugging Face, Sentry, Sanity, Stripe, ClickHouse (see `.cursor/mcp.json` in repo)
+- Full book for LLMs: /llms-full.txt
+
+## Notes
+- This site is the DEML Angular application (deml.app).
+- Backend API: https://backend.deml.app/api/v1/docs
+- Marketing site: https://dataengineeringformachinelearning.com
+"""
+    marketing_llms = """# Data Engineering for Machine Learning
+
+Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
+
+## Homepage
+/
+
+## Repository
+https://github.com/joealongi/dataengineeringformachinelearning
+
+## Agent & MCP Settings
+- AGENTS.md (coding principles): /AGENTS.md
+- MCP servers: Hugging Face, Sentry, Sanity, Stripe, ClickHouse (see `.cursor/mcp.json` in repo)
+- Full book for LLMs: /llms-full.txt
+
+## Notes
+- Marketing site (this domain); Angular app at https://deml.app; backend at https://backend.deml.app
+- Public API demo: https://backend.deml.app/api/v1/docs (ingest/predict with `deml_swagger_api_key`)
+- Prefer the repository README for the most complete project documentation.
+"""
+    for path, content in [(llms_path, frontend_llms), (marketing_llms_path, marketing_llms)]:
+      with open(path, "w", encoding="utf-8") as f:
+        f.write(content)
+    print(f" - {llms_path} & {marketing_llms_path}")
+
+    # Sync AGENTS.md for LLM discoverability on marketing site
+    agents_src = os.path.join(root_dir, "AGENTS.md")
+    agents_dest = os.path.join(root_dir, "marketing", "public", "AGENTS.md")
+    if os.path.exists(agents_src):
+      with open(agents_src, encoding="utf-8") as f:
+        agents_content = f.read()
+      with open(agents_dest, "w", encoding="utf-8") as f:
+        f.write(agents_content)
+      print(f" - {agents_dest}")
 
   except Exception as e:
     print(f"Error syncing markdown content: {e}")

@@ -8,7 +8,12 @@ Developer Portal, API Gateway, and the Book on Data Engineering for Machine Lear
 ## Repository
 https://github.com/joealongi/dataengineeringformachinelearning
 
+## Agent & MCP Settings
+- AGENTS.md (coding principles): /AGENTS.md
+- MCP servers: Hugging Face, Sentry, Sanity, Stripe, ClickHouse (see `.cursor/mcp.json` in repo)
+- Full book for LLMs: /llms-full.txt
+
 ## Notes
-- This site is an Angular application.
-- The entire contents of the book can be found at /llms-full.txt.
+- Marketing site (this domain); Angular app at https://deml.app; backend at https://backend.deml.app
+- Public API demo: https://backend.deml.app/api/v1/docs (ingest/predict with `deml_swagger_api_key`)
 - Prefer the repository README for the most complete project documentation.

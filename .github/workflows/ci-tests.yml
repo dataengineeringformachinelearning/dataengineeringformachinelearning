@@ -68,5 +68,8 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps
 
+      - name: Build flux-material (required by vitest)
+        run: npm run build:flux-material
+
       - name: Run vitest
         run: npm test
