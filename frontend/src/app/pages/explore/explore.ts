@@ -15,8 +15,8 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { FluxButton } from '@deml/flux-material';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+import { VikingButton } from '@deml/viking-ui';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { StatusCard } from '../../components/status-card/status-card';
@@ -27,8 +27,8 @@ import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
   standalone: true,
   imports: [
     CommonModule,
-    FluxButton,
-    FluxAppIcon,
+    VikingButton,
+    VikingAppIcon,
     RouterModule,
     StatusCta,
     StatusCard,

@@ -1,4 +1,4 @@
-<flux-app-sidebar [collapsed]="isCollapsed()" [dragging]="isDragging()" [width]="sidebarWidth()">
+<viking-app-sidebar [collapsed]="isCollapsed()" [dragging]="isDragging()" [width]="sidebarWidth()">
   <aside
     class="dashboard-sidebar"
     [class.collapsed]="isCollapsed()"
@@ -19,7 +19,7 @@
       <deml-brand-logo hostClass="brand-icon" />
       <h2 class="brand-title">DEML</h2>
       <div class="collapse-toggle-btn" aria-hidden="true">
-        <flux-app-icon
+        <viking-app-icon
           [name]="isCollapsed() ? 'chevron_right' : 'chevron_left'"
           [ariaHidden]="true"
         />
@@ -37,7 +37,7 @@
       (keydown.space)="$event.preventDefault(); openSearchDialog()"
     >
       <div class="search-wrapper">
-        <flux-app-icon name="search" [ariaHidden]="true" />
+        <viking-app-icon name="search" [ariaHidden]="true" />
         <span class="sidebar-search-placeholder">Search...</span>
         <kbd class="search-shortcut">⌘K</kbd>
       </div>
@@ -54,7 +54,7 @@
           [routerLinkActiveOptions]="{exact: true}"
           title="Dashboard"
         >
-          <flux-app-icon name="dashboard" [ariaHidden]="true" />
+          <viking-app-icon name="dashboard" [ariaHidden]="true" />
           <span class="nav-text">Dashboard</span>
         </a>
 
@@ -65,7 +65,7 @@
           [routerLinkActiveOptions]="{exact: true}"
           title="Site Setup"
         >
-          <flux-app-icon name="language" [ariaHidden]="true" />
+          <viking-app-icon name="language" [ariaHidden]="true" />
           <span class="nav-text">Sites</span>
         </a>
 
@@ -76,7 +76,7 @@
           [routerLinkActiveOptions]="{exact: true}"
           title="Account"
         >
-          <flux-app-icon name="person" [ariaHidden]="true" />
+          <viking-app-icon name="person" [ariaHidden]="true" />
           <span class="nav-text">Account</span>
         </a>
 
@@ -91,7 +91,7 @@
             (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
           >
             <span class="tree-label">Your Pages</span>
-            <flux-app-icon
+            <viking-app-icon
               [name]="isYourPagesExpanded() ? 'expand_more' : 'chevron_right'"
               hostClass="tree-arrow"
               [ariaHidden]="true"
@@ -115,7 +115,7 @@
             <span class="tree-child-item empty-state">No pages yet.</span>
             }
             <button class="tree-child-item new-page-btn" (click)="settingsService.selectPage(null)">
-              <flux-app-icon name="add" hostClass="new-page-icon" />
+              <viking-app-icon name="add" hostClass="new-page-icon" />
               New Page
             </button>
           </div>
@@ -129,7 +129,7 @@
           [routerLinkActiveOptions]="{exact: true}"
           title="Explore"
         >
-          <flux-app-icon name="explore" [ariaHidden]="true" />
+          <viking-app-icon name="explore" [ariaHidden]="true" />
           <span class="nav-text">Explore</span>
         </a>
 
@@ -153,4 +153,4 @@
       </div>
     </div>
   </aside>
-</flux-app-sidebar>
+</viking-app-sidebar>

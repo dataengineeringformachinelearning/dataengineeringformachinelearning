@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FluxBar, FluxButton } from '@deml/flux-material';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { VikingBar, VikingButton } from '@deml/viking-ui';
+import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 
 @Component({
   selector: 'app-whitepaper-cta',
   standalone: true,
-  imports: [FluxBar, FluxButton, FluxAppIcon],
+  imports: [VikingBar, VikingButton, VikingAppIcon],
   templateUrl: './whitepaper-cta.html',
   styleUrl: './whitepaper-cta.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

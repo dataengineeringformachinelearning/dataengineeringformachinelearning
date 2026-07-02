@@ -1,4 +1,4 @@
-<flux-search-palette
+<viking-search-palette
   [open]="open()"
   (openChange)="onOpenChange($event)"
   [query]="searchQuery()"
@@ -7,71 +7,71 @@
   (paletteKeydown)="handleKeyDown($event)"
 >
   @if (searchQuery().trim()) {
-  <div class="flux-search-results">
+  <div class="viking-search-results">
     @for (result of searchResults(); track result; let i = $index) {
     <div
-      class="flux-search-result"
-      [class.flux-selected]="i === selectedIndex()"
+      class="viking-search-result"
+      [class.viking-selected]="i === selectedIndex()"
       (click)="handleResultClick(result)"
       (keydown.enter)="handleResultClick(result)"
       tabindex="0"
       (mouseenter)="selectedIndex.set(i)"
     >
-      <div class="flux-search-result-icon">
-        <flux-app-icon name="dns" />
+      <div class="viking-search-result-icon">
+        <viking-app-icon name="dns" />
       </div>
-      <div class="flux-search-result-content">
-        <div class="flux-search-result-title" [innerHTML]="getHighlightedTitle(result)"></div>
-        <div class="flux-search-result-snippet" [innerHTML]="getHighlightedSnippet(result)"></div>
+      <div class="viking-search-result-content">
+        <div class="viking-search-result-title" [innerHTML]="getHighlightedTitle(result)"></div>
+        <div class="viking-search-result-snippet" [innerHTML]="getHighlightedSnippet(result)"></div>
       </div>
-      <flux-badge tone="muted" size="sm">Status</flux-badge>
+      <viking-badge tone="muted" size="sm">Status</viking-badge>
     </div>
     } @if (searchResults().length === 0) {
-    <div class="flux-search-empty">
-      <flux-app-icon name="search_off" hostClass="flux-search-empty-icon" [size]="40" />
+    <div class="viking-search-empty">
+      <viking-app-icon name="search_off" hostClass="viking-search-empty-icon" [size]="40" />
       <p>No results found for "<strong>{{ searchQuery() }}</strong>"</p>
       <span>Try searching for something else, like "SLA", "Neural Network", or "Kafka".</span>
     </div>
     }
   </div>
   } @else {
-  <div class="flux-search-suggestions">
-    <div class="flux-search-suggestions-heading">Quick Navigation</div>
-    <div class="flux-search-suggestions-grid">
+  <div class="viking-search-suggestions">
+    <div class="viking-search-suggestions-heading">Quick Navigation</div>
+    <div class="viking-search-suggestions-grid">
       <div
-        class="flux-search-suggestion"
+        class="viking-search-suggestion"
         (click)="onSuggestionClick('SLA')"
         tabindex="0"
         (keydown.enter)="onSuggestionClick('SLA')"
       >
-        <flux-app-icon name="speed" />
+        <viking-app-icon name="speed" />
         <span>SLA Monitoring</span>
       </div>
       <div
-        class="flux-search-suggestion"
+        class="viking-search-suggestion"
         (click)="onSuggestionClick('neural')"
         tabindex="0"
         (keydown.enter)="onSuggestionClick('neural')"
       >
-        <flux-app-icon name="psychology" />
+        <viking-app-icon name="psychology" />
         <span>Neural Networks</span>
       </div>
       <div
-        class="flux-search-suggestion"
+        class="viking-search-suggestion"
         (click)="onSuggestionClick('kafka')"
         tabindex="0"
         (keydown.enter)="onSuggestionClick('kafka')"
       >
-        <flux-app-icon name="lan" />
+        <viking-app-icon name="lan" />
         <span>Kafka Streams</span>
       </div>
       <div
-        class="flux-search-suggestion"
+        class="viking-search-suggestion"
         (click)="onSuggestionClick('vulnerabilities')"
         tabindex="0"
         (keydown.enter)="onSuggestionClick('vulnerabilities')"
       >
-        <flux-app-icon name="security" />
+        <viking-app-icon name="security" />
         <span>Security Reports</span>
       </div>
     </div>
@@ -79,8 +79,8 @@
   }
 
   <div fluxSearchPaletteFooter>
-    <div class="flux-search-palette-shortcut"><kbd>↑↓</kbd> <span>Navigate</span></div>
-    <div class="flux-search-palette-shortcut"><kbd>↵</kbd> <span>Select</span></div>
-    <div class="flux-search-palette-shortcut"><kbd>esc</kbd> <span>Close</span></div>
+    <div class="viking-search-palette-shortcut"><kbd>↑↓</kbd> <span>Navigate</span></div>
+    <div class="viking-search-palette-shortcut"><kbd>↵</kbd> <span>Select</span></div>
+    <div class="viking-search-palette-shortcut"><kbd>esc</kbd> <span>Close</span></div>
   </div>
-</flux-search-palette>
+</viking-search-palette>

@@ -1,13 +1,15 @@
 <div class="dashboard-container not-found-container">
-  <flux-card class="not-found-card" id="not-found-card">
-    <flux-heading [level]="1" size="xl" class="error-code">404</flux-heading>
-    <flux-heading [level]="2" size="lg" class="error-title">Page Not Found</flux-heading>
-    <flux-text variant="muted" class="error-message">
+  <viking-card class="not-found-card" id="not-found-card">
+    <viking-heading [level]="1" size="xl" class="error-code">404</viking-heading>
+    <viking-heading [level]="2" size="lg" class="error-title">Page Not Found</viking-heading>
+    <viking-text variant="muted" class="error-message">
       The page you are looking for might have been removed, had its name changed, or is temporarily
       unavailable.
-    </flux-text>
+    </viking-text>
     <div class="action-box">
-      <flux-button variant="primary" href="/" id="not-found-home-btn">Return to Home</flux-button>
+      <viking-button variant="primary" href="/" id="not-found-home-btn"
+        >Return to Home</viking-button
+      >
     </div>
-  </flux-card>
+  </viking-card>
 </div>

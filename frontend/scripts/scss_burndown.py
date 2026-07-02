@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Strip dead mat-icon rules and orphan settings layout SCSS after flux-material page-shell migration."""
+"""Strip dead mat-icon rules and orphan settings layout SCSS after viking-ui page-shell migration."""
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ def strip_mat_icon(content: str) -> str:
 
 
 def strip_vulnerabilities_shell(content: str) -> str:
-  """Remove metric/panel shell blocks now in flux-material page-shell.scss."""
+  """Remove metric/panel shell blocks now in viking-ui page-shell.scss."""
   # Drop hud-metrics through end of panel-header block
   start = content.find(".hud-metrics {")
   end = content.find("/* Filters */")

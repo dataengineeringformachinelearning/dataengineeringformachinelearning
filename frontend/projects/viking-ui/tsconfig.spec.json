@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../out-tsc/viking-ui-spec",
+    "types": ["vitest/globals"],
+    "moduleResolution": "bundler"
+  },
+  "include": ["src/**/*.ts"]
+}

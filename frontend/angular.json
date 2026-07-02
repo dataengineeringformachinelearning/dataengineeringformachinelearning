@@ -118,23 +118,23 @@
         }
       }
     },
-    "flux-material": {
+    "viking-ui": {
       "projectType": "library",
-      "root": "projects/flux-material",
-      "sourceRoot": "projects/flux-material/src",
-      "prefix": "flux",
+      "root": "projects/viking-ui",
+      "sourceRoot": "projects/viking-ui/src",
+      "prefix": "viking",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "options": {
-            "project": "projects/flux-material/ng-package.json"
+            "project": "projects/viking-ui/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/flux-material/tsconfig.lib.prod.json"
+              "tsConfig": "projects/viking-ui/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/flux-material/tsconfig.lib.json"
+              "tsConfig": "projects/viking-ui/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -143,33 +143,33 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "projects/flux-material/src/**/*.ts",
-              "projects/flux-material/src/**/*.html"
+              "projects/viking-ui/src/**/*.ts",
+              "projects/viking-ui/src/**/*.html"
             ]
           }
         }
       }
     },
-    "flux-material-showcase": {
+    "viking-ui-showcase": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "projects/flux-material-showcase",
-      "sourceRoot": "projects/flux-material-showcase/src",
+      "root": "projects/viking-ui-showcase",
+      "sourceRoot": "projects/viking-ui-showcase/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "projects/flux-material-showcase/src/main.ts",
-            "tsConfig": "projects/flux-material-showcase/tsconfig.app.json",
+            "browser": "projects/viking-ui-showcase/src/main.ts",
+            "tsConfig": "projects/viking-ui-showcase/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [],
-            "styles": ["projects/flux-material-showcase/src/styles.scss"],
-            "outputPath": "dist/flux-material-showcase"
+            "styles": ["projects/viking-ui-showcase/src/styles.scss"],
+            "outputPath": "dist/viking-ui-showcase"
           },
           "configurations": {
             "production": {
@@ -199,10 +199,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "flux-material-showcase:build:production"
+              "buildTarget": "viking-ui-showcase:build:production"
             },
             "development": {
-              "buildTarget": "flux-material-showcase:build:development"
+              "buildTarget": "viking-ui-showcase:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -211,8 +211,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "projects/flux-material-showcase/src/**/*.ts",
-              "projects/flux-material-showcase/src/**/*.html"
+              "projects/viking-ui-showcase/src/**/*.ts",
+              "projects/viking-ui-showcase/src/**/*.html"
             ]
           }
         }

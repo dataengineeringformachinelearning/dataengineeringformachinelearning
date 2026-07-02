@@ -1,6 +1,6 @@
 <div class="empty-state-premium">
   <div class="status-badge-premium primary">
-    <flux-app-icon [name]="badgeIcon" hostClass="badge-icon" [ariaHidden]="true" />
+    <viking-app-icon [name]="badgeIcon" hostClass="badge-icon" [ariaHidden]="true" />
     <span>{{ badgeText }}</span>
   </div>
 
@@ -9,21 +9,21 @@
 
   <div class="features-list">
     <div class="feature-item">
-      <flux-app-icon name="bolt" hostClass="feature-icon" />
+      <viking-app-icon name="bolt" hostClass="feature-icon" />
       <div class="feature-text">
         <strong>High-Throughput Telemetry</strong>
         <span>Process massive data volumes via Redpanda and Polars.</span>
       </div>
     </div>
     <div class="feature-item">
-      <flux-app-icon name="security" hostClass="feature-icon" />
+      <viking-app-icon name="security" hostClass="feature-icon" />
       <div class="feature-text">
         <strong>Aggregate Threat Modeling</strong>
         <span>Leverage global data to detect anomalies and evaluate your telemetry.</span>
       </div>
     </div>
     <div class="feature-item">
-      <flux-app-icon name="online_prediction" hostClass="feature-icon" />
+      <viking-app-icon name="online_prediction" hostClass="feature-icon" />
       <div class="feature-text">
         <strong>Predictive SLAs</strong>
         <span>Deep learning models dynamically forecast service level agreements.</span>
@@ -35,7 +35,7 @@
 
   <div class="cta-actions">
     @if (!authService.isAuthenticated()) {
-    <flux-button
+    <viking-button
       variant="primary"
       type="button"
       class="cta-main-btn"
@@ -43,11 +43,11 @@
       (pressed)="login()"
     >
       Get Started
-    </flux-button>
+    </viking-button>
     } @if (authService.isAuthenticated()) {
-    <flux-button variant="primary" href="/manage" class="cta-main-btn" icon="plus">
+    <viking-button variant="primary" href="/manage" class="cta-main-btn" icon="plus">
       Create Status Page
-    </flux-button>
+    </viking-button>
     }
   </div>
 </div>

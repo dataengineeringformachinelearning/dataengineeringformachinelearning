@@ -122,7 +122,7 @@
   }
 }
 
-// Hero/pricing CTAs — Flux-inspired patterns (https://fluxui.dev/) mapped to THEME.md tokens.
+// Hero/pricing CTAs — Viking-inspired patterns (https://fluxui.dev/) mapped to THEME.md tokens.
 // Cursor - Grok 4.3 (2026-06-30): tightened icon–label gap; flex parity vs grid stretch.
 .cta-group {
   display: flex;
@@ -1208,8 +1208,8 @@ a.cta-button {
 }
 
 .cta-group {
-  flux-button.cta-main,
-  flux-button.cta-secondary {
+  viking-button.cta-main,
+  viking-button.cta-secondary {
     flex: 1 1 auto;
 
     @media (min-width: 600px) {
@@ -1218,17 +1218,17 @@ a.cta-button {
   }
 }
 
-.pricing-card .features-list li flux-app-icon {
+.pricing-card .features-list li viking-app-icon {
   color: var(--crayola-blue);
   margin-right: 0.75rem;
   flex-shrink: 0;
 }
 
-.hero-stat-pill flux-app-icon,
-.integration-logo-item flux-app-icon,
-.security-pillar flux-app-icon,
-.visual-panel-header flux-app-icon,
-.quick-start-step flux-app-icon {
+.hero-stat-pill viking-app-icon,
+.integration-logo-item viking-app-icon,
+.security-pillar viking-app-icon,
+.visual-panel-header viking-app-icon,
+.quick-start-step viking-app-icon {
   color: var(--crayola-blue);
 }
 

@@ -9,12 +9,12 @@ import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
-import { FluxButton } from '@deml/flux-material';
+import { VikingButton } from '@deml/viking-ui';
 
 @Component({
   selector: 'app-success',
   standalone: true,
-  imports: [CommonModule, FluxButton],
+  imports: [CommonModule, VikingButton],
   templateUrl: './success.html',
   styleUrl: './success.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,9 +1,9 @@
-<flux-app-header [mobileMenuOpen]="isMobileMenuOpen()">
+<viking-app-header [mobileMenuOpen]="isMobileMenuOpen()">
   <a
     fluxAppHeaderBrand
     routerLink="/home"
     href="/home"
-    class="flux-app-header-brand"
+    class="viking-app-header-brand"
     aria-label="Go to homepage"
     (click)="closeMobileMenu()"
   >
@@ -15,9 +15,9 @@
       routerLink="/explore"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flux-app-header-nav-link"
+      class="viking-app-header-nav-link"
     >
-      <flux-app-icon name="explore" [ariaHidden]="true" />
+      <viking-app-icon name="explore" [ariaHidden]="true" />
       <span>Explore</span>
     </a>
 
@@ -25,10 +25,10 @@
       href="https://dataengineeringformachinelearning.com/documentation/"
       target="_blank"
       rel="noopener noreferrer"
-      class="flux-app-header-nav-link"
+      class="viking-app-header-nav-link"
       (click)="closeMobileMenu()"
     >
-      <flux-app-icon name="description" [ariaHidden]="true" />
+      <viking-app-icon name="description" [ariaHidden]="true" />
       <span>Documentation</span>
     </a>
 
@@ -37,14 +37,14 @@
       routerLink="/dashboard"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flux-app-header-nav-link"
+      class="viking-app-header-nav-link"
     >
-      <flux-app-icon name="dashboard" [ariaHidden]="true" />
+      <viking-app-icon name="dashboard" [ariaHidden]="true" />
       <span>Dashboard</span>
     </a>
 
-    <a routerLink="/settings" routerLinkActive="active" class="flux-app-header-nav-link">
-      <flux-app-icon name="language" [ariaHidden]="true" />
+    <a routerLink="/settings" routerLinkActive="active" class="viking-app-header-nav-link">
+      <viking-app-icon name="language" [ariaHidden]="true" />
       <span>Setup</span>
     </a>
 
@@ -52,9 +52,9 @@
       routerLink="/account"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flux-app-header-nav-link"
+      class="viking-app-header-nav-link"
     >
-      <flux-app-icon name="person" [ariaHidden]="true" />
+      <viking-app-icon name="person" [ariaHidden]="true" />
       <span>Account</span>
     </a>
     }
@@ -62,13 +62,13 @@
 
   <ng-container fluxAppHeaderAuth>
     @if (!authService.isAuthenticated()) {
-    <button type="button" class="flux-app-header-auth-btn" (click)="login()">
-      <flux-app-icon name="login" [ariaHidden]="true" />
+    <button type="button" class="viking-app-header-auth-btn" (click)="login()">
+      <viking-app-icon name="login" [ariaHidden]="true" />
       <span>Sign In</span>
     </button>
     } @if (authService.isAuthenticated()) {
-    <button type="button" class="flux-app-header-auth-btn" (click)="logout()">
-      <flux-app-icon name="logout" [ariaHidden]="true" />
+    <button type="button" class="viking-app-header-auth-btn" (click)="logout()">
+      <viking-app-icon name="logout" [ariaHidden]="true" />
       <span>Sign Out</span>
     </button>
     }
@@ -78,10 +78,10 @@
     <button
       type="button"
       (click)="onThemeToggle($event)"
-      class="flux-app-header-icon-btn"
+      class="viking-app-header-icon-btn"
       aria-label="Toggle light and dark theme"
     >
-      <flux-app-icon
+      <viking-app-icon
         [name]="themeService.theme() === 'light' ? 'dark_mode' : 'light_mode'"
         [ariaHidden]="true"
       />
@@ -90,11 +90,11 @@
     <button
       type="button"
       (click)="toggleMobileMenu()"
-      class="flux-app-header-icon-btn flux-app-header-menu-toggle"
+      class="viking-app-header-icon-btn viking-app-header-menu-toggle"
       aria-label="Toggle navigation menu"
       [attr.aria-expanded]="isMobileMenuOpen()"
     >
-      <flux-app-icon [name]="isMobileMenuOpen() ? 'close' : 'menu'" [ariaHidden]="true" />
+      <viking-app-icon [name]="isMobileMenuOpen() ? 'close' : 'menu'" [ariaHidden]="true" />
     </button>
   </ng-container>
 
@@ -103,10 +103,10 @@
       routerLink="/explore"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flux-app-header-mobile-link"
+      class="viking-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
-      <flux-app-icon name="explore" [ariaHidden]="true" />
+      <viking-app-icon name="explore" [ariaHidden]="true" />
       <span>Explore</span>
     </a>
 
@@ -114,10 +114,10 @@
       href="https://dataengineeringformachinelearning.com/documentation/"
       target="_blank"
       rel="noopener noreferrer"
-      class="flux-app-header-mobile-link"
+      class="viking-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
-      <flux-app-icon name="description" [ariaHidden]="true" />
+      <viking-app-icon name="description" [ariaHidden]="true" />
       <span>Documentation</span>
     </a>
 
@@ -126,20 +126,20 @@
       routerLink="/dashboard"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flux-app-header-mobile-link"
+      class="viking-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
-      <flux-app-icon name="dashboard" [ariaHidden]="true" />
+      <viking-app-icon name="dashboard" [ariaHidden]="true" />
       <span>Dashboard</span>
     </a>
 
     <a
       routerLink="/settings"
       routerLinkActive="active"
-      class="flux-app-header-mobile-link"
+      class="viking-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
-      <flux-app-icon name="language" [ariaHidden]="true" />
+      <viking-app-icon name="language" [ariaHidden]="true" />
       <span>Setup</span>
     </a>
 
@@ -147,26 +147,26 @@
       routerLink="/account"
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
-      class="flux-app-header-mobile-link"
+      class="viking-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
-      <flux-app-icon name="person" [ariaHidden]="true" />
+      <viking-app-icon name="person" [ariaHidden]="true" />
       <span>Account</span>
     </a>
     }
 
-    <div class="flux-app-header-mobile-divider"></div>
+    <div class="viking-app-header-mobile-divider"></div>
 
     @if (!authService.isAuthenticated()) {
-    <button type="button" class="flux-app-header-auth-btn" (click)="login(); closeMobileMenu()">
-      <flux-app-icon name="login" [ariaHidden]="true" />
+    <button type="button" class="viking-app-header-auth-btn" (click)="login(); closeMobileMenu()">
+      <viking-app-icon name="login" [ariaHidden]="true" />
       <span>Sign In</span>
     </button>
     } @if (authService.isAuthenticated()) {
-    <button type="button" class="flux-app-header-auth-btn" (click)="logout(); closeMobileMenu()">
-      <flux-app-icon name="logout" [ariaHidden]="true" />
+    <button type="button" class="viking-app-header-auth-btn" (click)="logout(); closeMobileMenu()">
+      <viking-app-icon name="logout" [ariaHidden]="true" />
       <span>Sign Out</span>
     </button>
     }
   </ng-container>
-</flux-app-header>
+</viking-app-header>

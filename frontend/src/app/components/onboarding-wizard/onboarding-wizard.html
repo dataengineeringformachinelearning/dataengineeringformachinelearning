@@ -1,5 +1,5 @@
 @if (open()) {
-<flux-modal
+<viking-modal
   [open]="true"
   heading="Workspace setup"
   [dismissible]="false"
@@ -7,13 +7,13 @@
 >
   <div class="wizard-shell" role="document" aria-labelledby="onboarding-title">
     <div class="wizard-progress">
-      <flux-progress [value]="progressPercent()" label="Setup progress" />
+      <viking-progress [value]="progressPercent()" label="Setup progress" />
       <span class="progress-label">Step {{ stepIndex() + 1 }} of {{ steps.length }}</span>
     </div>
 
     @switch (currentStep()) { @case ('welcome') {
     <div class="wizard-step">
-      <flux-app-icon name="rocket_launch" hostClass="wizard-icon" [ariaHidden]="true" />
+      <viking-app-icon name="rocket_launch" hostClass="wizard-icon" [ariaHidden]="true" />
       <h2 id="onboarding-title">Welcome to DEML</h2>
       <p>
         We'll walk you through creating your first monitoring site. In about two minutes you'll have
@@ -21,66 +21,69 @@
       </p>
       <ul class="wizard-benefits">
         <li>
-          <flux-app-icon name="check_circle" [ariaHidden]="true" /> Automatic threat detection
+          <viking-app-icon name="check_circle" [ariaHidden]="true" /> Automatic threat detection
         </li>
         <li>
-          <flux-app-icon name="check_circle" [ariaHidden]="true" /> Real-time performance analytics
+          <viking-app-icon name="check_circle" [ariaHidden]="true" /> Real-time performance
+          analytics
         </li>
-        <li><flux-app-icon name="check_circle" [ariaHidden]="true" /> Embeddable status widget</li>
+        <li>
+          <viking-app-icon name="check_circle" [ariaHidden]="true" /> Embeddable status widget
+        </li>
       </ul>
     </div>
     } @case ('site') {
     <div class="wizard-step">
-      <flux-app-icon name="language" hostClass="wizard-icon" [ariaHidden]="true" />
+      <viking-app-icon name="language" hostClass="wizard-icon" [ariaHidden]="true" />
       <h2 id="onboarding-title">Name your site</h2>
       <p>Give your status page a friendly name and a short URL slug.</p>
-      <flux-field label="Site name">
-        <flux-input [(ngModel)]="newPageTitle" placeholder="e.g. Acme API" />
-      </flux-field>
-      <flux-field label="URL slug">
-        <flux-input [(ngModel)]="newPageSlug" placeholder="e.g. acme-api" />
-      </flux-field>
+      <viking-field label="Site name">
+        <viking-input [(ngModel)]="newPageTitle" placeholder="e.g. Acme API" />
+      </viking-field>
+      <viking-field label="URL slug">
+        <viking-input [(ngModel)]="newPageSlug" placeholder="e.g. acme-api" />
+      </viking-field>
     </div>
     } @case ('endpoint') {
     <div class="wizard-step">
-      <flux-app-icon name="monitor_heart" hostClass="wizard-icon" [ariaHidden]="true" />
+      <viking-app-icon name="monitor_heart" hostClass="wizard-icon" [ariaHidden]="true" />
       <h2 id="onboarding-title">Add a health check</h2>
       <p>Point us at an endpoint we can ping to track uptime and latency.</p>
-      <flux-field label="Service name">
-        <flux-input [(ngModel)]="newServiceName" placeholder="e.g. API Gateway" />
-      </flux-field>
-      <flux-field label="Health check URL">
-        <flux-input
+      <viking-field label="Service name">
+        <viking-input [(ngModel)]="newServiceName" placeholder="e.g. API Gateway" />
+      </viking-field>
+      <viking-field label="Health check URL">
+        <viking-input
           [(ngModel)]="newServiceUrl"
           placeholder="https://api.example.com/health"
           icon="globe"
         />
-      </flux-field>
+      </viking-field>
     </div>
     } @case ('publish') {
     <div class="wizard-step">
-      <flux-app-icon name="public" hostClass="wizard-icon" [ariaHidden]="true" />
+      <viking-app-icon name="public" hostClass="wizard-icon" [ariaHidden]="true" />
       <h2 id="onboarding-title">Go live</h2>
       <p>Publish your status page so customers can see service health.</p>
-      <flux-checkbox [(ngModel)]="publishPage">Publish my status page</flux-checkbox>
+      <viking-checkbox [(ngModel)]="publishPage">Publish my status page</viking-checkbox>
       @if (createdPage()) {
       <div class="widget-preview">
         <p class="widget-label">Optional: embed this widget on your site</p>
         <pre class="widget-code">{{ getWidgetCode() }}</pre>
-        <flux-button
+        <viking-button
           variant="outline"
           type="button"
           [icon]="copiedWidget() ? 'check' : 'copy'"
           (pressed)="copyWidget()"
         >
           {{ copiedWidget() ? 'Copied' : 'Copy widget code' }}
-        </flux-button>
+        </viking-button>
       </div>
       }
     </div>
     } @case ('done') {
     <div class="wizard-step wizard-step-center">
-      <flux-app-icon name="celebration" hostClass="wizard-icon success" [ariaHidden]="true" />
+      <viking-app-icon name="celebration" hostClass="wizard-icon success" [ariaHidden]="true" />
       <h2 id="onboarding-title">You're all set!</h2>
       <p>
         Your site is configured. Head to your dashboard to review analytics, threats, and
@@ -88,22 +91,24 @@
       </p>
     </div>
     } } @if (errorMessage()) {
-    <flux-callout tone="danger" [heading]="errorMessage()!" />
+    <viking-callout tone="danger" [heading]="errorMessage()!" />
     }
 
     <div class="wizard-actions">
       @if (currentStep() !== 'welcome' && currentStep() !== 'done') {
-      <flux-button variant="ghost" type="button" (pressed)="goBack()" [disabled]="isBusy()"
-        >Back</flux-button
+      <viking-button variant="ghost" type="button" (pressed)="goBack()" [disabled]="isBusy()"
+        >Back</viking-button
       >
       }
 
       <div class="wizard-actions-right">
         @if (currentStep() === 'welcome') {
-        <flux-button variant="ghost" type="button" (pressed)="skip()">Skip for now</flux-button>
-        <flux-button variant="primary" type="button" (pressed)="goNext()">Get started</flux-button>
+        <viking-button variant="ghost" type="button" (pressed)="skip()">Skip for now</viking-button>
+        <viking-button variant="primary" type="button" (pressed)="goNext()"
+          >Get started</viking-button
+        >
         } @if (currentStep() === 'site') {
-        <flux-button
+        <viking-button
           variant="primary"
           type="button"
           (pressed)="createSite()"
@@ -111,12 +116,16 @@
           [disabled]="isBusy()"
         >
           Create site
-        </flux-button>
+        </viking-button>
         } @if (currentStep() === 'endpoint') {
-        <flux-button variant="ghost" type="button" (pressed)="skipEndpoint()" [disabled]="isBusy()"
-          >Skip</flux-button
+        <viking-button
+          variant="ghost"
+          type="button"
+          (pressed)="skipEndpoint()"
+          [disabled]="isBusy()"
+          >Skip</viking-button
         >
-        <flux-button
+        <viking-button
           variant="primary"
           type="button"
           (pressed)="addEndpoint()"
@@ -124,9 +133,9 @@
           [disabled]="isBusy()"
         >
           Add endpoint
-        </flux-button>
+        </viking-button>
         } @if (currentStep() === 'publish') {
-        <flux-button
+        <viking-button
           variant="primary"
           type="button"
           (pressed)="saveAndPublish()"
@@ -134,14 +143,14 @@
           [disabled]="isBusy()"
         >
           Finish setup
-        </flux-button>
+        </viking-button>
         } @if (currentStep() === 'done') {
-        <flux-button variant="primary" type="button" (pressed)="finish()"
-          >Open dashboard</flux-button
+        <viking-button variant="primary" type="button" (pressed)="finish()"
+          >Open dashboard</viking-button
         >
         }
       </div>
     </div>
   </div>
-</flux-modal>
+</viking-modal>
 }

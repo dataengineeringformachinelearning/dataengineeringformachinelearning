@@ -13,20 +13,20 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { FluxChart, FluxBadge, FluxChartSeries, FluxGaugeArc } from '@deml/flux-material';
+import { VikingChart, VikingBadge, VikingChartSeries, VikingGaugeArc } from '@deml/viking-ui';
 import { ThemeService } from '../../services/theme.service';
 import {
   UnifiedSelect,
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import {
-  FluxDonutSegment,
+  VikingDonutSegment,
   hasChartValues,
   hasDonutValues,
-  toFluxBarSeries,
-  toFluxDonutSegments,
-  toFluxLineSeries,
+  toVikingBarSeries,
+  toVikingDonutSegments,
+  toVikingLineSeries,
 } from '../../core/chart-data.util';
 import { environment } from '../../../environments/environment';
 import * as L from 'leaflet';
@@ -38,10 +38,10 @@ import * as L from 'leaflet';
     CommonModule,
     RouterLink,
     UnifiedSelect,
-    FluxChart,
-    FluxBadge,
-    FluxGaugeArc,
-    FluxAppIcon,
+    VikingChart,
+    VikingBadge,
+    VikingGaugeArc,
+    VikingAppIcon,
   ],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
@@ -84,13 +84,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public slaLevel = 0;
   public stabilityLevel = 0;
 
-  latencySeries = signal<FluxChartSeries[]>(toFluxLineSeries('Latency (ms)', []));
-  frequencySeries = signal<FluxChartSeries[]>(toFluxLineSeries('Requests', [], 'muted'));
-  statusSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Count', []));
-  endpointSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Calls', []));
-  topRegionsSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Requests', [], 'warning'));
-  threatSeveritySegments = signal<FluxDonutSegment[]>([]);
-  securityAlertsSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Anomalies', [], 'warning'));
+  latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
+  frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
+  statusSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Count', []));
+  endpointSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Calls', []));
+  topRegionsSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Requests', [], 'warning'));
+  threatSeveritySegments = signal<VikingDonutSegment[]>([]);
+  securityAlertsSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Anomalies', [], 'warning'));
 
   latencyCategories = signal<string[]>([]);
   frequencyCategories = signal<string[]>([]);
@@ -221,7 +221,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ),
           );
           this.latencySeries.set(
-            toFluxLineSeries(
+            toVikingLineSeries(
               'Latency (ms)',
               timeSeries.map((d: { latency: number }) => d.latency ?? 0),
             ),
@@ -237,7 +237,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ),
           );
           this.topRegionsSeries.set(
-            toFluxBarSeries(
+            toVikingBarSeries(
               'Requests',
               topOrigins.map((d: { count: number }) => d.count ?? 0),
               'warning',
@@ -255,7 +255,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ),
           );
           this.frequencySeries.set(
-            toFluxLineSeries(
+            toVikingLineSeries(
               'Requests',
               reqFreq.map((d: { requests: number }) => d.requests ?? 0),
               'muted',
@@ -269,7 +269,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ),
           );
           this.statusSeries.set(
-            toFluxBarSeries(
+            toVikingBarSeries(
               'Count',
               statuses.map((d: { count: number }) => d.count ?? 0),
             ),
@@ -283,7 +283,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             }),
           );
           this.endpointSeries.set(
-            toFluxBarSeries(
+            toVikingBarSeries(
               'Calls',
               endpoints.map((d: { count: number }) => d.count ?? 0),
             ),
@@ -291,7 +291,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
 
           const threats = user_metrics?.threat_severity || [];
           this.threatSeveritySegments.set(
-            toFluxDonutSegments(
+            toVikingDonutSegments(
               threats.map((d: { severity: string }) => d.severity),
               threats.map((d: { count: number }) => d.count ?? 0),
             ),
@@ -304,7 +304,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ),
           );
           this.securityAlertsSeries.set(
-            toFluxBarSeries(
+            toVikingBarSeries(
               'Anomalies',
               alerts.map((d: { count: number }) => d.count ?? 0),
               'warning',

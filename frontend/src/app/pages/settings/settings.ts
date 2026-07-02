@@ -19,18 +19,18 @@ import {
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
-  FluxButton,
-  FluxCallout,
-  FluxCheckbox,
-  FluxField,
-  FluxInput,
-  FluxPageHeader,
-  FluxTextarea,
-} from '@deml/flux-material';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+  VikingButton,
+  VikingCallout,
+  VikingCheckbox,
+  VikingField,
+  VikingInput,
+  VikingPageHeader,
+  VikingTextarea,
+} from '@deml/viking-ui';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { FluxDialogService } from '../../services/flux-dialog.service';
+import { VikingDialogService } from '../../services/viking-dialog.service';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
 import {
@@ -43,14 +43,14 @@ import {
   standalone: true,
   imports: [
     CommonModule,
-    FluxButton,
-    FluxCallout,
-    FluxCheckbox,
-    FluxField,
-    FluxInput,
-    FluxPageHeader,
-    FluxTextarea,
-    FluxAppIcon,
+    VikingButton,
+    VikingCallout,
+    VikingCheckbox,
+    VikingField,
+    VikingInput,
+    VikingPageHeader,
+    VikingTextarea,
+    VikingAppIcon,
     FormsModule,
     RouterModule,
     UnifiedSelect,
@@ -65,7 +65,7 @@ export class Settings implements OnInit {
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  private fluxDialog = inject(FluxDialogService);
+  private fluxDialog = inject(VikingDialogService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public settingsService = inject(SettingsService);

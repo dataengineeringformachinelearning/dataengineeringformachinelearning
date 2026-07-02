@@ -18,7 +18,7 @@
         <div class="status-card-outlined mfa-settings-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <flux-app-icon name="security" />
+              <viking-app-icon name="security" />
               Multi-Factor Authentication (MFA)
             </h2>
           </div>
@@ -33,7 +33,7 @@
               @if (isMfaEnrolled()) {
               <div class="mfa-status-enrolled panel-clean">
                 <div class="mfa-info-group">
-                  <flux-app-icon
+                  <viking-app-icon
                     name="check_circle"
                     hostClass="status-icon success mfa-icon-inline"
                   />
@@ -42,9 +42,9 @@
                     <div class="mfa-status-desc">SMS verification is active for your account.</div>
                   </div>
                 </div>
-                <flux-button variant="danger" type="button" (pressed)="disableMfa()">
+                <viking-button variant="danger" type="button" (pressed)="disableMfa()">
                   Disable MFA
-                </flux-button>
+                </viking-button>
               </div>
               } @else {
               <div class="mfa-enrollment-form panel-clean">
@@ -55,14 +55,14 @@
                   >
                 </p>
                 <div class="mfa-inline-form">
-                  <flux-field label="Phone Number" class="mfa-input-full">
-                    <flux-input
+                  <viking-field label="Phone Number" class="mfa-input-full">
+                    <viking-input
                       [(ngModel)]="mfaPhoneNumber"
                       placeholder="+11234567890"
                       [disabled]="mfaVerificationId !== null"
                     />
-                  </flux-field>
-                  <flux-button
+                  </viking-field>
+                  <viking-button
                     variant="primary"
                     type="button"
                     (pressed)="sendMfaCode()"
@@ -71,7 +71,7 @@
                     class="mfa-btn"
                   >
                     Send SMS Code
-                  </flux-button>
+                  </viking-button>
                 </div>
 
                 @if (mfaVerificationId) {
@@ -80,10 +80,10 @@
                     <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
                   </p>
                   <div class="mfa-inline-form">
-                    <flux-field label="Verification Code" class="mfa-input-full">
-                      <flux-input [(ngModel)]="mfaVerificationCode" placeholder="123456" />
-                    </flux-field>
-                    <flux-button
+                    <viking-field label="Verification Code" class="mfa-input-full">
+                      <viking-input [(ngModel)]="mfaVerificationCode" placeholder="123456" />
+                    </viking-field>
+                    <viking-button
                       variant="primary"
                       type="button"
                       (pressed)="verifyMfaCode()"
@@ -92,7 +92,7 @@
                       class="mfa-btn"
                     >
                       Verify & Enroll
-                    </flux-button>
+                    </viking-button>
                   </div>
                 </div>
                 }
@@ -115,7 +115,7 @@
         <div class="status-card-outlined api-keys-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <flux-app-icon name="vpn_key" />
+              <viking-app-icon name="vpn_key" />
               API Keys & Integrations
             </h2>
           </div>
@@ -134,7 +134,7 @@
                   <div class="code-block-outlined">
                     <code>{{ newlyGeneratedKey() }}</code>
                   </div>
-                  <flux-button
+                  <viking-button
                     variant="primary"
                     type="button"
                     class="copy-btn"
@@ -142,22 +142,22 @@
                     (pressed)="copyApiKey()"
                   >
                     {{ copiedApiKey() ? 'Copied' : 'Copy' }}
-                  </flux-button>
+                  </viking-button>
                 </div>
               </div>
               }
 
               <div class="service-form-panel panel-clean mt-3">
                 <div class="service-inputs-row">
-                  <flux-field label="New Key Name" class="u-style-be70d9">
-                    <flux-input
+                  <viking-field label="New Key Name" class="u-style-be70d9">
+                    <viking-input
                       [(ngModel)]="newApiKeyName"
                       placeholder="e.g. Databricks Ingestion Pipeline"
                       [disabled]="isGeneratingApiKey() || isViewer"
                     />
-                  </flux-field>
+                  </viking-field>
                 </div>
-                <flux-button
+                <viking-button
                   variant="primary"
                   type="button"
                   class="add-service-btn"
@@ -167,7 +167,7 @@
                   [loading]="isGeneratingApiKey()"
                 >
                   Generate Key
-                </flux-button>
+                </viking-button>
               </div>
 
               <div class="data-list-outlined mt-3">
@@ -180,7 +180,7 @@
                       }}
                     </span>
                   </div>
-                  <flux-button
+                  <viking-button
                     variant="ghost"
                     type="button"
                     [square]="true"
@@ -202,7 +202,7 @@
         <div class="status-card-outlined mfa-settings-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <flux-app-icon name="link" />
+              <viking-app-icon name="link" />
               Connected Accounts
             </h2>
           </div>
@@ -251,13 +251,13 @@
                   </div>
                   <div class="integration-action">
                     @if (isGoogleLinked()) {
-                    <flux-button variant="danger" type="button" (pressed)="unlinkGoogle()">
+                    <viking-button variant="danger" type="button" (pressed)="unlinkGoogle()">
                       Disconnect
-                    </flux-button>
+                    </viking-button>
                     } @else {
-                    <flux-button variant="primary" type="button" (pressed)="linkGoogle()">
+                    <viking-button variant="primary" type="button" (pressed)="linkGoogle()">
                       Link Google
-                    </flux-button>
+                    </viking-button>
                     }
                   </div>
                 </div>
@@ -286,13 +286,13 @@
                   </div>
                   <div class="integration-action">
                     @if (isAppleLinked()) {
-                    <flux-button variant="danger" type="button" (pressed)="unlinkApple()">
+                    <viking-button variant="danger" type="button" (pressed)="unlinkApple()">
                       Disconnect
-                    </flux-button>
+                    </viking-button>
                     } @else {
-                    <flux-button variant="primary" type="button" (pressed)="linkApple()">
+                    <viking-button variant="primary" type="button" (pressed)="linkApple()">
                       Link Apple
-                    </flux-button>
+                    </viking-button>
                     }
                   </div>
                 </div>
@@ -311,7 +311,7 @@
         <div class="status-card-outlined">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <flux-app-icon name="manage_accounts" />
+              <viking-app-icon name="manage_accounts" />
               Account & Billing Settings
             </h2>
           </div>
@@ -319,17 +319,17 @@
             <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
 
             <div class="panel-section mt-3">
-              <h3 class="section-heading"><flux-app-icon name="email" /> Update Email</h3>
+              <h3 class="section-heading"><viking-app-icon name="email" /> Update Email</h3>
               <div class="settings-form-panel panel-clean simple-inline-form">
-                <flux-field label="New Email Address" class="full-width">
-                  <flux-input
+                <viking-field label="New Email Address" class="full-width">
+                  <viking-input
                     [(ngModel)]="updateEmailInput"
                     placeholder="Enter new email..."
                     icon="mail"
                   />
-                </flux-field>
+                </viking-field>
                 <div class="settings-actions justify-end">
-                  <flux-button
+                  <viking-button
                     variant="primary"
                     type="button"
                     (pressed)="updateEmail()"
@@ -337,24 +337,24 @@
                     [loading]="isUpdatingEmail()"
                   >
                     Update Email
-                  </flux-button>
+                  </viking-button>
                 </div>
               </div>
             </div>
 
             <div class="panel-section mt-3">
-              <h3 class="section-heading"><flux-app-icon name="lock" /> Update Password</h3>
+              <h3 class="section-heading"><viking-app-icon name="lock" /> Update Password</h3>
               <div class="settings-form-panel panel-clean simple-inline-form">
-                <flux-field label="New Password" class="full-width">
-                  <flux-input
+                <viking-field label="New Password" class="full-width">
+                  <viking-input
                     type="password"
                     [(ngModel)]="updatePasswordInput"
                     placeholder="Enter new password..."
                     icon="lock"
                   />
-                </flux-field>
+                </viking-field>
                 <div class="settings-actions justify-end">
-                  <flux-button
+                  <viking-button
                     variant="primary"
                     type="button"
                     (pressed)="updatePassword()"
@@ -362,7 +362,7 @@
                     [loading]="isUpdatingPassword()"
                   >
                     Update Password
-                  </flux-button>
+                  </viking-button>
                 </div>
               </div>
               @if (accountError()) {
@@ -375,17 +375,17 @@
             @if (!isViewer) {
             <div class="panel-section mt-3">
               <h3 class="section-heading">
-                <flux-app-icon name="credit_card" /> Subscription Management
+                <viking-app-icon name="credit_card" /> Subscription Management
               </h3>
               <div class="settings-form-panel panel-clean">
                 @if (isBillingLoading()) {
                 <div class="loading-state">
-                  <flux-progress [indeterminate]="true" label="Loading subscription" />
+                  <viking-progress [indeterminate]="true" label="Loading subscription" />
                 </div>
                 } @else { @if (!subscriptionActive()) {
                 <div class="mfa-status-enrolled panel-clean u-style-ab4518">
                   <div class="mfa-info-group">
-                    <flux-app-icon
+                    <viking-app-icon
                       name="info"
                       hostClass="status-icon info mfa-icon-inline u-style-fa919b"
                     />
@@ -394,14 +394,14 @@
                       <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
                     </div>
                   </div>
-                  <flux-button variant="primary" type="button" (pressed)="subscribeToPro()">
+                  <viking-button variant="primary" type="button" (pressed)="subscribeToPro()">
                     Subscribe to Pro
-                  </flux-button>
+                  </viking-button>
                 </div>
                 } @else {
                 <div class="mfa-status-enrolled panel-clean">
                   <div class="mfa-info-group">
-                    <flux-app-icon
+                    <viking-app-icon
                       name="check_circle"
                       hostClass="status-icon success mfa-icon-inline"
                     />
@@ -415,13 +415,13 @@
                     </div>
                   </div>
                   @if (subscriptionCancelAtPeriodEnd()) {
-                  <flux-button variant="outline" type="button" (pressed)="resumeSubscription()">
+                  <viking-button variant="outline" type="button" (pressed)="resumeSubscription()">
                     Resume Subscription
-                  </flux-button>
+                  </viking-button>
                   } @else {
-                  <flux-button variant="danger" type="button" (pressed)="cancelSubscription()">
+                  <viking-button variant="danger" type="button" (pressed)="cancelSubscription()">
                     Cancel Subscription
-                  </flux-button>
+                  </viking-button>
                   }
                 </div>
                 } } @if (billingError()) {
@@ -439,7 +439,7 @@
         <div class="status-card-outlined danger-zone-card">
           <div class="card-header-clean">
             <h2 class="card-title-main">
-              <flux-app-icon name="warning" />
+              <viking-app-icon name="warning" />
               Danger Zone
             </h2>
           </div>
@@ -451,7 +451,7 @@
                 associated data. This action is irreversible.
               </p>
             </div>
-            <flux-button
+            <viking-button
               variant="danger"
               type="button"
               (pressed)="deleteAccount()"
@@ -459,7 +459,7 @@
               [loading]="isDeletingAccount()"
             >
               Delete Account
-            </flux-button>
+            </viking-button>
           </div>
         </div>
       </div>

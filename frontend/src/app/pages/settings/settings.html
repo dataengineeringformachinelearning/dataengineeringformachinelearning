@@ -2,18 +2,18 @@
   <!-- Glow Spheres for Homepage Unity -->
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
-      <flux-page-header tag="Site Setup" title="Your Sites">
-        <p fluxPageHeaderExtra class="hud-subtitle flux-page-header-subtitle">
+      <viking-page-header tag="Site Setup" title="Your Sites">
+        <p fluxPageHeaderExtra class="hud-subtitle viking-page-header-subtitle">
           Add monitoring sites, connect endpoints, and embed your status widget. Analytics and
           threats appear automatically on your dashboard.
           <a routerLink="/account" class="inline-status-link">Account & billing</a> are managed
           separately.
         </p>
-      </flux-page-header>
+      </viking-page-header>
 
       <div class="settings-stack grid-layout">
         @if (isViewer) {
-        <flux-callout
+        <viking-callout
           class="alert-viewer-banner col-span-4 col-span-md-12"
           tone="warning"
           heading="Read-Only Access"
@@ -22,18 +22,18 @@
           Your user profile is assigned the <strong>Viewer</strong> role. You cannot perform
           administrative modifications to status pages, monitored endpoints, incident reports, or
           integrations.
-        </flux-callout>
+        </viking-callout>
         }
 
         <div class="status-card-outlined col-span-4 col-span-md-12">
           <div class="card-header-clean">
             @if (selectedPage()) {
             <h2 class="card-title-main">
-              <flux-app-icon name="wysiwyg" />
+              <viking-app-icon name="wysiwyg" />
               {{ selectedPage()!.title }}
             </h2>
             } @if (selectedPage()) {
-            <flux-button
+            <viking-button
               variant="ghost"
               type="button"
               [square]="true"
@@ -45,7 +45,7 @@
             />
             } @if (!selectedPage()) {
             <h2 class="card-title-main">
-              <flux-app-icon name="add_box" />
+              <viking-app-icon name="add_box" />
               Create Status Page
             </h2>
             }
@@ -62,21 +62,21 @@
                 >
                 as a live example of layout, services, and incident configurations.
               </p>
-              <flux-field label="Title" class="full-width">
-                <flux-input
+              <viking-field label="Title" class="full-width">
+                <viking-input
                   [(ngModel)]="newPageTitle"
                   placeholder="e.g. My API Status"
                   [disabled]="isViewer"
                 />
-              </flux-field>
-              <flux-field label="Slug" class="full-width">
-                <flux-input
+              </viking-field>
+              <viking-field label="Slug" class="full-width">
+                <viking-input
                   [(ngModel)]="newPageSlug"
                   placeholder="e.g. my-api"
                   [disabled]="isViewer"
                 />
-              </flux-field>
-              <flux-button
+              </viking-field>
+              <viking-button
                 variant="primary"
                 type="button"
                 (pressed)="createStatusPage()"
@@ -86,7 +86,7 @@
                 class="create-page-btn"
               >
                 Create Page
-              </flux-button>
+              </viking-button>
             </div>
             }
 
@@ -96,7 +96,7 @@
               @if (selectedPage()?.slug === 'platform-status') {
               <div class="alert alert-info alert-fallback-banner u-style-315505">
                 <div class="u-style-0f195f">
-                  <flux-app-icon name="info" hostClass="u-style-6784e6" />
+                  <viking-app-icon name="info" hostClass="u-style-6784e6" />
                   <div>
                     <strong class="u-style-04b067">Platform Status Fallback:</strong>
                     <span class="u-style-39bd7e">
@@ -109,22 +109,22 @@
                   <h3 class="u-style-4d9a87">Create Your Own Custom Status Page</h3>
                   <div class="u-style-bb5495">
                     <div class="u-style-eb2b00">
-                      <flux-field label="Title" class="u-style-a7e5d2">
-                        <flux-input
+                      <viking-field label="Title" class="u-style-a7e5d2">
+                        <viking-input
                           [(ngModel)]="newPageTitle"
                           placeholder="e.g. My API Status"
                           [disabled]="isViewer"
                         />
-                      </flux-field>
-                      <flux-field label="Slug" class="u-style-a7e5d2">
-                        <flux-input
+                      </viking-field>
+                      <viking-field label="Slug" class="u-style-a7e5d2">
+                        <viking-input
                           [(ngModel)]="newPageSlug"
                           placeholder="e.g. my-api"
                           [disabled]="isViewer"
                         />
-                      </flux-field>
+                      </viking-field>
                     </div>
-                    <flux-button
+                    <viking-button
                       variant="primary"
                       type="button"
                       (pressed)="createStatusPage()"
@@ -134,44 +134,44 @@
                       class="u-style-a1ae42"
                     >
                       Create Custom Page
-                    </flux-button>
+                    </viking-button>
                   </div>
                 </div>
               </div>
               }
               <!-- Page Settings Section -->
               <div class="panel-section">
-                <h3 class="section-heading"><flux-app-icon name="settings" /> Page Settings</h3>
+                <h3 class="section-heading"><viking-app-icon name="settings" /> Page Settings</h3>
                 <div class="settings-form-panel panel-clean">
                   <div class="form-row">
-                    <flux-field label="Title">
-                      <flux-input
+                    <viking-field label="Title">
+                      <viking-input
                         [(ngModel)]="editTitle"
                         placeholder="e.g. My API Status"
                         [disabled]="isViewer"
                       />
-                    </flux-field>
-                    <flux-field label="Slug">
-                      <flux-input
+                    </viking-field>
+                    <viking-field label="Slug">
+                      <viking-input
                         [(ngModel)]="editSlug"
                         placeholder="e.g. my-api"
                         [disabled]="isViewer"
                       />
-                    </flux-field>
+                    </viking-field>
                   </div>
-                  <flux-field label="Description" class="full-width">
-                    <flux-textarea
+                  <viking-field label="Description" class="full-width">
+                    <viking-textarea
                       [(ngModel)]="editDescription"
                       [rows]="2"
                       placeholder="Description of this status page..."
                       [disabled]="isViewer"
                     />
-                  </flux-field>
+                  </viking-field>
                   <div class="settings-actions">
-                    <flux-checkbox [(ngModel)]="editIsPublished" [disabled]="isViewer">
+                    <viking-checkbox [(ngModel)]="editIsPublished" [disabled]="isViewer">
                       Publish Status Page (makes it visible in the public Explore directory)
-                    </flux-checkbox>
-                    <flux-button
+                    </viking-checkbox>
+                    <viking-button
                       variant="primary"
                       type="button"
                       class="save-settings-btn"
@@ -180,9 +180,9 @@
                       [loading]="isUpdatingPage()"
                     >
                       @if (!isUpdatingPage()) {
-                      <flux-app-icon name="save" />
+                      <viking-app-icon name="save" />
                       } Save Settings
-                    </flux-button>
+                    </viking-button>
                   </div>
                 </div>
               </div>
@@ -190,7 +190,7 @@
               <!-- Telemetry Tracking IDs Section -->
               <div class="panel-section">
                 <h3 class="section-heading">
-                  <flux-app-icon name="analytics" /> Telemetry Tracking IDs
+                  <viking-app-icon name="analytics" /> Telemetry Tracking IDs
                 </h3>
                 <div class="settings-form-panel panel-clean">
                   <p class="embed-desc">
@@ -199,30 +199,30 @@
                     monitor visitor traffic and telemetry.
                   </p>
                   <div class="form-row">
-                    <flux-field label="Google Analytics ID">
-                      <flux-input
+                    <viking-field label="Google Analytics ID">
+                      <viking-input
                         [(ngModel)]="editGoogleAnalyticsId"
                         placeholder="e.g. G-XXXXXXX"
                         [disabled]="isViewer"
                       />
-                    </flux-field>
-                    <flux-field label="Microsoft Clarity ID">
-                      <flux-input
+                    </viking-field>
+                    <viking-field label="Microsoft Clarity ID">
+                      <viking-input
                         [(ngModel)]="editMicrosoftClarityId"
                         placeholder="e.g. xxxxxxxx"
                         [disabled]="isViewer"
                       />
-                    </flux-field>
-                    <flux-field label="Cloudflare Analytics ID">
-                      <flux-input
+                    </viking-field>
+                    <viking-field label="Cloudflare Analytics ID">
+                      <viking-input
                         [(ngModel)]="editCloudflareAnalyticsId"
                         placeholder="e.g. xxxxxxxx"
                         [disabled]="isViewer"
                       />
-                    </flux-field>
+                    </viking-field>
                   </div>
                   <div class="settings-actions justify-end">
-                    <flux-button
+                    <viking-button
                       variant="primary"
                       type="button"
                       class="save-settings-btn"
@@ -231,34 +231,34 @@
                       [loading]="isUpdatingPage()"
                     >
                       @if (!isUpdatingPage()) {
-                      <flux-app-icon name="save" />
+                      <viking-app-icon name="save" />
                       } Save Tracking IDs
-                    </flux-button>
+                    </viking-button>
                   </div>
                 </div>
               </div>
 
               <div class="panel-section">
-                <h3 class="section-heading"><flux-app-icon name="dns" /> Monitored Services</h3>
+                <h3 class="section-heading"><viking-app-icon name="dns" /> Monitored Services</h3>
                 <div class="service-form-panel panel-clean">
                   <div class="service-inputs-row">
-                    <flux-field label="Service Name" class="flex-1">
-                      <flux-input
+                    <viking-field label="Service Name" class="flex-1">
+                      <viking-input
                         [(ngModel)]="newServiceName"
                         placeholder="e.g. Auth API"
                         [disabled]="isViewer"
                       />
-                    </flux-field>
-                    <flux-field label="Health Check URL" class="flex-2">
-                      <flux-input
+                    </viking-field>
+                    <viking-field label="Health Check URL" class="flex-2">
+                      <viking-input
                         [(ngModel)]="newServiceUrl"
                         placeholder="https://api.example.com/health"
                         icon="globe"
                         [disabled]="isViewer"
                       />
-                    </flux-field>
+                    </viking-field>
                   </div>
-                  <flux-button
+                  <viking-button
                     variant="primary"
                     type="button"
                     class="add-service-btn"
@@ -268,7 +268,7 @@
                     [loading]="isAddingService()"
                   >
                     Add Service
-                  </flux-button>
+                  </viking-button>
                 </div>
                 <div class="data-list-outlined">
                   @for (service of services(); track service) {
@@ -277,7 +277,7 @@
                       <span class="data-title">{{ service.name }}</span>
                       <span class="data-subtitle">{{ service.url }}</span>
                     </div>
-                    <flux-button
+                    <viking-button
                       variant="ghost"
                       type="button"
                       [square]="true"
@@ -294,24 +294,24 @@
               </div>
               <div class="panel-section">
                 <h3 class="section-heading">
-                  <flux-app-icon name="error_outline" /> Report Incident
+                  <viking-app-icon name="error_outline" /> Report Incident
                 </h3>
                 <div class="incident-form panel-clean">
-                  <flux-field label="Incident Title" class="full-width">
-                    <flux-input
+                  <viking-field label="Incident Title" class="full-width">
+                    <viking-input
                       [(ngModel)]="newIncidentTitle"
                       placeholder="e.g. API Degraded Performance"
                       [disabled]="isViewer"
                     />
-                  </flux-field>
-                  <flux-field label="Message / Update" class="full-width">
-                    <flux-textarea
+                  </viking-field>
+                  <viking-field label="Message / Update" class="full-width">
+                    <viking-textarea
                       [(ngModel)]="newIncidentMessage"
                       [rows]="2"
                       placeholder="Describe what is happening and what actions are being taken..."
                       [disabled]="isViewer"
                     />
-                  </flux-field>
+                  </viking-field>
                   <div class="form-row-actions">
                     <div class="select-wrapper">
                       <app-unified-select
@@ -322,7 +322,7 @@
                         [disabled]="isViewer"
                       ></app-unified-select>
                     </div>
-                    <flux-button
+                    <viking-button
                       variant="primary"
                       type="button"
                       class="post-incident-btn"
@@ -332,7 +332,7 @@
                       [loading]="isAddingIncident()"
                     >
                       Post Incident
-                    </flux-button>
+                    </viking-button>
                   </div>
                 </div>
                 <div class="data-list-outlined">
@@ -344,7 +344,7 @@
                         >{{ incident.status }} &bull; {{ incident.created_at | date:'short' }}</span
                       >
                     </div>
-                    <flux-button
+                    <viking-button
                       variant="ghost"
                       type="button"
                       [square]="true"
@@ -360,7 +360,7 @@
                 </div>
               </div>
               <div class="panel-section">
-                <h3 class="section-heading"><flux-app-icon name="code" /> Embeddable Widget</h3>
+                <h3 class="section-heading"><viking-app-icon name="code" /> Embeddable Widget</h3>
                 <p class="embed-desc">
                   Copy and paste this script tag onto your website to display a live status badge.
                 </p>
@@ -368,7 +368,7 @@
                   <div class="code-block-outlined">
                     <code>{{ getWidgetCode() }}</code>
                   </div>
-                  <flux-button
+                  <viking-button
                     variant="primary"
                     type="button"
                     class="copy-btn"
@@ -376,12 +376,12 @@
                     (pressed)="copyWidgetCode()"
                   >
                     {{ copied() ? 'Copied' : 'Copy' }}
-                  </flux-button>
+                  </viking-button>
                 </div>
               </div>
               <div class="panel-section">
                 <h3 class="section-heading">
-                  <flux-app-icon name="analytics" /> Threat Intel & API Integrations
+                  <viking-app-icon name="analytics" /> Threat Intel & API Integrations
                 </h3>
                 <p class="embed-desc">
                   Link your analytics providers to securely sync geolocation and visitor access
@@ -401,16 +401,16 @@
                     </div>
                     <div class="integration-action">
                       @if (integrations().find(i => i.provider === 'google' && i.active)) {
-                      <flux-button
+                      <viking-button
                         variant="danger"
                         type="button"
                         (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'google')!.id)"
                         [disabled]="isViewer"
                       >
                         Disconnect
-                      </flux-button>
+                      </viking-button>
                       } @else {
-                      <flux-button
+                      <viking-button
                         variant="primary"
                         type="button"
                         (pressed)="connectGoogleAnalytics()"
@@ -418,7 +418,7 @@
                         [loading]="isConnectingGoogle()"
                       >
                         Connect GA4 API
-                      </flux-button>
+                      </viking-button>
                       }
                     </div>
                   </div>
@@ -435,37 +435,37 @@
                       </div>
                       @if (integrations().find(i => i.provider === 'microsoft' && i.active)) {
                       <div class="integration-action">
-                        <flux-button
+                        <viking-button
                           variant="danger"
                           type="button"
                           (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'microsoft')!.id)"
                           [disabled]="isViewer"
                         >
                           Disconnect
-                        </flux-button>
+                        </viking-button>
                       </div>
                       }
                     </div>
                     @if (!integrations().find(i => i.provider === 'microsoft' && i.active)) {
                     <div class="clarity-form-row">
                       <div class="inputs-group">
-                        <flux-field label="Clarity Project ID">
-                          <flux-input
+                        <viking-field label="Clarity Project ID">
+                          <viking-input
                             [(ngModel)]="clarityProjectId"
                             placeholder="Project ID"
                             [disabled]="isViewer"
                           />
-                        </flux-field>
-                        <flux-field label="API Token / Key">
-                          <flux-input
+                        </viking-field>
+                        <viking-field label="API Token / Key">
+                          <viking-input
                             [(ngModel)]="clarityApiKey"
                             type="password"
                             placeholder="Clarity API Key"
                             [disabled]="isViewer"
                           />
-                        </flux-field>
+                        </viking-field>
                       </div>
-                      <flux-button
+                      <viking-button
                         variant="primary"
                         type="button"
                         (pressed)="connectMicrosoftClarity()"
@@ -473,7 +473,7 @@
                         [loading]="isConnectingClarity()"
                       >
                         Connect API
-                      </flux-button>
+                      </viking-button>
                     </div>
                     }
                   </div>
@@ -490,37 +490,37 @@
                       </div>
                       @if (integrations().find(i => i.provider === 'cloudflare' && i.active)) {
                       <div class="integration-action">
-                        <flux-button
+                        <viking-button
                           variant="danger"
                           type="button"
                           (pressed)="disconnectIntegration(integrations().find(i => i.provider === 'cloudflare')!.id)"
                           [disabled]="isViewer"
                         >
                           Disconnect
-                        </flux-button>
+                        </viking-button>
                       </div>
                       }
                     </div>
                     @if (!integrations().find(i => i.provider === 'cloudflare' && i.active)) {
                     <div class="cloudflare-form-row">
                       <div class="inputs-group">
-                        <flux-field label="Cloudflare Account ID">
-                          <flux-input
+                        <viking-field label="Cloudflare Account ID">
+                          <viking-input
                             [(ngModel)]="cloudflareProjectId"
                             placeholder="Account ID"
                             [disabled]="isViewer"
                           />
-                        </flux-field>
-                        <flux-field label="API Token / Key">
-                          <flux-input
+                        </viking-field>
+                        <viking-field label="API Token / Key">
+                          <viking-input
                             [(ngModel)]="cloudflareApiKey"
                             type="password"
                             placeholder="Cloudflare API Token"
                             [disabled]="isViewer"
                           />
-                        </flux-field>
+                        </viking-field>
                       </div>
-                      <flux-button
+                      <viking-button
                         variant="primary"
                         type="button"
                         (pressed)="connectCloudflare()"
@@ -528,7 +528,7 @@
                         [loading]="isConnectingCloudflare()"
                       >
                         Connect API
-                      </flux-button>
+                      </viking-button>
                     </div>
                     }
                   </div>

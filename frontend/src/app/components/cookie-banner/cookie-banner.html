@@ -8,12 +8,12 @@
   >
     <div class="cookie-banner-header">
       <div class="title-group">
-        <flux-app-icon name="cookie" hostClass="cookie-icon" />
+        <viking-app-icon name="cookie" hostClass="cookie-icon" />
         <h2 id="cookie-title" class="cookie-heading">Cookie Preferences</h2>
       </div>
       @if (consentService.hasDecided()) {
       <button class="close-btn" (click)="close()" aria-label="Close settings">
-        <flux-app-icon name="close" />
+        <viking-app-icon name="close" />
       </button>
       }
     </div>
@@ -54,7 +54,7 @@
             </p>
           </div>
           <div class="pref-action">
-            <flux-switch
+            <viking-switch
               id="cookie-toggle-analytical"
               [checked]="analyticalConsent()"
               (checkedChange)="toggleAnalytical($event)"
@@ -70,7 +70,7 @@
             </p>
           </div>
           <div class="pref-action">
-            <flux-switch
+            <viking-switch
               id="cookie-toggle-marketing"
               [checked]="marketingConsent()"
               (checkedChange)="toggleMarketing($event)"
@@ -82,7 +82,7 @@
     </div>
     <div class="cookie-banner-footer">
       <div class="footer-buttons">
-        <flux-button
+        <viking-button
           variant="ghost"
           type="button"
           class="settings-btn"
@@ -90,10 +90,10 @@
           id="cookie-customize-btn"
         >
           {{ showCustomize() ? 'Hide Options' : 'Cookie Settings' }}
-        </flux-button>
+        </viking-button>
         <div class="primary-actions">
           @if (!showCustomize()) {
-          <flux-button
+          <viking-button
             variant="ghost"
             type="button"
             class="reject-btn"
@@ -101,9 +101,9 @@
             id="cookie-reject-btn"
           >
             Reject All
-          </flux-button>
+          </viking-button>
           } @if (showCustomize()) {
-          <flux-button
+          <viking-button
             variant="ghost"
             type="button"
             class="save-btn"
@@ -111,9 +111,9 @@
             id="cookie-save-btn"
           >
             Save Choices
-          </flux-button>
+          </viking-button>
           }
-          <flux-button
+          <viking-button
             variant="primary"
             type="button"
             class="accept-btn"
@@ -121,7 +121,7 @@
             id="cookie-accept-btn"
           >
             Accept All
-          </flux-button>
+          </viking-button>
         </div>
       </div>
     </div>

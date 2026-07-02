@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { FluxIcon } from '@deml/flux-material';
+import { VikingIcon } from '@deml/viking-ui';
 
-/** Official DEML brand mark via flux-material icons. */
+/** Official DEML brand mark via viking-ui icons. */
 @Component({
   selector: 'deml-brand-logo',
-  imports: [FluxIcon],
+  imports: [VikingIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'aria-hidden': 'true',
     '[class]': 'hostClass()',
   },
-  template: `<flux-icon name="bar-chart" [size]="size()" />`,
+  template: `<viking-icon name="bar-chart" [size]="size()" />`,
   styles: [
     `
       :host {
@@ -20,7 +20,7 @@ import { FluxIcon } from '@deml/flux-material';
         flex-shrink: 0;
         line-height: 1;
         vertical-align: middle;
-        color: var(--flux-accent, var(--color-primary));
+        color: var(--viking-accent, var(--color-primary));
       }
     `,
   ],

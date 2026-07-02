@@ -1,4 +1,4 @@
-# FluxUI Adoption Analysis & Tailwind-to-SASS Conversion Schema
+# VikingUI Adoption Analysis & Tailwind-to-SASS Conversion Schema
 
 **Status**: Investigation / Feasibility
 **Date**: 2026-06-29
@@ -10,35 +10,35 @@
 
 ## 1. Executive Summary
 
-**Direct adoption of the FluxUI library: Impossible.**
+**Direct adoption of the VikingUI library: Impossible.**
 
-- FluxUI is a **Livewire (Laravel/PHP) + Tailwind CSS v4** component library.
+- VikingUI is a **Livewire (Laravel/PHP) + Tailwind CSS v4** component library.
 - It ships Blade components (`<flux:button>`, `<flux:input>`, etc.) + a compiled `flux.css` that depends on Tailwind.
 - No Angular components, no framework-agnostic web components, no plain CSS distribution suitable for Angular SSR + Material.
 
-**Visual / aesthetic pivot ("look like Flux"): Feasible with constraints.**
+**Visual / aesthetic pivot ("look like Viking"): Feasible with constraints.**
 
-We can emulate Flux's clean, accessible, composable, dark-mode-first aesthetic **inside** our existing design system by:
+We can emulate Viking's clean, accessible, composable, dark-mode-first aesthetic **inside** our existing design system by:
 
-- Using the **exact same THEME.md** color tokens (never Flux's zinc/red/etc. palettes).
-- Mapping Flux's Tailwind utilities and component patterns into our SCSS tokens + custom components.
-- Enhancing Angular Material overrides and/or custom components (unified-select, buttons, fields) to feel more like Flux's outline/primary/filled/ghost/subtle variants, grouped controls, icon+input compositions, and subtle surfaces.
+- Using the **exact same THEME.md** color tokens (never Viking's zinc/red/etc. palettes).
+- Mapping Viking's Tailwind utilities and component patterns into our SCSS tokens + custom components.
+- Enhancing Angular Material overrides and/or custom components (unified-select, buttons, fields) to feel more like Viking's outline/primary/filled/ghost/subtle variants, grouped controls, icon+input compositions, and subtle surfaces.
 - Keeping full compatibility with Angular Material 3 theming (`mat.theme(use-system-variables: true)`).
 
 **Tailwind → SASS conversion "schema": Yes, as a reference mapping (not a runtime transpiler).**
 
-We define a documented, deterministic mapping from common Tailwind classes and Flux patterns to DEML SCSS/CSS custom properties. This helps maintain consistency when porting inspiration or reviewing designs.
+We define a documented, deterministic mapping from common Tailwind classes and Viking patterns to DEML SCSS/CSS custom properties. This helps maintain consistency when porting inspiration or reviewing designs.
 
 **Recommendation**:
 
 - **Do not** "update all components" in a big bang.
-- Perform an **incremental "Flux-inspired refresh"** on high-visibility form and navigation components.
+- Perform an **incremental "Viking-inspired refresh"** on high-visibility form and navigation components.
 - Enforce via existing automation (pre-commit, `scripts/run_axe.js`, ruff/prettier/eslint on related, visual regression if added later).
 - Pilot on 2-3 components, measure a11y + layout shift.
 
 ---
 
-## 2. FluxUI Visual Language (Observed)
+## 2. VikingUI Visual Language (Observed)
 
 From official site and docs (buttons, inputs, groups, dropdowns, selects):
 
@@ -53,23 +53,23 @@ From official site and docs (buttons, inputs, groups, dropdowns, selects):
 - **Composition**: Lots of small building-block elements mixed in templates.
 - **Spacing**: Tailwind scale (0.25rem increments); we will map to our stricter 9px grid where possible.
 
-Flux ships a lot of the look via Tailwind utilities on top of its base flux.css.
+Viking ships a lot of the look via Tailwind utilities on top of its base flux.css.
 
 ---
 
-## 3. Current DEML Design System Strengths (vs Flux needs)
+## 3. Current DEML Design System Strengths (vs Viking needs)
 
 - Single source `THEME.md` + `frontend/src/design-system/tokens.scss` + `material-tokens.scss` + shared `packages/deml-design-system`.
 - 9px grid (`--space-1` ... `--space-8`, `--grid-unit`).
 - 18px minimum font size everywhere (enforced via `max(18px, ...)`).
 - Light/dark via `html[data-theme]` + prefers-color-scheme.
 - Heavy Angular Material 3 customization already (buttons are pill or sm radius, cards, dialogs, selects).
-- Custom `unified-select` (good candidate for Flux-like polish).
+- Custom `unified-select` (good candidate for Viking-like polish).
 - Mobile-first, `.page-inner-wrapper { max-width: 1260px }`.
 - Utilities in SCSS (`.u-*`).
 - Shared CSS build for marketing (Astro) + frontend.
 
-Gaps to close for Flux "feel":
+Gaps to close for Viking "feel":
 
 - More explicit "outline / subtle / ghost" treatments.
 - Better field grouping (prefix/suffix, adjacent buttons).
@@ -84,16 +84,16 @@ Gaps to close for Flux "feel":
 This is a **reference schema**, not executed by a build step. Use it when:
 
 - Reviewing external designs that use Tailwind.
-- Writing new SCSS that should "feel" like a Flux component.
+- Writing new SCSS that should "feel" like a Viking component.
 - Documenting "inspired" changes.
 
 ### 4.1 Color Mapping (Strict THEME.md Only)
 
-Flux allows arbitrary `color="blue"` etc. on primary buttons.
+Viking allows arbitrary `color="blue"` etc. on primary buttons.
 
 **DEML rule**: Map every color intent to one of:
 
-| Semantic Alias (THEME)          | Dark Value        | Light Value       | Flux-like Usage Example   |
+| Semantic Alias (THEME)          | Dark Value        | Light Value       | Viking-like Usage Example |
 | ------------------------------- | ----------------- | ----------------- | ------------------------- |
 | `--color-primary`               | `--crayola-blue`  | `--crayola-blue`  | Primary / main CTAs       |
 | `--color-primary-container`     | `--blue-bell`     | `--blue-bell`     | Accent / secondary filled |
@@ -130,7 +130,7 @@ Tailwind uses 0.25rem (4px) scale. We use 9px units.
 | `text-xs` / `text-sm`    | <18px     | `font-size: max(18px, 0.875rem);` or token     | Enforce floor                                                  |
 | `h-9` / `h-10`           | 36/40     | `min-height: 40px;` or calc with space         | Inputs ~40-56px for a11y                                       |
 
-**Rule**: After mapping, run through 9px lens. If a Flux example uses 12px padding, choose closest 9/18px that preserves touch targets (min 44px recommended).
+**Rule**: After mapping, run through 9px lens. If a Viking example uses 12px padding, choose closest 9/18px that preserves touch targets (min 44px recommended).
 
 ### 4.3 Typography & Effects
 
@@ -143,11 +143,11 @@ Tailwind uses 0.25rem (4px) scale. We use 9px units.
 | `transition`           | `var(--transition-smooth)`                                           |
 | `dark:` variants       | `html[data-theme='dark'] & { ... }` or `:host-context` in components |
 
-### 4.4 Component Pattern Mapping (Flux → DEML Angular)
+### 4.4 Component Pattern Mapping (Viking → DEML Angular)
 
 **Button**
 
-Flux:
+Viking:
 
 ```blade
 <flux:button variant="primary">Save</flux:button>
@@ -158,33 +158,33 @@ Flux:
 DEML (Material + classes):
 
 - Use `<button mat-raised-button color="primary">` or custom `.btn` with our tokens.
-- Add supporting classes: `.flux-btn-subtle`, `.flux-btn-ghost` (defined in overrides).
-- For groups: wrap in a container with `.flux-button-group` that applies adjacent border logic via CSS.
+- Add supporting classes: `.viking-btn-subtle`, `.viking-btn-ghost` (defined in overrides).
+- For groups: wrap in a container with `.viking-button-group` that applies adjacent border logic via CSS.
 
 **Input / Field**
 
-Flux uses a `flux:field` + label/desc + control.
+Viking uses a `flux:field` + label/desc + control.
 
 In Angular:
 
-- Continue `mat-form-field` or custom `.flux-field` wrapper.
-- Add `.flux-input-group`, `.flux-input-prefix`, `.flux-input-suffix`.
+- Continue `mat-form-field` or custom `.viking-field` wrapper.
+- Add `.viking-input-group`, `.viking-input-prefix`, `.viking-input-suffix`.
 - Support projected icon buttons inside (slots via ng-content).
 
 **Select / Dropdown**
 
-- Our `unified-select` is already close to Flux select.
-- Make its trigger/dropdown padding, focus, and selected state match Flux "outline" cleanliness.
+- Our `unified-select` is already close to Viking select.
+- Make its trigger/dropdown padding, focus, and selected state match Viking "outline" cleanliness.
 
 **Groups & Composition**
 
 Provide:
 
 ```html
-<div class="flux-input-group">
-  <span class="flux-input-prefix">https://</span>
+<div class="viking-input-group">
+  <span class="viking-input-prefix">https://</span>
   <input ... />
-  <button class="flux-input-affix-btn">...</button>
+  <button class="viking-input-affix-btn">...</button>
 </div>
 ```
 
@@ -192,7 +192,7 @@ Provide:
 
 ```json
 {
-  "name": "deml-flux-tailwind-to-sass-mapping",
+  "name": "deml-viking-tailwind-to-sass-mapping",
   "version": "1.0.0",
   "rules": {
     "colors": {
@@ -240,17 +240,17 @@ Provide:
   "componentMappings": {
     "button": {
       "variants": ["primary", "filled", "danger", "ghost", "subtle", "outline"],
-      "implementAs": "Angular Material overrides + .flux-btn-* utility classes"
+      "implementAs": "Angular Material overrides + .viking-btn-* utility classes"
     },
     "input": {
-      "wrappers": ["flux-field", "flux-input-group"],
+      "wrappers": ["viking-field", "viking-input-group"],
       "implementAs": "mat-form-field + custom group SCSS or standalone web-native input"
     }
   }
 }
 ```
 
-Store this schema in the doc and optionally as `frontend/src/design-system/flux-mapping.schema.json` for future validation scripts.
+Store this schema in the doc and optionally as `frontend/src/design-system/viking-mapping.schema.json` for future validation scripts.
 
 ---
 
@@ -258,11 +258,11 @@ Store this schema in the doc and optionally as `frontend/src/design-system/flux-
 
 1. **Keep** `mat.theme( use-system-variables: true )`.
 2. **Continue** overriding via `material-tokens.scss` + `components/material-overrides.scss`.
-3. **Add** (opt-in) Flux-inspired layer:
-   - New partial: `components/flux-inspired.scss` (forwarded from index).
-   - Classes: `.flux-btn`, `.flux-btn-primary`, `.flux-btn-subtle`, `.flux-field`, `.flux-input-group`, etc.
+3. **Add** (opt-in) Viking-inspired layer:
+   - New partial: `components/viking-inspired.scss` (forwarded from index).
+   - Classes: `.viking-btn`, `.viking-btn-primary`, `.viking-btn-subtle`, `.viking-field`, `.viking-input-group`, etc.
    - These use only THEME vars and 9px tokens.
-4. For complex Flux-like components (command palette, rich editor, calendar) — implement as **custom Angular components** or use existing libs wrapped, never by trying to port Tailwind classes.
+4. For complex Viking-like components (command palette, rich editor, calendar) — implement as **custom Angular components** or use existing libs wrapped, never by trying to port Tailwind classes.
 5. Update `unified-select`, login form controls, navbar actions, etc. incrementally.
 6. Marketing (Astro) benefits automatically via the shared `packages/deml-design-system` build.
 
@@ -291,9 +291,9 @@ Store this schema in the doc and optionally as `frontend/src/design-system/flux-
 
 **Phase 1 (pilot)**:
 
-- Refresh `unified-select` visuals to Flux-like (clean trigger, better option hover, subtle borders, icon alignment).
-- Add `.flux-button-group` support.
-- Introduce 1-2 new Flux-inspired button treatments in global styles using THEME only.
+- Refresh `unified-select` visuals to Viking-like (clean trigger, better option hover, subtle borders, icon alignment).
+- Add `.viking-button-group` support.
+- Introduce 1-2 new Viking-inspired button treatments in global styles using THEME only.
 - Run `node scripts/run_axe.js` and full frontend lint/build.
 
 **Phase 2**:
@@ -315,7 +315,7 @@ Store this schema in the doc and optionally as `frontend/src/design-system/flux-
 - `frontend/src/design-system/` (tokens, material-tokens, components/\*).
 - `packages/deml-design-system/` — shared build.
 - `frontend/src/styles.scss`, `theme.scss`.
-- Flux docs: https://fluxui.dev/ (buttons, inputs, theming, dark mode).
+- Viking docs: https://fluxui.dev/ (buttons, inputs, theming, dark mode).
 - AGENTS.md — "Critical Code Styling & Theming Law", no hardcoded palettes, WCAG automation.
 
 ---

@@ -57,8 +57,8 @@ module.exports = defineConfig([
     },
   },
   {
-    // Flux-Material UI library uses the `flux` selector prefix.
-    files: ['projects/flux-material/**/*.ts'],
+    // Viking-Material UI library uses the `flux` selector prefix.
+    files: ['projects/viking-ui/**/*.ts'],
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -87,12 +87,12 @@ module.exports = defineConfig([
     },
   },
   {
-    // flux-material and showcase may set dynamic presentation via host bindings.
+    // viking-ui and showcase may set dynamic presentation via host bindings.
     files: [
-      'projects/flux-material/**/*.html',
-      'projects/flux-material/**/*.ts',
-      'projects/flux-material-showcase/**/*.html',
-      'projects/flux-material-showcase/**/*.ts',
+      'projects/viking-ui/**/*.html',
+      'projects/viking-ui/**/*.ts',
+      'projects/viking-ui-showcase/**/*.html',
+      'projects/viking-ui-showcase/**/*.ts',
     ],
     rules: {
       '@angular-eslint/template/no-inline-styles': 'off',

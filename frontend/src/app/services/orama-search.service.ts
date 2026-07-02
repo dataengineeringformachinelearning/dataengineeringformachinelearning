@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { create, insert, search } from '@orama/orama';
-import { FluxDialogService } from './flux-dialog.service';
+import { VikingDialogService } from './viking-dialog.service';
 
 export interface SearchItem {
   id: string;
@@ -15,7 +15,7 @@ export interface SearchItem {
 })
 export class OramaSearchService {
   private db: any = null;
-  private readonly fluxDialog = inject(FluxDialogService);
+  private readonly fluxDialog = inject(VikingDialogService);
 
   constructor() {
     this.initializeDb();

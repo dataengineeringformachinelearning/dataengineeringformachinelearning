@@ -1,34 +1,34 @@
-import { FluxChartSeries, FluxTone } from '@deml/flux-material';
+import { VikingChartSeries, VikingTone } from '@deml/viking-ui';
 
-export interface FluxDonutSegment {
+export interface VikingDonutSegment {
   label: string;
   value: number;
-  tone?: FluxTone;
+  tone?: VikingTone;
 }
 
-const SEVERITY_TONES: Record<string, FluxTone> = {
+const SEVERITY_TONES: Record<string, VikingTone> = {
   low: 'accent',
   medium: 'muted',
   high: 'warning',
   critical: 'danger',
 };
 
-export const severityToTone = (severity: string): FluxTone =>
+export const severityToTone = (severity: string): VikingTone =>
   SEVERITY_TONES[severity.toLowerCase()] ?? 'muted';
 
-export const toFluxLineSeries = (
+export const toVikingLineSeries = (
   name: string,
   data: number[],
-  tone: FluxTone = 'accent',
-): FluxChartSeries[] => [{ name, data, tone }];
+  tone: VikingTone = 'accent',
+): VikingChartSeries[] => [{ name, data, tone }];
 
-export const toFluxBarSeries = (
+export const toVikingBarSeries = (
   name: string,
   data: number[],
-  tone: FluxTone = 'accent',
-): FluxChartSeries[] => [{ name, data, tone }];
+  tone: VikingTone = 'accent',
+): VikingChartSeries[] => [{ name, data, tone }];
 
-export const toFluxDonutSegments = (labels: string[], values: number[]): FluxDonutSegment[] =>
+export const toVikingDonutSegments = (labels: string[], values: number[]): VikingDonutSegment[] =>
   labels.map((label, index) => ({
     label: label.charAt(0).toUpperCase() + label.slice(1),
     value: values[index] ?? 0,
@@ -37,5 +37,5 @@ export const toFluxDonutSegments = (labels: string[], values: number[]): FluxDon
 
 export const hasChartValues = (data: number[]): boolean => data.some(value => value > 0);
 
-export const hasDonutValues = (segments: FluxDonutSegment[]): boolean =>
+export const hasDonutValues = (segments: VikingDonutSegment[]): boolean =>
   segments.some(segment => segment.value > 0);

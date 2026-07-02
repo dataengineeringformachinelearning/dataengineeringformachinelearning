@@ -6,102 +6,102 @@
           <div class="section-tag-row">
             <span class="section-tag">Access Portal</span>
           </div>
-          <flux-heading [level]="1" size="xl" class="hud-title">
+          <viking-heading [level]="1" size="xl" class="hud-title">
             {{ isForgotMode() ? 'Reset Password' : isResetMode() ? 'Set New Password' :
             mfaRequired() ? 'Two-Factor verification' : isPhoneMode() ? 'Sign In with Phone' :
             isRegisterMode() ? 'Sign Up' : 'Sign In' }}
-          </flux-heading>
-          <flux-text variant="muted" class="hud-subtitle">
+          </viking-heading>
+          <viking-text variant="muted" class="hud-subtitle">
             Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING).
-          </flux-text>
+          </viking-text>
         </div>
       </header>
 
       <div class="modal-body login-extracted-1">
         @if (successMessage()) {
-        <flux-callout tone="success" [heading]="successMessage()!" />
+        <viking-callout tone="success" [heading]="successMessage()!" />
         } @if (mfaRequired() && !successMessage()) {
-        <flux-callout tone="accent">
+        <viking-callout tone="accent">
           Two-factor authentication is required. An SMS verification code has been sent to your
           registered phone number.
-        </flux-callout>
+        </viking-callout>
         } @if (!successMessage() || isResetMode()) {
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
           @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
-          <flux-field [label]="isRegisterMode() ? 'Username' : 'Email Address'" [required]="true">
-            <flux-input
+          <viking-field [label]="isRegisterMode() ? 'Username' : 'Email Address'" [required]="true">
+            <viking-input
               [type]="isRegisterMode() ? 'text' : 'email'"
               formControlName="username"
               [placeholder]="isRegisterMode() ? '' : 'email@example.com'"
               [icon]="isRegisterMode() ? 'user' : 'mail'"
             />
-          </flux-field>
+          </viking-field>
           } @if (isRegisterMode() || isForgotMode()) {
-          <flux-field label="Email Address" [required]="isForgotMode()">
-            <flux-input
+          <viking-field label="Email Address" [required]="isForgotMode()">
+            <viking-input
               type="email"
               formControlName="email"
               placeholder="email@example.com"
               icon="mail"
             />
-          </flux-field>
+          </viking-field>
           } @if (!isForgotMode() && !isPhoneMode() && !mfaRequired()) {
-          <flux-field [label]="isResetMode() ? 'New Password' : 'Password'" [required]="true">
-            <flux-input type="password" formControlName="password" icon="lock" />
-          </flux-field>
+          <viking-field [label]="isResetMode() ? 'New Password' : 'Password'" [required]="true">
+            <viking-input type="password" formControlName="password" icon="lock" />
+          </viking-field>
           } @if (isPhoneMode() && !codeSent() && !mfaRequired()) {
-          <flux-field label="Phone Number" [required]="true">
-            <flux-input
+          <viking-field label="Phone Number" [required]="true">
+            <viking-input
               type="tel"
               formControlName="phone"
               placeholder="+11234567890"
               icon="phone"
             />
-          </flux-field>
+          </viking-field>
           } @if (codeSent()) {
-          <flux-field label="Verification Code" [required]="true">
-            <flux-input
+          <viking-field label="Verification Code" [required]="true">
+            <viking-input
               type="text"
               formControlName="verificationCode"
               placeholder="123456"
               icon="mail"
             />
-          </flux-field>
+          </viking-field>
           } @if (error()) {
-          <flux-callout tone="danger" [heading]="error()!" />
+          <viking-callout tone="danger" [heading]="error()!" />
           }
 
           <div class="toggle-link">
             @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
-            <flux-button variant="ghost" type="button" (pressed)="toggleMode()">
+            <viking-button variant="ghost" type="button" (pressed)="toggleMode()">
               {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account?
               Sign Up" }}
-            </flux-button>
+            </viking-button>
             } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
             !mfaRequired()) {
-            <flux-button variant="ghost" type="button" (pressed)="switchToPhone()">
+            <viking-button variant="ghost" type="button" (pressed)="switchToPhone()">
               Sign In with Phone Number
-            </flux-button>
+            </viking-button>
             } @if (isPhoneMode() && !codeSent()) {
-            <flux-button variant="ghost" type="button" (pressed)="switchToLogin()">
+            <viking-button variant="ghost" type="button" (pressed)="switchToLogin()">
               Sign In with Email
-            </flux-button>
+            </viking-button>
             } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
             !mfaRequired()) {
-            <flux-button variant="ghost" type="button" (pressed)="switchToForgot()">
+            <viking-button variant="ghost" type="button" (pressed)="switchToForgot()">
               Forgot password?
-            </flux-button>
+            </viking-button>
             } @if (isForgotMode() || isResetMode() || (isPhoneMode() && codeSent())) {
-            <flux-button variant="ghost" type="button" (pressed)="switchToLogin()">
+            <viking-button variant="ghost" type="button" (pressed)="switchToLogin()">
               Back to Sign In
-            </flux-button>
+            </viking-button>
             }
           </div>
 
           @if (!isForgotMode() && !isResetMode() && !mfaRequired() && !codeSent()) {
-          <flux-separator text="or" />
+          <viking-separator text="or" />
           <div class="social-buttons-container">
-            <flux-button
+            <viking-button
               variant="outline"
               type="button"
               [loading]="isLoading()"
@@ -109,8 +109,8 @@
               (pressed)="signInWithGoogle()"
             >
               Sign In with Google
-            </flux-button>
-            <flux-button
+            </viking-button>
+            <viking-button
               variant="outline"
               type="button"
               [loading]="isLoading()"
@@ -118,15 +118,15 @@
               (pressed)="signInWithApple()"
             >
               Sign In with Apple
-            </flux-button>
+            </viking-button>
           </div>
           }
         </form>
         }
 
         <div class="modal-footer">
-          <flux-separator />
-          <flux-button
+          <viking-separator />
+          <viking-button
             variant="primary"
             type="button"
             [loading]="isLoading()"
@@ -135,8 +135,8 @@
             (pressed)="onSubmit()"
           >
             {{ submitLabel() }}
-          </flux-button>
-          <flux-button
+          </viking-button>
+          <viking-button
             variant="ghost"
             type="button"
             icon="x"
@@ -144,7 +144,7 @@
             (pressed)="onCancel()"
           >
             Cancel
-          </flux-button>
+          </viking-button>
         </div>
       </div>
     </div>

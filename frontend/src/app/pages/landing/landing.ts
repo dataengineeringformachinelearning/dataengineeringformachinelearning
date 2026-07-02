@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FluxBar, FluxButton } from '@deml/flux-material';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+import { VikingBar, VikingButton } from '@deml/viking-ui';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
 
 const VERSION = '2.0.0';
@@ -103,7 +103,7 @@ const INTEGRATIONS = [
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [FluxBar, FluxButton, FluxAppIcon, WhitepaperCta],
+  imports: [VikingBar, VikingButton, VikingAppIcon, WhitepaperCta],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

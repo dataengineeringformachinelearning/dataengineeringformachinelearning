@@ -91,7 +91,7 @@
     gap: 16px;
     flex-wrap: wrap;
 
-    flux-field {
+    viking-field {
       flex: 1;
       min-width: 200px;
     }
@@ -530,7 +530,7 @@
         flex-direction: row;
         align-items: center;
 
-        flux-field {
+        viking-field {
           flex: 1;
           margin-bottom: -1.25em;
         }
@@ -714,7 +714,7 @@
     flex-direction: row;
     align-items: flex-start;
 
-    flux-field {
+    viking-field {
       flex: 1;
       margin-bottom: -1.25em;
     }

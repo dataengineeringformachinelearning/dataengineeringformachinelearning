@@ -8,7 +8,7 @@
 
     <!-- Main Content -->
     <main class="dashboard-main">
-      <flux-page-header
+      <viking-page-header
         layout="sidebar"
         tag="System Telemetry"
         title="System Status"
@@ -16,10 +16,12 @@
       >
         @if (authService.isAuthenticated()) {
         <div fluxPageHeaderActions>
-          <flux-button variant="filled" href="/manage" icon="settings">Manage Pages</flux-button>
+          <viking-button variant="filled" href="/manage" icon="settings"
+            >Manage Pages</viking-button
+          >
         </div>
         }
-      </flux-page-header>
+      </viking-page-header>
 
       <div class="dashboard-content-area">
         <div class="page-inner-wrapper">
@@ -28,13 +30,13 @@
           sanityService.error()) {
           <div class="announcements-container">
             <h2 class="section-title-premium">
-              <flux-app-icon name="campaign" />
+              <viking-app-icon name="campaign" />
               Latest System Announcements
             </h2>
 
             @if (sanityService.error()) {
             <div class="announcements-error">
-              <flux-app-icon name="error_outline" />
+              <viking-app-icon name="error_outline" />
               <span>{{ sanityService.error() }}</span>
             </div>
             } @else {
@@ -43,7 +45,7 @@
               @if (sanityService.loading()) {
               <div class="announcement-card-premium info">
                 <div class="ann-header">
-                  <flux-badge tone="accent">info</flux-badge>
+                  <viking-badge tone="accent">info</viking-badge>
                   <span class="ann-date">Jun 13, 2026</span>
                 </div>
                 <h3 class="ann-title">System Status Update</h3>
@@ -55,8 +57,8 @@
               } @else { @for (ann of sanityService.announcements(); track ann._id) {
               <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
                 <div class="ann-header">
-                  <flux-badge [tone]="announcementTone(ann.severity)"
-                    >{{ ann.severity || 'info' }}</flux-badge
+                  <viking-badge [tone]="announcementTone(ann.severity)"
+                    >{{ ann.severity || 'info' }}</viking-badge
                   >
                   <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
                 </div>
@@ -74,14 +76,14 @@
           <div class="analytics-cta-container panel-clean status-extracted-2">
             <div>
               <h2 class="section-title-premium status-extracted-3">
-                <flux-app-icon name="analytics" />
+                <viking-app-icon name="analytics" />
                 System Telemetry
               </h2>
               <p class="embed-desc status-extracted-1">
                 View detailed real-time metrics, latency charts, and traffic analysis.
               </p>
             </div>
-            <flux-button variant="primary" href="/dashboard">View Dashboard</flux-button>
+            <viking-button variant="primary" href="/dashboard">View Dashboard</viking-button>
           </div>
 
           <div class="status-stack">
@@ -96,13 +98,13 @@
             ></app-status-card>
             } @if (loadFailed()) {
             <div class="status-error-state">
-              <flux-app-icon name="cloud_off" hostClass="error-state-icon" />
+              <viking-app-icon name="cloud_off" hostClass="error-state-icon" />
               <h2 class="error-title">Unable to Connect</h2>
               <p class="error-subtitle">
                 We couldn't connect to the status service. Please check that the backend is running
                 and try again.
               </p>
-              <flux-button
+              <viking-button
                 variant="primary"
                 type="button"
                 class="retry-btn"
@@ -112,7 +114,7 @@
                 (pressed)="retryLoad()"
               >
                 Retry Connection
-              </flux-button>
+              </viking-button>
             </div>
             } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
             <app-status-cta></app-status-cta>

@@ -14,7 +14,7 @@
         <!-- Dynamic Global Health Status Banner (Cloudflare-style) -->
         <div class="global-status-banner" [ngClass]="globalPageStatus().toLowerCase()">
           <div class="status-banner-content">
-            <flux-app-icon
+            <viking-app-icon
               [name]="globalPageStatus() === 'Operational' ? 'check_circle' : (globalPageStatus() === 'Degraded' ? 'warning' : 'error')"
               hostClass="status-banner-icon"
             />
@@ -48,13 +48,13 @@
         sanityService.error()) {
         <div class="announcements-container isolated-status-extracted-2">
           <h2 class="section-title-premium">
-            <flux-app-icon name="campaign" />
+            <viking-app-icon name="campaign" />
             Latest System Announcements
           </h2>
 
           @if (sanityService.error()) {
           <div class="announcements-error">
-            <flux-app-icon name="error_outline" />
+            <viking-app-icon name="error_outline" />
             <span>{{ sanityService.error() }}</span>
           </div>
           } @else {
@@ -93,7 +93,7 @@
         <!-- Analytics Overview -->
         <div class="metrics-overview-header">
           <h3 class="section-title-premium">
-            <flux-app-icon name="monitoring" />
+            <viking-app-icon name="monitoring" />
             Analytics & Traffic
           </h3>
           <p class="section-description-premium">
@@ -105,7 +105,7 @@
         <div class="ml-stat-panels-row">
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <flux-app-icon name="timer" hostClass="stat-icon" />
+              <viking-app-icon name="timer" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">P99 Latency</span>
                 <span class="stat-subtitle">Last 24h</span>
@@ -120,7 +120,7 @@
           </div>
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <flux-app-icon name="bar_chart" hostClass="stat-icon" />
+              <viking-app-icon name="bar_chart" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Total Requests</span>
                 <span class="stat-subtitle">Last 24h</span>
@@ -138,7 +138,7 @@
         <!-- SLA Metrics Overview -->
         <div class="metrics-overview-header isolated-status-extracted-1">
           <h3 class="section-title-premium">
-            <flux-app-icon name="analytics" />
+            <viking-app-icon name="analytics" />
             Service Level Agreement (SLA)
           </h3>
           <p class="section-description-premium">
@@ -151,7 +151,7 @@
         <div class="ml-stat-panels-row">
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <flux-app-icon name="dns" hostClass="stat-icon" />
+              <viking-app-icon name="dns" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Cumulative SLA</span>
                 <span class="stat-subtitle">Based on real telemetry</span>
@@ -165,7 +165,7 @@
           </div>
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <flux-app-icon name="online_prediction" hostClass="stat-icon" />
+              <viking-app-icon name="online_prediction" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Predicted SLA</span>
                 <span class="stat-subtitle">30-day forecast via ML</span>
@@ -184,7 +184,7 @@
         <!-- Threat Intelligence Metrics Overview -->
         <div class="metrics-overview-header isolated-status-extracted-1">
           <h3 class="section-title-premium">
-            <flux-app-icon name="security" />
+            <viking-app-icon name="security" />
             Threat Intelligence
           </h3>
           <p class="section-description-premium">
@@ -196,7 +196,7 @@
         <div class="ml-stat-panels-row">
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <flux-app-icon name="security" hostClass="stat-icon" />
+              <viking-app-icon name="security" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Cumulative TA</span>
                 <span class="stat-subtitle">Based on real telemetry</span>
@@ -211,7 +211,7 @@
           </div>
           <div class="ml-stat-panel">
             <div class="stat-info">
-              <flux-app-icon name="online_prediction" hostClass="stat-icon" />
+              <viking-app-icon name="online_prediction" hostClass="stat-icon" />
               <div>
                 <span class="stat-title">Predicted TA</span>
                 <span class="stat-subtitle">30-day threat forecast via ML</span>
@@ -229,7 +229,7 @@
         <section class="standalone-services-section threat-analysis-section">
           <div class="section-title-wrapper">
             <div class="threat-title-container">
-              <flux-app-icon name="security" />
+              <viking-app-icon name="security" />
               <h3>ML Threat Analysis</h3>
             </div>
             <span class="threat-status-text">
@@ -264,7 +264,7 @@
         <!-- Service Performance List -->
         <section class="standalone-services-section">
           <div class="section-title-wrapper">
-            <flux-app-icon name="dashboard" />
+            <viking-app-icon name="dashboard" />
             <h3>Active Monitored Services</h3>
           </div>
           <div class="services-list-container">
@@ -278,7 +278,7 @@
                 <div class="service-names">
                   <a [href]="s.url" target="_blank" class="service-name-link">
                     <span>{{ formatServiceName(s.name) }}</span>
-                    <flux-app-icon name="open_in_new" />
+                    <viking-app-icon name="open_in_new" />
                   </a>
                 </div>
               </div>
@@ -312,9 +312,9 @@
           <div class="timeline-bars-wrapper-standalone">
             <div class="timeline-bars">
               @for (day of (page.uptime_history || []); track day; let idx = $index) {
-              <flux-uptime-bar
+              <viking-uptime-bar
                 class="timeline-bar-outlined"
-                [status]="day.status === 'no_data' ? 'no_data' : day.status"
+                [status]="uptimeBarStatus(day.status)"
                 [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))"
               />
               }
@@ -330,7 +330,7 @@
         @if (incidentsMap()[page.id]?.length) {
         <section class="standalone-incidents-section">
           <div class="section-title-wrapper">
-            <flux-app-icon name="history" />
+            <viking-app-icon name="history" />
             <h3>Recent Incidents & Maintenance</h3>
           </div>
           <div class="incidents-stack-standalone">
@@ -359,7 +359,7 @@
           <div class="promo-glow"></div>
           <div class="promo-content">
             <div class="promo-header">
-              <flux-app-icon name="insights" hostClass="promo-icon" />
+              <viking-app-icon name="insights" hostClass="promo-icon" />
               <h4>Predictive Status Pages for Your Own Products</h4>
             </div>
             <p class="promo-desc">
@@ -369,13 +369,13 @@
             </p>
             <div class="promo-actions">
               @if (!authService.isAuthenticated()) {
-              <flux-button variant="primary" type="button" icon="plus" (pressed)="login()">
+              <viking-button variant="primary" type="button" icon="plus" (pressed)="login()">
                 Create Your Status Page
-              </flux-button>
+              </viking-button>
               } @if (authService.isAuthenticated()) {
-              <flux-button variant="primary" href="/manage" icon="plus">
+              <viking-button variant="primary" href="/manage" icon="plus">
                 Build Your Status Page
-              </flux-button>
+              </viking-button>
               }
             </div>
           </div>
@@ -386,13 +386,13 @@
       <!-- Error/Offline State Fallback -->
       @if (loadFailed()) {
       <div class="status-error-state">
-        <flux-app-icon name="cloud_off" hostClass="error-state-icon" />
+        <viking-app-icon name="cloud_off" hostClass="error-state-icon" />
         <h2 class="error-title">Unable to Connect</h2>
         <p class="error-subtitle">
           We couldn't connect to the status service. Please check that the backend is running and
           try again.
         </p>
-        <flux-button
+        <viking-button
           variant="primary"
           type="button"
           class="retry-btn"
@@ -402,7 +402,7 @@
           (pressed)="retryLoad()"
         >
           Retry Connection
-        </flux-button>
+        </viking-button>
       </div>
       }
     </div>

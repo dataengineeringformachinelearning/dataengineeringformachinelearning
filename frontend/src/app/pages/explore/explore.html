@@ -31,13 +31,13 @@
         ></app-status-card>
         } @if (loadFailed()) {
         <div class="status-error-state col-span-4 col-span-md-12">
-          <flux-app-icon name="cloud_off" [ariaHidden]="true" hostClass="error-state-icon" />
+          <viking-app-icon name="cloud_off" [ariaHidden]="true" hostClass="error-state-icon" />
           <h2 class="error-title">Unable to Connect</h2>
           <p class="error-subtitle">
             We couldn't connect to the status service. Please check that the backend is running and
             try again.
           </p>
-          <flux-button
+          <viking-button
             variant="primary"
             type="button"
             class="retry-btn"
@@ -47,7 +47,7 @@
             (pressed)="retryLoad()"
           >
             Retry Connection
-          </flux-button>
+          </viking-button>
         </div>
         } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
         <app-status-cta

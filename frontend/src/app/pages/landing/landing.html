@@ -12,30 +12,30 @@
       </p>
       <div class="hero-stats" aria-label="Platform highlights">
         <div class="hero-stat-pill">
-          <flux-app-icon name="shield" [ariaHidden]="true" />
+          <viking-app-icon name="shield" [ariaHidden]="true" />
           <span>847 threats blocked today</span>
         </div>
         <div class="hero-stat-pill">
-          <flux-app-icon name="speed" [ariaHidden]="true" />
+          <viking-app-icon name="speed" [ariaHidden]="true" />
           <span>42ms P99 latency</span>
         </div>
         <div class="hero-stat-pill">
-          <flux-app-icon name="verified_user" [ariaHidden]="true" />
+          <viking-app-icon name="verified_user" [ariaHidden]="true" />
           <span>Zero-trust by default</span>
         </div>
       </div>
       <div class="cta-group">
-        <flux-button variant="primary" href="/login" icon="arrow-right" class="cta-main">
+        <viking-button variant="primary" href="/login" icon="arrow-right" class="cta-main">
           Get Started in 5 Minutes
-        </flux-button>
-        <flux-button
+        </viking-button>
+        <viking-button
           variant="subtle"
           href="/status/platform-status"
           icon="bar-chart"
           class="cta-secondary"
         >
           See Live Security Posture
-        </flux-button>
+        </viking-button>
       </div>
     </div>
 
@@ -67,7 +67,7 @@
             </div>
             <div class="mockup-chart">
               @for (h of [45, 72, 58, 85, 63, 91, 78, 55]; track $index) {
-              <flux-bar class="chart-bar" [height]="h" />
+              <viking-bar class="chart-bar" [height]="h" />
               }
             </div>
             <div class="mockup-stats-row">
@@ -91,7 +91,7 @@
       @for (item of quickStart; track item.step) {
       <div class="quick-start-step" role="listitem">
         <span class="step-number" aria-hidden="true">{{ item.step }}</span>
-        <flux-app-icon [name]="item.icon" hostClass="step-icon" [ariaHidden]="true" />
+        <viking-app-icon [name]="item.icon" hostClass="step-icon" [ariaHidden]="true" />
         <h3>{{ item.title }}</h3>
         <p>{{ item.description }}</p>
       </div>
@@ -109,7 +109,7 @@
         rel="noopener noreferrer"
         class="integration-logo-item"
       >
-        <flux-app-icon [name]="item.icon" [ariaHidden]="true" />
+        <viking-app-icon [name]="item.icon" [ariaHidden]="true" />
         <span>{{ item.name }}</span>
       </a>
       }
@@ -133,7 +133,7 @@
     <div class="showcase-band-visual" aria-hidden="true">
       <div class="visual-panel">
         <div class="visual-panel-header">
-          <flux-app-icon [name]="cap.icon" [ariaHidden]="true" />
+          <viking-app-icon [name]="cap.icon" [ariaHidden]="true" />
           <span>{{ cap.title }}</span>
         </div>
         <div class="visual-metrics">
@@ -171,7 +171,7 @@
     <div class="security-pillars-grid" role="list">
       @for (pillar of securityPillars; track pillar.label) {
       <div class="security-pillar" role="listitem">
-        <flux-app-icon [name]="pillar.icon" [ariaHidden]="true" />
+        <viking-app-icon [name]="pillar.icon" [ariaHidden]="true" />
         <strong>{{ pillar.label }}</strong>
         <span>{{ pillar.detail }}</span>
       </div>
@@ -190,22 +190,24 @@
         <h3>Standard Tier</h3>
         <div class="price">Free</div>
         <ul class="features-list">
-          <li><flux-app-icon name="check" [ariaHidden]="true" /> 60 requests / minute</li>
-          <li><flux-app-icon name="check" [ariaHidden]="true" /> Core Analytics</li>
-          <li><flux-app-icon name="check" [ariaHidden]="true" /> Community Support</li>
+          <li><viking-app-icon name="check" [ariaHidden]="true" /> 60 requests / minute</li>
+          <li><viking-app-icon name="check" [ariaHidden]="true" /> Core Analytics</li>
+          <li><viking-app-icon name="check" [ariaHidden]="true" /> Community Support</li>
         </ul>
-        <flux-button variant="subtle" href="/login">Get Started</flux-button>
+        <viking-button variant="subtle" href="/login">Get Started</viking-button>
       </div>
       <div class="pricing-card pro-tier">
         <div class="recommended-badge">Recommended</div>
         <h3>Pro Tier</h3>
         <div class="price">$39<span>/mo</span></div>
         <ul class="features-list">
-          <li><flux-app-icon name="check" [ariaHidden]="true" /> 1,000 requests / minute</li>
-          <li><flux-app-icon name="check" [ariaHidden]="true" /> Advanced Threat Detection</li>
-          <li><flux-app-icon name="check" [ariaHidden]="true" /> Priority Support</li>
+          <li><viking-app-icon name="check" [ariaHidden]="true" /> 1,000 requests / minute</li>
+          <li><viking-app-icon name="check" [ariaHidden]="true" /> Advanced Threat Detection</li>
+          <li><viking-app-icon name="check" [ariaHidden]="true" /> Priority Support</li>
         </ul>
-        <flux-button variant="primary" href="/login?action=checkout"> Upgrade to Pro </flux-button>
+        <viking-button variant="primary" href="/login?action=checkout">
+          Upgrade to Pro
+        </viking-button>
       </div>
     </div>
   </section>
@@ -219,8 +221,8 @@
       <span class="section-tag">Public Directory</span>
       <h2 id="explore-band-title">Explore Live Status Pages</h2>
       <p>Browse real-time status cards published by tenants across the platform.</p>
-      <flux-button variant="primary" href="/explore" icon="globe"
-        >Browse Status Directory</flux-button
+      <viking-button variant="primary" href="/explore" icon="globe"
+        >Browse Status Directory</viking-button
       >
     </div>
   </section>

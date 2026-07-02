@@ -1,14 +1,14 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { FluxAppHeader } from '@deml/flux-material';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { VikingAppHeader } from '@deml/viking-ui';
+import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, FluxAppHeader, FluxAppIcon, DemlBrandLogo],
+  imports: [RouterLink, RouterLinkActive, VikingAppHeader, VikingAppIcon, DemlBrandLogo],
   templateUrl: './navbar.html',
   changeDetection: ChangeDetectionStrategy.Eager,
 })

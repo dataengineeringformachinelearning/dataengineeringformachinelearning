@@ -28,7 +28,7 @@ class CustomSwagger(Swagger):
     <link rel="shortcut icon" href="https://deml.app/favicon.ico">
     <!-- Shared tokens for cohesion -->
     <link rel="stylesheet" href="https://deml.app/assets/design-tokens.css">
-    <link rel="stylesheet" href="https://deml.app/assets/flux-material.css">
+    <link rel="stylesheet" href="https://deml.app/assets/viking-ui.css">
     <style>
         .swagger-ui .topbar {{
             background-color: #111827;

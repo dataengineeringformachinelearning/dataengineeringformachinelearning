@@ -73,7 +73,7 @@
 
   &--compact {
     padding: 8px 12px;
-    font-size: max(16px, var(--base-font-size, 18px));
+    font-size: var(--ui-font-size, 14px);
   }
 
   &.pro-verified {

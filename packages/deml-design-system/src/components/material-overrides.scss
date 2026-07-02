@@ -1,6 +1,6 @@
-// Angular Material component overrides — DEML palette, 18px floor, 9px grid.
+// Angular Material component overrides — DEML palette, 16px floor, 9px grid.
 
-// Angular Material component overrides — DEML palette, 18px floor, 9px grid.
+// Angular Material component overrides — DEML palette, 16px floor, 9px grid.
 
 // Kill default Material purple — force THEME.md tokens globally.
 :root,
@@ -79,7 +79,7 @@ a.auth-btn {
   --mdc-filled-button-container-color: var(--crayola-blue);
   --mdc-filled-button-label-text-color: var(--white);
   --mat-filled-button-state-layer-color: var(--white);
-  font-size: max(18px, var(--base-font-size));
+  font-size: max(16px, var(--base-font-size));
   border-radius: var(--border-radius-sm);
 }
 
@@ -87,7 +87,7 @@ a.auth-btn {
 .mat-mdc-stroked-button {
   --mdc-outlined-button-outline-color: var(--border);
   --mdc-outlined-button-label-text-color: var(--text-color);
-  font-size: max(18px, var(--base-font-size));
+  font-size: max(16px, var(--base-font-size));
 }
 
 .mat-mdc-button.mat-warn,
@@ -106,7 +106,7 @@ a.auth-btn {
   --mat-outlined-button-ripple-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
   --mat-text-button-ripple-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
   --mat-filled-button-ripple-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
-  font-size: max(18px, var(--base-font-size));
+  font-size: max(16px, var(--base-font-size));
   border-radius: var(--border-radius-sm);
 }
 
@@ -127,12 +127,12 @@ a.auth-btn {
 .mat-mdc-chip,
 .mat-mdc-tab,
 .mat-mdc-snack-bar-container {
-  font-size: max(18px, var(--base-font-size));
+  font-size: max(16px, var(--base-font-size));
 }
 
 .mat-mdc-checkbox .mdc-label,
 .mat-mdc-radio-button .mdc-label {
-  font-size: max(18px, var(--base-font-size));
+  font-size: max(16px, var(--base-font-size));
 }
 
 .mat-mdc-progress-bar {

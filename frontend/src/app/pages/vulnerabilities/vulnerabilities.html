@@ -3,14 +3,14 @@
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
       <!-- High Density HUD Header -->
-      <flux-page-header
+      <viking-page-header
         tag="Security Operations"
         title="Vulnerability Prioritization & Triage"
         subtitle="Active security threat monitoring and telemetry orchestration"
       >
         <nav fluxPageHeaderBack class="page-back-nav" aria-label="Return to dashboard">
           <a class="back-link" routerLink="/dashboard" aria-label="Back to Dashboard">
-            <flux-app-icon name="arrow_back" [ariaHidden]="true" />
+            <viking-app-icon name="arrow_back" [ariaHidden]="true" />
             <span>Back to Dashboard</span>
           </a>
         </nav>
@@ -37,24 +37,24 @@
           }
         </div>
         }
-      </flux-page-header>
+      </viking-page-header>
 
-      <flux-metric-row>
-        <flux-metric-card label="TOTAL INGESTED" [value]="totalCount()" />
-        <flux-metric-card label="ACTIVE THREATS" variant="warning" [value]="openCount()" />
-        <flux-metric-card label="CRITICAL CVSS" variant="critical" [value]="criticalCount()" />
-      </flux-metric-row>
+      <viking-metric-row>
+        <viking-metric-card label="TOTAL INGESTED" [value]="totalCount()" />
+        <viking-metric-card label="ACTIVE THREATS" variant="warning" [value]="openCount()" />
+        <viking-metric-card label="CRITICAL CVSS" variant="critical" [value]="criticalCount()" />
+      </viking-metric-row>
 
       <!-- Dashboard Panel Grid -->
       <div class="dashboard-grid">
         <!-- Left Triage Queue Panel -->
-        <flux-hud-panel
+        <viking-hud-panel
           class="queue-panel col-span-4 col-span-md-4"
           icon="filter"
           title="Ingestion Queue"
         >
-          <flux-badge fluxHudPanelBadge tone="accent"
-            >{{ filteredVulnerabilities().length }}</flux-badge
+          <viking-badge fluxHudPanelBadge tone="accent"
+            >{{ filteredVulnerabilities().length }}</viking-badge
           >
 
           <div class="filter-bar">
@@ -86,7 +86,7 @@
             </div>
             } @else if (filteredVulnerabilities().length === 0) {
             <div class="empty-state">
-              <flux-app-icon name="verified_user" />
+              <viking-app-icon name="verified_user" />
               <h3 class="empty-title">SYSTEM SECURE</h3>
               <p>No active threats detected matching current filter parameters.</p>
             </div>
@@ -104,11 +104,11 @@
             >
               <div class="item-header">
                 <span class="item-id">VULN-{{ v.id.substring(0, 8).toUpperCase() }}</span>
-                <flux-badge [tone]="severityTone(v.severity)">{{ v.severity }}</flux-badge>
+                <viking-badge [tone]="severityTone(v.severity)">{{ v.severity }}</viking-badge>
               </div>
               <h3 class="item-title">{{ v.title }}</h3>
               <div class="item-footer">
-                <span class="client-id"><flux-app-icon name="dns" /> {{ v.customer_id }}</span>
+                <span class="client-id"><viking-app-icon name="dns" /> {{ v.customer_id }}</span>
                 <span
                   class="status-indicator"
                   [attr.data-status]="v.status.toLowerCase().replace(' ', '-')"
@@ -119,13 +119,13 @@
             </div>
             } }
           </div>
-        </flux-hud-panel>
+        </viking-hud-panel>
 
         <!-- Center Triage Detail & Interactive Matrix Panel -->
         <section class="panel-section detail-panel col-span-4 col-span-md-8">
           @if (selectedVuln()) {
           <div class="panel-header border-b">
-            <flux-app-icon name="assessment" hostClass="panel-icon" />
+            <viking-app-icon name="assessment" hostClass="panel-icon" />
             <h2>Vulnerability Profile & Prioritization</h2>
           </div>
 
@@ -145,7 +145,7 @@
             <!-- Interactive Risk Matrix Grid -->
             <div class="prioritization-section">
               <div class="section-title">
-                <flux-app-icon name="grid_view" />
+                <viking-app-icon name="grid_view" />
                 <h3>3x3 Risk Prioritization Matrix</h3>
               </div>
               <p class="section-subtitle">
@@ -197,7 +197,7 @@
             <!-- Status Action Triage Bar -->
             <div class="triage-action-bar">
               <div class="action-title">
-                <flux-app-icon name="tune" />
+                <viking-app-icon name="tune" />
                 <h3>Update Status</h3>
               </div>
               <div class="btn-group">
@@ -247,7 +247,7 @@
             <!-- Diagnostic Telemetry Code Section -->
             <div class="telemetry-section">
               <div class="section-title">
-                <flux-app-icon name="terminal" />
+                <viking-app-icon name="terminal" />
                 <h3>Diagnostic Telemetry Context</h3>
               </div>
               <pre class="telemetry-code"><code>{{ getTelemetryJson(selectedVuln()!) }}</code></pre>
@@ -256,7 +256,7 @@
           @} @else {
           <div class="no-selection-state">
             <div class="radar-scan">
-              <flux-app-icon name="radar" hostClass="huge-icon" />
+              <viking-app-icon name="radar" hostClass="huge-icon" />
             </div>
             <h2>Awaiting Threat Selection</h2>
             <p>
@@ -274,7 +274,7 @@
         <section class="soc-panel">
           <div class="soc-panel-header">
             <div class="soc-panel-title">
-              <flux-app-icon name="shield" [ariaHidden]="true" />
+              <viking-app-icon name="shield" [ariaHidden]="true" />
               <div>
                 <span class="soc-panel-tag">SIEM</span>
                 <h2>Active Incident Cases</h2>
@@ -286,7 +286,7 @@
               (click)="runIncidentQuery()"
               [disabled]="vulnService.incidentsLoading()"
             >
-              <flux-app-icon name="refresh" [ariaHidden]="true" />
+              <viking-app-icon name="refresh" [ariaHidden]="true" />
               {{ vulnService.incidentsLoading() ? 'Refreshing…' : 'Refresh' }}
             </button>
           </div>
@@ -300,7 +300,7 @@
             } @else if (activeIncidents().length === 0) {
             <div class="soc-empty-state clear">
               <div class="soc-empty-icon">
-                <flux-app-icon name="verified_user" [ariaHidden]="true" />
+                <viking-app-icon name="verified_user" [ariaHidden]="true" />
               </div>
               <h3>All clear</h3>
               <p>No active incidents. New cases appear here automatically when detected.</p>
@@ -350,7 +350,7 @@
         <section class="soc-panel">
           <div class="soc-panel-header">
             <div class="soc-panel-title">
-              <flux-app-icon name="bolt" [ariaHidden]="true" />
+              <viking-app-icon name="bolt" [ariaHidden]="true" />
               <div>
                 <span class="soc-panel-tag">SOAR</span>
                 <h2>Response Playbooks</h2>
@@ -362,7 +362,7 @@
               (click)="refreshPlaybooks()"
               [disabled]="vulnService.playbooksLoading()"
             >
-              <flux-app-icon name="refresh" [ariaHidden]="true" />
+              <viking-app-icon name="refresh" [ariaHidden]="true" />
               {{ vulnService.playbooksLoading() ? 'Refreshing…' : 'Refresh' }}
             </button>
           </div>
@@ -376,7 +376,7 @@
             } @else if (playbooks().length === 0) {
             <div class="soc-empty-state">
               <div class="soc-empty-icon">
-                <flux-app-icon name="menu_book" [ariaHidden]="true" />
+                <viking-app-icon name="menu_book" [ariaHidden]="true" />
               </div>
               <h3>No playbooks yet</h3>
               <p>Default response playbooks seed automatically when threats are detected.</p>
@@ -440,14 +440,14 @@
         aria-live="polite"
       >
         <span>{{ actionError() || actionMessage() }}</span>
-        <flux-button variant="ghost" type="button" (pressed)="clearActionFeedback()">
+        <viking-button variant="ghost" type="button" (pressed)="clearActionFeedback()">
           Dismiss
-        </flux-button>
+        </viking-button>
       </div>
       } @if (selectedIncident()) {
       <section class="intel-action-console panel-section">
         <div class="panel-header">
-          <flux-app-icon name="bolt" hostClass="panel-icon" />
+          <viking-app-icon name="bolt" hostClass="panel-icon" />
           <h2>Threat Response Console</h2>
         </div>
         <div class="intel-action-body">
@@ -458,15 +458,15 @@
               {{ incident.description || 'No description provided.' }}
             </p>
             <div class="intel-action-buttons">
-              <flux-button variant="primary" type="button" (pressed)="resolveIncident(incident)">
+              <viking-button variant="primary" type="button" (pressed)="resolveIncident(incident)">
                 Resolve
-              </flux-button>
-              <flux-button variant="outline" type="button" (pressed)="escalateIncident(incident)">
+              </viking-button>
+              <viking-button variant="outline" type="button" (pressed)="escalateIncident(incident)">
                 Escalate
-              </flux-button>
-              <flux-button variant="subtle" type="button" (pressed)="dismissIncident(incident)">
+              </viking-button>
+              <viking-button variant="subtle" type="button" (pressed)="dismissIncident(incident)">
                 False Positive
-              </flux-button>
+              </viking-button>
             </div>
           </div>
           }

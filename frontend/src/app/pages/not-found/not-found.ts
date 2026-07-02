@@ -1,10 +1,10 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
-import { FluxButton, FluxCard, FluxHeading, FluxText } from '@deml/flux-material';
+import { VikingButton, VikingCard, VikingHeading, VikingText } from '@deml/viking-ui';
 
 @Component({
   selector: 'app-not-found',
-  imports: [FluxButton, FluxCard, FluxHeading, FluxText],
+  imports: [VikingButton, VikingCard, VikingHeading, VikingText],
   templateUrl: './not-found.html',
   styleUrl: './not-found.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

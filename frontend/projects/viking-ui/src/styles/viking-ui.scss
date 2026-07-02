@@ -1,0 +1,108 @@
+@use 'page-shell';
+@use 'layout-shell';
+
+// ============================================================================
+// Viking-UI design tokens
+// ----------------------------------------------------------------------------
+// DEML clinical design system — Flux UI + Spartan-inspired patterns on THEME.md.
+// Lab coat aesthetic: crayola-blue accents, sharp borders, no gradients.
+// 8px grid. 16px main / 14px UI font floors. No colors outside THEME.md.
+// ============================================================================
+
+:root {
+  /* Accent (Viking "accent" concept -> Material primary) */
+  --viking-accent: var(--color-primary, #2176ff);
+  --viking-accent-content: var(--color-on-primary, #ffffff);
+  --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 12%, transparent);
+  --viking-accent-strong: var(--color-primary-container, #33a1fd);
+
+  /* Surfaces */
+  --viking-bg: var(--bg-color, #ffffff);
+  --viking-surface: var(--card-bg, #ffffff);
+  --viking-surface-alt: var(--color-surface-variant, color-mix(in srgb, #31393c 5%, #ffffff));
+  --viking-overlay-backdrop: color-mix(in srgb, var(--jet-black, #31393c) 55%, transparent);
+
+  /* Text */
+  --viking-text: var(--text-color, #31393c);
+  --viking-text-muted: var(--text-muted, color-mix(in srgb, #31393c 72%, #ffffff));
+  --viking-text-inverted: var(--color-on-primary, #ffffff);
+
+  /* Borders / focus */
+  --viking-border: var(--border, color-mix(in srgb, #31393c 15%, transparent));
+  --viking-border-strong: var(--border-layout, color-mix(in srgb, #31393c 25%, transparent));
+  --viking-ring: var(--focus-ring-color, #2176ff);
+  --viking-ring-width: var(--focus-ring-width, 3px);
+  --viking-ring-offset: var(--focus-ring-offset, 2px);
+
+  /* Status (THEME.md semantic map) */
+  --viking-success: var(--color-success, #33a1fd);
+  --viking-warning: var(--color-warning, #fdca40);
+  --viking-danger: var(--color-error, #f79824);
+  --viking-info: var(--color-info, #2176ff);
+  /* Danger-tinted TEXT on light surfaces needs deepening for WCAG AA. */
+  --viking-danger-text: color-mix(in srgb, var(--viking-danger) 50%, var(--jet-black, #31393c));
+  /* Text placed ON danger-filled surfaces (carrot orange requires dark text). */
+  --viking-on-danger: var(--jet-black, #31393c);
+
+  /* Shape (8px grid) */
+  --viking-radius: var(--border-radius-md, 8px);
+  --viking-radius-lg: var(--border-radius-lg, 16px);
+  --viking-radius-pill: var(--border-radius-pill, 999px);
+
+  /* Elevation — sharp and clinical, no diffuse glows */
+  --viking-shadow-sm: var(
+    --shadow-sm,
+    0 1px 2px color-mix(in srgb, #31393c 5%, transparent),
+    0 1px 3px color-mix(in srgb, #31393c 10%, transparent)
+  );
+  --viking-shadow-md: var(
+    --shadow-md,
+    0 4px 6px -1px color-mix(in srgb, #31393c 10%, transparent),
+    0 2px 4px -1px color-mix(in srgb, #31393c 6%, transparent)
+  );
+
+  /* Typography — 16px main content, 14px bold/UI chrome */
+  --viking-font-family: 'Inter', sans-serif;
+  --viking-font-size: max(16px, var(--base-font-size, 16px));
+  --viking-font-size-ui: max(14px, var(--ui-font-size, 14px));
+  --viking-font-size-lg: max(16px, calc(var(--viking-font-size) * 1.125));
+  --viking-font-size-xl: max(16px, calc(var(--viking-font-size) * 1.25));
+
+  /* Controls (8px grid heights) */
+  --viking-control-height: 40px;
+  --viking-control-height-sm: 32px;
+  --viking-control-height-xs: 24px;
+  --viking-control-padding-x: var(--space-2, 16px);
+  --viking-btn-min-width: var(--btn-min-width, 120px);
+
+  /* Spacing */
+  --viking-space-1: var(--space-1, 8px);
+  --viking-space-2: var(--space-2, 16px);
+  --viking-space-3: var(--space-3, 24px);
+  --viking-space-4: var(--space-4, 32px);
+
+  /* Chart axis labels — compact but WCAG-readable on chart surfaces */
+  --viking-chart-axis-size: 12px;
+
+  /* Page shell */
+  --viking-container-max-width: var(--container-max-width, 1260px);
+
+  /* Motion */
+  --viking-transition: var(--transition-smooth, all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+
+  /* Layering */
+  --viking-z-overlay: 1000;
+  --viking-z-toast: 1100;
+  --viking-z-tooltip: 1200;
+}
+
+/* Dark surfaces give the raw danger orange sufficient contrast already. */
+html[data-theme='dark'] {
+  --viking-danger-text: var(--viking-danger);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme='light']) {
+    --viking-danger-text: var(--viking-danger);
+  }
+}

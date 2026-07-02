@@ -11,7 +11,7 @@ const SCAN_DIRS = [
 
 // Generated bundles may minify entire files onto one line; property names like
 // max-width must not be mistaken for @media (max-width: …) breakpoints.
-const GENERATED_CSS = /(?:^|\/)(?:flux-material|deml-components|design-tokens)\.css$/;
+const GENERATED_CSS = /(?:^|\/)(?:viking-ui|deml-components|design-tokens)\.css$/;
 
 // Desktop-first breakpoint: @media … (max-width: …) — not layout max-width properties.
 const DESKTOP_FIRST_MEDIA = /@media[^{]*\([^)]*\bmax-width\s*:/i;

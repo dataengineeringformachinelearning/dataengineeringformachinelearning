@@ -1,38 +1,38 @@
 @if (data(); as dialogData) {
-<flux-modal [open]="open()" [heading]="heading()" (openChange)="onOpenChange($event)">
+<viking-modal [open]="open()" [heading]="heading()" (openChange)="onOpenChange($event)">
   <div class="confirm-body">
     <div class="title-row">
-      <flux-icon [name]="iconName()" [size]="24" />
-      <flux-text>{{ dialogData.message }}</flux-text>
+      <viking-icon [name]="iconName()" [size]="24" />
+      <viking-text>{{ dialogData.message }}</viking-text>
     </div>
 
     @if (dialogData.type === 'prompt' && dialogData.confirmText) {
-    <flux-field
+    <viking-field
       label="Verification text"
       [description]="'Type ' + dialogData.confirmText + ' to proceed'"
     >
-      <flux-input
+      <viking-input
         [ngModel]="inputValue()"
         (ngModelChange)="inputValue.set($event)"
         autocomplete="off"
         (keyup.enter)="onConfirm()"
       />
-    </flux-field>
+    </viking-field>
     }
   </div>
 
-  <div fluxModalActions>
+  <div vikingModalActions>
     @if (dialogData.type !== 'alert') {
-    <flux-button variant="ghost" icon="x" (pressed)="onCancel()">Cancel</flux-button>
+    <viking-button variant="ghost" icon="x" (pressed)="onCancel()">Cancel</viking-button>
     }
-    <flux-button
+    <viking-button
       [variant]="dialogData.confirmBtnColor === 'warn' ? 'danger' : 'primary'"
       [disabled]="!isValid()"
       [icon]="dialogData.type === 'alert' ? 'check-circle' : dialogData.confirmBtnColor === 'warn' ? 'trash' : 'check'"
       (pressed)="onConfirm()"
     >
       {{ dialogData.confirmBtnText || (dialogData.type === 'alert' ? 'OK' : 'Confirm') }}
-    </flux-button>
+    </viking-button>
   </div>
-</flux-modal>
+</viking-modal>
 }

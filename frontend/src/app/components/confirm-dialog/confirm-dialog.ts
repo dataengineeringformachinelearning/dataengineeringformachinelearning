@@ -2,15 +2,15 @@ import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  FluxButton,
-  FluxField,
-  FluxIcon,
-  FluxInput,
-  FluxModal,
-  FluxText,
-} from '@deml/flux-material';
-import { FluxDialogService } from '../../services/flux-dialog.service';
-import type { FluxIconName } from '@deml/flux-material';
+  VikingButton,
+  VikingField,
+  VikingIcon,
+  VikingInput,
+  VikingModal,
+  VikingText,
+} from '@deml/viking-ui';
+import { VikingDialogService } from '../../services/viking-dialog.service';
+import type { VikingIconName } from '@deml/viking-ui';
 
 export interface ConfirmDialogData {
   title?: string;
@@ -27,19 +27,19 @@ export interface ConfirmDialogData {
   imports: [
     CommonModule,
     FormsModule,
-    FluxModal,
-    FluxButton,
-    FluxField,
-    FluxInput,
-    FluxText,
-    FluxIcon,
+    VikingModal,
+    VikingButton,
+    VikingField,
+    VikingInput,
+    VikingText,
+    VikingIcon,
   ],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialog {
-  private readonly fluxDialog = inject(FluxDialogService);
+  private readonly fluxDialog = inject(VikingDialogService);
 
   protected readonly inputValue = signal<string>('');
 
@@ -63,7 +63,7 @@ export class ConfirmDialog {
     );
   });
 
-  protected readonly iconName = computed((): FluxIconName => {
+  protected readonly iconName = computed((): VikingIconName => {
     const data = this.data();
     if (!data) return 'info';
     if (data.type === 'alert') return 'info';

@@ -1,0 +1,4 @@
+// Static CSS bundle entry — tokens + page shell + footer + navbar for non-Angular apps.
+@use 'viking-ui' as *;
+@use 'static-navbar' as *;
+@use '../lib/footer/footer' as *;

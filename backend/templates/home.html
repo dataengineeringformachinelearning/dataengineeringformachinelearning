@@ -67,7 +67,7 @@
 
     <!-- Shared design system (synced from packages/deml-design-system) -->
     <link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
-    <link rel="stylesheet" href="{% static 'flux-material.css' %}" />
+    <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
     <link rel="stylesheet" href="{% static 'backend-styles.css' %}" />
     <script>
       (function () {
@@ -151,9 +151,9 @@
       </div>
     </header>
 
-    <main class="main" id="main-content">
+    <main class="main viking-page-shell" id="main-content">
       <!-- Simplified Hero Section -->
-      <section class="hero-section">
+      <section class="hero-section viking-section viking-section--hero">
         <div class="hero-badge">
           <span class="badge-dot"></span>
           <span class="badge-text">BACKEND OPERATIONAL</span>
@@ -185,7 +185,10 @@
         </div>
       </section>
 
-      <section class="bento-features-grid" aria-label="Key features">
+      <section
+        class="bento-features-grid viking-section-inner"
+        aria-label="Key features"
+      >
         <article class="feature-card">
           <span class="material-icons feature-icon" aria-hidden="true"
             >dns</span

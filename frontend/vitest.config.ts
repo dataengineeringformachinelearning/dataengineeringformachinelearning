@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
-      '@deml/flux-material': path.resolve(__dirname, 'projects/flux-material/src/public-api.ts'),
+      '@deml/viking-ui': path.resolve(__dirname, 'projects/viking-ui/src/public-api.ts'),
     },
   },
   plugins: [

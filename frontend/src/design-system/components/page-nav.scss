@@ -1,4 +1,4 @@
-// Unified back-navigation — flux-material brand (matches analytics reference).
+// Unified back-navigation — viking-ui brand (matches analytics reference).
 
 .page-back-nav {
   margin-bottom: var(--space-1);
@@ -21,7 +21,7 @@
     color 0.2s ease,
     transform 0.2s ease;
 
-  flux-app-icon {
+  viking-app-icon {
     font-size: 18px;
     width: 18px;
     height: 18px;
@@ -33,7 +33,7 @@
     color: var(--color-primary) !important;
     transform: translateX(-2px);
 
-    flux-app-icon {
+    viking-app-icon {
       transform: translateX(-2px);
     }
   }

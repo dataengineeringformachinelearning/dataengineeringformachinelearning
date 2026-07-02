@@ -1,13 +1,13 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FluxFooter } from '@deml/flux-material';
+import { VikingFooter } from '@deml/viking-ui';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 
 const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, FluxFooter],
+  imports: [RouterLink, VikingFooter],
   templateUrl: './footer.html',
   changeDetection: ChangeDetectionStrategy.Eager,
 })

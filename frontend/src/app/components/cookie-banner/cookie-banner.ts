@@ -1,12 +1,12 @@
 import { Component, inject, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 
-import { FluxButton, FluxSwitch } from '@deml/flux-material';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { VikingButton, VikingSwitch } from '@deml/viking-ui';
+import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 
 @Component({
   selector: 'app-cookie-banner',
-  imports: [FluxButton, FluxSwitch, FluxAppIcon],
+  imports: [VikingButton, VikingSwitch, VikingAppIcon],
   templateUrl: './cookie-banner.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './cookie-banner.scss',

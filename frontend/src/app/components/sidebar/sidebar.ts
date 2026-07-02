@@ -10,8 +10,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { FluxAppSidebar } from '@deml/flux-material';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { VikingAppSidebar } from '@deml/viking-ui';
+import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
@@ -22,7 +22,7 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FluxAppSidebar, FluxAppIcon, DemlBrandLogo],
+  imports: [CommonModule, RouterModule, VikingAppSidebar, VikingAppIcon, DemlBrandLogo],
   templateUrl: './sidebar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

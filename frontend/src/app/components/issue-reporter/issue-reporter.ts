@@ -2,18 +2,26 @@ import { Component, signal, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import {
-  FluxButton,
-  FluxCallout,
-  FluxFab,
-  FluxModal,
-  FluxText,
-  FluxTextarea,
-} from '@deml/flux-material';
+  VikingButton,
+  VikingCallout,
+  VikingFab,
+  VikingModal,
+  VikingText,
+  VikingTextarea,
+} from '@deml/viking-ui';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-issue-reporter',
-  imports: [FormsModule, FluxFab, FluxModal, FluxText, FluxTextarea, FluxCallout, FluxButton],
+  imports: [
+    FormsModule,
+    VikingFab,
+    VikingModal,
+    VikingText,
+    VikingTextarea,
+    VikingCallout,
+    VikingButton,
+  ],
   templateUrl: './issue-reporter.html',
 })
 export class IssueReporter {

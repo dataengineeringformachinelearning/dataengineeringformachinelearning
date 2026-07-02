@@ -10,20 +10,20 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  FluxButton,
-  FluxCallout,
-  FluxCheckbox,
-  FluxField,
-  FluxInput,
-  FluxModal,
-  FluxProgress,
-} from '@deml/flux-material';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+  VikingButton,
+  VikingCallout,
+  VikingCheckbox,
+  VikingField,
+  VikingInput,
+  VikingModal,
+  VikingProgress,
+} from '@deml/viking-ui';
+import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OnboardingService } from '../../services/onboarding.service';
-import { FluxDialogService } from '../../services/flux-dialog.service';
+import { VikingDialogService } from '../../services/viking-dialog.service';
 import { environment } from '../../../environments/environment';
 
 const STEPS = ['welcome', 'site', 'endpoint', 'publish', 'done'] as const;
@@ -35,21 +35,21 @@ type WizardStep = (typeof STEPS)[number];
   imports: [
     CommonModule,
     FormsModule,
-    FluxModal,
-    FluxButton,
-    FluxCallout,
-    FluxCheckbox,
-    FluxField,
-    FluxInput,
-    FluxProgress,
-    FluxAppIcon,
+    VikingModal,
+    VikingButton,
+    VikingCallout,
+    VikingCheckbox,
+    VikingField,
+    VikingInput,
+    VikingProgress,
+    VikingAppIcon,
   ],
   templateUrl: './onboarding-wizard.html',
   styleUrl: './onboarding-wizard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnboardingWizard {
-  private readonly fluxDialog = inject(FluxDialogService);
+  private readonly fluxDialog = inject(VikingDialogService);
   private monitorService = inject(MonitorService);
   private settingsService = inject(SettingsService);
   private authService = inject(AuthService);

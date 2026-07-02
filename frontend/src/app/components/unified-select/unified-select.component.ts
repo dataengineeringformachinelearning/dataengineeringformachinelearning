@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { FluxField, FluxSelect, FluxSelectOption } from '@deml/flux-material';
+import { VikingField, VikingSelect, VikingSelectOption } from '@deml/viking-ui';
 
 export interface SelectOption {
   value: string;
@@ -10,17 +10,17 @@ export interface SelectOption {
 @Component({
   selector: 'app-unified-select',
   standalone: true,
-  imports: [FormsModule, FluxField, FluxSelect],
+  imports: [FormsModule, VikingField, VikingSelect],
   template: `
-    <flux-field [label]="label ?? ''">
-      <flux-select
+    <viking-field [label]="label ?? ''">
+      <viking-select
         [options]="fluxOptions"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"
         [disabled]="disabled"
         placeholder="Select an option"
       />
-    </flux-field>
+    </viking-field>
   `,
 })
 export class UnifiedSelect {
@@ -31,7 +31,7 @@ export class UnifiedSelect {
   @Input() disabled = false;
   @Output() valueChange = new EventEmitter<string>();
 
-  protected get fluxOptions(): FluxSelectOption[] {
+  protected get fluxOptions(): VikingSelectOption[] {
     return this.options.map(opt => ({ label: opt.label, value: opt.value }));
   }
 }

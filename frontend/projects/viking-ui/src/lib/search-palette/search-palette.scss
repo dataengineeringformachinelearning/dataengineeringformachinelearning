@@ -1,0 +1,232 @@
+:host {
+  display: contents;
+}
+
+.viking-search-palette-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10vh var(--viking-space-2) var(--viking-space-2);
+  background: var(--viking-overlay-backdrop);
+  backdrop-filter: blur(4px);
+  border: none;
+  cursor: default;
+}
+
+.viking-search-palette {
+  display: flex;
+  flex-direction: column;
+  background: color-mix(in srgb, var(--viking-surface) 85%, transparent);
+  backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  box-shadow: var(--viking-shadow-md);
+  overflow: hidden;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+  font-family: var(--viking-font-family);
+  color: var(--viking-text);
+}
+
+.viking-search-palette-header {
+  display: flex;
+  align-items: center;
+  padding: var(--viking-space-2);
+  border-bottom: 1px solid var(--viking-border);
+  gap: var(--viking-space-1);
+  background: color-mix(in srgb, var(--viking-bg) 20%, transparent);
+}
+
+.viking-search-palette-header:focus-within {
+  border-bottom-color: var(--viking-accent);
+}
+
+.viking-search-palette-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: calc(var(--viking-font-size) * 1.05);
+  color: var(--viking-text);
+  font-family: inherit;
+}
+
+.viking-search-palette-close {
+  display: inline-flex;
+  border: none;
+  background: transparent;
+  color: var(--viking-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--viking-radius);
+}
+
+.viking-search-palette-close:hover {
+  color: var(--viking-text);
+  background: var(--viking-accent-soft);
+}
+
+.viking-search-palette-body {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.viking-search-palette-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border-top: 1px solid var(--viking-border);
+  font-size: calc(var(--viking-font-size) * 0.85);
+  color: var(--viking-text-muted);
+}
+
+::ng-deep .viking-search-palette-shortcut {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--viking-space-1) / 2);
+}
+
+::ng-deep .viking-search-palette-shortcut kbd {
+  font-family: inherit;
+  font-size: calc(var(--viking-font-size) * 0.75);
+  padding: 2px 6px;
+  border-radius: calc(var(--viking-radius) / 2);
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface-alt);
+}
+
+.viking-search-palette-body {
+  padding: var(--viking-space-2);
+}
+
+::ng-deep .viking-search-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+}
+
+::ng-deep .viking-search-result {
+  display: flex;
+  align-items: center;
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border-radius: var(--viking-radius);
+  background: color-mix(in srgb, var(--viking-surface) 2%, transparent);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  gap: var(--viking-space-1);
+}
+
+::ng-deep .viking-search-result.viking-selected,
+::ng-deep .viking-search-result:hover {
+  background: color-mix(in srgb, var(--viking-accent) 5%, transparent);
+  border-color: color-mix(in srgb, var(--viking-accent) 30%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--viking-accent) 10%, transparent);
+}
+
+::ng-deep .viking-search-result-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--viking-text-muted);
+}
+
+::ng-deep .viking-search-result.viking-selected .viking-search-result-icon,
+::ng-deep .viking-search-result:hover .viking-search-result-icon {
+  color: var(--viking-accent);
+}
+
+::ng-deep .viking-search-result-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--viking-space-1) / 2);
+  overflow: hidden;
+}
+
+::ng-deep .viking-search-result-title {
+  font-size: var(--viking-font-size);
+  font-weight: 600;
+  color: var(--viking-text);
+}
+
+::ng-deep .viking-search-result-snippet {
+  font-size: var(--viking-font-size);
+  color: var(--viking-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep mark.viking-search-highlight {
+  background: color-mix(in srgb, var(--viking-accent) 20%, transparent);
+  color: var(--viking-accent);
+  border-radius: 0;
+  padding: 0;
+  font-weight: 600;
+}
+
+::ng-deep .viking-search-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--viking-space-2) * 2) var(--viking-space-2);
+  text-align: center;
+  color: var(--viking-text-muted);
+}
+
+::ng-deep .viking-search-empty-icon {
+  opacity: 0.5;
+  margin-bottom: var(--viking-space-2);
+}
+
+::ng-deep .viking-search-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-1);
+}
+
+::ng-deep .viking-search-suggestions-heading {
+  font-size: var(--viking-font-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--viking-text-muted);
+}
+
+::ng-deep .viking-search-suggestions-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-1);
+}
+
+@media (min-width: 481px) {
+  ::ng-deep .viking-search-suggestions-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+::ng-deep .viking-search-suggestion {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  background: color-mix(in srgb, var(--viking-surface) 2%, transparent);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+::ng-deep .viking-search-suggestion:hover {
+  background: color-mix(in srgb, var(--viking-accent) 5%, transparent);
+  border-color: color-mix(in srgb, var(--viking-accent) 30%, transparent);
+  box-shadow: var(--viking-shadow-sm);
+}

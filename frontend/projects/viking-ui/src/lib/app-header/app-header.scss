@@ -1,0 +1,291 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.viking-app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  min-height: var(--viking-navbar-height, 64px);
+  background-color: var(--navbar-bg, var(--viking-surface));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--viking-border-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--viking-space-1) var(--viking-space-2);
+  box-sizing: border-box;
+}
+
+.viking-app-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.viking-app-header-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.viking-app-header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--viking-space-1);
+}
+
+.viking-app-header-center {
+  display: flex;
+  justify-content: center;
+}
+
+.viking-app-header-desktop-nav {
+  display: none;
+  align-items: center;
+  gap: calc(var(--viking-space-1) * 1.33);
+  padding: calc(var(--viking-space-1) / 2) 0;
+}
+
+.viking-app-header-desktop-auth {
+  display: none;
+  align-items: center;
+  gap: var(--viking-space-1);
+}
+
+::ng-deep .viking-app-header-nav-link {
+  position: relative;
+  font-size: var(--viking-font-size) !important;
+  color: var(--nav-link-color, var(--viking-text-muted)) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease !important;
+  border-radius: var(--viking-radius) var(--viking-radius) 0 0 !important;
+  padding: 0 var(--viking-space-2) !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--viking-space-1) !important;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::ng-deep .viking-app-header-nav-link::before {
+  content: '';
+  position: absolute;
+  inset: auto var(--viking-space-2) 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-accent) 80%, transparent),
+    transparent
+  );
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  pointer-events: none;
+}
+
+::ng-deep .viking-app-header-nav-link:hover {
+  color: var(--viking-text) !important;
+  background-color: color-mix(in srgb, var(--viking-accent) 10%, transparent) !important;
+  transform: translateY(-1px);
+}
+
+::ng-deep .viking-app-header-nav-link:hover::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+::ng-deep .viking-app-header-nav-link.active,
+::ng-deep .viking-app-header-nav-link.viking-current {
+  color: var(--viking-text) !important;
+  background-color: color-mix(in srgb, var(--viking-accent) 14%, transparent) !important;
+  box-shadow:
+    inset 0 -2px 0 0 var(--viking-accent),
+    0 0 12px color-mix(in srgb, var(--viking-accent) 18%, transparent) !important;
+}
+
+::ng-deep .viking-app-header-icon-btn {
+  color: var(--viking-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::ng-deep .viking-app-header-icon-btn:hover {
+  color: var(--viking-text);
+  transform: rotate(15deg);
+  background-color: color-mix(in srgb, var(--viking-accent) 5%, transparent);
+}
+
+::ng-deep .viking-app-header-icon-btn:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: 3px;
+}
+
+::ng-deep .viking-app-header-menu-toggle {
+  display: inline-flex !important;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+}
+
+::ng-deep .viking-app-header-auth-btn {
+  background: var(--color-dark-grey-btn-bg, var(--viking-surface-alt)) !important;
+  color: var(--color-dark-grey-btn-text, var(--viking-text)) !important;
+  font-weight: 600 !important;
+  border-radius: var(--viking-radius-pill) !important;
+  padding: 0 var(--viking-space-2) !important;
+  box-shadow: var(--viking-shadow-sm) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  border: 1px solid var(--viking-border) !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--viking-space-1) !important;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::ng-deep .viking-app-header-auth-btn:hover {
+  transform: translateY(-2px) !important;
+  background-color: var(--viking-accent) !important;
+  border-color: var(--viking-accent) !important;
+  color: var(--viking-accent-content) !important;
+  box-shadow: var(--viking-shadow-md) !important;
+}
+
+.viking-app-header-mobile {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background-color: var(--viking-surface);
+  box-shadow: var(--viking-shadow-md);
+  border-bottom: 1px solid var(--viking-border);
+  padding: var(--viking-space-2);
+  box-sizing: border-box;
+  z-index: 49;
+  gap: var(--viking-space-1);
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s ease;
+}
+
+.viking-app-header-mobile.viking-open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  display: flex;
+}
+
+::ng-deep .viking-app-header-mobile-link {
+  width: 100% !important;
+  justify-content: flex-start !important;
+  font-size: var(--viking-font-size) !important;
+  color: var(--viking-text-muted) !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: var(--viking-radius) !important;
+  padding: 0 var(--viking-space-2) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--viking-space-1) !important;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+::ng-deep .viking-app-header-mobile-link:hover {
+  color: var(--viking-text) !important;
+  background-color: color-mix(in srgb, var(--viking-accent) 5%, transparent) !important;
+}
+
+::ng-deep .viking-app-header-mobile-link.active,
+::ng-deep .viking-app-header-mobile-link.viking-current {
+  color: var(--viking-text) !important;
+  background-color: color-mix(in srgb, var(--viking-accent) 10%, transparent) !important;
+  box-shadow: inset 0 0 0 1px var(--viking-accent) !important;
+}
+
+::ng-deep .viking-app-header-mobile-divider {
+  height: 1px;
+  background-color: var(--viking-border);
+  margin: var(--viking-space-1) 0;
+}
+
+::ng-deep .viking-app-header-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--viking-accent) 60%, transparent));
+  transition: filter 0.3s ease;
+}
+
+::ng-deep .viking-app-header-brand:hover {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--viking-accent) 90%, transparent));
+}
+
+@media (min-width: 768px) {
+  .viking-app-header-desktop-nav {
+    display: flex;
+  }
+
+  .viking-app-header-desktop-auth {
+    display: flex;
+  }
+
+  ::ng-deep .viking-app-header-menu-toggle {
+    display: none !important;
+  }
+
+  .viking-app-header-mobile {
+    display: none !important;
+  }
+}

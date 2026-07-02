@@ -18,8 +18,8 @@ def sync_design_system():
   subprocess.run(["npm", "run", "build"], cwd=pkg_dir, check=True)
 
   frontend_dir = os.path.join(root_dir, "frontend")
-  print("Building @deml/flux-material CSS bundle...")
-  subprocess.run(["npm", "run", "build:flux-material-css"], cwd=frontend_dir, check=True)
+  print("Building @deml/viking-ui CSS bundle...")
+  subprocess.run(["npm", "run", "build:viking-ui-css"], cwd=frontend_dir, check=True)
 
   dist_tokens = os.path.join(dist_dir, "design-tokens.css")
   dist_components = os.path.join(dist_dir, "deml-components.css")
@@ -59,12 +59,12 @@ def sync_design_system():
     os.path.join(root_dir, "marketing", "public", "assets", "deml-components.css"),
   ]
 
-  flux_css_src = os.path.join(frontend_dir, "dist", "flux-material-css", "flux-material.css")
+  flux_css_src = os.path.join(frontend_dir, "dist", "viking-ui-css", "viking-ui.css")
   flux_css_targets = [
-    os.path.join(root_dir, "frontend", "src", "assets", "flux-material.css"),
-    os.path.join(root_dir, "frontend", "public", "assets", "flux-material.css"),
-    os.path.join(root_dir, "backend", "static", "flux-material.css"),
-    os.path.join(root_dir, "marketing", "public", "assets", "flux-material.css"),
+    os.path.join(root_dir, "frontend", "src", "assets", "viking-ui.css"),
+    os.path.join(root_dir, "frontend", "public", "assets", "viking-ui.css"),
+    os.path.join(root_dir, "backend", "static", "viking-ui.css"),
+    os.path.join(root_dir, "marketing", "public", "assets", "viking-ui.css"),
   ]
 
   for target in token_targets:
@@ -76,7 +76,7 @@ def sync_design_system():
     shutil.copy2(dist_components, target)
 
   if not os.path.isfile(flux_css_src):
-    print(f"Expected flux-material CSS missing: {flux_css_src}", file=sys.stderr)
+    print(f"Expected viking-ui CSS missing: {flux_css_src}", file=sys.stderr)
     sys.exit(1)
 
   for target in flux_css_targets:

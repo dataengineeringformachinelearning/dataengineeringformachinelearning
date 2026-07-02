@@ -1,0 +1,208 @@
+import { Component, signal } from '@angular/core';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import {
+  VikingAccordion,
+  VikingAccordionItem,
+  VikingBadge,
+  VikingButton,
+  VikingCalendar,
+  VikingChart,
+  VikingCheckbox,
+  VikingHeading,
+  VikingPagination,
+  VikingProgress,
+  VikingSelect,
+  VikingSwitch,
+  VikingToastService,
+  VikingSelectOption,
+} from './public-api';
+
+@Component({
+  imports: [VikingCheckbox, FormsModule],
+  template: `<viking-checkbox [(ngModel)]="accepted">Accept</viking-checkbox>`,
+})
+class CheckboxHost {
+  accepted = false;
+}
+
+@Component({
+  imports: [VikingSelect],
+  template: `<viking-select
+    [options]="options"
+    [value]="value()"
+    (valueChange)="value.set($event)"
+  />`,
+})
+class SelectHost {
+  readonly options: VikingSelectOption[] = [
+    { label: 'Alpha', value: 'a' },
+    { label: 'Beta', value: 'b' },
+  ];
+  readonly value = signal<unknown>(null);
+}
+
+describe('viking-ui', () => {
+  const render = async <T>(component: new () => T): Promise<ComponentFixture<T>> => {
+    const fixture = TestBed.createComponent(component);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    return fixture;
+  };
+
+  it('renders button variants with accessible focus and disabled semantics', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingButton);
+    fixture.componentRef.setInput('variant', 'primary');
+    fixture.componentRef.setInput('disabled', true);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    expect(button.classList.contains('viking-primary')).toBe(true);
+    expect(button.disabled).toBe(true);
+  });
+
+  it('renders an anchor with rel guard when href and target are set', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingButton);
+    fixture.componentRef.setInput('href', 'https://fluxui.dev');
+    fixture.componentRef.setInput('target', '_blank');
+    fixture.detectChanges();
+    const anchor = fixture.nativeElement.querySelector('a') as HTMLAnchorElement;
+    expect(anchor.getAttribute('rel')).toBe('noopener noreferrer');
+  });
+
+  it('applies tone classes on badges', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingBadge);
+    fixture.componentRef.setInput('tone', 'danger');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.classList.contains('viking-badge-danger')).toBe(true);
+  });
+
+  it('exposes heading level via aria-level', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingHeading);
+    fixture.componentRef.setInput('level', 2);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.getAttribute('aria-level')).toBe('2');
+  });
+
+  it('integrates checkbox with ngModel (ControlValueAccessor)', async (): Promise<void> => {
+    const fixture = await render(CheckboxHost);
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.componentInstance.accepted).toBe(true);
+  });
+
+  it('toggles switch state on change', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingSwitch);
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    input.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.checked()).toBe(true);
+  });
+
+  it('opens the select listbox and picks an option', async (): Promise<void> => {
+    const fixture = await render(SelectHost);
+    const trigger = fixture.nativeElement.querySelector(
+      '.viking-select-trigger',
+    ) as HTMLButtonElement;
+    trigger.click();
+    fixture.detectChanges();
+    const options = fixture.nativeElement.querySelectorAll('.viking-select-option');
+    expect(options.length).toBe(2);
+    (options[1] as HTMLElement).click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toBe('b');
+  });
+
+  it('windows pagination with ellipses for long ranges', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingPagination);
+    fixture.componentRef.setInput('totalPages', 20);
+    fixture.componentRef.setInput('page', 10);
+    fixture.detectChanges();
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('…');
+    expect(text).toContain('10');
+    expect(text).toContain('20');
+  });
+
+  it('clamps progress values into 0-100 and sets aria-valuenow', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingProgress);
+    fixture.componentRef.setInput('value', 140);
+    fixture.detectChanges();
+    const bar = fixture.nativeElement.querySelector('[role="progressbar"]') as HTMLElement;
+    expect(bar.getAttribute('aria-valuenow')).toBe('100');
+  });
+
+  it('renders a 42-day calendar grid and selects a day', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingCalendar);
+    fixture.detectChanges();
+    const days = fixture.nativeElement.querySelectorAll('.viking-calendar-day');
+    expect(days.length).toBe(42);
+    (days[15] as HTMLElement).click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.value()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('builds SVG paths for every chart series', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingChart);
+    fixture.componentRef.setInput('series', [
+      { name: 'p50', data: [1, 2, 3] },
+      { name: 'p95', tone: 'warning', data: [2, 4, 6] },
+    ]);
+    fixture.detectChanges();
+    const lines = fixture.nativeElement.querySelectorAll('.viking-chart-line');
+    expect(lines.length).toBe(2);
+    expect((lines[0] as SVGPathElement).getAttribute('d')).toContain('M');
+  });
+
+  it('renders grouped and stacked bar rects', async (): Promise<void> => {
+    const grouped = TestBed.createComponent(VikingChart);
+    grouped.componentRef.setInput('kind', 'grouped-bar');
+    grouped.componentRef.setInput('series', [
+      { name: 'A', tone: 'accent', data: [4, 6, 5] },
+      { name: 'B', tone: 'success', data: [3, 2, 4] },
+    ]);
+    grouped.detectChanges();
+    expect(grouped.nativeElement.querySelectorAll('.viking-chart-bar').length).toBe(6);
+
+    const stacked = TestBed.createComponent(VikingChart);
+    stacked.componentRef.setInput('kind', 'stacked-bar');
+    stacked.componentRef.setInput('series', [
+      { name: 'Online', tone: 'accent', data: [4, 3] },
+      { name: 'Retail', tone: 'success', data: [2, 5] },
+    ]);
+    stacked.detectChanges();
+    expect(stacked.nativeElement.querySelectorAll('.viking-chart-bar').length).toBe(4);
+  });
+
+  it('enforces exclusive accordion mode', async (): Promise<void> => {
+    @Component({
+      imports: [VikingAccordion, VikingAccordionItem],
+      template: `
+        <viking-accordion [exclusive]="true">
+          <viking-accordion-item heading="One">First</viking-accordion-item>
+          <viking-accordion-item heading="Two">Second</viking-accordion-item>
+        </viking-accordion>
+      `,
+    })
+    class AccordionHost {}
+
+    const fixture = await render(AccordionHost);
+    const triggers = fixture.nativeElement.querySelectorAll('.viking-accordion-trigger');
+    (triggers[0] as HTMLElement).click();
+    fixture.detectChanges();
+    (triggers[1] as HTMLElement).click();
+    fixture.detectChanges();
+    const expanded = fixture.nativeElement.querySelectorAll('[aria-expanded="true"]');
+    expect(expanded.length).toBe(1);
+  });
+
+  it('queues and auto-dismisses toasts via the service', (): void => {
+    const service = TestBed.inject(VikingToastService);
+    const id = service.show({ heading: 'Saved', text: 'All good', tone: 'success', duration: 0 });
+    expect(service.toasts().length).toBe(1);
+    service.dismiss(id);
+    expect(service.toasts().length).toBe(0);
+  });
+});

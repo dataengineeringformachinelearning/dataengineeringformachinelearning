@@ -11,21 +11,21 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { FluxBadge, FluxSearchPalette } from '@deml/flux-material';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
-import { FluxDialogService } from '../../services/flux-dialog.service';
+import { VikingBadge, VikingSearchPalette } from '@deml/viking-ui';
+import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
+import { VikingDialogService } from '../../services/viking-dialog.service';
 import { OramaSearchService, SearchItem } from '../../services/orama-search.service';
 import { SettingsService } from '../../services/settings.service';
 
 @Component({
   selector: 'app-search-dialog',
   standalone: true,
-  imports: [CommonModule, RouterModule, FluxSearchPalette, FluxBadge, FluxAppIcon],
+  imports: [CommonModule, RouterModule, VikingSearchPalette, VikingBadge, VikingAppIcon],
   templateUrl: './search-dialog.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchDialog implements AfterViewInit {
-  private readonly fluxDialog = inject(FluxDialogService);
+  private readonly fluxDialog = inject(VikingDialogService);
   private searchService = inject(OramaSearchService);
   private settingsService = inject(SettingsService);
   private router = inject(Router);
@@ -39,7 +39,7 @@ export class SearchDialog implements AfterViewInit {
   selectedIndex = signal<number>(0);
 
   ngAfterViewInit() {
-    // Focus is handled by flux-search-palette when open.
+    // Focus is handled by viking-search-palette when open.
   }
 
   protected async onQueryChange(query: string): Promise<void> {
@@ -101,7 +101,7 @@ export class SearchDialog implements AfterViewInit {
       count++;
       result += escapedText.substring(lastIndex, index);
       const match = escapedText.substring(index, index + query.length);
-      result += `<mark class="flux-search-highlight">${match}</mark>`;
+      result += `<mark class="viking-search-highlight">${match}</mark>`;
       lastIndex = index + query.length;
       index = lowerText.indexOf(lowerQuery, lastIndex);
     }

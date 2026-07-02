@@ -1,12 +1,12 @@
-<flux-fab icon="alert-triangle" label="Report Issue" (pressed)="toggleModal()" />
+<viking-fab icon="alert-triangle" label="Report Issue" (pressed)="toggleModal()" />
 
-<flux-modal [open]="isOpen()" (openChange)="isOpen.set($event)" heading="Report an Issue">
-  <flux-text>
+<viking-modal [open]="isOpen()" (openChange)="isOpen.set($event)" heading="Report an Issue">
+  <viking-text>
     Describe what went wrong. Diagnostic info (like recent errors) will be automatically attached to
     assist in resolving the issue.
-  </flux-text>
+  </viking-text>
 
-  <flux-textarea
+  <viking-textarea
     [ngModel]="issueDescription()"
     (ngModelChange)="issueDescription.set($event)"
     placeholder="E.g., The chart failed to load when the refresh button was clicked..."
@@ -16,16 +16,16 @@
   />
 
   @if (submissionStatus() === 'success') {
-  <flux-callout tone="success" heading="Issue reported successfully!" />
+  <viking-callout tone="success" heading="Issue reported successfully!" />
   } @if (submissionStatus() === 'error') {
-  <flux-callout tone="danger" heading="Failed to report issue. Please try again." />
+  <viking-callout tone="danger" heading="Failed to report issue. Please try again." />
   }
 
-  <div fluxModalActions>
-    <flux-button variant="ghost" icon="x" [disabled]="isSubmitting()" (pressed)="toggleModal()">
+  <div vikingModalActions>
+    <viking-button variant="ghost" icon="x" [disabled]="isSubmitting()" (pressed)="toggleModal()">
       Cancel
-    </flux-button>
-    <flux-button
+    </viking-button>
+    <viking-button
       variant="primary"
       icon="send"
       [loading]="isSubmitting()"
@@ -33,6 +33,6 @@
       (pressed)="submitIssue()"
     >
       Submit
-    </flux-button>
+    </viking-button>
   </div>
-</flux-modal>
+</viking-modal>

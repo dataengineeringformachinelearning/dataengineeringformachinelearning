@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FluxBadge } from '@deml/flux-material';
+import { VikingBadge } from '@deml/viking-ui';
 
 @Component({
   selector: 'app-pro-verified-badge',
   standalone: true,
-  imports: [FluxBadge],
+  imports: [VikingBadge],
   template: `
     @if (show) {
-      <flux-badge
+      <viking-badge
         tone="accent"
         icon="check-circle"
         title="Pro subscriber — verified status page"
         aria-label="Pro verified status page"
       >
         Pro Verified
-      </flux-badge>
+      </viking-badge>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

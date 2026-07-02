@@ -1,0 +1,26 @@
+{
+  "name": "@deml/viking-ui",
+  "version": "1.0.0",
+  "description": "Viking-UI: DEML clinical design system for Angular. Flux + Spartan-inspired patterns, THEME.md palette only.",
+  "keywords": [
+    "angular",
+    "ui",
+    "viking-ui",
+    "design-system",
+    "deml",
+    "a11y"
+  ],
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@angular/common": "^22.0.0",
+    "@angular/core": "^22.0.0",
+    "@angular/forms": "^22.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}

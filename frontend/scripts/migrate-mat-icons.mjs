@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Replaces static mat-icon elements with flux-app-icon in frontend templates. */
+/** Replaces static mat-icon elements with viking-app-icon in frontend templates. */
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -23,7 +23,7 @@ const convertStaticIcons = html =>
     const ariaHidden = /aria-hidden\s*=\s*["']true["']/.test(attrs) ? ' [ariaHidden]="true"' : '';
     const classMatch = attrs.match(/class\s*=\s*["']([^"']+)["']/);
     const hostClass = classMatch ? ` hostClass="${classMatch[1]}"` : '';
-    return `<flux-app-icon name="${name}"${ariaHidden}${hostClass} />`;
+    return `<viking-app-icon name="${name}"${ariaHidden}${hostClass} />`;
   });
 
 const files = walk(ROOT);

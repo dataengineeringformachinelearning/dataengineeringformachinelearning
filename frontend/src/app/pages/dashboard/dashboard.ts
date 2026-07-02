@@ -15,12 +15,12 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Title, Meta } from '@angular/platform-browser';
 import {
-  FluxChart,
-  FluxButton,
-  FluxBadge,
-  FluxChartSeries,
-  FluxRingGauge,
-} from '@deml/flux-material';
+  VikingChart,
+  VikingButton,
+  VikingBadge,
+  VikingChartSeries,
+  VikingRingGauge,
+} from '@deml/viking-ui';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 import { SettingsService } from '../../services/settings.service';
@@ -31,14 +31,14 @@ import {
   UnifiedSelect,
   SelectOption,
 } from '../../components/unified-select/unified-select.component';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import {
-  FluxDonutSegment,
+  VikingDonutSegment,
   hasChartValues,
   hasDonutValues,
-  toFluxBarSeries,
-  toFluxDonutSegments,
-  toFluxLineSeries,
+  toVikingBarSeries,
+  toVikingDonutSegments,
+  toVikingLineSeries,
 } from '../../core/chart-data.util';
 
 type DashboardTab = 'overview' | 'performance' | 'security';
@@ -50,11 +50,11 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     CommonModule,
     RouterModule,
     UnifiedSelect,
-    FluxChart,
-    FluxButton,
-    FluxBadge,
-    FluxRingGauge,
-    FluxAppIcon,
+    VikingChart,
+    VikingButton,
+    VikingBadge,
+    VikingRingGauge,
+    VikingAppIcon,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
@@ -77,9 +77,9 @@ export class Dashboard implements OnInit, OnDestroy {
   activeTab = signal<DashboardTab>('overview');
   isLoading = signal(true);
 
-  latencySeries = signal<FluxChartSeries[]>(toFluxLineSeries('Latency (ms)', []));
-  securityAlertSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Anomalies', [], 'warning'));
-  threatDonutSegments = signal<FluxDonutSegment[]>([]);
+  latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
+  securityAlertSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Anomalies', [], 'warning'));
+  threatDonutSegments = signal<VikingDonutSegment[]>([]);
 
   // Analytics metrics
   threatLevel = 0;
@@ -299,7 +299,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
           const timeSeries = user_metrics?.time_series || [];
           this.latencySeries.set(
-            toFluxLineSeries(
+            toVikingLineSeries(
               'Latency (ms)',
               timeSeries.map((d: { latency: number }) => d.latency ?? 0),
             ),
@@ -307,7 +307,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
           const threats = user_metrics?.threat_severity || [];
           this.threatDonutSegments.set(
-            toFluxDonutSegments(
+            toVikingDonutSegments(
               threats.map((d: { severity: string }) => d.severity),
               threats.map((d: { count: number }) => d.count ?? 0),
             ),
@@ -315,7 +315,7 @@ export class Dashboard implements OnInit, OnDestroy {
 
           const alerts = user_metrics?.security_alerts || [];
           this.securityAlertSeries.set(
-            toFluxBarSeries(
+            toVikingBarSeries(
               'Anomalies',
               alerts.map((d: { count: number }) => d.count ?? 0),
               'warning',

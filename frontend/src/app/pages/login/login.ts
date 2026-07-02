@@ -13,14 +13,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
-  FluxButton,
-  FluxCallout,
-  FluxField,
-  FluxHeading,
-  FluxInput,
-  FluxSeparator,
-  FluxText,
-} from '@deml/flux-material';
+  VikingButton,
+  VikingCallout,
+  VikingField,
+  VikingHeading,
+  VikingInput,
+  VikingSeparator,
+  VikingText,
+} from '@deml/viking-ui';
 
 import { AuthService } from '../../services/auth.service';
 import {
@@ -36,13 +36,13 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    FluxButton,
-    FluxCallout,
-    FluxField,
-    FluxHeading,
-    FluxInput,
-    FluxSeparator,
-    FluxText,
+    VikingButton,
+    VikingCallout,
+    VikingField,
+    VikingHeading,
+    VikingInput,
+    VikingSeparator,
+    VikingText,
   ],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

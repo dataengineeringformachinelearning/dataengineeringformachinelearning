@@ -11,11 +11,11 @@ import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { FluxButton, FluxField, FluxInput, FluxProgress } from '@deml/flux-material';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+import { VikingButton, VikingField, VikingInput, VikingProgress } from '@deml/viking-ui';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { FluxDialogService } from '../../services/flux-dialog.service';
+import { VikingDialogService } from '../../services/viking-dialog.service';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
 import { environment } from '../../../environments/environment';
 
@@ -24,11 +24,11 @@ import { environment } from '../../../environments/environment';
   standalone: true,
   imports: [
     CommonModule,
-    FluxButton,
-    FluxField,
-    FluxInput,
-    FluxProgress,
-    FluxAppIcon,
+    VikingButton,
+    VikingField,
+    VikingInput,
+    VikingProgress,
+    VikingAppIcon,
     FormsModule,
     RouterModule,
   ],
@@ -41,7 +41,7 @@ export class Account implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  private fluxDialog = inject(FluxDialogService);
+  private fluxDialog = inject(VikingDialogService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
 

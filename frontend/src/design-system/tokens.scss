@@ -10,29 +10,31 @@
   --white: #ffffff;
   --black: #000000;
 
-  /* Typography */
-  --base-font-size: 18px;
+  /* Typography — 16px main content floor, 14px UI chrome */
+  --base-font-size: 16px;
+  --ui-font-size: 14px;
   --header-letter-spacing: -0.02em;
 
-  /* 9px spacing scale */
-  --grid-unit: 9px;
-  --space-1: 9px;
-  --space-2: 18px;
-  --space-3: 27px;
-  --space-4: 36px;
-  --space-5: 45px;
-  --space-6: 54px;
-  --space-7: 63px;
-  --space-8: 72px;
+  /* 8px spacing scale (clinical grid) */
+  --grid-unit: 8px;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-7: 56px;
+  --space-8: 64px;
   --grid-gap: var(--space-3);
   --card-padding: var(--space-3);
   --container-max-width: 1260px;
   --navbar-height: var(--space-7);
+  --btn-min-width: 120px;
 
-  /* Radii (9px grid) */
+  /* Radii (8px grid) */
   --border-radius-lg: var(--space-2);
   --border-radius-md: var(--space-1);
-  --border-radius-sm: var(--space-1);
+  --border-radius-sm: 4px;
   --border-radius-pill: 999px;
 
   --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);

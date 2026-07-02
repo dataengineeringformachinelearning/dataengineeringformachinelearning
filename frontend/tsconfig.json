@@ -15,7 +15,7 @@
     "target": "ES2022",
     "module": "preserve",
     "paths": {
-      "@deml/flux-material": ["./projects/flux-material/src/public-api.ts"]
+      "@deml/viking-ui": ["./projects/viking-ui/src/public-api.ts"]
     }
   },
   "angularCompilerOptions": {

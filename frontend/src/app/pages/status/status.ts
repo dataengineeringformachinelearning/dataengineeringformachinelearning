@@ -15,8 +15,8 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { FluxBadge, FluxButton, FluxPageHeader } from '@deml/flux-material';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+import { VikingBadge, VikingButton, VikingPageHeader } from '@deml/viking-ui';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule, Router } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
@@ -30,10 +30,10 @@ import { timeout } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    FluxBadge,
-    FluxButton,
-    FluxPageHeader,
-    FluxAppIcon,
+    VikingBadge,
+    VikingButton,
+    VikingPageHeader,
+    VikingAppIcon,
     RouterModule,
     Sidebar,
     StatusCta,

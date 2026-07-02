@@ -11,15 +11,15 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import {
-  FluxBadge,
-  FluxButton,
-  FluxHudPanel,
-  FluxMetricCard,
-  FluxMetricRow,
-  FluxPageHeader,
-} from '@deml/flux-material';
-import type { FluxTone } from '@deml/flux-material';
-import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
+  VikingBadge,
+  VikingButton,
+  VikingHudPanel,
+  VikingMetricCard,
+  VikingMetricRow,
+  VikingPageHeader,
+} from '@deml/viking-ui';
+import type { VikingTone } from '@deml/viking-ui';
+import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import {
   UnifiedSelect,
   SelectOption,
@@ -42,13 +42,13 @@ import {
   imports: [
     CommonModule,
     RouterModule,
-    FluxAppIcon,
-    FluxBadge,
-    FluxButton,
-    FluxHudPanel,
-    FluxMetricCard,
-    FluxMetricRow,
-    FluxPageHeader,
+    VikingAppIcon,
+    VikingBadge,
+    VikingButton,
+    VikingHudPanel,
+    VikingMetricCard,
+    VikingMetricRow,
+    VikingPageHeader,
     FormsModule,
     UnifiedSelect,
   ],
@@ -88,7 +88,7 @@ export class Vulnerabilities implements OnInit {
 
   selectedVuln = signal<Vulnerability | null>(null);
 
-  severityTone(severity: string): FluxTone | 'neutral' {
+  severityTone(severity: string): VikingTone | 'neutral' {
     const key = severity.toLowerCase();
     if (key === 'critical' || key === 'high') return 'danger';
     if (key === 'medium' || key === 'warning') return 'warning';

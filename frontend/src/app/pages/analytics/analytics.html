@@ -9,7 +9,7 @@
           [queryParams]="{ tab: 'performance' }"
           aria-label="Back to Dashboard performance view"
         >
-          <flux-app-icon name="arrow_back" [ariaHidden]="true" />
+          <viking-app-icon name="arrow_back" [ariaHidden]="true" />
           <span>Back to Dashboard</span>
         </a>
       </nav>
@@ -29,7 +29,7 @@
       <!-- GLOBAL METRICS SECTION -->
       <div class="metrics-overview-header">
         <h2 class="section-title-premium">
-          <flux-app-icon name="public" />
+          <viking-app-icon name="public" />
           Global Platform Metrics
         </h2>
         <p class="section-description-premium">
@@ -42,12 +42,12 @@
           <div class="gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">
               <h3>System Threat</h3>
-              <flux-app-icon name="security" />
+              <viking-app-icon name="security" />
             </div>
             <div class="gauge-wrapper threat-gauge">
-              <flux-gauge-arc class="theme-amber" tone="amber" [value]="threatLevel" />
+              <viking-gauge-arc class="theme-amber" tone="amber" [value]="threatLevel" />
               <div class="gauge-center-text threat-text">
-                <flux-app-icon name="warning" hostClass="gauge-inner-icon" />
+                <viking-app-icon name="warning" hostClass="gauge-inner-icon" />
                 <span class="unit">DETECTED</span>
                 <span class="value"
                   >{{ threatLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
@@ -55,7 +55,7 @@
               </div>
             </div>
             <div class="gauge-card-footer">
-              <flux-app-icon name="info" />
+              <viking-app-icon name="info" />
               <span>Current threat exposure score</span>
             </div>
           </div>
@@ -64,18 +64,18 @@
           <div class="gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">
               <h3>Platform Effectiveness</h3>
-              <flux-app-icon name="analytics" />
+              <viking-app-icon name="analytics" />
             </div>
             <div class="gauge-wrapper main-gauge">
-              <flux-gauge-arc class="theme-red" tone="danger" [value]="cesLevel" />
+              <viking-gauge-arc class="theme-red" tone="danger" [value]="cesLevel" />
               <div class="gauge-center-text main-text">
-                <flux-app-icon name="stars" hostClass="gauge-inner-icon" />
+                <viking-app-icon name="stars" hostClass="gauge-inner-icon" />
                 <span class="unit">SCORE</span>
                 <span class="value">{{ cesLevel | number:'1.0-0' }}</span>
               </div>
             </div>
             <div class="gauge-card-footer">
-              <flux-app-icon name="info" />
+              <viking-app-icon name="info" />
               <span>Overall CES performance metric</span>
             </div>
           </div>
@@ -84,12 +84,12 @@
           <div class="gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">
               <h3>Network Stability</h3>
-              <flux-app-icon name="health_and_safety" />
+              <viking-app-icon name="health_and_safety" />
             </div>
             <div class="gauge-wrapper stability-gauge">
-              <flux-gauge-arc class="theme-primary" tone="primary" [value]="stabilityLevel" />
+              <viking-gauge-arc class="theme-primary" tone="primary" [value]="stabilityLevel" />
               <div class="gauge-center-text stability-text">
-                <flux-app-icon name="monitor_heart" hostClass="gauge-inner-icon" />
+                <viking-app-icon name="monitor_heart" hostClass="gauge-inner-icon" />
                 <span class="unit">UPTIME</span>
                 <span class="value"
                   >{{ stabilityLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
@@ -97,7 +97,7 @@
               </div>
             </div>
             <div class="gauge-card-footer">
-              <flux-app-icon name="info" />
+              <viking-app-icon name="info" />
               <span>System resilience index</span>
             </div>
           </div>
@@ -107,7 +107,7 @@
       <div class="metrics-overview-header metrics-section-spacing">
         <div>
           <h2 class="section-title-premium">
-            <flux-app-icon name="person" />
+            <viking-app-icon name="person" />
             Your Analytics
           </h2>
           <p class="section-description-premium">
@@ -168,7 +168,7 @@
           </div>
           <span class="stat-value u-style-324768">{{ (totalRequests || 0) | number }}</span>
         </div>
-        <div class="ml-stat-panel" [class.flux-stat-alert]="activeIncidents > 0">
+        <div class="ml-stat-panel" [class.viking-stat-alert]="activeIncidents > 0">
           <div class="stat-info">
             <div>
               <span class="stat-title">ACTIVE INCIDENTS</span>
@@ -207,7 +207,7 @@
       <div class="u-style-1e3398">
         <span class="u-style-bd64a0">Active Providers:</span>
         @for (provider of activeProviders; track provider) {
-        <flux-badge tone="accent" size="sm">{{ provider }}</flux-badge>
+        <viking-badge tone="accent" size="sm">{{ provider }}</viking-badge>
         }
       </div>
       }
@@ -222,18 +222,18 @@
 
           <div class="card-body-clean chart-container-large">
             @if (hasLatencyData()) {
-            <flux-chart
+            <viking-chart
               kind="line"
               [series]="latencySeries()"
               [categories]="latencyCategories()"
               label="System Latency (Last 24h)"
               [showArea]="true"
               [fill]="true"
-              class="flux-chart-large"
+              class="viking-chart-large"
             />
             } @else {
             <div class="empty-chart-state">
-              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -245,7 +245,7 @@
       <!-- TRAFFIC ANALYTICS SECTION -->
       <div class="metrics-overview-header metrics-section-spacing">
         <h2 class="section-title-premium">
-          <flux-app-icon name="traffic" />
+          <viking-app-icon name="traffic" />
           Traffic Analytics
         </h2>
         <p class="section-description-premium">
@@ -266,11 +266,11 @@
             <div
               id="originMap"
               class="u-style-2aad06"
-              [class.flux-map-ready]="originMapData.length > 0"
+              [class.viking-map-ready]="originMapData.length > 0"
             ></div>
             @if (originMapData.length === 0) {
             <div class="empty-chart-state">
-              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -291,17 +291,17 @@
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasTopRegionsData()) {
-            <flux-chart
+            <viking-chart
               kind="bar"
               [series]="topRegionsSeries()"
               [categories]="topRegionsCategories()"
               label="Top Regions"
               [fill]="true"
-              class="flux-chart-medium"
+              class="viking-chart-medium"
             />
             } @else {
             <div class="empty-chart-state">
-              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -318,18 +318,18 @@
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasFrequencyData()) {
-            <flux-chart
+            <viking-chart
               kind="line"
               [series]="frequencySeries()"
               [categories]="frequencyCategories()"
               label="Request Frequency"
               [showArea]="true"
               [fill]="true"
-              class="flux-chart-medium"
+              class="viking-chart-medium"
             />
             } @else {
             <div class="empty-chart-state">
-              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -346,17 +346,17 @@
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasEndpointData()) {
-            <flux-chart
+            <viking-chart
               kind="bar"
               [series]="endpointSeries()"
               [categories]="endpointCategories()"
               label="Request Counts per Endpoint"
               [fill]="true"
-              class="flux-chart-medium"
+              class="viking-chart-medium"
             />
             } @else {
             <div class="empty-chart-state">
-              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -368,7 +368,7 @@
       <!-- SIEM / SECURITY INSIGHTS SECTION -->
       <div class="metrics-overview-header metrics-section-spacing">
         <h2 class="section-title-premium">
-          <flux-app-icon name="security" />
+          <viking-app-icon name="security" />
           SIEM / Security Insights
         </h2>
         <p class="section-description-premium">
@@ -385,16 +385,16 @@
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasThreatSeverityData()) {
-            <flux-chart
+            <viking-chart
               kind="donut"
               [segments]="threatSeveritySegments()"
               label="Threat Events by Severity"
               [fill]="true"
-              class="flux-chart-medium"
+              class="viking-chart-medium"
             />
             } @else {
             <div class="empty-chart-state">
-              <flux-app-icon name="verified_user" hostClass="empty-icon" />
+              <viking-app-icon name="verified_user" hostClass="empty-icon" />
               <h3 class="empty-title">No Active Threats</h3>
               <p class="empty-subtitle">System is secure. No threat events detected.</p>
             </div>
@@ -411,17 +411,17 @@
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasSecurityAlertsData()) {
-            <flux-chart
+            <viking-chart
               kind="bar"
               [series]="securityAlertsSeries()"
               [categories]="securityAlertCategories()"
               label="Recent Security Anomalies"
               [fill]="true"
-              class="flux-chart-medium"
+              class="viking-chart-medium"
             />
             } @else {
             <div class="empty-chart-state">
-              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -438,17 +438,17 @@
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasStatusData()) {
-            <flux-chart
+            <viking-chart
               kind="bar"
               [series]="statusSeries()"
               [categories]="statusCategories()"
               label="HTTP Status Distribution"
               [fill]="true"
-              class="flux-chart-medium"
+              class="viking-chart-medium"
             />
             } @else {
             <div class="empty-chart-state">
-              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>

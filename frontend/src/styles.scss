@@ -2,12 +2,12 @@
 @use 'components/a11y' as *;
 @use 'components/badges' as *;
 @use 'components/layout' as *;
-// Navbar styles live in @deml/flux-material (flux-app-header).
+// Navbar styles live in @deml/viking-ui (viking-app-header).
 @use 'components/utilities' as *;
 @use 'components/extracted-utilities' as *;
-@use 'components/flux-inspired' as *;
+@use 'components/viking-inspired' as *;
 @use 'components/icon-inline' as *;
-@use '../projects/flux-material/src/styles/flux-material' as *;
+@use '../projects/viking-ui/src/styles/viking-ui' as *;
 
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';
@@ -122,7 +122,7 @@ li {
 }
 
 a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn):not(
-    .flux-btn
+    .viking-btn
   ) {
   color: var(--link-color);
   font-weight: 500;

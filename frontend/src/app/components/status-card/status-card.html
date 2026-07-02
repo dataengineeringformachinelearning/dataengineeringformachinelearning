@@ -30,7 +30,7 @@
     <div class="ml-stat-panels-row">
       <div class="ml-stat-panel">
         <div class="stat-info">
-          <flux-app-icon name="dns" hostClass="stat-icon" />
+          <viking-app-icon name="dns" hostClass="stat-icon" />
           <div>
             <span class="stat-title">Cumulative SLA</span>
             <span class="stat-subtitle">Based on real telemetry</span>
@@ -47,7 +47,7 @@
       <!-- Predictive SLA Section -->
       <div class="ml-stat-panel">
         <div class="stat-info">
-          <flux-app-icon name="online_prediction" hostClass="stat-icon" />
+          <viking-app-icon name="online_prediction" hostClass="stat-icon" />
           <div>
             <span class="stat-title">Predicted SLA</span>
             <span class="stat-subtitle">30-day forecast via ML</span>
@@ -67,7 +67,7 @@
     <div class="ml-stat-panels-row status-card-extracted-1">
       <div class="ml-stat-panel">
         <div class="stat-info">
-          <flux-app-icon name="timer" hostClass="stat-icon" />
+          <viking-app-icon name="timer" hostClass="stat-icon" />
           <div>
             <span class="stat-title">P99 Latency</span>
             <span class="stat-subtitle">Last 24h</span>
@@ -79,7 +79,7 @@
       </div>
       <div class="ml-stat-panel">
         <div class="stat-info">
-          <flux-app-icon name="bar_chart" hostClass="stat-icon" />
+          <viking-app-icon name="bar_chart" hostClass="stat-icon" />
           <div>
             <span class="stat-title">Total Requests</span>
             <span class="stat-subtitle">Last 24h</span>
@@ -99,7 +99,7 @@
       <!-- Cumulative TA Section -->
       <div class="ml-stat-panel">
         <div class="stat-info">
-          <flux-app-icon name="security" hostClass="stat-icon" />
+          <viking-app-icon name="security" hostClass="stat-icon" />
           <div>
             <span class="stat-title">Cumulative TA</span>
             <span class="stat-subtitle">Based on real telemetry</span>
@@ -116,7 +116,7 @@
       <!-- Predicted TA Section -->
       <div class="ml-stat-panel">
         <div class="stat-info">
-          <flux-app-icon name="online_prediction" hostClass="stat-icon" />
+          <viking-app-icon name="online_prediction" hostClass="stat-icon" />
           <div>
             <span class="stat-title">Predicted TA</span>
             <span class="stat-subtitle">30-day threat forecast via ML</span>
@@ -134,14 +134,14 @@
     <!-- View Dedicated Page Button (Explore page style) -->
     @if (showViewButton) {
     <div class="view-btn-container">
-      <flux-button
+      <viking-button
         variant="filled"
         class="view-btn"
         [href]="'/status/' + page.slug"
         iconTrailing="arrow-right"
       >
         View Dedicated Page
-      </flux-button>
+      </viking-button>
     </div>
     }
   </div>

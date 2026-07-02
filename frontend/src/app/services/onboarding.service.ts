@@ -1,13 +1,13 @@
 import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { FluxDialogService } from './flux-dialog.service';
+import { VikingDialogService } from './viking-dialog.service';
 
 const SKIP_KEY = 'deml_onboarding_skipped';
 const COMPLETE_KEY = 'deml_onboarding_complete';
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingService {
-  private readonly fluxDialog = inject(FluxDialogService);
+  private readonly fluxDialog = inject(VikingDialogService);
   private platformId = inject(PLATFORM_ID);
 
   private get storage(): Storage | null {

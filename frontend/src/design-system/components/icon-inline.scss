@@ -1,7 +1,7 @@
 // Vertical alignment for icons paired with text (buttons, links, titles).
 
-flux-app-icon,
-flux-icon,
+viking-app-icon,
+viking-icon,
 .material-icons,
 .material-symbols-outlined {
   display: inline-flex;
@@ -17,7 +17,7 @@ flux-icon,
 .auth-btn,
 .mobile-auth-btn,
 .back-link,
-.flux-btn,
+.viking-btn,
 .sidebar-brand,
 .sidebar-search .search-wrapper,
 .gauge-card-footer,
@@ -26,30 +26,30 @@ flux-icon,
 .panel-title-flex,
 .status-badge-premium,
 .feature-item {
-  flux-app-icon,
-  flux-icon,
+  viking-app-icon,
+  viking-icon,
   .material-icons {
     align-self: center;
   }
 }
 
-.nav-btn flux-app-icon,
-.nav-btn flux-icon,
-.mobile-nav-btn flux-app-icon,
-.auth-btn flux-app-icon,
-.mobile-auth-btn flux-app-icon {
+.nav-btn viking-app-icon,
+.nav-btn viking-icon,
+.mobile-nav-btn viking-app-icon,
+.auth-btn viking-app-icon,
+.mobile-auth-btn viking-app-icon {
   width: 18px;
   height: 18px;
   align-self: center;
 }
 
-.theme-toggle-btn flux-app-icon,
-.menu-toggle-btn flux-app-icon {
+.theme-toggle-btn viking-app-icon,
+.menu-toggle-btn viking-app-icon {
   width: 24px;
   height: 24px;
 }
 
-.section-title-premium flux-app-icon {
+.section-title-premium viking-app-icon {
   color: var(--status-accent, var(--crayola-blue));
   width: 22px;
   height: 22px;

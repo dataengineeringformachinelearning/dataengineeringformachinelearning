@@ -1,0 +1,227 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  input,
+  model,
+  signal,
+} from '@angular/core';
+import { VikingControl, provideVikingCva } from '../core/cva';
+import { VikingIcon } from '../icon/icon';
+import { VikingSelectOption } from '../core/types';
+
+/**
+ * viking-select — custom listbox select (https://fluxui.dev/components/select).
+ * ControlValueAccessor-compatible with full keyboard support.
+ */
+@Component({
+  selector: 'viking-select',
+  imports: [VikingIcon],
+  providers: [provideVikingCva(VikingSelect)],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:click)': 'onDocumentClick($event)' },
+  template: `
+    <button
+      type="button"
+      class="viking-control viking-select-trigger"
+      [disabled]="disabled() || formDisabled()"
+      [attr.aria-expanded]="open()"
+      [attr.aria-label]="label() || placeholder()"
+      aria-haspopup="listbox"
+      (click)="toggle()"
+      (keydown)="onKeydown($event)"
+    >
+      <span class="viking-select-value" [class.viking-select-placeholder]="!selectedLabel()">
+        {{ selectedLabel() || placeholder() }}
+      </span>
+      <viking-icon [name]="open() ? 'chevron-up' : 'chevron-down'" [size]="18" />
+    </button>
+    @if (open()) {
+      <div class="viking-select-panel" role="listbox" [attr.aria-label]="label() || placeholder()">
+        @for (option of options(); track option.label; let index = $index) {
+          <button
+            type="button"
+            role="option"
+            class="viking-select-option"
+            [class.viking-active]="index === activeIndex()"
+            [class.viking-selected]="option.value === value()"
+            [disabled]="option.disabled"
+            [attr.aria-selected]="option.value === value()"
+            (click)="pick(option)"
+            (mouseenter)="activeIndex.set(index)"
+          >
+            <span class="viking-select-option-label">{{ option.label }}</span>
+            @if (option.value === value()) {
+              <viking-icon name="check" [size]="16" />
+            }
+          </button>
+        }
+      </div>
+    }
+  `,
+  styles: [
+    `
+      :host {
+        position: relative;
+        display: block;
+      }
+      .viking-select-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--viking-space-1);
+        width: 100%;
+        min-height: var(--viking-control-height);
+        padding: 0 var(--viking-space-2);
+        background: var(--viking-surface);
+        border: 1px solid var(--viking-border-strong);
+        border-radius: var(--viking-radius);
+        box-shadow: var(--viking-shadow-sm);
+        color: var(--viking-text);
+        font-family: var(--viking-font-family);
+        font-size: var(--viking-font-size);
+        cursor: pointer;
+        transition: var(--viking-transition);
+        text-align: left;
+      }
+      .viking-select-trigger:hover:not(:disabled) {
+        border-color: var(--viking-accent-strong);
+      }
+      .viking-select-trigger:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
+      }
+      .viking-select-trigger:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .viking-select-placeholder {
+        color: var(--viking-text-muted);
+      }
+      .viking-select-panel {
+        position: absolute;
+        top: calc(100% + var(--viking-space-1));
+        left: 0;
+        right: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin: 0;
+        padding: var(--viking-space-1);
+        background: var(--viking-surface);
+        border: 1px solid var(--viking-border-strong);
+        border-radius: var(--viking-radius);
+        box-shadow: var(--viking-shadow-md);
+        z-index: var(--viking-z-overlay);
+        max-height: 315px;
+        overflow: auto;
+      }
+      .viking-select-option {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--viking-space-1);
+        padding: var(--viking-space-1);
+        border: none;
+        background: transparent;
+        text-align: left;
+        width: 100%;
+        border-radius: calc(var(--viking-radius) / 1.5);
+        font-family: var(--viking-font-family);
+        font-size: var(--viking-font-size);
+        color: var(--viking-text);
+        cursor: pointer;
+      }
+      .viking-select-option:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .viking-select-option:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: -2px;
+      }
+      .viking-active {
+        background: var(--viking-accent-soft);
+      }
+      .viking-selected {
+        font-weight: 600;
+        color: var(--viking-accent);
+      }
+    `,
+  ],
+})
+export class VikingSelect extends VikingControl<unknown> {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
+  readonly options = input.required<VikingSelectOption[]>();
+  readonly value = model<unknown>(null);
+  readonly placeholder = input<string>('Select…');
+  readonly label = input<string>('');
+  readonly disabled = input<boolean>(false);
+
+  protected readonly open = signal(false);
+  protected readonly activeIndex = signal(0);
+
+  protected readonly selectedLabel = computed(
+    () => this.options().find(option => option.value === this.value())?.label ?? '',
+  );
+
+  writeValue(value: unknown): void {
+    this.value.set(value);
+  }
+
+  protected toggle = (): void => {
+    this.open.update(value => !value);
+    if (this.open()) {
+      const index = this.options().findIndex(option => option.value === this.value());
+      this.activeIndex.set(Math.max(0, index));
+    }
+  };
+
+  protected pick = (option: VikingSelectOption): void => {
+    if (option.disabled) {
+      return;
+    }
+    this.value.set(option.value);
+    this.onChange(option.value);
+    this.onTouched();
+    this.open.set(false);
+  };
+
+  protected onKeydown = (event: KeyboardEvent): void => {
+    const options = this.options();
+    if (!this.open()) {
+      if (['ArrowDown', 'ArrowUp', 'Enter', ' '].includes(event.key)) {
+        event.preventDefault();
+        this.toggle();
+      }
+      return;
+    }
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.activeIndex.update(index => Math.min(options.length - 1, index + 1));
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.activeIndex.update(index => Math.max(0, index - 1));
+        break;
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        this.pick(options[this.activeIndex()]);
+        break;
+      case 'Escape':
+        this.open.set(false);
+        break;
+    }
+  };
+
+  protected onDocumentClick = (event: Event): void => {
+    if (this.open() && !this.host.nativeElement.contains(event.target as Node)) {
+      this.open.set(false);
+    }
+  };
+}
