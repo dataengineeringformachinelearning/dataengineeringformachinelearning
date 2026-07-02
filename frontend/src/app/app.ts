@@ -21,7 +21,7 @@ import { MonitorService } from './services/monitor.service';
 import { effect, HostListener } from '@angular/core';
 
 import { FluxToaster } from '@deml/flux-material';
-import { FluxAppIcon } from './components/flux-app-icon/flux-app-icon';
+import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { SearchDialog } from './components/search-dialog/search-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
@@ -35,7 +35,7 @@ import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wiza
     Footer,
     IssueReporter,
     CookieBanner,
-    FluxAppIcon,
+    DemlBrandLogo,
     FluxToaster,
     ConfirmDialog,
     SearchDialog,

@@ -630,11 +630,13 @@
   margin-top: 0;
   margin-bottom: 16px;
 
-  mat-icon {
-    color: var(--status-accent);
+  mat-icon,
+  flux-app-icon {
+    color: var(--status-accent, var(--crayola-blue));
     font-size: 22px;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
   }
 }
 

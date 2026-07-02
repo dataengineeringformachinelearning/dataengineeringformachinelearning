@@ -11,6 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OramaSearchService } from '../../services/orama-search.service';
@@ -20,7 +21,7 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FluxAppIcon],
+  imports: [CommonModule, RouterModule, FluxAppIcon, DemlBrandLogo],
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

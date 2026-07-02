@@ -33,7 +33,7 @@ export const toFluxDonutSegments = (
   values: number[],
 ): FluxDonutSegment[] =>
   labels.map((label, index) => ({
-    label,
+    label: label.charAt(0).toUpperCase() + label.slice(1),
     value: values[index] ?? 0,
     tone: severityToTone(label),
   }));

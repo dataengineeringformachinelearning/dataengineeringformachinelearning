@@ -1,12 +1,13 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, FluxAppIcon],
+  imports: [RouterLink, RouterLinkActive, FluxAppIcon, DemlBrandLogo],
   templateUrl: './navbar.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './navbar.scss',

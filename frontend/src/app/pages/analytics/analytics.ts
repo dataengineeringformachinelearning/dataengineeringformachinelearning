@@ -97,6 +97,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     toFluxBarSeries('Anomalies', [], 'warning'),
   );
 
+  latencyCategories = signal<string[]>([]);
+  frequencyCategories = signal<string[]>([]);
+  statusCategories = signal<string[]>([]);
+  endpointCategories = signal<string[]>([]);
+  topRegionsCategories = signal<string[]>([]);
+  securityAlertCategories = signal<string[]>([]);
+
   hasLatencyData = computed(() =>
     hasChartValues(this.latencySeries().flatMap(series => series.data)),
   );
@@ -213,6 +220,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           }
 
           const timeSeries = user_metrics?.time_series || [];
+          this.latencyCategories.set(
+            timeSeries.map((d: { label?: string; time?: string }) =>
+              String(d.label ?? d.time ?? '').slice(-5),
+            ),
+          );
           this.latencySeries.set(
             toFluxLineSeries(
               'Latency (ms)',
@@ -224,6 +236,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.originMapData = origins;
 
           const topOrigins = [...origins].sort((a: any, b: any) => b.count - a.count).slice(0, 5);
+          this.topRegionsCategories.set(
+            topOrigins.map((d: { region?: string; country?: string; name?: string }) =>
+              String(d.region ?? d.country ?? d.name ?? '—').slice(0, 8),
+            ),
+          );
           this.topRegionsSeries.set(
             toFluxBarSeries(
               'Requests',
@@ -237,6 +254,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           }
 
           const reqFreq = user_metrics?.request_frequency || [];
+          this.frequencyCategories.set(
+            reqFreq.map((d: { label?: string; time?: string }) =>
+              String(d.label ?? d.time ?? '').slice(-5),
+            ),
+          );
           this.frequencySeries.set(
             toFluxLineSeries(
               'Requests',
@@ -246,6 +268,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           );
 
           const statuses = user_metrics?.http_statuses || [];
+          this.statusCategories.set(
+            statuses.map((d: { status?: string | number; code?: string | number }) =>
+              String(d.status ?? d.code ?? '—'),
+            ),
+          );
           this.statusSeries.set(
             toFluxBarSeries(
               'Count',
@@ -254,6 +281,12 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           );
 
           const endpoints = user_metrics?.endpoint_counts || [];
+          this.endpointCategories.set(
+            endpoints.map((d: { endpoint?: string; path?: string }) => {
+              const raw = String(d.endpoint ?? d.path ?? '—');
+              return raw.length > 12 ? `…${raw.slice(-11)}` : raw;
+            }),
+          );
           this.endpointSeries.set(
             toFluxBarSeries(
               'Calls',
@@ -270,6 +303,11 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           );
 
           const alerts = user_metrics?.security_alerts || [];
+          this.securityAlertCategories.set(
+            alerts.map((d: { label?: string; type?: string }) =>
+              String(d.label ?? d.type ?? 'Alert').slice(0, 10),
+            ),
+          );
           this.securityAlertsSeries.set(
             toFluxBarSeries(
               'Anomalies',
