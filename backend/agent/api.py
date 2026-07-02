@@ -64,7 +64,7 @@ async def report_issue(request: Any, payload: IssueReportPayload) -> Any:
       telemetry_context=payload.telemetry_context,
       bug_report_id=str(bug_report.id),
     )
-    logger.info(f"Successfully processed issue: {response}")
+    logger.info("Successfully processed issue: %s", response)
     return {
       "status": "success",
       "message": "Issue processed and sent to Redpanda",

@@ -214,6 +214,6 @@ def send_alert_email(subject: str, message: str):
         "html": html_message,
       }
     )
-    logger.info(f"Alert email sent successfully: {r}")
+    logger.info("Alert email sent successfully: %s", r)
   except Exception as e:
-    logger.error(f"Failed to send alert email: {e}")
+    logger.error("Failed to send alert email: %s", e)

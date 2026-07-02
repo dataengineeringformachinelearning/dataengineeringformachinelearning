@@ -74,6 +74,6 @@ class TAXIIClient:
       if threats:
         # Use ignore_conflicts in production to avoid duplicates
         ThreatIntelligence.objects.bulk_create(threats, ignore_conflicts=True)
-        logger.info(f"Ingested {len(threats)} threat intelligence records from {source_name}")
+        logger.info("Ingested %d threat intelligence records from %s", len(threats), source_name)
 
     await sync_to_async(_bulk_insert)()

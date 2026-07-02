@@ -18,7 +18,7 @@ class LighthouseScanner:
   @classmethod
   def scan_url(cls, url, account_id=None):
     try:
-      logger.info(f"[Account: {account_id}] Running Lighthouse scan for {url}...")
+      logger.info("[Account: %s] Running Lighthouse scan for %s...", account_id, url)
 
       # Categories we want Lighthouse to audit
       categories = ["performance", "accessibility", "best-practices", "seo"]
@@ -48,7 +48,7 @@ class LighthouseScanner:
           "seo": categories_result.get("seo", {}).get("score", 0) * 100,
         }
 
-        logger.info(f"Scan complete for {url}: {scores}")
+        logger.info("Scan complete for %s: %s", url, scores)
         return scores
       elif response.status_code == 429:
         logger.warning(f"Lighthouse API quota exceeded (429) for {url}. Skipping scan.")

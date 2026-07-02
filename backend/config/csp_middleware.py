@@ -49,7 +49,6 @@ class ContentSecurityPolicyMiddleware:
         "frame-src 'self' https://*.firebaseapp.com;"
       )
       response["Content-Security-Policy"] = csp_policy.strip()
-      response["X-Frame-Options"] = "SAMEORIGIN"
       response["X-Content-Type-Options"] = "nosniff"
       response["X-XSS-Protection"] = "1; mode=block"
       response["Referrer-Policy"] = "strict-origin-when-cross-origin"

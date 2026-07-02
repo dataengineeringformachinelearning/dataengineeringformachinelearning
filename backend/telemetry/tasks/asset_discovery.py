@@ -27,7 +27,7 @@ class AssetDiscoveryScanner:
     try:
       # Assuming hostname provides the target URL
       url = f"https://{asset.hostname}"
-      logger.info(f"Initiating asset discovery scan for: {url}")
+      logger.info("Initiating asset discovery scan for: %s", url)
 
       # Wappalyzer's WebPage generation and scanning is synchronous,
       # so we run it in a separate thread to avoid blocking the event loop.
@@ -43,7 +43,7 @@ class AssetDiscoveryScanner:
       results = await asyncio.to_thread(_run_scan)
 
       if results:
-        logger.info(f"Discovered technologies for {asset.hostname}: {list(results.keys())}")
+        logger.info("Discovered technologies for %s: %s", asset.hostname, list(results.keys()))
         # Save the raw results to the asset metadata
         await sync_to_async(self._save_results)(asset, results)
 

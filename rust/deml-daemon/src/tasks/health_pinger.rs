@@ -112,7 +112,6 @@ async fn tick(
     let results: Vec<PingResult> = futures::future::join_all(probe_futures)
         .await
         .into_iter()
-        .flatten()
         .collect();
 
     let n = results.len();
@@ -168,7 +167,7 @@ async fn fetch_services(pool: &PgPool) -> Result<Vec<MonitoredService>> {
 
 // ── HTTP probe ────────────────────────────────────────────────────────────────
 
-async fn probe_service(client: &Client, svc: MonitoredService) -> Option<PingResult> {
+async fn probe_service(client: &Client, svc: MonitoredService) -> PingResult {
     let start = Instant::now();
     let url = svc.url.trim().to_string();
 
@@ -191,12 +190,12 @@ async fn probe_service(client: &Client, svc: MonitoredService) -> Option<PingRes
 
     let response_time_ms = start.elapsed().as_millis() as u64;
 
-    Some(PingResult {
+    PingResult {
         url,
         status_code,
         response_time_ms,
         is_active,
         account_id: svc.account_id,
         is_platform: svc.is_platform,
-    })
+    }
 }

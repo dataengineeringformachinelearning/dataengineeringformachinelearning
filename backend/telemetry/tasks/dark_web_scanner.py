@@ -36,7 +36,7 @@ class DarkWebScanner:
   def check_hibp_breaches(cls, account, account_id=None):
     """Check Have I Been Pwned for an email account."""
     try:
-      logger.info(f"[Account: {account_id}] Checking HIBP for {account}...")
+      logger.info("[Account: %s] Checking HIBP for %s...", account_id, account)
       url = f"https://haveibeenpwned.com/api/v3/breachedaccount/{account}"
       headers = {"User-Agent": "DataEngineeringForMachineLearning-OSINT"}
       response = requests.get(url, headers=headers, timeout=10)
@@ -54,7 +54,7 @@ class DarkWebScanner:
           )
         return breaches
       elif response.status_code == 404:
-        logger.info(f"No breaches found for {account}.")
+        logger.info("No breaches found for %s.", account)
         return []
       else:
         logger.error(f"HIBP API error: {response.status_code}")
@@ -71,7 +71,7 @@ class DarkWebScanner:
   def search_ahmia(cls, keyword, account_id=None):
     """Search Ahmia (Tor search engine) for a keyword over the Tor proxy."""
     try:
-      logger.info(f"[Account: {account_id}] Searching Dark Web for '{keyword}' via Tor...")
+      logger.info("[Account: %s] Searching Dark Web for '%s' via Tor...", account_id, keyword)
       url = (
         f"http://juhanurmihxlp77nkq76byazcldy2hlmovfu2epvl5ankdibsot4csyd.onion/search/?q={keyword}"
       )
@@ -79,7 +79,7 @@ class DarkWebScanner:
       response = requests.get(url, proxies=cls.proxies(), timeout=30)  # nosemgrep
 
       if response.status_code == 200:
-        logger.info(f"Successfully reached Ahmia for keyword '{keyword}'.")
+        logger.info("Successfully reached Ahmia for keyword '%s'.", keyword)
         if account_id:
           cls._save_threat(
             account_id,

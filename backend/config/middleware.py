@@ -62,7 +62,7 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
         # Set an unusable password since authentication is offloaded to Firebase
         user.set_unusable_password()
         user.save()
-        logger.info(f"Created Django user for Firebase UID: {uid}")
+        logger.info("Created Django user for Firebase UID: %s", uid)
 
       # Ensure user profile and role exists
       from monitor.models import UserProfile
@@ -73,7 +73,7 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
           profile.role = "Security Admin"
         else:
           profile.role = "Operator"
-        logger.info(f"Created user profile with role: {profile.role} for user: {user.username}")
+        logger.info("Created user profile with role: %s for user: %s", profile.role, user.username)
 
       # Sync linked_emails
       identities = decoded_token.get("firebase", {}).get("identities", {})
@@ -106,8 +106,7 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
       request.firebase_token = decoded_token
 
     except Exception as e:
-      logger.exception(f"Firebase token verification failed: {e}")
+      logger.exception("Firebase auth verification failed (type=%s)", type(e).__name__)
       # If token verification fails, request.user remains AnonymousUser
-      pass
 
     return None

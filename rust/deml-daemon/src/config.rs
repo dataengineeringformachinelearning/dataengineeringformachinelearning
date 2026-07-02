@@ -1,6 +1,6 @@
 use std::env;
 
-    /// Runtime configuration loaded entirely from environment variables.
+/// Runtime configuration loaded entirely from environment variables.
 /// All fields match the env vars already defined in docker-compose.yml and Railway.
 #[derive(Clone, Debug)]
 pub struct Config {
