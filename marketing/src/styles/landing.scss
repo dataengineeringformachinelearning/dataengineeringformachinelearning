@@ -181,7 +181,7 @@ a.cta-button {
     line-height: 1;
     margin: 0;
     padding: 0;
-    overflow: visible;
+    overflow: hidden;
     // Neutralise ligature-font baseline shift (affects 'monitoring').
     vertical-align: middle;
   }

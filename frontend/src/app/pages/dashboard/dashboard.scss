@@ -94,6 +94,7 @@
     line-height: 1;
     flex: 0 0 auto;
     margin: 0;
+    overflow: hidden;
     // Force ligature font metrics to baseline — fixes extra gap on 'monitoring' glyph.
     vertical-align: middle;
   }
@@ -142,9 +143,19 @@
 
 .overview-grid {
   grid-template-columns: 1fr;
+  grid-template-areas:
+    'setup'
+    'health'
+    'kpis'
+    'threats'
+    'metrics';
 
   @media (min-width: 600px) {
     grid-template-columns: repeat(2, 1fr);
+    grid-template-areas:
+      'setup setup'
+      'health kpis'
+      'threats metrics';
   }
 
   @media (min-width: 900px) {
