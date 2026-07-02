@@ -1,71 +1,38 @@
-<!-- Floating Action Button -->
-<button class="fab-button" (click)="toggleModal()" aria-label="Report Issue">
-  <flux-app-icon name="bug_report" hostClass="fab-icon" />
-</button>
+<flux-fab icon="alert-triangle" label="Report Issue" (pressed)="toggleModal()" />
 
-<!-- Modal Overlay -->
-@if (isOpen()) {
-<div class="modal-overlay" (click)="toggleModal()" tabindex="0" (keydown.enter)="toggleModal()">
-  <div
-    class="modal-content"
-    (click)="$event.stopPropagation()"
-    tabindex="0"
-    (keydown.enter)="$event.stopPropagation()"
-  >
-    <div class="modal-header">
-      <div class="title-wrapper">
-        <flux-app-icon name="report_problem" hostClass="header-icon" />
-        <h3>Report an Issue</h3>
-      </div>
-      <button class="close-btn" (click)="toggleModal()">
-        <flux-app-icon name="close" />
-      </button>
-    </div>
-    <div class="modal-body">
-      <p class="helper-text">
-        Describe what went wrong. Diagnostic info (like recent errors) will be automatically
-        attached to assist in resolving the issue.
-      </p>
-      <textarea
-        id="issue-description-input"
-        [(ngModel)]="issueDescription"
-        placeholder="E.g., The chart failed to load when the refresh button was clicked..."
-        rows="5"
-        [disabled]="isSubmitting()"
-        aria-label="Describe what went wrong"
-      >
-      </textarea>
-      @if (submissionStatus() === 'success') {
-      <div class="status-msg success" role="status">
-        <flux-app-icon name="check_circle" hostClass="status-icon" />
-        <span>Issue reported successfully!</span>
-      </div>
-      } @if (submissionStatus() === 'error') {
-      <div class="status-msg error" role="alert">
-        <flux-app-icon name="error" hostClass="status-icon" />
-        <span>Failed to report issue. Please try again.</span>
-      </div>
-      }
-    </div>
-    <div class="modal-footer">
-      <button class="btn-cancel" (click)="toggleModal()" [disabled]="isSubmitting()">
-        <flux-app-icon name="cancel" hostClass="btn-icon" />
-        <span>Cancel</span>
-      </button>
-      <button
-        class="btn-submit"
-        (click)="submitIssue()"
-        [disabled]="isSubmitting() || !issueDescription().trim()"
-      >
-        @if (!isSubmitting()) {
-        <flux-app-icon name="send" hostClass="btn-icon" />
-        } @if (!isSubmitting()) {
-        <span>Submit</span>
-        } @if (isSubmitting()) {
-        <span class="spinner"></span>
-        }
-      </button>
-    </div>
+<flux-modal [open]="isOpen()" (openChange)="isOpen.set($event)" heading="Report an Issue">
+  <flux-text>
+    Describe what went wrong. Diagnostic info (like recent errors) will be automatically attached to
+    assist in resolving the issue.
+  </flux-text>
+
+  <flux-textarea
+    [ngModel]="issueDescription()"
+    (ngModelChange)="issueDescription.set($event)"
+    placeholder="E.g., The chart failed to load when the refresh button was clicked..."
+    [rows]="5"
+    [disabled]="isSubmitting()"
+    label="Issue description"
+  />
+
+  @if (submissionStatus() === 'success') {
+  <flux-callout tone="success" heading="Issue reported successfully!" />
+  } @if (submissionStatus() === 'error') {
+  <flux-callout tone="danger" heading="Failed to report issue. Please try again." />
+  }
+
+  <div fluxModalActions>
+    <flux-button variant="ghost" icon="x" [disabled]="isSubmitting()" (pressed)="toggleModal()">
+      Cancel
+    </flux-button>
+    <flux-button
+      variant="primary"
+      icon="send"
+      [loading]="isSubmitting()"
+      [disabled]="!issueDescription().trim()"
+      (pressed)="submitIssue()"
+    >
+      Submit
+    </flux-button>
   </div>
-</div>
-}
+</flux-modal>

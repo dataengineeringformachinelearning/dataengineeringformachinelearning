@@ -1,0 +1,291 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.flux-app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  min-height: var(--flux-navbar-height, 64px);
+  background-color: var(--navbar-bg, var(--flux-surface));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--flux-border-strong);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--flux-space-1) var(--flux-space-2);
+  box-sizing: border-box;
+}
+
+.flux-app-header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.flux-app-header-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.flux-app-header-right {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--flux-space-1);
+}
+
+.flux-app-header-center {
+  display: flex;
+  justify-content: center;
+}
+
+.flux-app-header-desktop-nav {
+  display: none;
+  align-items: center;
+  gap: calc(var(--flux-space-1) * 1.33);
+  padding: calc(var(--flux-space-1) / 2) 0;
+}
+
+.flux-app-header-desktop-auth {
+  display: none;
+  align-items: center;
+  gap: var(--flux-space-1);
+}
+
+::ng-deep .flux-app-header-nav-link {
+  position: relative;
+  font-size: var(--flux-font-size) !important;
+  color: var(--nav-link-color, var(--flux-text-muted)) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease !important;
+  border-radius: var(--flux-radius) var(--flux-radius) 0 0 !important;
+  padding: 0 var(--flux-space-2) !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--flux-space-1) !important;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::ng-deep .flux-app-header-nav-link::before {
+  content: '';
+  position: absolute;
+  inset: auto var(--flux-space-2) 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--flux-accent) 80%, transparent),
+    transparent
+  );
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+  pointer-events: none;
+}
+
+::ng-deep .flux-app-header-nav-link:hover {
+  color: var(--flux-text) !important;
+  background-color: color-mix(in srgb, var(--flux-accent) 10%, transparent) !important;
+  transform: translateY(-1px);
+}
+
+::ng-deep .flux-app-header-nav-link:hover::before {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+::ng-deep .flux-app-header-nav-link.active,
+::ng-deep .flux-app-header-nav-link.flux-current {
+  color: var(--flux-text) !important;
+  background-color: color-mix(in srgb, var(--flux-accent) 14%, transparent) !important;
+  box-shadow:
+    inset 0 -2px 0 0 var(--flux-accent),
+    0 0 12px color-mix(in srgb, var(--flux-accent) 18%, transparent) !important;
+}
+
+::ng-deep .flux-app-header-icon-btn {
+  color: var(--flux-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease,
+    background-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::ng-deep .flux-app-header-icon-btn:hover {
+  color: var(--flux-text);
+  transform: rotate(15deg);
+  background-color: color-mix(in srgb, var(--flux-accent) 5%, transparent);
+}
+
+::ng-deep .flux-app-header-icon-btn:focus-visible {
+  outline: var(--flux-ring-width) solid var(--flux-ring);
+  outline-offset: 3px;
+}
+
+::ng-deep .flux-app-header-menu-toggle {
+  display: inline-flex !important;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+}
+
+::ng-deep .flux-app-header-auth-btn {
+  background: var(--color-dark-grey-btn-bg, var(--flux-surface-alt)) !important;
+  color: var(--color-dark-grey-btn-text, var(--flux-text)) !important;
+  font-weight: 600 !important;
+  border-radius: var(--flux-radius-pill) !important;
+  padding: 0 var(--flux-space-2) !important;
+  box-shadow: var(--flux-shadow-sm) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  border: 1px solid var(--flux-border) !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--flux-space-1) !important;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::ng-deep .flux-app-header-auth-btn:hover {
+  transform: translateY(-2px) !important;
+  background-color: var(--flux-accent) !important;
+  border-color: var(--flux-accent) !important;
+  color: var(--flux-accent-content) !important;
+  box-shadow: var(--flux-shadow-md) !important;
+}
+
+.flux-app-header-mobile {
+  display: none;
+  flex-direction: column;
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background-color: var(--flux-surface);
+  box-shadow: var(--flux-shadow-md);
+  border-bottom: 1px solid var(--flux-border);
+  padding: var(--flux-space-2);
+  box-sizing: border-box;
+  z-index: 49;
+  gap: var(--flux-space-1);
+  transform: translateY(-10px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s ease;
+}
+
+.flux-app-header-mobile.flux-open {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  display: flex;
+}
+
+::ng-deep .flux-app-header-mobile-link {
+  width: 100% !important;
+  justify-content: flex-start !important;
+  font-size: var(--flux-font-size) !important;
+  color: var(--flux-text-muted) !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  border-radius: var(--flux-radius) !important;
+  padding: 0 var(--flux-space-2) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: var(--flux-space-1) !important;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+::ng-deep .flux-app-header-mobile-link:hover {
+  color: var(--flux-text) !important;
+  background-color: color-mix(in srgb, var(--flux-accent) 5%, transparent) !important;
+}
+
+::ng-deep .flux-app-header-mobile-link.active,
+::ng-deep .flux-app-header-mobile-link.flux-current {
+  color: var(--flux-text) !important;
+  background-color: color-mix(in srgb, var(--flux-accent) 10%, transparent) !important;
+  box-shadow: inset 0 0 0 1px var(--flux-accent) !important;
+}
+
+::ng-deep .flux-app-header-mobile-divider {
+  height: 1px;
+  background-color: var(--flux-border);
+  margin: var(--flux-space-1) 0;
+}
+
+::ng-deep .flux-app-header-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--flux-accent) 60%, transparent));
+  transition: filter 0.3s ease;
+}
+
+::ng-deep .flux-app-header-brand:hover {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--flux-accent) 90%, transparent));
+}
+
+@media (min-width: 768px) {
+  .flux-app-header-desktop-nav {
+    display: flex;
+  }
+
+  .flux-app-header-desktop-auth {
+    display: flex;
+  }
+
+  ::ng-deep .flux-app-header-menu-toggle {
+    display: none !important;
+  }
+
+  .flux-app-header-mobile {
+    display: none !important;
+  }
+}

@@ -83,6 +83,19 @@ module.exports = defineConfig([
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {
       '@angular-eslint/template/prefer-control-flow': 'off',
+      '@angular-eslint/template/no-inline-styles': 'error',
+    },
+  },
+  {
+    // flux-material and showcase may set dynamic presentation via host bindings.
+    files: [
+      'projects/flux-material/**/*.html',
+      'projects/flux-material/**/*.ts',
+      'projects/flux-material-showcase/**/*.html',
+      'projects/flux-material-showcase/**/*.ts',
+    ],
+    rules: {
+      '@angular-eslint/template/no-inline-styles': 'off',
     },
   },
 ]);

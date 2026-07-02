@@ -1,5 +1,10 @@
 @if (open()) {
-<flux-modal [open]="true" heading="Workspace setup" [dismissible]="false" (openChange)="onOpenChange($event)">
+<flux-modal
+  [open]="true"
+  heading="Workspace setup"
+  [dismissible]="false"
+  (openChange)="onOpenChange($event)"
+>
   <div class="wizard-shell" role="document" aria-labelledby="onboarding-title">
     <div class="wizard-progress">
       <flux-progress [value]="progressPercent()" label="Setup progress" />
@@ -15,8 +20,12 @@
         uptime checks, a status page, and a live dashboard.
       </p>
       <ul class="wizard-benefits">
-        <li><flux-app-icon name="check_circle" [ariaHidden]="true" /> Automatic threat detection</li>
-        <li><flux-app-icon name="check_circle" [ariaHidden]="true" /> Real-time performance analytics</li>
+        <li>
+          <flux-app-icon name="check_circle" [ariaHidden]="true" /> Automatic threat detection
+        </li>
+        <li>
+          <flux-app-icon name="check_circle" [ariaHidden]="true" /> Real-time performance analytics
+        </li>
         <li><flux-app-icon name="check_circle" [ariaHidden]="true" /> Embeddable status widget</li>
       </ul>
     </div>
@@ -41,7 +50,11 @@
         <flux-input [(ngModel)]="newServiceName" placeholder="e.g. API Gateway" />
       </flux-field>
       <flux-field label="Health check URL">
-        <flux-input [(ngModel)]="newServiceUrl" placeholder="https://api.example.com/health" icon="globe" />
+        <flux-input
+          [(ngModel)]="newServiceUrl"
+          placeholder="https://api.example.com/health"
+          icon="globe"
+        />
       </flux-field>
     </div>
     } @case ('publish') {
@@ -54,7 +67,12 @@
       <div class="widget-preview">
         <p class="widget-label">Optional: embed this widget on your site</p>
         <pre class="widget-code">{{ getWidgetCode() }}</pre>
-        <flux-button variant="outline" type="button" [icon]="copiedWidget() ? 'check' : 'copy'" (pressed)="copyWidget()">
+        <flux-button
+          variant="outline"
+          type="button"
+          [icon]="copiedWidget() ? 'check' : 'copy'"
+          (pressed)="copyWidget()"
+        >
           {{ copiedWidget() ? 'Copied' : 'Copy widget code' }}
         </flux-button>
       </div>
@@ -75,7 +93,9 @@
 
     <div class="wizard-actions">
       @if (currentStep() !== 'welcome' && currentStep() !== 'done') {
-      <flux-button variant="ghost" type="button" (pressed)="goBack()" [disabled]="isBusy()">Back</flux-button>
+      <flux-button variant="ghost" type="button" (pressed)="goBack()" [disabled]="isBusy()"
+        >Back</flux-button
+      >
       }
 
       <div class="wizard-actions-right">
@@ -83,20 +103,42 @@
         <flux-button variant="ghost" type="button" (pressed)="skip()">Skip for now</flux-button>
         <flux-button variant="primary" type="button" (pressed)="goNext()">Get started</flux-button>
         } @if (currentStep() === 'site') {
-        <flux-button variant="primary" type="button" (pressed)="createSite()" [loading]="isBusy()" [disabled]="isBusy()">
+        <flux-button
+          variant="primary"
+          type="button"
+          (pressed)="createSite()"
+          [loading]="isBusy()"
+          [disabled]="isBusy()"
+        >
           Create site
         </flux-button>
         } @if (currentStep() === 'endpoint') {
-        <flux-button variant="ghost" type="button" (pressed)="skipEndpoint()" [disabled]="isBusy()">Skip</flux-button>
-        <flux-button variant="primary" type="button" (pressed)="addEndpoint()" [loading]="isBusy()" [disabled]="isBusy()">
+        <flux-button variant="ghost" type="button" (pressed)="skipEndpoint()" [disabled]="isBusy()"
+          >Skip</flux-button
+        >
+        <flux-button
+          variant="primary"
+          type="button"
+          (pressed)="addEndpoint()"
+          [loading]="isBusy()"
+          [disabled]="isBusy()"
+        >
           Add endpoint
         </flux-button>
         } @if (currentStep() === 'publish') {
-        <flux-button variant="primary" type="button" (pressed)="saveAndPublish()" [loading]="isBusy()" [disabled]="isBusy()">
+        <flux-button
+          variant="primary"
+          type="button"
+          (pressed)="saveAndPublish()"
+          [loading]="isBusy()"
+          [disabled]="isBusy()"
+        >
           Finish setup
         </flux-button>
         } @if (currentStep() === 'done') {
-        <flux-button variant="primary" type="button" (pressed)="finish()">Open dashboard</flux-button>
+        <flux-button variant="primary" type="button" (pressed)="finish()"
+          >Open dashboard</flux-button
+        >
         }
       </div>
     </div>

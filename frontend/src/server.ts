@@ -116,11 +116,7 @@ app.get('/auth-status', async (req, res) => {
         );
     }
   } catch (e) {
-    res
-      .status(200)
-      .send(
-        '<!doctype html><html><body><div hidden>Auth status</div></body></html>',
-      );
+    res.status(200).send('<!doctype html><html><body><div hidden>Auth status</div></body></html>');
   }
 });
 

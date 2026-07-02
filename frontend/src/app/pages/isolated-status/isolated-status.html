@@ -312,12 +312,11 @@
           <div class="timeline-bars-wrapper-standalone">
             <div class="timeline-bars">
               @for (day of (page.uptime_history || []); track day; let idx = $index) {
-              <div
+              <flux-uptime-bar
                 class="timeline-bar-outlined"
-                [ngClass]="{'bar-warning': day.status === 'partial_outage', 'bar-danger': day.status === 'major_outage', 'bar-nodata': day.status === 'no_data'}"
-                [style.height]="day.status === 'major_outage' ? '40%' : (day.status === 'partial_outage' ? '70%' : '100%')"
+                [status]="day.status === 'no_data' ? 'no_data' : day.status"
                 [title]="day.status === 'major_outage' ? 'Major Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'partial_outage' ? 'Partial Outage (' + (day.uptime | number:'1.1-2') + '%)' : (day.status === 'no_data' ? 'No telemetry data' : '100% operational'))"
-              ></div>
+              />
               }
             </div>
           </div>
@@ -370,12 +369,7 @@
             </p>
             <div class="promo-actions">
               @if (!authService.isAuthenticated()) {
-              <flux-button
-                variant="primary"
-                type="button"
-                icon="plus"
-                (pressed)="login()"
-              >
+              <flux-button variant="primary" type="button" icon="plus" (pressed)="login()">
                 Create Your Status Page
               </flux-button>
               } @if (authService.isAuthenticated()) {

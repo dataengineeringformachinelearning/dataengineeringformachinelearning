@@ -1,0 +1,51 @@
+// Angular Material M3 system variables — mapped to THEME.md palette only.
+// Used with mat.theme(..., use-system-variables: true) in the Angular app.
+
+html[data-theme='dark'] {
+  --mat-sys-primary: var(--crayola-blue);
+  --mat-sys-on-primary: var(--white);
+  --mat-sys-primary-container: var(--blue-bell);
+  --mat-sys-on-primary-container: var(--black);
+  --mat-sys-secondary: var(--blue-bell);
+  --mat-sys-on-secondary: var(--black);
+  --mat-sys-tertiary: var(--golden-pollen);
+  --mat-sys-on-tertiary: var(--black);
+  --mat-sys-error: var(--carrot-orange);
+  --mat-sys-on-error: var(--white);
+  --mat-sys-surface: var(--color-surface);
+  --mat-sys-on-surface: var(--white);
+  --mat-sys-surface-variant: var(--color-surface-variant);
+  --mat-sys-on-surface-variant: var(--text-muted);
+  --mat-sys-background: var(--bg-color);
+  --mat-sys-on-background: var(--white);
+  --mat-sys-outline: var(--border);
+  --mat-sys-outline-variant: var(--border-layout);
+  --mat-sys-inverse-surface: var(--white);
+  --mat-sys-inverse-on-surface: var(--jet-black);
+  --mat-sys-inverse-primary: var(--crayola-blue);
+}
+
+html[data-theme='light'],
+:root {
+  --mat-sys-primary: var(--crayola-blue);
+  --mat-sys-on-primary: var(--white);
+  --mat-sys-primary-container: var(--blue-bell);
+  --mat-sys-on-primary-container: var(--white);
+  --mat-sys-secondary: var(--crayola-blue);
+  --mat-sys-on-secondary: var(--white);
+  --mat-sys-tertiary: var(--golden-pollen);
+  --mat-sys-on-tertiary: var(--jet-black);
+  --mat-sys-error: var(--carrot-orange);
+  --mat-sys-on-error: var(--white);
+  --mat-sys-surface: var(--color-surface);
+  --mat-sys-on-surface: var(--jet-black);
+  --mat-sys-surface-variant: var(--color-surface-variant);
+  --mat-sys-on-surface-variant: var(--text-muted);
+  --mat-sys-background: var(--white);
+  --mat-sys-on-background: var(--jet-black);
+  --mat-sys-outline: var(--border);
+  --mat-sys-outline-variant: var(--border-layout);
+  --mat-sys-inverse-surface: var(--jet-black);
+  --mat-sys-inverse-on-surface: var(--white);
+  --mat-sys-inverse-primary: var(--blue-bell);
+}

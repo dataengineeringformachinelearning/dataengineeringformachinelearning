@@ -164,6 +164,11 @@ mark.deml-search-highlight {
   color: var(--text-muted, #999);
 }
 .deml-no-results p { margin: 0 0 8px; color: var(--text-color, #fff); }
+.deml-no-results-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
 .deml-search-footer {
   display: flex;
   padding: 8px 24px;
@@ -313,7 +318,7 @@ function renderSearch() {
     if (currentResults.length === 0 && inputEl.value.trim() !== "") {
       bodyEl.innerHTML = `
         <div class="deml-no-results">
-          <span class="material-icons" style="font-size: 40px; margin-bottom: 16px; opacity: 0.5;">search_off</span>
+          <span class="material-icons deml-no-results-icon">search_off</span>
           <p>No results found for "<strong>${inputEl.value}</strong>"</p>
         </div>`;
       return;

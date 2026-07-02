@@ -299,6 +299,24 @@
     align-items: flex-start;
     gap: 9px;
     min-width: 0;
+
+    &.flux-stat-alert {
+      border-color: var(--color-error);
+
+      .stat-value {
+        color: var(--color-error);
+      }
+    }
+  }
+
+  #originMap:not(.flux-map-ready) {
+    position: absolute;
+    visibility: hidden;
+  }
+
+  #originMap.flux-map-ready {
+    position: relative;
+    visibility: visible;
   }
 
   .stat-title {

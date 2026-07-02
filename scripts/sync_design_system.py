@@ -17,6 +17,10 @@ def sync_design_system():
   print("Building @deml/design-system...")
   subprocess.run(["npm", "run", "build"], cwd=pkg_dir, check=True)
 
+  frontend_dir = os.path.join(root_dir, "frontend")
+  print("Building @deml/flux-material CSS bundle...")
+  subprocess.run(["npm", "run", "build:flux-material-css"], cwd=frontend_dir, check=True)
+
   dist_tokens = os.path.join(dist_dir, "design-tokens.css")
   dist_components = os.path.join(dist_dir, "deml-components.css")
 
@@ -55,6 +59,14 @@ def sync_design_system():
     os.path.join(root_dir, "marketing", "public", "assets", "deml-components.css"),
   ]
 
+  flux_css_src = os.path.join(frontend_dir, "dist", "flux-material-css", "flux-material.css")
+  flux_css_targets = [
+    os.path.join(root_dir, "frontend", "src", "assets", "flux-material.css"),
+    os.path.join(root_dir, "frontend", "public", "assets", "flux-material.css"),
+    os.path.join(root_dir, "backend", "static", "flux-material.css"),
+    os.path.join(root_dir, "marketing", "public", "assets", "flux-material.css"),
+  ]
+
   for target in token_targets:
     os.makedirs(os.path.dirname(target), exist_ok=True)
     shutil.copy2(dist_tokens, target)
@@ -63,13 +75,21 @@ def sync_design_system():
     os.makedirs(os.path.dirname(target), exist_ok=True)
     shutil.copy2(dist_components, target)
 
+  if not os.path.isfile(flux_css_src):
+    print(f"Expected flux-material CSS missing: {flux_css_src}", file=sys.stderr)
+    sys.exit(1)
+
+  for target in flux_css_targets:
+    os.makedirs(os.path.dirname(target), exist_ok=True)
+    shutil.copy2(flux_css_src, target)
+
   scss_src = os.path.join(pkg_dir, "src")
   scss_target = os.path.join(root_dir, "frontend", "src", "design-system")
   if os.path.isdir(scss_src):
     shutil.copytree(scss_src, scss_target, dirs_exist_ok=True)
 
   print("Successfully synced design system to:")
-  for target in token_targets + component_targets:
+  for target in token_targets + component_targets + flux_css_targets:
     print(f" - {target}")
   if os.path.isdir(scss_target):
     print(f" - {scss_target}")

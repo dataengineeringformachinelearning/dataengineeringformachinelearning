@@ -1,6 +1,5 @@
 from django.contrib.sitemaps.views import sitemap
 from django.urls import converters, path
-
 from telemetry.views import telemetry_home
 
 from . import views

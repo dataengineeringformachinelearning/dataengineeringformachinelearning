@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { FluxIcon } from '@deml/flux-material';
 
-/** Official DEML brand mark — Material Icons `analytics` ligature (not flux SVG). */
+/** Official DEML brand mark via flux-material icons. */
 @Component({
   selector: 'deml-brand-logo',
+  imports: [FluxIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'aria-hidden': 'true',
+    '[class]': 'hostClass()',
   },
-  template: `<span class="material-icons deml-brand-logo-glyph" [class]="hostClass()">analytics</span>`,
+  template: `<flux-icon name="bar-chart" [size]="size()" />`,
   styles: [
     `
       :host {
@@ -17,23 +20,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         flex-shrink: 0;
         line-height: 1;
         vertical-align: middle;
-      }
-      .deml-brand-logo-glyph {
-        font-family: 'Material Icons';
-        font-weight: normal;
-        font-style: normal;
-        line-height: 1;
-        letter-spacing: normal;
-        text-transform: none;
-        display: inline-block;
-        white-space: nowrap;
-        word-wrap: normal;
-        direction: ltr;
-        -webkit-font-smoothing: antialiased;
+        color: var(--flux-accent, var(--color-primary));
       }
     `,
   ],
 })
 export class DemlBrandLogo {
   readonly hostClass = input<string>('brand-icon navbar-logo glowing-icon-sm');
+  readonly size = input<number>(28);
 }

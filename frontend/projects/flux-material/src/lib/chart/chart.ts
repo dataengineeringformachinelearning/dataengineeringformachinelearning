@@ -74,7 +74,11 @@ const truncateLabel = (label: string, max = 10): string =>
     '[class.flux-chart-fill-host]': 'fill()',
   },
   template: `
-    <figure class="flux-chart" [class.flux-chart-fill]="fill()" [class.flux-chart-compact]="compact() && !fill()">
+    <figure
+      class="flux-chart"
+      [class.flux-chart-fill]="fill()"
+      [class.flux-chart-compact]="compact() && !fill()"
+    >
       <svg
         [attr.viewBox]="'0 0 ' + width + ' ' + height()"
         preserveAspectRatio="xMidYMid meet"
@@ -83,10 +87,19 @@ const truncateLabel = (label: string, max = 10): string =>
       >
         @if (kind() === 'donut') {
           @for (slice of donutSlices(); track slice.label) {
-            <path class="flux-chart-donut-slice" [attr.d]="slice.path" [style.fill]="toneVar(slice.tone)" />
+            <path
+              class="flux-chart-donut-slice"
+              [attr.d]="slice.path"
+              [style.fill]="toneVar(slice.tone)"
+            />
           }
           @if (donutSlices().length > 0) {
-            <circle class="flux-chart-donut-hole" [attr.cx]="width / 2" [attr.cy]="plotCy()" r="46" />
+            <circle
+              class="flux-chart-donut-hole"
+              [attr.cx]="width / 2"
+              [attr.cy]="plotCy()"
+              r="46"
+            />
             <text
               class="flux-chart-donut-total"
               [attr.x]="width / 2"
@@ -152,20 +165,20 @@ const truncateLabel = (label: string, max = 10): string =>
             }
           } @else {
             <g clip-path="url(#flux-plot-clip)">
-            @for (path of paths(); track path.name) {
-              @if (showArea()) {
+              @for (path of paths(); track path.name) {
+                @if (showArea()) {
+                  <path
+                    class="flux-chart-area"
+                    [attr.d]="path.area"
+                    [style.fill]="toneVar(path.tone)"
+                  ></path>
+                }
                 <path
-                  class="flux-chart-area"
-                  [attr.d]="path.area"
-                  [style.fill]="toneVar(path.tone)"
+                  class="flux-chart-line"
+                  [attr.d]="path.line"
+                  [style.stroke]="toneVar(path.tone)"
                 ></path>
               }
-              <path
-                class="flux-chart-line"
-                [attr.d]="path.line"
-                [style.stroke]="toneVar(path.tone)"
-              ></path>
-            }
             </g>
           }
         }
@@ -321,9 +334,7 @@ export class FluxChart {
   protected readonly padLeft = PAD_LEFT;
   protected readonly padRight = PAD_RIGHT;
 
-  protected readonly height = computed(() =>
-    this.compact() ? HEIGHT_COMPACT : HEIGHT_DEFAULT,
-  );
+  protected readonly height = computed(() => (this.compact() ? HEIGHT_COMPACT : HEIGHT_DEFAULT));
 
   protected readonly plotBottom = computed(() => this.height() - PAD_BOTTOM);
   protected readonly plotTop = computed(() => PAD_TOP);
@@ -379,8 +390,7 @@ export class FluxChart {
 
     for (let index = 0; index < count; index += step) {
       const x =
-        PAD_LEFT +
-        (count === 1 ? plotWidth / 2 : (index / Math.max(1, count - 1)) * plotWidth);
+        PAD_LEFT + (count === 1 ? plotWidth / 2 : (index / Math.max(1, count - 1)) * plotWidth);
       const text = cats[index] ? truncateLabel(cats[index]) : `${index + 1}`;
       labels.push({ x, y: bottom, text, anchor: 'middle' });
     }
@@ -411,8 +421,7 @@ export class FluxChart {
     return this.series().map(item => {
       const points = item.data.map((value, index) => {
         const x =
-          PAD_LEFT +
-          (index / Math.max(1, item.data.length - 1)) * (WIDTH - PAD_LEFT - PAD_RIGHT);
+          PAD_LEFT + (index / Math.max(1, item.data.length - 1)) * (WIDTH - PAD_LEFT - PAD_RIGHT);
         const y = bottom - ((value - min) / range) * plotHeight;
         return `${x.toFixed(1)},${y.toFixed(1)}`;
       });

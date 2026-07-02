@@ -2,7 +2,7 @@
 @use 'components/a11y' as *;
 @use 'components/badges' as *;
 @use 'components/layout' as *;
-@use 'components/navbar' as *;
+// Navbar styles live in @deml/flux-material (flux-app-header).
 @use 'components/utilities' as *;
 @use 'components/extracted-utilities' as *;
 @use 'components/flux-inspired' as *;

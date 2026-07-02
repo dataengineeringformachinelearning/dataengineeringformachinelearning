@@ -20,10 +20,12 @@ import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
   FluxButton,
+  FluxCallout,
+  FluxCheckbox,
   FluxField,
   FluxInput,
+  FluxPageHeader,
   FluxTextarea,
-  FluxCheckbox,
 } from '@deml/flux-material';
 import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { FormsModule } from '@angular/forms';
@@ -42,10 +44,12 @@ import {
   imports: [
     CommonModule,
     FluxButton,
+    FluxCallout,
+    FluxCheckbox,
     FluxField,
     FluxInput,
+    FluxPageHeader,
     FluxTextarea,
-    FluxCheckbox,
     FluxAppIcon,
     FormsModule,
     RouterModule,

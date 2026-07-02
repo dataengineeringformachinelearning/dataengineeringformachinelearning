@@ -35,7 +35,13 @@
 
   <div class="cta-actions">
     @if (!authService.isAuthenticated()) {
-    <flux-button variant="primary" type="button" class="cta-main-btn" icon="arrow-right" (pressed)="login()">
+    <flux-button
+      variant="primary"
+      type="button"
+      class="cta-main-btn"
+      icon="arrow-right"
+      (pressed)="login()"
+    >
       Get Started
     </flux-button>
     } @if (authService.isAuthenticated()) {

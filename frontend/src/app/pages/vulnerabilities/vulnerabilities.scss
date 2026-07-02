@@ -6,125 +6,6 @@
   color: var(--color-on-background);
 }
 
-.hud-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-
-  @media (min-width: 600px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(12, 1fr);
-  }
-}
-
-.metric-card {
-  display: flex;
-  flex-direction: column;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  padding: 16px 24px;
-  border-radius: 8px;
-  min-width: 0;
-  align-items: flex-end;
-  box-sizing: border-box;
-  box-shadow: var(--shadow-sm);
-
-  @media (min-width: 481px) {
-    min-width: 160px;
-  }
-
-  .metric-label {
-    font-size: 1rem;
-    font-family: 'Inter', monospace;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-  }
-
-  .metric-value {
-    font-size: 2.2rem;
-    font-weight: bold;
-    font-family: 'Inter', monospace;
-    line-height: 1.2;
-  }
-
-  &.warning {
-    border-left: 3px solid var(--color-warning);
-    .metric-value {
-      color: var(--color-warning);
-    }
-  }
-
-  &.critical {
-    border-left: 3px solid var(--crayola-blue);
-    .metric-value {
-      color: var(--crayola-blue);
-    }
-  }
-}
-
-/* Grid Layout */
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--grid-gap);
-  flex: 1;
-  overflow: hidden;
-  min-height: 0;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(12, 1fr);
-  }
-}
-
-.panel-section {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.queue-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.detail-panel {
-  flex: 1;
-}
-
-.panel-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 16px;
-  background-color: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid var(--border);
-
-  .panel-icon {
-    font-size: 1.25rem;
-    color: var(--color-primary);
-  }
-
-  h2 {
-    font-size: 1rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    margin: 0;
-    letter-spacing: 0.05em;
-    flex: 1;
-  }
-
-}
-
 /* Filters */
 .filter-bar {
   padding: 16px;
@@ -236,11 +117,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    mat-icon {
-      font-size: 1rem;
-      width: 1rem;
-      height: 1rem;
-    }
   }
 
   .status-indicator {
@@ -331,11 +207,6 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
-
-  mat-icon {
-    font-size: 1.1rem;
-    color: var(--color-primary);
-  }
 
   h3 {
     font-size: 1rem;
@@ -501,11 +372,6 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
-
-  mat-icon {
-    font-size: 1.1rem;
-    color: var(--color-primary);
-  }
   h3 {
     font-size: 1rem;
     font-weight: bold;
@@ -635,15 +501,6 @@
   border: 1px dashed var(--border);
   border-radius: 8px;
   background-color: color-mix(in srgb, var(--color-success) 2%, transparent);
-
-  mat-icon {
-    font-size: 2.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
-    margin-bottom: 16px;
-    color: var(--color-success);
-    opacity: 0.8;
-  }
 
   .empty-title {
     font-size: 1rem;
@@ -788,12 +645,6 @@
   cursor: pointer;
   white-space: nowrap;
   transition: var(--transition-smooth);
-
-  mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
-  }
 
   &:hover:not(:disabled) {
     border-color: var(--color-primary);
@@ -1039,13 +890,6 @@
     background: color-mix(in srgb, var(--color-primary) 12%, transparent);
     border: 1px solid color-mix(in srgb, var(--color-primary) 28%, transparent);
     margin-bottom: 4px;
-
-    mat-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: var(--color-primary);
-    }
   }
 }
 
@@ -1085,14 +929,6 @@
   padding: 36px 24px;
   text-align: center;
   color: var(--text-muted);
-
-  mat-icon {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
-    color: var(--color-primary);
-    margin-bottom: 12px;
-  }
 
   .empty-title {
     margin: 0 0 8px;

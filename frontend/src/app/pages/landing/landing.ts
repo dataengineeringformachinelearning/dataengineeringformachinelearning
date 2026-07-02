@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { FluxButton } from '@deml/flux-material';
+import { FluxBar, FluxButton } from '@deml/flux-material';
 import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
 
@@ -39,7 +39,11 @@ const CAPABILITIES = [
       { label: 'Uptime', value: '99.97%', trend: 'stable' },
       { label: 'Requests/min', value: '12.4K', trend: 'up' },
     ],
-    link: { href: 'https://dataengineeringformachinelearning.com/documentation/', label: 'View integration docs →', muted: false },
+    link: {
+      href: 'https://dataengineeringformachinelearning.com/documentation/',
+      label: 'View integration docs →',
+      muted: false,
+    },
   },
   {
     tag: 'SECURITY',
@@ -70,10 +74,22 @@ const CAPABILITIES = [
 ] as const;
 
 const SECURITY_PILLARS = [
-  { icon: 'lock', label: 'AES-256-GCM at rest', detail: 'Field-level encryption with KMS rotation' },
-  { icon: 'fingerprint', label: 'UUID isolation', detail: 'No sequential IDs, no cross-tenant leaks' },
+  {
+    icon: 'lock',
+    label: 'AES-256-GCM at rest',
+    detail: 'Field-level encryption with KMS rotation',
+  },
+  {
+    icon: 'fingerprint',
+    label: 'UUID isolation',
+    detail: 'No sequential IDs, no cross-tenant leaks',
+  },
   { icon: 'gpp_maybe', label: 'Behavioral intel', detail: 'ASN, ISP, and biometrics enrichment' },
-  { icon: 'verified_user', label: 'Zero-trust auth', detail: 'Firebase JWT + ABAC on every endpoint' },
+  {
+    icon: 'verified_user',
+    label: 'Zero-trust auth',
+    detail: 'Firebase JWT + ABAC on every endpoint',
+  },
 ] as const;
 
 const INTEGRATIONS = [
@@ -87,7 +103,7 @@ const INTEGRATIONS = [
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [FluxButton, FluxAppIcon, WhitepaperCta],
+  imports: [FluxBar, FluxButton, FluxAppIcon, WhitepaperCta],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

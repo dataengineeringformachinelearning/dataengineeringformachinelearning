@@ -14,7 +14,13 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Title, Meta } from '@angular/platform-browser';
-import { FluxChart, FluxButton, FluxBadge, FluxChartSeries } from '@deml/flux-material';
+import {
+  FluxChart,
+  FluxButton,
+  FluxBadge,
+  FluxChartSeries,
+  FluxRingGauge,
+} from '@deml/flux-material';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 import { SettingsService } from '../../services/settings.service';
@@ -47,6 +53,7 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     FluxChart,
     FluxButton,
     FluxBadge,
+    FluxRingGauge,
     FluxAppIcon,
   ],
   templateUrl: './dashboard.html',

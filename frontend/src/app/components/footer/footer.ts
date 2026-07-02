@@ -1,15 +1,15 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { FluxFooter } from '@deml/flux-material';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 
 const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink],
+  imports: [RouterLink, FluxFooter],
   templateUrl: './footer.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './footer.scss',
 })
 export class Footer {
   private consentService = inject(CookieConsentService);

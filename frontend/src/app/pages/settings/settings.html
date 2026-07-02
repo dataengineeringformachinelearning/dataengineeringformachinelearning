@@ -2,31 +2,27 @@
   <!-- Glow Spheres for Homepage Unity -->
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
-      <header class="hud-header">
-        <div class="title-group">
-          <div class="section-tag-row">
-            <span class="section-tag">Site Setup</span>
-          </div>
-          <h1 class="hud-title">Your Sites</h1>
-          <p class="hud-subtitle">
-            Add monitoring sites, connect endpoints, and embed your status widget. Analytics and
-            threats appear automatically on your dashboard.
-            <a routerLink="/account" class="inline-status-link">Account & billing</a> are managed
-            separately.
-          </p>
-        </div>
-      </header>
+      <flux-page-header tag="Site Setup" title="Your Sites">
+        <p fluxPageHeaderExtra class="hud-subtitle flux-page-header-subtitle">
+          Add monitoring sites, connect endpoints, and embed your status widget. Analytics and
+          threats appear automatically on your dashboard.
+          <a routerLink="/account" class="inline-status-link">Account & billing</a> are managed
+          separately.
+        </p>
+      </flux-page-header>
 
       <div class="settings-stack grid-layout">
         @if (isViewer) {
-        <div class="alert alert-warning alert-viewer-banner col-span-4 col-span-md-12">
-          <flux-app-icon name="lock" />
-          <span
-            ><strong>Read-Only Access:</strong> Your user profile is assigned the
-            <strong>Viewer</strong> role. You cannot perform administrative modifications to status
-            pages, monitored endpoints, incident reports, or integrations.</span
-          >
-        </div>
+        <flux-callout
+          class="alert-viewer-banner col-span-4 col-span-md-12"
+          tone="warning"
+          heading="Read-Only Access"
+          icon="lock"
+        >
+          Your user profile is assigned the <strong>Viewer</strong> role. You cannot perform
+          administrative modifications to status pages, monitored endpoints, incident reports, or
+          integrations.
+        </flux-callout>
         }
 
         <div class="status-card-outlined col-span-4 col-span-md-12">
@@ -185,8 +181,7 @@
                     >
                       @if (!isUpdatingPage()) {
                       <flux-app-icon name="save" />
-                      }
-                      Save Settings
+                      } Save Settings
                     </flux-button>
                   </div>
                 </div>
@@ -237,8 +232,7 @@
                     >
                       @if (!isUpdatingPage()) {
                       <flux-app-icon name="save" />
-                      }
-                      Save Tracking IDs
+                      } Save Tracking IDs
                     </flux-button>
                   </div>
                 </div>
@@ -299,7 +293,9 @@
                 </div>
               </div>
               <div class="panel-section">
-                <h3 class="section-heading"><flux-app-icon name="error_outline" /> Report Incident</h3>
+                <h3 class="section-heading">
+                  <flux-app-icon name="error_outline" /> Report Incident
+                </h3>
                 <div class="incident-form panel-clean">
                   <flux-field label="Incident Title" class="full-width">
                     <flux-input

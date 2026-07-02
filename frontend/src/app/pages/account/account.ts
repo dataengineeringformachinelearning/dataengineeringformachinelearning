@@ -11,12 +11,7 @@ import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import {
-  FluxButton,
-  FluxField,
-  FluxInput,
-  FluxProgress,
-} from '@deml/flux-material';
+import { FluxButton, FluxField, FluxInput, FluxProgress } from '@deml/flux-material';
 import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';

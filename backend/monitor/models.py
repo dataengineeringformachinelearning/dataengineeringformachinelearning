@@ -27,7 +27,9 @@ class StatusPage(models.Model):
   class Meta:
     db_table = "status_pages"
     indexes = [
-      models.Index(fields=["is_platform", "is_published"]),  # common public/private + platform filter
+      models.Index(
+        fields=["is_platform", "is_published"]
+      ),  # common public/private + platform filter
       models.Index(fields=["user", "is_platform"]),  # tenant scoping queries
     ]
 

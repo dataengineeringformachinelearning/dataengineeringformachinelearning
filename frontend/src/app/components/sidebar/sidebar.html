@@ -1,152 +1,156 @@
-<aside
-  class="dashboard-sidebar"
-  [class.collapsed]="isCollapsed()"
-  [class.dragging]="isDragging()"
-  [style.width]="isCollapsed() ? '' : (sidebarWidth() + 'px')"
->
-  @if (!isCollapsed()) {
-  <div class="resize-handle" (mousedown)="startResize($event)"></div>
-  }
-  <div
-    class="sidebar-brand"
-    (click)="toggleCollapse()"
-    tabindex="0"
-    role="button"
-    aria-label="Toggle collapse"
-    (keydown.enter)="toggleCollapse()"
-    (keydown.space)="$event.preventDefault(); toggleCollapse()"
+<flux-app-sidebar [collapsed]="isCollapsed()" [dragging]="isDragging()" [width]="sidebarWidth()">
+  <aside
+    class="dashboard-sidebar"
+    [class.collapsed]="isCollapsed()"
+    [class.dragging]="isDragging()"
   >
-    <deml-brand-logo hostClass="brand-icon" />
-    <h2 class="brand-title">DEML</h2>
-    <div class="collapse-toggle-btn" aria-hidden="true">
-      <flux-app-icon [name]="isCollapsed() ? 'chevron_right' : 'chevron_left'" [ariaHidden]="true" />
+    @if (!isCollapsed()) {
+    <div class="resize-handle" (mousedown)="startResize($event)"></div>
+    }
+    <div
+      class="sidebar-brand"
+      (click)="toggleCollapse()"
+      tabindex="0"
+      role="button"
+      aria-label="Toggle collapse"
+      (keydown.enter)="toggleCollapse()"
+      (keydown.space)="$event.preventDefault(); toggleCollapse()"
+    >
+      <deml-brand-logo hostClass="brand-icon" />
+      <h2 class="brand-title">DEML</h2>
+      <div class="collapse-toggle-btn" aria-hidden="true">
+        <flux-app-icon
+          [name]="isCollapsed() ? 'chevron_right' : 'chevron_left'"
+          [ariaHidden]="true"
+        />
+      </div>
     </div>
-  </div>
 
-  @if (!isCollapsed()) {
-  <div
-    class="sidebar-search sidebar-extracted-1"
-    (click)="openSearchDialog()"
-    tabindex="0"
-    role="button"
-    aria-label="Open search dialog"
-    (keydown.enter)="openSearchDialog()"
-    (keydown.space)="$event.preventDefault(); openSearchDialog()"
-  >
-    <div class="search-wrapper">
-      <flux-app-icon name="search" [ariaHidden]="true" />
-      <span class="sidebar-search-placeholder">Search...</span>
-      <kbd class="search-shortcut">⌘K</kbd>
+    @if (!isCollapsed()) {
+    <div
+      class="sidebar-search sidebar-extracted-1"
+      (click)="openSearchDialog()"
+      tabindex="0"
+      role="button"
+      aria-label="Open search dialog"
+      (keydown.enter)="openSearchDialog()"
+      (keydown.space)="$event.preventDefault(); openSearchDialog()"
+    >
+      <div class="search-wrapper">
+        <flux-app-icon name="search" [ariaHidden]="true" />
+        <span class="sidebar-search-placeholder">Search...</span>
+        <kbd class="search-shortcut">⌘K</kbd>
+      </div>
     </div>
-  </div>
-  }
+    }
 
-  <div class="sidebar-scroll-container">
-    <nav class="sidebar-nav">
-      @if (authService.isAuthenticated()) {
-      <a
-        class="nav-item"
-        routerLink="/dashboard"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Dashboard"
-      >
-        <flux-app-icon name="dashboard" [ariaHidden]="true" />
-        <span class="nav-text">Dashboard</span>
-      </a>
-
-      <a
-        class="nav-item"
-        routerLink="/settings"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Site Setup"
-      >
-        <flux-app-icon name="language" [ariaHidden]="true" />
-        <span class="nav-text">Sites</span>
-      </a>
-
-      <a
-        class="nav-item"
-        routerLink="/account"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Account"
-      >
-        <flux-app-icon name="person" [ariaHidden]="true" />
-        <span class="nav-text">Account</span>
-      </a>
-
-      @if (!isCollapsed() && isSettingsActive()) {
-      <div class="nav-tree-section">
-        <div
-          class="nav-tree-header sidebar-extracted-1"
-          (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
-          tabindex="0"
-          role="button"
-          [attr.aria-expanded]="isYourPagesExpanded()"
-          (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
+    <div class="sidebar-scroll-container">
+      <nav class="sidebar-nav">
+        @if (authService.isAuthenticated()) {
+        <a
+          class="nav-item"
+          routerLink="/dashboard"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          title="Dashboard"
         >
-          <span class="tree-label">Your Pages</span>
-          <flux-app-icon
-            [name]="isYourPagesExpanded() ? 'expand_more' : 'chevron_right'"
-            hostClass="tree-arrow"
-            [ariaHidden]="true"
-          />
-        </div>
-        @if (isYourPagesExpanded()) {
-        <div class="nav-tree-children">
-          @for (page of settingsService.statusPages(); track page) {
-          <span
-            class="tree-child-item"
-            [class.active]="settingsService.selectedPage()?.id === page.id"
-            (click)="settingsService.selectPage(page)"
+          <flux-app-icon name="dashboard" [ariaHidden]="true" />
+          <span class="nav-text">Dashboard</span>
+        </a>
+
+        <a
+          class="nav-item"
+          routerLink="/settings"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          title="Site Setup"
+        >
+          <flux-app-icon name="language" [ariaHidden]="true" />
+          <span class="nav-text">Sites</span>
+        </a>
+
+        <a
+          class="nav-item"
+          routerLink="/account"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          title="Account"
+        >
+          <flux-app-icon name="person" [ariaHidden]="true" />
+          <span class="nav-text">Account</span>
+        </a>
+
+        @if (!isCollapsed() && isSettingsActive()) {
+        <div class="nav-tree-section">
+          <div
+            class="nav-tree-header sidebar-extracted-1"
+            (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
             tabindex="0"
             role="button"
-            (keydown.enter)="settingsService.selectPage(page)"
-            (keydown.space)="$event.preventDefault(); settingsService.selectPage(page)"
+            [attr.aria-expanded]="isYourPagesExpanded()"
+            (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
           >
-            {{ page.title }}
-          </span>
-          } @if (settingsService.statusPages().length === 0) {
-          <span class="tree-child-item empty-state">No pages yet.</span>
+            <span class="tree-label">Your Pages</span>
+            <flux-app-icon
+              [name]="isYourPagesExpanded() ? 'expand_more' : 'chevron_right'"
+              hostClass="tree-arrow"
+              [ariaHidden]="true"
+            />
+          </div>
+          @if (isYourPagesExpanded()) {
+          <div class="nav-tree-children">
+            @for (page of settingsService.statusPages(); track page) {
+            <span
+              class="tree-child-item"
+              [class.active]="settingsService.selectedPage()?.id === page.id"
+              (click)="settingsService.selectPage(page)"
+              tabindex="0"
+              role="button"
+              (keydown.enter)="settingsService.selectPage(page)"
+              (keydown.space)="$event.preventDefault(); settingsService.selectPage(page)"
+            >
+              {{ page.title }}
+            </span>
+            } @if (settingsService.statusPages().length === 0) {
+            <span class="tree-child-item empty-state">No pages yet.</span>
+            }
+            <button class="tree-child-item new-page-btn" (click)="settingsService.selectPage(null)">
+              <flux-app-icon name="add" hostClass="new-page-icon" />
+              New Page
+            </button>
+          </div>
           }
-          <button class="tree-child-item new-page-btn" (click)="settingsService.selectPage(null)">
-            <flux-app-icon name="add" hostClass="new-page-icon" />
-            New Page
-          </button>
         </div>
+        } } @else {
+        <a
+          class="nav-item"
+          routerLink="/explore"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{exact: true}"
+          title="Explore"
+        >
+          <flux-app-icon name="explore" [ariaHidden]="true" />
+          <span class="nav-text">Explore</span>
+        </a>
+
+        }
+      </nav>
+
+      <!-- Dynamic sidebar contents (extra lists) -->
+      <ng-content select="[sidebar-extra]"></ng-content>
+    </div>
+
+    <div class="sidebar-footer">
+      <div
+        class="system-health"
+        [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}"
+        [title]="globalStatus()"
+      >
+        <span class="health-dot"></span>
+        @if (!isCollapsed()) {
+        <span class="health-text">{{ globalStatus() }}</span>
         }
       </div>
-      } } @else {
-      <a
-        class="nav-item"
-        routerLink="/explore"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        title="Explore"
-      >
-        <flux-app-icon name="explore" [ariaHidden]="true" />
-        <span class="nav-text">Explore</span>
-      </a>
-
-      }
-    </nav>
-
-    <!-- Dynamic sidebar contents (extra lists) -->
-    <ng-content select="[sidebar-extra]"></ng-content>
-  </div>
-
-  <div class="sidebar-footer">
-    <div
-      class="system-health"
-      [ngClass]="{'degraded': globalStatus() !== 'All Systems Normal'}"
-      [title]="globalStatus()"
-    >
-      <span class="health-dot"></span>
-      @if (!isCollapsed()) {
-      <span class="health-text">{{ globalStatus() }}</span>
-      }
     </div>
-  </div>
-</aside>
+  </aside>
+</flux-app-sidebar>

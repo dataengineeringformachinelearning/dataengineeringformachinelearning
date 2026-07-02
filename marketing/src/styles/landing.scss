@@ -367,10 +367,17 @@ a.cta-button {
     border-radius: 4px 4px 0 0;
     opacity: 0.85;
     animation: barPulse 3s ease-in-out infinite;
+    height: calc(var(--chart-bar-height, 50) * 1%);
 
     @for $i from 1 through 8 {
       &:nth-child(#{$i}) {
         animation-delay: #{$i * 0.15}s;
+      }
+    }
+
+    @for $h from 40 through 95 {
+      &[data-height='#{$h}'] {
+        --chart-bar-height: #{$h};
       }
     }
   }

@@ -9,6 +9,13 @@ const SCAN_DIRS = [
   path.resolve(__dirname, '../../marketing/src/layouts'),
 ];
 
+// Generated bundles may minify entire files onto one line; property names like
+// max-width must not be mistaken for @media (max-width: …) breakpoints.
+const GENERATED_CSS = /(?:^|\/)(?:flux-material|deml-components|design-tokens)\.css$/;
+
+// Desktop-first breakpoint: @media … (max-width: …) — not layout max-width properties.
+const DESKTOP_FIRST_MEDIA = /@media[^{]*\([^)]*\bmax-width\s*:/i;
+
 function getFiles(dir, fileList = []) {
   const files = fs.readdirSync(dir);
   for (const file of files) {
@@ -18,7 +25,9 @@ function getFiles(dir, fileList = []) {
     if (stat.isDirectory()) {
       getFiles(filePath, fileList);
     } else if (file.endsWith('.css') || file.endsWith('.scss')) {
-      fileList.push(filePath);
+      if (!GENERATED_CSS.test(filePath)) {
+        fileList.push(filePath);
+      }
     }
   }
   return fileList;
@@ -34,7 +43,7 @@ for (const file of files) {
   const lines = content.split('\n');
 
   lines.forEach((line, index) => {
-    if (line.includes('@media') && line.includes('max-width')) {
+    if (DESKTOP_FIRST_MEDIA.test(line)) {
       const relativePath = path.relative(path.resolve(__dirname, '..'), file);
       console.error(`\x1b[31mViolation found in ${relativePath}:${index + 1}\x1b[0m`);
       console.error(`  Line: ${line.trim()}`);

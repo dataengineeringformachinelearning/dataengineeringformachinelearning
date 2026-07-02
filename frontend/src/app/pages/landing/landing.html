@@ -28,7 +28,12 @@
         <flux-button variant="primary" href="/login" icon="arrow-right" class="cta-main">
           Get Started in 5 Minutes
         </flux-button>
-        <flux-button variant="subtle" href="/status/platform-status" icon="bar-chart" class="cta-secondary">
+        <flux-button
+          variant="subtle"
+          href="/status/platform-status"
+          icon="bar-chart"
+          class="cta-secondary"
+        >
           See Live Security Posture
         </flux-button>
       </div>
@@ -50,13 +55,19 @@
           </div>
           <div class="mockup-main">
             <div class="mockup-gauges">
-              <div class="mockup-gauge"><span class="gauge-label">Threat</span><span class="gauge-val">12%</span></div>
-              <div class="mockup-gauge primary"><span class="gauge-label">CES</span><span class="gauge-val">94</span></div>
-              <div class="mockup-gauge"><span class="gauge-label">Stability</span><span class="gauge-val">99%</span></div>
+              <div class="mockup-gauge">
+                <span class="gauge-label">Threat</span><span class="gauge-val">12%</span>
+              </div>
+              <div class="mockup-gauge primary">
+                <span class="gauge-label">CES</span><span class="gauge-val">94</span>
+              </div>
+              <div class="mockup-gauge">
+                <span class="gauge-label">Stability</span><span class="gauge-val">99%</span>
+              </div>
             </div>
             <div class="mockup-chart">
               @for (h of [45, 72, 58, 85, 63, 91, 78, 55]; track $index) {
-              <div class="chart-bar" [style.height.%]="h"></div>
+              <flux-bar class="chart-bar" [height]="h" />
               }
             </div>
             <div class="mockup-stats-row">
@@ -76,16 +87,16 @@
       <h2 id="quick-start-title">Up and Running in Four Steps</h2>
       <p>No sprawling setup guides. Connect, observe, and act — the platform handles the rest.</p>
     </header>
-    <ol class="quick-start-steps">
+    <div class="quick-start-steps" role="list">
       @for (item of quickStart; track item.step) {
-      <li class="quick-start-step">
+      <div class="quick-start-step" role="listitem">
         <span class="step-number" aria-hidden="true">{{ item.step }}</span>
         <flux-app-icon [name]="item.icon" hostClass="step-icon" [ariaHidden]="true" />
         <h3>{{ item.title }}</h3>
         <p>{{ item.description }}</p>
-      </li>
+      </div>
       }
-    </ol>
+    </div>
   </section>
 
   <section class="integrations-strip" aria-label="Integrates with modern infrastructure">
@@ -155,19 +166,17 @@
     <header class="security-pillars-header">
       <span class="section-tag">Defense in Depth</span>
       <h2 id="security-pillars-title">Security That Works While You Sleep</h2>
-      <p>
-        Every layer — from ingestion to projection — is encrypted, isolated, and audited.
-      </p>
+      <p>Every layer — from ingestion to projection — is encrypted, isolated, and audited.</p>
     </header>
-    <ul class="security-pillars-grid">
+    <div class="security-pillars-grid" role="list">
       @for (pillar of securityPillars; track pillar.label) {
-      <li class="security-pillar">
+      <div class="security-pillar" role="listitem">
         <flux-app-icon [name]="pillar.icon" [ariaHidden]="true" />
         <strong>{{ pillar.label }}</strong>
         <span>{{ pillar.detail }}</span>
-      </li>
+      </div>
       }
-    </ul>
+    </div>
   </section>
 
   <section class="pricing-showcase" aria-labelledby="pricing-title">
@@ -196,9 +205,7 @@
           <li><flux-app-icon name="check" [ariaHidden]="true" /> Advanced Threat Detection</li>
           <li><flux-app-icon name="check" [ariaHidden]="true" /> Priority Support</li>
         </ul>
-        <flux-button variant="primary" href="/login?action=checkout">
-          Upgrade to Pro
-        </flux-button>
+        <flux-button variant="primary" href="/login?action=checkout"> Upgrade to Pro </flux-button>
       </div>
     </div>
   </section>
@@ -212,7 +219,9 @@
       <span class="section-tag">Public Directory</span>
       <h2 id="explore-band-title">Explore Live Status Pages</h2>
       <p>Browse real-time status cards published by tenants across the platform.</p>
-      <flux-button variant="primary" href="/explore" icon="globe">Browse Status Directory</flux-button>
+      <flux-button variant="primary" href="/explore" icon="globe"
+        >Browse Status Directory</flux-button
+      >
     </div>
   </section>
 </div>

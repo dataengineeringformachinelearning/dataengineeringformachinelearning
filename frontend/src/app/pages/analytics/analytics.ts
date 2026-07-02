@@ -13,11 +13,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import {
-  FluxChart,
-  FluxBadge,
-  FluxChartSeries,
-} from '@deml/flux-material';
+import { FluxChart, FluxBadge, FluxChartSeries, FluxGaugeArc } from '@deml/flux-material';
 import { ThemeService } from '../../services/theme.service';
 import {
   UnifiedSelect,
@@ -44,6 +40,7 @@ import * as L from 'leaflet';
     UnifiedSelect,
     FluxChart,
     FluxBadge,
+    FluxGaugeArc,
     FluxAppIcon,
   ],
   templateUrl: './analytics.html',
@@ -93,9 +90,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   endpointSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Calls', []));
   topRegionsSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Requests', [], 'warning'));
   threatSeveritySegments = signal<FluxDonutSegment[]>([]);
-  securityAlertsSeries = signal<FluxChartSeries[]>(
-    toFluxBarSeries('Anomalies', [], 'warning'),
-  );
+  securityAlertsSeries = signal<FluxChartSeries[]>(toFluxBarSeries('Anomalies', [], 'warning'));
 
   latencyCategories = signal<string[]>([]);
   frequencyCategories = signal<string[]>([]);

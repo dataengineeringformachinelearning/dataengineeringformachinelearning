@@ -45,14 +45,7 @@
               <flux-app-icon name="security" />
             </div>
             <div class="gauge-wrapper threat-gauge">
-              <svg aria-hidden="true" class="gauge-svg theme-amber" viewBox="0 0 100 60">
-                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
-                <path
-                  class="gauge-fill"
-                  d="M 10 50 A 40 40 0 0 1 90 50"
-                  [style.stroke-dasharray]="getGaugeStroke(threatLevel, 125.66)"
-                />
-              </svg>
+              <flux-gauge-arc class="theme-amber" tone="amber" [value]="threatLevel" />
               <div class="gauge-center-text threat-text">
                 <flux-app-icon name="warning" hostClass="gauge-inner-icon" />
                 <span class="unit">DETECTED</span>
@@ -74,14 +67,7 @@
               <flux-app-icon name="analytics" />
             </div>
             <div class="gauge-wrapper main-gauge">
-              <svg aria-hidden="true" class="gauge-svg theme-red" viewBox="0 0 100 60">
-                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
-                <path
-                  class="gauge-fill"
-                  d="M 10 50 A 40 40 0 0 1 90 50"
-                  [style.stroke-dasharray]="getGaugeStroke(cesLevel, 125.66)"
-                />
-              </svg>
+              <flux-gauge-arc class="theme-red" tone="danger" [value]="cesLevel" />
               <div class="gauge-center-text main-text">
                 <flux-app-icon name="stars" hostClass="gauge-inner-icon" />
                 <span class="unit">SCORE</span>
@@ -101,14 +87,7 @@
               <flux-app-icon name="health_and_safety" />
             </div>
             <div class="gauge-wrapper stability-gauge">
-              <svg aria-hidden="true" class="gauge-svg theme-primary" viewBox="0 0 100 60">
-                <path class="gauge-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
-                <path
-                  class="gauge-fill"
-                  d="M 10 50 A 40 40 0 0 1 90 50"
-                  [style.stroke-dasharray]="getGaugeStroke(stabilityLevel, 125.66)"
-                />
-              </svg>
+              <flux-gauge-arc class="theme-primary" tone="primary" [value]="stabilityLevel" />
               <div class="gauge-center-text stability-text">
                 <flux-app-icon name="monitor_heart" hostClass="gauge-inner-icon" />
                 <span class="unit">UPTIME</span>
@@ -189,20 +168,13 @@
           </div>
           <span class="stat-value u-style-324768">{{ (totalRequests || 0) | number }}</span>
         </div>
-        <div
-          class="ml-stat-panel"
-          [style.border-color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-        >
+        <div class="ml-stat-panel" [class.flux-stat-alert]="activeIncidents > 0">
           <div class="stat-info">
             <div>
               <span class="stat-title">ACTIVE INCIDENTS</span>
             </div>
           </div>
-          <span
-            class="stat-value u-style-324768"
-            [style.color]="activeIncidents > 0 ? 'var(--color-error)' : ''"
-            >{{ activeIncidents || 0 }}</span
-          >
+          <span class="stat-value u-style-324768">{{ activeIncidents || 0 }}</span>
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -294,8 +266,7 @@
             <div
               id="originMap"
               class="u-style-2aad06"
-              [style.position]="originMapData.length > 0 ? 'relative' : 'absolute'"
-              [style.visibility]="originMapData.length > 0 ? 'visible' : 'hidden'"
+              [class.flux-map-ready]="originMapData.length > 0"
             ></div>
             @if (originMapData.length === 0) {
             <div class="empty-chart-state">
@@ -370,9 +341,7 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Counts per Endpoint</div>
-            <div class="chart-custom-value">
-              {{ endpointSeries()[0]?.data?.length || 0 }} APIs
-            </div>
+            <div class="chart-custom-value">{{ endpointSeries()[0]?.data?.length || 0 }} APIs</div>
             <div class="chart-custom-trend">{{ endpointTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">

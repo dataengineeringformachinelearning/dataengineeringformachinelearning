@@ -15,7 +15,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { FluxButton } from '@deml/flux-material';
+import { FluxBadge, FluxButton, FluxPageHeader } from '@deml/flux-material';
 import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { RouterModule, Router } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
@@ -30,7 +30,9 @@ import { timeout } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
+    FluxBadge,
     FluxButton,
+    FluxPageHeader,
     FluxAppIcon,
     RouterModule,
     Sidebar,
@@ -57,6 +59,14 @@ export class Status implements OnInit {
   isLoading = signal<boolean>(true);
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
+
+  announcementTone(severity?: string | null): 'accent' | 'warning' | 'danger' | 'muted' {
+    const key = (severity || 'info').toLowerCase();
+    if (key === 'critical' || key === 'error' || key === 'danger') return 'danger';
+    if (key === 'warning') return 'warning';
+    if (key === 'info' || key === 'primary') return 'accent';
+    return 'muted';
+  }
 
   mockPage: StatusPageData = {
     id: 'mock-id',

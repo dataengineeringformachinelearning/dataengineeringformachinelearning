@@ -5,14 +5,13 @@ import {
   signal,
   ChangeDetectorRef,
   HostListener,
-  ElementRef,
-  ViewChild,
   AfterViewInit,
   NgZone,
   computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { FluxBadge, FluxSearchPalette } from '@deml/flux-material';
 import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 import { FluxDialogService } from '../../services/flux-dialog.service';
 import { OramaSearchService, SearchItem } from '../../services/orama-search.service';
@@ -21,9 +20,8 @@ import { SettingsService } from '../../services/settings.service';
 @Component({
   selector: 'app-search-dialog',
   standalone: true,
-  imports: [CommonModule, RouterModule, FluxAppIcon],
+  imports: [CommonModule, RouterModule, FluxSearchPalette, FluxBadge, FluxAppIcon],
   templateUrl: './search-dialog.html',
-  styleUrl: './search-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchDialog implements AfterViewInit {
@@ -40,24 +38,17 @@ export class SearchDialog implements AfterViewInit {
   searchResults = signal<SearchItem[]>([]);
   selectedIndex = signal<number>(0);
 
-  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
-
   ngAfterViewInit() {
-    setTimeout(() => {
-      if (this.open() && this.searchInput) {
-        this.searchInput.nativeElement.focus();
-      }
-    }, 100);
+    // Focus is handled by flux-search-palette when open.
   }
 
-  async onSearch(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const query = input.value;
+  protected async onQueryChange(query: string): Promise<void> {
     this.searchQuery.set(query);
     this.selectedIndex.set(0);
 
     if (!query.trim()) {
       this.searchResults.set([]);
+      this.cdr.markForCheck();
       return;
     }
 
@@ -110,7 +101,7 @@ export class SearchDialog implements AfterViewInit {
       count++;
       result += escapedText.substring(lastIndex, index);
       const match = escapedText.substring(index, index + query.length);
-      result += `<mark class="search-highlight">${match}</mark>`;
+      result += `<mark class="flux-search-highlight">${match}</mark>`;
       lastIndex = index + query.length;
       index = lowerText.indexOf(lowerQuery, lastIndex);
     }
@@ -160,6 +151,12 @@ export class SearchDialog implements AfterViewInit {
   close = (): void => {
     this.fluxDialog.closeSearch();
   };
+
+  protected onOpenChange(next: boolean): void {
+    if (!next) {
+      this.close();
+    }
+  }
 
   @HostListener('keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {

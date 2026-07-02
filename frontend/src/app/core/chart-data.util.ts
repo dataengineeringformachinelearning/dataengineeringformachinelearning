@@ -28,10 +28,7 @@ export const toFluxBarSeries = (
   tone: FluxTone = 'accent',
 ): FluxChartSeries[] => [{ name, data, tone }];
 
-export const toFluxDonutSegments = (
-  labels: string[],
-  values: number[],
-): FluxDonutSegment[] =>
+export const toFluxDonutSegments = (labels: string[], values: number[]): FluxDonutSegment[] =>
   labels.map((label, index) => ({
     label: label.charAt(0).toUpperCase() + label.slice(1),
     value: values[index] ?? 0,

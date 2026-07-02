@@ -9,6 +9,46 @@
     "notes": "Flux UI is a Livewire/Blade + Tailwind library; flux-material re-implements the free component styles as zero-dependency Angular standalone components themed with DEML Material tokens (THEME.md)."
   },
   "components": {
+    "app-header": {
+      "upstream": "https://fluxui.dev/components/navbar",
+      "exports": ["FluxAppHeader"],
+      "notes": "DEML app shell — sticky header with mobile menu slots."
+    },
+    "app-sidebar": {
+      "upstream": "https://fluxui.dev/components/navbar",
+      "exports": ["FluxAppSidebar"],
+      "notes": "DEML app shell — collapsible dashboard sidebar."
+    },
+    "footer": {
+      "upstream": "https://fluxui.dev/components/card",
+      "exports": ["FluxFooter"],
+      "notes": "DEML site-wide footer chrome."
+    },
+    "hud-panel": {
+      "upstream": "https://fluxui.dev/components/card",
+      "exports": ["FluxHudPanel"],
+      "notes": "DEML dashboard panel with icon header."
+    },
+    "metric-card": {
+      "upstream": "https://fluxui.dev/components/card",
+      "exports": ["FluxMetricRow", "FluxMetricCard"],
+      "notes": "DEML HUD KPI metric tiles."
+    },
+    "page-header": {
+      "upstream": "https://fluxui.dev/components/navbar",
+      "exports": ["FluxPageHeader"],
+      "notes": "DEML unified page header (HUD + sidebar topbar)."
+    },
+    "fab": {
+      "upstream": "https://fluxui.dev/components/button",
+      "exports": ["FluxFab"],
+      "notes": "DEML floating action button."
+    },
+    "search-palette": {
+      "upstream": "https://fluxui.dev/components/command",
+      "exports": ["FluxSearchPalette"],
+      "notes": "DEML search overlay (command-palette pattern)."
+    },
     "accordion": {
       "upstream": "https://fluxui.dev/components/accordion",
       "exports": ["FluxAccordion", "FluxAccordionItem"]

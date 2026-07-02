@@ -24,7 +24,16 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, FormsModule, FluxModal, FluxButton, FluxField, FluxInput, FluxText, FluxIcon],
+  imports: [
+    CommonModule,
+    FormsModule,
+    FluxModal,
+    FluxButton,
+    FluxField,
+    FluxInput,
+    FluxText,
+    FluxIcon,
+  ],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

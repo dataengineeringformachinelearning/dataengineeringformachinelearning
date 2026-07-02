@@ -1,4 +1,4 @@
-:host {
+.flux-app-sidebar-host {
   display: contents;
 
   /* Set up theme-driven variables following THEME.md */
@@ -14,7 +14,7 @@
   --sidebar-active-border: var(--color-primary-container);
 }
 
-:host-context(html[data-theme='light']) {
+html[data-theme='light'] .flux-app-sidebar-host {
   --sidebar-accent: var(--color-primary);
   --sidebar-border: var(--border-layout);
   --sidebar-bg: rgba(255, 255, 255, 0.85);
@@ -243,7 +243,7 @@
   }
 }
 
-:host-context(html[data-theme='light']) {
+html[data-theme='light'] .flux-app-sidebar-host {
   .sidebar-scroll-container::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.08);
   }
@@ -494,8 +494,11 @@
 }
 
 @media (min-width: 901px) {
+  .dashboard-sidebar:not(.collapsed) {
+    width: var(--flux-sidebar-width, 256px);
+  }
+
   .dashboard-sidebar {
-    width: 256px;
     border-right: 1px solid var(--sidebar-border);
     border-bottom: none;
     height: calc(100vh - 64px);

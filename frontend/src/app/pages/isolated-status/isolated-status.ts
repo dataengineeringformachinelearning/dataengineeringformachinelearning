@@ -16,7 +16,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService, ThreatReportResponse } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { FluxButton } from '@deml/flux-material';
+import { FluxButton, FluxUptimeBar } from '@deml/flux-material';
 import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { formatServiceName } from '../../core/utils/formatter.utils';
@@ -28,13 +28,7 @@ import { timeout } from 'rxjs';
 @Component({
   selector: 'app-isolated-status',
   standalone: true,
-  imports: [
-    CommonModule,
-    FluxButton,
-    FluxAppIcon,
-    RouterModule,
-    ProVerifiedBadge,
-  ],
+  imports: [CommonModule, FluxButton, FluxUptimeBar, FluxAppIcon, RouterModule, ProVerifiedBadge],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './isolated-status.scss',

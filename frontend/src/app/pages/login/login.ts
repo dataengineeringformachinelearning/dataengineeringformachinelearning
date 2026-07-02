@@ -118,12 +118,7 @@ export class Login implements OnInit, OnDestroy {
     return 'Login';
   };
 
-  protected submitIcon = ():
-    | 'send'
-    | 'lock'
-    | 'shield'
-    | 'user'
-    | null => {
+  protected submitIcon = (): 'send' | 'lock' | 'shield' | 'user' | null => {
     if (this.isForgotMode()) return 'send';
     if (this.isResetMode()) return 'lock';
     if (this.mfaRequired()) return 'shield';

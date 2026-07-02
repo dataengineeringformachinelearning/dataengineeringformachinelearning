@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
+import { FluxAppSidebar } from '@deml/flux-material';
 import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { SettingsService } from '../../services/settings.service';
@@ -21,9 +22,8 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, FluxAppIcon, DemlBrandLogo],
+  imports: [CommonModule, RouterModule, FluxAppSidebar, FluxAppIcon, DemlBrandLogo],
   templateUrl: './sidebar.html',
-  styleUrl: './sidebar.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Sidebar implements OnInit {

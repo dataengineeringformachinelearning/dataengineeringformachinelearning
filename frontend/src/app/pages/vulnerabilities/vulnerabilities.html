@@ -3,23 +3,19 @@
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
       <!-- High Density HUD Header -->
-      <header class="hud-header">
-        <div class="title-group">
-          <nav class="page-back-nav" aria-label="Return to dashboard">
-            <a class="back-link" routerLink="/dashboard" aria-label="Back to Dashboard">
-              <flux-app-icon name="arrow_back" [ariaHidden]="true" />
-              <span>Back to Dashboard</span>
-            </a>
-          </nav>
-          <div class="section-tag-row">
-            <span class="section-tag">Security Operations</span>
-          </div>
-          <h1 class="hud-title">Vulnerability Prioritization & Triage</h1>
-          <p class="hud-subtitle">Active security threat monitoring and telemetry orchestration</p>
-        </div>
-
+      <flux-page-header
+        tag="Security Operations"
+        title="Vulnerability Prioritization & Triage"
+        subtitle="Active security threat monitoring and telemetry orchestration"
+      >
+        <nav fluxPageHeaderBack class="page-back-nav" aria-label="Return to dashboard">
+          <a class="back-link" routerLink="/dashboard" aria-label="Back to Dashboard">
+            <flux-app-icon name="arrow_back" [ariaHidden]="true" />
+            <span>Back to Dashboard</span>
+          </a>
+        </nav>
         @if (tenants.length > 0) {
-        <div class="tenant-selector-group">
+        <div fluxPageHeaderActions class="tenant-selector-group">
           <app-unified-select
             id="tenantSelect"
             label="Environment:"
@@ -41,32 +37,25 @@
           }
         </div>
         }
-      </header>
+      </flux-page-header>
 
-      <div class="hud-metrics">
-        <div class="metric-card col-span-4 col-span-md-4">
-          <span class="metric-label">TOTAL INGESTED</span>
-          <span class="metric-value">{{ totalCount() }}</span>
-        </div>
-        <div class="metric-card warning col-span-4 col-span-md-4">
-          <span class="metric-label">ACTIVE THREATS</span>
-          <span class="metric-value">{{ openCount() }}</span>
-        </div>
-        <div class="metric-card critical col-span-4 col-span-md-4">
-          <span class="metric-label">CRITICAL CVSS</span>
-          <span class="metric-value">{{ criticalCount() }}</span>
-        </div>
-      </div>
+      <flux-metric-row>
+        <flux-metric-card label="TOTAL INGESTED" [value]="totalCount()" />
+        <flux-metric-card label="ACTIVE THREATS" variant="warning" [value]="openCount()" />
+        <flux-metric-card label="CRITICAL CVSS" variant="critical" [value]="criticalCount()" />
+      </flux-metric-row>
 
       <!-- Dashboard Panel Grid -->
       <div class="dashboard-grid">
         <!-- Left Triage Queue Panel -->
-        <section class="panel-section queue-panel col-span-4 col-span-md-4">
-          <div class="panel-header">
-            <flux-app-icon name="sort" hostClass="panel-icon" />
-            <h2>Ingestion Queue</h2>
-            <span class="status-badge-premium primary">{{ filteredVulnerabilities().length }}</span>
-          </div>
+        <flux-hud-panel
+          class="queue-panel col-span-4 col-span-md-4"
+          icon="filter"
+          title="Ingestion Queue"
+        >
+          <flux-badge fluxHudPanelBadge tone="accent"
+            >{{ filteredVulnerabilities().length }}</flux-badge
+          >
 
           <div class="filter-bar">
             <div class="filter-group">
@@ -115,9 +104,7 @@
             >
               <div class="item-header">
                 <span class="item-id">VULN-{{ v.id.substring(0, 8).toUpperCase() }}</span>
-                <span class="status-badge-premium" [ngClass]="v.severity.toLowerCase()">
-                  {{ v.severity }}
-                </span>
+                <flux-badge [tone]="severityTone(v.severity)">{{ v.severity }}</flux-badge>
               </div>
               <h3 class="item-title">{{ v.title }}</h3>
               <div class="item-footer">
@@ -132,7 +119,7 @@
             </div>
             } }
           </div>
-        </section>
+        </flux-hud-panel>
 
         <!-- Center Triage Detail & Interactive Matrix Panel -->
         <section class="panel-section detail-panel col-span-4 col-span-md-8">

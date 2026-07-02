@@ -84,40 +84,11 @@
   min-width: 0;
 }
 
-.dashboard-topbar {
-  padding: 16px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-  border-bottom: 1px solid var(--border);
-  background-color: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  .topbar-right {
-    width: 100%;
-    display: flex;
 
-    .manage-btn {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-}
 
-.page-title {
-  margin: 0;
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-color);
-}
 
-.page-description {
-  margin: 8px 0 0;
-  font-size: 1rem;
-  color: var(--text-muted);
-}
+
+
 
 .manage-btn {
   background: var(--color-dark-grey-btn-bg) !important;
@@ -127,10 +98,6 @@
   border: none !important;
   box-shadow: var(--shadow-sm) !important;
   transition: all 0.2s ease !important;
-
-  mat-icon {
-    color: var(--color-dark-grey-btn-text) !important;
-  }
 
   &:hover {
     transform: translateY(-2px);
@@ -146,32 +113,9 @@
 }
 
 /* Outlined status card - Digital Oasis aesthetic */
-.status-card-outlined {
-  border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border);
-  background-color: color-mix(in srgb, var(--color-surface) 45%, transparent);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition-smooth);
 
-  &:hover {
-    border-color: var(--status-accent);
-    box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
-  }
-}
 
-.card-header-clean {
-  padding: var(--card-padding);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-  background-color: rgba(255, 255, 255, 0.01);
-}
+
 
 .card-title {
   margin: 0;
@@ -186,9 +130,7 @@
   font-size: 1rem;
 }
 
-.card-body-clean {
-  padding: var(--card-padding);
-}
+
 
 /* Predictive SLA panel */
 .ml-stat-panel {
@@ -414,10 +356,6 @@
   &:hover {
     color: var(--status-accent) !important;
     opacity: 0.85;
-
-    mat-icon {
-      color: var(--status-accent) !important;
-    }
   }
 }
 
@@ -463,17 +401,6 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-
-    mat-icon {
-      font-size: var(--base-font-size);
-      width: 16px;
-      height: 16px;
-      color: var(--text-muted);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 0px;
-    }
   }
 
   .service-stats {
@@ -511,35 +438,11 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  .dashboard-topbar {
-    padding: 24px 32px;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0;
 
-    .topbar-right {
-      width: auto;
-      display: inline-flex;
 
-      .manage-btn {
-        width: auto;
-        justify-content: flex-start;
-      }
-    }
-  }
 
-  .card-header-clean {
-    padding: var(--card-padding);
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0;
-  }
 
-  .card-body-clean {
-    padding: var(--card-padding);
-  }
+
 
   .timeline-panel {
     padding: 24px;
@@ -674,12 +577,6 @@
   color: var(--color-error);
   font-size: 1rem;
   padding: 16px 0;
-
-  mat-icon {
-    font-size: var(--base-font-size);
-    width: 16px;
-    height: 16px;
-  }
 }
 
 .announcements-list-premium {

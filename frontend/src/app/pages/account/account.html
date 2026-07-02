@@ -33,7 +33,10 @@
               @if (isMfaEnrolled()) {
               <div class="mfa-status-enrolled panel-clean">
                 <div class="mfa-info-group">
-                  <flux-app-icon name="check_circle" hostClass="status-icon success mfa-icon-inline" />
+                  <flux-app-icon
+                    name="check_circle"
+                    hostClass="status-icon success mfa-icon-inline"
+                  />
                   <div class="mfa-info mfa-info-inline">
                     <strong>MFA Enrolled & Enforced</strong>
                     <div class="mfa-status-desc">SMS verification is active for your account.</div>
@@ -398,7 +401,10 @@
                 } @else {
                 <div class="mfa-status-enrolled panel-clean">
                   <div class="mfa-info-group">
-                    <flux-app-icon name="check_circle" hostClass="status-icon success mfa-icon-inline" />
+                    <flux-app-icon
+                      name="check_circle"
+                      hostClass="status-icon success mfa-icon-inline"
+                    />
                     <div class="mfa-info mfa-info-inline">
                       <strong>Pro Plan Active</strong>
                       <div class="mfa-status-desc">

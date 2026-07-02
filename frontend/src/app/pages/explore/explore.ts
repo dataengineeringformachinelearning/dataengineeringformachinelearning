@@ -25,7 +25,15 @@ import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, FluxButton, FluxAppIcon, RouterModule, StatusCta, StatusCard, WhitepaperCta],
+  imports: [
+    CommonModule,
+    FluxButton,
+    FluxAppIcon,
+    RouterModule,
+    StatusCta,
+    StatusCard,
+    WhitepaperCta,
+  ],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './explore.scss',

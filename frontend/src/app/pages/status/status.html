@@ -8,22 +8,18 @@
 
     <!-- Main Content -->
     <main class="dashboard-main">
-      <header class="dashboard-topbar">
-        <div class="topbar-left">
-          <div class="section-tag-row">
-            <span class="section-tag">System Telemetry</span>
-          </div>
-          <h1 class="page-title">System Status</h1>
-          <p class="page-description">Real-time status updates and historical uptime statistics.</p>
-        </div>
+      <flux-page-header
+        layout="sidebar"
+        tag="System Telemetry"
+        title="System Status"
+        subtitle="Real-time status updates and historical uptime statistics."
+      >
         @if (authService.isAuthenticated()) {
-        <div class="topbar-right">
-          <flux-button variant="filled" class="manage-btn" href="/manage" icon="settings">
-            Manage Pages
-          </flux-button>
+        <div fluxPageHeaderActions>
+          <flux-button variant="filled" href="/manage" icon="settings">Manage Pages</flux-button>
         </div>
         }
-      </header>
+      </flux-page-header>
 
       <div class="dashboard-content-area">
         <div class="page-inner-wrapper">
@@ -47,7 +43,7 @@
               @if (sanityService.loading()) {
               <div class="announcement-card-premium info">
                 <div class="ann-header">
-                  <span class="status-badge-premium info">info</span>
+                  <flux-badge tone="accent">info</flux-badge>
                   <span class="ann-date">Jun 13, 2026</span>
                 </div>
                 <h3 class="ann-title">System Status Update</h3>
@@ -59,9 +55,9 @@
               } @else { @for (ann of sanityService.announcements(); track ann._id) {
               <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
                 <div class="ann-header">
-                  <span class="status-badge-premium" [ngClass]="ann.severity || 'info'">
-                    {{ ann.severity || 'info' }}
-                  </span>
+                  <flux-badge [tone]="announcementTone(ann.severity)"
+                    >{{ ann.severity || 'info' }}</flux-badge
+                  >
                   <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
                 </div>
                 <h3 class="ann-title">{{ ann.title }}</h3>

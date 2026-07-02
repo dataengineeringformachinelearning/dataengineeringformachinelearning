@@ -1,7 +1,7 @@
 
 @use './theme' as theme;
 
-// Shared a11y, layout, navbar: /assets/deml-components.css (synced from packages/deml-design-system)
+// Shared tokens, navbar, footer, page shell: /assets/flux-material.css (@deml/flux-material)
 
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';

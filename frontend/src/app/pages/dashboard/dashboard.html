@@ -92,16 +92,7 @@
 
         <div class="health-card">
           <div class="health-ring" [attr.data-status]="healthLabel()">
-            <svg viewBox="0 0 120 120" aria-hidden="true">
-              <circle class="ring-bg" cx="60" cy="60" r="52" />
-              <circle
-                class="ring-fill"
-                cx="60"
-                cy="60"
-                r="52"
-                [style.stroke-dasharray]="getGaugeStroke(healthScore(), 327)"
-              />
-            </svg>
+            <flux-ring-gauge [value]="healthScore()" [status]="healthLabel()" />
             <div class="health-center">
               <span class="health-value">{{ healthScore() }}</span>
               <span class="health-label">{{ healthLabel() }}</span>

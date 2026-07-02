@@ -75,7 +75,7 @@ repos:
     hooks:
       - id: prettier
         files: \.(js|ts|css|html|json|md)$
-        exclude: ^(frontend/(public/llms-full.txt|src/assets/content/page.md)|(.*/)?(design-tokens|deml-components)\.css)$
+        exclude: ^(frontend/(public/llms-full.txt|public/llms-full.txt)|marketing/src/assets/content/page\.md|(.*/)?(design-tokens|deml-components|flux-material)\.css)$
         additional_dependencies:
           - prettier@3.8.2
 

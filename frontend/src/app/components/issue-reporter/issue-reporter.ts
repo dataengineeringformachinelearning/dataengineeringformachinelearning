@@ -1,15 +1,20 @@
 import { Component, signal, HostListener } from '@angular/core';
-
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import {
+  FluxButton,
+  FluxCallout,
+  FluxFab,
+  FluxModal,
+  FluxText,
+  FluxTextarea,
+} from '@deml/flux-material';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-issue-reporter',
-  imports: [FormsModule, FluxAppIcon],
+  imports: [FormsModule, FluxFab, FluxModal, FluxText, FluxTextarea, FluxCallout, FluxButton],
   templateUrl: './issue-reporter.html',
-  styleUrl: './issue-reporter.scss',
 })
 export class IssueReporter {
   isOpen = signal(false);

@@ -10,7 +10,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FluxButton } from '@deml/flux-material';
+import {
+  FluxBadge,
+  FluxButton,
+  FluxHudPanel,
+  FluxMetricCard,
+  FluxMetricRow,
+  FluxPageHeader,
+} from '@deml/flux-material';
+import type { FluxTone } from '@deml/flux-material';
 import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import {
   UnifiedSelect,
@@ -31,7 +39,19 @@ import {
 @Component({
   selector: 'app-vulnerabilities',
   standalone: true,
-  imports: [CommonModule, RouterModule, FluxAppIcon, FluxButton, FormsModule, UnifiedSelect],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FluxAppIcon,
+    FluxBadge,
+    FluxButton,
+    FluxHudPanel,
+    FluxMetricCard,
+    FluxMetricRow,
+    FluxPageHeader,
+    FormsModule,
+    UnifiedSelect,
+  ],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -67,6 +87,15 @@ export class Vulnerabilities implements OnInit {
   }));
 
   selectedVuln = signal<Vulnerability | null>(null);
+
+  severityTone(severity: string): FluxTone | 'neutral' {
+    const key = severity.toLowerCase();
+    if (key === 'critical' || key === 'high') return 'danger';
+    if (key === 'medium' || key === 'warning') return 'warning';
+    if (key === 'low' || key === 'muted') return 'muted';
+    if (key === 'primary' || key === 'info') return 'accent';
+    return 'neutral';
+  }
   filterStatus = signal<string>('All');
   filterSeverity = signal<string>('All');
 

@@ -1,20 +1,20 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { FluxBadge } from '@deml/flux-material';
 
 @Component({
   selector: 'app-pro-verified-badge',
   standalone: true,
-  imports: [FluxAppIcon],
+  imports: [FluxBadge],
   template: `
     @if (show) {
-      <span
-        class="status-badge-premium pro-verified"
+      <flux-badge
+        tone="accent"
+        icon="check-circle"
         title="Pro subscriber — verified status page"
         aria-label="Pro verified status page"
       >
-        <flux-app-icon name="verified" [ariaHidden]="true" />
-        <span>Pro Verified</span>
-      </span>
+        Pro Verified
+      </flux-badge>
     }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

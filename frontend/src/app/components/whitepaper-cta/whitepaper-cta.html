@@ -2,10 +2,15 @@
   <div class="whitepaper-cta-bg" aria-hidden="true">
     <div class="polars-grid">
       @for (bar of [72, 45, 88, 56, 91, 38, 67, 82, 49, 76, 58, 94]; track $index) {
-      <span class="polars-bar" [style.--bar-height]="bar + '%'"></span>
+      <flux-bar class="polars-bar" [height]="bar" />
       }
     </div>
-    <svg class="polars-sparkline" viewBox="0 0 400 80" preserveAspectRatio="none" aria-hidden="true">
+    <svg
+      class="polars-sparkline"
+      viewBox="0 0 400 80"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
       <defs>
         <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stop-color="var(--crayola-blue)" stop-opacity="0.15" />

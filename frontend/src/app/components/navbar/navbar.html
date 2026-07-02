@@ -1,113 +1,21 @@
-<header class="navbar">
-  <div class="navbar-content">
-    <div class="navbar-left">
-      <a
-        routerLink="/home"
-        href="/home"
-        class="navbar-brand"
-        aria-label="Go to homepage"
-        (click)="closeMobileMenu()"
-      >
-        <deml-brand-logo hostClass="brand-icon navbar-logo glowing-icon-sm" />
-      </a>
-    </div>
+<flux-app-header [mobileMenuOpen]="isMobileMenuOpen()">
+  <a
+    fluxAppHeaderBrand
+    routerLink="/home"
+    href="/home"
+    class="flux-app-header-brand"
+    aria-label="Go to homepage"
+    (click)="closeMobileMenu()"
+  >
+    <deml-brand-logo hostClass="brand-icon navbar-logo glowing-icon-sm" />
+  </a>
 
-    <nav class="navbar-center desktop-nav" aria-label="Main navigation">
-      <a
-        routerLink="/explore"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        class="nav-btn"
-      >
-        <flux-app-icon name="explore" [ariaHidden]="true" />
-        <span>Explore</span>
-      </a>
-
-      <a
-        href="https://dataengineeringformachinelearning.com/documentation/"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="nav-btn"
-        (click)="closeMobileMenu()"
-      >
-        <flux-app-icon name="description" [ariaHidden]="true" />
-        <span>Documentation</span>
-      </a>
-
-      @if (authService.isAuthenticated()) {
-      <a
-        routerLink="/dashboard"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        class="nav-btn"
-      >
-        <flux-app-icon name="dashboard" [ariaHidden]="true" />
-        <span>Dashboard</span>
-      </a>
-
-      <a routerLink="/settings" routerLinkActive="active" class="nav-btn">
-        <flux-app-icon name="language" [ariaHidden]="true" />
-        <span>Setup</span>
-      </a>
-
-      <a
-        routerLink="/account"
-        routerLinkActive="active"
-        [routerLinkActiveOptions]="{exact: true}"
-        class="nav-btn"
-      >
-        <flux-app-icon name="person" [ariaHidden]="true" />
-        <span>Account</span>
-      </a>
-      }
-    </nav>
-
-    <div class="navbar-right">
-      <div class="desktop-auth">
-        @if (!authService.isAuthenticated()) {
-        <button type="button" class="auth-btn" (click)="login()">
-          <flux-app-icon name="login" [ariaHidden]="true" />
-          <span>Sign In</span>
-        </button>
-        } @if (authService.isAuthenticated()) {
-        <button type="button" class="auth-btn" (click)="logout()">
-          <flux-app-icon name="logout" [ariaHidden]="true" />
-          <span>Sign Out</span>
-        </button>
-        }
-      </div>
-
-      <button
-        type="button"
-        (click)="onThemeToggle($event)"
-        class="theme-toggle-btn"
-        aria-label="Toggle light and dark theme"
-      >
-        <flux-app-icon
-          [name]="themeService.theme() === 'light' ? 'dark_mode' : 'light_mode'"
-          [ariaHidden]="true"
-        />
-      </button>
-
-      <button
-        type="button"
-        (click)="toggleMobileMenu()"
-        class="menu-toggle-btn"
-        aria-label="Toggle navigation menu"
-        [attr.aria-expanded]="isMobileMenuOpen()"
-      >
-        <flux-app-icon [name]="isMobileMenuOpen() ? 'close' : 'menu'" [ariaHidden]="true" />
-      </button>
-    </div>
-  </div>
-
-  <nav class="mobile-menu" [class.open]="isMobileMenuOpen()" aria-label="Mobile navigation">
+  <ng-container fluxAppHeaderNav>
     <a
       routerLink="/explore"
       routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      class="mobile-nav-btn"
-      (click)="closeMobileMenu()"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flux-app-header-nav-link"
     >
       <flux-app-icon name="explore" [ariaHidden]="true" />
       <span>Explore</span>
@@ -117,7 +25,7 @@
       href="https://dataengineeringformachinelearning.com/documentation/"
       target="_blank"
       rel="noopener noreferrer"
-      class="mobile-nav-btn"
+      class="flux-app-header-nav-link"
       (click)="closeMobileMenu()"
     >
       <flux-app-icon name="description" [ariaHidden]="true" />
@@ -128,8 +36,97 @@
     <a
       routerLink="/dashboard"
       routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      class="mobile-nav-btn"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flux-app-header-nav-link"
+    >
+      <flux-app-icon name="dashboard" [ariaHidden]="true" />
+      <span>Dashboard</span>
+    </a>
+
+    <a routerLink="/settings" routerLinkActive="active" class="flux-app-header-nav-link">
+      <flux-app-icon name="language" [ariaHidden]="true" />
+      <span>Setup</span>
+    </a>
+
+    <a
+      routerLink="/account"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flux-app-header-nav-link"
+    >
+      <flux-app-icon name="person" [ariaHidden]="true" />
+      <span>Account</span>
+    </a>
+    }
+  </ng-container>
+
+  <ng-container fluxAppHeaderAuth>
+    @if (!authService.isAuthenticated()) {
+    <button type="button" class="flux-app-header-auth-btn" (click)="login()">
+      <flux-app-icon name="login" [ariaHidden]="true" />
+      <span>Sign In</span>
+    </button>
+    } @if (authService.isAuthenticated()) {
+    <button type="button" class="flux-app-header-auth-btn" (click)="logout()">
+      <flux-app-icon name="logout" [ariaHidden]="true" />
+      <span>Sign Out</span>
+    </button>
+    }
+  </ng-container>
+
+  <ng-container fluxAppHeaderActions>
+    <button
+      type="button"
+      (click)="onThemeToggle($event)"
+      class="flux-app-header-icon-btn"
+      aria-label="Toggle light and dark theme"
+    >
+      <flux-app-icon
+        [name]="themeService.theme() === 'light' ? 'dark_mode' : 'light_mode'"
+        [ariaHidden]="true"
+      />
+    </button>
+
+    <button
+      type="button"
+      (click)="toggleMobileMenu()"
+      class="flux-app-header-icon-btn flux-app-header-menu-toggle"
+      aria-label="Toggle navigation menu"
+      [attr.aria-expanded]="isMobileMenuOpen()"
+    >
+      <flux-app-icon [name]="isMobileMenuOpen() ? 'close' : 'menu'" [ariaHidden]="true" />
+    </button>
+  </ng-container>
+
+  <ng-container fluxAppHeaderMobile>
+    <a
+      routerLink="/explore"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flux-app-header-mobile-link"
+      (click)="closeMobileMenu()"
+    >
+      <flux-app-icon name="explore" [ariaHidden]="true" />
+      <span>Explore</span>
+    </a>
+
+    <a
+      href="https://dataengineeringformachinelearning.com/documentation/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="flux-app-header-mobile-link"
+      (click)="closeMobileMenu()"
+    >
+      <flux-app-icon name="description" [ariaHidden]="true" />
+      <span>Documentation</span>
+    </a>
+
+    @if (authService.isAuthenticated()) {
+    <a
+      routerLink="/dashboard"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flux-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
       <flux-app-icon name="dashboard" [ariaHidden]="true" />
@@ -139,7 +136,7 @@
     <a
       routerLink="/settings"
       routerLinkActive="active"
-      class="mobile-nav-btn"
+      class="flux-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
       <flux-app-icon name="language" [ariaHidden]="true" />
@@ -149,8 +146,8 @@
     <a
       routerLink="/account"
       routerLinkActive="active"
-      [routerLinkActiveOptions]="{exact: true}"
-      class="mobile-nav-btn"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flux-app-header-mobile-link"
       (click)="closeMobileMenu()"
     >
       <flux-app-icon name="person" [ariaHidden]="true" />
@@ -158,18 +155,18 @@
     </a>
     }
 
-    <div class="mobile-divider"></div>
+    <div class="flux-app-header-mobile-divider"></div>
 
     @if (!authService.isAuthenticated()) {
-    <button type="button" class="mobile-auth-btn" (click)="login(); closeMobileMenu()">
+    <button type="button" class="flux-app-header-auth-btn" (click)="login(); closeMobileMenu()">
       <flux-app-icon name="login" [ariaHidden]="true" />
       <span>Sign In</span>
     </button>
     } @if (authService.isAuthenticated()) {
-    <button type="button" class="mobile-auth-btn" (click)="logout(); closeMobileMenu()">
+    <button type="button" class="flux-app-header-auth-btn" (click)="logout(); closeMobileMenu()">
       <flux-app-icon name="logout" [ariaHidden]="true" />
       <span>Sign Out</span>
     </button>
     }
-  </nav>
-</header>
+  </ng-container>
+</flux-app-header>
