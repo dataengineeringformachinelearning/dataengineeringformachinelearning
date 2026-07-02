@@ -84,7 +84,7 @@ export type FluxButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 'g
         cursor: pointer;
         text-decoration: none;
         transition: var(--flux-transition);
-        width: 100%;
+        width: auto;
         white-space: nowrap;
       }
       .flux-btn:focus-visible {
@@ -164,10 +164,12 @@ export type FluxButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 'g
       .flux-subtle {
         background: transparent;
         color: var(--flux-text-muted);
+        border-color: var(--flux-border);
       }
       .flux-subtle:hover:not(:disabled) {
         color: var(--flux-text);
         background: var(--flux-accent-soft);
+        border-color: var(--flux-border-strong);
       }
 
       .flux-btn-kbd {

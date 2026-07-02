@@ -747,24 +747,10 @@
     max-width: 680px;
   }
 
-  .promo-btn-primary {
-    background: var(--color-dark-grey-btn-bg) !important;
-    color: var(--color-dark-grey-btn-text) !important;
-    font-weight: 700 !important;
-    padding: 8px 24px !important;
-    border-radius: 24px !important;
-    box-shadow: var(--shadow-sm) !important;
-    transition: all 0.2s ease !important;
-
-    mat-icon {
-      color: var(--color-dark-grey-btn-text) !important;
-    }
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md) !important;
-      opacity: 0.95;
-    }
+  .promo-actions {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
   }
 }
 

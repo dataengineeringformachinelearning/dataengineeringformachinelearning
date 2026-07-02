@@ -5,10 +5,12 @@
       <!-- High Density HUD Header -->
       <header class="hud-header">
         <div class="title-group">
-          <a class="back-dashboard-link" routerLink="/dashboard">
-            <flux-app-icon name="arrow_back" [ariaHidden]="true" />
-            Back to dashboard
-          </a>
+          <nav class="page-back-nav" aria-label="Return to dashboard">
+            <a class="back-link" routerLink="/dashboard" aria-label="Back to Dashboard">
+              <flux-app-icon name="arrow_back" [ariaHidden]="true" />
+              <span>Back to Dashboard</span>
+            </a>
+          </nav>
           <div class="section-tag-row">
             <span class="section-tag">Security Operations</span>
           </div>
@@ -308,7 +310,7 @@
               <span class="spinner"></span>
               <p>Loading incident cases…</p>
             </div>
-            } @else if (incidents().length === 0) {
+            } @else if (activeIncidents().length === 0) {
             <div class="soc-empty-state clear">
               <div class="soc-empty-icon">
                 <flux-app-icon name="verified_user" [ariaHidden]="true" />
@@ -318,7 +320,7 @@
             </div>
             } @else {
             <div class="soc-card-list">
-              @for (incident of incidents(); track incident.id) {
+              @for (incident of activeIncidents(); track incident.id) {
               <div
                 class="soc-card incident-card"
                 [class.selected]="selectedIncident()?.id === incident.id"
@@ -455,7 +457,7 @@
           Dismiss
         </flux-button>
       </div>
-      } @if (selectedIncident() || selectedPlaybook()) {
+      } @if (selectedIncident()) {
       <section class="intel-action-console panel-section">
         <div class="panel-header">
           <flux-app-icon name="bolt" hostClass="panel-icon" />
@@ -472,31 +474,11 @@
               <flux-button variant="primary" type="button" (pressed)="resolveIncident(incident)">
                 Resolve
               </flux-button>
-              <flux-button variant="subtle" type="button" (pressed)="escalateIncident(incident)">
+              <flux-button variant="outline" type="button" (pressed)="escalateIncident(incident)">
                 Escalate
               </flux-button>
-              <flux-button variant="ghost" type="button" (pressed)="dismissIncident(incident)">
+              <flux-button variant="subtle" type="button" (pressed)="dismissIncident(incident)">
                 False Positive
-              </flux-button>
-            </div>
-          </div>
-          } @if (selectedPlaybook(); as playbook) {
-          <div class="intel-action-group">
-            <h3 class="intel-action-title">Playbook: {{ playbook.name }}</h3>
-            <p class="intel-action-desc">
-              {{ playbook.description || 'Automated response workflow.' }}
-            </p>
-            <div class="intel-action-buttons">
-              <flux-button
-                variant="primary"
-                type="button"
-                (pressed)="runSelectedPlaybook()"
-                [disabled]="!playbook.is_active"
-              >
-                Run Playbook
-              </flux-button>
-              <flux-button variant="subtle" type="button" (pressed)="togglePlaybook(playbook)">
-                {{ playbook.is_active ? 'Pause' : 'Activate' }}
               </flux-button>
             </div>
           </div>
