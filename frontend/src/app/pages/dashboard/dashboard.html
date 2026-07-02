@@ -40,7 +40,7 @@
           (click)="setTab('overview')"
         >
           <span class="tab-btn-content">
-            <mat-icon aria-hidden="true">dashboard</mat-icon>
+            <flux-app-icon name="dashboard" [ariaHidden]="true" />
             <span>Overview</span>
           </span>
         </button>
@@ -51,7 +51,7 @@
           (click)="setTab('performance')"
         >
           <span class="tab-btn-content">
-            <mat-icon aria-hidden="true">insights</mat-icon>
+            <flux-app-icon name="monitoring" [ariaHidden]="true" />
             <span>Performance</span>
           </span>
         </button>
@@ -62,10 +62,10 @@
           (click)="setTab('security')"
         >
           <span class="tab-btn-content">
-            <mat-icon aria-hidden="true">shield</mat-icon>
+            <flux-app-icon name="shield" [ariaHidden]="true" />
             <span>Security</span>
             @if (openVulnCount() > 0) {
-            <span class="tab-badge">{{ openVulnCount() }}</span>
+            <flux-badge tone="danger" size="sm">{{ openVulnCount() }}</flux-badge>
             }
           </span>
         </button>
@@ -76,7 +76,7 @@
         @if (!setupComplete()) {
         <div class="setup-banner col-span-full">
           <div class="setup-banner-content">
-            <mat-icon aria-hidden="true">rocket_launch</mat-icon>
+            <flux-app-icon name="rocket_launch" [ariaHidden]="true" />
             <div>
               <strong>Finish setting up your workspace</strong>
               <p>
@@ -84,9 +84,9 @@
               </p>
             </div>
           </div>
-          <button mat-flat-button color="primary" type="button" (click)="openOnboardingWizard()">
+          <flux-button variant="primary" type="button" (pressed)="openOnboardingWizard()">
             Continue setup
-          </button>
+          </flux-button>
         </div>
         }
 
@@ -114,22 +114,22 @@
 
         <div class="kpi-grid">
           <div class="kpi-card" [class.alert]="threatLevel > 50">
-            <mat-icon>security</mat-icon>
+            <flux-app-icon name="security" />
             <span class="kpi-label">Threat Exposure</span>
             <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
           </div>
           <div class="kpi-card" [class.alert]="openVulnCount() > 0">
-            <mat-icon>bug_report</mat-icon>
+            <flux-app-icon name="bug_report" />
             <span class="kpi-label">Open Issues</span>
             <span class="kpi-value">{{ openVulnCount() }}</span>
           </div>
           <div class="kpi-card">
-            <mat-icon>speed</mat-icon>
+            <flux-app-icon name="speed" />
             <span class="kpi-label">Uptime</span>
             <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
           </div>
           <div class="kpi-card" [class.alert]="activeIncidents > 0">
-            <mat-icon>report</mat-icon>
+            <flux-app-icon name="report" />
             <span class="kpi-label">Active Incidents</span>
             <span class="kpi-value">{{ activeIncidents }}</span>
           </div>
@@ -144,7 +144,7 @@
           <div class="panel-loading"><span class="spinner"></span> Scanning...</div>
           } @else if (recentThreats().length === 0) {
           <div class="panel-empty">
-            <mat-icon>verified_user</mat-icon>
+            <flux-app-icon name="verified_user" />
             <p>No active threats detected. Your perimeter looks clear.</p>
           </div>
           } @else {
@@ -188,21 +188,16 @@
             </div>
           </div>
           <div class="mini-chart">
-            @if (hasData(chartOptions)) {
-            <apx-chart
-              [series]="chartOptions.series"
-              [chart]="chartOptions.chart"
-              [xaxis]="chartOptions.xaxis"
-              [yaxis]="chartOptions.yaxis"
-              [stroke]="chartOptions.stroke"
-              [colors]="chartOptions.colors"
-              [grid]="chartOptions.grid"
-              [tooltip]="chartOptions.tooltip"
-              [dataLabels]="chartOptions.dataLabels"
-            ></apx-chart>
+            @if (hasLatencyData()) {
+            <flux-chart
+              kind="line"
+              [series]="latencySeries()"
+              label="Latency snapshot"
+              [showArea]="true"
+            />
             } @else {
             <div class="panel-empty compact">
-              <mat-icon>satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" />
               <p>Telemetry will appear once your site is connected.</p>
             </div>
             }
@@ -228,33 +223,29 @@
 
         <div class="detail-actions">
           <a class="action-btn" routerLink="/analytics">
-            <mat-icon aria-hidden="true">insights</mat-icon>
+            <flux-app-icon name="insights" [ariaHidden]="true" />
             <span>Full analytics view</span>
-            <mat-icon class="action-arrow" aria-hidden="true">arrow_forward</mat-icon>
+            <flux-app-icon name="arrow_forward" [ariaHidden]="true" hostClass="action-arrow" />
           </a>
         </div>
 
         <section class="panel-card chart-panel">
           <h2>Latency Trend (24h)</h2>
           <div class="chart-container">
-            @if (hasData(chartOptions)) {
-            <apx-chart
-              [series]="chartOptions.series"
-              [chart]="chartOptions.chart"
-              [xaxis]="chartOptions.xaxis"
-              [yaxis]="chartOptions.yaxis"
-              [stroke]="chartOptions.stroke"
-              [colors]="chartOptions.colors"
-              [fill]="chartOptions.fill"
-              [grid]="chartOptions.grid"
-              [tooltip]="chartOptions.tooltip"
-              [dataLabels]="chartOptions.dataLabels"
-            ></apx-chart>
+            @if (hasLatencyData()) {
+            <flux-chart
+              kind="line"
+              [series]="latencySeries()"
+              label="Latency Trend (24h)"
+              [showArea]="true"
+            />
             } @else {
             <div class="panel-empty">
-              <mat-icon>timeline</mat-icon>
+              <flux-app-icon name="timeline" />
               <p>No latency data yet. Add a monitored endpoint in Site Setup.</p>
-              <a mat-flat-button color="primary" routerLink="/settings">Go to Site Setup</a>
+              <flux-button variant="primary" type="button" (pressed)="goToSettings()">
+                Go to Site Setup
+              </flux-button>
             </div>
             }
           </div>
@@ -263,17 +254,12 @@
         <section class="panel-card chart-panel half">
           <h2>Threat Severity Distribution</h2>
           <div class="chart-container short">
-            @if (hasData(threatSeverityChartOptions)) {
-            <apx-chart
-              [series]="threatSeverityChartOptions.series"
-              [chart]="threatSeverityChartOptions.chart"
-              [labels]="threatSeverityChartOptions.labels"
-              [colors]="threatSeverityChartOptions.colors"
-              [legend]="threatSeverityChartOptions.legend"
-              [plotOptions]="threatSeverityChartOptions.plotOptions"
-              [dataLabels]="threatSeverityChartOptions.dataLabels"
-              [tooltip]="threatSeverityChartOptions.tooltip"
-            ></apx-chart>
+            @if (hasThreatDonutData()) {
+            <flux-chart
+              kind="donut"
+              [segments]="threatDonutSegments()"
+              label="Threat Severity Distribution"
+            />
             } @else {
             <div class="panel-empty compact">
               <p>No threat severity data available.</p>
@@ -285,17 +271,12 @@
         <section class="panel-card chart-panel half">
           <h2>Security Anomalies (24h)</h2>
           <div class="chart-container short">
-            @if (hasData(securityAlertsChartOptions)) {
-            <apx-chart
-              [series]="securityAlertsChartOptions.series"
-              [chart]="securityAlertsChartOptions.chart"
-              [xaxis]="securityAlertsChartOptions.xaxis"
-              [yaxis]="securityAlertsChartOptions.yaxis"
-              [colors]="securityAlertsChartOptions.colors"
-              [grid]="securityAlertsChartOptions.grid"
-              [tooltip]="securityAlertsChartOptions.tooltip"
-              [dataLabels]="securityAlertsChartOptions.dataLabels"
-            ></apx-chart>
+            @if (hasSecurityAlertData()) {
+            <flux-chart
+              kind="bar"
+              [series]="securityAlertSeries()"
+              label="Security Anomalies (24h)"
+            />
             } @else {
             <div class="panel-empty compact">
               <p>No anomaly signals detected.</p>
@@ -324,13 +305,13 @@
         <section class="panel-card security-panel">
           <div class="panel-header">
             <div class="panel-title-group">
-              <mat-icon class="panel-title-icon" aria-hidden="true">shield</mat-icon>
+              <flux-app-icon name="shield" [ariaHidden]="true" hostClass="panel-title-icon" />
               <h2>Threat Queue</h2>
             </div>
             <a class="action-btn compact" routerLink="/vulnerabilities">
-              <mat-icon aria-hidden="true">troubleshoot</mat-icon>
+              <flux-app-icon name="troubleshoot" [ariaHidden]="true" />
               <span>Advanced triage</span>
-              <mat-icon class="action-arrow" aria-hidden="true">arrow_forward</mat-icon>
+              <flux-app-icon name="arrow_forward" [ariaHidden]="true" hostClass="action-arrow" />
             </a>
           </div>
           @if (vulnService.isLoading()) {
@@ -338,7 +319,7 @@
           } @else if (recentThreats().length === 0) {
           <div class="panel-empty threat-clear">
             <div class="clear-icon-ring">
-              <mat-icon>verified_user</mat-icon>
+              <flux-app-icon name="verified_user" />
             </div>
             <h3>All clear</h3>
             <p>No vulnerabilities or threats require your attention right now.</p>
@@ -363,7 +344,7 @@
 
         <section class="panel-card insight-panel detection-panel">
           <div class="detection-header">
-            <mat-icon aria-hidden="true">psychology</mat-icon>
+            <flux-app-icon name="psychology" [ariaHidden]="true" />
             <h2>How threats are detected</h2>
           </div>
           <p>
@@ -373,15 +354,15 @@
           </p>
           <ul class="insight-list">
             <li>
-              <span class="insight-icon"><mat-icon>auto_awesome</mat-icon></span>
+              <span class="insight-icon"><flux-app-icon name="auto_awesome" /></span>
               <span>ML anomaly detection on live traffic</span>
             </li>
             <li>
-              <span class="insight-icon"><mat-icon>policy</mat-icon></span>
+              <span class="insight-icon"><flux-app-icon name="policy" /></span>
               <span>Automated Semgrep & Trivy scan ingestion</span>
             </li>
             <li>
-              <span class="insight-icon"><mat-icon>hub</mat-icon></span>
+              <span class="insight-icon"><flux-app-icon name="hub" /></span>
               <span>STIX 2.1 threat intel correlation</span>
             </li>
           </ul>

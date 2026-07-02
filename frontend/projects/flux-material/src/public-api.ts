@@ -6,6 +6,7 @@
 
 // Core
 export * from './lib/core/types';
+export type { FluxChartKind, FluxDonutSegment } from './lib/core/types';
 export { FLUX_ICON_NAMES, FLUX_ICON_PATHS } from './lib/core/icons';
 export type { FluxIconName } from './lib/core/icons';
 export { FluxControl, provideFluxCva } from './lib/core/cva';

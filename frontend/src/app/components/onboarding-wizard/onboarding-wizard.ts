@@ -5,20 +5,25 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   afterNextRender,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
+import {
+  FluxButton,
+  FluxCallout,
+  FluxCheckbox,
+  FluxField,
+  FluxInput,
+  FluxModal,
+  FluxProgress,
+} from '@deml/flux-material';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { OnboardingService } from '../../services/onboarding.service';
+import { FluxDialogService } from '../../services/flux-dialog.service';
 import { environment } from '../../../environments/environment';
 
 const STEPS = ['welcome', 'site', 'endpoint', 'publish', 'done'] as const;
@@ -30,25 +35,28 @@ type WizardStep = (typeof STEPS)[number];
   imports: [
     CommonModule,
     FormsModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatCheckboxModule,
-    MatProgressBarModule,
+    FluxModal,
+    FluxButton,
+    FluxCallout,
+    FluxCheckbox,
+    FluxField,
+    FluxInput,
+    FluxProgress,
+    FluxAppIcon,
   ],
   templateUrl: './onboarding-wizard.html',
   styleUrl: './onboarding-wizard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnboardingWizard {
-  private dialogRef = inject(MatDialogRef<OnboardingWizard>);
+  private readonly fluxDialog = inject(FluxDialogService);
   private monitorService = inject(MonitorService);
   private settingsService = inject(SettingsService);
   private authService = inject(AuthService);
   private onboardingService = inject(OnboardingService);
   private cdr = inject(ChangeDetectorRef);
+
+  protected readonly open = computed(() => this.fluxDialog.active()?.kind === 'onboarding');
 
   currentStep = signal<WizardStep>('welcome');
   isBusy = signal(false);
@@ -86,6 +94,12 @@ export class OnboardingWizard {
     });
   }
 
+  protected onOpenChange = (next: boolean): void => {
+    if (!next) {
+      this.fluxDialog.resolveOnboarding(false);
+    }
+  };
+
   goNext() {
     const idx = this.stepIndex();
     if (idx < STEPS.length - 1) {
@@ -104,12 +118,12 @@ export class OnboardingWizard {
 
   skip() {
     this.onboardingService.markSkipped();
-    this.dialogRef.close(false);
+    this.fluxDialog.resolveOnboarding(false);
   }
 
   finish() {
     this.onboardingService.markComplete();
-    this.dialogRef.close(true);
+    this.fluxDialog.resolveOnboarding(true);
   }
 
   createSite() {

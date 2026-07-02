@@ -16,10 +16,10 @@
     (keydown.enter)="toggleCollapse()"
     (keydown.space)="$event.preventDefault(); toggleCollapse()"
   >
-    <mat-icon class="brand-icon">analytics</mat-icon>
+    <flux-app-icon name="analytics" hostClass="brand-icon" />
     <h2 class="brand-title">DEML</h2>
     <div class="collapse-toggle-btn" aria-hidden="true">
-      <mat-icon aria-hidden="true">{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      <flux-app-icon [name]="isCollapsed() ? 'chevron_right' : 'chevron_left'" [ariaHidden]="true" />
     </div>
   </div>
 
@@ -34,7 +34,7 @@
     (keydown.space)="$event.preventDefault(); openSearchDialog()"
   >
     <div class="search-wrapper">
-      <mat-icon aria-hidden="true">search</mat-icon>
+      <flux-app-icon name="search" [ariaHidden]="true" />
       <span class="sidebar-search-placeholder">Search...</span>
       <kbd class="search-shortcut">⌘K</kbd>
     </div>
@@ -51,7 +51,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Dashboard"
       >
-        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        <flux-app-icon name="dashboard" [ariaHidden]="true" />
         <span class="nav-text">Dashboard</span>
       </a>
 
@@ -62,7 +62,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Site Setup"
       >
-        <mat-icon aria-hidden="true">language</mat-icon>
+        <flux-app-icon name="language" [ariaHidden]="true" />
         <span class="nav-text">Sites</span>
       </a>
 
@@ -73,7 +73,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Account"
       >
-        <mat-icon aria-hidden="true">person</mat-icon>
+        <flux-app-icon name="person" [ariaHidden]="true" />
         <span class="nav-text">Account</span>
       </a>
 
@@ -88,9 +88,11 @@
           (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
         >
           <span class="tree-label">Your Pages</span>
-          <mat-icon class="tree-arrow"
-            >{{ isYourPagesExpanded() ? 'expand_more' : 'chevron_right' }}</mat-icon
-          >
+          <flux-app-icon
+            [name]="isYourPagesExpanded() ? 'expand_more' : 'chevron_right'"
+            hostClass="tree-arrow"
+            [ariaHidden]="true"
+          />
         </div>
         @if (isYourPagesExpanded()) {
         <div class="nav-tree-children">
@@ -110,7 +112,7 @@
           <span class="tree-child-item empty-state">No pages yet.</span>
           }
           <button class="tree-child-item new-page-btn" (click)="settingsService.selectPage(null)">
-            <mat-icon class="new-page-icon">add</mat-icon>
+            <flux-app-icon name="add" hostClass="new-page-icon" />
             New Page
           </button>
         </div>
@@ -124,7 +126,7 @@
         [routerLinkActiveOptions]="{exact: true}"
         title="Explore"
       >
-        <mat-icon aria-hidden="true">explore</mat-icon>
+        <flux-app-icon name="explore" [ariaHidden]="true" />
         <span class="nav-text">Explore</span>
       </a>
 

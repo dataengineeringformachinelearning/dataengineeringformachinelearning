@@ -6,15 +6,15 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment';
+import { FluxButton } from '@deml/flux-material';
 
 @Component({
   selector: 'app-success',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [CommonModule, FluxButton],
   templateUrl: './success.html',
   styleUrl: './success.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

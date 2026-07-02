@@ -1,11 +1,16 @@
-import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import {
+  FluxButton,
+  FluxField,
+  FluxIcon,
+  FluxInput,
+  FluxModal,
+  FluxText,
+} from '@deml/flux-material';
+import { FluxDialogService } from '../../services/flux-dialog.service';
+import type { FluxIconName } from '@deml/flux-material';
 
 export interface ConfirmDialogData {
   title?: string;
@@ -19,39 +24,66 @@ export interface ConfirmDialogData {
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatDialogModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
-  ],
+  imports: [CommonModule, FormsModule, FluxModal, FluxButton, FluxField, FluxInput, FluxText, FluxIcon],
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialog {
-  public dialogRef = inject(MatDialogRef<ConfirmDialog>);
-  public data: ConfirmDialogData = inject(MAT_DIALOG_DATA);
+  private readonly fluxDialog = inject(FluxDialogService);
 
-  inputValue = signal<string>('');
+  protected readonly inputValue = signal<string>('');
 
-  get isValid(): boolean {
-    if (this.data.type === 'prompt' && this.data.confirmText) {
-      return this.inputValue() === this.data.confirmText;
+  protected readonly data = computed(() => {
+    const active = this.fluxDialog.active();
+    return active?.kind === 'confirm' ? (active.data as ConfirmDialogData) : null;
+  });
+
+  protected readonly open = computed(() => this.data() !== null);
+
+  protected readonly heading = computed(() => {
+    const data = this.data();
+    if (!data) return '';
+    return (
+      data.title ??
+      (data.type === 'alert'
+        ? 'Notice'
+        : data.type === 'prompt'
+          ? 'Verification Required'
+          : 'Confirm Action')
+    );
+  });
+
+  protected readonly iconName = computed((): FluxIconName => {
+    const data = this.data();
+    if (!data) return 'info';
+    if (data.type === 'alert') return 'info';
+    if (data.confirmBtnColor === 'warn') return 'alert-triangle';
+    return 'info';
+  });
+
+  protected readonly isValid = computed(() => {
+    const data = this.data();
+    if (!data || data.type !== 'prompt' || !data.confirmText) {
+      return true;
     }
-    return true;
-  }
+    return this.inputValue() === data.confirmText;
+  });
 
-  onCancel(): void {
-    this.dialogRef.close(false);
-  }
+  protected onCancel = (): void => {
+    this.inputValue.set('');
+    this.fluxDialog.resolveConfirm(false);
+  };
 
-  onConfirm(): void {
-    if (this.isValid) {
-      this.dialogRef.close(true);
+  protected onConfirm = (): void => {
+    if (!this.isValid()) return;
+    this.inputValue.set('');
+    this.fluxDialog.resolveConfirm(true);
+  };
+
+  protected onOpenChange = (next: boolean): void => {
+    if (!next) {
+      this.onCancel();
     }
-  }
+  };
 }

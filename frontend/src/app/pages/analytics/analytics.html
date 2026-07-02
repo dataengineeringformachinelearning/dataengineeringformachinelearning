@@ -9,7 +9,7 @@
           [queryParams]="{ tab: 'performance' }"
           aria-label="Back to Dashboard performance view"
         >
-          <mat-icon aria-hidden="true">arrow_back</mat-icon>
+          <flux-app-icon name="arrow_back" [ariaHidden]="true" />
           <span>Back to Dashboard</span>
         </a>
       </nav>
@@ -29,7 +29,7 @@
       <!-- GLOBAL METRICS SECTION -->
       <div class="metrics-overview-header">
         <h2 class="section-title-premium">
-          <mat-icon>public</mat-icon>
+          <flux-app-icon name="public" />
           Global Platform Metrics
         </h2>
         <p class="section-description-premium">
@@ -42,7 +42,7 @@
           <div class="gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">
               <h3>System Threat</h3>
-              <mat-icon>security</mat-icon>
+              <flux-app-icon name="security" />
             </div>
             <div class="gauge-wrapper threat-gauge">
               <svg aria-hidden="true" class="gauge-svg theme-amber" viewBox="0 0 100 60">
@@ -54,7 +54,7 @@
                 />
               </svg>
               <div class="gauge-center-text threat-text">
-                <mat-icon class="gauge-inner-icon">warning</mat-icon>
+                <flux-app-icon name="warning" hostClass="gauge-inner-icon" />
                 <span class="unit">DETECTED</span>
                 <span class="value"
                   >{{ threatLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
@@ -62,7 +62,7 @@
               </div>
             </div>
             <div class="gauge-card-footer">
-              <mat-icon>info</mat-icon>
+              <flux-app-icon name="info" />
               <span>Current threat exposure score</span>
             </div>
           </div>
@@ -71,7 +71,7 @@
           <div class="gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">
               <h3>Platform Effectiveness</h3>
-              <mat-icon>analytics</mat-icon>
+              <flux-app-icon name="analytics" />
             </div>
             <div class="gauge-wrapper main-gauge">
               <svg aria-hidden="true" class="gauge-svg theme-red" viewBox="0 0 100 60">
@@ -83,13 +83,13 @@
                 />
               </svg>
               <div class="gauge-center-text main-text">
-                <mat-icon class="gauge-inner-icon">stars</mat-icon>
+                <flux-app-icon name="stars" hostClass="gauge-inner-icon" />
                 <span class="unit">SCORE</span>
                 <span class="value">{{ cesLevel | number:'1.0-0' }}</span>
               </div>
             </div>
             <div class="gauge-card-footer">
-              <mat-icon>info</mat-icon>
+              <flux-app-icon name="info" />
               <span>Overall CES performance metric</span>
             </div>
           </div>
@@ -98,7 +98,7 @@
           <div class="gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">
               <h3>Network Stability</h3>
-              <mat-icon>health_and_safety</mat-icon>
+              <flux-app-icon name="health_and_safety" />
             </div>
             <div class="gauge-wrapper stability-gauge">
               <svg aria-hidden="true" class="gauge-svg theme-primary" viewBox="0 0 100 60">
@@ -110,7 +110,7 @@
                 />
               </svg>
               <div class="gauge-center-text stability-text">
-                <mat-icon class="gauge-inner-icon">monitor_heart</mat-icon>
+                <flux-app-icon name="monitor_heart" hostClass="gauge-inner-icon" />
                 <span class="unit">UPTIME</span>
                 <span class="value"
                   >{{ stabilityLevel | number:'1.0-0' }}<span class="unit-symbol">%</span></span
@@ -118,7 +118,7 @@
               </div>
             </div>
             <div class="gauge-card-footer">
-              <mat-icon>info</mat-icon>
+              <flux-app-icon name="info" />
               <span>System resilience index</span>
             </div>
           </div>
@@ -128,7 +128,7 @@
       <div class="metrics-overview-header metrics-section-spacing">
         <div>
           <h2 class="section-title-premium">
-            <mat-icon>person</mat-icon>
+            <flux-app-icon name="person" />
             Your Analytics
           </h2>
           <p class="section-description-premium">
@@ -235,7 +235,7 @@
       <div class="u-style-1e3398">
         <span class="u-style-bd64a0">Active Providers:</span>
         @for (provider of activeProviders; track provider) {
-        <span class="u-style-c120b8">{{ provider }}</span>
+        <flux-badge tone="accent" size="sm">{{ provider }}</flux-badge>
         }
       </div>
       }
@@ -249,24 +249,17 @@
           </div>
 
           <div class="card-body-clean chart-container-large">
-            @if (hasData(chartOptions)) {
-            <apx-chart
-              [series]="chartOptions.series"
-              [chart]="chartOptions.chart"
-              [xaxis]="chartOptions.xaxis"
-              [yaxis]="chartOptions.yaxis"
-              [dataLabels]="chartOptions.dataLabels"
-              [grid]="chartOptions.grid"
-              [stroke]="chartOptions.stroke"
-              [colors]="chartOptions.colors"
-              [fill]="chartOptions.fill"
-              [tooltip]="chartOptions.tooltip"
-              [noData]="chartOptions.noData"
-              class="apx-chart-large"
-            ></apx-chart>
+            @if (hasLatencyData()) {
+            <flux-chart
+              kind="line"
+              [series]="latencySeries()"
+              label="System Latency (Last 24h)"
+              [showArea]="true"
+              class="flux-chart-large"
+            />
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -278,7 +271,7 @@
       <!-- TRAFFIC ANALYTICS SECTION -->
       <div class="metrics-overview-header metrics-section-spacing">
         <h2 class="section-title-premium">
-          <mat-icon>traffic</mat-icon>
+          <flux-app-icon name="traffic" />
           Traffic Analytics
         </h2>
         <p class="section-description-premium">
@@ -304,7 +297,7 @@
             ></div>
             @if (originMapData.length === 0) {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -319,29 +312,21 @@
           <div class="chart-custom-header">
             <div class="chart-custom-title">Top Regions</div>
             <div class="chart-custom-value">
-              {{ topRegionsChartOptions.series[0]?.data?.length || 0 }} Regions
+              {{ topRegionsSeries()[0]?.data?.length || 0 }} Regions
             </div>
             <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(topRegionsChartOptions)) {
-            <apx-chart
-              [series]="topRegionsChartOptions.series"
-              [chart]="topRegionsChartOptions.chart"
-              [xaxis]="topRegionsChartOptions.xaxis"
-              [yaxis]="topRegionsChartOptions.yaxis"
-              [dataLabels]="topRegionsChartOptions.dataLabels"
-              [grid]="topRegionsChartOptions.grid"
-              [stroke]="topRegionsChartOptions.stroke"
-              [colors]="topRegionsChartOptions.colors"
-              [plotOptions]="topRegionsChartOptions.plotOptions"
-              [tooltip]="topRegionsChartOptions.tooltip"
-              [noData]="topRegionsChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
+            @if (hasTopRegionsData()) {
+            <flux-chart
+              kind="bar"
+              [series]="topRegionsSeries()"
+              label="Top Regions"
+              class="flux-chart-medium"
+            />
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -357,24 +342,17 @@
             <div class="chart-custom-trend">{{ frequencyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(frequencyChartOptions)) {
-            <apx-chart
-              [series]="frequencyChartOptions.series"
-              [chart]="frequencyChartOptions.chart"
-              [xaxis]="frequencyChartOptions.xaxis"
-              [yaxis]="frequencyChartOptions.yaxis"
-              [dataLabels]="frequencyChartOptions.dataLabels"
-              [grid]="frequencyChartOptions.grid"
-              [stroke]="frequencyChartOptions.stroke"
-              [colors]="frequencyChartOptions.colors"
-              [fill]="frequencyChartOptions.fill"
-              [tooltip]="frequencyChartOptions.tooltip"
-              [noData]="frequencyChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
+            @if (hasFrequencyData()) {
+            <flux-chart
+              kind="line"
+              [series]="frequencySeries()"
+              label="Request Frequency"
+              [showArea]="true"
+              class="flux-chart-medium"
+            />
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -387,29 +365,21 @@
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Counts per Endpoint</div>
             <div class="chart-custom-value">
-              {{ endpointChartOptions.series[0]?.data?.length || 0 }} APIs
+              {{ endpointSeries()[0]?.data?.length || 0 }} APIs
             </div>
             <div class="chart-custom-trend">{{ endpointTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(endpointChartOptions)) {
-            <apx-chart
-              [series]="endpointChartOptions.series"
-              [chart]="endpointChartOptions.chart"
-              [xaxis]="endpointChartOptions.xaxis"
-              [yaxis]="endpointChartOptions.yaxis"
-              [dataLabels]="endpointChartOptions.dataLabels"
-              [grid]="endpointChartOptions.grid"
-              [stroke]="endpointChartOptions.stroke"
-              [colors]="endpointChartOptions.colors"
-              [plotOptions]="endpointChartOptions.plotOptions"
-              [tooltip]="endpointChartOptions.tooltip"
-              [noData]="endpointChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
+            @if (hasEndpointData()) {
+            <flux-chart
+              kind="bar"
+              [series]="endpointSeries()"
+              label="Request Counts per Endpoint"
+              class="flux-chart-medium"
+            />
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -421,7 +391,7 @@
       <!-- SIEM / SECURITY INSIGHTS SECTION -->
       <div class="metrics-overview-header metrics-section-spacing">
         <h2 class="section-title-premium">
-          <mat-icon>security</mat-icon>
+          <flux-app-icon name="security" />
           SIEM / Security Insights
         </h2>
         <p class="section-description-premium">
@@ -437,23 +407,16 @@
             <div class="chart-custom-trend">{{ threatTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(threatSeverityChartOptions)) {
-            <apx-chart
-              [series]="threatSeverityChartOptions.series"
-              [chart]="threatSeverityChartOptions.chart"
-              [labels]="threatSeverityChartOptions.labels"
-              [plotOptions]="threatSeverityChartOptions.plotOptions"
-              [dataLabels]="threatSeverityChartOptions.dataLabels"
-              [stroke]="threatSeverityChartOptions.stroke"
-              [colors]="threatSeverityChartOptions.colors"
-              [legend]="threatSeverityChartOptions.legend"
-              [tooltip]="threatSeverityChartOptions.tooltip"
-              [noData]="threatSeverityChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
+            @if (hasThreatSeverityData()) {
+            <flux-chart
+              kind="donut"
+              [segments]="threatSeveritySegments()"
+              label="Threat Events by Severity"
+              class="flux-chart-medium"
+            />
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">verified_user</mat-icon>
+              <flux-app-icon name="verified_user" hostClass="empty-icon" />
               <h3 class="empty-title">No Active Threats</h3>
               <p class="empty-subtitle">System is secure. No threat events detected.</p>
             </div>
@@ -469,24 +432,16 @@
             <div class="chart-custom-trend">{{ anomalyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(securityAlertsChartOptions)) {
-            <apx-chart
-              [series]="securityAlertsChartOptions.series"
-              [chart]="securityAlertsChartOptions.chart"
-              [xaxis]="securityAlertsChartOptions.xaxis"
-              [yaxis]="securityAlertsChartOptions.yaxis"
-              [dataLabels]="securityAlertsChartOptions.dataLabels"
-              [grid]="securityAlertsChartOptions.grid"
-              [stroke]="securityAlertsChartOptions.stroke"
-              [colors]="securityAlertsChartOptions.colors"
-              [plotOptions]="securityAlertsChartOptions.plotOptions"
-              [tooltip]="securityAlertsChartOptions.tooltip"
-              [noData]="securityAlertsChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
+            @if (hasSecurityAlertsData()) {
+            <flux-chart
+              kind="bar"
+              [series]="securityAlertsSeries()"
+              label="Recent Security Anomalies"
+              class="flux-chart-medium"
+            />
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>
@@ -502,24 +457,16 @@
             <div class="chart-custom-trend">{{ statusTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasData(statusChartOptions)) {
-            <apx-chart
-              [series]="statusChartOptions.series"
-              [chart]="statusChartOptions.chart"
-              [xaxis]="statusChartOptions.xaxis"
-              [yaxis]="statusChartOptions.yaxis"
-              [dataLabels]="statusChartOptions.dataLabels"
-              [grid]="statusChartOptions.grid"
-              [stroke]="statusChartOptions.stroke"
-              [colors]="statusChartOptions.colors"
-              [plotOptions]="statusChartOptions.plotOptions"
-              [tooltip]="statusChartOptions.tooltip"
-              [noData]="statusChartOptions.noData"
-              class="apx-chart-medium"
-            ></apx-chart>
+            @if (hasStatusData()) {
+            <flux-chart
+              kind="bar"
+              [series]="statusSeries()"
+              label="HTTP Status Distribution"
+              class="flux-chart-medium"
+            />
             } @else {
             <div class="empty-chart-state">
-              <mat-icon class="empty-icon">satellite_alt</mat-icon>
+              <flux-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
               <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
             </div>

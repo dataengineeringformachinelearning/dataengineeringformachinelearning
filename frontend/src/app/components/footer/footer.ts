@@ -2,13 +2,11 @@ import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 
-import { MatIconModule } from '@angular/material/icon';
-
 const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, MatIconModule],
+  imports: [RouterLink],
   templateUrl: './footer.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './footer.scss',

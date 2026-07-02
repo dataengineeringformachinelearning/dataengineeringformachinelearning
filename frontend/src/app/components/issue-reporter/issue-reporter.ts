@@ -2,12 +2,12 @@ import { Component, signal, HostListener } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { MatIconModule } from '@angular/material/icon';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 
 @Component({
   selector: 'app-issue-reporter',
-  imports: [FormsModule, MatIconModule],
+  imports: [FormsModule, FluxAppIcon],
   templateUrl: './issue-reporter.html',
   styleUrl: './issue-reporter.scss',
 })

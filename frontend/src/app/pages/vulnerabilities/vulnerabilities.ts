@@ -10,8 +10,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
+import { FluxButton } from '@deml/flux-material';
+import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import {
   UnifiedSelect,
   SelectOption,
@@ -31,7 +31,7 @@ import {
 @Component({
   selector: 'app-vulnerabilities',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, FormsModule, UnifiedSelect],
+  imports: [CommonModule, RouterModule, FluxAppIcon, FluxButton, FormsModule, UnifiedSelect],
   templateUrl: './vulnerabilities.html',
   styleUrl: './vulnerabilities.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

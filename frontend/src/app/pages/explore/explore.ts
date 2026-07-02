@@ -15,8 +15,8 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { FluxButton } from '@deml/flux-material';
+import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { RouterModule } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { StatusCard } from '../../components/status-card/status-card';
@@ -24,7 +24,7 @@ import { StatusCard } from '../../components/status-card/status-card';
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, MatIconModule, RouterModule, StatusCta, StatusCard],
+  imports: [CommonModule, FluxButton, FluxAppIcon, RouterModule, StatusCta, StatusCard],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './explore.scss',

@@ -9,29 +9,32 @@ import {
   ViewChild,
   AfterViewInit,
   NgZone,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { FluxAppIcon } from '../flux-app-icon/flux-app-icon';
+import { FluxDialogService } from '../../services/flux-dialog.service';
 import { OramaSearchService, SearchItem } from '../../services/orama-search.service';
 import { SettingsService } from '../../services/settings.service';
 
 @Component({
   selector: 'app-search-dialog',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule, MatDialogModule],
+  imports: [CommonModule, RouterModule, FluxAppIcon],
   templateUrl: './search-dialog.html',
   styleUrl: './search-dialog.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchDialog implements AfterViewInit {
-  private dialogRef = inject(MatDialogRef<SearchDialog>);
+  private readonly fluxDialog = inject(FluxDialogService);
   private searchService = inject(OramaSearchService);
   private settingsService = inject(SettingsService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
   private zone = inject(NgZone);
+
+  protected readonly open = computed(() => this.fluxDialog.active()?.kind === 'search');
 
   searchQuery = signal<string>('');
   searchResults = signal<SearchItem[]>([]);
@@ -40,9 +43,8 @@ export class SearchDialog implements AfterViewInit {
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   ngAfterViewInit() {
-    // Focus search input on load
     setTimeout(() => {
-      if (this.searchInput) {
+      if (this.open() && this.searchInput) {
         this.searchInput.nativeElement.focus();
       }
     }, 100);
@@ -155,9 +157,9 @@ export class SearchDialog implements AfterViewInit {
     });
   }
 
-  close() {
-    this.dialogRef.close();
-  }
+  close = (): void => {
+    this.fluxDialog.closeSearch();
+  };
 
   @HostListener('keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {

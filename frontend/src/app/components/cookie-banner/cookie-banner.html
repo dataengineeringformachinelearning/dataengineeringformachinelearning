@@ -8,12 +8,12 @@
   >
     <div class="cookie-banner-header">
       <div class="title-group">
-        <mat-icon class="cookie-icon">cookie</mat-icon>
+        <flux-app-icon name="cookie" hostClass="cookie-icon" />
         <h2 id="cookie-title" class="cookie-heading">Cookie Preferences</h2>
       </div>
       @if (consentService.hasDecided()) {
       <button class="close-btn" (click)="close()" aria-label="Close settings">
-        <mat-icon>close</mat-icon>
+        <flux-app-icon name="close" />
       </button>
       }
     </div>
@@ -54,21 +54,11 @@
             </p>
           </div>
           <div class="pref-action">
-            <button
-              type="button"
-              class="toggle-switch"
-              [class.active]="analyticalConsent()"
-              (click)="toggleAnalytical()"
-              (keydown.space)="$event.preventDefault(); toggleAnalytical()"
-              (keydown.enter)="$event.preventDefault(); toggleAnalytical()"
+            <flux-switch
               id="cookie-toggle-analytical"
-              aria-label="Toggle Performance & Analytics Cookies"
-              aria-checked="false"
-              [attr.aria-checked]="analyticalConsent()"
-              role="switch"
-            >
-              <span class="toggle-slider"></span>
-            </button>
+              [checked]="analyticalConsent()"
+              (checkedChange)="toggleAnalytical($event)"
+            />
           </div>
         </div>
         <div class="preference-item">
@@ -80,21 +70,11 @@
             </p>
           </div>
           <div class="pref-action">
-            <button
-              type="button"
-              class="toggle-switch"
-              [class.active]="marketingConsent()"
-              (click)="toggleMarketing()"
-              (keydown.space)="$event.preventDefault(); toggleMarketing()"
-              (keydown.enter)="$event.preventDefault(); toggleMarketing()"
+            <flux-switch
               id="cookie-toggle-marketing"
-              aria-label="Toggle Marketing & Customization Cookies"
-              aria-checked="false"
-              [attr.aria-checked]="marketingConsent()"
-              role="switch"
-            >
-              <span class="toggle-slider"></span>
-            </button>
+              [checked]="marketingConsent()"
+              (checkedChange)="toggleMarketing($event)"
+            />
           </div>
         </div>
       </div>
@@ -102,33 +82,46 @@
     </div>
     <div class="cookie-banner-footer">
       <div class="footer-buttons">
-        <button
-          mat-button
+        <flux-button
+          variant="ghost"
+          type="button"
           class="settings-btn"
-          (click)="toggleCustomize()"
+          (pressed)="toggleCustomize()"
           id="cookie-customize-btn"
         >
           {{ showCustomize() ? 'Hide Options' : 'Cookie Settings' }}
-        </button>
+        </flux-button>
         <div class="primary-actions">
           @if (!showCustomize()) {
-          <button mat-button class="reject-btn" (click)="rejectAll()" id="cookie-reject-btn">
+          <flux-button
+            variant="ghost"
+            type="button"
+            class="reject-btn"
+            (pressed)="rejectAll()"
+            id="cookie-reject-btn"
+          >
             Reject All
-          </button>
+          </flux-button>
           } @if (showCustomize()) {
-          <button mat-button class="save-btn" (click)="savePreferences()" id="cookie-save-btn">
+          <flux-button
+            variant="ghost"
+            type="button"
+            class="save-btn"
+            (pressed)="savePreferences()"
+            id="cookie-save-btn"
+          >
             Save Choices
-          </button>
+          </flux-button>
           }
-          <button
-            mat-raised-button
-            color="primary"
+          <flux-button
+            variant="primary"
+            type="button"
             class="accept-btn"
-            (click)="acceptAll()"
+            (pressed)="acceptAll()"
             id="cookie-accept-btn"
           >
             Accept All
-          </button>
+          </flux-button>
         </div>
       </div>
     </div>

@@ -1,47 +1,12 @@
-@use '@angular/material' as mat;
 @use './theme' as theme;
 @use 'components/a11y' as *;
 @use 'components/badges' as *;
 @use 'components/layout' as *;
 @use 'components/navbar' as *;
-@use 'components/material-overrides' as *;
 @use 'components/utilities' as *;
 @use 'components/extracted-utilities' as *;
 @use 'components/flux-inspired' as *;
 @use '../projects/flux-material/src/styles/flux-material' as *;
-
-/* Disable inner focus outline for Angular Material inputs, textareas, and select elements,
-   as the form field container handles focus state visually at the border level.
-   We instead apply the focus outline to the entire form field using :has() */
-.mat-mdc-form-field input:focus-visible,
-.mat-mdc-form-field textarea:focus-visible,
-.mat-mdc-form-field select:focus-visible,
-.mat-form-field input:focus-visible,
-.mat-form-field textarea:focus-visible,
-.mat-form-field select:focus-visible,
-html[data-theme='light'] .mat-mdc-form-field input:focus-visible,
-html[data-theme='light'] .mat-mdc-form-field textarea:focus-visible,
-html[data-theme='light'] .mat-mdc-form-field select:focus-visible,
-html[data-theme='light'] .mat-form-field input:focus-visible,
-html[data-theme='light'] .mat-form-field textarea:focus-visible,
-html[data-theme='light'] .mat-form-field select:focus-visible {
-  outline: none !important;
-}
-
-/* Wrap the accessibility focus ring around the visual field container (excluding the subscript area) */
-.mdc-text-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
-.mat-form-field-flex:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid var(--color-primary-container) !important;
-  outline-offset: 3px !important;
-  border-radius: var(--border-radius-sm);
-}
-
-html[data-theme='light']
-  .mdc-text-field:has(input:focus-visible, textarea:focus-visible, select:focus-visible),
-html[data-theme='light']
-  .mat-form-field-flex:has(input:focus-visible, textarea:focus-visible, select:focus-visible) {
-  outline: 2px solid var(--color-primary) !important;
-}
 
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';
@@ -67,47 +32,6 @@ code[class*='language-'] {
 
 // ====================== GOOGLE FONT ======================
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-html {
-  @include mat.theme(
-    (
-      color: (
-        theme-type: light,
-        use-system-variables: true,
-      ),
-      typography: (
-        brand-family: '"Inter", sans-serif',
-        plain-family: '"Inter", sans-serif',
-      ),
-      density: 0,
-    )
-  );
-}
-
-@media (prefers-color-scheme: dark) {
-  html:not([data-theme='light']) {
-    @include mat.theme(
-      (
-        color: (
-          theme-type: dark,
-          use-system-variables: true,
-        ),
-      )
-    );
-  }
-}
-
-html[data-theme='dark'],
-html.dark {
-  @include mat.theme(
-    (
-      color: (
-        theme-type: dark,
-        use-system-variables: true,
-      ),
-    )
-  );
-}
 
 // ====================== GLOBAL LAYOUT ======================
 *,

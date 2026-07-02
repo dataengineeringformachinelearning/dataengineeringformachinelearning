@@ -10,9 +10,13 @@ full component-to-upstream mapping.
 
 ## Usage inside this repo
 
-The app consumes the library **directly from source** via the TypeScript path
-mapping `@deml/flux-material` (see `tsconfig.json`), so no build step is needed
-during development:
+The app consumes the library as a **local npm dependency** and from source during development:
+
+```json
+"@deml/flux-material": "file:dist/flux-material"
+```
+
+`prebuild` / `prestart` run `npm run build:flux-material` automatically. TypeScript also maps `@deml/flux-material` to source in `tsconfig.json` for fast HMR.
 
 ```ts
 import { FluxButton, FluxCard, FluxToastService } from '@deml/flux-material';
