@@ -149,6 +149,74 @@
           }
         }
       }
+    },
+    "flux-material-showcase": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/flux-material-showcase",
+      "sourceRoot": "projects/flux-material-showcase/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/flux-material-showcase/src/main.ts",
+            "tsConfig": "projects/flux-material-showcase/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [],
+            "styles": ["projects/flux-material-showcase/src/styles.scss"],
+            "outputPath": "dist/flux-material-showcase"
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2MB",
+                  "maximumError": "3MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "16kB",
+                  "maximumError": "40kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "flux-material-showcase:build:production"
+            },
+            "development": {
+              "buildTarget": "flux-material-showcase:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/flux-material-showcase/src/**/*.ts",
+              "projects/flux-material-showcase/src/**/*.html"
+            ]
+          }
+        }
+      }
     }
   }
 }

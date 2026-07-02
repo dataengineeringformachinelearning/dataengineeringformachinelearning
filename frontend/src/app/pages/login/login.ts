@@ -11,11 +11,16 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import {
+  FluxButton,
+  FluxCallout,
+  FluxField,
+  FluxHeading,
+  FluxInput,
+  FluxSeparator,
+  FluxText,
+} from '@deml/flux-material';
 
 import { AuthService } from '../../services/auth.service';
 import {
@@ -31,10 +36,13 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatIconModule,
+    FluxButton,
+    FluxCallout,
+    FluxField,
+    FluxHeading,
+    FluxInput,
+    FluxSeparator,
+    FluxText,
   ],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -99,6 +107,30 @@ export class Login implements OnInit, OnDestroy {
   verificationId = signal<string | null>(null);
   uid = signal<string>('');
   token = signal<string>('');
+
+  protected submitLabel = (): string => {
+    if (this.isForgotMode()) return 'Send Link';
+    if (this.isResetMode()) return 'Reset';
+    if (this.mfaRequired()) return 'Verify';
+    if (this.isPhoneMode() && !this.codeSent()) return 'Send OTP';
+    if (this.isPhoneMode() && this.codeSent()) return 'Login';
+    if (this.isRegisterMode()) return 'Sign Up';
+    return 'Login';
+  };
+
+  protected submitIcon = ():
+    | 'send'
+    | 'lock'
+    | 'shield'
+    | 'user'
+    | null => {
+    if (this.isForgotMode()) return 'send';
+    if (this.isResetMode()) return 'lock';
+    if (this.mfaRequired()) return 'shield';
+    if (this.isPhoneMode() && !this.codeSent()) return 'send';
+    if (this.isRegisterMode()) return 'user';
+    return null;
+  };
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {

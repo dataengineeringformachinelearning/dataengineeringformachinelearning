@@ -59,7 +59,6 @@ import {
   FluxTimeline,
   FluxTimelineItem,
   FluxToastService,
-  FluxToaster,
   FluxTooltip,
 } from '@deml/flux-material';
 
@@ -68,7 +67,7 @@ import {
  * component (https://fluxui.dev), themed with DEML Material tokens.
  */
 @Component({
-  selector: 'app-flux-showcase',
+  selector: 'app-showcase',
   imports: [
     FluxAccordion,
     FluxAccordionItem,
@@ -122,14 +121,13 @@ import {
     FluxTimePicker,
     FluxTimeline,
     FluxTimelineItem,
-    FluxToaster,
     FluxTooltip,
   ],
-  templateUrl: './flux-showcase.html',
-  styleUrl: './flux-showcase.scss',
+  templateUrl: './showcase.html',
+  styleUrl: './showcase.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FluxShowcase {
+export class Showcase {
   private readonly toastService = inject(FluxToastService);
 
   protected readonly modalOpen = signal(false);
@@ -137,9 +135,8 @@ export class FluxShowcase {
   protected readonly lastMessage = signal('');
 
   protected readonly breadcrumbs: FluxBreadcrumb[] = [
-    { label: 'Platform', href: '/' },
-    { label: 'Design System', href: '/flux' },
-    { label: 'Flux-Material' },
+    { label: '@deml/flux-material', href: '/' },
+    { label: 'Component Gallery' },
   ];
 
   protected readonly regionOptions: FluxSelectOption[] = [
@@ -198,7 +195,7 @@ export class FluxShowcase {
   ]);
 
   constructor() {
-    inject(Title).setTitle('Flux-Material UI Kit | DEML');
+    inject(Title).setTitle('Flux-Material Component Gallery');
   }
 
   protected showToast = (tone: 'success' | 'danger'): void => {

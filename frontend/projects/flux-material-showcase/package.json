@@ -1,0 +1,10 @@
+{
+  "name": "@deml/flux-material-showcase",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Standalone component gallery for @deml/flux-material (not deployed on deml.app).",
+  "scripts": {
+    "start": "ng serve flux-material-showcase",
+    "build": "ng build flux-material-showcase"
+  }
+}

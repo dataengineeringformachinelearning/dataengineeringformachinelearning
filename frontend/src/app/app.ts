@@ -21,10 +21,11 @@ import { MonitorService } from './services/monitor.service';
 import { effect, HostListener } from '@angular/core';
 
 import { MatIconModule } from '@angular/material/icon';
+import { FluxToaster } from '@deml/flux-material';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Navbar, Sidebar, Footer, IssueReporter, CookieBanner, MatIconModule],
+  imports: [RouterOutlet, Navbar, Sidebar, Footer, IssueReporter, CookieBanner, MatIconModule, FluxToaster],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './app.scss',

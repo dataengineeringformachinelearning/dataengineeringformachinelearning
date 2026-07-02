@@ -11,6 +11,9 @@
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
     "lint": "ng lint",
     "build:flux-material": "ng build flux-material",
+    "build:flux-material-showcase": "ng build flux-material-showcase",
+    "build:flux-material-system": "npm run build:flux-material && npm run build:flux-material-showcase",
+    "serve:flux-material-showcase": "ng serve flux-material-showcase",
     "check:flux-upstream": "node scripts/check_flux_upstream.mjs",
     "check:mobile-first": "node scripts/check_mobile_first.js",
     "generate:api": "openapi-generator-cli generate -i ./openapi.json -g typescript-angular -o src/app/api --skip-validate-spec"

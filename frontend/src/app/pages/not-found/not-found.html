@@ -1,15 +1,13 @@
 <div class="dashboard-container not-found-container">
-  <div class="not-found-card" id="not-found-card">
-    <div class="error-code">404</div>
-    <h1 class="error-title">Page Not Found</h1>
-    <p class="error-message">
+  <flux-card class="not-found-card" id="not-found-card">
+    <flux-heading [level]="1" size="xl" class="error-code">404</flux-heading>
+    <flux-heading [level]="2" size="lg" class="error-title">Page Not Found</flux-heading>
+    <flux-text variant="muted" class="error-message">
       The page you are looking for might have been removed, had its name changed, or is temporarily
       unavailable.
-    </p>
+    </flux-text>
     <div class="action-box">
-      <a routerLink="/" class="mat-mdc-raised-button mat-primary home-btn" id="not-found-home-btn">
-        Return to Home
-      </a>
+      <flux-button variant="primary" href="/" id="not-found-home-btn">Return to Home</flux-button>
     </div>
-  </div>
+  </flux-card>
 </div>
