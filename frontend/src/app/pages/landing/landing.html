@@ -1,0 +1,218 @@
+<div class="landing-container showcase-layout">
+  <section class="hero-showcase" aria-labelledby="main-title">
+    <div class="hero-copy">
+      <div class="hero-badge">
+        <span class="badge-dot pulse-dot"></span>
+        <span class="badge-text">Secured · Version {{ version }}</span>
+      </div>
+      <h1 class="title" id="main-title">Secure Your Data<br />Pipeline. Ship ML Faster.</h1>
+      <p class="subtitle">
+        DEML fuses rigorous data engineering with predictive security. Stream telemetry, catch
+        threats in real time, and keep every tenant isolated — without slowing your team down.
+      </p>
+      <div class="hero-stats" aria-label="Platform highlights">
+        <div class="hero-stat-pill">
+          <flux-app-icon name="shield" [ariaHidden]="true" />
+          <span>847 threats blocked today</span>
+        </div>
+        <div class="hero-stat-pill">
+          <flux-app-icon name="speed" [ariaHidden]="true" />
+          <span>42ms P99 latency</span>
+        </div>
+        <div class="hero-stat-pill">
+          <flux-app-icon name="verified_user" [ariaHidden]="true" />
+          <span>Zero-trust by default</span>
+        </div>
+      </div>
+      <div class="cta-group">
+        <flux-button variant="primary" href="/login" icon="arrow-right" class="cta-main">
+          Get Started in 5 Minutes
+        </flux-button>
+        <flux-button variant="subtle" href="/status/platform-status" icon="bar-chart" class="cta-secondary">
+          See Live Security Posture
+        </flux-button>
+      </div>
+    </div>
+
+    <div class="hero-mockup" aria-hidden="true">
+      <div class="mockup-window">
+        <div class="mockup-titlebar">
+          <span class="mockup-dot"></span>
+          <span class="mockup-dot"></span>
+          <span class="mockup-dot"></span>
+          <span class="mockup-title">deml.app / security-ops</span>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-sidebar">
+            <span class="mockup-nav-item active"></span>
+            <span class="mockup-nav-item"></span>
+            <span class="mockup-nav-item"></span>
+          </div>
+          <div class="mockup-main">
+            <div class="mockup-gauges">
+              <div class="mockup-gauge"><span class="gauge-label">Threat</span><span class="gauge-val">12%</span></div>
+              <div class="mockup-gauge primary"><span class="gauge-label">CES</span><span class="gauge-val">94</span></div>
+              <div class="mockup-gauge"><span class="gauge-label">Stability</span><span class="gauge-val">99%</span></div>
+            </div>
+            <div class="mockup-chart">
+              @for (h of [45, 72, 58, 85, 63, 91, 78, 55]; track $index) {
+              <div class="chart-bar" [style.height.%]="h"></div>
+              }
+            </div>
+            <div class="mockup-stats-row">
+              <div class="mockup-stat"><span>P99</span><strong>42ms</strong></div>
+              <div class="mockup-stat"><span>Requests</span><strong>12.4K</strong></div>
+              <div class="mockup-stat"><span>Incidents</span><strong>0</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick-start-band" aria-labelledby="quick-start-title">
+    <header class="quick-start-header">
+      <span class="section-tag">Simple by Design</span>
+      <h2 id="quick-start-title">Up and Running in Four Steps</h2>
+      <p>No sprawling setup guides. Connect, observe, and act — the platform handles the rest.</p>
+    </header>
+    <ol class="quick-start-steps">
+      @for (item of quickStart; track item.step) {
+      <li class="quick-start-step">
+        <span class="step-number" aria-hidden="true">{{ item.step }}</span>
+        <flux-app-icon [name]="item.icon" hostClass="step-icon" [ariaHidden]="true" />
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.description }}</p>
+      </li>
+      }
+    </ol>
+  </section>
+
+  <section class="integrations-strip" aria-label="Integrates with modern infrastructure">
+    <p class="strip-label">Integrates With</p>
+    <div class="integration-logos">
+      @for (item of integrations; track item.name) {
+      <a
+        href="https://dataengineeringformachinelearning.com/documentation/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="integration-logo-item"
+      >
+        <flux-app-icon [name]="item.icon" [ariaHidden]="true" />
+        <span>{{ item.name }}</span>
+      </a>
+      }
+    </div>
+  </section>
+
+  @for (cap of capabilities; track cap.tag; let idx = $index) {
+  <section
+    class="showcase-band"
+    [class.reversed]="idx % 2 === 1"
+    [attr.aria-labelledby]="'cap-' + idx"
+  >
+    <div class="showcase-band-copy">
+      <span class="section-tag">{{ cap.tag }}</span>
+      <h2 [id]="'cap-' + idx">{{ cap.title }}</h2>
+      <p>{{ cap.description }}</p>
+      <a [href]="cap.link.href" class="showcase-link" [class.muted-link]="cap.link.muted">
+        {{ cap.link.label }}
+      </a>
+    </div>
+    <div class="showcase-band-visual" aria-hidden="true">
+      <div class="visual-panel">
+        <div class="visual-panel-header">
+          <flux-app-icon [name]="cap.icon" [ariaHidden]="true" />
+          <span>{{ cap.title }}</span>
+        </div>
+        <div class="visual-metrics">
+          @for (m of cap.metrics; track m.label) {
+          <div class="visual-metric">
+            <span class="metric-label">{{ m.label }}</span>
+            <span class="metric-value">{{ m.value }}</span>
+            <span class="metric-trend" [class]="'trend-' + m.trend" aria-hidden="true">
+              {{ trendSymbol(m.trend) }}
+            </span>
+          </div>
+          }
+        </div>
+        <div class="visual-sparkline">
+          <svg viewBox="0 0 200 48" preserveAspectRatio="none" aria-hidden="true">
+            <polyline
+              points="0,40 25,32 50,36 75,20 100,28 125,12 150,18 175,8 200,14"
+              fill="none"
+              stroke="var(--crayola-blue)"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+  }
+
+  <section class="security-pillars-band" aria-labelledby="security-pillars-title">
+    <header class="security-pillars-header">
+      <span class="section-tag">Defense in Depth</span>
+      <h2 id="security-pillars-title">Security That Works While You Sleep</h2>
+      <p>
+        Every layer — from ingestion to projection — is encrypted, isolated, and audited.
+      </p>
+    </header>
+    <ul class="security-pillars-grid">
+      @for (pillar of securityPillars; track pillar.label) {
+      <li class="security-pillar">
+        <flux-app-icon [name]="pillar.icon" [ariaHidden]="true" />
+        <strong>{{ pillar.label }}</strong>
+        <span>{{ pillar.detail }}</span>
+      </li>
+      }
+    </ul>
+  </section>
+
+  <section class="pricing-showcase" aria-labelledby="pricing-title">
+    <header class="pricing-header">
+      <span class="section-tag">API Access</span>
+      <h2 id="pricing-title">Simple, Transparent Pricing</h2>
+      <p>Choose the tier that fits your telemetry throughput needs.</p>
+    </header>
+    <div class="pricing-cards-container">
+      <div class="pricing-card standard-tier">
+        <h3>Standard Tier</h3>
+        <div class="price">Free</div>
+        <ul class="features-list">
+          <li><flux-app-icon name="check" [ariaHidden]="true" /> 60 requests / minute</li>
+          <li><flux-app-icon name="check" [ariaHidden]="true" /> Core Analytics</li>
+          <li><flux-app-icon name="check" [ariaHidden]="true" /> Community Support</li>
+        </ul>
+        <flux-button variant="subtle" href="/login">Get Started</flux-button>
+      </div>
+      <div class="pricing-card pro-tier">
+        <div class="recommended-badge">Recommended</div>
+        <h3>Pro Tier</h3>
+        <div class="price">$39<span>/mo</span></div>
+        <ul class="features-list">
+          <li><flux-app-icon name="check" [ariaHidden]="true" /> 1,000 requests / minute</li>
+          <li><flux-app-icon name="check" [ariaHidden]="true" /> Advanced Threat Detection</li>
+          <li><flux-app-icon name="check" [ariaHidden]="true" /> Priority Support</li>
+        </ul>
+        <flux-button variant="primary" href="/login?action=checkout">
+          Upgrade to Pro
+        </flux-button>
+      </div>
+    </div>
+  </section>
+
+  <section class="whitepaper-section" aria-label="Whitepaper">
+    <app-whitepaper-cta />
+  </section>
+
+  <section class="explore-band" aria-labelledby="explore-band-title">
+    <div class="explore-band-inner">
+      <span class="section-tag">Public Directory</span>
+      <h2 id="explore-band-title">Explore Live Status Pages</h2>
+      <p>Browse real-time status cards published by tenants across the platform.</p>
+      <flux-button variant="primary" href="/explore" icon="globe">Browse Status Directory</flux-button>
+    </div>
+  </section>
+</div>

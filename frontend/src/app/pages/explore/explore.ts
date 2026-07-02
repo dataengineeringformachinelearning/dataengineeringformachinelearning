@@ -20,11 +20,12 @@ import { FluxAppIcon } from '../../components/flux-app-icon/flux-app-icon';
 import { RouterModule } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { StatusCard } from '../../components/status-card/status-card';
+import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
 
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, FluxButton, FluxAppIcon, RouterModule, StatusCta, StatusCard],
+  imports: [CommonModule, FluxButton, FluxAppIcon, RouterModule, StatusCta, StatusCard, WhitepaperCta],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './explore.scss',

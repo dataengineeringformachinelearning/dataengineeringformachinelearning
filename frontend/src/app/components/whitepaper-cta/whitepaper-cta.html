@@ -1,0 +1,43 @@
+<section class="whitepaper-cta" aria-labelledby="whitepaper-cta-title">
+  <div class="whitepaper-cta-bg" aria-hidden="true">
+    <div class="polars-grid">
+      @for (bar of [72, 45, 88, 56, 91, 38, 67, 82, 49, 76, 58, 94]; track $index) {
+      <span class="polars-bar" [style.--bar-height]="bar + '%'"></span>
+      }
+    </div>
+    <svg class="polars-sparkline" viewBox="0 0 400 80" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="sparkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="var(--crayola-blue)" stop-opacity="0.15" />
+          <stop offset="50%" stop-color="var(--blue-bell)" stop-opacity="0.35" />
+          <stop offset="100%" stop-color="var(--golden-pollen)" stop-opacity="0.15" />
+        </linearGradient>
+      </defs>
+      <polyline
+        points="0,60 40,48 80,52 120,32 160,40 200,18 240,28 280,12 320,22 360,8 400,16"
+        fill="none"
+        stroke="url(#sparkGrad)"
+        stroke-width="2"
+      />
+    </svg>
+  </div>
+
+  <div class="whitepaper-cta-content">
+    <span class="section-tag">Research & Architecture</span>
+    <h2 id="whitepaper-cta-title">The Whitepaper</h2>
+    <p>
+      Event projection patterns, threat mitigation algorithms, and the architecture powering
+      symmetrical multi-tenant pipelines.
+    </p>
+    <flux-button
+      variant="primary"
+      href="https://dataengineeringformachinelearning.com/whitepaper/"
+      target="_blank"
+      rel="noopener noreferrer"
+      icon="file"
+      class="whitepaper-btn"
+    >
+      Read Whitepaper
+    </flux-button>
+  </div>
+</section>

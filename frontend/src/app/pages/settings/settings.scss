@@ -293,7 +293,7 @@
     gap: 16px;
     flex-wrap: wrap;
 
-    mat-form-field {
+    flux-field {
       flex: 1;
       min-width: 200px;
     }
@@ -841,7 +841,7 @@
         flex-direction: row;
         align-items: center;
 
-        mat-form-field {
+        flux-field {
           flex: 1;
           margin-bottom: -1.25em;
         }
@@ -1077,7 +1077,7 @@
     flex-direction: row;
     align-items: flex-start;
 
-    mat-form-field {
+    flux-field {
       flex: 1;
       margin-bottom: -1.25em;
     }

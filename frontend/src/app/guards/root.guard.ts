@@ -13,7 +13,7 @@ export const rootGuard: CanActivateFn = (
   const router = inject(Router);
 
   const getRedirectTarget = (isAuthenticated: boolean): UrlTree => {
-    return isAuthenticated ? router.parseUrl('/dashboard') : router.parseUrl('/login');
+    return isAuthenticated ? router.parseUrl('/dashboard') : router.parseUrl('/home');
   };
 
   if (authService.isInitialized()) {
