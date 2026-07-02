@@ -11,15 +11,15 @@ import { FluxControl, provideFluxCva } from '../core/cva';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <label class="flux-switch" [class.flux-disabled]="disabled() || formDisabled()">
-      <input
-        type="checkbox"
-        role="switch"
-        [checked]="checked()"
-        [disabled]="disabled() || formDisabled()"
-        (change)="toggle($event)"
-        (blur)="onTouched()"
-      />
-      <span class="flux-switch-track" aria-hidden="true">
+      <span class="flux-switch-track" [class.flux-checked]="checked()">
+        <input
+          type="checkbox"
+          role="switch"
+          [checked]="checked()"
+          [disabled]="disabled() || formDisabled()"
+          (change)="toggle($event)"
+          (blur)="onTouched()"
+        />
         <span class="flux-switch-thumb"></span>
       </span>
       <span class="flux-switch-content">
@@ -46,13 +46,8 @@ import { FluxControl, provideFluxCva } from '../core/cva';
         opacity: 0.55;
         cursor: not-allowed;
       }
-      input {
-        position: absolute;
-        opacity: 0;
-        width: 1px;
-        height: 1px;
-      }
       .flux-switch-track {
+        position: relative;
         display: inline-flex;
         align-items: center;
         width: var(--flux-space-4);
@@ -66,6 +61,16 @@ import { FluxControl, provideFluxCva } from '../core/cva';
         flex-shrink: 0;
         box-sizing: border-box;
       }
+      /* The native input fills the visual track so clicks and focus land on it. */
+      .flux-switch-track input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
       .flux-switch-thumb {
         width: 14px;
         height: 14px;
@@ -73,15 +78,15 @@ import { FluxControl, provideFluxCva } from '../core/cva';
         background: var(--flux-text-muted);
         transition: var(--flux-transition);
       }
-      input:checked + .flux-switch-track {
+      .flux-switch-track.flux-checked {
         background: var(--flux-accent);
         border-color: var(--flux-accent);
       }
-      input:checked + .flux-switch-track .flux-switch-thumb {
+      .flux-switch-track.flux-checked .flux-switch-thumb {
         background: var(--flux-accent-content);
         transform: translateX(calc(var(--flux-space-4) - 22px));
       }
-      input:focus-visible + .flux-switch-track {
+      .flux-switch-track:has(input:focus-visible) {
         outline: var(--flux-ring-width) solid var(--flux-ring);
         outline-offset: var(--flux-ring-offset);
       }

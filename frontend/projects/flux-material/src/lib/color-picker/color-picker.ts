@@ -53,6 +53,7 @@ import { FluxIcon } from '../icon/icon';
       }
       .flux-color-swatch,
       .flux-color-custom {
+        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -78,11 +79,15 @@ import { FluxIcon } from '../icon/icon';
         border-color: var(--flux-text);
         box-shadow: var(--flux-shadow-sm);
       }
+      /* The native input fills the swatch so clicks and focus land on it. */
       .flux-color-custom input {
         position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
         opacity: 0;
-        width: 1px;
-        height: 1px;
+        cursor: pointer;
       }
       .flux-color-value {
         font-size: var(--flux-font-size);

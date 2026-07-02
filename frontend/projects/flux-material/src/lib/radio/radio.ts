@@ -22,15 +22,16 @@ import { fluxUid } from '../core/uid';
         class="flux-radio"
         [class.flux-disabled]="option.disabled || disabled() || formDisabled()"
       >
-        <input
-          type="radio"
-          [name]="groupName"
-          [checked]="option.value === value()"
-          [disabled]="option.disabled || disabled() || formDisabled()"
-          (change)="select(option)"
-          (blur)="onTouched()"
-        />
-        <span class="flux-radio-dot" aria-hidden="true"></span>
+        <span class="flux-radio-dot" [class.flux-checked]="option.value === value()">
+          <input
+            type="radio"
+            [name]="groupName"
+            [checked]="option.value === value()"
+            [disabled]="option.disabled || disabled() || formDisabled()"
+            (change)="select(option)"
+            (blur)="onTouched()"
+          />
+        </span>
         <span class="flux-radio-label">{{ option.label }}</span>
       </label>
     }
@@ -58,13 +59,8 @@ import { fluxUid } from '../core/uid';
         opacity: 0.55;
         cursor: not-allowed;
       }
-      input {
-        position: absolute;
-        opacity: 0;
-        width: 1px;
-        height: 1px;
-      }
       .flux-radio-dot {
+        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -75,16 +71,27 @@ import { fluxUid } from '../core/uid';
         background: var(--flux-surface);
         transition: var(--flux-transition);
         flex-shrink: 0;
+        box-sizing: border-box;
+      }
+      /* The native input fills the visual dot so clicks and focus land on it. */
+      .flux-radio-dot input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
       }
       .flux-radio:hover:not(.flux-disabled) .flux-radio-dot {
         border-color: var(--flux-accent-strong);
       }
-      input:checked + .flux-radio-dot {
+      .flux-radio-dot.flux-checked {
         border-color: var(--flux-accent);
         border-width: 5px;
         background: var(--flux-accent-content);
       }
-      input:focus-visible + .flux-radio-dot {
+      .flux-radio-dot:has(input:focus-visible) {
         outline: var(--flux-ring-width) solid var(--flux-ring);
         outline-offset: var(--flux-ring-offset);
       }

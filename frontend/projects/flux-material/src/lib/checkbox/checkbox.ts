@@ -13,15 +13,15 @@ import { FluxIcon } from '../icon/icon';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <label class="flux-checkbox" [class.flux-disabled]="disabled() || formDisabled()">
-      <input
-        type="checkbox"
-        [checked]="checked()"
-        [indeterminate]="indeterminate()"
-        [disabled]="disabled() || formDisabled()"
-        (change)="toggle($event)"
-        (blur)="onTouched()"
-      />
-      <span class="flux-checkbox-box" aria-hidden="true">
+      <span class="flux-checkbox-box" [class.flux-checked]="checked() || indeterminate()">
+        <input
+          type="checkbox"
+          [checked]="checked()"
+          [indeterminate]="indeterminate()"
+          [disabled]="disabled() || formDisabled()"
+          (change)="toggle($event)"
+          (blur)="onTouched()"
+        />
         @if (indeterminate()) {
           <flux-icon name="minus" [size]="14" />
         } @else if (checked()) {
@@ -52,13 +52,8 @@ import { FluxIcon } from '../icon/icon';
         opacity: 0.55;
         cursor: not-allowed;
       }
-      input {
-        position: absolute;
-        opacity: 0;
-        width: 1px;
-        height: 1px;
-      }
       .flux-checkbox-box {
+        position: relative;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -72,15 +67,24 @@ import { FluxIcon } from '../icon/icon';
         transition: var(--flux-transition);
         flex-shrink: 0;
       }
+      /* The native input fills the visual box so clicks and focus land on it. */
+      .flux-checkbox-box input {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
       .flux-checkbox:hover:not(.flux-disabled) .flux-checkbox-box {
         border-color: var(--flux-accent-strong);
       }
-      input:checked + .flux-checkbox-box,
-      input:indeterminate + .flux-checkbox-box {
+      .flux-checkbox-box.flux-checked {
         background: var(--flux-accent);
         border-color: var(--flux-accent);
       }
-      input:focus-visible + .flux-checkbox-box {
+      .flux-checkbox-box:has(input:focus-visible) {
         outline: var(--flux-ring-width) solid var(--flux-ring);
         outline-offset: var(--flux-ring-offset);
       }

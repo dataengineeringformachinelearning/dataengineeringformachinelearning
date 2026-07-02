@@ -55,6 +55,7 @@ import { FluxIcon } from '../icon/icon';
         font-family: var(--flux-font-family);
       }
       .flux-upload-zone {
+        position: relative;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -79,11 +80,15 @@ import { FluxIcon } from '../icon/icon';
         outline: var(--flux-ring-width) solid var(--flux-ring);
         outline-offset: var(--flux-ring-offset);
       }
+      /* The native input fills the drop zone so clicks and focus land on it. */
       input {
         position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
         opacity: 0;
-        width: 1px;
-        height: 1px;
+        cursor: pointer;
       }
       .flux-upload-heading {
         font-size: var(--flux-font-size);
