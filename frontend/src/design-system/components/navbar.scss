@@ -125,7 +125,8 @@
   border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important;
   padding: 0 16px !important;
   height: 40px !important;
-  line-height: 40px !important;
+  min-height: 40px !important;
+  line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
@@ -286,7 +287,8 @@ html[data-theme='light'] {
   border: 1px solid var(--border) !important;
   transition: var(--transition-smooth) !important;
   height: 40px !important;
-  line-height: 40px !important;
+  min-height: 40px !important;
+  line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
@@ -351,7 +353,8 @@ html[data-theme='light'] {
   font-size: 1rem !important;
   color: var(--text-muted) !important;
   height: 40px !important;
-  line-height: 40px !important;
+  min-height: 40px !important;
+  line-height: 1 !important;
   border-radius: var(--border-radius-sm) !important;
   padding: 0 16px !important;
   display: inline-flex !important;
@@ -387,7 +390,8 @@ html[data-theme='light'] {
 .mobile-auth-btn {
   width: 100% !important;
   height: 40px !important;
-  line-height: 40px !important;
+  min-height: 40px !important;
+  line-height: 1 !important;
   justify-content: center !important;
   border-radius: var(--border-radius-lg) !important;
   background: var(--color-dark-grey-btn-bg) !important;

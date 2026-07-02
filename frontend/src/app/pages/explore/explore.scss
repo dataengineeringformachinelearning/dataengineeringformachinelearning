@@ -1,5 +1,10 @@
 @use '../status/status.scss' as *;
 
+.explore-whitepaper-cta {
+  display: block;
+  margin-top: 48px;
+}
+
 .inline-status-link {
   color: var(--status-accent);
   font-weight: 500;

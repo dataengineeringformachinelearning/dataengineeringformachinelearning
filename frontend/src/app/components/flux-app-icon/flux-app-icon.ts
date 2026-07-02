@@ -10,6 +10,7 @@ import { mapMaterialIcon } from '../../core/flux-icon-map';
   host: {
     '[attr.aria-hidden]': 'ariaHidden() ? "true" : null',
     '[class]': 'hostClass()',
+    style: 'display: inline-flex; align-items: center; justify-content: center; vertical-align: middle; line-height: 1;',
   },
   template: `<flux-icon [name]="resolvedName()" [size]="size()" [spin]="spin()" />`,
 })

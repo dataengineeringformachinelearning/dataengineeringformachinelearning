@@ -253,8 +253,10 @@
             <flux-chart
               kind="line"
               [series]="latencySeries()"
+              [categories]="latencyCategories()"
               label="System Latency (Last 24h)"
               [showArea]="true"
+              [fill]="true"
               class="flux-chart-large"
             />
             } @else {
@@ -321,7 +323,9 @@
             <flux-chart
               kind="bar"
               [series]="topRegionsSeries()"
+              [categories]="topRegionsCategories()"
               label="Top Regions"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -346,8 +350,10 @@
             <flux-chart
               kind="line"
               [series]="frequencySeries()"
+              [categories]="frequencyCategories()"
               label="Request Frequency"
               [showArea]="true"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -374,7 +380,9 @@
             <flux-chart
               kind="bar"
               [series]="endpointSeries()"
+              [categories]="endpointCategories()"
               label="Request Counts per Endpoint"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -412,6 +420,7 @@
               kind="donut"
               [segments]="threatSeveritySegments()"
               label="Threat Events by Severity"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -436,7 +445,9 @@
             <flux-chart
               kind="bar"
               [series]="securityAlertsSeries()"
+              [categories]="securityAlertCategories()"
               label="Recent Security Anomalies"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -461,7 +472,9 @@
             <flux-chart
               kind="bar"
               [series]="statusSeries()"
+              [categories]="statusCategories()"
               label="HTTP Status Distribution"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
