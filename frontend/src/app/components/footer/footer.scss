@@ -154,3 +154,10 @@
     }
   }
 }
+
+:host-context(html[data-theme='light']) {
+  .usa-badge:hover {
+    background-color: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.15);
+  }
+}

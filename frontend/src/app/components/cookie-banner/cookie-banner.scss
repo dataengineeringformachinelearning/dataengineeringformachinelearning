@@ -73,6 +73,11 @@
       background-color: rgba(255, 255, 255, 0.08);
       color: var(--text-color);
     }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary, #2176ff);
+      outline-offset: 2px;
+    }
   }
 }
 
@@ -178,13 +183,18 @@
 
   .toggle-slider {
     position: absolute;
-    left: 0px;
+    left: 4px;
     width: 16px;
     height: 16px;
     background-color: var(--white);
     border-radius: 50%;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-primary, #2176ff);
+    outline-offset: 2px;
   }
 }
 

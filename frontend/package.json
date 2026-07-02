@@ -37,6 +37,7 @@
     "firebase": "^12.14.0",
     "leaflet": "^1.9.4",
     "ng-apexcharts": "^2.4.0",
+    "prismjs": "^1.30.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "^0.16.2"
