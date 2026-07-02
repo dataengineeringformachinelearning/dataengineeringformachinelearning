@@ -53,6 +53,63 @@
     }
   };
 
+  // Shared: collect browser threat indicators (used by vuln reports + analytics)
+  const getBrowserThreatIndicators = () => {
+    const indicators = {
+      referrer: document.referrer || "Direct",
+      language: navigator.language,
+      platform: navigator.platform,
+      cores: navigator.hardwareConcurrency || "N/A",
+      memory_gb: navigator.deviceMemory || "N/A",
+      webdriver: !!navigator.webdriver,
+      plugins_count: navigator.plugins ? navigator.plugins.length : 0,
+      visibility_state: document.visibilityState || "visible",
+      screen_color_depth: window.screen ? window.screen.colorDepth : "N/A",
+      network_connection: {},
+    };
+    try {
+      if (navigator.connection) {
+        const conn = navigator.connection;
+        indicators.network_connection = {
+          effective_type: conn.effectiveType,
+          rtt_ms: conn.rtt,
+          downlink_mbps: conn.downlink,
+        };
+      }
+    } catch {}
+    return indicators;
+  };
+
+  // Shared: collect page performance metrics (FCP, load time, protocol)
+  const collectPerformanceMetrics = () => {
+    let pageLoadTime = 0;
+    let domInteractive = 0;
+    let dnsLookup = 0;
+    let fcpTime = 0;
+    let protocol = "unknown";
+    try {
+      const [navigation] = window.performance.getEntriesByType("navigation");
+      if (navigation) {
+        pageLoadTime = Math.round(
+          navigation.loadEventEnd - navigation.startTime,
+        );
+        domInteractive = Math.round(
+          navigation.domInteractive - navigation.startTime,
+        );
+        dnsLookup = Math.round(
+          navigation.domainLookupEnd - navigation.domainLookupStart,
+        );
+        protocol = navigation.nextHopProtocol || "unknown";
+      }
+      const paints = window.performance.getEntriesByType("paint");
+      const fcp = paints.find((p) => p.name === "first-contentful-paint");
+      if (fcp) {
+        fcpTime = Math.round(fcp.startTime);
+      }
+    } catch {}
+    return { pageLoadTime, domInteractive, dnsLookup, fcpTime, protocol };
+  };
+
   const DEFAULT_STATUS_APP = "https://deml.app";
 
   const isMarketingHost = (hostname) =>
@@ -430,6 +487,13 @@
             background-color: #94a3b8;
             margin-right: 8px;
             display: inline-block;
+            flex-shrink: 0;
+          }
+          .status-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 220px;
           }
           .divider {
             color: rgba(255, 255, 255, 0.2);
@@ -459,12 +523,14 @@
           }
           .modal-overlay {
             position: fixed;
+            overflow-y: auto;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             background-color: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -530,6 +596,11 @@
             flex-direction: column;
             gap: 16px;
           }
+          @media (max-width: 480px) {
+            .modal-body {
+              padding: 16px;
+            }
+          }
           .helper-text {
             font-size: 14px;
             color: #94a3b8;
@@ -552,7 +623,7 @@
             padding: 10px 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 16px;
             outline: none;
             background-color: rgba(0, 0, 0, 0.2);
             color: #f8fafc;
@@ -567,9 +638,11 @@
           .form-row {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
           }
           .form-row .form-field {
             flex: 1;
+            min-width: 140px;
           }
           .modal-footer {
             padding: 16px 20px;
@@ -799,7 +872,7 @@
               inputDesc,
               btnCancel,
               btnSubmit,
-            ];
+            ].filter(Boolean);
             const first = focusables[0];
             const last = focusables[focusables.length - 1];
             const activeEl = this.shadowRoot.activeElement;
@@ -818,34 +891,7 @@
           }
         });
 
-        const getBrowserThreatIndicators = () => {
-          const indicators = {
-            referrer: document.referrer || "Direct",
-            language: navigator.language,
-            platform: navigator.platform,
-            cores: navigator.hardwareConcurrency || "N/A",
-            memory_gb: navigator.deviceMemory || "N/A",
-            webdriver: navigator.webdriver ? true : false,
-            plugins_count: navigator.plugins ? navigator.plugins.length : 0,
-            visibility_state: document.visibilityState || "visible",
-            screen_color_depth: window.screen
-              ? window.screen.colorDepth
-              : "N/A",
-            network_connection: {},
-          };
-
-          try {
-            if (navigator.connection) {
-              const conn = navigator.connection;
-              indicators.network_connection = {
-                effective_type: conn.effectiveType,
-                rtt_ms: conn.rtt,
-                downlink_mbps: conn.downlink,
-              };
-            }
-          } catch {}
-          return indicators;
-        };
+        // getBrowserThreatIndicators is now a top-level shared helper
 
         btnSubmit.addEventListener("click", async () => {
           const title = inputTitle.value.trim();
@@ -882,32 +928,8 @@
 
           btnSubmit.disabled = true;
 
-          let pageLoadTime = 0;
-          let domInteractive = 0;
-          let dnsLookup = 0;
-          let fcpTime = 0;
-          let protocol = "unknown";
-          try {
-            const [navigation] =
-              window.performance.getEntriesByType("navigation");
-            if (navigation) {
-              pageLoadTime = Math.round(
-                navigation.loadEventEnd - navigation.startTime,
-              );
-              domInteractive = Math.round(
-                navigation.domInteractive - navigation.startTime,
-              );
-              dnsLookup = Math.round(
-                navigation.domainLookupEnd - navigation.domainLookupStart,
-              );
-              protocol = navigation.nextHopProtocol || "unknown";
-            }
-            const paints = window.performance.getEntriesByType("paint");
-            const fcp = paints.find((p) => p.name === "first-contentful-paint");
-            if (fcp) {
-              fcpTime = Math.round(fcp.startTime);
-            }
-          } catch {}
+          const { pageLoadTime, domInteractive, dnsLookup, fcpTime, protocol } =
+            collectPerformanceMetrics();
 
           const payload = {
             title,
@@ -966,8 +988,7 @@
         // Automatically report client performance analytics to feed the Threat Analysis (TA) model
         const reportAnalyticsToTa = async () => {
           let responseTimeMs = 250; // Fallback default
-          let fcpTime = 0;
-          let protocol = "unknown";
+
           const sessionStart = Number(
             sessionStorage.getItem("deml_session_start") || Date.now(),
           );
@@ -1003,26 +1024,12 @@
               clickEntropy * 0.3 +
               (sessionDurationS > 10 ? 0.2 : 0),
           );
-          try {
-            const [navigation] =
-              window.performance.getEntriesByType("navigation");
-            if (navigation && navigation.loadEventEnd > 0) {
-              responseTimeMs = Math.round(
-                navigation.loadEventEnd - navigation.startTime,
-              );
-              protocol = navigation.nextHopProtocol || "unknown";
-            } else if (window.performance.timing) {
-              const t = window.performance.timing;
-              if (t.loadEventEnd > 0 && t.navigationStart > 0) {
-                responseTimeMs = t.loadEventEnd - t.navigationStart;
-              }
-            }
-            const paints = window.performance.getEntriesByType("paint");
-            const fcp = paints.find((p) => p.name === "first-contentful-paint");
-            if (fcp) {
-              fcpTime = Math.round(fcp.startTime);
-            }
-          } catch {}
+          const perfMetrics = collectPerformanceMetrics();
+          const fcpTime = perfMetrics.fcpTime;
+          const protocol = perfMetrics.protocol;
+          if (perfMetrics.pageLoadTime > 0) {
+            responseTimeMs = perfMetrics.pageLoadTime;
+          }
 
           const telemetryPayload = {
             tenant_id: pageId,
@@ -1147,7 +1154,7 @@
               const href = statusPageUrl(frontendHost, page.slug);
               widgetLink.href = href;
 
-              let color = "var(--color-success, #10b981)";
+              let color = "#10b981";
               let textContent = "All Systems Operational";
 
               try {

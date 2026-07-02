@@ -213,7 +213,16 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
 }
 
 .dashboard-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow-y: auto; }
-.content-wrapper { padding: 40px 24px; max-width: 800px; margin: 0 auto; width: 100%; }
+.content-wrapper {
+  padding: 24px 16px;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    padding: 40px 24px;
+  }
+}
 
 .whitepaper-header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 32px; margin-bottom: 48px; }
 .title { font-size: 2.25rem; font-weight: 800; line-height: 1.15; margin-bottom: 12px; }
@@ -228,7 +237,22 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
 }
 
 .pagination-controls-outlined {
-  display: flex; flex-direction: row; justify-content: space-between; align-items: center; gap: 24px; padding: 16px 32px; border: 1px solid var(--border); border-radius: 16px; background: var(--card-bg);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-bg);
+
+  @media (min-width: 600px) {
+    justify-content: space-between;
+    padding: 16px 32px;
+    gap: 24px;
+  }
 }
 .pagination-btn {
   background: var(--color-primary) !important; color: white !important; font-weight: 600; border-radius: 16px; border: none; padding: 8px 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: opacity 0.2s;
