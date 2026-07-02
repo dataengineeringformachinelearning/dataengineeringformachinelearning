@@ -256,6 +256,7 @@
               [categories]="latencyCategories()"
               label="System Latency (Last 24h)"
               [showArea]="true"
+              [fill]="true"
               class="flux-chart-large"
             />
             } @else {
@@ -324,7 +325,7 @@
               [series]="topRegionsSeries()"
               [categories]="topRegionsCategories()"
               label="Top Regions"
-              [compact]="true"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -352,7 +353,7 @@
               [categories]="frequencyCategories()"
               label="Request Frequency"
               [showArea]="true"
-              [compact]="true"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -381,7 +382,7 @@
               [series]="endpointSeries()"
               [categories]="endpointCategories()"
               label="Request Counts per Endpoint"
-              [compact]="true"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -419,7 +420,7 @@
               kind="donut"
               [segments]="threatSeveritySegments()"
               label="Threat Events by Severity"
-              [compact]="true"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -446,7 +447,7 @@
               [series]="securityAlertsSeries()"
               [categories]="securityAlertCategories()"
               label="Recent Security Anomalies"
-              [compact]="true"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {
@@ -473,7 +474,7 @@
               [series]="statusSeries()"
               [categories]="statusCategories()"
               label="HTTP Status Distribution"
-              [compact]="true"
+              [fill]="true"
               class="flux-chart-medium"
             />
             } @else {

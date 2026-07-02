@@ -272,15 +272,24 @@
 
 /* Semantic Layout Classes */
 .chart-container-medium {
-  min-height: 220px;
-  max-height: 260px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
   position: relative;
   overflow: hidden;
+  padding-top: 0;
 
   flux-chart {
-    display: block;
-    width: 100%;
-    max-height: 220px;
+    flex: 1 1 auto;
+    display: flex;
+    min-height: 260px;
+    height: 100%;
+  }
+
+  .empty-chart-state {
+    flex: 1 1 auto;
+    min-height: 260px;
   }
 }
 
@@ -296,6 +305,23 @@
 
   @media (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .status-card-outlined {
+    display: flex;
+    flex-direction: column;
+    min-height: 380px;
+  }
+
+  .chart-custom-header {
+    flex-shrink: 0;
+  }
+
+  .card-body-clean.chart-container-medium {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--card-padding);
   }
 }
 
@@ -343,20 +369,30 @@
 
 .flux-chart-large {
   width: 100%;
-  max-height: 280px;
-  display: block;
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 300px;
 }
 
 .chart-container-large {
-  min-height: 280px;
-  max-height: 320px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
   position: relative;
   overflow: hidden;
+  padding-top: 0;
 
   flux-chart {
-    display: block;
-    width: 100%;
-    max-height: 280px;
+    flex: 1 1 auto;
+    display: flex;
+    min-height: 300px;
+    height: 100%;
+  }
+
+  .empty-chart-state {
+    flex: 1 1 auto;
+    min-height: 300px;
   }
 }
 
@@ -365,12 +401,25 @@
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
   margin-bottom: var(--grid-gap, 27px);
+
+  .status-card-outlined {
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+  }
+
+  .card-body-clean.chart-container-large {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .flux-chart-medium {
   width: 100%;
-  max-height: 220px;
-  display: block;
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 260px;
 }
 
 .panel-title-flex {

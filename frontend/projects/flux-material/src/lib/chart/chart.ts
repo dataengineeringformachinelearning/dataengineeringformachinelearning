@@ -38,8 +38,8 @@ const TONE_VARS: Record<FluxTone, string> = {
 };
 
 const WIDTH = 720;
-const HEIGHT_DEFAULT = 220;
-const HEIGHT_COMPACT = 168;
+const HEIGHT_DEFAULT = 260;
+const HEIGHT_COMPACT = 200;
 const PAD_TOP = 14;
 const PAD_RIGHT = 16;
 const PAD_BOTTOM = 36;
@@ -70,8 +70,11 @@ const truncateLabel = (label: string, max = 10): string =>
 @Component({
   selector: 'flux-chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.flux-chart-fill-host]': 'fill()',
+  },
   template: `
-    <figure class="flux-chart" [class.flux-chart-compact]="compact()">
+    <figure class="flux-chart" [class.flux-chart-fill]="fill()" [class.flux-chart-compact]="compact() && !fill()">
       <svg
         [attr.viewBox]="'0 0 ' + width + ' ' + height()"
         preserveAspectRatio="xMidYMid meet"
@@ -186,6 +189,17 @@ const truncateLabel = (label: string, max = 10): string =>
   `,
   styles: [
     `
+      :host {
+        display: block;
+        width: 100%;
+      }
+      :host(.flux-chart-fill-host) {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 240px;
+        height: 100%;
+      }
       .flux-chart {
         margin: 0;
         font-family: var(--flux-font-family);
@@ -193,18 +207,31 @@ const truncateLabel = (label: string, max = 10): string =>
         width: 100%;
         max-width: 100%;
       }
+      .flux-chart-fill {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-height: 240px;
+        height: 100%;
+      }
       svg {
         display: block;
         width: 100%;
         height: auto;
-        max-height: 280px;
+        min-height: 180px;
         background: var(--flux-surface);
         border: 1px solid var(--flux-border);
         border-radius: var(--flux-radius);
         overflow: hidden;
       }
+      .flux-chart-fill svg {
+        flex: 1 1 auto;
+        height: 100%;
+        min-height: 240px;
+        max-height: none;
+      }
       .flux-chart-compact svg {
-        max-height: 200px;
+        max-height: 220px;
       }
       .flux-chart-grid {
         stroke: var(--flux-border);
@@ -276,6 +303,7 @@ export class FluxChart {
   readonly label = input<string>('');
   readonly showArea = input<boolean>(true);
   readonly compact = input<boolean>(false);
+  readonly fill = input<boolean>(false);
 
   protected readonly width = WIDTH;
   protected readonly padLeft = PAD_LEFT;
