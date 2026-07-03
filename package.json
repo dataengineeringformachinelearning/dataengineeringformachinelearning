@@ -20,8 +20,10 @@
     "quality:fix": "python scripts/deml_tooling.py quality --fast --fix",
     "quality:full": "python scripts/deml_tooling.py quality --ci",
     "quality:push": "python scripts/deml_tooling.py quality --full",
+    "build:viking-ui": "npm run build:viking-ui --prefix frontend",
     "build:viking-ui-docs": "npm run build --prefix viking-ui-docs",
     "start:viking-ui-docs": "npm run start --prefix viking-ui-docs",
+    "deploy:viking-ui-docs": "npm run build:viking-ui-docs && npx --yes firebase-tools@latest deploy --only hosting:deml-ui --project demldotcom",
     "install-hooks": "python scripts/deml_tooling.py install-hooks && uvx pre-commit install --hook-type pre-commit --hook-type pre-push"
   }
 }

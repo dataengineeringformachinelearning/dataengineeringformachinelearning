@@ -25,7 +25,9 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            viking-ui-docs/package-lock.json
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
@@ -38,3 +40,8 @@ jobs:
 
       - name: Verify e2e spec files exist
         run: test -f cypress/e2e/smoke.cy.ts
+
+      - name: Build Viking-UI docs site
+        run: |
+          npm ci --legacy-peer-deps --prefix ../viking-ui-docs
+          npm run build --prefix ../viking-ui-docs

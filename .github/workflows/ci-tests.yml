@@ -10,12 +10,14 @@ on:
     paths:
       - 'backend/**'
       - 'frontend/**'
+      - 'viking-ui-docs/**'
       - 'scripts/**'
       - '.github/workflows/ci-tests.yml'
   pull_request:
     paths:
       - 'backend/**'
       - 'frontend/**'
+      - 'viking-ui-docs/**'
       - 'scripts/**'
       - '.github/workflows/ci-tests.yml'
   workflow_dispatch:
@@ -76,3 +78,33 @@ jobs:
 
       - name: Run vitest (viking-ui library)
         run: npm run test:viking-ui
+
+  viking-ui-docs-build:
+    name: Viking-UI Docs (build)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            viking-ui-docs/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci --legacy-peer-deps --prefix frontend
+
+      - name: Build Viking-UI library
+        run: npm run build:viking-ui --prefix frontend
+
+      - name: Install and build Viking-UI docs site
+        run: |
+          npm ci --legacy-peer-deps --prefix viking-ui-docs
+          npm run build --prefix viking-ui-docs
+
+      - name: Verify Firebase hosting output path
+        run: test -f viking-ui-docs/dist/browser/index.html
