@@ -71,5 +71,8 @@ jobs:
       - name: Build viking-ui (required by vitest)
         run: npm run build:viking-ui
 
-      - name: Run vitest
+      - name: Run vitest (app)
         run: npm test
+
+      - name: Run vitest (viking-ui library)
+        run: npm run test:viking-ui

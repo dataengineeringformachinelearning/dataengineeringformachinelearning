@@ -11,8 +11,11 @@
 //! | Task                  | Interval  | Why Python                              |
 //! |-----------------------|-----------|-----------------------------------------|
 //! | aggregate_analytics   | 1 hour    | Django ORM Avg/Count + ClickHouse write |
-//! | rotate_keys           | 90 days   | GCP KMS SDK + transaction.atomic()      |
+//! | sync_subscriptions    | 6 hours   | Stripe subscription reconciliation      |
 //! | reconcile_accounts    | 6 hours   | Auth/sites/Stripe/deletion reconciliation |
+//! | db_cleanup            | 24 hours  | Postgres retention + orphan pruning       |
+//! | train_all_models      | 7 days    | PyTorch SLA/threat model retraining       |
+//! | rotate_keys           | 90 days   | GCP KMS SDK (also in security_worker)     |
 
 use std::time::Duration;
 
@@ -37,11 +40,22 @@ const CRON_TASKS: &[CronTask] = &[
         interval: Duration::from_secs(3600), // 1h
     },
     CronTask {
+        name: "sync_subscriptions",
+        interval: Duration::from_secs(21600), // 6h
+    },
+    CronTask {
         name: "reconcile_accounts",
         interval: Duration::from_secs(21600), // 6h
     },
-    // rotate_keys: 90-day interval is managed separately; triggered by a
-    // scheduled Cloud Run job in production. Listed here for completeness.
+    CronTask {
+        name: "db_cleanup",
+        interval: Duration::from_secs(86400), // 24h
+    },
+    CronTask {
+        name: "train_all_models",
+        interval: Duration::from_secs(604800), // 7d
+    },
+    // rotate_keys: 90-day interval is managed by security_worker asyncio scheduler.
 ];
 
 // ── Payload shape ─────────────────────────────────────────────────────────────

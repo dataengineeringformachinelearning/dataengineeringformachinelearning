@@ -1,0 +1,39 @@
+name: E2E Smoke Tests
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'frontend/cypress/**'
+      - 'frontend/cypress.config.ts'
+      - '.github/workflows/e2e-smoke.yml'
+
+jobs:
+  cypress-smoke:
+    name: Cypress smoke (build-only validation)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build viking-ui
+        run: npm run build:viking-ui
+
+      - name: Validate Cypress config compiles
+        run: npx tsc --noEmit cypress.config.ts
+
+      - name: Verify e2e spec files exist
+        run: test -f cypress/e2e/smoke.cy.ts
