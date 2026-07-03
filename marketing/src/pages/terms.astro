@@ -1,10 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { siteEnv } from '../lib/site-env';
+import { webPageJsonLd, canonicalHref } from '../lib/seo';
+
+const { MARKETING_URL } = siteEnv();
+const pageTitle = 'Terms & Conditions - DEML Platform';
+const pageDescription =
+  'Terms of service, acceptable use, billing policies, and legal agreements for the DEML platform.';
+const termsJsonLd = webPageJsonLd(pageTitle, pageDescription, canonicalHref('/terms', MARKETING_URL));
 ---
 
 <Layout
-  title="Terms & Conditions - DEML Platform"
-  description="Terms of service, acceptable use, billing policies, and legal agreements for the DEML platform."
+  title={pageTitle}
+  description={pageDescription}
+  keywords="DEML terms of service, acceptable use, billing policy, SaaS legal agreement"
+  jsonLd={termsJsonLd}
 >
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">

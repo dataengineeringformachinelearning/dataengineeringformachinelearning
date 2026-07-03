@@ -13,9 +13,13 @@
     {% endblock %}
     <meta
       name="keywords"
-      content="data engineering, machine learning, backend, API, services, swagger, openapi"
+      content="{% block meta_keywords %}data engineering, machine learning, backend, API, services, swagger, openapi{% endblock %}"
     />
     <meta name="author" content="Joe Alongi" />
+    <meta
+      name="robots"
+      content="{% block robots %}index, follow{% endblock %}"
+    />
     <link rel="canonical" href="{{ request.build_absolute_uri }}" />
 
     <!-- Favicons -->
@@ -36,7 +40,10 @@
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="og:title" content="{% block og_title %}DEML Backend API{% endblock %}" />
+    <meta
+      property="og:title"
+      content="{% block og_title %}DEML Backend API{% endblock %}"
+    />
     <meta
       property="og:description"
       content="{% block og_description %}Core REST API and services for Data Engineering for Machine Learning.{% endblock %}"
@@ -45,11 +52,18 @@
       property="og:image"
       content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}"
     />
+    <meta
+      property="og:image:alt"
+      content="DEML backend API preview — data engineering and machine learning services"
+    />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta property="twitter:title" content="{% block twitter_title %}DEML Backend API{% endblock %}" />
+    <meta
+      property="twitter:title"
+      content="{% block twitter_title %}DEML Backend API{% endblock %}"
+    />
     <meta
       property="twitter:description"
       content="{% block twitter_description %}Core REST API and services for Data Engineering for Machine Learning.{% endblock %}"
@@ -58,6 +72,21 @@
       property="twitter:image"
       content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}"
     />
+    <meta
+      name="twitter:image:alt"
+      content="DEML backend API preview — data engineering and machine learning services"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebAPI",
+        "name": "DEML Backend API",
+        "description": "Core REST API, authentication, billing, and telemetry services for Data Engineering for Machine Learning.",
+        "url": "{{ request.scheme }}://{{ request.get_host }}/",
+        "documentation": "{{ request.scheme }}://{{ request.get_host }}/api/v1/docs"
+      }
+    </script>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -111,18 +140,13 @@
       gtag("js", new Date());
       gtag("config", "G-KYZRDR2MY4");
     </script>
-    {% endblock %}
-    {% block extra_head %}{% endblock %}
+    {% endblock %} {% block extra_head %}{% endblock %}
   </head>
   <body class="{% block body_class %}backend-landing{% endblock %}">
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    {% include "partials/site_navbar.html" %}
-
-    {% block content %}{% endblock %}
-
-    {% include "partials/site_footer.html" %}
-
-    {% block extra_scripts %}{% endblock %}
+    {% include "partials/site_navbar.html" %} {% block content %}{% endblock %}
+    {% include "partials/site_footer.html" %} {% block extra_scripts %}{%
+    endblock %}
   </body>
 </html>

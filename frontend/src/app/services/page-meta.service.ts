@@ -4,6 +4,10 @@ import { isPlatformBrowser } from '@angular/common';
 import { resolveRouteMeta } from '../core/page-meta';
 import { environment } from '../../environments/environment';
 
+const OG_IMAGE = '/data-engineering-for-machine-learning-preview.png';
+const OG_IMAGE_ALT =
+  'DEML application preview — data engineering and machine learning telemetry dashboard';
+
 @Injectable({ providedIn: 'root' })
 export class PageMetaService {
   private readonly title = inject(Title);
@@ -11,19 +15,38 @@ export class PageMetaService {
   private readonly platformId = inject(PLATFORM_ID);
 
   applyForUrl(url: string): void {
-    const { title, description } = resolveRouteMeta(url);
+    const { title, description, robots, keywords, ogType } = resolveRouteMeta(url);
+    const path = url.split('?')[0]?.split('#')[0] ?? '/';
+    const canonical = `${environment.frontendUrl}${path.startsWith('/') ? path : `/${path}`}`;
+
     this.title.setTitle(title);
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ name: 'title', content: title });
+    this.meta.updateTag({ name: 'robots', content: robots });
+    this.meta.updateTag({ property: 'og:type', content: ogType });
     this.meta.updateTag({ property: 'og:title', content: title });
     this.meta.updateTag({ property: 'og:description', content: description });
-    this.meta.updateTag({ property: 'twitter:title', content: title });
-    this.meta.updateTag({ property: 'twitter:description', content: description });
+    this.meta.updateTag({ property: 'og:url', content: canonical });
+    this.meta.updateTag({
+      property: 'og:image',
+      content: `${environment.frontendUrl}${OG_IMAGE}`,
+    });
+    this.meta.updateTag({ property: 'og:image:alt', content: OG_IMAGE_ALT });
+    this.meta.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
+    this.meta.updateTag({ name: 'twitter:title', content: title });
+    this.meta.updateTag({ name: 'twitter:description', content: description });
+    this.meta.updateTag({ name: 'twitter:url', content: canonical });
+    this.meta.updateTag({
+      name: 'twitter:image',
+      content: `${environment.frontendUrl}${OG_IMAGE}`,
+    });
+    this.meta.updateTag({ name: 'twitter:image:alt', content: OG_IMAGE_ALT });
+
+    if (keywords) {
+      this.meta.updateTag({ name: 'keywords', content: keywords });
+    }
 
     if (isPlatformBrowser(this.platformId)) {
-      const canonical = `${environment.frontendUrl}${url.split('?')[0]?.split('#')[0] ?? '/'}`;
-      this.meta.updateTag({ property: 'og:url', content: canonical });
-      this.meta.updateTag({ property: 'twitter:url', content: canonical });
       let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
       if (!link) {
         link = document.createElement('link');

@@ -3,6 +3,14 @@ import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
 import fs from 'node:fs';
 import { marked } from 'marked';
+import { siteEnv } from '../lib/site-env';
+import { bookJsonLd, canonicalHref } from '../lib/seo';
+
+const { MARKETING_URL } = siteEnv();
+const pageTitle = 'The Book - DEML Platform';
+const pageDescription =
+  'Interactive chapters, deployment notes, and annotated walkthroughs for Data Engineering for Machine Learning.';
+const bookJsonLdPayload = bookJsonLd(pageTitle, pageDescription, canonicalHref('/book', MARKETING_URL));
 
 // Read the markdown file
 const pageMarkdownPath = process.cwd() + '/src/assets/content/page.md';
@@ -45,8 +53,11 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
 ---
 
 <Layout
-  title="The Book - DEML Platform"
-  description="Interactive chapters, deployment notes, and annotated walkthroughs for Data Engineering for Machine Learning."
+  title={pageTitle}
+  description={pageDescription}
+  keywords="data engineering book, machine learning guide, MLOps deployment, DEML chapters, cloud run deployment"
+  ogType="book"
+  jsonLd={bookJsonLdPayload}
 >
   <div class="dashboard-page-container dashboard-layout" id="book-app">
     <aside class="dashboard-sidebar no-print">

@@ -1,6 +1,15 @@
 User-agent: *
 Allow: /
+Allow: /login
+Allow: /explore
+Allow: /status
 Disallow: /dashboard
+Disallow: /account
+Disallow: /analytics
+Disallow: /vulnerabilities
+Disallow: /settings
+Disallow: /success
+Disallow: /auth-status
 Disallow: /api/
 
 Sitemap: https://deml.app/sitemap.xml

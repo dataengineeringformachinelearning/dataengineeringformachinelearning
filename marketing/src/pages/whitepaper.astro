@@ -1,10 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { siteEnv } from '../lib/site-env';
+import { techArticleJsonLd, canonicalHref } from '../lib/seo';
+
+const { MARKETING_URL } = siteEnv();
+const pageTitle = 'The Whitepaper - DEML Platform';
+const pageDescription =
+  'Architecture diagrams, event projection patterns, and automated threat mitigation strategies powering DEML.';
+const whitepaperJsonLd = techArticleJsonLd(
+  pageTitle,
+  pageDescription,
+  canonicalHref('/whitepaper', MARKETING_URL),
+);
 ---
 
 <Layout
-  title="The Whitepaper - DEML Platform"
-  description="Architecture diagrams, event projection patterns, and automated threat mitigation strategies powering DEML."
+  title={pageTitle}
+  description={pageDescription}
+  keywords="DEML whitepaper, event projections, threat mitigation, multi-tenant architecture, Redpanda, Firestore"
+  ogType="article"
+  jsonLd={whitepaperJsonLd}
 >
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">

@@ -3,7 +3,11 @@ import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
 ---
 
-<Layout title="404: Page Not Found" description="The requested page could not be found.">
+<Layout
+  title="404: Page Not Found - DEML Platform"
+  description="The requested DEML marketing page could not be found. Return to the homepage or explore the app."
+  robots="noindex, nofollow"
+>
   <div class="not-found-container">
     <VikingIcon name="error_outline" size={20} class="error-icon" />
     <h1 class="error-code">404</h1>

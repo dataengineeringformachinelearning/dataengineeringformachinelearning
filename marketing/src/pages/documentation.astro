@@ -2,6 +2,17 @@
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
 import { siteEnv } from '../lib/site-env';
+import { techArticleJsonLd, canonicalHref } from '../lib/seo';
+
+const { MARKETING_URL } = siteEnv();
+const pageTitle = 'Documentation - DEML Platform';
+const pageDescription =
+  'Integration guides for Kubernetes, TensorFlow, PyTorch, Spark, Databricks, and the DEML telemetry API.';
+const docsJsonLd = techArticleJsonLd(
+  pageTitle,
+  pageDescription,
+  canonicalHref('/documentation', MARKETING_URL),
+);
 
 const { FRONTEND_URL } = siteEnv();
 
@@ -34,8 +45,11 @@ const quickStartSteps = [
 ---
 
 <Layout
-  title="Documentation - DEML Platform"
-  description="Integration guides for Kubernetes, TensorFlow, PyTorch, Spark, Databricks, and the DEML telemetry API."
+  title={pageTitle}
+  description={pageDescription}
+  keywords="DEML API documentation, telemetry ingestion, Kubernetes integration, TensorFlow, PyTorch, Spark, Databricks"
+  ogType="article"
+  jsonLd={docsJsonLd}
 >
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">

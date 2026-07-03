@@ -4,15 +4,46 @@ import '../styles/global.scss';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import { algoliaEnv } from '../lib/site-env';
+import {
+	SITE_NAME,
+	DEFAULT_OG_IMAGE,
+	DEFAULT_OG_IMAGE_ALT,
+	TWITTER_SITE,
+	AUTHOR_NAME,
+	canonicalHref,
+} from '../lib/seo';
 
 const algolia = algoliaEnv();
 
 export interface Props {
 	title: string;
 	description?: string;
+	keywords?: string;
+	robots?: string;
+	ogImage?: string;
+	ogImageAlt?: string;
+	ogType?: string;
+	jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
-const { title, description = "Interactive steps, working notes, and AI annotation on the DEML (DATA ENGINEERING FOR MACHINE LEARNING) book." } = Astro.props;
+const {
+	title,
+	description = 'Interactive steps, working notes, and AI annotation on the DEML (DATA ENGINEERING FOR MACHINE LEARNING) book.',
+	keywords,
+	robots = 'index, follow',
+	ogImage = DEFAULT_OG_IMAGE,
+	ogImageAlt = DEFAULT_OG_IMAGE_ALT,
+	ogType = 'website',
+	jsonLd,
+} = Astro.props;
+
+const canonical = canonicalHref(Astro.url.pathname, Astro.site!);
+const ogImageUrl = new URL(ogImage, Astro.site);
+const jsonLdPayload = jsonLd
+	? Array.isArray(jsonLd)
+		? jsonLd
+		: [jsonLd]
+	: null;
 ---
 
 <!doctype html>
@@ -30,49 +61,50 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 		<meta name="generator" content={Astro.generator} />
 
 		<title>{title}</title>
+		<meta name="title" content={title} />
 		<meta name="description" content={description} />
-		<meta name="author" content="Joe Alongi" />
-		<meta name="robots" content="index, follow" />
+		{keywords && <meta name="keywords" content={keywords} />}
+		<meta name="author" content={AUTHOR_NAME} />
+		<meta name="robots" content={robots} />
 		<meta name="algolia-site-verification" content="687B59B29612DE68" /> <!-- pragma: allowlist secret -->
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 
-		<!-- Canonical URL -->
-		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+		<link rel="canonical" href={canonical} />
 
-		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content={Astro.url} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:url" content={canonical} />
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
-		<meta property="og:image" content={new URL('/data-engineering-for-machine-learning-preview.png', Astro.site)} />
-		<meta property="og:site_name" content="DEML (DATA ENGINEERING FOR MACHINE LEARNING)" />
+		<meta property="og:image" content={ogImageUrl} />
+		<meta property="og:image:alt" content={ogImageAlt} />
+		<meta property="og:site_name" content={SITE_NAME} />
 		<meta property="og:locale" content="en_US" />
 
-		<!-- Twitter -->
-		<meta property="twitter:card" content="summary_large_image" />
-		<meta property="twitter:url" content={Astro.url} />
-		<meta property="twitter:title" content={title} />
-		<meta property="twitter:description" content={description} />
-		<meta property="twitter:image" content={new URL('/data-engineering-for-machine-learning-preview.png', Astro.site)} />
-		<meta name="twitter:site" content="@joealongi" />
-		<meta name="twitter:creator" content="@joealongi" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonical} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImageUrl} />
+		<meta name="twitter:image:alt" content={ogImageAlt} />
+		<meta name="twitter:site" content={TWITTER_SITE} />
+		<meta name="twitter:creator" content={TWITTER_SITE} />
 
-		<!-- Theme Colors -->
+		{jsonLdPayload && (
+			<script type="application/ld+json" set:html={JSON.stringify(jsonLdPayload.length === 1 ? jsonLdPayload[0] : jsonLdPayload)} />
+		)}
+
 		<meta name="theme-color" content="var(--viking-white-pure)" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
 		<meta name="color-scheme" content="light dark" />
 
-		<!-- Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-		<!-- Shared Viking-UI design system (synced via scripts/sync_design_system.py) -->
 		<link rel="stylesheet" href="/assets/design-tokens.css" />
 		<link rel="stylesheet" href="/assets/deml-components.css" />
 		<link rel="stylesheet" href="/assets/viking-ui.css" />
 
-		<!-- Theme Script -->
 		<script is:inline>
 			(function () {
 				var savedTheme = localStorage.getItem('theme');
@@ -92,7 +124,6 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 			})();
 		</script>
 
-		<!-- DEML Widgets (served locally from marketing to avoid cross-origin/CORS; data attrs point to main app) -->
 		<script is:inline define:vars={{ algolia }}>
 			window.ALGOLIA_CONFIG = {
 				appId: algolia.APP_ID,
@@ -104,7 +135,6 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>
 		<script is:inline src="/assets/widgets/algolia-search.js" defer></script>
 
-		<!-- Google tag (gtag.js) -->
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-MH3M99CQ80"></script>
 		<script is:inline>
 		  window.dataLayer = window.dataLayer || [];

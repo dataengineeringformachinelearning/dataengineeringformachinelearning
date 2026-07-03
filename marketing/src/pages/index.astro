@@ -4,8 +4,22 @@ import VikingIcon from '../components/VikingIcon.astro';
 import WhitepaperCta from '../components/WhitepaperCta.astro';
 import '../styles/landing.scss';
 import { siteEnv } from '../lib/site-env';
+import {
+  DEFAULT_KEYWORDS,
+  organizationJsonLd,
+  webSiteJsonLd,
+  softwareApplicationJsonLd,
+} from '../lib/seo';
 
-const { FRONTEND_URL, BACKEND_URL } = siteEnv();
+const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
+const pageTitle = 'DEML (DATA ENGINEERING FOR MACHINE LEARNING)';
+const pageDescription =
+  'Secure your data pipeline and ship ML faster. Real-time telemetry, threat intelligence, and tenant-safe event projections for modern data teams.';
+const homeJsonLd = [
+  organizationJsonLd(MARKETING_URL),
+  webSiteJsonLd(MARKETING_URL),
+  softwareApplicationJsonLd(FRONTEND_URL),
+];
 const WIDGET_PAGE_ID = 'platform-status';
 const WIDGET_SCRIPT_PATH = '/assets/widgets/widget.js';
 const widgetEmbedAttrs = `data-backend-url="${BACKEND_URL}" data-frontend-url="${FRONTEND_URL}" data-page-id="${WIDGET_PAGE_ID}"`;
@@ -102,8 +116,10 @@ const integrations = [
 ---
 
 <Layout
-  title="DEML (DATA ENGINEERING FOR MACHINE LEARNING)"
-  description="Secure your data pipeline and ship ML faster. Real-time telemetry, threat intelligence, and tenant-safe event projections for modern data teams."
+  title={pageTitle}
+  description={pageDescription}
+  keywords={`${DEFAULT_KEYWORDS}, observability, SLA forecasting, STIX threat intelligence`}
+  jsonLd={homeJsonLd}
 >
   <div class="landing-container showcase-layout">
 

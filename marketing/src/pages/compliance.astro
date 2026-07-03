@@ -1,11 +1,25 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
+import { siteEnv } from '../lib/site-env';
+import { webPageJsonLd, canonicalHref } from '../lib/seo';
+
+const { MARKETING_URL } = siteEnv();
+const pageTitle = 'SOC2 Compliance - DEML Platform';
+const pageDescription =
+  'SOC2 controls, data retention policies, encryption practices, and audit-ready compliance documentation for DEML.';
+const complianceJsonLd = webPageJsonLd(
+  pageTitle,
+  pageDescription,
+  canonicalHref('/compliance', MARKETING_URL),
+);
 ---
 
 <Layout
-  title="SOC2 Compliance - DEML Platform"
-  description="SOC2 controls, data retention policies, encryption practices, and audit-ready compliance documentation for DEML."
+  title={pageTitle}
+  description={pageDescription}
+  keywords="SOC2 compliance, DEML security, data retention, encryption, audit controls, CMMC"
+  jsonLd={complianceJsonLd}
 >
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">

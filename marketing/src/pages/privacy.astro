@@ -1,10 +1,24 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { siteEnv } from '../lib/site-env';
+import { webPageJsonLd, canonicalHref } from '../lib/seo';
+
+const { MARKETING_URL } = siteEnv();
+const pageTitle = 'Privacy Policy - DEML Platform';
+const pageDescription =
+  'How DEML collects, processes, retains, and protects personal data — including GDPR rights and cookie practices.';
+const privacyJsonLd = webPageJsonLd(
+  pageTitle,
+  pageDescription,
+  canonicalHref('/privacy', MARKETING_URL),
+);
 ---
 
 <Layout
-  title="Privacy Policy - DEML Platform"
-  description="How DEML collects, processes, retains, and protects personal data — including GDPR rights and cookie practices."
+  title={pageTitle}
+  description={pageDescription}
+  keywords="DEML privacy policy, GDPR, data protection, cookies, personal data retention"
+  jsonLd={privacyJsonLd}
 >
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">
