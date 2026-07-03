@@ -19,7 +19,7 @@
 
 ## Design philosophy
 
-Viking-UI expresses **Porsche-like precision** and **Wallace Corp high-end industrial tech**:
+Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 
 - **Dark-first engineering aesthetic** — deep charcoals, machined metallic edges, no decorative noise.
 - **Luxurious minimalism** — every pixel earns its place; data and metrics dominate ornament.

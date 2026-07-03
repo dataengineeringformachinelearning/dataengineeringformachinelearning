@@ -85,7 +85,6 @@ import {
               >
                 Viking-UI
               </a>
-              — Porsche/Wallace premium theme (<code>THEME.md</code>)
             </span>
           </div>
         </div>
