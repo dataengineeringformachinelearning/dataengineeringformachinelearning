@@ -514,6 +514,45 @@ class OutboxEvent(models.Model):
     return f"Outbox {self.topic} @ {self.created_at}"
 
 
+class UserLifecycleJob(models.Model):
+  """Async account lifecycle work (deletion saga, future provisioning hooks)."""
+
+  class JobType(models.TextChoices):
+    DELETION = "deletion", "Deletion"
+    RECONCILE = "reconcile", "Reconcile"
+
+  class State(models.TextChoices):
+    PENDING = "pending", "Pending"
+    RUNNING = "running", "Running"
+    COMPLETED = "completed", "Completed"
+    FAILED = "failed", "Failed"
+
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  job_type = models.CharField(max_length=32, choices=JobType.choices, default=JobType.DELETION)
+  state = models.CharField(max_length=32, choices=State.choices, default=State.PENDING)
+  user = models.ForeignKey(
+    User, on_delete=models.SET_NULL, null=True, blank=True, related_name="lifecycle_jobs"
+  )
+  account_id = models.UUIDField()
+  firebase_uid = models.CharField(max_length=128, blank=True, default="")
+  user_email = models.CharField(max_length=255, blank=True, default="")
+  steps_completed = models.JSONField(default=list, blank=True)
+  last_error = models.TextField(blank=True, default="")
+  created_at = models.DateTimeField(auto_now_add=True)
+  updated_at = models.DateTimeField(auto_now=True)
+  completed_at = models.DateTimeField(null=True, blank=True)
+
+  class Meta:
+    db_table = "user_lifecycle_jobs"
+    indexes = [
+      models.Index(fields=["job_type", "state", "created_at"]),
+      models.Index(fields=["account_id"]),
+    ]
+
+  def __str__(self):
+    return f"{self.job_type}:{self.state} ({self.account_id})"
+
+
 class ValidatedSite(models.Model):
   """Registered domain for a user account; gates telemetry ingest (CORS)."""
 

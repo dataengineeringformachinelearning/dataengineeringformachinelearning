@@ -346,13 +346,16 @@ export class AuthService {
   async deleteAccount() {
     this.isProcessing.set(true);
     try {
-      // First delete on backend (so request is authenticated with active token)
-      await firstValueFrom(
-        this.http.delete(`${environment.backendUrl}/api/v1/auth/delete-account`, {}),
+      // Backend runs the deletion saga (Stripe, API keys, Firebase, Postgres).
+      const res = await firstValueFrom(
+        this.http.delete<{ status: string; completed?: boolean }>(
+          `${environment.backendUrl}/api/v1/auth/delete-account`,
+          {},
+        ),
       );
 
-      // Then delete from Firebase
-      if (this.auth?.currentUser) {
+      // Firebase is removed server-side when completed; client delete is a fallback only.
+      if (!res.completed && this.auth?.currentUser) {
         await deleteUser(this.auth.currentUser);
       }
       this.isAuthenticated.set(false);

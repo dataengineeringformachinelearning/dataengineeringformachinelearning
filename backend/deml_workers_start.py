@@ -1,11 +1,12 @@
 """
 deml-workers: Merged Python background worker container.
 
-Runs in a single process — three coroutines in parallel via asyncio.gather():
+Runs in a single process — four coroutines in parallel via asyncio.gather():
 
   1. security_worker   — threat intel, TAXII, key rotation, dark web, VACUUM ANALYZE
   2. ml_worker         — PyTorch SLA/threat model training, Kafka ml-training-events consumer
-  3. task_consumer     — consumes Redpanda `internal-tasks` topic published by deml-daemon
+  3. lifecycle_worker  — continuous account deletion queue + auth/Stripe/sites reconciliation retries
+  4. task_consumer     — consumes Redpanda `internal-tasks` topic published by deml-daemon
                          cron_publisher and dispatches to Django management commands.
 
 Replaces three separate Docker containers (ml_worker, security_worker, and the
@@ -44,6 +45,7 @@ ALLOWED_TASKS: frozenset[str] = frozenset(
   {
     "aggregate_analytics",
     "sync_subscriptions",
+    "reconcile_accounts",
     "train_all_models",
     "db_cleanup",
   }
@@ -100,6 +102,27 @@ async def run_ml_worker() -> None:
     await asyncio.sleep(10)
 
   logger.error("deml_workers: ml_worker thread exited — container will restart")
+
+
+async def run_lifecycle_worker() -> None:
+  """Process pending account deletion jobs continuously."""
+  import threading
+
+  logger.info("deml_workers: starting lifecycle_worker thread")
+
+  def _run() -> None:
+    try:
+      call_command("lifecycle_worker")
+    except Exception as exc:
+      logger.exception("lifecycle_worker thread exited with error: %s", exc)
+
+  thread = threading.Thread(target=_run, name="lifecycle_worker", daemon=True)
+  thread.start()
+
+  while thread.is_alive():
+    await asyncio.sleep(10)
+
+  logger.error("deml_workers: lifecycle_worker thread exited — container will restart")
 
 
 async def run_task_consumer() -> None:
@@ -195,6 +218,7 @@ async def main() -> None:
   await asyncio.gather(
     run_security_worker(),
     run_ml_worker(),
+    run_lifecycle_worker(),
     run_task_consumer(),
     return_exceptions=True,  # Log errors from each worker independently
   )

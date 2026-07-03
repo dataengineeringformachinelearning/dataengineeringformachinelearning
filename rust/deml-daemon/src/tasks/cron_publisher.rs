@@ -12,7 +12,7 @@
 //! |-----------------------|-----------|-----------------------------------------|
 //! | aggregate_analytics   | 1 hour    | Django ORM Avg/Count + ClickHouse write |
 //! | rotate_keys           | 90 days   | GCP KMS SDK + transaction.atomic()      |
-//! | sync_subscriptions    | 6 hours   | Stripe SDK + Django User model          |
+//! | reconcile_accounts    | 6 hours   | Auth/sites/Stripe/deletion reconciliation |
 
 use std::time::Duration;
 
@@ -37,7 +37,7 @@ const CRON_TASKS: &[CronTask] = &[
         interval: Duration::from_secs(3600), // 1h
     },
     CronTask {
-        name: "sync_subscriptions",
+        name: "reconcile_accounts",
         interval: Duration::from_secs(21600), // 6h
     },
     // rotate_keys: 90-day interval is managed separately; triggered by a

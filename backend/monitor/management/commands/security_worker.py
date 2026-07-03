@@ -145,9 +145,9 @@ class Command(BaseCommand):
     await asyncio.sleep(DAILY_SUBSCRIPTION_OFFSET_SECONDS)
     while True:
       try:
-        self.stdout.write("Security Worker: Running subscription sync sweep...")
-        await self.run_sync_command("sync_subscriptions")
-        self.stdout.write(self.style.SUCCESS("Security Worker: Subscription sweep completed."))
+        self.stdout.write("Security Worker: Running account reconciliation sweep...")
+        await self.run_sync_command("reconcile_accounts")
+        self.stdout.write(self.style.SUCCESS("Security Worker: Account reconciliation completed."))
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"Security Worker: Subscription sweep failed: {e}"))
 
