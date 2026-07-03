@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   VIKING_FILLED_ICON_NAMES,
@@ -142,8 +142,6 @@ import {
   ],
 })
 export class VikingIcon {
-  private readonly sanitizer = inject(DomSanitizer);
-
   readonly name = input.required<VikingIconName | string>();
   /** Explicit pixel size — overridden by sizePreset when set. */
   readonly size = input<number | undefined>(undefined);
@@ -184,6 +182,8 @@ export class VikingIcon {
         : (VIKING_ICON_PATHS[name] ?? '');
     return this.sanitizer.bypassSecurityTrustHtml(html);
   });
+
+  constructor(private readonly sanitizer: DomSanitizer) {}
 }
 
 /** Alias for consumers expecting VikingIconComponent. */
