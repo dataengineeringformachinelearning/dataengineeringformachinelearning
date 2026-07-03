@@ -143,11 +143,84 @@
   padding: var(--card-padding);
 }
 
-.panel-section {
-  margin-bottom: var(--viking-space-4, 32px);
-
-  &:last-of-type {
+/* Flat section layout — one outer card, dividers between sections (no nested cards) */
+.status-card-outlined {
+  .panel-section {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
     margin-bottom: 0;
+    padding: var(--viking-space-4, 32px) 0;
+
+    &:first-of-type {
+      padding-top: 0;
+    }
+
+    &:last-of-type {
+      padding-bottom: 0;
+    }
+
+    &:not(:first-of-type) {
+      border-top: 1px solid var(--border);
+    }
+  }
+
+  .section-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 var(--viking-space-3, 24px);
+  }
+
+  .settings-form-panel,
+  .service-form-panel,
+  .incident-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-2, 16px);
+    margin-bottom: var(--viking-space-2, 16px);
+  }
+
+  .data-list-outlined {
+    border: none;
+    border-radius: 0;
+    overflow: visible;
+    background: transparent;
+  }
+
+  .data-item-row {
+    padding: var(--viking-space-2, 16px) 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .integrations-list {
+    padding: 0;
+    background: transparent;
+    border: none;
+  }
+
+  .code-block-outlined {
+    background-color: color-mix(in srgb, var(--viking-charcoal-900, #111) 60%, var(--bg-color));
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-sm, 8px);
+    padding: 12px 16px;
+    font-size: 0.88rem;
+  }
+
+  .empty-data-text {
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--border);
+    padding: var(--viking-space-4, 32px) var(--viking-space-2, 16px);
   }
 }
 
@@ -172,14 +245,6 @@
     font-size: 16px;
     flex-shrink: 0;
   }
-}
-
-.panel-clean {
-  background-color: color-mix(in srgb, var(--viking-bg, var(--bg-color)) 2%, transparent);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md);
-  padding: var(--card-padding);
-  margin-bottom: var(--viking-space-2, 16px);
 }
 
 .form-row {
@@ -211,28 +276,15 @@
   width: 100%;
 }
 
-/* Outlined Data List */
-.data-list-outlined {
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: rgba(255, 255, 255, 0.01);
-}
-
+/* Data rows — borders applied inside .status-card-outlined flat layout */
 .data-item-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--border);
   transition: background-color 0.2s ease;
 
   &:hover {
     background-color: var(--hover-color);
-  }
-
-  &:last-child {
-    border-bottom: none;
   }
 }
 
@@ -343,20 +395,17 @@
 
 .embed-desc {
   color: var(--text-muted);
-  font-size: 1rem;
-  margin-bottom: 16px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  margin: 0 0 var(--viking-space-2, 16px);
 }
 
 .code-block-outlined {
   font-family: 'Inter', monospace;
-  font-size: 1rem;
+  font-size: 0.88rem;
   overflow-x: auto;
   white-space: pre-wrap;
   color: var(--text-color);
-  background-color: var(--bg-color);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
   flex: 1;
   margin: 0;
 }
@@ -413,21 +462,25 @@
 
 }
 
-/* Integrations list alignment styles */
+/* Integrations list */
 .integrations-list {
   display: flex;
   flex-direction: column;
-  padding: 0 24px;
 
   .integration-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 0;
+    padding: var(--viking-space-3, 24px) 0;
     border-bottom: 1px solid var(--border);
 
     &:last-child {
       border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    &:first-child {
+      padding-top: 0;
     }
 
     &.clarity-item,
