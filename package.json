@@ -1,0 +1,12 @@
+{
+  "name": "deml-platform",
+  "private": true,
+  "description": "DEML monorepo workspace scripts",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "cleanup-theme": "node cleanup-theme.js --dry-run",
+    "cleanup-theme:apply": "node cleanup-theme.js --apply"
+  }
+}
