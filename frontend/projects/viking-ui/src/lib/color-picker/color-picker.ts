@@ -65,10 +65,13 @@ import { VikingIcon } from '../icon/icon';
         color: var(--viking-accent-content);
         transition: var(--viking-transition-interactive);
         padding: 0;
+        box-shadow: var(--viking-shadow-xs);
       }
       .viking-color-swatch:hover,
       .viking-color-custom:hover {
-        transform: scale(1.08);
+        transform: scale(1.06);
+        border-color: var(--viking-accent-strong);
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-color-swatch:focus-visible,
       .viking-color-custom:focus-within {
@@ -77,7 +80,9 @@ import { VikingIcon } from '../icon/icon';
       }
       .viking-selected {
         border-color: var(--viking-text);
-        box-shadow: var(--viking-shadow-sm);
+        box-shadow:
+          var(--viking-shadow-sm),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
       }
       /* The native input fills the swatch so clicks and focus land on it. */
       .viking-color-custom input {

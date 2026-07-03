@@ -1,0 +1,108 @@
+// Shared chrome CTA styles — mirrors viking-button variants for static navbar / marketing HTML.
+@mixin viking-chrome-btn-base {
+  font-family: var(--viking-font-family, 'Inter', sans-serif);
+  font-size: var(--viking-font-size-sm, 14px);
+  font-weight: var(--viking-font-weight-semibold, 600);
+  letter-spacing: var(--viking-letter-spacing-wide, 0.025em);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1, 8px);
+  min-height: var(--viking-control-height, 40px);
+  min-width: var(--viking-btn-min-width, 120px);
+  padding: 0 var(--viking-space-2, 16px);
+  border-radius: var(--viking-radius, 8px);
+  border: 1px solid transparent;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(
+    --viking-transition-interactive,
+    color 0.25s ease,
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.15s ease
+  );
+
+  &:focus-visible {
+    outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
+    outline-offset: var(--viking-ring-offset, 2px);
+  }
+
+  &:active {
+    transform: translateY(0) scale(var(--viking-state-active-scale, 0.985));
+    box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  }
+}
+
+@mixin viking-chrome-btn-primary {
+  @include viking-chrome-btn-base;
+  background: var(--viking-accent, var(--viking-teal-600));
+  color: var(--viking-accent-content, var(--viking-white-pure));
+  border-color: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 80%, var(--viking-black, #000));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+
+  &:hover {
+    background: var(--viking-accent-hover, var(--viking-teal-500));
+    border-color: var(--viking-accent-hover, var(--viking-teal-500));
+    color: var(--viking-accent-content, var(--viking-white-pure));
+    box-shadow: var(--viking-shadow-hover, var(--shadow-hover));
+    transform: translateY(var(--viking-state-hover-lift, -1px));
+  }
+}
+
+@mixin viking-chrome-btn-outline {
+  @include viking-chrome-btn-base;
+  background: var(--viking-surface, var(--card-bg));
+  color: var(--viking-text, var(--text-color));
+  border-color: var(--viking-border-strong, var(--border));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+
+  &:hover {
+    background: var(--viking-surface-alt, var(--viking-charcoal-700));
+    border-color: var(--viking-accent-strong, var(--viking-teal-400));
+    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+    transform: translateY(var(--viking-state-hover-lift, -1px));
+  }
+}
+
+.auth-btn,
+a.auth-btn {
+  @include viking-chrome-btn-primary;
+
+  svg,
+  .material-icons {
+    flex-shrink: 0;
+    transition: transform var(--viking-duration-fast, 150ms) var(--viking-ease-default, ease);
+  }
+
+  &:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+.auth-btn.auth-btn-outline,
+a.auth-btn.auth-btn-outline {
+  @include viking-chrome-btn-outline;
+
+  &:hover svg {
+    transform: none;
+  }
+}
+
+.mobile-auth-btn,
+a.mobile-auth-btn {
+  @include viking-chrome-btn-primary;
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+}
+
+.mobile-auth-btn.auth-btn-outline,
+a.mobile-auth-btn.auth-btn-outline {
+  @include viking-chrome-btn-outline;
+}

@@ -106,11 +106,27 @@
 
 .viking-panel-card,
 .status-card-outlined {
+  position: relative;
   border-radius: var(--viking-radius-lg);
   border: 1px solid var(--viking-border);
   background-color: var(--viking-surface);
   overflow: hidden;
   box-shadow: var(--viking-shadow-sm);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 }
 
 .viking-panel-card-header,
@@ -177,6 +193,58 @@
   color: var(--viking-text-muted);
   gap: var(--viking-space-1-5);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
+}
+
+.viking-chart-empty,
+.empty-chart-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--viking-space-4) var(--viking-space-3);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-alt);
+  border: 1px dashed var(--viking-border-strong);
+  box-shadow: var(--viking-shadow-inner);
+  min-height: 220px;
+  gap: var(--viking-space-1-5);
+  animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
+
+  .empty-icon,
+  .viking-icon,
+  viking-icon,
+  viking-app-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--viking-space-6);
+    height: var(--viking-space-6);
+    border-radius: var(--viking-radius-lg);
+    background: var(--viking-accent-soft);
+    color: var(--viking-accent-strong);
+    box-shadow: var(--viking-shadow-sm);
+    margin-bottom: var(--viking-space-half);
+    font-size: 28px;
+  }
+
+  .empty-title {
+    margin: 0;
+    font-size: var(--viking-font-size-md);
+    font-weight: var(--viking-font-weight-semibold);
+    letter-spacing: var(--viking-letter-spacing-caps);
+    text-transform: uppercase;
+    color: var(--viking-text);
+    line-height: var(--viking-line-height-tight);
+  }
+
+  .empty-subtitle {
+    margin: 0;
+    font-size: var(--viking-font-size);
+    color: var(--viking-text-muted);
+    line-height: var(--viking-line-height-relaxed);
+    max-width: 28rem;
+  }
 }
 
 .viking-loader-state,

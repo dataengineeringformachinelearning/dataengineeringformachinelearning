@@ -38,14 +38,13 @@
     <viking-button
       variant="primary"
       type="button"
-      class="cta-main-btn"
       icon="arrow-right"
       (pressed)="login()"
     >
       Get Started
     </viking-button>
     } @if (authService.isAuthenticated()) {
-    <viking-button variant="primary" href="/manage" class="cta-main-btn" icon="plus">
+    <viking-button variant="primary" href="/manage" icon="plus">
       Create Status Page
     </viking-button>
     }
