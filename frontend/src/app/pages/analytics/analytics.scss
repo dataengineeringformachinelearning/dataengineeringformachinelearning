@@ -30,45 +30,7 @@
   border: 0;
 }
 
-/* Beautiful theme-aware high-contrast empty state styling */
-.empty-chart-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 36px 24px;
-  border-radius: var(--border-radius-md);
-  background: var(--card-bg);
-  border: 1px dashed var(--border);
-  min-height: 220px;
-
-  .empty-icon {
-    font-size: 54px;
-    width: 56px;
-    height: 56px;
-    margin-bottom: 16px;
-    color: var(--color-primary);
-    opacity: 0.8;
-  }
-
-  .empty-title {
-    font-size: 1rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin: 0 0 8px 0;
-    color: var(--color-primary);
-  }
-
-  .empty-subtitle {
-    font-size: 1rem;
-    color: var(--text-muted);
-    max-width: 464px;
-    line-height: 1.5;
-    margin: 0;
-  }
-}
+/* Empty chart states — canonical styles in viking-ui page-shell (.empty-chart-state) */
 
 /* ------------------------------------- */
 /* CES METER GAUGE STYLES                */

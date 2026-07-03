@@ -1,3 +1,5 @@
+@use '../../styles/chrome-buttons' as *;
+
 :host {
   display: block;
   width: 100%;
@@ -167,30 +169,16 @@
 }
 
 ::ng-deep .viking-app-header-auth-btn {
-  background: var(--color-dark-grey-btn-bg, var(--viking-surface-alt)) !important;
-  color: var(--color-dark-grey-btn-text, var(--viking-text)) !important;
-  font-weight: 600 !important;
-  border-radius: var(--viking-radius-pill) !important;
-  padding: 0 var(--viking-space-2) !important;
-  box-shadow: var(--viking-shadow-sm) !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.1em !important;
-  border: 1px solid var(--viking-border) !important;
-  height: 40px !important;
-  min-height: 40px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: var(--viking-space-1) !important;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  @include viking-chrome-btn-primary;
+  min-width: auto;
+}
+
+::ng-deep .viking-app-header-auth-btn.viking-app-header-auth-btn-outline {
+  @include viking-chrome-btn-outline;
 }
 
 ::ng-deep .viking-app-header-auth-btn:hover {
-  transform: translateY(-2px) !important;
-  background-color: var(--viking-accent) !important;
-  border-color: var(--viking-accent) !important;
-  color: var(--viking-accent-content) !important;
-  box-shadow: var(--viking-shadow-md) !important;
+  transform: translateY(var(--viking-state-hover-lift, -1px));
 }
 
 .viking-app-header-mobile {

@@ -495,20 +495,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 16px;
-  color: var(--text-muted);
+  padding: var(--viking-space-6, 48px) var(--viking-space-2, 16px);
+  color: var(--viking-text-muted, var(--text-muted));
   text-align: center;
-  border: 1px dashed var(--border);
-  border-radius: 8px;
-  background-color: color-mix(in srgb, var(--color-success) 2%, transparent);
+  border: 1px dashed var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius-lg, 12px);
+  background-color: var(--viking-surface-alt, var(--viking-charcoal-700));
+  box-shadow: var(--viking-shadow-inner, inset 0 1px 2px rgba(0, 0, 0, 0.14));
+  gap: var(--viking-space-1, 8px);
 
   .empty-title {
-    font-size: 1rem;
-    font-family: 'Inter', monospace;
-    font-weight: bold;
-    color: var(--color-success);
-    margin: 0 0 8px 0;
-    letter-spacing: 0.1em;
+    font-size: var(--viking-font-size-md, 18px);
+    font-weight: var(--viking-font-weight-semibold, 600);
+    color: var(--viking-success, var(--color-success));
+    margin: 0;
+    letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+    text-transform: uppercase;
   }
 
   p {
@@ -863,14 +865,20 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 40px 20px;
-  color: var(--text-muted);
-  gap: 8px;
+  padding: var(--viking-space-4, 32px) var(--viking-space-2, 16px);
+  color: var(--viking-text-muted, var(--text-muted));
+  gap: var(--viking-space-1, 8px);
+  border-radius: var(--viking-radius-lg, 12px);
+  background: var(--viking-surface-alt, var(--viking-charcoal-700));
+  border: 1px dashed var(--viking-border-strong, var(--border));
 
   h3 {
     margin: 0;
-    color: var(--text-color);
-    font-size: 1rem;
+    color: var(--viking-text, var(--text-color));
+    font-size: var(--viking-font-size-md, 18px);
+    font-weight: var(--viking-font-weight-semibold, 600);
+    letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+    text-transform: uppercase;
   }
 
   p {
@@ -926,16 +934,20 @@
 }
 
 .siem-empty-state {
-  padding: 36px 24px;
+  padding: var(--viking-space-4, 32px) var(--viking-space-3, 24px);
   text-align: center;
-  color: var(--text-muted);
+  color: var(--viking-text-muted, var(--text-muted));
+  border-radius: var(--viking-radius-lg, 12px);
+  background: var(--viking-surface-alt, var(--viking-charcoal-700));
+  border: 1px dashed var(--viking-border-strong, var(--border));
 
   .empty-title {
-    margin: 0 0 8px;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    color: var(--text-color);
+    margin: 0 0 var(--viking-space-1, 8px);
+    font-size: var(--viking-font-size-md, 18px);
+    font-weight: var(--viking-font-weight-semibold, 600);
+    letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+    text-transform: uppercase;
+    color: var(--viking-text, var(--text-color));
   }
 
   p {

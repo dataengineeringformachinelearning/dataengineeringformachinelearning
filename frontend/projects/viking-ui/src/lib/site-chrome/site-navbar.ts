@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { VikingButton } from '../button/button';
 import { VikingIcon } from '../icon/icon';
 import {
   DEFAULT_SITE_URLS,
@@ -19,7 +20,7 @@ import {
 @Component({
   selector: 'viking-site-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterLink, RouterLinkActive, VikingIcon],
+  imports: [RouterLink, RouterLinkActive, VikingButton, VikingIcon],
   template: `
     <header class="navbar">
       <div class="navbar-content">
@@ -78,15 +79,13 @@ import {
 
           <div class="desktop-auth">
             @if (!isAuthenticated()) {
-              <button type="button" class="auth-btn" (click)="login.emit()">
-                <viking-icon name="arrow-right" [size]="16" />
-                <span>Sign In</span>
-              </button>
+              <viking-button variant="primary" type="button" icon="arrow-right" (pressed)="login.emit()">
+                Sign In
+              </viking-button>
             } @else {
-              <button type="button" class="auth-btn" (click)="logout.emit()">
-                <viking-icon name="log-out" [size]="16" />
-                <span>Sign Out</span>
-              </button>
+              <viking-button variant="outline" type="button" icon="log-out" (pressed)="logout.emit()">
+                Sign Out
+              </viking-button>
             }
           </div>
 
@@ -135,15 +134,25 @@ import {
         <div class="mobile-divider"></div>
 
         @if (!isAuthenticated()) {
-          <button type="button" class="mobile-auth-btn" (click)="login.emit(); closeMobileMenu()">
-            <viking-icon name="arrow-right" [size]="16" />
-            <span>Sign In</span>
-          </button>
+          <viking-button
+            variant="primary"
+            type="button"
+            icon="arrow-right"
+            [fullWidth]="true"
+            (pressed)="login.emit(); closeMobileMenu()"
+          >
+            Sign In
+          </viking-button>
         } @else {
-          <button type="button" class="mobile-auth-btn" (click)="logout.emit(); closeMobileMenu()">
-            <viking-icon name="log-out" [size]="16" />
-            <span>Sign Out</span>
-          </button>
+          <viking-button
+            variant="outline"
+            type="button"
+            icon="log-out"
+            [fullWidth]="true"
+            (pressed)="logout.emit(); closeMobileMenu()"
+          >
+            Sign Out
+          </viking-button>
         }
       </nav>
     </header>
