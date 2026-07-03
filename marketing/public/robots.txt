@@ -1,7 +1,10 @@
 User-agent: *
 Allow: /
 Disallow: /api/
+Disallow: /llms-full.txt
+Disallow: /assets/content/search-index.json
 
+Sitemap: https://dataengineeringformachinelearning.com/sitemap.xml
 Sitemap: https://dataengineeringformachinelearning.com/sitemap-index.xml
 Sitemap: https://deml.app/sitemap.xml
 Sitemap: https://backend.deml.app/sitemap.xml

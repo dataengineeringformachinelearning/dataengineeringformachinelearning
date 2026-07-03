@@ -1,0 +1,308 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import VikingIcon from '../../components/VikingIcon.astro';
+import { loadBookChapters } from '../../lib/book-chapters';
+import { bookJsonLd, canonicalHref } from '../../lib/seo';
+import { siteEnv } from '../../lib/site-env';
+
+export function getStaticPaths() {
+  const chapters = loadBookChapters();
+  return chapters.map(chapter => ({
+    params: { slug: chapter.slug },
+    props: { chapter, chapters },
+  }));
+}
+
+const { chapter, chapters } = Astro.props;
+const { MARKETING_URL } = siteEnv();
+const pageTitle = `${chapter.title} - The Book - DEML Platform`;
+const pageDescription = `Chapter from Data Engineering for Machine Learning: ${chapter.title}`;
+const bookJsonLdPayload = bookJsonLd(
+  pageTitle,
+  pageDescription,
+  canonicalHref(`/book/${chapter.slug}`, MARKETING_URL),
+);
+---
+
+<Layout
+  title={pageTitle}
+  description={pageDescription}
+  keywords="data engineering book, machine learning guide, MLOps deployment, DEML chapters"
+  ogType="article"
+  jsonLd={bookJsonLdPayload}
+>
+  <div class="dashboard-page-container dashboard-layout" id="book-app">
+    <aside class="dashboard-sidebar no-print">
+      <a href="/book/" class="sidebar-search sidebar-extracted-1 u-style-328aaa book-toc-link">
+        <div class="search-wrapper">
+          <VikingIcon name="menu_book" size={20} class="u-style-315c1f" />
+          <span class="sidebar-search-placeholder">All chapters</span>
+        </div>
+      </a>
+
+      <div class="sidebar-section">
+        <h3 class="section-title">Chapters</h3>
+        <nav class="page-list" aria-label="Book chapters">
+          {chapters.map(item => (
+            <a
+              href={`/book/${item.slug}/`}
+              class:list={['page-item', { active: item.slug === chapter.slug }]}
+            >
+              <span class="page-title">{item.title}</span>
+            </a>
+          ))}
+        </nav>
+      </div>
+    </aside>
+
+    <div class="dashboard-main dashboard-content-area u-style-ef4080" id="main-content">
+      <div class="content-wrapper page-inner-wrapper">
+        <div class="whitepaper-container book-shell">
+          {chapter.slug === 'cover' ? (
+            <div class="book-cover-page u-style-9c7405">
+              <div class="u-style-54df94">
+                <div class="u-style-bdb450"></div>
+                <div class="u-style-34ef33"></div>
+                <div class="u-style-ec5da2">
+                  <div class="u-style-10c394">Interactive Guide</div>
+                  <VikingIcon name="rocket_launch" size={20} class="u-style-5c1531" />
+                  <h1 class="u-style-c46697">Data Engineering<br />for Machine Learning</h1>
+                  <p class="u-style-85912f">Building High-Throughput Event Platforms</p>
+                  <div class="u-style-fe3035">
+                    <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer" class="u-style-018404">Joe Alongi</a>
+                    <span class="u-style-19122e">VOL. I</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div class="whitepaper-content">
+              <section class="paper-section">
+                <div class="page-transition-container" set:html={chapter.html} />
+              </section>
+            </div>
+          )}
+
+          <div class="pagination-controls-outlined u-style-fef210">
+            {chapter.index > 0 ? (
+              <a class="pagination-btn" href={`/book/${chapters[chapter.index - 1].slug}/`}>
+                <VikingIcon name="chevron_left" size={20} /> Previous
+              </a>
+            ) : (
+              <span class="pagination-btn is-disabled">
+                <VikingIcon name="chevron_left" size={20} /> Previous
+              </span>
+            )}
+            <span class="page-counter">
+              Chapter {chapter.index + 1} of {chapters.length}
+            </span>
+            {chapter.index < chapters.length - 1 ? (
+              <a class="pagination-btn" href={`/book/${chapters[chapter.index + 1].slug}/`}>
+                Next <VikingIcon name="chevron_right" size={20} />
+              </a>
+            ) : (
+              <span class="pagination-btn is-disabled">
+                Next <VikingIcon name="chevron_right" size={20} />
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style lang="scss">
+:global(:root) {
+  --book-accent: var(--color-primary-container, var(--viking-teal-400));
+}
+
+#book-app {
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 0%, color-mix(in srgb, var(--viking-teal-600) 8%, transparent), transparent),
+    var(--bg-color);
+}
+
+.book-shell {
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  backdrop-filter: blur(16px);
+  padding: 0 0 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.book-toc-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.sidebar-section {
+  padding: 24px 16px;
+  overflow-y: auto;
+
+  .section-title {
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 0 0 8px 8px;
+    font-weight: 600;
+  }
+}
+
+.sidebar-search {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+
+  .search-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border);
+    padding: 8px;
+    border-radius: 16px;
+  }
+}
+
+.page-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.page-item {
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    background-color: var(--hover-color);
+    border-color: var(--border);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 25%, transparent) 0%, rgba(192, 197, 193, 0.08) 100%);
+    border-color: var(--book-accent);
+    color: var(--book-accent);
+
+    .page-title {
+      color: var(--book-accent);
+      font-weight: 600;
+    }
+  }
+}
+
+.dashboard-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.content-wrapper {
+  padding: 24px 16px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+
+  @media (min-width: 768px) {
+    padding: 32px 24px 48px;
+  }
+}
+
+.whitepaper-content .paper-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px 36px;
+  box-shadow: var(--shadow-sm);
+
+  :global(h2) {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin: 0 0 16px;
+    color: var(--text-color);
+    border-bottom: 2px solid color-mix(in srgb, var(--viking-teal-600) 30%, transparent);
+    padding-bottom: 8px;
+  }
+
+  :global(h3) {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 24px 0 12px;
+    color: var(--text-color);
+  }
+
+  :global(p) {
+    font-size: 1.05rem;
+    line-height: 1.65;
+    margin: 0 0 16px;
+    color: var(--text-muted);
+  }
+
+  :global(pre) {
+    background: var(--viking-charcoal-900);
+    padding: 16px;
+    border-radius: 12px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  :global(a) {
+    color: var(--viking-teal-600);
+  }
+}
+
+.pagination-controls-outlined {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card-bg);
+  margin-top: 24px;
+
+  @media (min-width: 600px) {
+    justify-content: space-between;
+    padding: 16px 32px;
+  }
+}
+
+.pagination-btn {
+  background: var(--color-primary) !important;
+  color: white !important;
+  font-weight: 600;
+  border-radius: 16px;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+
+  &.is-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+</style>
