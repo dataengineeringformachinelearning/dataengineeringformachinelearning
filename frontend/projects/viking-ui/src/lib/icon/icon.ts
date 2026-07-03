@@ -1,30 +1,31 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
-  VIKING_BRAND_ICON_NAMES,
   VIKING_FILLED_ICON_NAMES,
   VIKING_ICON_FILLED_PATHS,
   VIKING_ICON_PATHS,
   resolveVikingIcon,
+  resolveVikingIconColor,
   resolveVikingIconSize,
   vikingIconViewBox,
+  VikingIconColorToken,
   VikingIconName,
   VikingIconSizePreset,
   VikingIconVariant,
 } from '../core/icons';
 
 /**
- * viking-icon — inline SVG icon.
- * Zero-dependency stroke icons from the internal registry; brand marks use official artwork.
+ * viking-icon — themeable inline SVG icon (Lucide-sourced registry + DEML brand marks).
+ * Zero runtime dependencies; paths are inlined at build time from Lucide.
  *
- * @example Outline (default)
+ * @example Outline with semantic color
  * ```html
- * <viking-icon name="search" sizePreset="md" />
+ * <viking-icon name="search" sizePreset="md" color="accent" />
  * ```
  *
  * @example Filled brand mark
  * ```html
- * <viking-icon name="deml" variant="filled" [size]="28" />
+ * <viking-icon name="deml" variant="filled" [size]="28" color="accent" />
  * ```
  */
 @Component({
@@ -37,6 +38,7 @@ import {
     '[class.viking-icon-sm]': 'sizePreset() === "sm"',
     '[class.viking-icon-md]': 'sizePreset() === "md"',
     '[class.viking-icon-lg]': 'sizePreset() === "lg" || (!sizePreset() && !size())',
+    '[style.color]': 'resolvedColor()',
     'aria-hidden': 'true',
   },
   template: `
@@ -146,6 +148,8 @@ export class VikingIcon {
   readonly sizePreset = input<VikingIconSizePreset | null>(null);
   /** outline (stroke) or filled (solid) */
   readonly variant = input<VikingIconVariant>('outline');
+  /** Semantic token (accent, success, …) or any CSS color value. */
+  readonly color = input<VikingIconColorToken | string | undefined>(undefined);
   readonly spin = input<boolean>(false);
 
   protected readonly resolvedName = computed(() => resolveVikingIcon(this.name()));
@@ -154,11 +158,13 @@ export class VikingIcon {
     resolveVikingIconSize(this.size(), this.sizePreset()),
   );
 
+  protected readonly resolvedColor = computed(() => resolveVikingIconColor(this.color()));
+
   protected readonly viewBox = computed(() => vikingIconViewBox(this.resolvedName()));
 
   protected readonly isFilled = computed(() => {
     const name = this.resolvedName();
-    if ((VIKING_BRAND_ICON_NAMES as readonly string[]).includes(name)) {
+    if (name === 'google' || name === 'apple') {
       return false;
     }
     if (this.variant() === 'filled') {
@@ -173,7 +179,9 @@ export class VikingIcon {
       this.isFilled() && VIKING_ICON_FILLED_PATHS[name]
         ? VIKING_ICON_FILLED_PATHS[name]
         : (VIKING_ICON_PATHS[name] ?? '');
-    // Registry content is a static, trusted constant defined inside this package.
     return this.sanitizer.bypassSecurityTrustHtml(html);
   });
 }
+
+/** Alias for consumers expecting VikingIconComponent. */
+export { VikingIcon as VikingIconComponent };

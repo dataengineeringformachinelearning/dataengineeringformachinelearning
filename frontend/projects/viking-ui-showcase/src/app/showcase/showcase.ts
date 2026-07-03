@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import {
+  VIKING_LUCIDE_ICON_NAMES,
   VikingAccordion,
   VikingAccordionItem,
   VikingAuthPanel,
@@ -275,6 +276,17 @@ export class Showcase {
     { symbol: 'MSFT', price: '$338.12', change: '+1.8%', tone: 'success' as const },
     { symbol: 'TSLA', price: '$242.68', change: '-3.2%', tone: 'danger' as const },
     { symbol: 'GOOGL', price: '$129.87', change: '+0.9%', tone: 'success' as const },
+  ];
+
+  /** Lucide-sourced registry icons for the gallery grid. */
+  protected readonly lucideIconNames = VIKING_LUCIDE_ICON_NAMES;
+
+  protected readonly iconColorSamples = [
+    { name: 'accent', color: 'accent' as const },
+    { name: 'success', color: 'success' as const },
+    { name: 'warning', color: 'warning' as const },
+    { name: 'danger', color: 'danger' as const },
+    { name: 'muted', color: 'muted' as const },
   ];
 
   protected readonly kanbanColumns = signal<VikingKanbanColumn[]>([

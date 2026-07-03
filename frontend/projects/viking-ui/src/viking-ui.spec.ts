@@ -237,4 +237,21 @@ describe('viking-ui', () => {
     expect(svg.style.width).toBe('16px');
     expect(svg.style.height).toBe('16px');
   });
+
+  it('resolves semantic color tokens to CSS custom properties', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingIcon);
+    fixture.componentRef.setInput('name', 'shield');
+    fixture.componentRef.setInput('color', 'accent');
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).style.color).toBe('var(--viking-accent)');
+  });
+
+  it('renders Lucide-sourced search icon paths', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingIcon);
+    fixture.componentRef.setInput('name', 'search');
+    fixture.detectChanges();
+    const svg = fixture.nativeElement.querySelector('svg') as SVGSVGElement;
+    expect(svg.innerHTML).toContain('circle');
+    expect(svg.getAttribute('stroke')).toBe('currentColor');
+  });
 });

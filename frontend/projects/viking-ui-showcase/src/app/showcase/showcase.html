@@ -466,25 +466,56 @@
         <viking-pagination [page]="4" [totalPages]="12" />
       </section>
 
+      <section class="demo demo-wide" id="demo-icons">
+        <viking-heading size="lg" [level]="2">Icon System (Lucide)</viking-heading>
+        <viking-text variant="muted">
+          Themeable <code>viking-icon</code> — Lucide paths inlined at build time (zero runtime
+          deps). Supports size presets, semantic colors, and outline/filled variants.
+        </viking-text>
+
+        <viking-heading size="sm" [level]="3">Brand marks</viking-heading>
+        <div class="demo-row icon-brand-row">
+          <viking-icon name="deml" variant="filled" [size]="32" color="accent" />
+          <viking-icon name="deml-compact" variant="filled" [size]="28" color="accent" />
+          <viking-icon name="deml-lockup" [size]="32" color="accent" />
+          <viking-icon name="deml" [size]="32" color="muted" />
+        </div>
+
+        <viking-heading size="sm" [level]="3">Sizes &amp; variants</viking-heading>
+        <div class="demo-row">
+          <viking-icon name="shield" sizePreset="sm" color="accent" />
+          <viking-icon name="shield" sizePreset="md" color="accent" />
+          <viking-icon name="shield" sizePreset="lg" color="accent" />
+          <viking-icon name="heart" variant="outline" color="danger" />
+          <viking-icon name="heart" variant="filled" color="danger" />
+          <viking-icon name="loader" [spin]="true" color="accent" />
+        </div>
+
+        <viking-heading size="sm" [level]="3">Semantic colors</viking-heading>
+        <div class="demo-row">
+          @for (sample of iconColorSamples; track sample.name) {
+            <viking-icon name="check-circle" [color]="sample.color" [size]="22" />
+          }
+        </div>
+
+        <viking-heading size="sm" [level]="3">Lucide registry ({{ lucideIconNames.length }} icons)</viking-heading>
+        <div class="icon-gallery" role="list" aria-label="Lucide icon registry">
+          @for (iconName of lucideIconNames; track iconName) {
+            <div class="icon-gallery-cell" role="listitem" [attr.title]="iconName">
+              <viking-icon [name]="iconName" sizePreset="md" />
+              <span class="icon-gallery-label">{{ iconName }}</span>
+            </div>
+          }
+        </div>
+      </section>
+
       <section class="demo" id="demo-upload">
-        <viking-heading size="lg" [level]="2">File Upload &amp; Icons</viking-heading>
+        <viking-heading size="lg" [level]="2">File Upload</viking-heading>
         <viking-file-upload
           heading="Drop model artifacts here"
           hint="state_dict only — pickle files are rejected"
           accept=".pt,.safetensors,.json"
         />
-        <div class="demo-row icon-row">
-          <viking-icon name="search" />
-          <viking-icon name="calendar" />
-          <viking-icon name="bell" />
-          <viking-icon name="shield" />
-          <viking-icon name="bar-chart" />
-          <viking-icon name="sparkle" />
-          <viking-icon name="terminal" />
-          <viking-icon name="lock" />
-          <viking-icon name="globe" />
-          <viking-icon name="heart" />
-        </div>
       </section>
     </div>
   </section>
