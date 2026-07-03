@@ -94,7 +94,7 @@ export class VikingCard {
   readonly loading = input<boolean>(false);
   readonly compact = input<boolean>(false);
 
-  protected onActivate = (event: KeyboardEvent): void => {
+  protected onActivate = (event: Event): void => {
     if (!this.interactive() || this.loading()) {
       return;
     }
