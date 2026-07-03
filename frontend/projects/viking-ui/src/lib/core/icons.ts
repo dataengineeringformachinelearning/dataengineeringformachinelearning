@@ -7,6 +7,8 @@ import {
   VIKING_BRAND_ICON_FILLED_PATHS,
   VIKING_BRAND_ICON_PATHS,
   VIKING_BRAND_ICON_NAMES_LIST,
+  VIKING_DRAKKAR_ICON_FILLED_PATHS,
+  VIKING_DRAKKAR_ICON_PATHS,
 } from './brand-icons';
 
 export type VikingIconName = keyof typeof VIKING_ICON_PATHS;
@@ -46,12 +48,14 @@ const VIKING_CUSTOM_ICON_PATHS = {
 export const VIKING_ICON_PATHS = {
   ...LUCIDE_ICON_PATHS,
   ...VIKING_BRAND_ICON_PATHS,
+  ...VIKING_DRAKKAR_ICON_PATHS,
   ...VIKING_CUSTOM_ICON_PATHS,
 } as const;
 
 /** Filled-path overrides used when variant="filled" (brand marks, solid shapes). */
 export const VIKING_ICON_FILLED_PATHS: Partial<Record<VikingIconName, string>> = {
   ...VIKING_BRAND_ICON_FILLED_PATHS,
+  ...VIKING_DRAKKAR_ICON_FILLED_PATHS,
 };
 
 /** Legacy Material Icons ligature names → Viking icon registry keys. */

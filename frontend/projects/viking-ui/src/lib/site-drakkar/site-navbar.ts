@@ -31,11 +31,23 @@ import {
               aria-label="Go to marketing homepage"
               (click)="onBrandClick($event)"
             >
-              <viking-icon name="deml" [size]="28" class="brand-icon navbar-logo glowing-icon-sm" />
+              <viking-icon
+                name="drakkar"
+                variant="filled"
+                [size]="28"
+                color="accent"
+                class="brand-icon navbar-logo glowing-icon-sm"
+              />
             </a>
           } @else {
             <a [href]="brandHref()" class="navbar-brand" aria-label="Go to homepage">
-              <viking-icon name="deml" [size]="28" class="brand-icon navbar-logo glowing-icon-sm" />
+              <viking-icon
+                name="drakkar"
+                variant="filled"
+                [size]="28"
+                color="accent"
+                class="brand-icon navbar-logo glowing-icon-sm"
+              />
             </a>
           }
         </div>

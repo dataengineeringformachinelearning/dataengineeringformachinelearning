@@ -1,6 +1,7 @@
 ---
 import {
   VIKING_ICON_PATHS,
+  VIKING_ICON_FILLED_PATHS,
   VIKING_FILLED_ICON_NAMES,
   resolveVikingIcon,
   vikingIconViewBox,
@@ -10,26 +11,40 @@ export interface Props {
   name: string;
   size?: number;
   class?: string;
+  variant?: 'outline' | 'filled';
+  color?: 'accent' | 'muted' | 'inherit';
 }
 
-const { name, size = 16, class: className = '' } = Astro.props;
+const { name, size = 16, class: className = '', variant = 'outline', color = 'inherit' } =
+  Astro.props;
 const resolved = resolveVikingIcon(name);
-const paths = VIKING_ICON_PATHS[resolved] ?? VIKING_ICON_PATHS.info;
-const filled = (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(resolved);
+const isFilled =
+  variant === 'filled' || (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(resolved);
+const paths =
+  isFilled && VIKING_ICON_FILLED_PATHS[resolved]
+    ? VIKING_ICON_FILLED_PATHS[resolved]
+    : (VIKING_ICON_PATHS[resolved] ?? VIKING_ICON_PATHS.info);
 const viewBox = vikingIconViewBox(resolved);
+const colorStyle =
+  color === 'accent'
+    ? 'color: var(--viking-accent, #0d7377)'
+    : color === 'muted'
+      ? 'color: var(--viking-text-muted, #777777)'
+      : undefined;
 ---
 
 <svg
   xmlns="http://www.w3.org/2000/svg"
   viewBox={viewBox}
-  fill={filled ? 'currentColor' : 'none'}
-  stroke={filled ? 'none' : 'currentColor'}
-  stroke-width={filled ? undefined : '1.8'}
-  stroke-linecap={filled ? undefined : 'round'}
-  stroke-linejoin={filled ? undefined : 'round'}
+  fill={isFilled ? 'currentColor' : 'none'}
+  stroke={isFilled ? 'none' : 'currentColor'}
+  stroke-width={isFilled ? undefined : '1.8'}
+  stroke-linecap={isFilled ? undefined : 'round'}
+  stroke-linejoin={isFilled ? undefined : 'round'}
   width={size}
   height={size}
   class={className}
+  style={colorStyle}
   aria-hidden="true"
   set:html={paths}
 />

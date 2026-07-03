@@ -207,6 +207,27 @@ describe('viking-ui', () => {
     expect(service.toasts().length).toBe(0);
   });
 
+  it('renders outline and filled Drakkar brand icons at 24×24 viewBox', async (): Promise<void> => {
+    const outline = TestBed.createComponent(VikingIcon);
+    outline.componentRef.setInput('name', 'drakkar');
+    outline.componentRef.setInput('sizePreset', 'lg');
+    outline.detectChanges();
+    const outlineSvg = outline.nativeElement.querySelector('svg') as SVGSVGElement;
+    expect(outlineSvg.getAttribute('viewBox')).toBe('0 0 24 24');
+    expect(outlineSvg.getAttribute('stroke')).toBe('currentColor');
+    expect(outline.nativeElement.classList.contains('viking-icon-outline')).toBe(true);
+
+    const filled = TestBed.createComponent(VikingIcon);
+    filled.componentRef.setInput('name', 'drakkar');
+    filled.componentRef.setInput('variant', 'filled');
+    filled.componentRef.setInput('size', 28);
+    filled.detectChanges();
+    const filledSvg = filled.nativeElement.querySelector('svg') as SVGSVGElement;
+    expect(filledSvg.getAttribute('fill')).toBe('currentColor');
+    expect(filledSvg.getAttribute('stroke')).toBe('none');
+    expect(filled.nativeElement.classList.contains('viking-icon-filled')).toBe(true);
+  });
+
   it('renders outline and filled DEML brand icons at 24×24 viewBox', async (): Promise<void> => {
     const outline = TestBed.createComponent(VikingIcon);
     outline.componentRef.setInput('name', 'deml');

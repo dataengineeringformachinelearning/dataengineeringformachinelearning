@@ -167,7 +167,13 @@
             "browser": "projects/viking-ui-showcase/src/main.ts",
             "tsConfig": "projects/viking-ui-showcase/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "assets": [],
+            "assets": [
+              {
+                "glob": "favicon.svg",
+                "input": "projects/viking-ui-showcase/public",
+                "output": "/"
+              }
+            ],
             "styles": ["projects/viking-ui-showcase/src/styles.scss"],
             "outputPath": "dist/viking-ui-showcase"
           },

@@ -383,7 +383,7 @@ If `data-theme` is omitted, `prefers-color-scheme` selects the palette.
 | `lg`   | 24px                           | 1.75   |
 
 - Colors: semantic tones (`accent`, `success`, `warning`, `danger`, `muted`) → CSS variables only.
-- Brand marks: `deml`, `deml-compact`, `deml-lockup` — use `color="accent"`; never recolor SVG paths manually.
+- Brand marks: `drakkar`, `drakkar-compact`, `drakkar-lockup` (Viking-UI / Drakkar shell) and `deml`, `deml-compact`, `deml-lockup` (DEML product) — use `color="accent"`; never recolor SVG paths manually.
 - Charts and gauges: native SVG, `viewBox` + `preserveAspectRatio`; no third-party chart libraries.
 
 ### 8.4 Series color (`viking-color-picker`)

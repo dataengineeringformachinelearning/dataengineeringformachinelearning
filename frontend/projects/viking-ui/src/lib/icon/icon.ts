@@ -25,7 +25,7 @@ import {
  *
  * @example Filled brand mark
  * ```html
- * <viking-icon name="deml" variant="filled" [size]="28" color="accent" />
+ * <viking-icon name="drakkar" variant="filled" [size]="28" color="accent" />
  * ```
  */
 @Component({
