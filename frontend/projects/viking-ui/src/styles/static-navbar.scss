@@ -503,14 +503,46 @@ button.auth-btn {
   filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent));
 }
 
-// Algolia Experiences autocomplete host (shared across marketing + app).
+// Algolia Experiences autocomplete — aligned with viking-autocomplete + search-palette.
+@mixin viking-navbar-search-shell {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+  min-height: var(--viking-control-height, 40px);
+  padding: 0 var(--viking-space-2, 16px);
+  background: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  transition: var(--viking-transition, border-color 0.25s ease);
+}
+
+@mixin viking-navbar-search-shell-focus {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
+  outline-offset: var(--viking-ring-offset, 2px);
+}
+
+@mixin viking-navbar-search-panel {
+  margin: 0;
+  padding: var(--viking-space-1, 8px);
+  background: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  max-height: 288px;
+  overflow: auto;
+  font-family: var(--viking-font-family, inherit);
+}
+
 .navbar-search {
   display: flex;
   align-items: center;
+  align-self: center;
   flex: 0;
   justify-content: center;
   max-width: none;
   min-width: 0;
+  min-height: var(--viking-control-height, 40px);
   margin: 0 4px;
 }
 
@@ -518,6 +550,15 @@ button.auth-btn {
   width: 100%;
   min-width: 0;
   display: none;
+  position: relative;
+  font-family: var(--viking-font-family, inherit);
+
+  --aa-font-family: var(--viking-font-family, inherit);
+  --aa-font-size: var(--viking-font-size-sm, 14px);
+  --aa-spacing: var(--viking-space-1, 8px);
+  --aa-spacing-half: var(--viking-space-half, 4px);
+  --aa-panel-max-height: 288px;
+  --aa-panel-shadow: var(--viking-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.25));
 }
 
 .algolia-autocomplete-host.algolia-autocomplete-open {
@@ -526,13 +567,31 @@ button.auth-btn {
   top: calc(var(--viking-navbar-height, var(--navbar-height, 64px)) + var(--viking-space-1, 8px));
   left: var(--viking-space-2, 16px);
   right: var(--viking-space-2, 16px);
-  z-index: 10001;
+  z-index: var(--viking-z-overlay, 10001);
   max-width: none;
   padding: var(--viking-space-1, 8px);
   border: 1px solid var(--viking-border, var(--border));
   border-radius: var(--viking-radius-lg, 12px);
-  background: var(--viking-surface, var(--card-bg));
-  box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  background: color-mix(in srgb, var(--viking-surface, var(--card-bg)) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--viking-shadow-lg, var(--shadow-md));
+
+  .aa-Form,
+  form {
+    @include viking-navbar-search-shell;
+    border-color: var(--viking-accent-strong, var(--viking-teal-400));
+    @include viking-navbar-search-shell-focus;
+  }
+
+  .aa-Panel {
+    position: static;
+    margin-top: var(--viking-space-1, 8px);
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    max-height: 50vh;
+  }
 }
 
 .navbar-search-mobile-btn {
@@ -556,50 +615,254 @@ button.auth-btn {
   }
 
   &:focus-visible {
-    outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
-    outline-offset: var(--viking-ring-offset, 2px);
+    @include viking-navbar-search-shell-focus;
   }
 }
 
-.algolia-autocomplete-host input {
+.algolia-autocomplete-host .aa-Autocomplete,
+.algolia-autocomplete-host .aa-DetachedContainer {
   width: 100%;
-  min-height: var(--viking-control-height, 40px);
-  padding: 0 var(--viking-space-2, 16px);
-  border: 1px solid var(--viking-border-strong, var(--border));
-  border-radius: var(--viking-radius, 8px);
-  background: var(--viking-surface, var(--card-bg));
-  color: var(--viking-text, var(--text-color));
-  font: inherit;
-  font-size: var(--viking-font-size-sm, 14px);
-  box-shadow: none;
-  transition: var(--viking-transition-colors, border-color 0.25s ease);
 }
 
 .algolia-autocomplete-host .aa-Form,
 .algolia-autocomplete-host form {
+  @include viking-navbar-search-shell;
+  margin: 0 !important;
+
+  &:focus-within {
+    @include viking-navbar-search-shell-focus;
+  }
+}
+
+.algolia-autocomplete-host .aa-InputWrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: var(--viking-space-1, 8px);
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
   padding: 0 !important;
-  margin: 0 !important;
 }
 
-.algolia-autocomplete-host .aa-InputWrapper,
 .algolia-autocomplete-host .aa-InputWrapperPrefix,
 .algolia-autocomplete-host .aa-InputWrapperSuffix {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--viking-text-muted, var(--text-muted));
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
+  padding: 0 !important;
 }
 
+.algolia-autocomplete-host .aa-InputWrapperPrefix svg,
+.algolia-autocomplete-host .aa-InputWrapperSuffix svg {
+  width: 20px;
+  height: 20px;
+}
+
+.algolia-autocomplete-host .aa-Input,
+.algolia-autocomplete-host input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 0 !important;
+  height: auto;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  background: transparent !important;
+  color: var(--viking-text, var(--text-color));
+  font: inherit;
+  font-size: var(--viking-font-size, 16px);
+  box-shadow: none !important;
+}
+
+.algolia-autocomplete-host .aa-Input::placeholder,
 .algolia-autocomplete-host input::placeholder {
   color: var(--viking-text-muted, var(--text-muted));
 }
 
-.algolia-autocomplete-host input:focus-visible {
-  border-color: var(--viking-accent-strong, var(--viking-teal-400));
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
-  outline-offset: var(--viking-ring-offset, 2px);
+.algolia-autocomplete-host .aa-Panel {
+  @include viking-navbar-search-panel;
+  position: absolute;
+  top: calc(100% + var(--viking-space-1, 8px));
+  left: 0;
+  right: 0;
+  z-index: var(--viking-z-overlay, 10001);
+}
+
+.algolia-autocomplete-host .aa-PanelLayout,
+.algolia-autocomplete-host .aa-Source {
+  margin: 0;
+}
+
+.algolia-autocomplete-host .aa-List {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.algolia-autocomplete-host .aa-SourceHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+  padding: var(--viking-space-1, 8px) var(--viking-space-1, 8px) 0;
+  margin: 0;
+}
+
+.algolia-autocomplete-host .aa-SourceHeaderTitle {
+  font-size: calc(var(--viking-font-size-sm, 14px) * 0.85);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.algolia-autocomplete-host .aa-SourceHeaderLine {
+  flex: 1;
+  height: 1px;
+  background: var(--viking-border, var(--border));
+}
+
+.algolia-autocomplete-host .aa-Item {
+  border-radius: calc(var(--viking-radius, 8px) / 1.5);
+  padding: 0;
+  margin: 0;
+}
+
+.algolia-autocomplete-host .aa-ItemLink,
+.algolia-autocomplete-host .aa-ItemWrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+  min-height: var(--viking-control-height-sm, 36px);
+  padding: var(--viking-space-1, 8px);
+  border-radius: calc(var(--viking-radius, 8px) / 1.5);
+  color: var(--viking-text, var(--text-color));
+  text-decoration: none;
+  transition: var(--viking-transition-interactive, background-color 0.2s ease);
+}
+
+.algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemLink,
+.algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemWrapper,
+.algolia-autocomplete-host .aa-Item:hover .aa-ItemLink,
+.algolia-autocomplete-host .aa-Item:hover .aa-ItemWrapper {
+  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent));
+}
+
+.algolia-autocomplete-host .aa-ItemContent {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+  min-width: 0;
+  flex: 1;
+}
+
+.algolia-autocomplete-host .aa-ItemIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemIcon,
+.algolia-autocomplete-host .aa-Item:hover .aa-ItemIcon {
+  color: var(--viking-accent, var(--viking-teal-600));
+}
+
+.algolia-autocomplete-host .aa-ItemContentBody {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--viking-space-1, 8px) / 2);
+  min-width: 0;
+  flex: 1;
+}
+
+.algolia-autocomplete-host .aa-ItemContentTitle {
+  font-size: var(--viking-font-size, 16px);
+  font-weight: 600;
+  color: var(--viking-text, var(--text-color));
+  line-height: 1.3;
+}
+
+.algolia-autocomplete-host .aa-ItemContentDescription {
+  font-size: var(--viking-font-size-sm, 14px);
+  color: var(--viking-text-muted, var(--text-muted));
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.algolia-autocomplete-host mark,
+.algolia-autocomplete-host .aa-ItemContentTitle mark,
+.algolia-autocomplete-host .aa-ItemContentDescription mark {
+  background: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 20%, transparent);
+  color: var(--viking-accent, var(--viking-teal-600));
+  border-radius: 0;
+  padding: 0;
+  font-weight: 600;
+}
+
+.algolia-autocomplete-host .aa-ItemActions,
+.algolia-autocomplete-host .aa-GradientBottom,
+.algolia-autocomplete-host .aa-GradientTop {
+  display: none;
+}
+
+// Detached overlay (Algolia mobile / portal panel) — match search-palette modal.
+.aa-DetachedOverlay {
+  background: var(--viking-overlay-backdrop, rgba(0, 0, 0, 0.55)) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.aa-DetachedContainer {
+  font-family: var(--viking-font-family, inherit);
+  border: 1px solid var(--viking-border, var(--border)) !important;
+  border-radius: var(--viking-radius-lg, 12px) !important;
+  background: color-mix(in srgb, var(--viking-surface, var(--card-bg)) 92%, transparent) !important;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: var(--viking-shadow-lg, var(--shadow-md)) !important;
+}
+
+.aa-DetachedContainer .aa-Form,
+.aa-DetachedContainer form {
+  @include viking-navbar-search-shell;
+  margin: var(--viking-space-1, 8px) !important;
+  border-bottom: 1px solid var(--viking-border, var(--border)) !important;
+  border-radius: var(--viking-radius, 8px) var(--viking-radius, 8px) 0 0 !important;
+  box-shadow: none !important;
+}
+
+.aa-DetachedContainer .aa-Panel {
+  @include viking-navbar-search-panel;
+  position: static !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  max-height: 50vh !important;
+}
+
+body.algolia-search-backdrop::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--viking-z-overlay, 10001) - 1);
+  background: var(--viking-overlay-backdrop, rgba(0, 0, 0, 0.55));
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
 }
 
 @media (min-width: 768px) {
