@@ -37,8 +37,8 @@ viking-icon,
 .mobile-nav-btn viking-app-icon,
 .auth-btn viking-app-icon,
 .mobile-auth-btn viking-app-icon {
-  width: 18px;
-  height: 18px;
+  width: var(--viking-icon-size-md, var(--base-font-size));
+  height: var(--viking-icon-size-md, var(--base-font-size));
   align-self: center;
 }
 

@@ -337,10 +337,10 @@ html[data-theme='light'] .viking-app-sidebar-host {
       border-left: 3px solid transparent;
 
       .new-page-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        line-height: 18px;
+        font-size: var(--viking-icon-size-md, var(--base-font-size));
+        width: var(--viking-icon-size-md, var(--base-font-size));
+        height: var(--viking-icon-size-md, var(--base-font-size));
+        line-height: var(--viking-icon-size-md, var(--base-font-size));
       }
 
       &:hover {

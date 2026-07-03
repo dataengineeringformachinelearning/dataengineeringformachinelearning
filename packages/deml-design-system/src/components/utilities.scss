@@ -1,4 +1,20 @@
-// Semantic layout utilities (9px grid). Prefer these over hash-suffixed u-style-* classes.
+// Semantic layout utilities (4px grid via --space-* / --viking-space-*). Prefer these over hash-suffixed u-style-* classes.
+
+.u-items-center {
+  align-items: center;
+}
+
+.u-items-start {
+  align-items: flex-start;
+}
+
+.u-justify-between {
+  justify-content: space-between;
+}
+
+.u-text-center {
+  text-align: center;
+}
 
 .u-w-full {
   width: 100%;
@@ -31,6 +47,14 @@
 .u-flex-col {
   display: flex;
   flex-direction: column;
+}
+
+.u-gap-half {
+  gap: var(--space-half);
+}
+
+.u-gap-1-5 {
+  gap: var(--space-1-5);
 }
 
 .u-gap-1 {
