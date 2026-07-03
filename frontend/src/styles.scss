@@ -8,6 +8,7 @@
 @use 'components/viking-inspired' as *;
 @use 'components/icon-inline' as *;
 @use '../projects/viking-ui/src/styles/viking-ui' as *;
+@use '../projects/viking-ui/src/styles/buttons' as *;
 
 // ====================== PRISM SYNTAX HIGHLIGHTING ======================
 @import 'prismjs/themes/prism-okaidia.css';

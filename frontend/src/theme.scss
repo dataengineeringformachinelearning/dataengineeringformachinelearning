@@ -16,12 +16,9 @@ h6 {
   letter-spacing: var(--header-letter-spacing);
 }
 
-button:hover,
-.card:hover,
-.viking-btn:hover {
+.card:hover {
   transition: var(--transition-smooth);
   box-shadow: var(--shadow-hover);
-  opacity: 0.95;
 }
 
 /* YouTube style video feed borders */

@@ -23,7 +23,7 @@
 
   <div vikingModalActions>
     @if (dialogData.type !== 'alert') {
-    <viking-button variant="ghost" icon="x" (pressed)="onCancel()">Cancel</viking-button>
+    <viking-button variant="outline" (pressed)="onCancel()">Cancel</viking-button>
     }
     <viking-button
       [variant]="dialogData.confirmBtnColor === 'warn' ? 'danger' : 'primary'"

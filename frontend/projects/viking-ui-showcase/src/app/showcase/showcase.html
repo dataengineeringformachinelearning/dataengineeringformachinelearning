@@ -420,7 +420,7 @@
           Rotating the tenant KMS key re-encrypts all secrets. Workers stay online during the
           rotation.
           <div vikingModalActions>
-            <viking-button variant="ghost" (pressed)="modalOpen.set(false)">Cancel</viking-button>
+            <viking-button variant="outline" (pressed)="modalOpen.set(false)">Cancel</viking-button>
             <viking-button variant="primary" icon="lock" (pressed)="modalOpen.set(false)"
               >Rotate keys</viking-button
             >

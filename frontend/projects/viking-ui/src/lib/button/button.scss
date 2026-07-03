@@ -1,0 +1,86 @@
+@use '../../styles/buttons' as btn;
+
+:host {
+  display: inline-flex;
+}
+
+:host(.viking-full) {
+  display: flex;
+
+  .viking-btn {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+.viking-btn {
+  @include btn.viking-btn-base;
+}
+
+.viking-sm {
+  @include btn.viking-btn-size-sm;
+}
+
+.viking-xs {
+  @include btn.viking-btn-size-xs;
+}
+
+.viking-square {
+  width: var(--viking-control-height);
+  min-width: var(--viking-control-height);
+  padding: 0;
+
+  &.viking-sm {
+    width: var(--viking-control-height-sm);
+    min-width: var(--viking-control-height-sm);
+  }
+
+  &.viking-xs {
+    width: var(--viking-control-height-xs);
+    min-width: var(--viking-control-height-xs);
+  }
+
+  .viking-btn-label {
+    display: none;
+  }
+}
+
+.viking-outline {
+  @include btn.viking-btn-outline;
+}
+
+.viking-primary {
+  @include btn.viking-btn-primary;
+}
+
+.viking-secondary {
+  @include btn.viking-btn-secondary;
+}
+
+.viking-filled {
+  @include btn.viking-btn-filled;
+}
+
+.viking-danger {
+  @include btn.viking-btn-danger;
+}
+
+.viking-ghost {
+  @include btn.viking-btn-ghost;
+}
+
+.viking-subtle {
+  @include btn.viking-btn-subtle;
+}
+
+.viking-btn-kbd {
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
+  background: var(--viking-surface-alt);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-xs);
+  padding: 0 var(--viking-space-half);
+  line-height: 1.4;
+  margin-left: var(--viking-space-half);
+}
