@@ -68,6 +68,17 @@ def databricks_status(request):
   }
 
 
+@router.get("/redshift", response=IntegrationStatus, summary="AWS Redshift Integration Status")
+def redshift_status(request):
+  return {
+    "integration": "AWS Redshift",
+    "status": "ready",
+    "enabled": True,
+    "version": "2.0+",
+    "message": "AWS Redshift warehouse integration is active.",
+  }
+
+
 from typing import Any
 
 from .auth import IntegrationAPIKeyAuth

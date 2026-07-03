@@ -214,6 +214,7 @@ DEML provides first-class integration paths for the tools that power modern ML i
 | **PyTorch**      | Custom `DataLoader`, Hugging Face `state_dict` models    | `/api/v1/ingest`, `/api/v1/predict` | [pytorch.md](docs/integrations/pytorch.md)           |
 | **Apache Spark** | Batch + Structured Streaming sinks                       | `/api/v1/ingest`                    | [apache-spark.md](docs/integrations/apache-spark.md) |
 | **Databricks**   | Secret Scopes, scheduled jobs, notebook ingest           | `/api/v1/ingest`, `/api/v1/predict` | [databricks.md](docs/integrations/databricks.md)     |
+| **AWS Redshift** | UNLOAD/COPY, Data API, scheduled warehouse exports       | `/api/v1/ingest`, `/api/v1/predict` | [redshift.md](docs/integrations/redshift.md)         |
 
 ### Authentication (all integrations)
 
@@ -289,6 +290,20 @@ requests.post(INGEST_URL, headers={"Authorization": f"Bearer {api_key}"}, json={
 
 See [docs/integrations/databricks.md](docs/integrations/databricks.md).
 
+### AWS Redshift
+
+Export warehouse rollups via UNLOAD or the Redshift Data API, then ingest to DEML:
+
+```python
+requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"source": "aws-redshift", "batch_id": "daily-rollups", "records": records},
+)
+```
+
+See [docs/integrations/redshift.md](docs/integrations/redshift.md).
+
 ### Integration health checks
 
 Verify connectivity per platform:
@@ -299,6 +314,7 @@ curl https://backend.deml.app/api/v1/integrations/tensorflow   -H "Authorization
 curl https://backend.deml.app/api/v1/integrations/pytorch        -H "Authorization: Bearer YOUR_API_KEY"
 curl https://backend.deml.app/api/v1/integrations/apache-spark -H "Authorization: Bearer YOUR_API_KEY"
 curl https://backend.deml.app/api/v1/integrations/databricks     -H "Authorization: Bearer YOUR_API_KEY"
+curl https://backend.deml.app/api/v1/integrations/redshift        -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ---
@@ -399,7 +415,8 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI), [Orbitron](https://fonts.google.com/specimen/Orbitron) and [Michroma](https://fonts.google.com/specimen/Michroma) (CES instrumentation and marketing display)
 - **UI patterns (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
-- **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
+- **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
+- **Official Integrations** (customer-facing): [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](docs/integrations/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
 - **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
