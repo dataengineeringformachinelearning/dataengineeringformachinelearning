@@ -1,1 +1,2 @@
-@use '../../styles/static-navbar' as *;
+// Navbar styles live in static-navbar.scss (global viking-ui.css + app styles.scss).
+// ViewEncapsulation.None — do not @use static-navbar here (duplicates ~46kB into component budget).
