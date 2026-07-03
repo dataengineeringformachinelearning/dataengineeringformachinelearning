@@ -22,6 +22,11 @@
                 "glob": "favicon.svg",
                 "input": "public",
                 "output": "/"
+              },
+              {
+                "glob": "**/*",
+                "input": "../frontend/src/assets/fonts",
+                "output": "/assets/fonts"
               }
             ],
             "styles": ["src/styles.scss"],

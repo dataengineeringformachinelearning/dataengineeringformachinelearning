@@ -36,7 +36,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       .chart-custom-title {
         color: var(--viking-text-muted, var(--text-muted));
         font-size: var(--viking-font-size-ui, 14px);
-        font-family: var(--viking-font-family, 'Inter', sans-serif);
+        font-family: var(--viking-font-family);
         letter-spacing: var(--viking-letter-spacing-wide, 0.025em);
         font-weight: var(--viking-font-weight-semibold, 600);
         margin: 0;
@@ -45,7 +45,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       .chart-custom-value {
         color: var(--viking-text, var(--text-color));
         font-size: var(--viking-font-size-xl, 24px);
-        font-family: var(--viking-font-family, 'Inter', sans-serif);
+        font-family: var(--viking-font-family);
         font-weight: var(--viking-font-weight-bold, 700);
         line-height: var(--viking-line-height-tight, 1.25);
         margin: 0;
@@ -54,7 +54,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       .chart-custom-trend {
         color: var(--color-primary);
         font-size: var(--viking-font-size-sm, 14px);
-        font-family: var(--viking-font-family, 'Inter', sans-serif);
+        font-family: var(--viking-font-family);
         font-weight: var(--viking-font-weight-semibold, 600);
         letter-spacing: 0.02em;
         margin: 0;

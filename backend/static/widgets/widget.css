@@ -21,7 +21,7 @@
   --base-font-size: 16px;
   --space-1: 8px;
   --space-2: 16px;
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: var(--viking-font-family, 'Inter', ui-sans-serif, system-ui, sans-serif);
   --color-primary: var(--viking-teal-600);
   --color-success: var(--viking-green-500);
   --color-warning: var(--viking-gold-500);

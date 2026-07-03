@@ -83,6 +83,12 @@ def sync_design_system():
     os.makedirs(os.path.dirname(target), exist_ok=True)
     shutil.copy2(viking_css_src, target)
 
+  print("Syncing self-hosted Inter fonts...")
+  subprocess.run(
+    [sys.executable, os.path.join(root_dir, "scripts", "sync_fonts.py")],
+    check=True,
+  )
+
   scss_src = os.path.join(pkg_dir, "src")
   scss_target = os.path.join(root_dir, "frontend", "src", "design-system")
   if os.path.isdir(scss_src):

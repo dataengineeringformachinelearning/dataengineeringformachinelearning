@@ -165,23 +165,46 @@ Parent apps may still expose these; Viking-UI maps them in `viking-ui.scss`:
 
 ## 2. Typography
 
+Inter is the **primary typeface** for every DEML surface. The variable font is **self-hosted** (`InterVariable.woff2`) for performance, privacy, and CSP simplicity — no Google Fonts CDN requests.
+
 ### 2.1 Font families
 
-| Token                                     | Stack                                                       | Usage                                                |
-| ----------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
-| `--viking-font-family`                    | `'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif` | Body, Drakkar shell, tables, forms                   |
-| `--viking-font-family-mono`               | `'JetBrains Mono', 'SF Mono', 'Consolas', monospace`        | Code, hex values, telemetry IDs                      |
-| Display (marketing / CES instrumentation) | `'Orbitron', 'Michroma', var(--viking-font-family)`         | Hero headlines, gauge badges, instrument labels only |
+| Token                         | Stack                                                                                                      | Usage                                           |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `--viking-font-family`        | `'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif` | Body, UI chrome, headings, tables, forms, Swagger |
+| `--viking-font-family-mono`   | `ui-monospace, 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, monospace`                          | Code blocks, hex values, telemetry IDs, kbd     |
+| `.viking-font-display`        | Inherits `--viking-font-family` with caps spacing                                                          | Section tags, instrument labels, KPI badges     |
 
-**Rules:**
+**Self-hosting:**
 
-- **16px minimum** for main content (`--viking-font-size` / `--base-font-size`).
-- **14px minimum** for Drakkar shell controls (`--viking-font-size-sm` / `--ui-font-size`).
-- Headings use `--viking-letter-spacing-tight` (`-0.02em`) or `--viking-letter-spacing-tighter` (`-0.03em`).
-- Instrument / badge caps use `--viking-letter-spacing-caps` (`0.08em`) — never on body copy.
-- Metrics and KPIs: `--viking-font-weight-semibold` or `--viking-font-weight-bold`, tabular nums where applicable.
+| Asset                         | Canonical source                                              | Deployed paths                                                                 |
+| ----------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| `InterVariable.woff2`         | `frontend/projects/viking-ui/assets/fonts/inter/`             | `*/assets/fonts/inter/` (frontend, marketing), `backend/static/fonts/inter/`   |
+| `InterVariable-Italic.woff2`  | Same                                                          | Same                                                                           |
+| `@font-face` declarations     | `frontend/projects/viking-ui/src/styles/_fonts.scss`          | Compiled into `viking-ui.css` on every surface                                 |
 
-### 2.2 Type scale
+Sync fonts after changes: `python scripts/sync_fonts.py` (also runs inside `scripts/sync_design_system.py`).
+
+**Preload** (optional, recommended on login/marketing shells):
+
+```html
+<link rel="preload" href="/assets/fonts/inter/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
+```
+
+### 2.2 Weights & optical sizing
+
+Inter variable font supports **100–900** continuously. Use tokenized weights — do not load discrete font files.
+
+| Token                           | Value | Typical use                                      |
+| ------------------------------- | ----- | ------------------------------------------------ |
+| `--viking-font-weight-regular`  | 400   | Body copy, descriptions, chart axis labels       |
+| `--viking-font-weight-medium`   | 500   | Nav items, table headers, inline links           |
+| `--viking-font-weight-semibold` | 600   | Section headings (h2–h4), card titles, buttons   |
+| `--viking-font-weight-bold`     | 700   | Page titles (h1), KPI values, emphasis metrics   |
+
+Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics and KPIs add `.viking-tabular-nums` (`font-variant-numeric: tabular-nums lining-nums`).
+
+### 2.3 Type scale
 
 | Token                         | Size | Typical use              |
 | ----------------------------- | ---- | ------------------------ |
@@ -196,7 +219,16 @@ Parent apps may still expose these; Viking-UI maps them in `viking-ui.scss`:
 | `--viking-font-size-3xl`      | 36px | Marketing hero           |
 | `--viking-font-size-4xl`      | 48px | Display (marketing only) |
 
-### 2.3 Line height & weight
+### 2.4 Line height by element
+
+| Element / context        | Token / value                         | Notes                                      |
+| ------------------------ | ------------------------------------- | ------------------------------------------ |
+| Body (`p`, prose)        | `--viking-line-height-relaxed` (1.625) | Default for long-form readability          |
+| UI controls, nav, tables | `--viking-line-height-normal` (1.5)   | Compact chrome                             |
+| Headings h1–h3           | `--viking-line-height-tight` (1.25)   | Pair with negative letter-spacing          |
+| Buttons, badges, chips   | `--viking-line-height-snug` (1.375)   | Single-line controls                       |
+| Chart axis labels        | `--viking-line-height-tight` (1.25)   | At `--viking-chart-axis-size` (12px min)   |
+| Code blocks              | `--viking-line-height-relaxed` (1.625)| Use `--viking-font-family-mono`            |
 
 | Token                           | Value |
 | ------------------------------- | ----- |
@@ -204,10 +236,28 @@ Parent apps may still expose these; Viking-UI maps them in `viking-ui.scss`:
 | `--viking-line-height-snug`     | 1.375 |
 | `--viking-line-height-normal`   | 1.5   |
 | `--viking-line-height-relaxed`  | 1.625 |
-| `--viking-font-weight-regular`  | 400   |
-| `--viking-font-weight-medium`   | 500   |
-| `--viking-font-weight-semibold` | 600   |
-| `--viking-font-weight-bold`     | 700   |
+| `--viking-line-height-loose`    | 1.75  |
+
+### 2.5 Letter spacing
+
+| Token                              | Value     | Usage                                      |
+| ---------------------------------- | --------- | ------------------------------------------ |
+| `--viking-letter-spacing-tighter`  | -0.03em   | h1, hero display                           |
+| `--viking-letter-spacing-tight`    | -0.02em   | h2–h6, card titles                         |
+| `--viking-letter-spacing-normal`   | 0         | Body copy                                  |
+| `--viking-letter-spacing-wide`     | 0.025em   | Subtle label emphasis                      |
+| `--viking-letter-spacing-wider`    | 0.05em    | h3 uppercase treatment                     |
+| `--viking-letter-spacing-caps`     | 0.08em    | `.viking-font-display` only — never body   |
+
+### 2.6 Rules
+
+- **16px minimum** for main content (`--viking-font-size` / `--base-font-size`).
+- **14px minimum** for Drakkar shell controls (`--viking-font-size-sm` / `--ui-font-size`).
+- **Never** load Inter from Google Fonts or other CDNs in production — use `_fonts.scss`.
+- **Never** hardcode `font-family: 'Inter'` in components — use `var(--viking-font-family)`.
+- Headings use `--viking-letter-spacing-tight` or `--viking-letter-spacing-tighter`.
+- Instrument / badge caps use `.viking-font-display` or `--viking-letter-spacing-caps` — never on body copy.
+- Metrics and KPIs: `--viking-font-weight-semibold` or `--viking-font-weight-bold` + `.viking-tabular-nums`.
 
 ---
 
@@ -529,7 +579,7 @@ series = [
 - Use negative letter-spacing on headings for a precision instrument feel.
 - Prefer `viking-chart` native SVG for all data visualization.
 - Test with `node scripts/run_axe.js` before shipping UI changes.
-- Load Inter (+ Orbitron/Michroma on marketing/instrument surfaces) from the same font pipeline.
+- Load Inter from `_fonts.scss` (self-hosted variable woff2) on every surface — never from Google Fonts CDN.
 
 ### Don't
 
@@ -561,6 +611,7 @@ All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900
 
 1. Edit `frontend/projects/viking-ui/src/styles/_variables.scss` for token changes.
 2. Run `npm run build:viking-ui-css` to regenerate `viking-ui.css` artifacts.
+3. Run `python scripts/sync_fonts.py` after updating Inter font files.
 3. Update this document and `viking-color-picker` presets if the series palette changes.
 4. Sync marketing/backend copies of `viking-ui.css` in CI or publish step.
 5. Run `python scripts/sync_content.py` after editing `BOOK.md`, `WHITEPAPER.md`, or `README.md`.

@@ -344,7 +344,7 @@
   padding: 8px 16px;
   border-radius: 8px;
   outline: none;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--viking-font-family);
   font-size: var(--viking-font-size-md, var(--base-font-size));
   min-width: 200px;
   width: 100%;

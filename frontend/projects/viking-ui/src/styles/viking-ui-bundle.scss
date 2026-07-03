@@ -1,4 +1,6 @@
 // Static CSS bundle entry — tokens + page shell + footer + navbar + a11y for non-Angular apps.
+@use 'fonts';
+@use 'typography';
 @use 'viking-ui' as *;
 @use 'buttons' as *;
 @use 'drakkar-buttons' as *;

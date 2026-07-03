@@ -24,7 +24,7 @@
   label {
     font-size: 1rem;
     font-weight: 600;
-    font-family: 'Inter', monospace;
+    font-family: var(--viking-font-family-mono);
     color: var(--text-muted);
     margin-bottom: 8px;
     text-transform: uppercase;
@@ -98,7 +98,7 @@
 
   .item-id {
     font-size: 1rem;
-    font-family: 'Inter', monospace;
+    font-family: var(--viking-font-family-mono);
     color: var(--text-muted);
   }
 
@@ -117,7 +117,7 @@
   align-items: center;
   font-size: 1rem;
   color: var(--text-muted);
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
 
   .client-id {
     display: flex;
@@ -168,7 +168,7 @@
 }
 
 .vuln-id-tag {
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-size: 1rem;
   background-color: var(--color-background);
   padding: 8px 8px;
@@ -177,7 +177,7 @@
 }
 
 .cve-tag {
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-size: 1rem;
   font-weight: bold;
   background-color: color-mix(in srgb, var(--color-error) 15%, transparent);
@@ -239,7 +239,7 @@
 }
 
 .y-axis-label {
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-size: 1rem;
   font-weight: bold;
   writing-mode: vertical-rl;
@@ -263,7 +263,7 @@
   .row-label {
     width: 16px;
     text-align: right;
-    font-family: 'Inter', monospace;
+    font-family: var(--viking-font-family-mono);
     font-size: 1rem;
     color: var(--text-muted);
     margin-right: 8px;
@@ -279,7 +279,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-weight: bold;
   font-size: 1rem;
   transition: var(--transition-smooth);
@@ -341,7 +341,7 @@
   .col-label {
     width: 64px;
     text-align: center;
-    font-family: 'Inter', monospace;
+    font-family: var(--viking-font-family-mono);
     font-size: 1rem;
     color: var(--text-muted);
   }
@@ -353,7 +353,7 @@
 
 .x-axis-label {
   text-align: center;
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-size: 1rem;
   font-weight: bold;
   margin-top: 8px;
@@ -401,7 +401,7 @@
   font-size: 1rem;
   cursor: pointer;
   transition: var(--transition-smooth);
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   outline: none;
 
   &:hover {
@@ -432,7 +432,7 @@
   margin: 0;
 
   code {
-    font-family: 'Inter', monospace;
+    font-family: var(--viking-font-family-mono);
     font-size: 1rem;
     color: var(--color-success);
   }
@@ -469,7 +469,7 @@
   p {
     font-size: 1rem;
     margin: 0;
-    font-family: 'Inter', monospace;
+    font-family: var(--viking-font-family-mono);
   }
 }
 
@@ -642,7 +642,7 @@
 }
 
 .soc-id {
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -908,7 +908,7 @@
   color: var(--white) !important;
   border-radius: var(--border-radius-sm) !important;
   padding: var(--space-1) var(--space-2) !important;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--viking-font-family);
   font-size: max(16px, var(--base-font-size));
   font-weight: 600;
   border: 1px solid var(--viking-teal-400) !important;

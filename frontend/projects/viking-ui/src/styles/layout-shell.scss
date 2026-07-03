@@ -74,7 +74,7 @@
 
 .viking-section-title {
   margin: 0;
-  font-family: var(--viking-font-family, 'Inter', sans-serif);
+  font-family: var(--viking-font-family);
   font-size: clamp(1.5rem, 3vw, 2rem);
   font-weight: 700;
   letter-spacing: var(--header-letter-spacing, -0.02em);
@@ -83,7 +83,7 @@
 
 .viking-section-lead {
   margin: 0;
-  font-family: var(--viking-font-family, 'Inter', sans-serif);
+  font-family: var(--viking-font-family);
   font-size: var(--viking-font-size, var(--base-font-size, 16px));
   line-height: 1.6;
   color: var(--viking-text-muted, var(--text-muted));
