@@ -3,7 +3,6 @@ import { Title } from '@angular/platform-browser';
 import {
   VikingAccordion,
   VikingAccordionItem,
-  VikingAuthFooter,
   VikingAuthPanel,
   VikingAutocomplete,
   VikingAvatar,
@@ -89,7 +88,6 @@ import {
   imports: [
     VikingAccordion,
     VikingAccordionItem,
-    VikingAuthFooter,
     VikingAuthPanel,
     VikingAutocomplete,
     VikingAvatar,

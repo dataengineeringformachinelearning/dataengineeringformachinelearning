@@ -13,14 +13,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
-  VikingAuthFooter,
   VikingAuthPanel,
   VikingButton,
   VikingCallout,
   VikingField,
-  VikingHeading,
   VikingInput,
-  VikingText,
 } from '@dataengineeringformachinelearning/viking-ui';
 
 import { AuthService } from '../../services/auth.service';
@@ -37,14 +34,11 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    VikingAuthFooter,
     VikingAuthPanel,
     VikingButton,
     VikingCallout,
     VikingField,
-    VikingHeading,
     VikingInput,
-    VikingText,
   ],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -109,6 +103,22 @@ export class Login implements OnInit, OnDestroy {
   verificationId = signal<string | null>(null);
   uid = signal<string>('');
   token = signal<string>('');
+
+  protected pageTitle = (): string => {
+    if (this.isForgotMode()) return 'Reset Password';
+    if (this.isResetMode()) return 'Set New Password';
+    if (this.mfaRequired()) return 'Two-Factor verification';
+    if (this.isPhoneMode()) return 'Sign In with Phone';
+    if (this.isRegisterMode()) return 'Sign Up';
+    return 'Sign In';
+  };
+
+  protected showSocialLogin = (): boolean =>
+    !this.successMessage() &&
+    !this.isForgotMode() &&
+    !this.isResetMode() &&
+    !this.mfaRequired() &&
+    !this.codeSent();
 
   protected submitLabel = (): string => {
     if (this.isForgotMode()) return 'Send Link';

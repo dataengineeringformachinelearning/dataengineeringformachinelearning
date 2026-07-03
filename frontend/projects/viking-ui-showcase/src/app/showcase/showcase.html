@@ -3,8 +3,8 @@
     <viking-brand name="Viking-UI" />
     <viking-heading size="xl" [level]="1">Viking-UI Component Gallery</viking-heading>
     <viking-text variant="muted">
-      DEML clinical design system on THEME.md tokens. Publishable as
-      <code>&#64;deml/viking-ui</code>.
+      DEML clinical design system — Viking-UI component library on THEME.md tokens. Publishable as
+      <code>&#64;dataengineeringformachinelearning/viking-ui</code>.
     </viking-text>
     <viking-breadcrumbs [items]="breadcrumbs" />
   </header>
@@ -123,6 +123,39 @@
           >
         </div>
       </viking-sheet>
+    </section>
+
+    <section class="demo demo-wide" id="demo-auth-panel">
+      <viking-heading size="lg" [level]="2">Auth Panel Template</viking-heading>
+      <viking-text variant="muted">
+        Access portal layout — full-width actions, Google and Apple sign-in with brand icons.
+      </viking-text>
+      <viking-auth-panel
+        tag="Access Portal"
+        title="Sign In"
+        subtitle="Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+        [showSocial]="true"
+      >
+        <viking-field label="Email Address" [required]="true">
+          <viking-input type="email" placeholder="email@example.com" icon="mail" />
+        </viking-field>
+        <viking-field label="Password" [required]="true">
+          <viking-input type="password" icon="lock" />
+        </viking-field>
+        <div vikingAuthLinks class="viking-auth-links">
+          <viking-button variant="outline" [fullWidth]="true"
+            >Don't have an account? Sign Up</viking-button
+          >
+          <viking-button variant="outline" [fullWidth]="true"
+            >Sign In with Phone Number</viking-button
+          >
+          <viking-button variant="outline" [fullWidth]="true">Forgot password?</viking-button>
+        </div>
+        <div vikingAuthFooter>
+          <viking-button variant="primary" [fullWidth]="true">Login</viking-button>
+          <viking-button variant="outline" [fullWidth]="true" icon="x">Cancel</viking-button>
+        </div>
+      </viking-auth-panel>
     </section>
 
     <section class="demo" id="demo-kbd-label">
@@ -626,25 +659,6 @@
       <div class="site-chrome-preview">
         <viking-site-footer context="marketing" />
       </div>
-    </section>
-
-    <section class="demo" id="demo-auth-panel">
-      <viking-heading size="lg" [level]="2">Auth Panel</viking-heading>
-      <viking-text variant="muted">
-        Social sign-in row with fixed-aspect brand icons and accessible outline buttons.
-      </viking-text>
-      <viking-auth-panel [loading]="false" />
-    </section>
-
-    <section class="demo" id="demo-auth-footer">
-      <viking-heading size="lg" [level]="2">Auth Footer</viking-heading>
-      <viking-text variant="muted">
-        Stacked primary and cancel actions with consistent spacing for login panels.
-      </viking-text>
-      <viking-auth-footer>
-        <viking-button variant="primary" icon="log-in">Login</viking-button>
-        <viking-button variant="ghost" icon="x">Cancel</viking-button>
-      </viking-auth-footer>
     </section>
   </div>
 </div>

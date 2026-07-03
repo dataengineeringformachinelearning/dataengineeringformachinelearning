@@ -178,10 +178,12 @@ def patch_viking_package_json() -> None:
     '"keywords": [\n    "angular",\n    "ui",\n    "flux",\n    "material",\n    "design-system",\n    "deml"\n  ]',
     '"keywords": [\n    "angular",\n    "ui",\n    "viking-ui",\n    "design-system",\n    "deml",\n    "a11y"\n  ]',
   )
+  if '"license": "UNLICENSED"' in text:
+    text = text.replace('"license": "UNLICENSED"', '"license": "Apache-2.0"')
   if '"publishConfig"' not in text:
     text = text.replace(
-      '"license": "UNLICENSED"',
-      '"license": "UNLICENSED",\n  "publishConfig": {\n    "access": "public"\n  }',
+      '"license": "Apache-2.0"',
+      '"license": "Apache-2.0",\n  "publishConfig": {\n    "access": "public"\n  }',
     )
   pkg.write_text(text, encoding="utf-8")
 

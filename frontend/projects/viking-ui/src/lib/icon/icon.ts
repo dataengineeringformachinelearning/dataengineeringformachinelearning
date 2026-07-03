@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { VIKING_ICON_PATHS, VikingIconName } from '../core/icons';
+import { VIKING_FILLED_ICON_NAMES, VIKING_ICON_PATHS, VikingIconName } from '../core/icons';
 
 /**
  * viking-icon — inline SVG icon.
@@ -17,9 +17,9 @@ import { VIKING_ICON_PATHS, VikingIconName } from '../core/icons';
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.8"
+      [attr.fill]="filled() ? 'currentColor' : 'none'"
+      [attr.stroke]="filled() ? 'none' : 'currentColor'"
+      [attr.stroke-width]="filled() ? null : '1.8'"
       stroke-linecap="round"
       stroke-linejoin="round"
       [style.width.px]="size()"
@@ -53,6 +53,10 @@ export class VikingIcon {
   readonly name = input.required<VikingIconName>();
   readonly size = input<number>(24);
   readonly spin = input<boolean>(false);
+
+  protected readonly filled = computed(() =>
+    (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(this.name()),
+  );
 
   protected readonly paths = computed<SafeHtml>(() =>
     // Registry content is a static, trusted constant defined inside this package.

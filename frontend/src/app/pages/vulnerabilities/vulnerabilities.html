@@ -8,14 +8,14 @@
         title="Vulnerability Prioritization & Triage"
         subtitle="Active security threat monitoring and telemetry orchestration"
       >
-        <nav fluxPageHeaderBack class="page-back-nav" aria-label="Return to dashboard">
+        <nav vikingPageHeaderBack class="page-back-nav" aria-label="Return to dashboard">
           <a class="back-link" routerLink="/dashboard" aria-label="Back to Dashboard">
             <viking-app-icon name="arrow_back" [ariaHidden]="true" />
             <span>Back to Dashboard</span>
           </a>
         </nav>
         @if (tenants.length > 0) {
-        <div fluxPageHeaderActions class="tenant-selector-group">
+        <div vikingPageHeaderActions class="tenant-selector-group">
           <app-unified-select
             id="tenantSelect"
             label="Environment:"

@@ -34,6 +34,18 @@ const brandHref = resolveBrandHref('marketing', urls);
       ))}
     </nav>
 
+    <div class="navbar-search" role="search">
+      <div id="autocomplete" class="algolia-autocomplete-host" aria-label="Search site content"></div>
+      <button
+        type="button"
+        class="navbar-search-mobile-btn"
+        aria-label="Open search"
+        onclick="if(window.DemlWidgets) window.DemlWidgets.openSearch()"
+      >
+        <span class="material-icons" aria-hidden="true">search</span>
+      </button>
+    </div>
+
     <div class="navbar-right">
       <div class="desktop-auth">
         <a href={`${FRONTEND_URL}/login`} class="auth-btn" id="auth-btn-desktop">

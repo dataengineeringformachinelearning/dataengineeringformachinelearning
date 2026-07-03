@@ -20,6 +20,20 @@ function pick(
   return fallback;
 }
 
+export function algoliaEnv(env: EnvRecord = import.meta.env) {
+  return {
+    APP_ID: pick(env, "ALGOLIA_APP_ID", [], "ZJAFYOSH2V"),
+    API_KEY: pick(
+      env,
+      "ALGOLIA_API_KEY",
+      [],
+      "7c9de08d7f553ba6c60441c1324c105d",
+    ), // pragma: allowlist secret
+    EXPERIENCE_ID: pick(env, "ALGOLIA_EXPERIENCE_ID", [], "ZJAFYOSH2V"),
+    ENV: pick(env, "ALGOLIA_ENV", [], "prod"),
+  };
+}
+
 export function siteEnv(env: EnvRecord = import.meta.env) {
   return {
     FRONTEND_URL: pick(

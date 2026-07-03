@@ -16,7 +16,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
       [class.hud-header]="layout() === 'hud'"
     >
       <div class="viking-page-header-main title-group topbar-left">
-        <ng-content select="[fluxPageHeaderBack]" />
+        <ng-content select="[vikingPageHeaderBack]" />
         @if (tag()) {
           <div class="section-tag-row">
             <span class="section-tag viking-page-header-tag">{{ tag() }}</span>
@@ -26,10 +26,10 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         @if (subtitle()) {
           <p class="viking-page-header-subtitle hud-subtitle page-description">{{ subtitle() }}</p>
         }
-        <ng-content select="[fluxPageHeaderExtra]" />
+        <ng-content select="[vikingPageHeaderExtra]" />
       </div>
       <div class="viking-page-header-actions topbar-right">
-        <ng-content select="[fluxPageHeaderActions]" />
+        <ng-content select="[vikingPageHeaderActions]" />
       </div>
     </header>
   `,

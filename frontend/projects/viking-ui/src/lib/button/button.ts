@@ -14,7 +14,10 @@ export type VikingButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 
   selector: 'viking-button',
   imports: [VikingIcon, NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[style.pointer-events]': "disabled() ? 'none' : null" },
+  host: {
+    '[style.pointer-events]': "disabled() ? 'none' : null",
+    '[class.viking-full]': 'fullWidth()',
+  },
   template: `
     @if (href()) {
       <a
@@ -197,6 +200,8 @@ export class VikingButton {
   readonly disabled = input<boolean>(false);
   readonly loading = input<boolean>(false);
   readonly square = input<boolean>(false);
+  /** Stretch button to 100% of container width. */
+  readonly fullWidth = input<boolean>(false);
   readonly href = input<string | null>(null);
   readonly target = input<string | null>(null);
   readonly kbd = input<string | null>(null);

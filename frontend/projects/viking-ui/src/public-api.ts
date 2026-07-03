@@ -11,14 +11,13 @@ export type { VikingIconName } from './lib/core/icons';
 export { VikingControl, provideVikingCva } from './lib/core/cva';
 
 // Components (alphabetical)
-export * from './lib/auth/auth-footer';
-export * from './lib/auth/auth-panel';
 export * from './lib/site-chrome/site-chrome.config';
 export * from './lib/site-chrome/site-navbar';
 export * from './lib/site-chrome/site-footer';
 export * from './lib/app-header/app-header';
 export * from './lib/app-sidebar/app-sidebar';
 export * from './lib/accordion/accordion';
+export * from './lib/auth-panel/auth-panel';
 export * from './lib/autocomplete/autocomplete';
 export * from './lib/avatar/avatar';
 export * from './lib/badge/badge';

@@ -18,7 +18,7 @@ def sync_design_system():
   subprocess.run(["npm", "run", "build"], cwd=pkg_dir, check=True)
 
   frontend_dir = os.path.join(root_dir, "frontend")
-  print("Building @deml/viking-ui CSS bundle...")
+  print("Building @dataengineeringformachinelearning/viking-ui CSS bundle...")
   subprocess.run(["npm", "run", "build:viking-ui-css"], cwd=frontend_dir, check=True)
 
   dist_tokens = os.path.join(dist_dir, "design-tokens.css")
@@ -59,8 +59,8 @@ def sync_design_system():
     os.path.join(root_dir, "marketing", "public", "assets", "deml-components.css"),
   ]
 
-  flux_css_src = os.path.join(frontend_dir, "dist", "viking-ui-css", "viking-ui.css")
-  flux_css_targets = [
+  viking_css_src = os.path.join(frontend_dir, "dist", "viking-ui-css", "viking-ui.css")
+  viking_css_targets = [
     os.path.join(root_dir, "frontend", "src", "assets", "viking-ui.css"),
     os.path.join(root_dir, "frontend", "public", "assets", "viking-ui.css"),
     os.path.join(root_dir, "backend", "static", "viking-ui.css"),
@@ -75,13 +75,13 @@ def sync_design_system():
     os.makedirs(os.path.dirname(target), exist_ok=True)
     shutil.copy2(dist_components, target)
 
-  if not os.path.isfile(flux_css_src):
-    print(f"Expected viking-ui CSS missing: {flux_css_src}", file=sys.stderr)
+  if not os.path.isfile(viking_css_src):
+    print(f"Expected viking-ui CSS missing: {viking_css_src}", file=sys.stderr)
     sys.exit(1)
 
-  for target in flux_css_targets:
+  for target in viking_css_targets:
     os.makedirs(os.path.dirname(target), exist_ok=True)
-    shutil.copy2(flux_css_src, target)
+    shutil.copy2(viking_css_src, target)
 
   scss_src = os.path.join(pkg_dir, "src")
   scss_target = os.path.join(root_dir, "frontend", "src", "design-system")
@@ -89,7 +89,7 @@ def sync_design_system():
     shutil.copytree(scss_src, scss_target, dirs_exist_ok=True)
 
   print("Successfully synced design system to:")
-  for target in token_targets + component_targets + flux_css_targets:
+  for target in token_targets + component_targets + viking_css_targets:
     print(f" - {target}")
   if os.path.isdir(scss_target):
     print(f" - {scss_target}")

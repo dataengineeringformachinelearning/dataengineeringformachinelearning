@@ -3,6 +3,10 @@ import '../styles/theme.scss';
 import '../styles/global.scss';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
+import { algoliaEnv } from '../lib/site-env';
+
+const algolia = algoliaEnv();
+const algoliaScriptUrl = `https://cdn.jsdelivr.net/npm/@algolia/experiences/dist/experiences.js?appId=${algolia.APP_ID}&apiKey=${algolia.API_KEY}&experienceId=${algolia.EXPERIENCE_ID}&env=${algolia.ENV}`;
 
 export interface Props {
 	title: string;
@@ -30,6 +34,7 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 		<meta name="description" content={description} />
 		<meta name="author" content="Joe Alongi" />
 		<meta name="robots" content="index, follow" />
+		<meta name="algolia-site-verification" content="687B59B29612DE68" /> <!-- pragma: allowlist secret -->
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
 
@@ -89,7 +94,7 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 
 		<!-- DEML Widgets (served locally from marketing to avoid cross-origin/CORS; data attrs point to main app) -->
 		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>
-		<script is:inline type="module" src="/assets/widgets/search-dialog.js" defer></script>
+		<script is:inline src="/assets/widgets/algolia-search.js" defer></script>
 
 		<!-- Google tag (gtag.js) -->
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-MH3M99CQ80"></script>
@@ -115,5 +120,8 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 			<slot />
 		</main>
 		<Footer />
+
+		<!-- Algolia Experiences site search (requires #autocomplete in Navbar) -->
+		<script is:inline src={algoliaScriptUrl}></script>
 	</body>
 </html>
