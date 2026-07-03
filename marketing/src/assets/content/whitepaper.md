@@ -62,6 +62,11 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ## 3. Defendable Architecture Principles
 
+> [!IMPORTANT]
+> **Foundational Frameworks — Key References**
+>
+> DEML's security architecture is guided by two Lockheed Martin white papers from the Intelligence Driven Defense® program: **[A Threat-Driven Approach to Cyber Security](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Threat-Driven-Approach.pdf)** (Muckin & Fitch, 2019), which supplies IDDIL/ATC threat analysis and STRIDE-LM categorization; and **[Defendable Architectures](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Defendable-Architectures.pdf)** (Fitch & Muckin, 2019), which defines the Visibility / Manageability / Survivability characteristics below. See [BOOK.md Appendix L](BOOK.md#appendix-l-foundational-security-frameworks) for full citations and rationale.
+
 Lockheed Martin's *Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems should exhibit to support intelligence-driven defense rather than static compliance alone. The DEML platform is engineered to embody each characteristic across its operational planes.
 
 **Visibility** enables defenders to observe activity across the network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
@@ -289,7 +294,8 @@ This platform was substantially authored with assistance from the following inte
 17. Mend.io. (2026). _Mend: Application Security Testing_.
 18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
 19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
-20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures_. Lockheed Martin Corporation.
+20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Lockheed Martin Corporation. https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Defendable-Architectures.pdf
+21. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Lockheed Martin Corporation. https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Threat-Driven-Approach.pdf
 
 ## 15. DevSecOps and Platform Standardization Audit
 
