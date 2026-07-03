@@ -88,6 +88,7 @@ import {
         xmlns="http://www.w3.org/2000/svg"
         [attr.viewBox]="viewBox()"
         [attr.fill]="isFilled() ? 'currentColor' : 'none'"
+        [attr.fill-rule]="isFilled() ? 'evenodd' : null"
         [attr.stroke]="isFilled() ? 'none' : 'currentColor'"
         stroke-linecap="round"
         stroke-linejoin="round"

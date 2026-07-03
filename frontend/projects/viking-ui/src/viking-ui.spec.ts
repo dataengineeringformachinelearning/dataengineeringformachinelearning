@@ -224,6 +224,7 @@ describe('viking-ui', () => {
     filled.detectChanges();
     const filledSvg = filled.nativeElement.querySelector('svg') as SVGSVGElement;
     expect(filledSvg.getAttribute('fill')).toBe('currentColor');
+    expect(filledSvg.getAttribute('fill-rule')).toBe('evenodd');
     expect(filledSvg.getAttribute('stroke')).toBe('none');
     expect(filled.nativeElement.classList.contains('viking-icon-filled')).toBe(true);
   });
@@ -245,6 +246,7 @@ describe('viking-ui', () => {
     filled.detectChanges();
     const filledSvg = filled.nativeElement.querySelector('svg') as SVGSVGElement;
     expect(filledSvg.getAttribute('fill')).toBe('currentColor');
+    expect(filledSvg.getAttribute('fill-rule')).toBe('evenodd');
     expect(filledSvg.getAttribute('stroke')).toBe('none');
     expect(filled.nativeElement.classList.contains('viking-icon-filled')).toBe(true);
   });
