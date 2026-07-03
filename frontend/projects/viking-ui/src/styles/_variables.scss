@@ -1,0 +1,283 @@
+// ============================================================================
+// Viking-UI Premium Foundation Tokens
+// ----------------------------------------------------------------------------
+// Dark-first engineering aesthetic: deep charcoals, metallic accents,
+// refined teal (primary) + crimson (secondary) CTAs. 4px spacing grid.
+// All --viking-* semantic tokens in viking-ui.scss map from these values.
+// ============================================================================
+
+:root {
+  /* ── Charcoal surfaces ─────────────────────────────────────────────────── */
+  --viking-charcoal-950: #0a0a0a;
+  --viking-charcoal-900: #111111;
+  --viking-charcoal-800: #1a1a1a;
+  --viking-charcoal-700: #2a2a2a;
+  --viking-charcoal-600: #333333;
+  --viking-charcoal-500: #444444;
+
+  /* ── Metallic accents (borders, dividers, subtle depth) ────────────────── */
+  --viking-metallic-600: #555555;
+  --viking-metallic-500: #666666;
+  --viking-metallic-400: #777777;
+  --viking-metallic-300: #999999;
+  --viking-metallic-200: #aaaaaa;
+  --viking-metallic-100: #bbbbbb;
+
+  /* ── Primary accent — deep teal (CTAs, focus, links) ───────────────────── */
+  --viking-teal-700: #0a5c5f;
+  --viking-teal-600: #0d7377;
+  --viking-teal-500: #109094;
+  --viking-teal-400: #14a3a8;
+  --viking-teal-300: #2db8bd;
+
+  /* ── Secondary accent — rich crimson (emphasis, destructive) ───────────── */
+  --viking-crimson-700: #7a2231;
+  --viking-crimson-600: #922b3e;
+  --viking-crimson-500: #a83344;
+  --viking-crimson-400: #c44355;
+
+  /* ── Status (refined for premium palette) ──────────────────────────────── */
+  --viking-green-500: #2a9d8f;
+  --viking-gold-500: #c4a035;
+  --viking-blue-500: #3d8bfd;
+
+  /* ── Neutrals ──────────────────────────────────────────────────────────── */
+  --viking-white: #f5f5f5;
+  --viking-white-pure: #ffffff;
+  --viking-black: #000000;
+
+  /* ── Spacing — strict 4px base (legacy --viking-space-N aliases preserved) ─ */
+  --viking-grid-unit: 4px;
+  --viking-space-0: 0;
+  --viking-space-px: 1px;
+  --viking-space-half: 4px;
+  --viking-space-1: 8px;
+  --viking-space-1-5: 12px;
+  --viking-space-2: 16px;
+  --viking-space-3: 24px;
+  --viking-space-4: 32px;
+  --viking-space-5: 40px;
+  --viking-space-6: 48px;
+  --viking-space-7: 56px;
+  --viking-space-8: 64px;
+  --viking-space-9: 80px;
+  --viking-space-10: 96px;
+
+  /* ── Typography ──────────────────────────────────────────────────────────── */
+  --viking-font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --viking-font-family-mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+
+  --viking-font-size-2xs: 11px;
+  --viking-font-size-xs: 12px;
+  --viking-font-size-sm: 14px;
+  --viking-font-size-base: 16px;
+  --viking-font-size-md: 18px;
+  --viking-font-size-lg: 20px;
+  --viking-font-size-xl: 24px;
+  --viking-font-size-2xl: 30px;
+  --viking-font-size-3xl: 36px;
+  --viking-font-size-4xl: 48px;
+
+  --viking-font-weight-regular: 400;
+  --viking-font-weight-medium: 500;
+  --viking-font-weight-semibold: 600;
+  --viking-font-weight-bold: 700;
+
+  --viking-line-height-none: 1;
+  --viking-line-height-tight: 1.25;
+  --viking-line-height-snug: 1.375;
+  --viking-line-height-normal: 1.5;
+  --viking-line-height-relaxed: 1.625;
+  --viking-line-height-loose: 1.75;
+
+  --viking-letter-spacing-tighter: -0.03em;
+  --viking-letter-spacing-tight: -0.02em;
+  --viking-letter-spacing-normal: 0;
+  --viking-letter-spacing-wide: 0.025em;
+  --viking-letter-spacing-wider: 0.05em;
+  --viking-letter-spacing-caps: 0.08em;
+
+  /* ── Border radius — 6–12px premium feel ─────────────────────────────────── */
+  --viking-radius-xs: 4px;
+  --viking-radius-sm: 6px;
+  --viking-radius: 8px;
+  --viking-radius-md: 10px;
+  --viking-radius-lg: 12px;
+  --viking-radius-xl: 16px;
+  --viking-radius-pill: 999px;
+
+  /* ── Elevation — soft shadows with subtle metallic top-edge ──────────────── */
+  --viking-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --viking-shadow-sm:
+    0 1px 2px rgba(0, 0, 0, 0.18), 0 1px 3px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --viking-shadow-md:
+    0 2px 4px rgba(0, 0, 0, 0.16), 0 4px 8px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --viking-shadow-lg:
+    0 4px 8px rgba(0, 0, 0, 0.14), 0 12px 24px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --viking-shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.14);
+
+  /* ── Motion ──────────────────────────────────────────────────────────────── */
+  --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --viking-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --viking-ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  --viking-duration-fast: 150ms;
+  --viking-duration: 250ms;
+  --viking-duration-slow: 350ms;
+
+  --viking-transition-colors:
+    color var(--viking-duration) var(--viking-ease-default),
+    background-color var(--viking-duration) var(--viking-ease-default),
+    border-color var(--viking-duration) var(--viking-ease-default),
+    box-shadow var(--viking-duration) var(--viking-ease-default),
+    fill var(--viking-duration) var(--viking-ease-default),
+    stroke var(--viking-duration) var(--viking-ease-default);
+  --viking-transition: all var(--viking-duration) var(--viking-ease-default);
+
+  /* ── Controls ──────────────────────────────────────────────────────────── */
+  --viking-control-height: 40px;
+  --viking-control-height-sm: 32px;
+  --viking-control-height-xs: 24px;
+  --viking-control-padding-x: var(--viking-space-2);
+  --viking-btn-min-width: 120px;
+
+  /* ── Layout ────────────────────────────────────────────────────────────── */
+  --viking-container-max-width: 1260px;
+  --viking-navbar-height: 64px;
+  --viking-sidebar-width: 256px;
+
+  /* ── Layering ────────────────────────────────────────────────────────────── */
+  --viking-z-overlay: 1000;
+  --viking-z-toast: 1100;
+  --viking-z-tooltip: 1200;
+
+  /* ── Chart ───────────────────────────────────────────────────────────────── */
+  --viking-chart-axis-size: 12px;
+}
+
+/* ── Dark mode (default) ─────────────────────────────────────────────────── */
+:root,
+html[data-theme='dark'] {
+  --viking-bg: var(--viking-charcoal-900);
+  --viking-surface: var(--viking-charcoal-800);
+  --viking-surface-alt: var(--viking-charcoal-700);
+  --viking-surface-raised: var(--viking-charcoal-600);
+
+  --viking-text: var(--viking-white);
+  --viking-text-muted: var(--viking-metallic-200);
+  --viking-text-subtle: var(--viking-metallic-300);
+  --viking-text-inverted: var(--viking-charcoal-900);
+
+  --viking-border: color-mix(in srgb, var(--viking-metallic-600) 35%, transparent);
+  --viking-border-strong: color-mix(in srgb, var(--viking-metallic-400) 55%, transparent);
+  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 18%, transparent);
+
+  --viking-accent: var(--viking-teal-600);
+  --viking-accent-hover: var(--viking-teal-500);
+  --viking-accent-content: var(--viking-white-pure);
+  --viking-accent-soft: color-mix(in srgb, var(--viking-teal-600) 14%, transparent);
+  --viking-accent-strong: var(--viking-teal-400);
+
+  --viking-accent-secondary: var(--viking-crimson-600);
+  --viking-accent-secondary-hover: var(--viking-crimson-500);
+  --viking-accent-secondary-content: var(--viking-white-pure);
+  --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-crimson-600) 12%, transparent);
+
+  --viking-success: var(--viking-green-500);
+  --viking-warning: var(--viking-gold-500);
+  --viking-danger: var(--viking-crimson-500);
+  --viking-info: var(--viking-blue-500);
+  --viking-danger-text: var(--viking-crimson-400);
+  --viking-on-danger: var(--viking-white-pure);
+
+  --viking-ring: var(--viking-teal-400);
+  --viking-ring-width: 2px;
+  --viking-ring-offset: 2px;
+
+  --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-950) 72%, transparent);
+
+  --viking-shadow-sm:
+    0 1px 2px rgba(0, 0, 0, 0.28), 0 1px 3px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --viking-shadow-md:
+    0 2px 4px rgba(0, 0, 0, 0.24), 0 4px 8px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --viking-shadow-lg:
+    0 4px 8px rgba(0, 0, 0, 0.2), 0 12px 24px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── Light mode ──────────────────────────────────────────────────────────── */
+html[data-theme='light'] {
+  --viking-bg: var(--viking-white-pure);
+  --viking-surface: var(--viking-white-pure);
+  --viking-surface-alt: #f7f7f7;
+  --viking-surface-raised: #efefef;
+
+  --viking-text: var(--viking-charcoal-900);
+  --viking-text-muted: var(--viking-metallic-500);
+  --viking-text-subtle: var(--viking-metallic-400);
+  --viking-text-inverted: var(--viking-white-pure);
+
+  --viking-border: color-mix(in srgb, var(--viking-metallic-600) 22%, transparent);
+  --viking-border-strong: color-mix(in srgb, var(--viking-metallic-600) 38%, transparent);
+  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 12%, transparent);
+
+  --viking-accent: var(--viking-teal-700);
+  --viking-accent-hover: var(--viking-teal-600);
+  --viking-accent-content: var(--viking-white-pure);
+  --viking-accent-soft: color-mix(in srgb, var(--viking-teal-700) 10%, transparent);
+  --viking-accent-strong: var(--viking-teal-500);
+
+  --viking-accent-secondary: var(--viking-crimson-700);
+  --viking-accent-secondary-hover: var(--viking-crimson-600);
+  --viking-accent-secondary-content: var(--viking-white-pure);
+  --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-crimson-700) 8%, transparent);
+
+  --viking-danger-text: var(--viking-crimson-700);
+  --viking-on-danger: var(--viking-white-pure);
+
+  --viking-ring: var(--viking-teal-600);
+
+  --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-900) 45%, transparent);
+
+  --viking-shadow-sm:
+    0 1px 2px rgba(17, 17, 17, 0.06), 0 1px 3px rgba(17, 17, 17, 0.08);
+  --viking-shadow-md:
+    0 2px 4px rgba(17, 17, 17, 0.06), 0 4px 8px rgba(17, 17, 17, 0.08);
+  --viking-shadow-lg:
+    0 4px 8px rgba(17, 17, 17, 0.06), 0 12px 24px rgba(17, 17, 17, 0.1);
+}
+
+/* Respect system preference when no explicit theme is set */
+@media (prefers-color-scheme: light) {
+  html:not([data-theme='dark']) {
+    --viking-bg: var(--viking-white-pure);
+    --viking-surface: var(--viking-white-pure);
+    --viking-surface-alt: #f7f7f7;
+    --viking-surface-raised: #efefef;
+    --viking-text: var(--viking-charcoal-900);
+    --viking-text-muted: var(--viking-metallic-500);
+    --viking-text-subtle: var(--viking-metallic-400);
+    --viking-text-inverted: var(--viking-white-pure);
+    --viking-border: color-mix(in srgb, var(--viking-metallic-600) 22%, transparent);
+    --viking-border-strong: color-mix(in srgb, var(--viking-metallic-600) 38%, transparent);
+    --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 12%, transparent);
+    --viking-accent: var(--viking-teal-700);
+    --viking-accent-hover: var(--viking-teal-600);
+    --viking-accent-soft: color-mix(in srgb, var(--viking-teal-700) 10%, transparent);
+    --viking-accent-strong: var(--viking-teal-500);
+    --viking-accent-secondary: var(--viking-crimson-700);
+    --viking-accent-secondary-hover: var(--viking-crimson-600);
+    --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-crimson-700) 8%, transparent);
+    --viking-danger-text: var(--viking-crimson-700);
+    --viking-ring: var(--viking-teal-600);
+    --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-900) 45%, transparent);
+    --viking-shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.06), 0 1px 3px rgba(17, 17, 17, 0.08);
+    --viking-shadow-md: 0 2px 4px rgba(17, 17, 17, 0.06), 0 4px 8px rgba(17, 17, 17, 0.08);
+    --viking-shadow-lg: 0 4px 8px rgba(17, 17, 17, 0.06), 0 12px 24px rgba(17, 17, 17, 0.1);
+  }
+}

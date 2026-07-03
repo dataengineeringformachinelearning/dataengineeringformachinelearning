@@ -1,94 +1,163 @@
+@use 'variables';
 @use 'page-shell';
 @use 'layout-shell';
 
 // ============================================================================
 // Viking-UI design tokens
 // ----------------------------------------------------------------------------
-// DEML clinical design system — Viking-UI patterns on THEME.md tokens.
-// Lab coat aesthetic: crayola-blue accents, sharp borders, no gradients.
-// 8px grid. 16px main / 14px UI font floors. No colors outside THEME.md.
+// Premium engineering aesthetic — dark-first charcoals, metallic accents,
+// deep teal primary + crimson secondary. Maps to parent DEML tokens when
+// present for Angular app compatibility; falls back to _variables.scss.
 // ============================================================================
 
 :root {
-  /* Accent (Viking "accent" concept -> Material primary) */
-  --viking-accent: var(--color-primary, #2176ff);
-  --viking-accent-content: var(--color-on-primary, #ffffff);
-  --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 12%, transparent);
-  --viking-accent-strong: var(--color-primary-container, #33a1fd);
+  /* Accent — deep teal primary, crimson secondary */
+  --viking-accent: var(--color-primary, var(--viking-teal-600, #0d7377));
+  --viking-accent-hover: var(--viking-teal-500, #109094);
+  --viking-accent-content: var(--color-on-primary, var(--viking-white-pure, #ffffff));
+  --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 14%, transparent);
+  --viking-accent-strong: var(--color-primary-container, var(--viking-teal-400, #14a3a8));
+
+  --viking-accent-secondary: var(--accent-color, var(--viking-crimson-600, #922b3e));
+  --viking-accent-secondary-hover: var(--viking-crimson-500, #a83344);
+  --viking-accent-secondary-content: var(--viking-white-pure, #ffffff);
+  --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-accent-secondary) 12%, transparent);
 
   /* Surfaces */
-  --viking-bg: var(--bg-color, #ffffff);
-  --viking-surface: var(--card-bg, #ffffff);
-  --viking-surface-alt: var(--color-surface-variant, color-mix(in srgb, #31393c 5%, #ffffff));
-  --viking-overlay-backdrop: color-mix(in srgb, var(--jet-black, #31393c) 55%, transparent);
+  --viking-bg: var(--bg-color, var(--viking-charcoal-900, #111111));
+  --viking-surface: var(--card-bg, var(--viking-charcoal-800, #1a1a1a));
+  --viking-surface-alt: var(--color-surface-variant, var(--viking-charcoal-700, #2a2a2a));
+  --viking-surface-raised: var(--viking-charcoal-600, #333333);
+  --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-950, #0a0a0a) 72%, transparent);
 
   /* Text */
-  --viking-text: var(--text-color, #31393c);
-  --viking-text-muted: var(--text-muted, color-mix(in srgb, #31393c 72%, #ffffff));
-  --viking-text-inverted: var(--color-on-primary, #ffffff);
+  --viking-text: var(--text-color, var(--viking-white, #f5f5f5));
+  --viking-text-muted: var(--text-muted, var(--viking-metallic-200, #aaaaaa));
+  --viking-text-subtle: var(--viking-metallic-300, #999999);
+  --viking-text-inverted: var(--color-on-primary, var(--viking-charcoal-900, #111111));
 
   /* Borders / focus */
-  --viking-border: var(--border, color-mix(in srgb, #31393c 15%, transparent));
-  --viking-border-strong: var(--border-layout, color-mix(in srgb, #31393c 25%, transparent));
-  --viking-ring: var(--focus-ring-color, #2176ff);
-  --viking-ring-width: var(--focus-ring-width, 3px);
+  --viking-border: var(--border, color-mix(in srgb, var(--viking-metallic-600, #555555) 35%, transparent));
+  --viking-border-strong: var(--border-layout, color-mix(in srgb, var(--viking-metallic-400, #777777) 55%, transparent));
+  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600, #555555) 18%, transparent);
+  --viking-ring: var(--focus-ring-color, var(--viking-teal-400, #14a3a8));
+  --viking-ring-width: var(--focus-ring-width, 2px);
   --viking-ring-offset: var(--focus-ring-offset, 2px);
 
-  /* Status (THEME.md semantic map) */
-  --viking-success: var(--color-success, #33a1fd);
-  --viking-warning: var(--color-warning, #fdca40);
-  --viking-danger: var(--color-error, #f79824);
-  --viking-info: var(--color-info, #2176ff);
-  /* Danger-tinted TEXT on light surfaces needs deepening for WCAG AA. */
-  --viking-danger-text: color-mix(in srgb, var(--viking-danger) 50%, var(--jet-black, #31393c));
-  /* Text placed ON danger-filled surfaces (carrot orange requires dark text). */
-  --viking-on-danger: var(--jet-black, #31393c);
+  /* Status */
+  --viking-success: var(--color-success, var(--viking-green-500, #2a9d8f));
+  --viking-warning: var(--color-warning, var(--viking-gold-500, #c4a035));
+  --viking-danger: var(--color-error, var(--viking-crimson-500, #a83344));
+  --viking-info: var(--color-info, var(--viking-blue-500, #3d8bfd));
+  --viking-danger-text: color-mix(in srgb, var(--viking-danger) 50%, var(--viking-charcoal-900, #111111));
+  --viking-on-danger: var(--viking-white-pure, #ffffff);
 
-  /* Shape (8px grid) */
+  /* Shape */
+  --viking-radius-xs: 4px;
+  --viking-radius-sm: 6px;
   --viking-radius: var(--border-radius-md, 8px);
-  --viking-radius-lg: var(--border-radius-lg, 16px);
+  --viking-radius-md: 10px;
+  --viking-radius-lg: var(--border-radius-lg, 12px);
+  --viking-radius-xl: 16px;
   --viking-radius-pill: var(--border-radius-pill, 999px);
 
-  /* Elevation — sharp and clinical, no diffuse glows */
+  /* Elevation */
+  --viking-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
   --viking-shadow-sm: var(
     --shadow-sm,
-    0 1px 2px color-mix(in srgb, #31393c 5%, transparent),
-    0 1px 3px color-mix(in srgb, #31393c 10%, transparent)
+    0 1px 2px rgba(0, 0, 0, 0.18),
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04)
   );
   --viking-shadow-md: var(
     --shadow-md,
-    0 4px 6px -1px color-mix(in srgb, #31393c 10%, transparent),
-    0 2px 4px -1px color-mix(in srgb, #31393c 6%, transparent)
+    0 2px 4px rgba(0, 0, 0, 0.16),
+    0 4px 8px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05)
   );
+  --viking-shadow-lg: var(
+    --shadow-lg,
+    0 4px 8px rgba(0, 0, 0, 0.14),
+    0 12px 24px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06)
+  );
+  --viking-shadow-inner: inset 0 1px 2px rgba(0, 0, 0, 0.14);
 
-  /* Typography — 16px main content, 14px bold/UI chrome */
-  --viking-font-family: 'Inter', sans-serif;
+  /* Typography — 16px body floor, 14px UI chrome */
+  --viking-font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --viking-font-family-mono: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+
+  --viking-font-size-2xs: 11px;
+  --viking-font-size-xs: 12px;
+  --viking-font-size-sm: max(14px, var(--ui-font-size, 14px));
   --viking-font-size: max(16px, var(--base-font-size, 16px));
-  --viking-font-size-ui: max(14px, var(--ui-font-size, 14px));
-  --viking-font-size-lg: max(16px, calc(var(--viking-font-size) * 1.125));
-  --viking-font-size-xl: max(16px, calc(var(--viking-font-size) * 1.25));
+  --viking-font-size-md: max(16px, calc(var(--viking-font-size) * 1.125));
+  --viking-font-size-lg: max(16px, calc(var(--viking-font-size) * 1.25));
+  --viking-font-size-xl: max(18px, calc(var(--viking-font-size) * 1.5));
+  --viking-font-size-2xl: max(20px, calc(var(--viking-font-size) * 1.875));
+  --viking-font-size-3xl: max(24px, calc(var(--viking-font-size) * 2.25));
+  --viking-font-size-4xl: max(30px, calc(var(--viking-font-size) * 3));
 
-  /* Controls (8px grid heights) */
+  /* Legacy aliases (backward compatible) */
+  --viking-font-size-ui: var(--viking-font-size-sm);
+
+  --viking-font-weight-regular: 400;
+  --viking-font-weight-medium: 500;
+  --viking-font-weight-semibold: 600;
+  --viking-font-weight-bold: 700;
+
+  --viking-line-height-tight: 1.25;
+  --viking-line-height-snug: 1.375;
+  --viking-line-height-normal: 1.5;
+  --viking-line-height-relaxed: 1.625;
+  --viking-line-height-loose: 1.75;
+
+  --viking-letter-spacing-tight: var(--header-letter-spacing, -0.02em);
+  --viking-letter-spacing-normal: 0;
+  --viking-letter-spacing-wide: 0.025em;
+  --viking-letter-spacing-wider: 0.05em;
+  --viking-letter-spacing-caps: 0.08em;
+
+  /* Controls */
   --viking-control-height: 40px;
   --viking-control-height-sm: 32px;
   --viking-control-height-xs: 24px;
-  --viking-control-padding-x: var(--space-2, 16px);
+  --viking-control-padding-x: var(--space-2, var(--viking-space-2, 16px));
   --viking-btn-min-width: var(--btn-min-width, 120px);
 
-  /* Spacing */
+  /* Spacing — 4px grid with legacy aliases */
+  --viking-grid-unit: 4px;
+  --viking-space-0: 0;
+  --viking-space-half: var(--space-half, 4px);
   --viking-space-1: var(--space-1, 8px);
+  --viking-space-1-5: var(--space-1-5, 12px);
   --viking-space-2: var(--space-2, 16px);
   --viking-space-3: var(--space-3, 24px);
   --viking-space-4: var(--space-4, 32px);
+  --viking-space-5: var(--space-5, 40px);
+  --viking-space-6: var(--space-6, 48px);
+  --viking-space-7: var(--space-7, 56px);
+  --viking-space-8: var(--space-8, 64px);
 
-  /* Chart axis labels — compact but WCAG-readable on chart surfaces */
+  /* Chart axis labels */
   --viking-chart-axis-size: 12px;
 
   /* Page shell */
   --viking-container-max-width: var(--container-max-width, 1260px);
+  --viking-navbar-height: var(--navbar-height, 64px);
+  --viking-sidebar-width: 256px;
 
   /* Motion */
-  --viking-transition: var(--transition-smooth, all 0.2s cubic-bezier(0.4, 0, 0.2, 1));
+  --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --viking-duration-fast: 150ms;
+  --viking-duration: 250ms;
+  --viking-duration-slow: 350ms;
+  --viking-transition-colors:
+    color var(--viking-duration) var(--viking-ease-default),
+    background-color var(--viking-duration) var(--viking-ease-default),
+    border-color var(--viking-duration) var(--viking-ease-default),
+    box-shadow var(--viking-duration) var(--viking-ease-default);
+  --viking-transition: var(--transition-smooth, all 0.25s cubic-bezier(0.4, 0, 0.2, 1));
 
   /* Layering */
   --viking-z-overlay: 1000;
@@ -96,7 +165,7 @@
   --viking-z-tooltip: 1200;
 }
 
-/* Dark surfaces give the raw danger orange sufficient contrast already. */
+/* Dark surfaces — danger text uses full crimson */
 html[data-theme='dark'] {
   --viking-danger-text: var(--viking-danger);
 }
@@ -105,4 +174,19 @@ html[data-theme='dark'] {
   html:not([data-theme='light']) {
     --viking-danger-text: var(--viking-danger);
   }
+}
+
+/* Smooth theme transitions on root surfaces */
+html {
+  color-scheme: dark light;
+}
+
+html,
+body,
+.viking-btn,
+.viking-card,
+.viking-hud-panel,
+.viking-metric-card,
+.viking-panel-card {
+  transition: var(--viking-transition-colors);
 }
