@@ -1,0 +1,100 @@
+# Creates an ephemeral Neon Postgres branch per pull request and deletes it on close.
+# Requires NEON_API_KEY (secret) and NEON_PROJECT_ID (variable) from the Neon GitHub integration.
+# See https://neon.com/docs/guides/neon-github-integration
+
+name: Create/Delete Branch for Pull Request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  setup:
+    name: Setup
+    outputs:
+      branch: ${{ steps.branch_name.outputs.current_branch }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch name
+        id: branch_name
+        uses: tj-actions/branch-names@v8
+
+  create_neon_branch:
+    name: Create Neon Branch
+    needs: setup
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (
+        github.event.action == 'synchronize' ||
+        github.event.action == 'opened' ||
+        github.event.action == 'reopened'
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get branch expiration date as an env variable (2 weeks from now)
+        id: get_expiration_date
+        run: echo "EXPIRES_AT=$(date -u --date '+14 days' +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
+      - name: Create Neon Branch
+        id: create_neon_branch
+        uses: neondatabase/create-branch-action@v6
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch_name: preview/pr-${{ github.event.pull_request.number }}-${{ needs.setup.outputs.branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
+          expires_at: ${{ env.EXPIRES_AT }}
+
+      # The step above creates a new Neon branch.
+      # Connection strings are only available within this job. Add migrations, tests,
+      # or deployment steps here rather than in a separate job.
+      #
+      # Pooled connection (recommended for serverless/CI):
+      #   ${{ steps.create_neon_branch.outputs.db_url_pooled }}
+      # Direct connection:
+      #   ${{ steps.create_neon_branch.outputs.db_url }}
+      #
+      # Do not log DATABASE_URL values; they contain credentials.
+      #
+      # Example Django migrations (uncomment when ready):
+      # - name: Checkout repository
+      #   uses: actions/checkout@v4
+      # - name: Run migrations
+      #   working-directory: backend
+      #   run: uv run python manage.py migrate --noinput
+      #   env:
+      #     DATABASE_URL: ${{ steps.create_neon_branch.outputs.db_url_pooled }}
+      #
+      # Schema diff comments require job permissions:
+      # permissions:
+      #   contents: read
+      #   pull-requests: write
+      #
+      # - name: Post Schema Diff Comment to PR
+      #   uses: neondatabase/schema-diff-action@v1
+      #   with:
+      #     project_id: ${{ vars.NEON_PROJECT_ID }}
+      #     compare_branch: preview/pr-${{ github.event.pull_request.number }}-${{ needs.setup.outputs.branch }}
+      #     api_key: ${{ secrets.NEON_API_KEY }}
+
+  delete_neon_branch:
+    name: Delete Neon Branch
+    needs: setup
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.action == 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete Neon Branch
+        uses: neondatabase/delete-branch-action@v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: preview/pr-${{ github.event.pull_request.number }}-${{ needs.setup.outputs.branch }}
+          api_key: ${{ secrets.NEON_API_KEY }}
