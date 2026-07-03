@@ -1,46 +1,56 @@
 <div class="landing">
   <header class="landing-hero">
-    <viking-brand name="Viking-UI" />
-    <viking-heading size="xl" [level]="1">Stop fighting your component library.</viking-heading>
-    <viking-text variant="muted" class="landing-lead">
-      Accessible Angular UI primitives built with signals, SSR compatible, and zoneless ready.
-      Install the behavior. Copy the styles. Customize without limits.
-    </viking-text>
-    <div class="landing-actions">
-      <a routerLink="/components" class="landing-cta">
-        <viking-button variant="primary" icon="download">Get Started</viking-button>
-      </a>
-      <a routerLink="/components" class="landing-cta">
-        <viking-button variant="secondary" icon="chevron-right">View Components</viking-button>
-      </a>
+    <div class="landing-brand">
+      <span class="doc-brand-mark" aria-hidden="true"></span>
+      <span class="doc-brand-name">Viking-UI</span>
     </div>
-    <viking-text variant="muted" class="landing-meta">
+    <h1 class="landing-title">Stop fighting your component library.</h1>
+    <p class="landing-lead">
+      Accessible Angular UI primitives built with signals, SSR compatible, and
+      zoneless ready. Install the behavior. Copy the styles. Customize without
+      limits.
+    </p>
+    <div class="landing-actions">
+      <a routerLink="/components" class="landing-cta landing-cta--primary"
+        >Get Started</a
+      >
+      <a routerLink="/components" class="landing-cta landing-cta--secondary"
+        >View Components</a
+      >
+    </div>
+    <p class="landing-meta">
       Published as
-      <code>&#64;dataengineeringformachinelearning/viking-ui</code> — THEME.md tokens, WCAG 2.1 AA,
-      zero third-party UI runtime deps.
-    </viking-text>
+      <code>&#64;dataengineeringformachinelearning/viking-ui</code> — THEME.md
+      tokens, WCAG 2.1 AA, zero third-party UI runtime deps.
+    </p>
   </header>
 
   <section class="landing-features" aria-labelledby="landing-features-heading">
-    <viking-heading size="lg" [level]="2" id="landing-features-heading">Built for precision engineering</viking-heading>
+    <h2 class="landing-section-title" id="landing-features-heading">
+      Built for precision engineering
+    </h2>
     <div class="landing-feature-grid">
       <article class="landing-feature">
-        <viking-heading size="base" [level]="3">Signal-native APIs</viking-heading>
-        <viking-text variant="muted">
-          Every control uses Angular signals — `input()`, `model()`, and `OnPush` change detection out of the box.
-        </viking-text>
+        <h3 class="landing-feature-title">Signal-native APIs</h3>
+        <p class="landing-feature-copy">
+          Every control uses Angular signals — <code>input()</code>,
+          <code>model()</code>, and <code>OnPush</code> change detection out of
+          the box.
+        </p>
       </article>
       <article class="landing-feature">
-        <viking-heading size="base" [level]="3">Zero UI runtime deps</viking-heading>
-        <viking-text variant="muted">
-          Native SVG charts, inline icon registry, and platform dialog elements. No Material, no CDK bloat.
-        </viking-text>
+        <h3 class="landing-feature-title">Zero UI runtime deps</h3>
+        <p class="landing-feature-copy">
+          Native SVG charts, inline icon registry, and platform dialog elements.
+          No Material, no CDK bloat.
+        </p>
       </article>
       <article class="landing-feature">
-        <viking-heading size="base" [level]="3">THEME.md tokens</viking-heading>
-        <viking-text variant="muted">
-          Charcoal, teal, and crimson semantic palette with WCAG 2.1 AA contrast enforced by construction.
-        </viking-text>
+        <h3 class="landing-feature-title">THEME.md tokens</h3>
+        <p class="landing-feature-copy">
+          Charcoal, teal, and crimson semantic palette with WCAG 2.1 AA contrast
+          enforced by construction.
+        </p>
       </article>
     </div>
   </section>

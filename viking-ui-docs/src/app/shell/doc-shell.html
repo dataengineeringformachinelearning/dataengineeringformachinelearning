@@ -1,13 +1,12 @@
 <div class="doc-shell">
   <aside class="doc-sidebar" aria-label="Documentation navigation">
     <a class="doc-sidebar-brand" routerLink="/">
-      <viking-brand name="Viking-UI" />
+      <span class="doc-brand-mark" aria-hidden="true"></span>
+      <span class="doc-brand-name">Viking-UI</span>
     </a>
 
     <nav class="doc-sidebar-group">
-      <viking-text variant="muted" class="doc-sidebar-label"
-        >Getting Started</viking-text
-      >
+      <span class="doc-sidebar-label">Getting Started</span>
       <a
         class="doc-sidebar-link"
         routerLink="/"
@@ -28,9 +27,7 @@
       class="doc-sidebar-group doc-sidebar-group--sections"
       aria-label="Component sections"
     >
-      <viking-text variant="muted" class="doc-sidebar-label"
-        >On this page</viking-text
-      >
+      <span class="doc-sidebar-label">On this page</span>
       @for (section of navSections; track section.id) {
       <a
         class="doc-sidebar-link doc-sidebar-link--anchor"
@@ -43,9 +40,7 @@
     </nav>
 
     <div class="doc-sidebar-footer">
-      <viking-button variant="primary" icon="download" href="/components">
-        Browse components
-      </viking-button>
+      <a class="doc-sidebar-cta" routerLink="/components">Browse components</a>
     </div>
   </aside>
 

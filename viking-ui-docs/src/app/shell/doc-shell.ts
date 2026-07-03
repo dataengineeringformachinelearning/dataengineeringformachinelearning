@@ -5,23 +5,10 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from "@angular/router";
-import {
-  VikingBrand,
-  VikingButton,
-  VikingText,
-} from "@dataengineeringformachinelearning/viking-ui";
-
 /** Persistent doc-site chrome — sidebar navigation like spartan.ng. */
 @Component({
   selector: "app-doc-shell",
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    VikingBrand,
-    VikingButton,
-    VikingText,
-  ],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: "./doc-shell.html",
   styleUrl: "./doc-shell.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
