@@ -2,7 +2,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "moduleResolution": "bundler",
+    "paths": {
+      "@dataengineeringformachinelearning/viking-ui": [
+        "../frontend/projects/viking-ui/src/public-api.ts"
+      ]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["src/**/*.spec.ts"]

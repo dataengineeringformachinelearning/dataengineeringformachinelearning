@@ -1,13 +1,13 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import { RouterOutlet } from "@angular/router";
+import { ToastOutlet } from "./toast-outlet";
 
 @Component({
-  selector: 'app-root',
-  imports: [RouterOutlet, VikingToaster],
+  selector: "app-root",
+  imports: [RouterOutlet, ToastOutlet],
   template: `
     <router-outlet />
-    <viking-toaster />
+    <app-toast-outlet />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

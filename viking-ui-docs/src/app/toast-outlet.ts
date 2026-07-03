@@ -1,57 +1,35 @@
-import { ChangeDetectionStrategy, Component, Injectable, input, signal } from '@angular/core';
-import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
-import { VikingToastInstance, VikingToastOptions } from '../core/types';
+import { ChangeDetectionStrategy, Component } from "@angular/core";
+import {
+  VikingIcon,
+  VikingIconName,
+  VikingToastService,
+} from "@dataengineeringformachinelearning/viking-ui";
 
 const TONE_ICONS: Record<string, VikingIconName> = {
-  accent: 'info',
-  success: 'check-circle',
-  warning: 'alert-triangle',
-  danger: 'alert-circle',
-  muted: 'info',
+  accent: "info",
+  success: "check-circle",
+  warning: "alert-triangle",
+  danger: "alert-circle",
+  muted: "info",
 };
 
-/**
- * VikingToastService — imperative toast API.
- * Render a single <viking-toaster> outlet near the app root.
- */
-@Injectable({ providedIn: 'root' })
-export class VikingToastService {
-  private nextId = 1;
-  readonly toasts = signal<VikingToastInstance[]>([]);
-
-  readonly show = (options: VikingToastOptions): number => {
-    const toast: VikingToastInstance = {
-      id: this.nextId++,
-      heading: options.heading ?? '',
-      text: options.text,
-      tone: options.tone ?? 'accent',
-      duration: options.duration ?? 4500,
-    };
-    this.toasts.update(list => [...list, toast]);
-    if (toast.duration > 0) {
-      setTimeout(() => this.dismiss(toast.id), toast.duration);
-    }
-    return toast.id;
-  };
-
-  readonly dismiss = (id: number): void => {
-    this.toasts.update(list => list.filter(toast => toast.id !== id));
-  };
-}
-
-/**
- * viking-toaster — fixed-position outlet that renders active toasts.
- */
+/** App-local toast outlet — avoids cross-package field inject() NG0203 in production builds. */
 @Component({
-  selector: 'viking-toaster',
+  selector: "app-toast-outlet",
   imports: [VikingIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.viking-toaster-top]': "position() === 'top-end'" },
   template: `
     @for (toast of service.toasts(); track toast.id) {
-      <div class="viking-toast" [class]="'viking-toast-' + toast.tone" role="status">
-        <viking-icon class="viking-toast-icon" [name]="toneIcon(toast.tone)" [size]="20" />
+      <div
+        class="viking-toast"
+        [class]="'viking-toast-' + toast.tone"
+        role="status"
+      >
+        <viking-icon
+          class="viking-toast-icon"
+          [name]="toneIcon(toast.tone)"
+          [size]="20"
+        />
         <div class="viking-toast-body">
           @if (toast.heading) {
             <p class="viking-toast-heading">{{ toast.heading }}</p>
@@ -88,10 +66,6 @@ export class VikingToastService {
           left: var(--viking-space-2);
           max-width: none;
         }
-      }
-      :host(.viking-toaster-top) {
-        bottom: auto;
-        top: var(--viking-space-3);
       }
       .viking-toast {
         display: flex;
@@ -172,10 +146,9 @@ export class VikingToastService {
     `,
   ],
 })
-export class VikingToaster {
-  readonly position = input<'bottom-end' | 'top-end'>('bottom-end');
-
+export class ToastOutlet {
   constructor(protected readonly service: VikingToastService) {}
 
-  protected toneIcon = (tone: string): VikingIconName => TONE_ICONS[tone] ?? 'info';
+  protected toneIcon = (tone: string): VikingIconName =>
+    TONE_ICONS[tone] ?? "info";
 }
