@@ -149,7 +149,7 @@
 
   &:hover {
     box-shadow: var(--shadow-hover);
-    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--viking-accent, var(--color-primary)) 35%, var(--border));
   }
 }
 

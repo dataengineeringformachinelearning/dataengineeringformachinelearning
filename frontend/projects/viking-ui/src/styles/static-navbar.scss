@@ -514,7 +514,12 @@ button.auth-btn {
   border: 1px solid var(--viking-border-strong, var(--border));
   border-radius: var(--viking-radius, 8px);
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  transition: var(--viking-transition, border-color 0.25s ease);
+  transition: var(--viking-transition-interactive, border-color 0.25s ease, box-shadow 0.25s ease);
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-teal-400)) 55%, var(--viking-border-strong, var(--border)));
+    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  }
 }
 
 @mixin viking-navbar-search-shell-focus {
@@ -652,11 +657,13 @@ button.auth-btn {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--viking-text-muted, var(--text-muted));
+  align-self: center;
+  color: var(--viking-accent-strong, var(--viking-teal-400));
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
   padding: 0 !important;
+  line-height: 1;
 }
 
 .algolia-autocomplete-host .aa-InputWrapperPrefix svg,
@@ -680,6 +687,7 @@ button.auth-btn {
   color: var(--viking-text, var(--text-color));
   font: inherit;
   font-size: var(--viking-font-size, 16px);
+  line-height: var(--viking-line-height-normal, 1.5);
   box-shadow: none !important;
 }
 
@@ -742,10 +750,10 @@ button.auth-btn {
 .algolia-autocomplete-host .aa-ItemLink,
 .algolia-autocomplete-host .aa-ItemWrapper {
   display: flex;
-  align-items: center;
-  gap: var(--viking-space-1, 8px);
+  align-items: flex-start;
+  gap: var(--viking-space-1-5, 12px);
   min-height: var(--viking-control-height-sm, 36px);
-  padding: var(--viking-space-1, 8px);
+  padding: var(--viking-space-1-5, 12px);
   border-radius: calc(var(--viking-radius, 8px) / 1.5);
   color: var(--viking-text, var(--text-color));
   text-decoration: none;
@@ -761,8 +769,8 @@ button.auth-btn {
 
 .algolia-autocomplete-host .aa-ItemContent {
   display: flex;
-  align-items: center;
-  gap: var(--viking-space-1, 8px);
+  align-items: flex-start;
+  gap: var(--viking-space-1-5, 12px);
   min-width: 0;
   flex: 1;
 }
@@ -772,7 +780,21 @@ button.auth-btn {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--viking-text-muted, var(--text-muted));
+  width: var(--viking-space-5, 40px);
+  height: var(--viking-space-5, 40px);
+  margin-top: 2px;
+  border-radius: var(--viking-radius, 8px);
+  background: var(--viking-surface-alt, var(--viking-charcoal-700)) !important;
+  box-shadow: none !important;
+  color: var(--viking-accent-strong, var(--viking-teal-400));
+  overflow: hidden;
+
+  img,
+  svg {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
 }
 
 .algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemIcon,
@@ -798,9 +820,12 @@ button.auth-btn {
 .algolia-autocomplete-host .aa-ItemContentDescription {
   font-size: var(--viking-font-size-sm, 14px);
   color: var(--viking-text-muted, var(--text-muted));
-  line-height: 1.4;
-  white-space: nowrap;
+  line-height: var(--viking-line-height-relaxed, 1.625);
+  white-space: normal;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
   text-overflow: ellipsis;
 }
 

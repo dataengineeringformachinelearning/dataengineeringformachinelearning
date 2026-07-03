@@ -84,11 +84,6 @@ def strip_unused_settings_blocks(content: str) -> str:
     ".mfa-inline-form",
     ".mfa-input-full",
     ".mfa-step-title",
-    ".mfa-info-inline",
-    ".mfa-icon-inline",
-    ".mfa-info-group",
-    ".mfa-status-enrolled",
-    ".mfa-status-desc",
   )
   for selector in dead_selectors:
     token = f"{selector} {{"
