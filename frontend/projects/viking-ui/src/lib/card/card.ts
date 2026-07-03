@@ -43,6 +43,7 @@ import { VikingSkeleton } from '../skeleton/skeleton';
         transition: var(--viking-transition-interactive);
         position: relative;
         overflow: hidden;
+        min-width: 0;
       }
       :host::before {
         content: '';

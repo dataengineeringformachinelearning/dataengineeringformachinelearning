@@ -50,6 +50,7 @@ import { fluxUid } from '../core/uid';
         font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-text);
         letter-spacing: var(--viking-letter-spacing-wide);
+        line-height: var(--viking-line-height-tight);
       }
       .viking-field-required {
         color: var(--viking-danger);

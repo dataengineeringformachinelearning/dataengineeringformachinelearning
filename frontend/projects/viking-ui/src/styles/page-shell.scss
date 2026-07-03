@@ -172,8 +172,9 @@
 
 .viking-page-header-sidebar.dashboard-topbar {
   padding: var(--viking-space-2);
-  background-color: color-mix(in srgb, var(--viking-surface) 2%, transparent);
-  backdrop-filter: blur(8px);
+  background-color: var(--viking-surface);
+  border-bottom: 1px solid var(--viking-border-subtle);
+  box-shadow: var(--viking-shadow-xs);
 }
 
 .viking-page-header-title,

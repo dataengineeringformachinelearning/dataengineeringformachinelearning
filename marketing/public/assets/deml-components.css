@@ -88,9 +88,9 @@ select:focus-visible,
 .status-badge-premium {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border-radius: 16px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--border-radius-xl);
   font-weight: 600;
   font-size: 1rem;
   line-height: 1.2;
@@ -102,12 +102,11 @@ select:focus-visible,
 }
 .status-badge-premium .status-dot,
 .status-badge-premium .status-dot-greenblue {
-  width: 8px;
-  height: 8px;
+  width: var(--space-1);
+  height: var(--space-1);
   border-radius: 50%;
   flex-shrink: 0;
   background-color: currentColor;
-  box-shadow: 0 0 8px currentColor;
 }
 .status-badge-premium.operational, .status-badge-premium.resolved, .status-badge-premium.success, .status-badge-premium.low, .status-badge-premium.compliant {
   background: color-mix(in srgb, var(--color-success) 8%, transparent);
@@ -149,11 +148,13 @@ html[data-theme=light] .status-badge-premium.primary {
   letter-spacing: 0.02em;
 }
 .status-badge-premium.pro-verified mat-icon,
-.status-badge-premium.pro-verified .material-icons {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
+.status-badge-premium.pro-verified .material-icons,
+.status-badge-premium.pro-verified viking-icon,
+.status-badge-premium.pro-verified viking-app-icon {
+  font-size: var(--viking-icon-size-md, var(--base-font-size));
+  width: var(--viking-icon-size-md, var(--base-font-size));
+  height: var(--viking-icon-size-md, var(--base-font-size));
+  line-height: var(--viking-icon-size-md, var(--base-font-size));
   flex-shrink: 0;
 }
 html[data-theme=light] .status-badge-premium.pro-verified {
@@ -221,8 +222,8 @@ viking-icon,
 .mobile-nav-btn viking-app-icon,
 .auth-btn viking-app-icon,
 .mobile-auth-btn viking-app-icon {
-  width: 18px;
-  height: 18px;
+  width: var(--viking-icon-size-md, var(--base-font-size));
+  height: var(--viking-icon-size-md, var(--base-font-size));
   align-self: center;
 }
 
@@ -316,6 +317,22 @@ th,
   font-size: max(16px, var(--base-font-size, 16px));
 }
 
+.u-items-center {
+  align-items: center;
+}
+
+.u-items-start {
+  align-items: flex-start;
+}
+
+.u-justify-between {
+  justify-content: space-between;
+}
+
+.u-text-center {
+  text-align: center;
+}
+
 .u-w-full {
   width: 100%;
 }
@@ -347,6 +364,14 @@ th,
 .u-flex-col {
   display: flex;
   flex-direction: column;
+}
+
+.u-gap-half {
+  gap: var(--space-half);
+}
+
+.u-gap-1-5 {
+  gap: var(--space-1-5);
 }
 
 .u-gap-1 {
