@@ -1,5 +1,5 @@
 @if (!authService.isInitialized()) {
-<div class="global-auth-loader">
+<div class="global-auth-loader" id="main-content" tabindex="-1">
   <div class="loader-content">
     <deml-brand-logo hostClass="brand-icon loader-logo glowing-icon-sm" />
     <div class="premium-spinner"></div>
@@ -14,13 +14,13 @@
   @if (isDashboardPage()) {
   <div class="dashboard-wrapper">
     <app-sidebar></app-sidebar>
-    <div class="dashboard-content">
+    <div class="dashboard-content" id="main-content" tabindex="-1">
       <router-outlet />
     </div>
   </div>
   } @else {
   <!-- Main Content -->
-  <div class="main-content">
+  <div class="main-content" id="main-content" tabindex="-1">
     <router-outlet />
   </div>
   }

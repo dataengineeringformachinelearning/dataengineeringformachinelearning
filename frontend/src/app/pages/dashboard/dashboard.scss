@@ -338,6 +338,13 @@
   &.wide {
     text-align: center;
   }
+
+  .kpi-sparkline {
+    margin-top: 8px;
+    width: 100%;
+    height: 2rem;
+    opacity: 0.85;
+  }
 }
 
 .kpi-label {

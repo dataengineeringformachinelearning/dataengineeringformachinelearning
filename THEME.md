@@ -90,3 +90,25 @@ To guarantee layout consistency and a pixel-perfect feel, follow these guideline
 ## 5. Video Feeds
 
 - Styled to resemble YouTube video players with specific, clean border overlays and aspect ratios.
+
+## 6. Data Visualization (Charts & Gauges)
+
+Chart and gauge styling uses Viking UI tokens — never raw hex outside THEME.md palette.
+
+| Role | Token |
+|------|-------|
+| Primary series | `--crayola-blue` / `--viking-accent` |
+| Success / stable | `--blue-bell` / `--viking-success` |
+| Warning | `--golden-pollen` / `--viking-warning` |
+| Danger / critical | `--carrot-orange` / `--viking-danger` |
+| Muted / baseline | `--viking-text-muted` |
+| Grid lines | `--viking-border` at ~55% mix |
+| Axis labels | `--viking-text-muted`, `--viking-chart-axis-size` (12px min) |
+| Chart surface | `--viking-surface` / `--card-bg` |
+
+**Rules:**
+
+- Use native SVG `viking-chart` (line, area, bar, grouped-bar, stacked-bar, sparkline, donut) — no third-party chart libraries.
+- No gradients on chart fills or strokes; solid THEME.md colors only.
+- Charts must scale via `viewBox` + `preserveAspectRatio`; axis text stays legible at mobile widths.
+- Decorative charts use `aria-hidden` on SVG; data charts expose `label` / `summary` for screen readers.

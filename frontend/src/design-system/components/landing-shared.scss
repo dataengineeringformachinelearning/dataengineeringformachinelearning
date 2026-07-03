@@ -12,7 +12,7 @@
 }
 
 .showcase-layout {
-  max-width: 1400px;
+  max-width: var(--container-max-width, 1260px);
   margin: 0 auto;
 }
 
@@ -890,8 +890,11 @@ a.cta-button {
 .visual-sparkline {
   height: 48px;
   opacity: 0.9;
+  width: 100%;
 
-  svg {
+  viking-chart,
+  .capability-sparkline {
+    display: block;
     width: 100%;
     height: 100%;
   }

@@ -146,19 +146,18 @@
 
     <!-- Critical skip-link styles: axe pre-commit scans this file without Angular bundles. -->
     <style>
-      /* Critical skip-link: clipped when idle, high-contrast when focused. */
       a.skip-link {
-        position: fixed;
-        top: 16px;
+        position: absolute;
+        top: 0;
         left: 16px;
+        z-index: 10000;
+        padding: 8px 16px;
+        border-radius: 8px;
         background-color: #000000;
         color: #ffffff;
-        padding: 8px 16px;
-        z-index: 10000;
-        border-radius: 9px;
         text-decoration: none;
         font-weight: 600;
-        font-size: 18px;
+        font-size: 16px;
         line-height: 1.4;
         clip: rect(0 0 0 0);
         clip-path: inset(50%);
@@ -177,7 +176,7 @@
         height: auto;
         overflow: visible;
         white-space: normal;
-        outline: 2px solid #2176ff;
+        outline: 3px solid #2176ff;
         outline-offset: 2px;
       }
     </style>
@@ -218,8 +217,6 @@
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
-    <main id="main-content" tabindex="-1">
-      <app-root></app-root>
-    </main>
+    <app-root></app-root>
   </body>
 </html>
