@@ -6,7 +6,18 @@
     "node": ">=22.12.0"
   },
   "scripts": {
+    "sync": "python scripts/deml_tooling.py sync --all",
+    "sync:content": "python scripts/deml_tooling.py sync --content",
+    "sync:design-system": "python scripts/deml_tooling.py sync --design-system",
+    "sync:widgets": "python scripts/deml_tooling.py sync --widgets",
+    "hygiene": "python scripts/deml_tooling.py hygiene",
+    "hygiene:cache": "python scripts/deml_tooling.py hygiene --cache",
     "cleanup-theme": "node cleanup-theme.js --dry-run",
-    "cleanup-theme:apply": "node cleanup-theme.js --apply"
+    "cleanup-theme:apply": "node cleanup-theme.js --apply",
+    "quality": "python scripts/deml_tooling.py quality --fast",
+    "quality:fix": "python scripts/deml_tooling.py quality --fast --fix",
+    "quality:full": "python scripts/deml_tooling.py quality --ci",
+    "quality:push": "python scripts/deml_tooling.py quality --full",
+    "install-hooks": "python scripts/deml_tooling.py install-hooks && uvx pre-commit install --hook-type pre-commit --hook-type pre-push"
   }
 }

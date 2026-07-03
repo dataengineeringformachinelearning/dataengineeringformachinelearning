@@ -1,5 +1,5 @@
 #!/bin/bash
-# Workspace Hygiene & Local Pruning — Cursor - Grok 4.3 (2026-07-01)
+# Workspace cache purge — also available via: python scripts/deml_tooling.py hygiene --cache
 # Expanded for full PASS 0 compliance: caches + orphan scan + hygiene report.
 set -euo pipefail
 

@@ -1,0 +1,6 @@
+#!/bin/sh
+# DEML pre-commit — delegates to pre-commit framework (fast stage only).
+# Install: python scripts/deml_tooling.py install-hooks && uvx pre-commit install --hook-type pre-commit --hook-type pre-push
+set -eu
+cd "$(git rev-parse --show-toplevel)"
+exec uvx pre-commit run --color=always

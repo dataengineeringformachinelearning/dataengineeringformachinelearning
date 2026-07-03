@@ -1,0 +1,47 @@
+# Lint, format, secrets, and SAST — mirrors local pre-commit + pre-push stages.
+name: Quality Gates
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  quality:
+    name: Pre-commit + pre-push
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Install frontend deps (theme + axe checks)
+        working-directory: frontend
+        run: npm ci --legacy-peer-deps
+
+      - name: Install backend deps (migration linter)
+        working-directory: backend
+        run: pip install -r requirements.txt
+
+      - name: Install pre-commit hooks
+        run: uvx pre-commit install --install-hooks --hook-type pre-commit --hook-type pre-push
+
+      - name: Run fast quality gates (pre-commit stage)
+        run: uvx pre-commit run --all-files --hook-stage pre-commit
+
+      - name: Run security gates (pre-push stage)
+        run: uvx pre-commit run --all-files --hook-stage pre-push
+
+      - name: Run manual gates (theme dry-run)
+        run: uvx pre-commit run cleanup-theme --all-files --hook-stage manual
+        continue-on-error: true

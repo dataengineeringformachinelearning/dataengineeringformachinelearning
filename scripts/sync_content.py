@@ -2,6 +2,24 @@ import glob
 import os
 
 
+def _mtime(path: str) -> float:
+  try:
+    return os.path.getmtime(path)
+  except OSError:
+    return 0.0
+
+
+def _needs_sync(sources: list[str], destinations: list[str]) -> bool:
+  """Skip heavy sync when no source is newer than any destination."""
+  source_mtime = max((_mtime(src) for src in sources if os.path.exists(src)), default=0.0)
+  if source_mtime == 0.0:
+    return False
+  dest_mtimes = [_mtime(dst) for dst in destinations if os.path.exists(dst)]
+  if not dest_mtimes:
+    return True
+  return source_mtime > min(dest_mtimes)
+
+
 def sync_readme():
   # Get the directory where the script is located (scripts folder)
   script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -186,6 +204,34 @@ def sync_search_index():
 
 
 if __name__ == "__main__":
-  sync_readme()
-  sync_version()
-  sync_search_index()
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  root_dir = os.path.dirname(script_dir)
+
+  book_path = os.path.join(root_dir, "BOOK.md")
+  readme_path = os.path.join(root_dir, "README.md")
+  version_path = os.path.join(root_dir, "version.txt")
+  agents_path = os.path.join(root_dir, "AGENTS.md")
+
+  content_dests = [
+    os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md"),
+    os.path.join(root_dir, "marketing", "src", "assets", "content", "readme.md"),
+    os.path.join(root_dir, "frontend", "public", "llms-full.txt"),
+    os.path.join(root_dir, "marketing", "public", "llms-full.txt"),
+    os.path.join(root_dir, "frontend", "public", "llms.txt"),
+    os.path.join(root_dir, "marketing", "public", "llms.txt"),
+    os.path.join(root_dir, "marketing", "public", "AGENTS.md"),
+    os.path.join(root_dir, "marketing", "public", "assets", "content", "search-index.json"),
+    os.path.join(root_dir, "frontend", "version.txt"),
+    os.path.join(root_dir, "backend", "version.txt"),
+  ]
+
+  if _needs_sync([book_path, readme_path, agents_path], content_dests):
+    sync_readme()
+    sync_search_index()
+  else:
+    print("sync_content: sources unchanged — skipping BOOK/README/AGENTS propagation")
+
+  if _needs_sync([version_path], content_dests[-2:]):
+    sync_version()
+  else:
+    print("sync_content: version.txt unchanged — skipping version sync")
