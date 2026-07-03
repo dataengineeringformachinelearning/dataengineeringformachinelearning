@@ -68,3 +68,20 @@ export const hasChartValues = (data: number[]): boolean => data.some(value => va
 
 export const hasDonutValues = (segments: VikingDonutSegment[]): boolean =>
   segments.some(segment => segment.value > 0);
+
+/** Build a single-series sparkline payload when enough points exist. */
+export const toVikingSparklineSeries = (
+  name: string,
+  data: number[],
+  tone: VikingTone = 'accent',
+): VikingChartSeries[] => {
+  if (data.length < 2) {
+    return [];
+  }
+  const rounded = data.map(value => Math.round(value * 100) / 100);
+  const unique = new Set(rounded);
+  if (unique.size === 1 && rounded[0] === 0) {
+    return [];
+  }
+  return [{ name, data, tone }];
+};

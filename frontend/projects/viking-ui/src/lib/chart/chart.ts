@@ -548,7 +548,9 @@ export class VikingChart {
     return kind === 'bar' || kind === 'grouped-bar' || kind === 'stacked-bar';
   });
 
-  protected readonly renderArea = computed(() => this.kind() === 'area' || this.showArea());
+  protected readonly renderArea = computed(
+    () => this.kind() === 'area' || this.showArea() || this.isSparkline(),
+  );
 
   protected readonly renderPoints = computed(
     () => this.showPoints() && !this.isSparkline() && !this.isBarKind(),
@@ -576,6 +578,18 @@ export class VikingChart {
     if (all.length === 0) {
       return { min: 0, max: 1 };
     }
+    const dataMin = Math.min(...all);
+    const dataMax = Math.max(...all);
+
+    if (this.isSparkline()) {
+      if (dataMax === dataMin) {
+        const pad = Math.max(Math.abs(dataMax) * 0.12, 0.5);
+        return { min: dataMax - pad, max: dataMax + pad };
+      }
+      const padding = Math.max((dataMax - dataMin) * 0.12, 0.5);
+      return { min: dataMin - padding, max: dataMax + padding };
+    }
+
     const min = Math.min(0, ...all);
     const max = Math.max(...all);
     return { min, max: max === min ? max + 1 : max };

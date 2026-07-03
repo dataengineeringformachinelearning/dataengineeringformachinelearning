@@ -40,6 +40,7 @@ import {
   toVikingBarSeries,
   toVikingDonutSegments,
   toVikingLineSeries,
+  toVikingSparklineSeries,
 } from '../../core/chart-data.util';
 
 type DashboardTab = 'overview' | 'performance' | 'security';
@@ -80,6 +81,10 @@ export class Dashboard implements OnInit, OnDestroy {
   isLoading = signal(true);
 
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
+  uptimeSeries = signal<VikingChartSeries[]>(toVikingLineSeries('Uptime (%)', [], 'success'));
+  threatTrendSeries = signal<VikingChartSeries[]>(
+    toVikingLineSeries('Threat events', [], 'warning'),
+  );
   securityAlertSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Anomalies', [], 'warning'));
   threatDonutSegments = signal<VikingDonutSegment[]>([]);
 
@@ -158,21 +163,13 @@ export class Dashboard implements OnInit, OnDestroy {
 
   hasThreatDonutData = computed(() => hasDonutValues(this.threatDonutSegments()));
 
-  latencySparkline = computed(() => {
-    const data = this.latencySeries()[0]?.data ?? [];
-    if (data.length < 2) {
-      return [];
-    }
-    return [{ name: 'Latency', data, tone: 'accent' as const }];
-  });
+  uptimeSparkline = computed(() =>
+    toVikingSparklineSeries('Uptime', this.uptimeSeries()[0]?.data ?? [], 'success'),
+  );
 
-  securitySparkline = computed(() => {
-    const data = this.securityAlertSeries()[0]?.data ?? [];
-    if (data.length < 2) {
-      return [];
-    }
-    return [{ name: 'Anomalies', data, tone: 'warning' as const }];
-  });
+  threatSparkline = computed(() =>
+    toVikingSparklineSeries('Threats', this.threatTrendSeries()[0]?.data ?? [], 'warning'),
+  );
 
   constructor() {
     afterNextRender(() => {
@@ -323,6 +320,15 @@ export class Dashboard implements OnInit, OnDestroy {
             ),
           );
 
+          const uptimeSeriesData = user_metrics?.uptime_series || [];
+          this.uptimeSeries.set(
+            toVikingLineSeries(
+              'Uptime (%)',
+              uptimeSeriesData.map((d: { uptime: number }) => d.uptime ?? 100),
+              'success',
+            ),
+          );
+
           const threats = user_metrics?.threat_severity || [];
           this.threatDonutSegments.set(
             toVikingDonutSegments(
@@ -332,6 +338,13 @@ export class Dashboard implements OnInit, OnDestroy {
           );
 
           const alerts = user_metrics?.security_alerts || [];
+          this.threatTrendSeries.set(
+            toVikingLineSeries(
+              'Threat events',
+              alerts.map((d: { count: number }) => d.count ?? 0),
+              'warning',
+            ),
+          );
           this.securityAlertSeries.set(
             toVikingBarSeries(
               'Anomalies',

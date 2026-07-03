@@ -109,11 +109,13 @@
             <span class="kpi-label">Threat Exposure</span>
             <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
             <div class="kpi-sparkline-slot">
-              @if (securitySparkline().length) {
+              @if (threatSparkline().length) {
               <viking-chart
                 kind="sparkline"
-                [series]="securitySparkline()"
-                label="Threat exposure trend"
+                [series]="threatSparkline()"
+                label="Threat exposure trend (24h)"
+                curve="smooth"
+                [showArea]="true"
                 class="kpi-sparkline viking-chart-wide"
               />
               }
@@ -130,11 +132,13 @@
             <span class="kpi-label">Uptime</span>
             <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
             <div class="kpi-sparkline-slot">
-              @if (latencySparkline().length) {
+              @if (uptimeSparkline().length) {
               <viking-chart
                 kind="sparkline"
-                [series]="latencySparkline()"
-                label="Latency trend"
+                [series]="uptimeSparkline()"
+                label="Uptime trend (24h)"
+                curve="smooth"
+                [showArea]="true"
                 class="kpi-sparkline viking-chart-wide"
               />
               }

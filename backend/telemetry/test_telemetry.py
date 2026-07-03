@@ -288,3 +288,7 @@ def test_analytics_overview_hybrid_query(client) -> None:
 
   assert metrics["total_requests_24h"] == 101
   assert metrics["average_latency_ms"] > 0.0
+  assert len(metrics["time_series"]) == 24
+  assert len(metrics["uptime_series"]) == 24
+  assert all("uptime" in point for point in metrics["uptime_series"])
+  assert len(metrics["security_alerts"]) == 24
