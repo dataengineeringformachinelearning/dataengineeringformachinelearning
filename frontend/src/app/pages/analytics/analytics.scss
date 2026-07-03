@@ -187,30 +187,7 @@
   }
 }
 
-/* Semantic Layout Classes */
-.chart-container-medium {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  min-height: 280px;
-  position: relative;
-  overflow: hidden;
-  padding-top: 0;
-
-  viking-chart {
-    flex: 1 1 auto;
-    display: flex;
-    min-height: 260px;
-    height: 100%;
-  }
-
-  .empty-chart-state {
-    flex: 1 1 auto;
-    min-height: 260px;
-    width: 100%;
-  }
-}
-
+/* Semantic Layout Classes — origin map canvas (panel shell lives in viking-chart-panel) */
 .origin-map-container {
   min-height: 360px;
 
@@ -232,31 +209,6 @@
       visibility: visible;
     }
   }
-
-  .origin-map-empty {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    min-height: 360px;
-    margin: 0;
-    border: 1px dashed var(--viking-border-strong, var(--border));
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--viking-surface-alt, var(--card-bg)) 12%, transparent) 0%,
-        color-mix(in srgb, var(--viking-surface-alt, var(--card-bg)) 88%, transparent) 42%,
-        var(--viking-surface-alt, var(--card-bg)) 100%
-      );
-    backdrop-filter: blur(2px);
-  }
-}
-
-.chart-value-muted {
-  font-size: 1.125rem !important;
-  font-weight: var(--viking-font-weight-semibold, 600) !important;
-  color: var(--text-muted) !important;
-  letter-spacing: var(--viking-letter-spacing-caps, 0.05em);
-  text-transform: uppercase;
 }
 
 .dashboard-grid-responsive {
@@ -271,30 +223,6 @@
 
   @media (min-width: 1024px) {
     grid-template-columns: repeat(3, 1fr);
-  }
-
-  .status-card-outlined {
-    display: flex;
-    flex-direction: column;
-    min-height: 380px;
-  }
-
-  .chart-custom-header {
-    flex-shrink: 0;
-    margin-bottom: var(--viking-space-2, 16px);
-  }
-
-  .card-body-clean.chart-container-medium {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    padding: 0 var(--viking-space-3, 24px) var(--viking-space-3, 24px);
-
-    .empty-chart-state {
-      flex: 1 1 auto;
-      width: 100%;
-      margin: 0;
-    }
   }
 }
 
@@ -355,56 +283,11 @@
   min-height: 300px;
 }
 
-.chart-container-large {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  min-height: 320px;
-  position: relative;
-  overflow: hidden;
-  padding-top: 0;
-
-  viking-chart {
-    flex: 1 1 auto;
-    display: flex;
-    min-height: 300px;
-    height: 100%;
-  }
-
-  .empty-chart-state {
-    flex: 1 1 auto;
-    min-height: 300px;
-  }
-}
-
 .dashboard-grid-single {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
   margin-bottom: var(--grid-gap, 27px);
-
-  .status-card-outlined {
-    display: flex;
-    flex-direction: column;
-    min-height: 420px;
-  }
-
-  .chart-custom-header {
-    margin-bottom: var(--viking-space-2, 16px);
-  }
-
-  .card-body-clean.chart-container-large {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    padding: 0 var(--viking-space-3, 24px) var(--viking-space-3, 24px);
-
-    .empty-chart-state {
-      flex: 1 1 auto;
-      width: 100%;
-      margin: 0;
-    }
-  }
 }
 
 .viking-chart-medium {
@@ -432,42 +315,6 @@
 
 .panel-header-padded {
   padding: var(--viking-space-3, 24px) var(--viking-space-3, 24px) 0;
-}
-
-/* Custom Metric Headers */
-.chart-custom-header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--viking-space-half, 4px);
-  padding: var(--viking-space-3, 24px) var(--viking-space-3, 24px) 0;
-  width: 100%;
-}
-
-.chart-custom-title {
-  color: var(--viking-text-muted, var(--text-muted));
-  font-size: var(--viking-font-size-ui, 14px);
-  font-family: var(--viking-font-family, 'Inter', sans-serif);
-  letter-spacing: var(--viking-letter-spacing-wide, 0.025em);
-  font-weight: var(--viking-font-weight-semibold, 600);
-  margin: 0;
-}
-
-.chart-custom-value {
-  color: var(--viking-text, var(--text-color));
-  font-size: var(--viking-font-size-xl, 24px);
-  font-family: var(--viking-font-family, 'Inter', sans-serif);
-  font-weight: var(--viking-font-weight-bold, 700);
-  line-height: var(--viking-line-height-tight, 1.25);
-  margin: 0;
-}
-
-.chart-custom-trend {
-  color: var(--color-primary);
-  font-size: var(--viking-font-size-sm, 14px);
-  font-family: var(--viking-font-family, 'Inter', sans-serif);
-  font-weight: var(--viking-font-weight-semibold, 600);
-  letter-spacing: 0.02em;
 }
 
 /* Custom Filter Stylings */

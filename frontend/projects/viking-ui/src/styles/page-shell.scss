@@ -231,11 +231,25 @@
 }
 
 /* Chart cards — shared header/body rhythm for dashboard analytics grids */
-.status-card-outlined:has(.chart-custom-header) {
-  .chart-custom-header {
+.status-card-outlined:has(.chart-custom-header),
+.viking-chart-panel:has(viking-chart-card-header) {
+  .chart-custom-header,
+  viking-chart-card-header {
     border-bottom: 1px solid var(--viking-border-subtle);
     padding-bottom: var(--viking-space-2);
     margin-bottom: 0;
+  }
+}
+
+.viking-chart-panel-body {
+  viking-chart,
+  .viking-chart-large,
+  .viking-chart-medium {
+    flex: 1 1 auto;
+    display: flex;
+    width: 100%;
+    min-height: inherit;
+    height: 100%;
   }
 }
 
