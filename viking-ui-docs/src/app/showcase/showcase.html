@@ -359,10 +359,18 @@
         <viking-heading size="lg" [level]="2"
           >Select, Autocomplete &amp; Pillbox</viking-heading
         >
-        <viking-field label="Deployment region">
+        <viking-field label="Deployment region (half width)">
           <viking-select
             [options]="regionOptions"
             placeholder="Choose region"
+            width="half"
+          />
+        </viking-field>
+        <viking-field label="Deployment region (full width)">
+          <viking-select
+            [options]="regionOptions"
+            placeholder="Choose region"
+            width="full"
           />
         </viking-field>
         <viking-field label="Worker pipeline">

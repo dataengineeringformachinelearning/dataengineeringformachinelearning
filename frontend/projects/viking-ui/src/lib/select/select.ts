@@ -12,6 +12,8 @@ import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
 import { VikingSelectOption } from '../core/types';
 
+export type VikingSelectWidth = 'full' | 'half';
+
 /**
  * viking-select — custom listbox select.
  * ControlValueAccessor-compatible with full keyboard support.
@@ -21,7 +23,11 @@ import { VikingSelectOption } from '../core/types';
   imports: [VikingIcon],
   providers: [provideVikingCva(VikingSelect)],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '(document:click)': 'onDocumentClick($event)' },
+  host: {
+    '(document:click)': 'onDocumentClick($event)',
+    '[class.viking-select-full]': "width() === 'full'",
+    '[class.viking-select-half]': "width() === 'half'",
+  },
   template: `
     <button
       type="button"
@@ -66,6 +72,20 @@ import { VikingSelectOption } from '../core/types';
       :host {
         position: relative;
         display: block;
+        min-width: 0;
+      }
+      :host(.viking-select-full) {
+        width: 100%;
+      }
+      :host(.viking-select-half) {
+        width: 100%;
+        max-width: var(--viking-select-half-max-width, min(100%, 24rem));
+      }
+      .viking-select-value {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .viking-select-trigger {
         display: flex;
@@ -105,19 +125,23 @@ import { VikingSelectOption } from '../core/types';
         position: absolute;
         top: calc(100% + var(--viking-space-half));
         left: 0;
-        right: 0;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
         display: flex;
         flex-direction: column;
         gap: 2px;
         margin: 0;
         padding: var(--viking-space-1);
-        background: var(--viking-surface);
+        background-color: var(--viking-select-panel-bg, var(--viking-surface-raised));
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius);
         box-shadow: var(--viking-shadow-lg);
         z-index: var(--viking-z-overlay);
         max-height: 315px;
         overflow: auto;
+        isolation: isolate;
         animation: viking-slide-up var(--viking-duration-fast) var(--viking-ease-default);
       }
       .viking-select-option {
@@ -130,12 +154,19 @@ import { VikingSelectOption } from '../core/types';
         background: transparent;
         text-align: left;
         width: 100%;
+        min-width: 0;
         border-radius: var(--viking-radius-sm);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-sm);
         color: var(--viking-text);
         cursor: pointer;
         transition: var(--viking-transition-interactive);
+      }
+      .viking-select-option-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .viking-select-option:disabled {
         opacity: var(--viking-state-disabled-opacity);
@@ -152,7 +183,7 @@ import { VikingSelectOption } from '../core/types';
       .viking-selected {
         font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-accent-strong);
-        background: color-mix(in srgb, var(--viking-accent) 10%, transparent);
+        background: color-mix(in srgb, var(--viking-accent) 14%, var(--viking-select-panel-bg, var(--viking-surface-raised)));
       }
     `,
   ],
@@ -165,6 +196,7 @@ export class VikingSelect extends VikingControl<unknown> {
   readonly placeholder = input<string>('Select…');
   readonly label = input<string>('');
   readonly disabled = input<boolean>(false);
+  readonly width = input<VikingSelectWidth>('full');
 
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(0);
