@@ -5,7 +5,6 @@
   "description": "Standalone Viking-UI documentation site (spartan.ng-style). Deployed separately from deml.app.",
   "scripts": {
     "prebuild": "npm run build:viking-ui --prefix ../frontend",
-    "prestart": "npm run build:viking-ui --prefix ../frontend",
     "start": "ng serve",
     "build": "ng build"
   },
@@ -19,7 +18,6 @@
     "@angular/forms": "22.0.4",
     "@angular/platform-browser": "22.0.4",
     "@angular/router": "22.0.4",
-    "@dataengineeringformachinelearning/viking-ui": "file:../frontend/dist/viking-ui",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "^0.16.2"

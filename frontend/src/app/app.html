@@ -1,4 +1,6 @@
-@if (!authService.isInitialized()) {
+@if (isAuthStatusPage()) {
+<router-outlet />
+} @else if (!authService.isInitialized()) {
 <div class="global-auth-loader" id="main-content" tabindex="-1">
   <div class="loader-content">
     <deml-brand-logo hostClass="brand-icon loader-logo" />

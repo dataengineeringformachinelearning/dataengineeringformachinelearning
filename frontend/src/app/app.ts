@@ -47,8 +47,12 @@ export class App implements OnInit {
 
   isStandaloneStatusPage = signal(false);
   isDashboardPage = signal(false);
+  isAuthStatusPage = signal(false);
 
   ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.isAuthStatusPage.set(window.location.pathname.startsWith('/auth-status'));
+    }
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
@@ -83,7 +87,7 @@ export class App implements OnInit {
         }
       });
 
-    if (isPlatformBrowser(this.platformId)) {
+    if (isPlatformBrowser(this.platformId) && !this.isAuthStatusPage()) {
       this.authService.checkAuth();
       this.checkResetToken();
       this.registerServiceWorker();
@@ -91,6 +95,10 @@ export class App implements OnInit {
   }
 
   async registerServiceWorker() {
+    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/auth-status')) {
+      return;
+    }
+
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       try {
         const registration = await navigator.serviceWorker.register('/service-worker.js');

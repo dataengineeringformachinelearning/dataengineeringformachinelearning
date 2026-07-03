@@ -2,15 +2,15 @@
 
 **Single source of truth** for visual design across all DEML surfaces:
 
-| Property                                                                               | Stack                          | Theme entry point                         |
-| -------------------------------------------------------------------------------------- | ------------------------------ | ----------------------------------------- |
-| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | Marketing (Astro)              | `/assets/viking-ui.css` + this document   |
-| [deml.app](https://deml.app)                                                           | Angular SSR frontend           | `frontend/projects/viking-ui/src/styles/` |
-| [backend.deml.app](https://backend.deml.app)                                           | Django API + templates         | `backend/static/viking-ui.css`            |
-| Swagger / OpenAPI UI                                                                   | Django Ninja docs              | Same tokens via static CSS                |
-| Marketing site                                                                         | `marketing/`                   | `marketing/public/assets/viking-ui.css`   |
-| Docs, Book & Whitepaper                                                                | Synced content + Drakkar shell | THEME.md tokens in prose and components   |
-| Viking-UI Docs                                                                         | Component documentation site   | `deml-ui` (Firebase Hosting)              |
+| Property                                                                                      | Stack                          | Theme entry point                         |
+| --------------------------------------------------------------------------------------------- | ------------------------------ | ----------------------------------------- |
+| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com)        | Marketing (Astro)              | `/assets/viking-ui.css` + this document   |
+| [deml.app](https://deml.app)                                                                  | Angular SSR frontend           | `frontend/projects/viking-ui/src/styles/` |
+| [backend.deml.app](https://backend.deml.app)                                                  | Django API + templates         | `backend/static/viking-ui.css`            |
+| Swagger / OpenAPI UI                                                                          | Django Ninja docs              | Same tokens via static CSS                |
+| Marketing site                                                                                | `marketing/`                   | `marketing/public/assets/viking-ui.css`   |
+| Docs, Book & Whitepaper                                                                       | Synced content + Drakkar shell | THEME.md tokens in prose and components   |
+| [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/) | Viking-UI component docs       | `deml-ui` (Firebase Hosting)              |
 
 **Canonical implementation:** `frontend/projects/viking-ui/src/styles/_variables.scss`
 **Compiled CSS:** `viking-ui.css` (copied to `frontend/`, `backend/static/`, `marketing/public/assets/`)
@@ -469,7 +469,10 @@ readonly value = model<string>('#0d7377');
 **Showcase usage:**
 
 ```html
-<viking-field label="Series color" description="Presets are the THEME.md premium palette.">
+<viking-field
+  label="Series color"
+  description="Presets are the THEME.md premium palette."
+>
   <viking-color-picker />
 </viking-field>
 ```
@@ -521,7 +524,7 @@ Shimmer uses `--viking-charcoal-700` → `--viking-charcoal-600` (dark) or `#EFE
 ### 10.1 Angular app
 
 ```scss
-@use '@dataengineeringformachinelearning/viking-ui/styles/viking-ui';
+@use "@dataengineeringformachinelearning/viking-ui/styles/viking-ui";
 ```
 
 ```html
@@ -594,11 +597,11 @@ series = [
 
 Marketing documentation pages (`/book`, `/whitepaper`, `/documentation`) share Viking-UI tokens via `viking-ui.css` and follow these layout rules:
 
-| Page | Source | Layout |
-| ---- | ------ | ------ |
-| **The Book** | `BOOK.md` → `sync_content.py` → `page.md` | Sidebar chapter nav, glass hero, 900px reading column |
-| **The Whitepaper** | `WHITEPAPER.md` → `whitepaper.md` | Sticky section nav, two-column card grid, integration pill strip |
-| **Documentation** | Static Astro + `docs/integrations/*.md` links | Sticky outline nav, bento API cards, six integration examples |
+| Page               | Source                                        | Layout                                                           |
+| ------------------ | --------------------------------------------- | ---------------------------------------------------------------- |
+| **The Book**       | `BOOK.md` → `sync_content.py` → `page.md`     | Sidebar chapter nav, glass hero, 900px reading column            |
+| **The Whitepaper** | `WHITEPAPER.md` → `whitepaper.md`             | Sticky section nav, two-column card grid, integration pill strip |
+| **Documentation**  | Static Astro + `docs/integrations/*.md` links | Sticky outline nav, bento API cards, six integration examples    |
 
 All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900` code blocks, and `--container-max-width` (1260px) outer wrappers. Never hardcode integration names inconsistently — the six official platforms are Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and AWS Redshift.
 

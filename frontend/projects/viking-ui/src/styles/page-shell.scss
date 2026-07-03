@@ -253,6 +253,16 @@
   }
 }
 
+.chart-container-large {
+  --viking-chart-fill-min-height: 20rem;
+  min-height: 22.5rem;
+}
+
+.chart-container-medium {
+  --viking-chart-fill-min-height: 17.5rem;
+  min-height: 19rem;
+}
+
 .viking-chart-empty,
 .empty-chart-state,
 .panel-empty {

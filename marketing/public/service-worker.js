@@ -1,4 +1,5 @@
-const CACHE_NAME = "deml-cache-v4";
+const CACHE_NAME = "deml-cache-v5";
+const BYPASS_PATH_PREFIXES = ["/auth-status"];
 const ASSETS_TO_CACHE = [
   "/",
   "/index.html",
@@ -60,8 +61,14 @@ self.addEventListener("fetch", (event) => {
   const requestUrl = new URL(event.request.url);
   if (requestUrl.origin !== self.location.origin) return;
 
-  // Do not handle/intercept API requests or non-GET requests
+  // Do not handle/intercept API requests, auth iframe, or non-GET requests
   if (event.request.method !== "GET" || event.request.url.includes("/api/"))
+    return;
+  if (
+    BYPASS_PATH_PREFIXES.some((prefix) =>
+      requestUrl.pathname.startsWith(prefix),
+    )
+  )
     return;
 
   // Network-First strategy for HTML navigation requests (index.html)
@@ -122,9 +129,7 @@ self.addEventListener("fetch", (event) => {
           }
           return networkResponse;
         })
-        .catch((error) => {
-          throw error;
-        });
+        .catch(() => caches.match(event.request));
     }),
   );
 });

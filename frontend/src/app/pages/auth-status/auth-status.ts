@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, effect } from '@angular/core';
+import { Component, OnInit, effect } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
@@ -38,11 +38,12 @@ const resolveParentOrigin = (explicitOrigin: string | null, referrer: string): s
   styles: [],
 })
 export class AuthStatus implements OnInit {
-  private readonly authService = inject(AuthService);
-  private readonly route = inject(ActivatedRoute);
   private parentOrigin = '';
 
-  constructor() {
+  constructor(
+    private readonly authService: AuthService,
+    private readonly route: ActivatedRoute,
+  ) {
     effect(() => {
       if (!this.parentOrigin) return;
       if (!this.authService.isInitialized() || this.authService.isProcessing()) {
@@ -53,6 +54,8 @@ export class AuthStatus implements OnInit {
   }
 
   ngOnInit(): void {
+    this.authService.checkAuth();
+
     const params = this.route.snapshot.queryParamMap;
     this.parentOrigin = resolveParentOrigin(
       params.get('parent_origin'),

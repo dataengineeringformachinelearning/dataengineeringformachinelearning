@@ -18,18 +18,56 @@
       type="font/woff2"
       crossorigin
     />
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -->
+    <link
+      rel="canonical"
+      href="https://ui.dataengineeringformachinelearning.com/"
+    />
+    <!-- pragma: allowlist secret -->
+    <meta name="algolia-site-verification" content="687B59B29612DE68" />
     <script>
       (function () {
-        var savedTheme = localStorage.getItem('theme');
-        var theme = 'dark';
-        if (savedTheme === 'light' || savedTheme === 'dark') {
+        var savedTheme = localStorage.getItem("theme");
+        var theme = "dark";
+        if (savedTheme === "light" || savedTheme === "dark") {
           theme = savedTheme;
         } else {
-          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
         }
-        document.documentElement.setAttribute('data-theme', theme);
-        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.classList.toggle("dark", theme === "dark");
       })();
+    </script>
+
+    <!-- Google tag (gtag.js) — Viking-UI docs property -->
+    <!-- nosemgrep: html.security.audit.missing-integrity.missing-integrity -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-JZ1MS7DNL2"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-JZ1MS7DNL2");
+    </script>
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "xddv4klojn");
     </script>
   </head>
   <body>
