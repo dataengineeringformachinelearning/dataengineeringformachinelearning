@@ -139,7 +139,7 @@
               </div>
               }
 
-              <div class="settings-form-panel panel-clean simple-inline-form mt-3">
+              <viking-form-section heading="Generate API Key" icon="key" layout="inline" class="mt-3">
                 <viking-field label="New Key Name" class="full-width">
                   <viking-input
                     [(ngModel)]="newApiKeyName"
@@ -147,7 +147,7 @@
                     [disabled]="isGeneratingApiKey() || isViewer"
                   />
                 </viking-field>
-                <div class="settings-actions justify-end">
+                <ng-container vikingFormActions>
                   <viking-button
                     variant="primary"
                     type="button"
@@ -158,8 +158,8 @@
                   >
                     Generate Key
                   </viking-button>
-                </div>
-              </div>
+                </ng-container>
+              </viking-form-section>
 
               <div class="data-list-outlined mt-3">
                 @for (key of apiKeys(); track key.id) {
@@ -313,9 +313,8 @@
           <div class="card-body-clean">
             <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
 
-            <div class="panel-section mt-3">
-              <h3 class="section-heading"><viking-app-icon name="email" /> Update Email</h3>
-              <div class="settings-form-panel panel-clean simple-inline-form">
+            <viking-form-panel class="mt-3">
+              <viking-form-section heading="Update Email" icon="mail" layout="inline">
                 <viking-field label="New Email Address" class="full-width">
                   <viking-input
                     [(ngModel)]="updateEmailInput"
@@ -323,7 +322,7 @@
                     icon="mail"
                   />
                 </viking-field>
-                <div class="settings-actions justify-end">
+                <ng-container vikingFormActions>
                   <viking-button
                     variant="primary"
                     type="button"
@@ -333,13 +332,10 @@
                   >
                     Update Email
                   </viking-button>
-                </div>
-              </div>
-            </div>
+                </ng-container>
+              </viking-form-section>
 
-            <div class="panel-section mt-3">
-              <h3 class="section-heading"><viking-app-icon name="lock" /> Update Password</h3>
-              <div class="settings-form-panel panel-clean simple-inline-form">
+              <viking-form-section heading="Update Password" icon="lock" layout="inline">
                 <viking-field label="New Password" class="full-width">
                   <viking-input
                     type="password"
@@ -348,7 +344,7 @@
                     icon="lock"
                   />
                 </viking-field>
-                <div class="settings-actions justify-end">
+                <ng-container vikingFormActions>
                   <viking-button
                     variant="primary"
                     type="button"
@@ -358,57 +354,54 @@
                   >
                     Update Password
                   </viking-button>
-                </div>
-              </div>
-              @if (accountError()) {
-              <div class="alert alert-error mt-3">{{ accountError() }}</div>
-              } @if (accountSuccess()) {
-              <div class="alert alert-success mt-3">{{ accountSuccess() }}</div>
-              }
-            </div>
+                </ng-container>
+                <ng-container vikingFormFooter>
+                  @if (accountError()) {
+                  <div class="alert alert-error">{{ accountError() }}</div>
+                  } @if (accountSuccess()) {
+                  <div class="alert alert-success">{{ accountSuccess() }}</div>
+                  }
+                </ng-container>
+              </viking-form-section>
 
-            @if (!isViewer) {
-            <div class="panel-section mt-3">
-              <h3 class="section-heading">
-                <viking-app-icon name="credit_card" /> Subscription Management
-              </h3>
-              <div class="settings-form-panel panel-clean">
+              @if (!isViewer) {
+              <viking-form-section heading="Subscription Management" icon="sparkle" layout="status">
                 @if (isBillingLoading()) {
                 <div class="loading-state">
                   <viking-progress [indeterminate]="true" label="Loading subscription" />
                 </div>
                 } @else { @if (!subscriptionActive()) {
-                <div class="mfa-status-enrolled panel-clean u-style-ab4518">
-                  <div class="mfa-info-group">
-                    <viking-app-icon
-                      name="info"
-                      hostClass="status-icon info mfa-icon-inline u-style-fa919b"
-                    />
-                    <div class="mfa-info mfa-info-inline">
-                      <strong>Standard Plan</strong>
-                      <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
-                    </div>
+                <div class="mfa-info-group">
+                  <viking-app-icon
+                    name="info"
+                    hostClass="status-icon info mfa-icon-inline u-style-fa919b"
+                  />
+                  <div class="mfa-info mfa-info-inline">
+                    <strong>Standard Plan</strong>
+                    <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
                   </div>
+                </div>
+                <ng-container vikingFormActions>
                   <viking-button variant="primary" type="button" (pressed)="subscribeToPro()">
                     Subscribe to Pro
                   </viking-button>
-                </div>
+                </ng-container>
                 } @else {
-                <div class="mfa-status-enrolled panel-clean">
-                  <div class="mfa-info-group">
-                    <viking-app-icon
-                      name="check_circle"
-                      hostClass="status-icon success mfa-icon-inline"
-                    />
-                    <div class="mfa-info mfa-info-inline">
-                      <strong>Pro Plan Active</strong>
-                      <div class="mfa-status-desc">
-                        {{ subscriptionCancelAtPeriodEnd() ? 'Your subscription will cancel at the
-                        end of the current billing cycle.' : 'Your subscription is active and will
-                        auto-renew.' }}
-                      </div>
+                <div class="mfa-info-group">
+                  <viking-app-icon
+                    name="check_circle"
+                    hostClass="status-icon success mfa-icon-inline"
+                  />
+                  <div class="mfa-info mfa-info-inline">
+                    <strong>Pro Plan Active</strong>
+                    <div class="mfa-status-desc">
+                      {{ subscriptionCancelAtPeriodEnd() ? 'Your subscription will cancel at the
+                      end of the current billing cycle.' : 'Your subscription is active and will
+                      auto-renew.' }}
                     </div>
                   </div>
+                </div>
+                <ng-container vikingFormActions>
                   @if (subscriptionCancelAtPeriodEnd()) {
                   <viking-button variant="outline" type="button" (pressed)="resumeSubscription()">
                     Resume Subscription
@@ -418,15 +411,18 @@
                     Cancel Subscription
                   </viking-button>
                   }
-                </div>
-                } } @if (billingError()) {
-                <div class="alert alert-error mt-3">{{ billingError() }}</div>
-                } @if (billingSuccess()) {
-                <div class="alert alert-success mt-3">{{ billingSuccess() }}</div>
-                }
-              </div>
-            </div>
-            }
+                </ng-container>
+                } }
+                <ng-container vikingFormFooter>
+                  @if (billingError()) {
+                  <div class="alert alert-error">{{ billingError() }}</div>
+                  } @if (billingSuccess()) {
+                  <div class="alert alert-success">{{ billingSuccess() }}</div>
+                  }
+                </ng-container>
+              </viking-form-section>
+              }
+            </viking-form-panel>
           </div>
         </div>
 

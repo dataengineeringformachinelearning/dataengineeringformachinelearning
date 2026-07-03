@@ -14,6 +14,8 @@ import { AuthService } from '../../services/auth.service';
 import {
   VikingButton,
   VikingField,
+  VikingFormPanel,
+  VikingFormSection,
   VikingInput,
   VikingProgress,
   VikingPageHeader,
@@ -32,6 +34,8 @@ import { environment } from '../../../environments/environment';
     CommonModule,
     VikingButton,
     VikingField,
+    VikingFormPanel,
+    VikingFormSection,
     VikingInput,
     VikingProgress,
     VikingPageHeader,

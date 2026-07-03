@@ -9,8 +9,12 @@ import {
   VikingCalendar,
   VikingChart,
   VikingCheckbox,
+  VikingFormPanel,
+  VikingFormSection,
   VikingHeading,
   VikingIcon,
+  VikingInput,
+  VikingField,
   VikingPagination,
   VikingProgress,
   VikingSelect,
@@ -276,5 +280,43 @@ describe('viking-ui', () => {
     const svg = fixture.nativeElement.querySelector('svg') as SVGSVGElement;
     expect(svg.innerHTML).toContain('circle');
     expect(svg.getAttribute('stroke')).toBe('currentColor');
+  });
+
+  it('renders form section headings and layout classes', async (): Promise<void> => {
+    @Component({
+      imports: [VikingFormSection, VikingField, VikingInput, FormsModule],
+      template: `
+        <viking-form-section heading="Update Email" icon="mail" layout="inline">
+          <viking-field label="Email">
+            <viking-input />
+          </viking-field>
+          <button type="button" vikingFormActions>Save</button>
+        </viking-form-section>
+      `,
+    })
+    class FormSectionHost {}
+
+    const fixture = await render(FormSectionHost);
+    const section = fixture.nativeElement.querySelector('viking-form-section') as HTMLElement;
+    expect(section.classList.contains('viking-form-section-inline')).toBe(true);
+    expect(section.querySelector('.viking-form-section-title')?.textContent).toContain('Update Email');
+    expect(section.querySelector('[vikingFormActions]')).toBeTruthy();
+  });
+
+  it('separates stacked form sections inside a panel', async (): Promise<void> => {
+    @Component({
+      imports: [VikingFormPanel, VikingFormSection],
+      template: `
+        <viking-form-panel>
+          <viking-form-section heading="One" layout="stack" />
+          <viking-form-section heading="Two" layout="stack" />
+        </viking-form-panel>
+      `,
+    })
+    class FormPanelHost {}
+
+    const fixture = await render(FormPanelHost);
+    const sections = fixture.nativeElement.querySelectorAll('viking-form-section');
+    expect(sections.length).toBe(2);
   });
 });
