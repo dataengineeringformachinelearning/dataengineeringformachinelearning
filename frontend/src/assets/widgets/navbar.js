@@ -4,6 +4,8 @@
  */
 (() => {
   const ICON_PATHS = window.__VIKING_ICON_PATHS ?? {};
+  const AUTH_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+  const IFRAME_AUTH_TTL_MS = 5 * 60 * 1000;
 
   const svgIcon = (name, size = 16) => {
     const paths = ICON_PATHS[name] ?? ICON_PATHS.info ?? '';
@@ -60,8 +62,67 @@
     const config = window.__DEML ?? {};
     const BACKEND_URL = config.BACKEND_URL ?? config.API_BASE ?? '';
     const FRONTEND_URL = config.FRONTEND_URL ?? config.MAIN_APP ?? 'https://deml.app';
+    const parentOrigin = window.location.origin;
 
-    const updateAuthUIFromStatus = (status) => {
+    const readSessionActive = () => {
+      const raw = localStorage.getItem('deml_session_active');
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        if (parsed.active && (!parsed.expires || Date.now() < parsed.expires)) {
+          return parsed;
+        }
+        localStorage.removeItem('deml_session_active');
+      } catch {
+        if (raw === 'true') return { active: true };
+        localStorage.removeItem('deml_session_active');
+      }
+      return null;
+    };
+
+    const readAuthCache = () => {
+      const raw = localStorage.getItem('deml_auth_status');
+      if (!raw) return null;
+      try {
+        const parsed = JSON.parse(raw);
+        if (
+          parsed.isAuthenticated &&
+          parsed.timestamp &&
+          Date.now() - parsed.timestamp < AUTH_CACHE_TTL_MS
+        ) {
+          return parsed;
+        }
+        localStorage.removeItem('deml_auth_status');
+      } catch {
+        localStorage.removeItem('deml_auth_status');
+      }
+      return null;
+    };
+
+    const persistAuthCache = status => {
+      if (status?.isAuthenticated) {
+        localStorage.setItem(
+          'deml_auth_status',
+          JSON.stringify({ ...status, timestamp: Date.now() }),
+        );
+      }
+    };
+
+    const clearAuthStorage = () => {
+      localStorage.removeItem('deml_session_active');
+      localStorage.removeItem('deml_auth_status');
+    };
+
+    const setSignOutVisible = visible => {
+      for (const id of ['auth-signout-desktop', 'auth-signout-mobile']) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        el.hidden = !visible;
+        el.style.display = visible ? '' : 'none';
+      }
+    };
+
+    const updateAuthUIFromStatus = status => {
       const isLoggedIn = status?.isAuthenticated === true;
       const desktopBtn = document.getElementById('auth-btn-desktop');
       const desktopIcon = document.getElementById('auth-icon-desktop');
@@ -71,99 +132,113 @@
       const mobileText = document.getElementById('auth-text-mobile');
 
       if (isLoggedIn) {
-        if (desktopBtn && desktopIcon && desktopText) {
+        if (desktopBtn) {
           desktopBtn.href = `${FRONTEND_URL}/dashboard`;
-          setIcon(desktopIcon, 'home', 16);
-          desktopText.textContent = 'Dashboard';
+          if (desktopIcon) setIcon(desktopIcon, 'home', 16);
+          if (desktopText) desktopText.textContent = 'Dashboard';
         }
-        if (mobileBtn && mobileIcon && mobileText) {
+        if (mobileBtn) {
           mobileBtn.href = `${FRONTEND_URL}/dashboard`;
-          setIcon(mobileIcon, 'home', 16);
-          mobileText.textContent = 'Dashboard';
+          if (mobileIcon) setIcon(mobileIcon, 'home', 16);
+          if (mobileText) mobileText.textContent = 'Dashboard';
         }
+        setSignOutVisible(true);
       } else {
-        localStorage.removeItem('deml_session_active');
-        localStorage.removeItem('deml_auth_status');
-        if (desktopBtn && desktopIcon && desktopText) {
-          desktopBtn.href = `${FRONTEND_URL}/login`;
-          setIcon(desktopIcon, 'arrow-right', 16);
-          desktopText.textContent = 'Sign In';
+        clearAuthStorage();
+        if (desktopBtn) {
+          desktopBtn.href = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.origin)}`;
+          if (desktopIcon) setIcon(desktopIcon, 'arrow-right', 16);
+          if (desktopText) desktopText.textContent = 'Sign In';
         }
-        if (mobileBtn && mobileIcon && mobileText) {
-          mobileBtn.href = `${FRONTEND_URL}/login`;
-          setIcon(mobileIcon, 'arrow-right', 16);
-          mobileText.textContent = 'Sign In';
+        if (mobileBtn) {
+          mobileBtn.href = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.origin)}`;
+          if (mobileIcon) setIcon(mobileIcon, 'arrow-right', 16);
+          if (mobileText) mobileText.textContent = 'Sign In';
         }
+        setSignOutVisible(false);
       }
+    };
+
+    const signOut = () => {
+      clearAuthStorage();
+      updateAuthUIFromStatus({ isAuthenticated: false });
+
+      const iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = `${FRONTEND_URL}/auth-status?action=signout&parent_origin=${encodeURIComponent(parentOrigin)}`;
+      document.body.appendChild(iframe);
+      window.setTimeout(() => iframe.remove(), 5000);
+    };
+
+    const bindSignOutButtons = () => {
+      for (const id of ['auth-signout-desktop', 'auth-signout-mobile']) {
+        const btn = document.getElementById(id);
+        if (!btn || btn.dataset.bound === 'true') continue;
+        btn.dataset.bound = 'true';
+        btn.addEventListener('click', event => {
+          event.preventDefault();
+          signOut();
+        });
+      }
+    };
+
+    const applyTrustedAuthStatus = (status, source) => {
+      if (status?.isAuthenticated) {
+        persistAuthCache(status);
+        updateAuthUIFromStatus(status);
+        return;
+      }
+      if (source === 'iframe' && (readSessionActive() || readAuthCache())) {
+        return;
+      }
+      updateAuthUIFromStatus(status);
     };
 
     const checkAuthHandoff = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const handoffToken = urlParams.get('session_handoff');
-      if (handoffToken && BACKEND_URL) {
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/v1/auth/handoff/verify`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: handoffToken }),
-          });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.status === 'success') {
-              const expiry = Date.now() + 24 * 60 * 60 * 1000;
-              localStorage.setItem(
-                'deml_session_active',
-                JSON.stringify({ active: true, expires: expiry, user: data.user }),
-              );
-              updateAuthUIFromStatus({ isAuthenticated: true, ...data });
-            }
+      if (!handoffToken || !BACKEND_URL) return;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/v1/auth/handoff/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: handoffToken }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.status === 'success') {
+            const expiry = Date.now() + AUTH_CACHE_TTL_MS;
+            localStorage.setItem(
+              'deml_session_active',
+              JSON.stringify({ active: true, expires: expiry, user: data.user }),
+            );
+            applyTrustedAuthStatus({ isAuthenticated: true, ...data }, 'handoff');
           }
-        } catch (e) {
-          console.error('Failed to verify handoff token', e);
         }
-        const cleanUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
-        window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
+      } catch (e) {
+        console.error('Failed to verify handoff token', e);
       }
 
-      const flag = localStorage.getItem('deml_session_active');
-      if (flag) {
-        try {
-          const parsed = JSON.parse(flag);
-          if (parsed.active && (!parsed.expires || Date.now() < parsed.expires)) {
-            updateAuthUIFromStatus({ isAuthenticated: true, user: parsed.user });
-          } else {
-            localStorage.removeItem('deml_session_active');
-          }
-        } catch {
-          if (flag === 'true') {
-            updateAuthUIFromStatus({ isAuthenticated: true });
-          } else {
-            localStorage.removeItem('deml_session_active');
-          }
-        }
-      }
+      const cleanUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+      window.history.replaceState({ path: cleanUrl }, '', cleanUrl);
     };
 
     const checkAuthViaIframe = () => {
-      const cached = localStorage.getItem('deml_auth_status');
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          if (parsed.timestamp && Date.now() - parsed.timestamp < 5 * 60 * 1000) {
-            updateAuthUIFromStatus(parsed);
-            return;
-          }
-        } catch {
-          /* ignore */
-        }
+      const cached = readAuthCache();
+      const session = readSessionActive();
+      if (session) {
+        applyTrustedAuthStatus({ isAuthenticated: true, user: session.user }, 'session');
+      } else if (cached) {
+        applyTrustedAuthStatus(cached, 'cache');
       }
 
       const iframe = document.createElement('iframe');
       iframe.style.display = 'none';
-      iframe.src = `${FRONTEND_URL}/auth-status`;
+      iframe.src = `${FRONTEND_URL}/auth-status?parent_origin=${encodeURIComponent(parentOrigin)}`;
       document.body.appendChild(iframe);
 
-      const listener = (event) => {
+      const listener = event => {
         try {
           const mainOrigin = new URL(FRONTEND_URL).origin;
           if (
@@ -177,22 +252,18 @@
           if (!event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
         }
         if (event.data?.type === 'AUTH_STATUS') {
-          window.removeEventListener('message', listener);
-          localStorage.setItem(
-            'deml_auth_status',
-            JSON.stringify({ ...event.data, timestamp: Date.now() }),
-          );
-          updateAuthUIFromStatus(event.data);
-          iframe.remove();
+          applyTrustedAuthStatus(event.data, 'iframe');
         }
       };
+
       window.addEventListener('message', listener);
-      setTimeout(() => {
+      window.setTimeout(() => {
         iframe.remove();
         window.removeEventListener('message', listener);
-      }, 10000);
+      }, 15000);
     };
 
+    bindSignOutButtons();
     void checkAuthHandoff();
     checkAuthViaIframe();
   };

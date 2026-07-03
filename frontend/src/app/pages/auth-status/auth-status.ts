@@ -1,5 +1,35 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, effect } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+
+const TRUSTED_PARENT_HOSTS = [
+  'localhost',
+  '127.0.0.1',
+  'dataengineeringformachinelearning.com',
+  'deml.app',
+];
+
+const isTrustedParentOrigin = (origin: string): boolean => {
+  try {
+    const host = new URL(origin).hostname;
+    return TRUSTED_PARENT_HOSTS.some(trusted => host === trusted || host.endsWith(`.${trusted}`));
+  } catch {
+    return false;
+  }
+};
+
+const resolveParentOrigin = (explicitOrigin: string | null, referrer: string): string => {
+  if (explicitOrigin && isTrustedParentOrigin(explicitOrigin)) {
+    return explicitOrigin;
+  }
+  if (!referrer) return '';
+  try {
+    const origin = new URL(referrer).origin;
+    return isTrustedParentOrigin(origin) ? origin : '';
+  } catch {
+    return '';
+  }
+};
 
 @Component({
   selector: 'app-auth-status',
@@ -8,63 +38,46 @@ import { AuthService } from '../../services/auth.service';
   styles: [],
 })
 export class AuthStatus implements OnInit {
-  private authService = inject(AuthService);
+  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
+  private parentOrigin = '';
 
-  ngOnInit() {
-    // The component is loaded in a hidden iframe from the marketing site to share the browser's auth context from the main app domain.
-    // It accesses the Firebase/auth state and posts via postMessage.
-    // Wait for auth initialization. Use env configured domains where possible.
-    const checkAndPost = () => {
-      if (this.authService.isInitialized()) {
-        const isAuth = this.authService.isAuthenticated();
-        const userId = this.authService.currentUserId();
-        const role = this.authService.currentUserRole();
-
-        const status = {
-          type: 'AUTH_STATUS',
-          isAuthenticated: isAuth,
-          userId: userId,
-          role: role,
-          timestamp: Date.now(),
-        };
-
-        // Post to the marketing origin (update if domain changes).
-        // Post to any parent; the listener will validate the origin strictly for security.
-        if (window.parent && window.parent !== window) {
-          let targetOrigin = '';
-          if (document.referrer) {
-            try {
-              const refUrl = new URL(document.referrer);
-              const host = refUrl.hostname;
-              if (
-                host === 'localhost' ||
-                host === '127.0.0.1' ||
-                host.endsWith('dataengineeringformachinelearning.com') ||
-                host.endsWith('deml.app')
-              ) {
-                targetOrigin = refUrl.origin;
-              }
-            } catch (e) {
-              console.error('[AuthStatus] Failed to parse referrer URL:', e);
-            }
-          }
-          if (targetOrigin) {
-            window.parent.postMessage(status, targetOrigin);
-          } else {
-            console.warn(
-              '[AuthStatus] Refusing to post message to untrusted or empty referrer:',
-              document.referrer,
-            );
-          }
-        }
-
-        console.log('[AuthStatus] Posted auth status to parent:', status);
-      } else {
-        // Retry soon if not initialized
-        setTimeout(checkAndPost, 300);
+  constructor() {
+    effect(() => {
+      if (!this.parentOrigin) return;
+      if (!this.authService.isInitialized() || this.authService.isProcessing()) {
+        return;
       }
+      this.postStatus();
+    });
+  }
+
+  ngOnInit(): void {
+    const params = this.route.snapshot.queryParamMap;
+    this.parentOrigin = resolveParentOrigin(
+      params.get('parent_origin'),
+      typeof document !== 'undefined' ? document.referrer : '',
+    );
+
+    const action = params.get('action');
+    if (action === 'signout') {
+      void this.authService.logout().then(() => this.postStatus());
+    }
+  }
+
+  private postStatus(): void {
+    if (!this.parentOrigin || !window.parent || window.parent === window) {
+      return;
+    }
+
+    const status = {
+      type: 'AUTH_STATUS' as const,
+      isAuthenticated: this.authService.isAuthenticated(),
+      userId: this.authService.currentUserId(),
+      role: this.authService.currentUserRole(),
+      timestamp: Date.now(),
     };
 
-    setTimeout(checkAndPost, 200);
+    window.parent.postMessage(status, this.parentOrigin);
   }
 }

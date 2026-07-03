@@ -39,7 +39,6 @@ export class Navbar {
 
   async logout(): Promise<void> {
     await this.authService.logout();
-    await this.router.navigate(['/login']);
-    window.location.reload();
+    void this.router.navigate(['/login']);
   }
 }
