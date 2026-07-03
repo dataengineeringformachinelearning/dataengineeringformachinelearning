@@ -6,12 +6,13 @@ import {
   effect,
   OnInit,
   OnDestroy,
+  PLATFORM_ID,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import {
   VikingAuthPanel,
   VikingButton,
@@ -47,6 +48,7 @@ import {
   styleUrl: './login.scss',
 })
 export class Login implements OnInit, OnDestroy {
+  private readonly platformId = inject(PLATFORM_ID);
   private fb = inject(FormBuilder);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -159,6 +161,9 @@ export class Login implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
     if (this.recaptchaVerifier) {
       try {
         this.recaptchaVerifier.clear();
@@ -167,10 +172,7 @@ export class Login implements OnInit, OnDestroy {
       }
       this.recaptchaVerifier = null;
     }
-    const element = document.getElementById('recaptcha-container');
-    if (element) {
-      element.remove();
-    }
+    document.getElementById('recaptcha-container')?.remove();
   }
 
   toggleMode(): void {

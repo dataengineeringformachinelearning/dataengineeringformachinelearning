@@ -94,8 +94,10 @@ import {
         stroke-linejoin="round"
         [style.width.px]="resolvedSize()"
         [style.height.px]="resolvedSize()"
-        [innerHTML]="paths()"
-      ></svg>
+      >
+        <!-- innerHTML on <g> — binding on <svg> throws NotYetImplemented under SSR (domino). -->
+        <g [innerHTML]="paths()"></g>
+      </svg>
     }
   `,
   styles: [
