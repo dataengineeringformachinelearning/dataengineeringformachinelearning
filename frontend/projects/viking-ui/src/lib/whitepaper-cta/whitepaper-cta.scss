@@ -2,19 +2,25 @@
   position: relative;
   max-width: 720px;
   margin: 0 auto;
-  padding: 36px 28px;
-  border-radius: 20px;
+  padding: var(--viking-space-4) var(--viking-space-3);
+  border-radius: var(--viking-radius-xl);
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--viking-accent) 22%, transparent);
   background: color-mix(in srgb, var(--viking-accent) 6%, var(--viking-surface));
   text-align: center;
+  box-shadow: var(--viking-shadow-sm);
+  transition: var(--viking-transition-colors);
+
+  @media (min-width: 768px) {
+    padding: var(--viking-space-5) var(--viking-space-4);
+  }
 }
 
 .viking-whitepaper-cta-bg {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 .viking-whitepaper-polars-grid {
@@ -23,8 +29,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 6px;
-  padding: 0 24px;
+  gap: var(--viking-space-half);
+  padding: 0 var(--viking-space-3);
   mask-image: linear-gradient(to top, black 30%, transparent 85%);
 }
 
@@ -34,17 +40,13 @@
   flex: 1;
   max-width: 28px;
   height: calc(var(--viking-bar-height, 50) * 1%);
-  background: linear-gradient(
-    180deg,
-    var(--viking-accent),
-    var(--viking-accent-strong, var(--viking-info))
-  );
-  border-radius: 4px 4px 0 0;
-  opacity: 0.85;
+  background: var(--viking-accent);
+  border-radius: var(--viking-radius-xs) var(--viking-radius-xs) 0 0;
+  opacity: 0.75;
 }
 
 .viking-whitepaper-polars-bar {
-  animation: vikingWhitepaperBarPulse 4s ease-in-out infinite;
+  animation: vikingWhitepaperBarPulse 4s var(--viking-ease-default) infinite;
 
   @for $i from 1 through 12 {
     &:nth-child(#{$i}) {
@@ -56,12 +58,19 @@
 @keyframes vikingWhitepaperBarPulse {
   0%,
   100% {
-    opacity: 0.45;
+    opacity: 0.4;
     transform: scaleY(1);
   }
   50% {
-    opacity: 0.85;
-    transform: scaleY(1.08);
+    opacity: 0.75;
+    transform: scaleY(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-whitepaper-polars-bar {
+    animation: none;
+    opacity: 0.5;
   }
 }
 
@@ -71,7 +80,7 @@
   left: 0;
   width: 100%;
   height: 40%;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
 .viking-whitepaper-cta-content {
@@ -80,34 +89,35 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: var(--viking-space-1-5);
 }
 
 .viking-whitepaper-tag {
   font-size: var(--viking-font-size-ui);
-  font-weight: 700;
-  letter-spacing: 0.15em;
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-caps);
   color: var(--viking-accent);
   text-transform: uppercase;
 }
 
 .viking-whitepaper-title {
-  font-size: 1.75rem;
-  font-weight: 800;
+  font-size: clamp(1.375rem, 3vw, 1.75rem);
+  font-weight: var(--viking-font-weight-bold);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--viking-letter-spacing-tight);
   color: var(--viking-text);
+  line-height: var(--viking-line-height-tight);
 }
 
 .viking-whitepaper-description {
   color: var(--viking-text-muted);
   margin: 0;
-  max-width: 480px;
-  line-height: 1.55;
+  max-width: 30rem;
+  line-height: var(--viking-line-height-relaxed);
   font-size: var(--viking-font-size);
 }
 
 .viking-whitepaper-btn {
-  margin-top: 8px;
+  margin-top: var(--viking-space-1);
 }

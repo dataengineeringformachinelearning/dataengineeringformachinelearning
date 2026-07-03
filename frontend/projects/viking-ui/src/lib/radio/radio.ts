@@ -56,7 +56,7 @@ import { fluxUid } from '../core/uid';
         cursor: pointer;
       }
       .viking-disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       .viking-radio-dot {

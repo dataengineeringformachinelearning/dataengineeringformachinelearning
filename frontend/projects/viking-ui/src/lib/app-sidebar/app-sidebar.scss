@@ -190,7 +190,10 @@ html[data-theme='light'] .viking-app-sidebar-host {
   text-decoration: none;
   font-weight: 600;
   font-size: 1rem;
-  transition: all 0.2s ease;
+  transition:
+    color var(--viking-duration) var(--viking-ease-default),
+    background-color var(--viking-duration) var(--viking-ease-default),
+    border-color var(--viking-duration) var(--viking-ease-default);
   border-left: 3px solid transparent;
   white-space: nowrap;
 
@@ -270,7 +273,10 @@ html[data-theme='light'] .viking-app-sidebar-host {
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition:
+      color var(--viking-duration) var(--viking-ease-default),
+      background-color var(--viking-duration) var(--viking-ease-default),
+      border-color var(--viking-duration) var(--viking-ease-default);
     border-left: 3px solid transparent;
     text-decoration: none;
     white-space: nowrap;

@@ -155,6 +155,11 @@
         "VikingEditor"
       ]
     },
+    "empty-state": {
+      "exports": [
+        "VikingEmptyState"
+      ]
+    },
     "fab": {
       "exports": [
         "VikingFab"
@@ -208,6 +213,11 @@
     "label": {
       "exports": [
         "VikingLabel"
+      ]
+    },
+    "loading-overlay": {
+      "exports": [
+        "VikingLoadingOverlay"
       ]
     },
     "menubar": {
@@ -403,6 +413,11 @@
       "exports": [
         "VikingUptimeBar",
         "VikingUptimeStatus"
+      ]
+    },
+    "whitepaper-cta": {
+      "exports": [
+        "VikingWhitepaperCta"
       ]
     }
   }

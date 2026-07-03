@@ -88,6 +88,14 @@ export class VikingToastService {
         z-index: var(--viking-z-toast);
         max-width: min(414px, calc(100vw - var(--viking-space-4)));
       }
+      @media (max-width: 767px) {
+        :host {
+          bottom: var(--viking-space-2);
+          right: var(--viking-space-2);
+          left: var(--viking-space-2);
+          max-width: none;
+        }
+      }
       :host(.viking-toaster-top) {
         bottom: auto;
         top: var(--viking-space-3);
@@ -102,16 +110,21 @@ export class VikingToastService {
         border-radius: var(--viking-radius);
         box-shadow: var(--viking-shadow-md);
         font-family: var(--viking-font-family);
-        animation: viking-toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: viking-toast-in var(--viking-duration) var(--viking-ease-out);
       }
       @keyframes viking-toast-in {
         from {
-          transform: translateY(9px);
+          transform: translateY(var(--viking-space-1));
           opacity: 0;
         }
         to {
           transform: translateY(0);
           opacity: 1;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .viking-toast {
+          animation: none;
         }
       }
       .viking-toast-icon {
@@ -151,8 +164,9 @@ export class VikingToastService {
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 3px;
+        padding: var(--viking-space-half);
         border-radius: var(--viking-radius-pill);
+        transition: var(--viking-transition-interactive);
       }
       .viking-toast-close:hover {
         color: var(--viking-text);

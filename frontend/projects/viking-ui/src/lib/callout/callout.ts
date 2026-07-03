@@ -79,10 +79,16 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         border-left-color: var(--viking-warning);
         background: color-mix(in srgb, var(--viking-warning) 12%, var(--viking-surface));
       }
+      :host(.viking-callout-warning) .viking-callout-icon {
+        color: var(--viking-warning);
+      }
       :host(.viking-callout-danger) {
         border-color: color-mix(in srgb, var(--viking-danger) 45%, transparent);
         border-left-color: var(--viking-danger);
         background: color-mix(in srgb, var(--viking-danger) 10%, var(--viking-surface));
+      }
+      :host(.viking-callout-danger) .viking-callout-icon {
+        color: var(--viking-danger);
       }
       .viking-callout-body {
         flex: 1;

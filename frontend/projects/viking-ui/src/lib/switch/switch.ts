@@ -43,7 +43,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
         cursor: pointer;
       }
       .viking-disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       .viking-switch-track {
@@ -57,7 +57,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
         border-radius: var(--viking-radius-pill);
         background: var(--viking-surface-alt);
         border: 1px solid var(--viking-border-strong);
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
         flex-shrink: 0;
         box-sizing: border-box;
       }
@@ -76,7 +76,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
         height: 14px;
         border-radius: var(--viking-radius-pill);
         background: var(--viking-text-muted);
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-transform);
       }
       .viking-switch-track.viking-checked {
         background: var(--viking-accent);

@@ -27,39 +27,36 @@ import { VikingIconName } from '../core/icons';
       }
       .viking-fab {
         position: fixed;
-        bottom: calc(var(--viking-space-2) * 1.75);
-        right: calc(var(--viking-space-2) * 1.75);
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
+        bottom: var(--viking-space-3);
+        right: var(--viking-space-3);
+        width: var(--viking-space-7);
+        height: var(--viking-space-7);
+        border-radius: var(--viking-radius-pill);
         background: var(--viking-accent);
         color: var(--viking-accent-content);
-        border: 1px solid var(--viking-border);
-        box-shadow: var(--viking-shadow-sm);
+        border: 1px solid color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
+        box-shadow: var(--viking-shadow-md);
         cursor: pointer;
-        z-index: 999;
+        z-index: var(--viking-z-overlay);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition:
-          transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-          box-shadow 0.2s ease,
-          filter 0.2s;
+        transition: var(--viking-transition-interactive);
       }
       .viking-fab:hover:not(:disabled) {
-        transform: scale(1.08);
-        box-shadow: var(--viking-shadow-md);
-        filter: brightness(1.1);
+        transform: translateY(var(--viking-state-hover-lift));
+        box-shadow: var(--viking-shadow-hover);
+        background: var(--viking-accent-hover);
       }
       .viking-fab:active:not(:disabled) {
-        transform: scale(0.95);
+        transform: translateY(0) scale(var(--viking-state-active-scale));
       }
       .viking-fab:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
       }
       .viking-fab:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
     `,

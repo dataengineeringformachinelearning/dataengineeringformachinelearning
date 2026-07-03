@@ -11,6 +11,7 @@ import { VikingSkeleton } from '../skeleton/skeleton';
   host: {
     '[class.viking-card-interactive]': 'interactive()',
     '[class.viking-card-loading]': 'loading()',
+    '[class.viking-card-compact]': 'compact()',
     '[attr.aria-busy]': "loading() ? 'true' : null",
     '[attr.tabindex]': 'interactive() ? 0 : null',
     '[attr.role]': "interactive() ? 'button' : null",
@@ -75,6 +76,9 @@ import { VikingSkeleton } from '../skeleton/skeleton';
       :host(.viking-card-loading) {
         pointer-events: none;
       }
+      :host(.viking-card-compact) {
+        padding: var(--viking-space-2);
+      }
       .viking-card-skeleton {
         display: flex;
         flex-direction: column;
@@ -88,6 +92,7 @@ export class VikingCard {
 
   readonly interactive = input<boolean>(false);
   readonly loading = input<boolean>(false);
+  readonly compact = input<boolean>(false);
 
   protected onActivate = (event: KeyboardEvent): void => {
     if (!this.interactive() || this.loading()) {

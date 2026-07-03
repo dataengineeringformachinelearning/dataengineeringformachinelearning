@@ -62,8 +62,8 @@ import { VikingIcon } from '../icon/icon';
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius);
         cursor: pointer;
-        color: var(--white, #ffffff);
-        transition: var(--viking-transition);
+        color: var(--viking-accent-content);
+        transition: var(--viking-transition-interactive);
         padding: 0;
       }
       .viking-color-swatch:hover,
@@ -100,14 +100,20 @@ import { VikingIcon } from '../icon/icon';
   ],
 })
 export class VikingColorPicker extends VikingControl<string> {
-  readonly value = model<string>('#2176ff');
+  readonly value = model<string>('#0d7377');
   readonly label = input<string>('');
   readonly disabled = input<boolean>(false);
-  /** Preset swatches — defaults to the THEME.md palette. */
-  readonly presets = input<string[]>(['#31393c', '#2176ff', '#33a1fd', '#fdca40', '#f79824']);
+  /** Preset swatches — Viking premium palette mapped to THEME.md semantic roles. */
+  readonly presets = input<string[]>([
+    '#111111',
+    '#0d7377',
+    '#2a9d8f',
+    '#c4a035',
+    '#a83344',
+  ]);
 
   writeValue(value: string): void {
-    this.value.set(value || '#2176ff');
+    this.value.set(value || '#0d7377');
   }
 
   protected pick = (color: string): void => {
