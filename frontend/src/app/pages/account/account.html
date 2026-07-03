@@ -145,27 +145,26 @@
               </div>
               }
 
-              <div class="service-form-panel panel-clean mt-3">
-                <div class="service-inputs-row">
-                  <viking-field label="New Key Name" class="u-style-be70d9">
-                    <viking-input
-                      [(ngModel)]="newApiKeyName"
-                      placeholder="e.g. Databricks Ingestion Pipeline"
-                      [disabled]="isGeneratingApiKey() || isViewer"
-                    />
-                  </viking-field>
+              <div class="settings-form-panel panel-clean simple-inline-form mt-3">
+                <viking-field label="New Key Name" class="full-width">
+                  <viking-input
+                    [(ngModel)]="newApiKeyName"
+                    placeholder="e.g. Databricks Ingestion Pipeline"
+                    [disabled]="isGeneratingApiKey() || isViewer"
+                  />
+                </viking-field>
+                <div class="settings-actions justify-end">
+                  <viking-button
+                    variant="primary"
+                    type="button"
+                    icon="plus"
+                    (pressed)="generateApiKey()"
+                    [disabled]="!newApiKeyName || isGeneratingApiKey() || isViewer"
+                    [loading]="isGeneratingApiKey()"
+                  >
+                    Generate Key
+                  </viking-button>
                 </div>
-                <viking-button
-                  variant="primary"
-                  type="button"
-                  class="add-service-btn"
-                  icon="plus"
-                  (pressed)="generateApiKey()"
-                  [disabled]="!newApiKeyName || isGeneratingApiKey() || isViewer"
-                  [loading]="isGeneratingApiKey()"
-                >
-                  Generate Key
-                </viking-button>
               </div>
 
               <div class="data-list-outlined mt-3">

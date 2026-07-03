@@ -216,8 +216,12 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">System Latency (Last 24h)</div>
+            @if (hasLatencyData()) {
             <div class="chart-custom-value">{{ p99Latency }} ms</div>
             <div class="chart-custom-trend">{{ latencyTrend }}</div>
+            } @else {
+            <div class="chart-custom-value chart-value-muted">Awaiting signal</div>
+            }
           </div>
 
           <div class="card-body-clean chart-container-large">
@@ -262,14 +266,14 @@
             <div class="chart-custom-value">{{ originMapData.length || 0 }} Regions</div>
             <div class="chart-custom-trend">{{ originTrend }}</div>
           </div>
-          <div class="card-body-clean chart-container-medium u-style-019b32">
+          <div class="card-body-clean chart-container-medium origin-map-container">
             <div
               id="originMap"
-              class="u-style-2aad06"
+              class="origin-map-canvas"
               [class.viking-map-ready]="originMapData.length > 0"
             ></div>
             @if (originMapData.length === 0) {
-            <div class="empty-chart-state">
+            <div class="empty-chart-state origin-map-empty">
               <viking-app-icon name="public" hostClass="empty-icon" />
               <h3 class="empty-title">No Geographic Data</h3>
               <p class="empty-subtitle">Regional traffic origins will appear once requests are received from connected endpoints.</p>
@@ -284,10 +288,14 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Top Regions</div>
+            @if (hasTopRegionsData()) {
             <div class="chart-custom-value">
               {{ topRegionsSeries()[0]?.data?.length || 0 }} Regions
             </div>
             <div class="chart-custom-trend">{{ originTrend }}</div>
+            } @else {
+            <div class="chart-custom-value chart-value-muted">No regions yet</div>
+            }
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasTopRegionsData()) {
@@ -313,8 +321,12 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Frequency</div>
+            @if (hasTrafficGroupedData() || hasFrequencyData()) {
             <div class="chart-custom-value">{{ totalRequests | number }} Req</div>
             <div class="chart-custom-trend">{{ frequencyTrend }}</div>
+            } @else {
+            <div class="chart-custom-value chart-value-muted">Awaiting signal</div>
+            }
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasTrafficGroupedData()) {
@@ -350,8 +362,12 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Request Counts per Endpoint</div>
+            @if (hasEndpointData()) {
             <div class="chart-custom-value">{{ endpointSeries()[0]?.data?.length || 0 }} APIs</div>
             <div class="chart-custom-trend">{{ endpointTrend }}</div>
+            } @else {
+            <div class="chart-custom-value chart-value-muted">No endpoints yet</div>
+            }
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasEndpointData()) {
@@ -389,8 +405,12 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Threat Events by Severity</div>
+            @if (hasThreatSeverityData()) {
             <div class="chart-custom-value">{{ threatLevel | number:'1.0-0' }}%</div>
             <div class="chart-custom-trend">{{ threatTrend }}</div>
+            } @else {
+            <div class="chart-custom-value chart-value-muted">Perimeter secure</div>
+            }
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasThreatSeverityData()) {
@@ -415,8 +435,12 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">Recent Security Anomalies</div>
+            @if (hasSecurityAlertsData()) {
             <div class="chart-custom-value">{{ activeIncidents }} Active</div>
             <div class="chart-custom-trend">{{ anomalyTrend }}</div>
+            } @else {
+            <div class="chart-custom-value chart-value-muted">No anomalies</div>
+            }
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasSecurityAlertsData()) {
@@ -442,8 +466,12 @@
         <section class="status-card-outlined">
           <div class="chart-custom-header">
             <div class="chart-custom-title">HTTP Status Distribution</div>
+            @if (hasStatusStackedData() || hasStatusData()) {
             <div class="chart-custom-value">{{ uptimePercent }}%</div>
             <div class="chart-custom-trend">{{ statusTrend }}</div>
+            } @else {
+            <div class="chart-custom-value chart-value-muted">Awaiting signal</div>
+            }
           </div>
           <div class="card-body-clean chart-container-medium">
             @if (hasStatusStackedData()) {
