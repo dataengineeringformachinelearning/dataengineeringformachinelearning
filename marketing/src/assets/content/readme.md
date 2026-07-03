@@ -20,6 +20,8 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 > The philosophical, educational, and narrative deep dives into data engineering, MLOps, and the architecture of this system can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
 >
 > For a brief summary of the platform's hypothesis, architecture diagrams, and algorithms, please read the **[Whitepaper (WHITEPAPER.md)](WHITEPAPER.md)**.
+>
+> For the unified visual design system (Viking-UI premium theme, Porsche/Wallace standards), see **[THEME.md](THEME.md)**.
 
 > [!NOTE]
 > **arXiv Endorsement Request:** We are currently seeking an arXiv endorsement to formally publish the architectural whitepaper to `cs.CR` (Cryptography and Security). If you are a qualified arXiv author and find this work valuable, we would greatly appreciate your endorsement! You can endorse the author [here](https://arxiv.org/auth/endorse?x=ZISEYL) using code **ZISEYL**.
@@ -55,6 +57,20 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
 - **SaaS Reliability & Stability**: Comprehensive automated testing, static analysis (Ruff/ESLint/Axe), and clean-code architecture ensuring production-grade robustness.
+- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md)) across marketing, app, API, and docs — Porsche/Wallace standards, zero third-party UI runtimes, WCAG 2.1 AA by construction.
+
+## Design System (Viking-UI)
+
+All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** — the Viking-UI premium theme:
+
+| Surface | Theme entry point |
+|---------|-------------------|
+| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | `/assets/viking-ui.css` |
+| [deml.app](https://deml.app) | `@dataengineeringformachinelearning/viking-ui` |
+| [backend.deml.app](https://backend.deml.app) | `backend/static/viking-ui.css` |
+| Swagger / OpenAPI UI | Same tokens via static CSS |
+
+**Philosophy:** Porsche-like precision and Wallace Corp high-end industrial tech — dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
 
 ## Solution Architecture
 
@@ -379,7 +395,8 @@ We provide dedicated support for our users:
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power this platform's architecture:
 
-- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with THEME.md tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds for `@dataengineeringformachinelearning/viking-ui`), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/)
+- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds for `@dataengineeringformachinelearning/viking-ui`), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/)
+- **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2 — Porsche/Wallace standards); [Inter](https://rsms.me/inter/) (body/UI), [Orbitron](https://fonts.google.com/specimen/Orbitron) and [Michroma](https://fonts.google.com/specimen/Michroma) (CES instrumentation and marketing display)
 - **UI patterns (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)

@@ -1,7 +1,7 @@
 {
   "name": "@dataengineeringformachinelearning/viking-ui",
   "version": "1.1.0",
-  "description": "Viking-UI: DEML clinical design system for Angular. THEME.md palette, WCAG 2.1 AA, zero third-party UI runtime deps.",
+  "description": "Viking-UI: DEML premium design system for Angular. THEME.md Porsche/Wallace palette, WCAG 2.1 AA, zero third-party UI runtime deps.",
   "keywords": [
     "angular",
     "ui",
