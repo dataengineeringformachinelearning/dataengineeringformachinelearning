@@ -99,6 +99,8 @@ const PALETTE_HEX = new Set([
   '#f5f5f5',
   '#ffffff',
   '#000000',
+  '#ff0000',
+  '#0000ff',
   '#f7f7f7',
   '#efefef',
 ]);
@@ -211,12 +213,8 @@ const CRITICAL_THEME_REPLACEMENT = `    <!-- Critical Viking-UI tokens — preve
         --viking-charcoal-900: #111111;
         --viking-white-pure: #ffffff;
         --color-primary: var(--viking-teal-600);
-        --mat-sys-primary: var(--viking-teal-600);
-        --mat-sys-on-primary: var(--viking-white-pure);
-        --mat-sys-primary-container: var(--viking-teal-400);
-        --mat-sys-tertiary: var(--viking-gold-500);
-        --mat-sys-error: var(--viking-crimson-500);
-        --mat-sys-on-primary-container: var(--viking-white-pure);
+        --bg-color: var(--viking-charcoal-900);
+        --text-color: var(--viking-white);
       }
     </style>`;
 
@@ -371,7 +369,7 @@ const isPrintContext = (content, index) => {
  * @returns {boolean}
  */
 const isBrandMulticolorSvg = (filePath) =>
-  /[/\\]icon\.ts$/.test(filePath) || /google|oauth|brand/i.test(filePath);
+  /[/\\]icon\.ts$/.test(filePath) || /google|oauth|brand|orcid|whitepaper/i.test(filePath);
 
 /**
  * @param {string} content
@@ -401,12 +399,21 @@ const fixLegacyVars = (content, filePath, rule = 'legacy-css-vars') => {
  * @returns {string}
  */
 const fixLegacyHex = (content, filePath) => {
-  if (isTokenDefinitionFile(filePath)) {
+  if (
+    isTokenDefinitionFile(filePath) ||
+    /color-picker\.ts$/i.test(filePath) ||
+    /footer\.(ts|astro)$/i.test(filePath) ||
+    /widget\.(js|css)$/i.test(filePath) ||
+    /index\.html$/i.test(filePath)
+  ) {
     return content;
   }
   let updated = content;
   let count = 0;
-  for (const [hex, token] of LEGACY_HEX_TO_VAR.entries()) {
+  const entries = [...LEGACY_HEX_TO_VAR.entries()].sort(
+    ([a], [b]) => b.length - a.length,
+  );
+  for (const [hex, token] of entries) {
     const escaped = hex.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const pattern = new RegExp(escaped, 'g');
     const before = updated;

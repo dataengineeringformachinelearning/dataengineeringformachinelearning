@@ -64,7 +64,7 @@ import Layout from '../layouts/Layout.astro';
 
             <div class="cookie-action-box">
               <p>You can adjust, enable, or revoke your cookie choices at any time.</p>
-              <button class="mat-mdc-raised-button mat-primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
+              <button class="viking-button viking-button--primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
                 Manage Cookie Preferences
               </button>
             </div>
@@ -113,7 +113,7 @@ import Layout from '../layouts/Layout.astro';
                   <textarea id="gdpr-details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
                 </div>
 
-                <button type="submit" class="mat-mdc-raised-button mat-accent" id="privacy-submit-gdpr-request">
+                <button type="submit" class="viking-button viking-button--secondary" id="privacy-submit-gdpr-request">
                   Submit Compliance Request
                 </button>
               </form>
@@ -380,9 +380,9 @@ import Layout from '../layouts/Layout.astro';
   }
 }
 
-.mat-mdc-raised-button {
+.viking-button {
   background-color: var(--color-primary);
-  color: #fff;
+  color: var(--viking-white-pure);
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
@@ -394,7 +394,7 @@ import Layout from '../layouts/Layout.astro';
     opacity: 0.9;
   }
 
-  &.mat-accent {
+  &.viking-button--secondary {
     background-color: var(--color-success);
   }
 }

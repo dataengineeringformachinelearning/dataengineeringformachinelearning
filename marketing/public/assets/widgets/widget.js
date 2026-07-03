@@ -1,29 +1,23 @@
 (() => {
-  if (customElements.get("platform-widget")) {
+  if (customElements.get('platform-widget')) {
     // If already registered, only run the auto-initialization for this script if not already done
     const currentScript = document.currentScript;
-    if (currentScript && currentScript.hasAttribute("data-page-id")) {
-      const pageId = currentScript.getAttribute("data-page-id");
-      const backendUrl = currentScript.getAttribute("data-backend-url");
-      const frontendUrl = currentScript.getAttribute("data-frontend-url");
+    if (currentScript && currentScript.hasAttribute('data-page-id')) {
+      const pageId = currentScript.getAttribute('data-page-id');
+      const backendUrl = currentScript.getAttribute('data-backend-url');
+      const frontendUrl = currentScript.getAttribute('data-frontend-url');
 
       // Check if we already inserted the widget next to this script tag
-      if (
-        !currentScript.nextSibling ||
-        currentScript.nextSibling.nodeName !== "PLATFORM-WIDGET"
-      ) {
-        const widget = document.createElement("platform-widget");
-        widget.setAttribute("data-page-id", pageId);
+      if (!currentScript.nextSibling || currentScript.nextSibling.nodeName !== 'PLATFORM-WIDGET') {
+        const widget = document.createElement('platform-widget');
+        widget.setAttribute('data-page-id', pageId);
         if (backendUrl) {
-          widget.setAttribute("data-backend-url", backendUrl);
+          widget.setAttribute('data-backend-url', backendUrl);
         }
         if (frontendUrl) {
-          widget.setAttribute("data-frontend-url", frontendUrl);
+          widget.setAttribute('data-frontend-url', frontendUrl);
         }
-        currentScript.parentNode.insertBefore(
-          widget,
-          currentScript.nextSibling,
-        );
+        currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);
       }
     }
     return;
@@ -31,11 +25,11 @@
 
   // Intercept console errors on host page safely to package as telemetry analytics
   const recentErrors = [];
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     try {
       const originalError = console.error;
       console.error = (...args) => {
-        recentErrors.push(args.join(" "));
+        recentErrors.push(args.join(' '));
         if (recentErrors.length > 5) recentErrors.shift();
         originalError.apply(console, args);
       };
@@ -43,9 +37,9 @@
   }
 
   // Helper for idle callbacks to optimize performance
-  const runWhenIdle = (callback) => {
-    if (typeof window !== "undefined") {
-      if ("requestIdleCallback" in window) {
+  const runWhenIdle = callback => {
+    if (typeof window !== 'undefined') {
+      if ('requestIdleCallback' in window) {
         window.requestIdleCallback(callback);
       } else {
         setTimeout(callback, 200);
@@ -53,82 +47,23 @@
     }
   };
 
-  // Shared: collect browser threat indicators (used by vuln reports + analytics)
-  const getBrowserThreatIndicators = () => {
-    const indicators = {
-      referrer: document.referrer || "Direct",
-      language: navigator.language,
-      platform: navigator.platform,
-      cores: navigator.hardwareConcurrency || "N/A",
-      memory_gb: navigator.deviceMemory || "N/A",
-      webdriver: !!navigator.webdriver,
-      plugins_count: navigator.plugins ? navigator.plugins.length : 0,
-      visibility_state: document.visibilityState || "visible",
-      screen_color_depth: window.screen ? window.screen.colorDepth : "N/A",
-      network_connection: {},
-    };
-    try {
-      if (navigator.connection) {
-        const conn = navigator.connection;
-        indicators.network_connection = {
-          effective_type: conn.effectiveType,
-          rtt_ms: conn.rtt,
-          downlink_mbps: conn.downlink,
-        };
-      }
-    } catch {}
-    return indicators;
-  };
+  const DEFAULT_STATUS_APP = 'https://deml.app';
 
-  // Shared: collect page performance metrics (FCP, load time, protocol)
-  const collectPerformanceMetrics = () => {
-    let pageLoadTime = 0;
-    let domInteractive = 0;
-    let dnsLookup = 0;
-    let fcpTime = 0;
-    let protocol = "unknown";
-    try {
-      const [navigation] = window.performance.getEntriesByType("navigation");
-      if (navigation) {
-        pageLoadTime = Math.round(
-          navigation.loadEventEnd - navigation.startTime,
-        );
-        domInteractive = Math.round(
-          navigation.domInteractive - navigation.startTime,
-        );
-        dnsLookup = Math.round(
-          navigation.domainLookupEnd - navigation.domainLookupStart,
-        );
-        protocol = navigation.nextHopProtocol || "unknown";
-      }
-      const paints = window.performance.getEntriesByType("paint");
-      const fcp = paints.find((p) => p.name === "first-contentful-paint");
-      if (fcp) {
-        fcpTime = Math.round(fcp.startTime);
-      }
-    } catch {}
-    return { pageLoadTime, domInteractive, dnsLookup, fcpTime, protocol };
-  };
-
-  const DEFAULT_STATUS_APP = "https://deml.app";
-
-  const isMarketingHost = (hostname) =>
-    hostname === "dataengineeringformachinelearning.com" ||
-    hostname === "www.dataengineeringformachinelearning.com";
+  const isMarketingHost = hostname =>
+    hostname === 'dataengineeringformachinelearning.com' ||
+    hostname === 'www.dataengineeringformachinelearning.com';
 
   // Status pages are served by the Angular app (deml.app), never the marketing site.
-  const normalizeStatusAppHost = (url) => {
+  const normalizeStatusAppHost = url => {
     if (!url) return DEFAULT_STATUS_APP;
     try {
-      const parsed = new URL(
-        url.startsWith("http") ? url : `https://${url.replace(/^\/+/, "")}`,
-      );
+      const parsed = new URL(url.startsWith('http') ? url : `https://${url.replace(/^\/+/, '')}`);
       if (isMarketingHost(parsed.hostname)) {
         return DEFAULT_STATUS_APP;
       }
-      return `${parsed.protocol}//${parsed.hostname}${parsed.port ? `:${parsed.port}` : ""}`;
+      return `${parsed.protocol}//${parsed.hostname}${parsed.port ? `:${parsed.port}` : ''}`;
     } catch {
-      return String(url).replace(/\/$/, "");
+      return String(url).replace(/\/$/, '');
     }
   };
 
@@ -143,22 +78,19 @@
     if (backendUrl) {
       try {
         const backend = new URL(backendUrl);
-        if (backend.hostname.startsWith("backend.")) {
+        if (backend.hostname.startsWith('backend.')) {
           return normalizeStatusAppHost(
-            `${backend.protocol}//${backend.hostname.slice("backend.".length)}`,
+            `${backend.protocol}//${backend.hostname.slice('backend.'.length)}`,
           );
         }
-        if (
-          backend.hostname === "localhost" ||
-          backend.hostname === "127.0.0.1"
-        ) {
-          const port = backend.port === "8000" ? "4200" : backend.port;
+        if (backend.hostname === 'localhost' || backend.hostname === '127.0.0.1') {
+          const port = backend.port === '8000' ? '4200' : backend.port;
           return normalizeStatusAppHost(
-            `${backend.protocol}//${backend.hostname}${port ? `:${port}` : ""}`,
+            `${backend.protocol}//${backend.hostname}${port ? `:${port}` : ''}`,
           );
         }
         return normalizeStatusAppHost(
-          `${backend.protocol}//${backend.hostname}${backend.port ? `:${backend.port}` : ""}`,
+          `${backend.protocol}//${backend.hostname}${backend.port ? `:${backend.port}` : ''}`,
         );
       } catch {}
     }
@@ -175,10 +107,7 @@
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), timeout);
     try {
-      const response = await fetch(resource, {
-        ...options,
-        signal: controller.signal,
-      });
+      const response = await fetch(resource, { ...options, signal: controller.signal });
       clearTimeout(id);
       return response;
     } catch (error) {
@@ -197,12 +126,11 @@
   };
 
   const initGlobalAgent = () => {
-    if (typeof window === "undefined" || typeof document === "undefined")
-      return;
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
     // 1. Behavioral Analytics (Click tracking)
     document.addEventListener(
-      "click",
+      'click',
       () => {
         globalAgentData.clicks++;
       },
@@ -213,10 +141,8 @@
     runWhenIdle(() => {
       try {
         const now = new Date();
-        const lastScanStr = localStorage.getItem("deml_asset_scan_time");
-        const lastScanDate = lastScanStr
-          ? new Date(parseInt(lastScanStr))
-          : null;
+        const lastScanStr = localStorage.getItem('deml_asset_scan_time');
+        const lastScanDate = lastScanStr ? new Date(parseInt(lastScanStr)) : null;
 
         const isPast3AM = now.getHours() >= 3;
         const isSameDay =
@@ -227,10 +153,10 @@
 
         if (isPast3AM && !isSameDay) {
           const techs = [];
-          if (window.React) techs.push("React");
-          if (window.angular) techs.push("Angular");
-          if (window.jQuery) techs.push("jQuery");
-          if (window.Vue) techs.push("Vue");
+          if (window.React) techs.push('React');
+          if (window.angular) techs.push('Angular');
+          if (window.jQuery) techs.push('jQuery');
+          if (window.Vue) techs.push('Vue');
 
           const generator = document.querySelector('meta[name="generator"]');
           if (generator) techs.push(generator.content);
@@ -238,35 +164,32 @@
           globalAgentData.technologies = techs;
 
           if (window.performance && window.performance.getEntriesByType) {
-            const resources = window.performance.getEntriesByType("resource");
-            globalAgentData.assets = resources.map((r) => r.name).slice(0, 50); // limit to save payload size
+            const resources = window.performance.getEntriesByType('resource');
+            globalAgentData.assets = resources.map(r => r.name).slice(0, 50); // limit to save payload size
           }
 
-          localStorage.setItem(
-            "deml_asset_scan_time",
-            now.getTime().toString(),
-          );
+          localStorage.setItem('deml_asset_scan_time', now.getTime().toString());
         }
       } catch {}
     });
 
     // 3. Global XSS Detection (Mutation Observer)
     try {
-      const observer = new MutationObserver((mutations) => {
+      const observer = new MutationObserver(mutations => {
         for (const mutation of mutations) {
           for (const node of mutation.addedNodes) {
-            if (node.tagName === "SCRIPT") {
-              const src = node.src || "inline";
-              if (!src.includes("deml.app")) {
+            if (node.tagName === 'SCRIPT') {
+              const src = node.src || 'inline';
+              if (!src.includes('deml.app')) {
                 globalAgentData.xss_events.push({
-                  type: "script_injected",
+                  type: 'script_injected',
                   src: src.substring(0, 100),
                 });
               }
-            } else if (node.tagName === "IFRAME") {
+            } else if (node.tagName === 'IFRAME') {
               globalAgentData.xss_events.push({
-                type: "iframe_injected",
-                src: (node.src || "unknown").substring(0, 100),
+                type: 'iframe_injected',
+                src: (node.src || 'unknown').substring(0, 100),
               });
             }
           }
@@ -276,9 +199,9 @@
     } catch {}
 
     // CSP Violation Tracking
-    document.addEventListener("securitypolicyviolation", (e) => {
+    document.addEventListener('securitypolicyviolation', e => {
       globalAgentData.xss_events.push({
-        type: "csp_violation",
+        type: 'csp_violation',
         blockedURI: e.blockedURI,
         violatedDirective: e.violatedDirective,
       });
@@ -287,38 +210,32 @@
     // 4. Site-Wide DLP & Honeypots (Form Interception)
     runWhenIdle(() => {
       try {
-        const forms = document.querySelectorAll("form.deml-protected-form");
+        const forms = document.querySelectorAll('form.deml-protected-form');
         globalAgentData.forms_protected = forms.length;
 
-        forms.forEach((form) => {
-          if (form.classList.contains("deml-ignore")) return;
+        forms.forEach(form => {
+          if (form.classList.contains('deml-ignore')) return;
 
-          const honeypot = document.createElement("input");
-          honeypot.type = "text";
-          honeypot.name = "deml_site_bot_check";
-          honeypot.classList.add("honeypot-field");
+          const honeypot = document.createElement('input');
+          honeypot.type = 'text';
+          honeypot.name = 'deml_site_bot_check';
+          honeypot.classList.add('honeypot-field');
           honeypot.tabIndex = -1;
-          honeypot.setAttribute("aria-hidden", "true");
+          honeypot.setAttribute('aria-hidden', 'true');
           form.appendChild(honeypot);
 
-          form.addEventListener("submit", (e) => {
-            if (honeypot.value !== "") {
+          form.addEventListener('submit', e => {
+            if (honeypot.value !== '') {
               e.preventDefault(); // Trap bot
-              globalAgentData.dlp_events.push({
-                type: "bot_trapped",
-                formAction: form.action,
-              });
+              globalAgentData.dlp_events.push({ type: 'bot_trapped', formAction: form.action });
               return;
             }
 
-            const inputs = form.querySelectorAll(
-              'input[type="text"], textarea',
-            );
-            const dlpRegex =
-              /(password|api[_-]?key|secret|sk-[a-zA-Z0-9]{20,})/i;
+            const inputs = form.querySelectorAll('input[type="text"], textarea');
+            const dlpRegex = /(password|api[_-]?key|secret|sk-[a-zA-Z0-9]{20,})/i;
 
             let foundSecret = false;
-            inputs.forEach((input) => {
+            inputs.forEach(input => {
               if (dlpRegex.test(input.value)) {
                 foundSecret = true;
               }
@@ -326,7 +243,7 @@
 
             if (foundSecret) {
               globalAgentData.dlp_events.push({
-                type: "secret_leak_attempt",
+                type: 'secret_leak_attempt',
                 formAction: form.action,
               });
             }
@@ -339,36 +256,35 @@
   initGlobalAgent();
 
   customElements.define(
-    "platform-widget",
+    'platform-widget',
     class extends HTMLElement {
       constructor() {
         super();
-        this.attachShadow({ mode: "open" });
-        this.clientIp = "127.0.0.1";
+        this.attachShadow({ mode: 'open' });
+        this.clientIp = '127.0.0.1';
         // Prevent unstyled flash on hard refresh before connectedCallback completes.
         this.shadowRoot.innerHTML =
-          "<style>:host{display:flex;justify-content:center;width:100%;margin:18px auto;min-height:44px;opacity:0;transition:opacity .12s ease}:host(.deml-ready){opacity:1}</style>";
+          '<style>:host{display:flex;justify-content:center;width:100%;margin:18px auto;min-height:44px;opacity:0;transition:opacity .12s ease}:host(.deml-ready){opacity:1}</style>';
       }
 
       async connectedCallback() {
-        const pageId = this.getAttribute("data-page-id");
+        const pageId = this.getAttribute('data-page-id');
         if (!pageId) {
-          console.error("Widget missing data-page-id attribute");
+          console.error('Widget missing data-page-id attribute');
           return;
         }
 
         // Resolve URLs: strictly prefer data-* attributes or the origin of the loaded script.
         // No hardcoded production domains or fallbacks. Set data-backend-url / data-frontend-url on the embed script.
         const currentScript =
-          document.currentScript ||
-          document.querySelector('script[src*="widget.js"]');
+          document.currentScript || document.querySelector('script[src*="widget.js"]');
         const scriptOrigin = currentScript
           ? new URL(currentScript.src).origin
           : window.location.origin;
 
-        const backendUrl = this.getAttribute("data-backend-url") ?? "";
+        const backendUrl = this.getAttribute('data-backend-url') ?? '';
         const frontendHost = resolveFrontendHost({
-          explicit: this.getAttribute("data-frontend-url"),
+          explicit: this.getAttribute('data-frontend-url'),
           backendUrl,
           scriptOrigin,
         });
@@ -376,25 +292,22 @@
         // Resolve Client IP lazily during idle cycles
         runWhenIdle(async () => {
           try {
-            const ipRes = await fetchWithTimeout(
-              "https://api.ipify.org?format=json",
-            );
+            const ipRes = await fetchWithTimeout('https://api.ipify.org?format=json');
             if (ipRes.ok) {
               const ipData = await ipRes.json();
-              this.clientIp = ipData.ip || "127.0.0.1";
+              this.clientIp = ipData.ip || '127.0.0.1';
             }
           } catch {}
         });
 
         if (!window.__demlBehavioralBound) {
           window.__demlBehavioralBound = true;
-          document.addEventListener("click", () => {
-            const count =
-              Number(sessionStorage.getItem("deml_click_count") || 0) + 1;
-            sessionStorage.setItem("deml_click_count", String(count));
+          document.addEventListener('click', () => {
+            const count = Number(sessionStorage.getItem('deml_click_count') || 0) + 1;
+            sessionStorage.setItem('deml_click_count', String(count));
           });
           window.addEventListener(
-            "scroll",
+            'scroll',
             () => {
               const pct = Math.min(
                 100,
@@ -404,11 +317,8 @@
                     100,
                 ),
               );
-              const prev = Number(
-                sessionStorage.getItem("deml_scroll_pct") || 0,
-              );
-              if (pct > prev)
-                sessionStorage.setItem("deml_scroll_pct", String(pct));
+              const prev = Number(sessionStorage.getItem('deml_scroll_pct') || 0);
+              if (pct > prev) sessionStorage.setItem('deml_scroll_pct', String(pct));
             },
             { passive: true },
           );
@@ -425,22 +335,28 @@
             /* Prevent FOUC: start invisible, fade in once .deml-ready is applied */
             opacity: 0;
             transition: opacity 0.15s ease;
-            --jet-black: #31393c;
-            --crayola-blue: #2176ff;
-            --blue-bell: #33a1fd;
-            --golden-pollen: #fdca40;
-            --carrot-orange: #f79824;
-            --white: #ffffff;
-            --black: #000000;
-            --color-primary: var(--crayola-blue);
-            --color-success: var(--blue-bell);
-            --color-warning: var(--golden-pollen);
-            --color-error: var(--carrot-orange);
-            --card-bg: #121212;
-            --bg-color: #121212;
-            --border: rgba(255, 255, 255, 0.12);
-            --text-color: var(--white);
-            --text-muted: rgba(255, 255, 255, 0.72);
+            --viking-charcoal-900: #111111;
+            --viking-teal-600: #0d7377;
+            --viking-teal-400: #14a3a8;
+            --viking-gold-500: #c4a035;
+            --viking-crimson-500: #a83344;
+            --viking-green-500: #2a9d8f;
+            --viking-blue-500: #3d8bfd;
+            --viking-metallic-300: #999999;
+            --viking-metallic-500: #666666;
+            --viking-metallic-200: #aaaaaa;
+            --viking-white: #f5f5f5;
+            --viking-white-pure: #ffffff;
+            --viking-black: #000000;
+            --color-primary: var(--viking-teal-600);
+            --color-success: var(--viking-green-500);
+            --color-warning: var(--viking-gold-500);
+            --color-error: var(--viking-crimson-500);
+            --card-bg: var(--viking-charcoal-900);
+            --bg-color: var(--viking-charcoal-900);
+            --border: color-mix(in srgb, var(--viking-metallic-600, #555555) 35%, transparent);
+            --text-color: var(--viking-white);
+            --text-muted: var(--viking-metallic-200);
             --space-1: 9px;
             --space-2: 18px;
             --base-font-size: 18px;
@@ -455,7 +371,7 @@
             display: inline-flex;
             align-items: center;
             padding: var(--space-1) var(--space-2);
-            background: var(--jet-black);
+            background: var(--viking-charcoal-900);
             border: 1px solid var(--border);
             border-radius: 10000px;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -469,7 +385,7 @@
           }
           .widget-container:hover {
             background: var(--card-bg);
-            border-color: var(--blue-bell);
+            border-color: var(--viking-teal-400);
             box-shadow: var(--shadow-md);
             transform: translateY(-1px);
           }
@@ -478,22 +394,16 @@
             align-items: center;
             gap: 6px;
             text-decoration: none;
-            color: var(--white, #ffffff);
+            color: var(--white, var(--viking-white-pure));
+            gap: 0;
           }
           .status-dot {
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: #94a3b8;
+            background-color: var(--viking-metallic-300);
             margin-right: 8px;
             display: inline-block;
-            flex-shrink: 0;
-          }
-          .status-text {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 220px;
           }
           .divider {
             color: rgba(255, 255, 255, 0.2);
@@ -502,7 +412,7 @@
           .report-trigger {
             background: none;
             border: none;
-            color: var(--carrot-orange, #f79824);
+            color: var(--viking-crimson-500);
             cursor: pointer;
             padding: 4px;
             display: inline-flex;
@@ -523,24 +433,22 @@
           }
           .modal-overlay {
             position: fixed;
-            overflow-y: auto;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             background-color: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 99999;
           }
           .modal-title-icon {
-            color: var(--color-error, #ef4444);
+            color: var(--color-error, var(--viking-crimson-500));
           }
           .modal-content {
-            background-color: #1e293b;
+            background-color: var(--viking-charcoal-800);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px;
             width: 90%;
@@ -549,7 +457,7 @@
             flex-direction: column;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
             animation: modal-anim 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            color: #f8fafc;
+            color: var(--viking-white);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             text-align: left;
           }
@@ -581,14 +489,14 @@
           .close-btn {
             background: none;
             border: none;
-            color: #64748b;
+            color: var(--viking-metallic-500);
             cursor: pointer;
             font-size: 20px;
             line-height: 1;
             transition: color 0.2s;
           }
           .close-btn:hover {
-            color: #f8fafc;
+            color: var(--viking-white);
           }
           .modal-body {
             padding: 20px;
@@ -596,14 +504,9 @@
             flex-direction: column;
             gap: 16px;
           }
-          @media (max-width: 480px) {
-            .modal-body {
-              padding: 16px;
-            }
-          }
           .helper-text {
             font-size: 14px;
-            color: #94a3b8;
+            color: var(--viking-metallic-300);
             margin: 0;
             line-height: 1.5;
           }
@@ -615,7 +518,7 @@
           .form-field label {
             font-size: 14px;
             font-weight: 600;
-            color: #cbd5e1;
+            color: var(--viking-metallic-200);
           }
           .form-field input,
           .form-field textarea,
@@ -623,26 +526,24 @@
             padding: 10px 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px;
             outline: none;
             background-color: rgba(0, 0, 0, 0.2);
-            color: #f8fafc;
+            color: var(--viking-white);
             font-family: inherit;
             transition: all 0.2s;
           }
           .form-field input:focus,
           .form-field textarea:focus {
-            border-color: #3b82f6;
+            border-color: var(--viking-blue-500);
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
           }
           .form-row {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
           }
           .form-row .form-field {
             flex: 1;
-            min-width: 140px;
           }
           .modal-footer {
             padding: 16px 20px;
@@ -667,19 +568,19 @@
           .btn-cancel {
             background-color: transparent;
             border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #cbd5e1;
+            color: var(--viking-metallic-200);
           }
           .btn-cancel:hover {
             background-color: rgba(255, 255, 255, 0.05);
-            color: #f8fafc;
+            color: var(--viking-white);
           }
           .btn-submit {
-            background-color: #3b82f6;
+            background-color: var(--viking-blue-500);
             color: white;
           }
           .btn-submit:hover:not(:disabled) {
             opacity: 1;
-            background-color: #2563eb;
+            background-color: var(--viking-teal-600);
           }
           .btn-submit:disabled {
             opacity: 0.5;
@@ -695,17 +596,17 @@
           .status-msg.success {
             background-color: rgba(21, 128, 61, 0.2);
             border: 1px solid rgba(21, 128, 61, 0.3);
-            color: #4ade80;
+            color: var(--viking-green-500);
           }
           .status-msg.error {
             background-color: rgba(185, 28, 28, 0.2);
             border: 1px solid rgba(185, 28, 28, 0.3);
-            color: #f87171;
+            color: var(--viking-crimson-400);
           }
           .status-msg.warning {
             background-color: rgba(180, 83, 9, 0.2);
             border: 1px solid rgba(180, 83, 9, 0.3);
-            color: #fbbf24;
+            color: var(--viking-gold-500);
           }
           .honeypot-field {
             position: absolute !important;
@@ -717,9 +618,9 @@
           .security-banner {
             display: flex;
             gap: 8px;
-            background-color: #fffbeb;
-            border: 1px solid #fde68a;
-            color: #92400e;
+            background-color: var(--viking-white-pure)beb;
+            border: 1px solid color-mix(in srgb, var(--viking-gold-500) 55%, transparent);
+            color: var(--viking-crimson-700);
             padding: 16px;
             border-radius: 8px;
             font-size: 16px;
@@ -729,7 +630,7 @@
           .security-banner svg {
             flex-shrink: 0;
             margin-top: 0px;
-            color: #d97706;
+            color: var(--viking-gold-500);
           }
         </style>
         <div class="widget-container">
@@ -807,40 +708,40 @@
         </div>
       `;
 
-        this.classList.add("deml-ready");
+        this.classList.add('deml-ready');
 
-        const widgetLink = this.shadowRoot.querySelector(".widget-link");
-        const dot = this.shadowRoot.querySelector(".status-dot");
-        const text = this.shadowRoot.querySelector(".status-text");
+        const widgetLink = this.shadowRoot.querySelector('.widget-link');
+        const dot = this.shadowRoot.querySelector('.status-dot');
+        const text = this.shadowRoot.querySelector('.status-text');
 
         // Modal triggers
-        const reportTrigger = this.shadowRoot.querySelector(".report-trigger");
-        const modalOverlay = this.shadowRoot.querySelector(".modal-overlay");
-        const closeBtn = this.shadowRoot.querySelector(".close-btn");
-        const btnCancel = this.shadowRoot.querySelector(".btn-cancel");
-        const btnSubmit = this.shadowRoot.querySelector(".btn-submit");
-        const statusMsg = this.shadowRoot.querySelector(".status-msg");
+        const reportTrigger = this.shadowRoot.querySelector('.report-trigger');
+        const modalOverlay = this.shadowRoot.querySelector('.modal-overlay');
+        const closeBtn = this.shadowRoot.querySelector('.close-btn');
+        const btnCancel = this.shadowRoot.querySelector('.btn-cancel');
+        const btnSubmit = this.shadowRoot.querySelector('.btn-submit');
+        const statusMsg = this.shadowRoot.querySelector('.status-msg');
 
         // Modal inputs
-        const inputTitle = this.shadowRoot.querySelector(".input-title");
-        const inputSeverity = this.shadowRoot.querySelector(".input-severity");
-        const inputCve = this.shadowRoot.querySelector(".input-cve");
-        const inputDesc = this.shadowRoot.querySelector(".input-desc");
-        const inputBot = this.shadowRoot.querySelector(".input-bot");
+        const inputTitle = this.shadowRoot.querySelector('.input-title');
+        const inputSeverity = this.shadowRoot.querySelector('.input-severity');
+        const inputCve = this.shadowRoot.querySelector('.input-cve');
+        const inputDesc = this.shadowRoot.querySelector('.input-desc');
+        const inputBot = this.shadowRoot.querySelector('.input-bot');
         let dlpWarned = false;
 
         const toggleModal = () => {
-          const visible = !modalOverlay.classList.contains("is-hidden");
+          const visible = !modalOverlay.classList.contains('is-hidden');
           if (visible) {
-            modalOverlay.classList.add("is-hidden");
+            modalOverlay.classList.add('is-hidden');
             reportTrigger.focus();
           } else {
-            modalOverlay.classList.remove("is-hidden");
-            inputTitle.value = "";
-            inputDesc.value = "";
-            inputCve.value = "";
-            inputBot.value = "";
-            statusMsg.classList.add("is-hidden");
+            modalOverlay.classList.remove('is-hidden');
+            inputTitle.value = '';
+            inputDesc.value = '';
+            inputCve.value = '';
+            inputBot.value = '';
+            statusMsg.classList.add('is-hidden');
             btnSubmit.disabled = false;
             dlpWarned = false;
             setTimeout(() => {
@@ -849,21 +750,21 @@
           }
         };
 
-        reportTrigger.addEventListener("click", toggleModal);
-        closeBtn.addEventListener("click", toggleModal);
-        btnCancel.addEventListener("click", toggleModal);
+        reportTrigger.addEventListener('click', toggleModal);
+        closeBtn.addEventListener('click', toggleModal);
+        btnCancel.addEventListener('click', toggleModal);
 
         // Trap focus and close on Escape (Section 508 / WCAG Compliance)
-        this.shadowRoot.addEventListener("keydown", (e) => {
-          if (modalOverlay.classList.contains("is-hidden")) return;
+        this.shadowRoot.addEventListener('keydown', e => {
+          if (modalOverlay.classList.contains('is-hidden')) return;
 
-          if (e.key === "Escape" || e.key === "Esc") {
+          if (e.key === 'Escape' || e.key === 'Esc') {
             toggleModal();
             e.preventDefault();
             return;
           }
 
-          if (e.key === "Tab") {
+          if (e.key === 'Tab') {
             const focusables = [
               closeBtn,
               inputTitle,
@@ -872,7 +773,7 @@
               inputDesc,
               btnCancel,
               btnSubmit,
-            ].filter(Boolean);
+            ];
             const first = focusables[0];
             const last = focusables[focusables.length - 1];
             const activeEl = this.shadowRoot.activeElement;
@@ -891,25 +792,49 @@
           }
         });
 
-        // getBrowserThreatIndicators is now a top-level shared helper
+        const getBrowserThreatIndicators = () => {
+          const indicators = {
+            referrer: document.referrer || 'Direct',
+            language: navigator.language,
+            platform: navigator.platform,
+            cores: navigator.hardwareConcurrency || 'N/A',
+            memory_gb: navigator.deviceMemory || 'N/A',
+            webdriver: navigator.webdriver ? true : false,
+            plugins_count: navigator.plugins ? navigator.plugins.length : 0,
+            visibility_state: document.visibilityState || 'visible',
+            screen_color_depth: window.screen ? window.screen.colorDepth : 'N/A',
+            network_connection: {},
+          };
 
-        btnSubmit.addEventListener("click", async () => {
+          try {
+            if (navigator.connection) {
+              const conn = navigator.connection;
+              indicators.network_connection = {
+                effective_type: conn.effectiveType,
+                rtt_ms: conn.rtt,
+                downlink_mbps: conn.downlink,
+              };
+            }
+          } catch {}
+          return indicators;
+        };
+
+        btnSubmit.addEventListener('click', async () => {
           const title = inputTitle.value.trim();
           const description = inputDesc.value.trim();
           if (!title || !description) return;
 
           // Honeypot check
-          if (inputBot && inputBot.value !== "") {
+          if (inputBot && inputBot.value !== '') {
             // Fake success to fool bots
-            statusMsg.innerText =
-              "Threat reported successfully! Triage initiated.";
-            statusMsg.className = "status-msg success";
-            statusMsg.classList.remove("is-hidden");
+            statusMsg.innerText = 'Threat reported successfully! Triage initiated.';
+            statusMsg.className = 'status-msg success';
+            statusMsg.classList.remove('is-hidden');
             setTimeout(toggleModal, 2000);
             return;
           }
 
-          statusMsg.classList.add("is-hidden");
+          statusMsg.classList.add('is-hidden');
 
           // Non-blocking DLP check
           const dlpRegex = /(password|api[_-]?key|secret|sk-[a-zA-Z0-9]{20,})/i;
@@ -918,9 +843,9 @@
             flagged_dlp = true;
             if (!dlpWarned) {
               statusMsg.innerText =
-                "Warning: Your report appears to contain sensitive credentials (e.g., password or API key). Please remove them. Click submit again to proceed anyway.";
-              statusMsg.className = "status-msg warning";
-              statusMsg.classList.remove("is-hidden");
+                'Warning: Your report appears to contain sensitive credentials (e.g., password or API key). Please remove them. Click submit again to proceed anyway.';
+              statusMsg.className = 'status-msg warning';
+              statusMsg.classList.remove('is-hidden');
               dlpWarned = true;
               return;
             }
@@ -928,8 +853,25 @@
 
           btnSubmit.disabled = true;
 
-          const { pageLoadTime, domInteractive, dnsLookup, fcpTime, protocol } =
-            collectPerformanceMetrics();
+          let pageLoadTime = 0;
+          let domInteractive = 0;
+          let dnsLookup = 0;
+          let fcpTime = 0;
+          let protocol = 'unknown';
+          try {
+            const [navigation] = window.performance.getEntriesByType('navigation');
+            if (navigation) {
+              pageLoadTime = Math.round(navigation.loadEventEnd - navigation.startTime);
+              domInteractive = Math.round(navigation.domInteractive - navigation.startTime);
+              dnsLookup = Math.round(navigation.domainLookupEnd - navigation.domainLookupStart);
+              protocol = navigation.nextHopProtocol || 'unknown';
+            }
+            const paints = window.performance.getEntriesByType('paint');
+            const fcp = paints.find(p => p.name === 'first-contentful-paint');
+            if (fcp) {
+              fcpTime = Math.round(fcp.startTime);
+            }
+          } catch {}
 
           const payload = {
             title,
@@ -959,28 +901,24 @@
           };
 
           try {
-            const res = await fetchWithTimeout(
-              `${backendUrl}/api/v1/agent/vulnerabilities`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(payload),
-                timeout: 8000,
-              },
-            );
+            const res = await fetchWithTimeout(`${backendUrl}/api/v1/agent/vulnerabilities`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+              timeout: 8000,
+            });
             if (res.ok) {
-              statusMsg.innerText =
-                "Threat reported successfully! Triage initiated.";
-              statusMsg.className = "status-msg success";
-              statusMsg.classList.remove("is-hidden");
+              statusMsg.innerText = 'Threat reported successfully! Triage initiated.';
+              statusMsg.className = 'status-msg success';
+              statusMsg.classList.remove('is-hidden');
               setTimeout(toggleModal, 2000);
             } else {
-              throw new Error("Server returned error status");
+              throw new Error('Server returned error status');
             }
           } catch {
-            statusMsg.innerText = "Failed to report threat. Please try again.";
-            statusMsg.className = "status-msg error";
-            statusMsg.classList.remove("is-hidden");
+            statusMsg.innerText = 'Failed to report threat. Please try again.';
+            statusMsg.className = 'status-msg error';
+            statusMsg.classList.remove('is-hidden');
             btnSubmit.disabled = false;
           }
         });
@@ -988,27 +926,16 @@
         // Automatically report client performance analytics to feed the Threat Analysis (TA) model
         const reportAnalyticsToTa = async () => {
           let responseTimeMs = 250; // Fallback default
-
-          const sessionStart = Number(
-            sessionStorage.getItem("deml_session_start") || Date.now(),
-          );
-          if (!sessionStorage.getItem("deml_session_start")) {
-            sessionStorage.setItem("deml_session_start", String(sessionStart));
+          let fcpTime = 0;
+          let protocol = 'unknown';
+          const sessionStart = Number(sessionStorage.getItem('deml_session_start') || Date.now());
+          if (!sessionStorage.getItem('deml_session_start')) {
+            sessionStorage.setItem('deml_session_start', String(sessionStart));
           }
-          const clickCount = Number(
-            sessionStorage.getItem("deml_click_count") || 0,
-          );
-          const maxScrollPct = Number(
-            sessionStorage.getItem("deml_scroll_pct") || 0,
-          );
-          const sessionDurationS = Math.max(
-            1,
-            Math.round((Date.now() - sessionStart) / 1000),
-          );
-          const clickEntropy = Math.min(
-            1,
-            clickCount / Math.max(sessionDurationS, 1),
-          );
+          const clickCount = Number(sessionStorage.getItem('deml_click_count') || 0);
+          const maxScrollPct = Number(sessionStorage.getItem('deml_scroll_pct') || 0);
+          const sessionDurationS = Math.max(1, Math.round((Date.now() - sessionStart) / 1000));
+          const clickEntropy = Math.min(1, clickCount / Math.max(sessionDurationS, 1));
           const scrollDepthPct = Math.min(
             100,
             Math.round(
@@ -1020,16 +947,25 @@
           );
           const behavioralEntropy = Math.min(
             1,
-            (scrollDepthPct / 100) * 0.5 +
-              clickEntropy * 0.3 +
-              (sessionDurationS > 10 ? 0.2 : 0),
+            (scrollDepthPct / 100) * 0.5 + clickEntropy * 0.3 + (sessionDurationS > 10 ? 0.2 : 0),
           );
-          const perfMetrics = collectPerformanceMetrics();
-          const fcpTime = perfMetrics.fcpTime;
-          const protocol = perfMetrics.protocol;
-          if (perfMetrics.pageLoadTime > 0) {
-            responseTimeMs = perfMetrics.pageLoadTime;
-          }
+          try {
+            const [navigation] = window.performance.getEntriesByType('navigation');
+            if (navigation && navigation.loadEventEnd > 0) {
+              responseTimeMs = Math.round(navigation.loadEventEnd - navigation.startTime);
+              protocol = navigation.nextHopProtocol || 'unknown';
+            } else if (window.performance.timing) {
+              const t = window.performance.timing;
+              if (t.loadEventEnd > 0 && t.navigationStart > 0) {
+                responseTimeMs = t.loadEventEnd - t.navigationStart;
+              }
+            }
+            const paints = window.performance.getEntriesByType('paint');
+            const fcp = paints.find(p => p.name === 'first-contentful-paint');
+            if (fcp) {
+              fcpTime = Math.round(fcp.startTime);
+            }
+          } catch {}
 
           const telemetryPayload = {
             tenant_id: pageId,
@@ -1057,8 +993,8 @@
           try {
             // Send legacy payload to backend for threat analysis
             await fetchWithTimeout(`${backendUrl}/api/v1/telemetry/endpoints`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify(telemetryPayload),
             });
 
@@ -1067,17 +1003,16 @@
             // prevents spurious OPTIONS/POST requests to the page origin (e.g. 404 on telemetry.deml.app).
             try {
               const scriptTag =
-                document.currentScript ||
-                document.querySelector('script[src*="widget.js"]');
-              const otelUrl = scriptTag?.getAttribute("data-otel-url") ?? "";
+                document.currentScript || document.querySelector('script[src*="widget.js"]');
+              const otelUrl = scriptTag?.getAttribute('data-otel-url') ?? '';
 
               if (otelUrl) {
                 const { WebTracerProvider } =
-                  await import("https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1");
+                  await import('https://esm.sh/@opentelemetry/sdk-trace-web@1.24.1');
                 const { OTLPTraceExporter } =
-                  await import("https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1");
+                  await import('https://esm.sh/@opentelemetry/exporter-trace-otlp-http@0.51.1');
                 const { BatchSpanProcessor } =
-                  await import("https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1");
+                  await import('https://esm.sh/@opentelemetry/sdk-trace-base@1.24.1');
 
                 const provider = new WebTracerProvider();
 
@@ -1085,26 +1020,26 @@
                 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
                 provider.register();
 
-                const tracer = provider.getTracer("widget-telemetry");
-                const span = tracer.startSpan("page_load");
-                span.setAttribute("fcp_ms", fcpTime);
-                span.setAttribute("response_time_ms", responseTimeMs);
-                span.setAttribute("client_ip", this.clientIp);
+                const tracer = provider.getTracer('widget-telemetry');
+                const span = tracer.startSpan('page_load');
+                span.setAttribute('fcp_ms', fcpTime);
+                span.setAttribute('response_time_ms', responseTimeMs);
+                span.setAttribute('client_ip', this.clientIp);
                 span.end();
               }
             } catch (otelErr) {
-              console.warn("Failed to initialize OpenTelemetry", otelErr);
+              console.warn('Failed to initialize OpenTelemetry', otelErr);
             }
           } catch (e) {
-            console.warn("Threat analysis telemetry reporting offline", e);
+            console.warn('Threat analysis telemetry reporting offline', e);
           }
         };
 
         // Trigger analytics report once page finishes loading completely (idle-optimized)
-        if (document.readyState === "complete") {
+        if (document.readyState === 'complete') {
           runWhenIdle(() => reportAnalyticsToTa());
         } else {
-          window.addEventListener("load", () => {
+          window.addEventListener('load', () => {
             runWhenIdle(() => reportAnalyticsToTa());
           });
         }
@@ -1145,7 +1080,7 @@
               if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                  page = data.find((p) => p.id === pageId || p.slug === pageId);
+                  page = data.find(p => p.id === pageId || p.slug === pageId);
                 }
               }
             }
@@ -1154,8 +1089,8 @@
               const href = statusPageUrl(frontendHost, page.slug);
               widgetLink.href = href;
 
-              let color = "#10b981";
-              let textContent = "All Systems Operational";
+              let color = 'var(--color-success, var(--viking-green-500))';
+              let textContent = 'All Systems Operational';
 
               try {
                 const [incidentsRes, servicesRes] = await Promise.all([
@@ -1172,33 +1107,24 @@
                   const services = await servicesRes.json();
 
                   if (Array.isArray(incidents) && Array.isArray(services)) {
-                    const activeIncidents = incidents.filter(
-                      (inc) => inc.status !== "Resolved",
-                    );
-                    const outages = services.filter(
-                      (s) => s.status === "Outage",
-                    );
-                    const degraded = services.filter(
-                      (s) => s.status === "Degraded",
-                    );
+                    const activeIncidents = incidents.filter(inc => inc.status !== 'Resolved');
+                    const outages = services.filter(s => s.status === 'Outage');
+                    const degraded = services.filter(s => s.status === 'Degraded');
 
                     if (activeIncidents.length > 0) {
-                      color = "var(--color-error, #ef4444)";
+                      color = 'var(--color-error, var(--viking-crimson-500))';
                       textContent = `Incident: ${activeIncidents[0].status}`;
                     } else if (outages.length > 0) {
-                      color = "var(--color-error, #ef4444)";
-                      textContent = "Service Outage";
+                      color = 'var(--color-error, var(--viking-crimson-500))';
+                      textContent = 'Service Outage';
                     } else if (degraded.length > 0) {
-                      color = "var(--color-warning, #f59e0b)";
-                      textContent = "Degraded Performance";
+                      color = 'var(--color-warning, var(--viking-gold-500))';
+                      textContent = 'Degraded Performance';
                     }
                   }
                 }
               } catch (err) {
-                console.warn(
-                  "Failed to fetch incidents or services for widget",
-                  err,
-                );
+                console.warn('Failed to fetch incidents or services for widget', err);
               }
 
               dot.style.backgroundColor = color;
@@ -1214,12 +1140,12 @@
                 );
               } catch {}
             } else {
-              dot.style.backgroundColor = "var(--color-error, #ef4444)";
-              text.innerText = "Status Page Not Found";
+              dot.style.backgroundColor = 'var(--color-error, var(--viking-crimson-500))';
+              text.innerText = 'Status Page Not Found';
             }
           } catch (globalErr) {
-            dot.style.backgroundColor = "var(--text-muted, #94a3b8)";
-            text.innerText = "Status Unknown";
+            dot.style.backgroundColor = 'var(--text-muted, var(--viking-metallic-300))';
+            text.innerText = 'Status Unknown';
           }
         };
 
@@ -1230,20 +1156,19 @@
 
   // Auto-initialize legacy script-only installations
   const currentScript =
-    document.currentScript ||
-    document.querySelector('script[src*="widget.js"]');
-  if (currentScript && currentScript.hasAttribute("data-page-id")) {
-    const pageId = currentScript.getAttribute("data-page-id");
-    const backendUrl = currentScript.getAttribute("data-backend-url");
-    const frontendUrl = currentScript.getAttribute("data-frontend-url");
+    document.currentScript || document.querySelector('script[src*="widget.js"]');
+  if (currentScript && currentScript.hasAttribute('data-page-id')) {
+    const pageId = currentScript.getAttribute('data-page-id');
+    const backendUrl = currentScript.getAttribute('data-backend-url');
+    const frontendUrl = currentScript.getAttribute('data-frontend-url');
 
-    const widget = document.createElement("platform-widget");
-    widget.setAttribute("data-page-id", pageId);
+    const widget = document.createElement('platform-widget');
+    widget.setAttribute('data-page-id', pageId);
     if (backendUrl) {
-      widget.setAttribute("data-backend-url", backendUrl);
+      widget.setAttribute('data-backend-url', backendUrl);
     }
     if (frontendUrl) {
-      widget.setAttribute("data-frontend-url", frontendUrl);
+      widget.setAttribute('data-frontend-url', frontendUrl);
     }
 
     currentScript.parentNode.insertBefore(widget, currentScript.nextSibling);

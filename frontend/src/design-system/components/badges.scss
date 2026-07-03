@@ -77,9 +77,9 @@
   }
 
   &.pro-verified {
-    background: color-mix(in srgb, var(--golden-pollen) 14%, transparent);
-    color: var(--golden-pollen);
-    border-color: color-mix(in srgb, var(--golden-pollen) 28%, transparent);
+    background: color-mix(in srgb, var(--viking-gold-500) 14%, transparent);
+    color: var(--viking-gold-500);
+    border-color: color-mix(in srgb, var(--viking-gold-500) 28%, transparent);
     text-transform: none;
     letter-spacing: 0.02em;
 
@@ -94,8 +94,8 @@
   }
 
   html[data-theme='light'] &.pro-verified {
-    color: var(--carrot-orange);
-    border-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
-    background: color-mix(in srgb, var(--carrot-orange) 10%, transparent);
+    color: var(--viking-crimson-500);
+    border-color: color-mix(in srgb, var(--viking-crimson-500) 28%, transparent);
+    background: color-mix(in srgb, var(--viking-crimson-500) 10%, transparent);
   }
 }

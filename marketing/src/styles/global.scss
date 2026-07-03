@@ -9,7 +9,7 @@
 // ====================== LEAFLET ======================
 
 pre[class*='language-'] {
-  background-color: var(--jet-black) !important;
+  background-color: var(--viking-charcoal-900) !important;
   border: 1px solid var(--border);
   border-radius: var(--border-radius-md);
   padding: var(--space-3);
@@ -116,7 +116,7 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;
@@ -128,8 +128,8 @@ a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):not(.nav
     color 0.2s ease;
 }
 
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):hover,
-a:not(.mat-mdc-button):not(.mdc-button):not(.cta-button):not(.nav-item):focus-visible {
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):hover,
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):focus-visible {
   color: var(--link-hover-color);
   text-decoration: none;
   border-bottom-color: var(--link-hover-color); /* WCAG requirement: non-color hover indicator */
@@ -208,9 +208,9 @@ main.main {
 }
 
 // ====================== MATERIAL BUTTONS (ACCESSIBLE) ======================
-.mdc-button,
-.mat-mdc-button,
-.mat-mdc-raised-button,
+.viking-button,
+.viking-button,
+.viking-button,
 .mat-mdc-unelevated-button {
   border-radius: 96px !important; /* Pill shape like homepage */
   text-transform: none !important;
@@ -220,8 +220,8 @@ main.main {
   height: 56px !important;
 }
 
-.mdc-button--raised,
-.mat-mdc-raised-button,
+.viking-button--raised,
+.viking-button,
 .mat-mdc-unelevated-button {
   box-shadow: var(--shadow-sm) !important;
   transition:
@@ -231,34 +231,34 @@ main.main {
     color 0.2s ease !important;
 }
 
-.mdc-button--raised:hover,
-.mat-mdc-raised-button:hover,
+.viking-button--raised:hover,
+.viking-button:hover,
 .mat-mdc-unelevated-button:hover {
   box-shadow: var(--shadow-md) !important;
   transform: translateY(-2px) !important;
 }
 
 /* Primary Raised and Flat Buttons */
-.mat-mdc-raised-button.mat-primary,
-.mat-mdc-unelevated-button.mat-primary,
-.mdc-button--raised.mat-primary {
+.viking-button.viking-button--primary,
+.mat-mdc-unelevated-button.viking-button--primary,
+.viking-button--raised.viking-button--primary {
   background-color: var(--color-primary) !important;
   color: var(--color-on-primary) !important;
   box-shadow: var(--shadow-sm) !important;
 }
 
-.mat-mdc-raised-button.mat-primary:hover,
-.mat-mdc-unelevated-button.mat-primary:hover,
-.mdc-button--raised.mat-primary:hover {
+.viking-button.viking-button--primary:hover,
+.mat-mdc-unelevated-button.viking-button--primary:hover,
+.viking-button--raised.viking-button--primary:hover {
   box-shadow: var(--shadow-hover) !important;
   background-color: var(--color-on-primary) !important;
   color: var(--color-primary) !important;
 }
 
 /* Accent Raised and Flat Buttons */
-.mat-mdc-raised-button.mat-accent,
-.mat-mdc-unelevated-button.mat-accent,
-.mdc-button--raised.mat-accent {
+.viking-button.viking-button--secondary,
+.mat-mdc-unelevated-button.viking-button--secondary,
+.viking-button--raised.viking-button--secondary {
   background-color: var(--color-primary-container) !important;
   color: var(--color-on-primary-container) !important;
   border: 1px solid var(--border) !important;
@@ -266,41 +266,41 @@ main.main {
   transition: all 0.2s ease !important;
 }
 
-.mat-mdc-raised-button.mat-accent:hover,
-.mat-mdc-unelevated-button.mat-accent:hover,
-.mdc-button--raised.mat-accent:hover {
+.viking-button.viking-button--secondary:hover,
+.mat-mdc-unelevated-button.viking-button--secondary:hover,
+.viking-button--raised.viking-button--secondary:hover {
   background-color: var(--color-on-primary-container) !important;
   color: var(--color-primary-container) !important;
   border-color: var(--color-on-primary-container) !important;
 }
 
 /* Warn/Error Raised and Flat Buttons */
-.mat-mdc-raised-button.mat-warn,
+.viking-button.mat-warn,
 .mat-mdc-unelevated-button.mat-warn,
-.mdc-button--raised.mat-warn {
+.viking-button--raised.mat-warn {
   background-color: var(--color-error) !important;
   color: var(--color-on-primary) !important;
 }
 
-.mat-mdc-raised-button.mat-warn:hover,
+.viking-button.mat-warn:hover,
 .mat-mdc-unelevated-button.mat-warn:hover,
-.mdc-button--raised.mat-warn:hover {
+.viking-button--raised.mat-warn:hover {
   opacity: 0.9 !important;
 }
 
 /* Standard/Navbar Text Buttons */
-.mat-mdc-button {
+.viking-button {
   color: var(--text-color) !important;
   background-color: transparent !important;
 }
 
-.mat-mdc-button:hover,
-.mat-mdc-button:focus-visible {
+.viking-button:hover,
+.viking-button:focus-visible {
   background-color: rgba(255, 255, 255, 0.08) !important; /* WCAG visual indicator */
 }
 
 /* Exception for primary text buttons */
-.mat-mdc-button.mat-primary {
+.viking-button.viking-button--primary {
   color: var(--color-primary-container) !important;
 }
 
@@ -715,8 +715,8 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
   }
 }
 
-.mat-mdc-raised-button.mat-primary:hover {
-  border-bottom: 2px solid var(--golden-pollen);
+.viking-button.viking-button--primary:hover {
+  border-bottom: 2px solid var(--viking-gold-500);
 }
 
 /* ====================== RESPONSIVE GRID SYSTEM ====================== */

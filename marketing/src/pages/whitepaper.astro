@@ -28,7 +28,7 @@ import Layout from '../layouts/Layout.astro';
               <a id="cy-effective-orcid-url" href="https://orcid.org/0009-0007-2401-2603" target="_blank" rel="me noopener noreferrer" class="orcid-link">
                 <svg width="16" height="16" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
                   <path fill="#A6CE39" d="M256 128c0 70.692-57.308 128-128 128S0 198.692 0 128 57.308 0 128 0s128 57.308 128 128z" />
-                  <path fill="#FFF" d="M86.301 185.733H65.864V76.324h20.437v109.409zm-10.222-121.23c-6.848 0-12.39-5.412-12.39-12.083 0-6.685 5.542-12.102 12.39-12.102 6.837 0 12.408 5.417 12.408 12.102 0 6.67-5.571 12.083-12.408 12.083zM109.309 76.324h50.158c28.91 0 49.378 19.349 49.378 54.49 0 35.158-20.468 54.919-49.378 54.919h-50.158V76.324zm20.448 90.732h28.18c18.318 0 29.56-11.758 29.56-35.961 0-24.214-11.242-36.035-29.56-36.035h-28.18v71.996z" />
+                  <path fill="var(--viking-white-pure)" d="M86.301 185.733H65.864V76.324h20.437v109.409zm-10.222-121.23c-6.848 0-12.39-5.412-12.39-12.083 0-6.685 5.542-12.102 12.39-12.102 6.837 0 12.408 5.417 12.408 12.102 0 6.67-5.571 12.083-12.408 12.083zM109.309 76.324h50.158c28.91 0 49.378 19.349 49.378 54.49 0 35.158-20.468 54.919-49.378 54.919h-50.158V76.324zm20.448 90.732h28.18c18.318 0 29.56-11.758 29.56-35.961 0-24.214-11.242-36.035-29.56-36.035h-28.18v71.996z" />
                 </svg>
                 <span>0009-0007-2401-2603</span>
               </a>
@@ -510,7 +510,7 @@ import Layout from '../layouts/Layout.astro';
 
     &.primary { border-color: var(--color-primary); color: var(--color-on-primary); background: var(--color-primary); }
     &.secondary { border-color: var(--color-primary-container); color: var(--color-on-primary-container); background: var(--color-primary-container); }
-    &.success { border-color: var(--color-success); color: #ffffff; background: var(--color-success); }
+    &.success { border-color: var(--color-success); color: var(--viking-white-pure); background: var(--color-success); }
   }
 
   .diagram-arrow {
@@ -589,29 +589,29 @@ import Layout from '../layouts/Layout.astro';
 }
 
 @media print {
-  :global(body), :global(html) { background: #ffffff !important; color: #000000 !important; }
+  :global(body), :global(html) { background: var(--viking-white-pure) !important; color: var(--viking-black) !important; }
   .whitepaper-container { max-width: 100% !important; padding: 0 !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
   .no-print { display: none !important; }
   :global(header), :global(footer) { display: none !important; }
   .whitepaper-header {
-    border-bottom: 1px solid #000 !important; margin-bottom: 24px !important; padding-bottom: 16px !important;
-    .title { font-size: 24pt !important; color: #000 !important; }
-    .subtitle, .author-meta { color: #000 !important; }
+    border-bottom: 1px solid var(--viking-black) !important; margin-bottom: 24px !important; padding-bottom: 16px !important;
+    .title { font-size: 24pt !important; color: var(--viking-black) !important; }
+    .subtitle, .author-meta { color: var(--viking-black) !important; }
   }
   .whitepaper-content {
     column-count: 2 !important; column-gap: 32px !important;
     .paper-section {
-      h2 { color: #000 !important; font-size: 12pt !important; }
+      h2 { color: var(--viking-black) !important; font-size: 12pt !important; }
       p { color: var(--black) !important; font-size: var(--base-font-size) !important; }
     }
   }
   .diagram-placeholder {
-    border: 1px solid #000 !important; background: #fff !important;
+    border: 1px solid var(--viking-black) !important; background: var(--viking-white-pure) !important;
     .diagram-node {
-      border: 1px solid #000 !important; background: #fff !important; color: #000 !important;
-      &.primary, &.secondary, &.success { background: #fff !important; color: #000 !important; border-color: #000 !important; }
+      border: 1px solid var(--viking-black) !important; background: var(--viking-white-pure) !important; color: var(--viking-black) !important;
+      &.primary, &.secondary, &.success { background: var(--viking-white-pure) !important; color: var(--viking-black) !important; border-color: var(--viking-black) !important; }
     }
-    .diagram-arrow { color: #000 !important; }
+    .diagram-arrow { color: var(--viking-black) !important; }
   }
 }
 </style>

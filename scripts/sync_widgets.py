@@ -23,9 +23,17 @@ WIDGET_FILES = (
 ALGOLIA_CONFIG = "algolia-config.js"
 
 
+def resolve_widget_src(root: str, name: str) -> str:
+  src_widgets = os.path.join(root, "frontend", "src", "assets", "widgets")
+  src_assets = os.path.join(root, "frontend", "src", "assets")
+  src = os.path.join(src_widgets, name)
+  if not os.path.isfile(src) and name in ("widget.js", "widget.css"):
+    src = os.path.join(src_assets, name)
+  return src
+
+
 def sync_widgets() -> None:
   root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-  src_widgets = os.path.join(root, "frontend", "src", "assets", "widgets")
   marketing_widgets = os.path.join(root, "marketing", "public", "assets", "widgets")
   backend_widgets = os.path.join(root, "backend", "static", "widgets")
 
@@ -33,7 +41,7 @@ def sync_widgets() -> None:
   os.makedirs(backend_widgets, exist_ok=True)
 
   for name in WIDGET_FILES:
-    src = os.path.join(src_widgets, name)
+    src = resolve_widget_src(root, name)
     if not os.path.isfile(src):
       print(f"Skip missing widget asset: {name}", file=sys.stderr)
       continue

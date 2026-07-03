@@ -21,8 +21,8 @@
   z-index: 10000;
   padding: var(--space-1, 8px) var(--space-2, 16px);
   border-radius: var(--border-radius-sm, 8px);
-  background-color: var(--black, #000) !important;
-  color: var(--white, #fff) !important;
+  background-color: var(--black, var(--viking-black)) !important;
+  color: var(--white, var(--viking-white-pure)) !important;
   text-decoration: none;
   font-weight: 600;
   font-size: max(16px, var(--base-font-size, 16px));
@@ -44,7 +44,7 @@
   height: auto;
   overflow: visible;
   white-space: normal;
-  outline: var(--focus-ring-width, 3px) solid var(--focus-ring-color, #2176ff);
+  outline: var(--focus-ring-width, 3px) solid var(--focus-ring-color, var(--viking-teal-600));
   outline-offset: var(--focus-ring-offset, 2px);
 }
 
