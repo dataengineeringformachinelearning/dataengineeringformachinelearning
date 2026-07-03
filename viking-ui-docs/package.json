@@ -1,0 +1,33 @@
+{
+  "name": "viking-ui-docs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone Viking-UI documentation site (spartan.ng-style). Deployed separately from deml.app.",
+  "scripts": {
+    "prebuild": "npm run build:viking-ui --prefix ../frontend",
+    "prestart": "npm run build:viking-ui --prefix ../frontend",
+    "start": "ng serve",
+    "build": "ng build"
+  },
+  "engines": {
+    "node": ">=24.15.0"
+  },
+  "dependencies": {
+    "@angular/common": "22.0.4",
+    "@angular/compiler": "22.0.4",
+    "@angular/core": "22.0.4",
+    "@angular/forms": "22.0.4",
+    "@angular/platform-browser": "22.0.4",
+    "@angular/router": "22.0.4",
+    "@dataengineeringformachinelearning/viking-ui": "file:../frontend/dist/viking-ui",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.16.2"
+  },
+  "devDependencies": {
+    "@angular/build": "22.0.4",
+    "@angular/cli": "22.0.4",
+    "@angular/compiler-cli": "22.0.4",
+    "typescript": "~6.0.3"
+  }
+}

@@ -1,8 +1,8 @@
-@use '../../../../packages/deml-design-system/src/tokens' as *;
-@use '../../viking-ui/src/styles/viking-ui' as *;
-@use '../../viking-ui/src/styles/static-navbar' as *;
-@use '../../viking-ui/src/lib/footer/footer' as *;
-@use '../../viking-ui/src/lib/whitepaper-cta/whitepaper-cta' as *;
+@use '../../packages/deml-design-system/src/tokens' as *;
+@use '../../frontend/projects/viking-ui/src/styles/viking-ui' as *;
+@use '../../frontend/projects/viking-ui/src/styles/static-navbar' as *;
+@use '../../frontend/projects/viking-ui/src/lib/footer/footer' as *;
+@use '../../frontend/projects/viking-ui/src/lib/whitepaper-cta/whitepaper-cta' as *;
 
 *,
 *::before,

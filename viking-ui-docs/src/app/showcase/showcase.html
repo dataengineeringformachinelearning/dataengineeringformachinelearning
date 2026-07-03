@@ -1,33 +1,13 @@
 <div class="viking-showcase">
-  <header class="showcase-hero">
-    <div class="showcase-hero-inner">
-      <viking-brand name="Viking-UI" />
-      <viking-heading size="xl" [level]="1">Stop fighting your component library.</viking-heading>
-      <viking-text variant="muted" class="showcase-hero-lead">
-        Accessible Angular UI primitives built with signals, SSR compatible, and zoneless ready.
-        Install the behavior. Copy the styles. Customize without limits.
-      </viking-text>
-      <div class="showcase-hero-actions">
-        <viking-button variant="primary" icon="download">Get Started</viking-button>
-        <viking-button variant="secondary" icon="chevron-right">View Components</viking-button>
-      </div>
-      <viking-text variant="muted" class="showcase-hero-meta">
-        Publishable as <code>&#64;dataengineeringformachinelearning/viking-ui</code> — THEME.md tokens,
-        WCAG 2.1 AA, zero third-party UI runtime deps.
-      </viking-text>
-    </div>
+  <header class="showcase-page-header">
+    <viking-breadcrumbs [items]="breadcrumbs" />
+    <viking-heading size="lg" [level]="1">Components</viking-heading>
+    <viking-text variant="muted">
+      Interactive previews for every Viking-UI primitive. Copy patterns directly into your Angular app.
+    </viking-text>
   </header>
 
-  <div class="showcase-layout">
-    <nav class="showcase-sidebar" aria-label="Component sections">
-      @for (section of sidebarSections; track section.id) {
-        <a class="showcase-sidebar-link" [href]="'#' + section.id">{{ section.label }}</a>
-      }
-    </nav>
-
-    <main class="showcase-main">
-      <viking-breadcrumbs [items]="breadcrumbs" />
-      <section class="showcase-category" id="cat-foundations" aria-labelledby="cat-foundations-heading">
+  <section class="showcase-category" id="cat-foundations" aria-labelledby="cat-foundations-heading">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-foundations-heading">Foundations</viking-heading>
       <viking-text variant="muted"
@@ -855,6 +835,4 @@
       </section>
     </div>
   </section>
-    </main>
-  </div>
 </div>

@@ -10,7 +10,7 @@
 | Swagger / OpenAPI UI                                                                   | Django Ninja docs              | Same tokens via static CSS                |
 | Marketing site                                                                         | `marketing/`                   | `marketing/public/assets/viking-ui.css`   |
 | Docs, Book & Whitepaper                                                                | Synced content + Drakkar shell | THEME.md tokens in prose and components   |
-| Viking-UI Showcase                                                                     | Component gallery              | `viking-ui-showcase`                      |
+| Viking-UI Docs                                                                         | Component documentation site   | `viking-ui-docs`                          |
 
 **Canonical implementation:** `frontend/projects/viking-ui/src/styles/_variables.scss`
 **Compiled CSS:** `viking-ui.css` (copied to `frontend/`, `backend/static/`, `marketing/public/assets/`)

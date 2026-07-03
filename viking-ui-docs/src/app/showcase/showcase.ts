@@ -187,23 +187,9 @@ export class Showcase {
   ];
 
   protected readonly breadcrumbs: VikingBreadcrumb[] = [
-    { label: '@dataengineeringformachinelearning/viking-ui', href: '/' },
+    { label: 'Viking-UI', href: '/' },
     { label: 'Components' },
   ];
-
-  /** Doc-site sidebar anchors — one entry per showcase category section. */
-  protected readonly sidebarSections = [
-    { id: 'cat-foundations', label: 'Foundations' },
-    { id: 'cat-shell', label: 'Application Shell' },
-    { id: 'cat-auth', label: 'Authentication' },
-    { id: 'cat-forms', label: 'Forms & Inputs' },
-    { id: 'cat-overlays', label: 'Feedback & Overlays' },
-    { id: 'cat-nav', label: 'Navigation' },
-    { id: 'cat-data', label: 'Data Visualization' },
-    { id: 'cat-content', label: 'Content & Media' },
-    { id: 'cat-marketing', label: 'Marketing' },
-    { id: 'cat-drakkar', label: 'Drakkar Shell' },
-  ] as const;
 
   protected readonly regionOptions: VikingSelectOption[] = [
     { label: 'us-central1 (Iowa)', value: 'us-central1' },
@@ -321,7 +307,7 @@ export class Showcase {
   ]);
 
   constructor() {
-    inject(Title).setTitle('Viking-UI — Angular Component Library');
+    inject(Title).setTitle('Components — Viking-UI');
   }
 
   protected toggleDrakkarTheme = (): void => {

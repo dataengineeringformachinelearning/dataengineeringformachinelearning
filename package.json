@@ -20,6 +20,8 @@
     "quality:fix": "python scripts/deml_tooling.py quality --fast --fix",
     "quality:full": "python scripts/deml_tooling.py quality --ci",
     "quality:push": "python scripts/deml_tooling.py quality --full",
+    "build:viking-ui-docs": "npm run build --prefix viking-ui-docs",
+    "start:viking-ui-docs": "npm run start --prefix viking-ui-docs",
     "install-hooks": "python scripts/deml_tooling.py install-hooks && uvx pre-commit install --hook-type pre-commit --hook-type pre-push"
   }
 }

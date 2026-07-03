@@ -17,10 +17,11 @@ describe('DEML app smoke', () => {
   });
 });
 
-describe('Viking-UI showcase smoke', () => {
-  it('loads showcase hero and foundations section', () => {
+describe('Viking-UI docs smoke', () => {
+  it('loads docs landing and components route', () => {
     cy.visit('http://localhost:4300', { failOnStatusCode: false });
-    cy.get('.showcase-hero').should('exist');
+    cy.contains(/Stop fighting your component library/i).should('exist');
+    cy.visit('http://localhost:4300/components', { failOnStatusCode: false });
     cy.get('#cat-foundations').should('exist');
   });
 });

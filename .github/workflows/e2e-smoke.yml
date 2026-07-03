@@ -6,6 +6,7 @@ on:
     paths:
       - 'frontend/cypress/**'
       - 'frontend/cypress.config.ts'
+      - 'viking-ui-docs/**'
       - '.github/workflows/e2e-smoke.yml'
 
 jobs:
