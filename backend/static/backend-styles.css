@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+/* Inter variable font loaded via viking-ui.css (self-hosted woff2) */
 
 /* Tokens: design-tokens.css (synced from packages/deml-design-system) */
 :root {
@@ -21,7 +21,7 @@ body {
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: "Inter", sans-serif;
+  font-family: var(--viking-font-family, "Inter", ui-sans-serif, system-ui, sans-serif);
   font-size: 1.125rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;

@@ -576,7 +576,7 @@ const complianceJsonLd = webPageJsonLd(
       .transmission-log-item {
         display: flex; align-items: center; gap: 8px;
         .log-dot { width: 6px; height: 6px; background: var(--color-primary); border-radius: 50%; }
-        .log-text { font-family: 'Inter', monospace; font-size: var(--base-font-size); color: var(--text-color); }
+        .log-text { font-family: var(--viking-font-family-mono); font-size: var(--base-font-size); color: var(--text-color); }
       }
     }
   }
@@ -599,7 +599,7 @@ const complianceJsonLd = webPageJsonLd(
     border-bottom: 1px solid var(--border);
 
     .dot { width: 10px; height: 10px; border-radius: 50%; &.red { background: var(--color-error); } &.yellow { background: var(--color-warning); } &.green { background: var(--color-success); } }
-    .file-name { color: var(--text-color); font-size: var(--base-font-size); font-family: 'Inter', monospace; margin-left: 8px; font-weight: 500;}
+    .file-name { color: var(--text-color); font-size: var(--base-font-size); font-family: var(--viking-font-family-mono); margin-left: 8px; font-weight: 500;}
   }
 
   pre {
@@ -609,7 +609,7 @@ const complianceJsonLd = webPageJsonLd(
     overflow-x: auto;
     max-height: 416px;
 
-    code { font-family: 'Inter', monospace; font-size: var(--base-font-size); color: var(--text-color); line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
+    code { font-family: var(--viking-font-family-mono); font-size: var(--base-font-size); color: var(--text-color); line-height: 1.4; white-space: pre-wrap; word-break: break-all; }
   }
 }
 </style>

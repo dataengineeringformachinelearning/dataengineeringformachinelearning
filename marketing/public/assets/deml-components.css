@@ -1009,7 +1009,7 @@ th,
   border-radius: var(--border-radius-md);
   padding: var(--space-1) var(--space-2);
   font-size: max(16px, var(--base-font-size));
-  font-family: "Inter", sans-serif;
+  font-family: var(--viking-font-family);
   line-height: 1.4;
   min-height: 44px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;

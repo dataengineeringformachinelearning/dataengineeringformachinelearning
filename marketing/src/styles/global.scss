@@ -24,10 +24,7 @@ code[class*='language-'] {
   color: var(--white) !important;
 }
 
-// ====================== GOOGLE FONT ======================
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
-
+// Inter variable font loaded via viking-ui.css (self-hosted woff2).
 
 // ====================== GLOBAL LAYOUT ======================
 *,
@@ -62,7 +59,7 @@ app-root {
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Inter', sans-serif;
+  font-family: var(--viking-font-family);
   font-size: var(--base-font-size, 16px);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
@@ -393,7 +390,7 @@ main.main {
   bottom: 24px;
   right: 24px;
   z-index: 99999;
-  font-family: 'Inter', sans-serif;
+  font-family: var(--viking-font-family);
   max-width: 400px;
   animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
@@ -602,7 +599,7 @@ html[data-theme='light'] #global-error-toast {
 }
 
 .hud-title {
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -615,7 +612,7 @@ html[data-theme='light'] #global-error-toast {
   font-size: 1rem;
   color: var(--text-muted);
   margin: 8px 0 0 0;
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
 }
 
 /* Hide floating invisible reCAPTCHA badge globally */
@@ -650,7 +647,7 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
 }
 
 .section-tag {
-  font-family: 'Inter', monospace;
+  font-family: var(--viking-font-family-mono);
   font-size: 1rem;
   font-weight: 800;
   color: var(--color-primary);
@@ -827,7 +824,7 @@ select::picker(select) {
 
 /* Style the visible trigger button */
 select {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--viking-font-family);
   background-color: var(--card-bg);
   color: var(--text-color);
   border: 1px solid var(--text-muted); /* WCAG 3:1 contrast for input borders */
@@ -850,7 +847,7 @@ select:hover {
 
 /* Style the dropdown options list */
 select::picker(select) {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--viking-font-family);
   background-color: var(--card-bg);
   color: var(--text-color);
   border: 1px solid var(--text-muted);

@@ -99,8 +99,13 @@ const jsonLdPayload = jsonLd
 		<meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
 		<meta name="color-scheme" content="light dark" />
 
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="preload"
+			href="/assets/fonts/inter/InterVariable.woff2"
+			as="font"
+			type="font/woff2"
+			crossorigin
+		/>
 
 		<link rel="stylesheet" href="/assets/design-tokens.css" />
 		<link rel="stylesheet" href="/assets/deml-components.css" />
