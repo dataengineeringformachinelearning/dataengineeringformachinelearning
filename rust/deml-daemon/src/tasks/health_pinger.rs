@@ -2,7 +2,7 @@
 //!
 //! Fetches all `MonitoredService` rows from Postgres, issues concurrent HTTP
 //! HEAD/GET probes (one per service), then POSTs the raw timing data to a
-//! Django internal endpoint (`/internal/ingest/ping`) which performs the
+//! Django internal endpoint (`/api/v1/internal/ingest/ping`) which performs the
 //! enriched `Endpoints.objects.create()` write via the ORM.
 //!
 //! This replaces the Python `pingers.active_pinger_scheduler` coroutine — the
@@ -33,7 +33,7 @@ struct MonitoredService {
     is_platform: bool,
 }
 
-/// Payload sent to Django's `/internal/ingest/ping` endpoint.
+/// Payload sent to Django's `/api/v1/internal/ingest/ping` endpoint.
 #[derive(Debug, Serialize)]
 struct PingResult {
     url: String,
@@ -120,7 +120,10 @@ async fn tick(
     }
 
     // POST all results to Django in one batch.
-    let ingest_url = format!("{}/internal/ingest/ping", backend_url.trim_end_matches('/'));
+    let ingest_url = format!(
+        "{}/api/v1/internal/ingest/ping",
+        backend_url.trim_end_matches('/')
+    );
     match ingest_client
         .post(&ingest_url)
         .header("X-Internal-Secret", secret)
