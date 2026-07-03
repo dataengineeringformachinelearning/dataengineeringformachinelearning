@@ -8,7 +8,4 @@ backend/templates/partials/site_navbar.html
 backend/templates/partials/site_footer.html
 
 # Django templates — Prettier splits {% block %} tags and breaks production
-backend/templates/home.html
-backend/templates/swagger.html
-backend/templates/404.html
-backend/templates/base.html
+backend/templates/**/*.html

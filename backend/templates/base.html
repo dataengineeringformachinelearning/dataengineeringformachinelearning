@@ -146,8 +146,9 @@
   <body class="{% block body_class %}backend-landing{% endblock %}">
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    {% include "partials/site_navbar.html" %} {% block content %}{% endblock %}
-    {% include "partials/site_footer.html" %} {% block extra_scripts %}{%
-    endblock %}
+    {% include "partials/site_navbar.html" %}
+    {% block content %}{% endblock %}
+    {% include "partials/site_footer.html" %}
+    {% block extra_scripts %}{% endblock %}
   </body>
 </html>
