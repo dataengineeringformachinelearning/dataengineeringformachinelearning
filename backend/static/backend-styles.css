@@ -39,13 +39,14 @@ html[data-theme="light"] body {
 main.main {
   min-height: 100vh;
   margin: 0 auto;
-  padding: 4rem 1.5rem;
+  padding: 5rem 1rem 2.5rem;
   max-width: var(--container-max-width, 1260px);
   display: flex;
   flex-direction: column;
   position: relative;
   z-index: 10;
   box-sizing: border-box;
+  width: 100%;
 }
 
 .content {
@@ -357,11 +358,18 @@ footer {
 
 /* Mega Footer Styles */
 .mega-footer {
-  margin-top: 5rem;
-  padding: 4rem 2rem 2rem;
+  margin-top: 3rem;
+  padding: 2.5rem 1rem 1.5rem;
   background-color: var(--bg-color);
   border-top: 1px solid var(--border);
   color: var(--text-color);
+}
+
+@media (min-width: 768px) {
+  .mega-footer {
+    margin-top: 5rem;
+    padding: 4rem 2rem 2rem;
+  }
 }
 
 .footer-content {

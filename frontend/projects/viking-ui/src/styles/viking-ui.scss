@@ -121,8 +121,8 @@
   --viking-letter-spacing-caps: 0.08em;
 
   /* Controls */
-  --viking-control-height: 40px;
-  --viking-control-height-sm: 32px;
+  --viking-control-height: var(--viking-touch-target-min, 44px);
+  --viking-control-height-sm: 40px;
   --viking-control-height-xs: 24px;
   --viking-control-padding-x: var(--space-2, var(--viking-space-2, 16px));
   --viking-btn-min-width: var(--btn-min-width, 120px);
@@ -193,11 +193,11 @@ body,
   transition: var(--viking-transition-colors);
 }
 
-/* Mobile-first control sizing — touch-friendly on small screens */
-@media (max-width: 767px) {
+/* Mobile-first control sizing — compact controls from tablet/desktop up */
+@media (min-width: 768px) {
   :root {
-    --viking-control-height: var(--viking-touch-target-min, 44px);
-    --viking-control-height-sm: 40px;
+    --viking-control-height: 40px;
+    --viking-control-height-sm: 32px;
   }
 }
 

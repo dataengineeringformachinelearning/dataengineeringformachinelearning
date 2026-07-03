@@ -155,8 +155,8 @@
   --viking-state-disabled-opacity: 0.48;
 
   /* ── Controls ──────────────────────────────────────────────────────────── */
-  --viking-control-height: 40px;
-  --viking-control-height-sm: 32px;
+  --viking-control-height: var(--viking-touch-target-min, 44px);
+  --viking-control-height-sm: 40px;
   --viking-control-height-xs: 24px;
   --viking-control-padding-x: var(--viking-space-2);
   --viking-btn-min-width: 120px;

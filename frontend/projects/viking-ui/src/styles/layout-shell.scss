@@ -10,6 +10,23 @@
   box-sizing: border-box;
 }
 
+/* Phone → TV: keep content centered with breathable gutters on ultra-wide displays */
+@media (min-width: 1440px) {
+  .viking-page-shell,
+  .page-inner-wrapper,
+  .viking-section-inner {
+    padding-inline: var(--viking-space-3, var(--space-3, 24px));
+  }
+}
+
+@media (min-width: 1920px) {
+  .viking-page-shell,
+  .page-inner-wrapper,
+  .viking-section-inner {
+    padding-inline: var(--viking-space-4, var(--space-4, 32px));
+  }
+}
+
 .viking-section {
   width: 100%;
   padding-block: var(--viking-space-6, var(--space-6, 48px));

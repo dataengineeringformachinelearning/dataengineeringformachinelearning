@@ -101,10 +101,10 @@ h6 {
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: clamp(1.75rem, 5vw, 2.5rem);
 }
 h2 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
 }
 h3 {
   font-size: 1.5rem;
@@ -530,9 +530,15 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
 /* ====================== RESPONSIVE GRID SYSTEM ====================== */
 .grid-layout {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr;
   gap: var(--grid-gap);
   width: 100%;
+}
+
+@media (min-width: 600px) {
+  .grid-layout {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (min-width: 768px) {
