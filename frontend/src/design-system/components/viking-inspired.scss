@@ -1,12 +1,12 @@
 // Viking-inspired visual patterns (clean, accessible, composable controls)
-// Implemented for Angular/Material using ONLY tokens from THEME.md.
-// No Tailwind. 8px grid. 16px main / 14px UI font floors. Subtle clinical aesthetic.
+// Implemented using ONLY tokens from THEME.md / viking-ui.css.
+// No Tailwind. 4px grid. 16px main / 14px UI font floors. Premium engineering aesthetic.
 
 @use 'sass:color';
 
 // ============================================
 // Viking-like Button Variants (additive classes)
-// Use alongside mat- buttons or native buttons.
+// Use alongside viking-button or native buttons.
 // Variants: .viking-btn-subtle, .viking-btn-ghost, .viking-btn-outline (base feel)
 // ============================================
 
@@ -65,15 +65,15 @@ a.viking-btn {
   }
 }
 
-// Primary filled (aligns with THEME.md: crayola-blue + white)
+// Primary filled (aligns with THEME.md: deep teal + white)
 .viking-btn-primary {
-  background-color: var(--crayola-blue);
+  background-color: var(--viking-teal-600);
   color: var(--white);
-  border-color: var(--crayola-blue);
+  border-color: var(--viking-teal-600);
 
   &:hover:not(:disabled) {
-    background-color: var(--blue-bell);
-    border-color: var(--blue-bell);
+    background-color: var(--viking-teal-400);
+    border-color: var(--viking-teal-400);
     color: var(--white);
   }
 
@@ -85,9 +85,9 @@ a.viking-btn {
 
 // Danger
 .viking-btn-danger {
-  background-color: var(--carrot-orange);
+  background-color: var(--viking-crimson-500);
   color: var(--white);
-  border-color: var(--carrot-orange);
+  border-color: var(--viking-crimson-500);
 
   &:hover:not(:disabled) {
     opacity: 0.9;
@@ -200,7 +200,7 @@ a.viking-btn {
   }
 }
 
-// Standalone clean input base (for native or when avoiding mat-form-field)
+// Standalone clean input base (native inputs)
 .viking-input {
   width: 100%;
   background-color: var(--card-bg);

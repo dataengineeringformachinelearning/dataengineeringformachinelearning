@@ -175,7 +175,7 @@
     transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  &.theme-amber .gauge-fill { stroke: var(--crayola-blue); }
+  &.theme-amber .gauge-fill { stroke: var(--viking-teal-600); }
   &.theme-red .gauge-fill { stroke: var(--color-gauge-red); }
   &.theme-primary .gauge-fill { stroke: var(--color-primary); }
   &.theme-success .gauge-fill { stroke: var(--color-success); }
@@ -191,7 +191,7 @@
   align-items: center;
   width: 100%;
 
-  &.threat-text { color: var(--crayola-blue); }
+  &.threat-text { color: var(--viking-teal-600); }
   &.main-text { color: var(--color-gauge-red); }
   &.stability-text { color: var(--color-primary); }
 
@@ -444,7 +444,7 @@
 }
 
 .chart-custom-trend {
-  color: var(--blue-bell);
+  color: var(--viking-teal-400);
   font-size: 18px;
   font-family: 'Inter', sans-serif;
   font-weight: 600;

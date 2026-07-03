@@ -6,7 +6,7 @@
   --accent-color: var(--color-primary-container);
   --shadow-glow: 0 0 12px rgba(33, 118, 255, 0.3);
   --focus-offset: 4px;
-  --color-amber: var(--golden-pollen);
+  --color-amber: var(--viking-gold-500);
 }
 
 html,
@@ -187,7 +187,7 @@ p {
 
 .primary-btn {
   background-color: var(--primary-color);
-  color: #ffffff;
+  color: var(--viking-white-pure);
   border: 1px solid transparent;
   box-shadow: var(--shadow-sm);
 }

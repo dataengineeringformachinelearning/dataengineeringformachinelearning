@@ -53,9 +53,9 @@
   justify-content: center;
 }
 
-// Angular mat-icon defaults to overflow:hidden — clips ligature glyphs at tight sizes.
-.navbar-brand .navbar-logo.mat-icon,
-.navbar-brand mat-icon.navbar-logo {
+// Viking icon sizing in navbar brand — prevent overflow clipping at tight sizes.
+.navbar-brand .navbar-logo.viking-icon,
+.navbar-brand .brand-icon {
   overflow: visible !important;
   width: 36px !important;
   height: 36px !important;
@@ -152,7 +152,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--crayola-blue) 80%, transparent),
+    color-mix(in srgb, var(--viking-teal-600) 80%, transparent),
     transparent
   );
   opacity: 0;
@@ -165,7 +165,7 @@
 
 .nav-btn:hover {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--crayola-blue) 10%, transparent) !important;
+  background-color: color-mix(in srgb, var(--viking-teal-600) 10%, transparent) !important;
   transform: translateY(-1px);
 }
 
@@ -175,7 +175,7 @@
 }
 
 html[data-theme='light'] {
-  --nav-link-color: color-mix(in srgb, var(--jet-black) 88%, var(--white));
+  --nav-link-color: color-mix(in srgb, var(--viking-charcoal-900) 88%, var(--white));
 
   .nav-btn,
   .mobile-nav-btn,
@@ -186,16 +186,16 @@ html[data-theme='light'] {
 
   .nav-btn:hover,
   .mobile-nav-btn:hover {
-    background-color: color-mix(in srgb, var(--crayola-blue) 10%, transparent) !important;
+    background-color: color-mix(in srgb, var(--viking-teal-600) 10%, transparent) !important;
   }
 }
 
 .nav-btn.active {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--crayola-blue) 14%, transparent) !important;
+  background-color: color-mix(in srgb, var(--viking-teal-600) 14%, transparent) !important;
   box-shadow:
-    inset 0 -2px 0 0 var(--crayola-blue),
-    0 0 12px color-mix(in srgb, var(--crayola-blue) 18%, transparent) !important;
+    inset 0 -2px 0 0 var(--viking-teal-600),
+    0 0 12px color-mix(in srgb, var(--viking-teal-600) 18%, transparent) !important;
 }
 
 .nav-btn.active::before {
@@ -305,8 +305,8 @@ html[data-theme='light'] {
 
 .auth-btn:hover {
   transform: translateY(-2px) !important;
-  background-color: var(--crayola-blue) !important;
-  border-color: var(--crayola-blue) !important;
+  background-color: var(--viking-teal-600) !important;
+  border-color: var(--viking-teal-600) !important;
   color: var(--white) !important;
   box-shadow: var(--shadow-md) !important;
 }
@@ -375,7 +375,7 @@ html[data-theme='light'] {
 .mobile-nav-btn.active {
   color: var(--text-color) !important;
   background-color: rgba(33, 118, 255, 0.1) !important;
-  box-shadow: inset 0 0 0 1px var(--crayola-blue) !important;
+  box-shadow: inset 0 0 0 1px var(--viking-teal-600) !important;
 }
 
 .mobile-divider {
@@ -420,7 +420,7 @@ html[data-theme='light'] {
   transition: all 0.3s ease;
 }
 
-// Glow on the brand link wrapper so mat-icon overflow does not clip the filter.
+// Glow on the brand link wrapper so icon overflow does not clip the filter.
 .navbar-brand.glowing-icon-sm,
 .navbar-brand:has(.glowing-icon-sm) {
   filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));

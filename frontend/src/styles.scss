@@ -16,7 +16,7 @@
 @import 'leaflet/dist/leaflet.css';
 
 pre[class*='language-'] {
-  background-color: var(--jet-black) !important;
+  background-color: var(--viking-charcoal-900) !important;
   border: 1px solid var(--border);
   border-radius: var(--border-radius-md);
   padding: var(--space-3);
@@ -491,7 +491,7 @@ html[data-theme='light'] #global-error-toast {
   visibility: hidden !important;
 }
 
-/* Ensure Google reCAPTCHA challenge iframe and its parent containers are always on top of Angular Material dialogs */
+/* Ensure Google reCAPTCHA challenge iframe and its parent containers are always on top of modals */
 .grecaptcha-bubble-holder,
 div.grecaptcha-bubble-holder,
 #recaptcha-container,

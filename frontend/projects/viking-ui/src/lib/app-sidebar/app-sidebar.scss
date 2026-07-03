@@ -517,14 +517,14 @@ html[data-theme='light'] .viking-app-sidebar-host {
 
     mark.search-highlight {
       background: rgba(33, 118, 255, 0.25);
-      color: var(--crayola-blue);
+      color: var(--viking-teal-600);
       font-weight: 700;
       border-radius: 0px;
       padding: 0 0px;
 
       :host-context(html[data-theme='light']) & {
         background: rgba(33, 118, 255, 0.15);
-        color: var(--crayola-blue);
+        color: var(--viking-teal-600);
       }
     }
   }
