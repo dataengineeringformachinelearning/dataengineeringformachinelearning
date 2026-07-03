@@ -385,12 +385,11 @@
 
       <!-- Error/Offline State Fallback -->
       @if (loadFailed()) {
-      <div class="status-error-state">
-        <viking-app-icon name="cloud_off" hostClass="error-state-icon" />
+      <div class="status-error-state" role="alert">
+        <viking-app-icon name="cloud_off" hostClass="error-state-icon" ariaHidden="true" />
         <h2 class="error-title">Unable to Connect</h2>
         <p class="error-subtitle">
-          We couldn't connect to the status service. Please check that the backend is running and
-          try again.
+          We couldn't reach the status service. Verify the backend is running, then retry.
         </p>
         <viking-button
           variant="primary"

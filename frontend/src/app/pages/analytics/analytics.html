@@ -235,7 +235,7 @@
             <div class="empty-chart-state">
               <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+              <p class="empty-subtitle">Waiting for data streams from active nodes. Connect a monitored endpoint to begin.</p>
             </div>
             }
           </div>
@@ -270,9 +270,9 @@
             ></div>
             @if (originMapData.length === 0) {
             <div class="empty-chart-state">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+              <viking-app-icon name="public" hostClass="empty-icon" />
+              <h3 class="empty-title">No Geographic Data</h3>
+              <p class="empty-subtitle">Regional traffic origins will appear once requests are received from connected endpoints.</p>
             </div>
             }
           </div>
@@ -301,9 +301,9 @@
             />
             } @else {
             <div class="empty-chart-state">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+              <viking-app-icon name="public" hostClass="empty-icon" />
+              <h3 class="empty-title">No Regional Data</h3>
+              <p class="empty-subtitle">Top traffic regions will populate as geographic telemetry is collected.</p>
             </div>
             }
           </div>
@@ -340,7 +340,7 @@
             <div class="empty-chart-state">
               <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
               <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+              <p class="empty-subtitle">Waiting for data streams from active nodes. Connect a monitored endpoint to begin.</p>
             </div>
             }
           </div>
@@ -365,9 +365,9 @@
             />
             } @else {
             <div class="empty-chart-state">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+              <viking-app-icon name="hub" hostClass="empty-icon" />
+              <h3 class="empty-title">No Endpoint Data</h3>
+              <p class="empty-subtitle">Per-endpoint request counts will appear once traffic is routed through monitored APIs.</p>
             </div>
             }
           </div>
@@ -402,10 +402,10 @@
               class="viking-chart-medium"
             />
             } @else {
-            <div class="empty-chart-state">
+            <div class="empty-chart-state is-secure">
               <viking-app-icon name="verified_user" hostClass="empty-icon" />
               <h3 class="empty-title">No Active Threats</h3>
-              <p class="empty-subtitle">System is secure. No threat events detected.</p>
+              <p class="empty-subtitle">Your perimeter is secure. No threat events have been detected.</p>
             </div>
             }
           </div>
@@ -429,10 +429,10 @@
               class="viking-chart-medium"
             />
             } @else {
-            <div class="empty-chart-state">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+            <div class="empty-chart-state is-secure">
+              <viking-app-icon name="radar" hostClass="empty-icon" />
+              <h3 class="empty-title">No Anomalies Detected</h3>
+              <p class="empty-subtitle">Security monitoring is active. No anomalous behavior patterns identified.</p>
             </div>
             }
           </div>
@@ -466,9 +466,9 @@
             />
             } @else {
             <div class="empty-chart-state">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes...</p>
+              <viking-app-icon name="http" hostClass="empty-icon" />
+              <h3 class="empty-title">No Status Data</h3>
+              <p class="empty-subtitle">HTTP response distribution will chart once request telemetry is available.</p>
             </div>
             }
           </div>

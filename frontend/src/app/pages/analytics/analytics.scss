@@ -406,10 +406,11 @@
 }
 
 .chart-custom-trend {
-  color: var(--viking-teal-400);
-  font-size: 18px;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
+  color: var(--color-primary);
+  font-size: var(--viking-font-size-sm, 14px);
+  font-family: var(--viking-font-family, 'Inter', sans-serif);
+  font-weight: var(--viking-font-weight-semibold, 600);
+  letter-spacing: 0.02em;
 }
 
 /* Custom Filter Stylings */

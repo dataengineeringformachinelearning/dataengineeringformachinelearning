@@ -359,65 +359,7 @@ html[data-theme='light'] #global-error-toast {
   }
 }
 
-/* Error/Offline State */
-.status-error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 32px 24px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-lg);
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-  margin-top: 32px;
-
-  @media (min-width: 601px) {
-    padding: 72px 32px;
-  }
-
-  .error-state-icon {
-    font-size: 72px;
-    width: 72px;
-    height: 72px;
-    color: var(--text-muted);
-    margin-bottom: 24px;
-    opacity: 0.6;
-  }
-
-  .error-title {
-    margin: 0 0 8px;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    letter-spacing: -0.01em;
-  }
-
-  .error-subtitle {
-    margin: 0 0 32px;
-    font-size: 1rem;
-    line-height: 1.6;
-    color: var(--text-muted);
-    max-width: 416px;
-  }
-
-  .retry-btn {
-    font-weight: 700 !important;
-    padding: 8px 24px !important;
-    border-radius: var(--border-radius-sm) !important;
-    box-shadow: var(--shadow-sm) !important;
-    transition: all 0.2s ease !important;
-
-    &:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md) !important;
-      opacity: 0.95;
-    }
-  }
-}
+/* Error/Offline State — canonical styles in viking-ui page-shell (.status-error-state) */
 
 .btn-spinner {
   display: inline-block;

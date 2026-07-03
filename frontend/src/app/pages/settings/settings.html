@@ -288,7 +288,11 @@
                     />
                   </div>
                   } @if (services().length === 0) {
-                  <div class="empty-data-text">No services monitored yet. Add one above!</div>
+                  <div class="empty-data-text">
+                    <viking-app-icon name="monitor_heart" hostClass="empty-icon" />
+                    <p class="empty-title">No Services Monitored</p>
+                    <p class="empty-subtitle">Add a service above to begin uptime and health monitoring.</p>
+                  </div>
                   }
                 </div>
               </div>
@@ -355,7 +359,11 @@
                     />
                   </div>
                   } @if (incidents().length === 0) {
-                  <div class="empty-data-text">No incidents reported yet.</div>
+                  <div class="empty-data-text">
+                    <viking-app-icon name="check_circle" hostClass="empty-icon" />
+                    <p class="empty-title">No Incidents Reported</p>
+                    <p class="empty-subtitle">All systems operational. Post an incident above if service degradation occurs.</p>
+                  </div>
                   }
                 </div>
               </div>
