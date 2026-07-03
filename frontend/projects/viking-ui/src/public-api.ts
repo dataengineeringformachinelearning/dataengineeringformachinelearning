@@ -69,6 +69,7 @@ export * from './lib/editor/editor';
 export * from './lib/fab/fab';
 export * from './lib/field/field';
 export * from './lib/footer/footer';
+export * from './lib/form-section/form-section';
 export * from './lib/file-upload/file-upload';
 export * from './lib/gauge-arc/gauge-arc';
 export * from './lib/hud-panel/hud-panel';
