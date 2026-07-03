@@ -18,6 +18,9 @@ import {
   VikingChartSeries,
   VikingGaugeArc,
   VikingPageHeader,
+  VikingChartPanel,
+  VikingChartCardHeader,
+  VikingChartEmptyState,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { ThemeService } from '../../services/theme.service';
 import {
@@ -48,6 +51,9 @@ import * as L from 'leaflet';
     VikingGaugeArc,
     VikingAppIcon,
     VikingPageHeader,
+    VikingChartPanel,
+    VikingChartCardHeader,
+    VikingChartEmptyState,
   ],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],
@@ -394,18 +400,26 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onTenantChange(tenantId: string) {
+  public onTenantChange(tenantId: string): void {
     this.selectedTenantId = tenantId;
     this.selectedSite = 'All';
     this.loadAnalyticsData();
   }
 
-  public onSiteChange(site: any) {
+  public onSiteChange(site: string): void {
     this.selectedSite = site;
     this.loadAnalyticsData();
   }
 
-  private initMap() {
+  public formatCount(value: number): string {
+    return value.toLocaleString();
+  }
+
+  public formatPercent(value: number): string {
+    return `${Math.round(value)}%`;
+  }
+
+  private initMap(): void {
     if (!this.isBrowser) return;
 
     setTimeout(() => {
@@ -439,7 +453,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
     }, 100);
   }
 
-  private updateMapMarkers() {
+  private updateMapMarkers(): void {
     if (!this.map) return;
 
     this.map.eachLayer(layer => {

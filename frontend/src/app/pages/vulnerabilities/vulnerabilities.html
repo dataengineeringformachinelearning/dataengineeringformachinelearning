@@ -80,11 +80,13 @@
               <p>Ingesting feed...</p>
             </div>
             } @else if (filteredVulnerabilities().length === 0) {
-            <div class="empty-state">
-              <viking-app-icon name="verified_user" />
-              <h3 class="empty-title">SYSTEM SECURE</h3>
-              <p>No active threats detected matching current filter parameters.</p>
-            </div>
+            <viking-chart-empty-state
+              layout="fill"
+              tone="secure"
+              icon="check-circle"
+              title="System Secure"
+              description="No active threats detected matching current filter parameters."
+            />
             } @else { @for (v of filteredVulnerabilities(); track v.id) {
             <div
               class="queue-item"
@@ -248,16 +250,14 @@
               <pre class="telemetry-code"><code>{{ getTelemetryJson(selectedVuln()!) }}</code></pre>
             </div>
           </div>
-          @} @else {
-          <div class="no-selection-state">
-            <div class="radar-scan">
-              <viking-app-icon name="radar" hostClass="huge-icon" />
-            </div>
-            <h2>Awaiting Threat Selection</h2>
-            <p>
-              Select an item from the ingestion queue to map risk matrices, analyze diagnostic
-              payload data, and execute remediation protocols.
-            </p>
+          @          } @else {
+          <div class="panel-body no-selection-body">
+            <viking-chart-empty-state
+              layout="fill"
+              icon="search"
+              title="Awaiting Threat Selection"
+              description="Select an item from the ingestion queue to map risk matrices, analyze diagnostic payload data, and execute remediation protocols."
+            />
           </div>
           }
         </section>
@@ -293,13 +293,13 @@
               <p>Loading incident cases…</p>
             </div>
             } @else if (activeIncidents().length === 0) {
-            <div class="soc-empty-state clear">
-              <div class="soc-empty-icon">
-                <viking-app-icon name="verified_user" [ariaHidden]="true" />
-              </div>
-              <h3>All clear</h3>
-              <p>No active incidents. New cases appear here automatically when detected.</p>
-            </div>
+            <viking-chart-empty-state
+              layout="fill"
+              tone="secure"
+              icon="check-circle"
+              title="All Clear"
+              description="No active incidents. New cases appear here automatically when detected."
+            />
             } @else {
             <div class="soc-card-list">
               @for (incident of activeIncidents(); track incident.id) {
@@ -369,13 +369,12 @@
               <p>Loading playbooks…</p>
             </div>
             } @else if (playbooks().length === 0) {
-            <div class="soc-empty-state">
-              <div class="soc-empty-icon">
-                <viking-app-icon name="menu_book" [ariaHidden]="true" />
-              </div>
-              <h3>No playbooks yet</h3>
-              <p>Default response playbooks seed automatically when threats are detected.</p>
-            </div>
+            <viking-chart-empty-state
+              layout="fill"
+              icon="file"
+              title="No Playbooks Yet"
+              description="Default response playbooks seed automatically when threats are detected."
+            />
             } @else {
             <div class="soc-card-list">
               @for (playbook of playbooks(); track playbook.id) {

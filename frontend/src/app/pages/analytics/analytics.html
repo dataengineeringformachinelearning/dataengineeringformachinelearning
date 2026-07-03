@@ -199,37 +199,33 @@
       }
 
       <div class="dashboard-grid dashboard-grid-single">
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">System Latency (Last 24h)</div>
-            @if (hasLatencyData()) {
-            <div class="chart-custom-value">{{ p99Latency }} ms</div>
-            <div class="chart-custom-trend">{{ latencyTrend }}</div>
-            } @else {
-            <div class="chart-custom-value chart-value-muted">Awaiting signal</div>
-            }
-          </div>
+        <viking-chart-panel size="large">
+          <viking-chart-card-header
+            title="System Latency (Last 24h)"
+            [hasData]="hasLatencyData()"
+            [value]="p99Latency + ' ms'"
+            [trend]="latencyTrend"
+            emptyLabel="Awaiting signal"
+          />
 
-          <div class="card-body-clean chart-container-large">
-            @if (hasLatencyData()) {
-            <viking-chart
-              kind="line"
-              [series]="latencySeries()"
-              [categories]="latencyCategories()"
-              label="System Latency (Last 24h)"
-              [showArea]="true"
-              [fill]="true"
-              class="viking-chart-large"
-            />
-            } @else {
-            <div class="empty-chart-state">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes. Connect a monitored endpoint to begin.</p>
-            </div>
-            }
-          </div>
-        </section>
+          @if (hasLatencyData()) {
+          <viking-chart
+            kind="line"
+            [series]="latencySeries()"
+            [categories]="latencyCategories()"
+            label="System Latency (Last 24h)"
+            [showArea]="true"
+            [fill]="true"
+            class="viking-chart-large"
+          />
+          } @else {
+          <viking-chart-empty-state
+            icon="globe"
+            title="No Telemetry Signal"
+            description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
+          />
+          }
+        </viking-chart-panel>
       </div>
 
       <!-- TRAFFIC ANALYTICS SECTION -->
@@ -245,135 +241,118 @@
 
       <!-- Full Width Origin Map -->
       <div class="dashboard-grid dashboard-grid-single">
-        <!-- Origin Chart -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">Geographic Origins</div>
-            <div class="chart-custom-value">{{ originMapData.length || 0 }} Regions</div>
-            <div class="chart-custom-trend">{{ originTrend }}</div>
-          </div>
-          <div class="card-body-clean chart-container-medium origin-map-container">
-            <div
-              id="originMap"
-              class="origin-map-canvas"
-              [class.viking-map-ready]="originMapData.length > 0"
-            ></div>
-            @if (originMapData.length === 0) {
-            <div class="empty-chart-state origin-map-empty">
-              <viking-app-icon name="public" hostClass="empty-icon" />
-              <h3 class="empty-title">No Geographic Data</h3>
-              <p class="empty-subtitle">Regional traffic origins will appear once requests are received from connected endpoints.</p>
-            </div>
-            }
-          </div>
-        </section>
+        <viking-chart-panel size="medium" body="origin-map">
+          <viking-chart-card-header
+            title="Geographic Origins"
+            [hasData]="originMapData.length > 0"
+            [value]="originMapData.length + ' Regions'"
+            [trend]="originTrend"
+            emptyLabel="Awaiting signal"
+          />
+          <div
+            id="originMap"
+            class="origin-map-canvas"
+            [class.viking-map-ready]="originMapData.length > 0"
+          ></div>
+          @if (originMapData.length === 0) {
+          <viking-chart-empty-state
+            layout="overlay"
+            icon="globe"
+            title="No Geographic Data"
+            description="Regional traffic origins will appear once requests are received from connected endpoints."
+          />
+          }
+        </viking-chart-panel>
       </div>
 
       <div class="dashboard-grid dashboard-grid-responsive">
-        <!-- Top Regions Chart -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">Top Regions</div>
-            @if (hasTopRegionsData()) {
-            <div class="chart-custom-value">
-              {{ topRegionsSeries()[0]?.data?.length || 0 }} Regions
-            </div>
-            <div class="chart-custom-trend">{{ originTrend }}</div>
-            } @else {
-            <div class="chart-custom-value chart-value-muted">No regions yet</div>
-            }
-          </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasTopRegionsData()) {
-            <viking-chart
-              kind="bar"
-              [series]="topRegionsSeries()"
-              [categories]="topRegionsCategories()"
-              label="Top Regions"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else {
-            <div class="empty-chart-state">
-              <viking-app-icon name="public" hostClass="empty-icon" />
-              <h3 class="empty-title">No Regional Data</h3>
-              <p class="empty-subtitle">Top traffic regions will populate as geographic telemetry is collected.</p>
-            </div>
-            }
-          </div>
-        </section>
+        <viking-chart-panel>
+          <viking-chart-card-header
+            title="Top Regions"
+            [hasData]="hasTopRegionsData()"
+            [value]="(topRegionsSeries()[0]?.data?.length || 0) + ' Regions'"
+            [trend]="originTrend"
+            emptyLabel="No regions yet"
+          />
+          @if (hasTopRegionsData()) {
+          <viking-chart
+            kind="bar"
+            [series]="topRegionsSeries()"
+            [categories]="topRegionsCategories()"
+            label="Top Regions"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else {
+          <viking-chart-empty-state
+            icon="globe"
+            title="No Regional Data"
+            description="Top traffic regions will populate as geographic telemetry is collected."
+          />
+          }
+        </viking-chart-panel>
 
-        <!-- Frequency Chart -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">Request Frequency</div>
-            @if (hasTrafficGroupedData() || hasFrequencyData()) {
-            <div class="chart-custom-value">{{ totalRequests | number }} Req</div>
-            <div class="chart-custom-trend">{{ frequencyTrend }}</div>
-            } @else {
-            <div class="chart-custom-value chart-value-muted">Awaiting signal</div>
-            }
-          </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasTrafficGroupedData()) {
-            <viking-chart
-              kind="grouped-bar"
-              [series]="trafficGroupedSeries()"
-              [categories]="frequencyCategories()"
-              label="Request frequency vs latency"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else if (hasFrequencyData()) {
-            <viking-chart
-              kind="line"
-              [series]="frequencySeries()"
-              [categories]="frequencyCategories()"
-              label="Request Frequency"
-              [showArea]="true"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else {
-            <div class="empty-chart-state">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">No Telemetry Signal</h3>
-              <p class="empty-subtitle">Waiting for data streams from active nodes. Connect a monitored endpoint to begin.</p>
-            </div>
-            }
-          </div>
-        </section>
+        <viking-chart-panel>
+          <viking-chart-card-header
+            title="Request Frequency"
+            [hasData]="hasTrafficGroupedData() || hasFrequencyData()"
+            [value]="formatCount(totalRequests) + ' Req'"
+            [trend]="frequencyTrend"
+            emptyLabel="Awaiting signal"
+          />
+          @if (hasTrafficGroupedData()) {
+          <viking-chart
+            kind="grouped-bar"
+            [series]="trafficGroupedSeries()"
+            [categories]="frequencyCategories()"
+            label="Request frequency vs latency"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else if (hasFrequencyData()) {
+          <viking-chart
+            kind="line"
+            [series]="frequencySeries()"
+            [categories]="frequencyCategories()"
+            label="Request Frequency"
+            [showArea]="true"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else {
+          <viking-chart-empty-state
+            icon="globe"
+            title="No Telemetry Signal"
+            description="Waiting for data streams from active nodes. Connect a monitored endpoint to begin."
+          />
+          }
+        </viking-chart-panel>
 
-        <!-- Endpoint Chart -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">Request Counts per Endpoint</div>
-            @if (hasEndpointData()) {
-            <div class="chart-custom-value">{{ endpointSeries()[0]?.data?.length || 0 }} APIs</div>
-            <div class="chart-custom-trend">{{ endpointTrend }}</div>
-            } @else {
-            <div class="chart-custom-value chart-value-muted">No endpoints yet</div>
-            }
-          </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasEndpointData()) {
-            <viking-chart
-              kind="bar"
-              [series]="endpointSeries()"
-              [categories]="endpointCategories()"
-              label="Request Counts per Endpoint"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else {
-            <div class="empty-chart-state">
-              <viking-app-icon name="hub" hostClass="empty-icon" />
-              <h3 class="empty-title">No Endpoint Data</h3>
-              <p class="empty-subtitle">Per-endpoint request counts will appear once traffic is routed through monitored APIs.</p>
-            </div>
-            }
-          </div>
-        </section>
+        <viking-chart-panel>
+          <viking-chart-card-header
+            title="Request Counts per Endpoint"
+            [hasData]="hasEndpointData()"
+            [value]="(endpointSeries()[0]?.data?.length || 0) + ' APIs'"
+            [trend]="endpointTrend"
+            emptyLabel="No endpoints yet"
+          />
+          @if (hasEndpointData()) {
+          <viking-chart
+            kind="bar"
+            [series]="endpointSeries()"
+            [categories]="endpointCategories()"
+            label="Request Counts per Endpoint"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else {
+          <viking-chart-empty-state
+            icon="globe"
+            title="No Endpoint Data"
+            description="Per-endpoint request counts will appear once traffic is routed through monitored APIs."
+          />
+          }
+        </viking-chart-panel>
       </div>
 
       <!-- SIEM / SECURITY INSIGHTS SECTION -->
@@ -387,106 +366,93 @@
         </p>
       </div>
       <div class="dashboard-grid dashboard-grid-responsive">
-        <!-- Threat Chart -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">Threat Events by Severity</div>
-            @if (hasThreatSeverityData()) {
-            <div class="chart-custom-value">{{ threatLevel | number:'1.0-0' }}%</div>
-            <div class="chart-custom-trend">{{ threatTrend }}</div>
-            } @else {
-            <div class="chart-custom-value chart-value-muted">Perimeter secure</div>
-            }
-          </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasThreatSeverityData()) {
-            <viking-chart
-              kind="donut"
-              [segments]="threatSeveritySegments()"
-              label="Threat Events by Severity"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else {
-            <div class="empty-chart-state is-secure">
-              <viking-app-icon name="verified_user" hostClass="empty-icon" />
-              <h3 class="empty-title">No Active Threats</h3>
-              <p class="empty-subtitle">Your perimeter is secure. No threat events have been detected.</p>
-            </div>
-            }
-          </div>
-        </section>
+        <viking-chart-panel>
+          <viking-chart-card-header
+            title="Threat Events by Severity"
+            [hasData]="hasThreatSeverityData()"
+            [value]="formatPercent(threatLevel)"
+            [trend]="threatTrend"
+            emptyLabel="Perimeter secure"
+          />
+          @if (hasThreatSeverityData()) {
+          <viking-chart
+            kind="donut"
+            [segments]="threatSeveritySegments()"
+            label="Threat Events by Severity"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else {
+          <viking-chart-empty-state
+            tone="secure"
+            icon="check-circle"
+            title="No Active Threats"
+            description="Your perimeter is secure. No threat events have been detected."
+          />
+          }
+        </viking-chart-panel>
 
-        <!-- Anomalies Chart -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">Recent Security Anomalies</div>
-            @if (hasSecurityAlertsData()) {
-            <div class="chart-custom-value">{{ activeIncidents }} Active</div>
-            <div class="chart-custom-trend">{{ anomalyTrend }}</div>
-            } @else {
-            <div class="chart-custom-value chart-value-muted">No anomalies</div>
-            }
-          </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasSecurityAlertsData()) {
-            <viking-chart
-              kind="bar"
-              [series]="securityAlertsSeries()"
-              [categories]="securityAlertCategories()"
-              label="Recent Security Anomalies"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else {
-            <div class="empty-chart-state is-secure">
-              <viking-app-icon name="radar" hostClass="empty-icon" />
-              <h3 class="empty-title">No Anomalies Detected</h3>
-              <p class="empty-subtitle">Security monitoring is active. No anomalous behavior patterns identified.</p>
-            </div>
-            }
-          </div>
-        </section>
+        <viking-chart-panel>
+          <viking-chart-card-header
+            title="Recent Security Anomalies"
+            [hasData]="hasSecurityAlertsData()"
+            [value]="activeIncidents + ' Active'"
+            [trend]="anomalyTrend"
+            emptyLabel="No anomalies"
+          />
+          @if (hasSecurityAlertsData()) {
+          <viking-chart
+            kind="bar"
+            [series]="securityAlertsSeries()"
+            [categories]="securityAlertCategories()"
+            label="Recent Security Anomalies"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else {
+          <viking-chart-empty-state
+            tone="secure"
+            icon="search"
+            title="No Anomalies Detected"
+            description="Security monitoring is active. No anomalous behavior patterns identified."
+          />
+          }
+        </viking-chart-panel>
 
-        <!-- Status Chart (Moved back to SIEM) -->
-        <section class="status-card-outlined">
-          <div class="chart-custom-header">
-            <div class="chart-custom-title">HTTP Status Distribution</div>
-            @if (hasStatusStackedData() || hasStatusData()) {
-            <div class="chart-custom-value">{{ uptimePercent }}%</div>
-            <div class="chart-custom-trend">{{ statusTrend }}</div>
-            } @else {
-            <div class="chart-custom-value chart-value-muted">Awaiting signal</div>
-            }
-          </div>
-          <div class="card-body-clean chart-container-medium">
-            @if (hasStatusStackedData()) {
-            <viking-chart
-              kind="stacked-bar"
-              [series]="statusStackedSeries()"
-              [categories]="statusCategories()"
-              label="HTTP Status Distribution"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else if (hasStatusData()) {
-            <viking-chart
-              kind="bar"
-              [series]="statusSeries()"
-              [categories]="statusCategories()"
-              label="HTTP Status Distribution"
-              [fill]="true"
-              class="viking-chart-medium"
-            />
-            } @else {
-            <div class="empty-chart-state">
-              <viking-app-icon name="http" hostClass="empty-icon" />
-              <h3 class="empty-title">No Status Data</h3>
-              <p class="empty-subtitle">HTTP response distribution will chart once request telemetry is available.</p>
-            </div>
-            }
-          </div>
-        </section>
+        <viking-chart-panel>
+          <viking-chart-card-header
+            title="HTTP Status Distribution"
+            [hasData]="hasStatusStackedData() || hasStatusData()"
+            [value]="uptimePercent + '%'"
+            [trend]="statusTrend"
+            emptyLabel="Awaiting signal"
+          />
+          @if (hasStatusStackedData()) {
+          <viking-chart
+            kind="stacked-bar"
+            [series]="statusStackedSeries()"
+            [categories]="statusCategories()"
+            label="HTTP Status Distribution"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else if (hasStatusData()) {
+          <viking-chart
+            kind="bar"
+            [series]="statusSeries()"
+            [categories]="statusCategories()"
+            label="HTTP Status Distribution"
+            [fill]="true"
+            class="viking-chart-medium"
+          />
+          } @else {
+          <viking-chart-empty-state
+            icon="bar-chart"
+            title="No Status Data"
+            description="HTTP response distribution will chart once request telemetry is available."
+          />
+          }
+        </viking-chart-panel>
       </div>
     </div>
   </div>

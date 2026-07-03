@@ -108,37 +108,43 @@
             <viking-app-icon name="security" />
             <span class="kpi-label">Threat Exposure</span>
             <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
-            @if (securitySparkline().length) {
-            <viking-chart
-              kind="sparkline"
-              [series]="securitySparkline()"
-              label="Threat exposure trend"
-              class="kpi-sparkline viking-chart-wide"
-            />
-            }
+            <div class="kpi-sparkline-slot">
+              @if (securitySparkline().length) {
+              <viking-chart
+                kind="sparkline"
+                [series]="securitySparkline()"
+                label="Threat exposure trend"
+                class="kpi-sparkline viking-chart-wide"
+              />
+              }
+            </div>
           </div>
           <div class="kpi-card" [class.alert]="openVulnCount() > 0">
             <viking-app-icon name="bug_report" />
             <span class="kpi-label">Open Issues</span>
             <span class="kpi-value">{{ openVulnCount() }}</span>
+            <div class="kpi-sparkline-slot" aria-hidden="true"></div>
           </div>
           <div class="kpi-card">
             <viking-app-icon name="speed" />
             <span class="kpi-label">Uptime</span>
             <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
-            @if (latencySparkline().length) {
-            <viking-chart
-              kind="sparkline"
-              [series]="latencySparkline()"
-              label="Latency trend"
-              class="kpi-sparkline viking-chart-wide"
-            />
-            }
+            <div class="kpi-sparkline-slot">
+              @if (latencySparkline().length) {
+              <viking-chart
+                kind="sparkline"
+                [series]="latencySparkline()"
+                label="Latency trend"
+                class="kpi-sparkline viking-chart-wide"
+              />
+              }
+            </div>
           </div>
           <div class="kpi-card" [class.alert]="activeIncidents > 0">
             <viking-app-icon name="report" />
             <span class="kpi-label">Active Incidents</span>
             <span class="kpi-value">{{ activeIncidents }}</span>
+            <div class="kpi-sparkline-slot" aria-hidden="true"></div>
           </div>
         </div>
 
@@ -147,29 +153,33 @@
             <h2>Recent Threats</h2>
             <button type="button" class="link-btn" (click)="setTab('security')">View all</button>
           </div>
-          @if (vulnService.isLoading()) {
-          <div class="panel-loading"><span class="spinner"></span> Scanning...</div>
-          } @else if (recentThreats().length === 0) {
-          <div class="empty-chart-state compact is-secure">
-            <viking-app-icon name="verified_user" hostClass="empty-icon" />
-            <h3 class="empty-title">Perimeter Clear</h3>
-            <p class="empty-subtitle">No active threats detected. Your perimeter looks clear.</p>
-          </div>
-          } @else {
-          <div class="threat-list" role="list">
-            @for (threat of recentThreats(); track trackThreat($index, threat)) {
-            <div class="threat-item" role="listitem">
-              <span class="severity-pill" [ngClass]="severityClass(threat.severity)"
-                >{{ threat.severity }}</span
-              >
-              <div class="threat-info">
-                <strong>{{ threat.title }}</strong>
-                <span>{{ threat.status }}</span>
+          <div class="panel-body">
+            @if (vulnService.isLoading()) {
+            <div class="panel-loading"><span class="spinner"></span> Scanning...</div>
+            } @else if (recentThreats().length === 0) {
+            <viking-chart-empty-state
+              layout="fill"
+              tone="secure"
+              icon="check-circle"
+              title="Perimeter Clear"
+              description="No active threats detected. Your perimeter looks clear."
+            />
+            } @else {
+            <div class="threat-list" role="list">
+              @for (threat of recentThreats(); track trackThreat($index, threat)) {
+              <div class="threat-item" role="listitem">
+                <span class="severity-pill" [ngClass]="severityClass(threat.severity)"
+                  >{{ threat.severity }}</span
+                >
+                <div class="threat-info">
+                  <strong>{{ threat.title }}</strong>
+                  <span>{{ threat.status }}</span>
+                </div>
               </div>
+              }
             </div>
             }
           </div>
-          }
         </section>
 
         <section class="panel-card metrics-panel">
@@ -195,7 +205,7 @@
               <span class="snapshot-value">{{ cesLevel | number:'1.0-0' }}</span>
             </div>
           </div>
-          <div class="mini-chart">
+          <div class="panel-body mini-chart">
             @if (hasLatencyData()) {
             <viking-chart
               kind="line"
@@ -205,11 +215,12 @@
               [fill]="true"
             />
             } @else {
-            <div class="empty-chart-state compact">
-              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
-              <h3 class="empty-title">Awaiting Telemetry</h3>
-              <p class="empty-subtitle">Performance data will appear once your site is connected.</p>
-            </div>
+            <viking-chart-empty-state
+              layout="fill"
+              icon="globe"
+              title="Awaiting Telemetry"
+              description="Performance data will appear once your site is connected."
+            />
             }
           </div>
         </section>
@@ -251,14 +262,16 @@
               [fill]="true"
             />
             } @else {
-            <div class="empty-chart-state">
-              <viking-app-icon name="timeline" hostClass="empty-icon" />
-              <h3 class="empty-title">No Latency Data</h3>
-              <p class="empty-subtitle">Add a monitored endpoint in Sites to begin collecting latency metrics.</p>
+            <viking-chart-empty-state
+              layout="fill"
+              icon="trending-up"
+              title="No Latency Data"
+              description="Add a monitored endpoint in Sites to begin collecting latency metrics."
+            >
               <viking-button variant="primary" type="button" (pressed)="goToSettings()">
                 Go to Sites
               </viking-button>
-            </div>
+            </viking-chart-empty-state>
             }
           </div>
         </section>
@@ -274,11 +287,13 @@
               [fill]="true"
             />
             } @else {
-            <div class="empty-chart-state compact is-secure">
-              <viking-app-icon name="verified_user" hostClass="empty-icon" />
-              <h3 class="empty-title">No Threat Data</h3>
-              <p class="empty-subtitle">Threat severity distribution will appear when events are detected.</p>
-            </div>
+            <viking-chart-empty-state
+              layout="fill"
+              tone="secure"
+              icon="check-circle"
+              title="No Threat Data"
+              description="Threat severity distribution will appear when events are detected."
+            />
             }
           </div>
         </section>
@@ -294,11 +309,13 @@
               [fill]="true"
             />
             } @else {
-            <div class="empty-chart-state compact is-secure">
-              <viking-app-icon name="radar" hostClass="empty-icon" />
-              <h3 class="empty-title">No Anomalies</h3>
-              <p class="empty-subtitle">No anomalous security signals detected in the last 24 hours.</p>
-            </div>
+            <viking-chart-empty-state
+              layout="fill"
+              tone="secure"
+              icon="search"
+              title="No Anomalies"
+              description="No anomalous security signals detected in the last 24 hours."
+            />
             }
           </div>
         </section>
@@ -335,10 +352,14 @@
           @if (vulnService.isLoading()) {
           <div class="panel-loading"><span class="spinner"></span> Ingesting threat feed...</div>
           } @else if (recentThreats().length === 0) {
-          <div class="empty-chart-state is-secure">
-            <viking-app-icon name="verified_user" hostClass="empty-icon" />
-            <h3 class="empty-title">All Clear</h3>
-            <p class="empty-subtitle">No vulnerabilities or threats require your attention right now.</p>
+          <div class="panel-body">
+            <viking-chart-empty-state
+              layout="fill"
+              tone="secure"
+              icon="check-circle"
+              title="All Clear"
+              description="No vulnerabilities or threats require your attention right now."
+            />
           </div>
           } @else {
           <div class="security-queue" role="list">

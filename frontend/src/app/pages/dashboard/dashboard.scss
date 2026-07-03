@@ -291,6 +291,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 16px;
+  min-height: 132px;
   border-radius: var(--border-radius-md);
   border: 1px solid var(--border);
   background: linear-gradient(
@@ -340,11 +341,18 @@
   }
 
   .kpi-sparkline {
-    margin-top: 8px;
     width: 100%;
     height: 2rem;
     opacity: 0.85;
   }
+}
+
+.kpi-sparkline-slot {
+  margin-top: auto;
+  min-height: 2rem;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
 }
 
 .kpi-label {
@@ -367,6 +375,26 @@
 
 .metrics-panel {
   grid-area: metrics;
+}
+
+.panel-card.threats-panel,
+.panel-card.metrics-panel,
+.panel-card.security-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
+}
+
+.panel-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+
+  viking-chart-empty-state {
+    flex: 1 1 auto;
+    --viking-chart-empty-min-height: 200px;
+  }
 }
 
 .panel-header {
@@ -618,6 +646,7 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin-bottom: 16px;
+  flex-shrink: 0;
 }
 
 .snapshot-stat {
@@ -639,10 +668,10 @@
 }
 
 .mini-chart {
-  height: 180px;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;
+  min-height: 180px;
 
   viking-chart {
     display: flex;
@@ -651,9 +680,9 @@
     min-height: 0;
   }
 
-  .empty-chart-state.compact {
+  viking-chart-empty-state {
     flex: 1 1 auto;
-    min-height: 140px;
+    --viking-chart-empty-min-height: 160px;
   }
 }
 
@@ -742,13 +771,9 @@
     min-height: 0;
   }
 
-  .empty-chart-state {
+  viking-chart-empty-state {
     flex: 1 1 auto;
-    min-height: 200px;
-  }
-
-  .empty-chart-state.compact {
-    min-height: 160px;
+    --viking-chart-empty-min-height: 200px;
   }
 }
 
