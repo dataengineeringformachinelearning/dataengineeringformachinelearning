@@ -1,11 +1,22 @@
 # @dataengineeringformachinelearning/viking-ui
 
-**Viking-UI** is DEML's premium Angular design system — dark-first engineering aesthetics with luxurious minimalism.
+**Viking-UI** is DEML's premium Angular design system — dark-first engineering aesthetics with luxurious minimalism. Visual tokens and Porsche/Wallace standards are defined in the canonical **[THEME.md](../../../THEME.md)** at the repository root.
+
+## Design philosophy
+
+From [THEME.md](../../../THEME.md):
+
+- **Porsche-like precision** and **Wallace Corp high-end industrial tech**
+- **Dark-first** — deep charcoals, machined metallic edges, no decorative noise
+- **Deep teal** (`#0D7377`) primary CTA, **rich crimson** (`#922B3E`) secondary accent
+- **Charcoal surfaces** (`#111`, `#1A1A1A`, `#2A2A2A`) with metallic borders
+- **WCAG 2.1 AA** focus rings, 44px touch targets, keyboard navigation
+- **Zero arbitrary hex** — all colors resolve to `--viking-*` tokens
+
+## Features
 
 - **4px grid** spacing (`--viking-space-half` … `--viking-space-10`; legacy `--viking-space-1` = 8px)
 - **16px** main content / **14px** UI chrome typography with full type scale
-- **Deep teal** (`#0D7377`) primary CTA, **rich crimson** (`#922B3E`) secondary accent
-- **Charcoal surfaces** (`#111`, `#1A1A1A`, `#2A2A2A`) with metallic borders (`#555`–`#AAA`)
 - Zero-dependency components (`viking-*` selectors, `--viking-*` tokens)
 - WCAG 2.1 AA focus rings, smooth theme transitions, axe-core tested templates
 
