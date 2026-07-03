@@ -58,6 +58,11 @@ import { VikingSize, VikingTone } from '../core/types';
         color: var(--viking-accent-content);
         box-shadow: var(--viking-shadow-sm);
       }
+      :host(.viking-badge-secondary) {
+        background: color-mix(in srgb, var(--viking-accent-secondary) 16%, var(--viking-surface));
+        border-color: color-mix(in srgb, var(--viking-accent-secondary) 55%, transparent);
+        color: var(--viking-accent-secondary);
+      }
       :host(.viking-badge-success) {
         background: color-mix(in srgb, var(--viking-success) 16%, var(--viking-surface));
         border-color: color-mix(in srgb, var(--viking-success) 55%, transparent);
@@ -72,6 +77,11 @@ import { VikingSize, VikingTone } from '../core/types';
         background: color-mix(in srgb, var(--viking-danger) 14%, var(--viking-surface));
         border-color: color-mix(in srgb, var(--viking-danger) 50%, transparent);
         color: var(--viking-danger-text);
+      }
+      :host(.viking-badge-info) {
+        background: color-mix(in srgb, var(--viking-info) 14%, var(--viking-surface));
+        border-color: color-mix(in srgb, var(--viking-info) 50%, transparent);
+        color: var(--viking-info);
       }
       :host(.viking-badge-muted) {
         color: var(--viking-text-muted);

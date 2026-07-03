@@ -81,6 +81,14 @@ export class VikingTimeline {}
         border-color: var(--viking-accent);
         color: var(--viking-accent);
       }
+      .viking-marker-secondary {
+        border-color: var(--viking-accent-secondary);
+        color: var(--viking-accent-secondary);
+      }
+      .viking-marker-info {
+        border-color: var(--viking-info);
+        color: var(--viking-info);
+      }
       .viking-marker-success {
         border-color: var(--viking-success);
         color: var(--viking-success);

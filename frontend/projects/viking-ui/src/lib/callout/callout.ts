@@ -5,9 +5,11 @@ import { VikingTone } from '../core/types';
 
 const TONE_ICONS: Record<string, VikingIconName> = {
   accent: 'info',
+  secondary: 'info',
   success: 'check-circle',
   warning: 'alert-triangle',
   danger: 'alert-circle',
+  info: 'info',
   muted: 'info',
 };
 
@@ -65,6 +67,22 @@ const TONE_ICONS: Record<string, VikingIconName> = {
       }
       :host(.viking-callout-accent) .viking-callout-icon {
         color: var(--viking-accent);
+      }
+      :host(.viking-callout-secondary) {
+        border-color: color-mix(in srgb, var(--viking-accent-secondary) 45%, transparent);
+        border-left-color: var(--viking-accent-secondary);
+        background: var(--viking-accent-secondary-soft);
+      }
+      :host(.viking-callout-secondary) .viking-callout-icon {
+        color: var(--viking-accent-secondary);
+      }
+      :host(.viking-callout-info) {
+        border-color: color-mix(in srgb, var(--viking-info) 45%, transparent);
+        border-left-color: var(--viking-info);
+        background: color-mix(in srgb, var(--viking-info) 10%, var(--viking-surface));
+      }
+      :host(.viking-callout-info) .viking-callout-icon {
+        color: var(--viking-info);
       }
       :host(.viking-callout-success) {
         border-color: color-mix(in srgb, var(--viking-success) 45%, transparent);

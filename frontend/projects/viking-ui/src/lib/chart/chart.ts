@@ -57,9 +57,11 @@ interface Gutter {
 
 const TONE_VARS: Record<VikingTone, string> = {
   accent: 'var(--viking-accent)',
+  secondary: 'var(--viking-accent-secondary)',
   success: 'var(--viking-success)',
   warning: 'var(--viking-warning)',
   danger: 'var(--viking-danger)',
+  info: 'var(--viking-info)',
   muted: 'var(--viking-text-muted)',
 };
 
@@ -160,7 +162,9 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       [attr.aria-describedby]="summary() ? 'viking-chart-summary-' + chartId : null"
     >
       @if (label()) {
-        <figcaption class="sr-only" [id]="'viking-chart-label-' + chartId">{{ label() }}</figcaption>
+        <figcaption class="sr-only" [id]="'viking-chart-label-' + chartId">
+          {{ label() }}
+        </figcaption>
       }
       @if (summary()) {
         <p class="sr-only" [id]="'viking-chart-summary-' + chartId">{{ summary() }}</p>

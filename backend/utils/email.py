@@ -64,7 +64,7 @@ def send_alert_email(subject: str, message: str):
         background-color: #f4f5f7;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
-        color: #31393c;
+        color: #111111;
       }}
       table {{ border-collapse: collapse; }}
       .container {{
@@ -79,7 +79,7 @@ def send_alert_email(subject: str, message: str):
         margin-bottom: 40px;
       }}
       .header {{
-        background-color: #31393c;
+        background-color: #111111;
         padding: 30px 40px;
         text-align: center;
       }}
@@ -97,7 +97,7 @@ def send_alert_email(subject: str, message: str):
       .hero h2 {{
         margin: 0 0 15px;
         font-size: 22px;
-        color: #2176ff;
+        color: #0d7377;
         font-weight: 600;
         letter-spacing: -0.02em;
       }}
@@ -112,7 +112,7 @@ def send_alert_email(subject: str, message: str):
       }}
       .alert-box {{
         background-color: #f8f9fa;
-        border-left: 4px solid #2176ff;
+        border-left: 4px solid #0d7377;
         padding: 20px;
         border-radius: 4px;
         margin-bottom: 30px;
@@ -122,7 +122,7 @@ def send_alert_email(subject: str, message: str):
         font-family: ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', monospace;
         font-size: 13px;
         line-height: 1.5;
-        color: #31393c;
+        color: #111111;
         white-space: pre-wrap;
       }}
       .cta {{
@@ -130,7 +130,7 @@ def send_alert_email(subject: str, message: str):
         margin: 30px 0;
       }}
       .cta a {{
-        background-color: #2176ff;
+        background-color: #0d7377;
         color: #ffffff;
         text-decoration: none;
         padding: 14px 28px;
@@ -148,7 +148,7 @@ def send_alert_email(subject: str, message: str):
         line-height: 1.5;
       }}
       .footer a {{
-        color: #2176ff;
+        color: #0d7377;
         text-decoration: none;
       }}
     </style>
@@ -171,7 +171,7 @@ def send_alert_email(subject: str, message: str):
 
             <!-- Main Content -->
             <div class="content">
-              <div style="font-weight: 600; margin-bottom: 10px; color: #31393c; font-size: 15px;">Event Overview: {subject}</div>
+              <div style="font-weight: 600; margin-bottom: 10px; color: #111111; font-size: 15px;">Event Overview: {subject}</div>
               <div class="alert-box">
                 <pre>{message}</pre>
               </div>
@@ -181,7 +181,7 @@ def send_alert_email(subject: str, message: str):
               </div>
 
               <p style="font-size: 14px; color: #666; margin-top: 20px; line-height: 1.5;">
-                If you have any questions or need immediate assistance, please contact our support team at <a href="mailto:support@deml.app" style="color: #2176ff;">support@deml.app</a>.
+                If you have any questions or need immediate assistance, please contact our support team at <a href="mailto:support@deml.app" style="color: #0d7377;">support@deml.app</a>.
               </p>
             </div>
 

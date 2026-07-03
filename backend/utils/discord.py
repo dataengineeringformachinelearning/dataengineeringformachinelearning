@@ -21,7 +21,7 @@ def send_discord_alert(subject: str, message: str):
   embed = {
     "title": subject,
     "description": f"```\n{message}\n```",
-    "color": 2193151,  # Crayola Blue: #2176ff
+    "color": 881527,  # Viking teal: #0d7377
     "footer": {"text": "DEML Platform"},
     "timestamp": datetime.datetime.utcnow().isoformat(),
   }

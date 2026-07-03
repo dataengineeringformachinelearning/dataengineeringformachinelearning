@@ -119,9 +119,10 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   hasStatusStackedData = computed(() =>
     hasChartValues(this.statusStackedSeries().flatMap(series => series.data)),
   );
-  hasTrafficGroupedData = computed(() =>
-    this.trafficGroupedSeries().length > 1 &&
-    hasChartValues(this.trafficGroupedSeries().flatMap(series => series.data)),
+  hasTrafficGroupedData = computed(
+    () =>
+      this.trafficGroupedSeries().length > 1 &&
+      hasChartValues(this.trafficGroupedSeries().flatMap(series => series.data)),
   );
   hasEndpointData = computed(() =>
     hasChartValues(this.endpointSeries().flatMap(series => series.data)),
@@ -283,7 +284,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           if (groupedLen >= 2) {
             this.trafficGroupedSeries.set([
               { name: 'Requests', data: freqData.slice(0, groupedLen), tone: 'accent' },
-              { name: 'Latency (ms)', data: latData.slice(0, groupedLen), tone: 'warning' },
+              { name: 'Latency (ms)', data: latData.slice(0, groupedLen), tone: 'info' },
             ]);
           } else {
             this.trafficGroupedSeries.set([]);

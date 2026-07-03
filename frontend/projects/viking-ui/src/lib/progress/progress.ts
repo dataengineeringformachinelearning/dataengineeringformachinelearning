@@ -68,8 +68,14 @@ import { VikingTone } from '../core/types';
         background: var(--viking-accent);
         transition: width 0.3s ease;
       }
+      .viking-bar-secondary {
+        background: var(--viking-accent-secondary);
+      }
       .viking-bar-success {
         background: var(--viking-success);
+      }
+      .viking-bar-info {
+        background: var(--viking-info);
       }
       .viking-bar-warning {
         background: var(--viking-warning);

@@ -19,11 +19,21 @@ _CSP_CONNECT_SRC = (
   "https://*.googleapis.com https://*.firebaseio.com "
   "https://*.algolia.net https://*.algolianet.com https://*.algolia.io "
   "https://experiences.resolver.algolia.com https://experiences.cdn.algolia.com "
+  "https://experiences.algolia.com "
   "https://deml.app https://*.deml.app "
   "https://backend.deml.app https://*.backend.deml.app "
   "https://dataengineeringformachinelearning.com https://*.dataengineeringformachinelearning.com "
   "https://*.google-analytics.com https://*.googletagmanager.com "
   "https://*.clarity.ms https://*.bing.com"
+)
+_CSP_IMG_SRC = (
+  "'self' data: blob: "
+  "https://deml.app https://*.deml.app "
+  "https://backend.deml.app https://*.backend.deml.app "
+  "https://dataengineeringformachinelearning.com https://*.dataengineeringformachinelearning.com "
+  "https://c.clarity.ms https://*.clarity.ms "
+  "https://*.google-analytics.com https://*.googletagmanager.com "
+  "https://*.bing.com"
 )
 _CSP_FRAME_SRC = (
   "'self' https://*.firebaseapp.com https://deml.app https://*.deml.app "
@@ -73,7 +83,7 @@ class ContentSecurityPolicyMiddleware:
         "https://fonts.googleapis.com https://deml.app https://*.deml.app; "
         "font-src 'self' data: https://fonts.gstatic.com; "
         f"connect-src {_CSP_CONNECT_SRC} {extra_connect}; "
-        f"img-src 'self' data: blob: https://deml.app https://*.deml.app {extra_img}; "
+        f"img-src {_CSP_IMG_SRC} {extra_img}; "
         f"frame-src {_CSP_FRAME_SRC};"
       )
       response["Content-Security-Policy"] = csp_policy.strip()

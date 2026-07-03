@@ -1,7 +1,14 @@
 import type { VikingIconName } from './icons';
 
 /** Semantic tones — every tone resolves to a THEME.md token. */
-export type VikingTone = 'accent' | 'success' | 'warning' | 'danger' | 'muted';
+export type VikingTone =
+  | 'accent'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'muted';
 
 export type VikingSize = 'base' | 'sm' | 'xs';
 
