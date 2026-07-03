@@ -199,7 +199,33 @@ Production runs **14 Cloud Run services** (see [Chapter 22](#chapter-22-producti
 - **Supply chain:** Pre-commit + GitHub Actions (Semgrep, Trivy, Gitleaks, Renovate); internal Kanban for vulns ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)).
 - **Compliance posture:** Architected for SOC 2 Type II, CMMC 2.0 Level 2, NIST SP 800-171 Rev. 3 ([Chapter 23](#chapter-23-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3)).
 
-### 10. Observability & Health Monitoring
+### 10. Threat-Driven Design and Defendable Architecture Principles
+
+Modern data and ML platforms are not passive repositories—they are **detection and response surfaces**. Adversaries target telemetry pipelines, model endpoints, and tenant boundaries because those paths carry high-value signals and privileged access. A compliance-first checklist or a vulnerability-first patch queue alone cannot keep pace with that reality. Lockheed Martin's *A Threat-Driven Approach to Cyber Security* (Muckin & Fitch, 2019) argues that defenders must **prioritize threats over compliance artifacts or isolated CVEs**: identify what adversaries are trying to achieve, then engineer controls that interrupt those objectives. The companion framework *Defendable Architectures* (Fitch & Muckin, 2019) translates that mindset into build-time requirements—systems must be explicitly designed for **Visibility**, **Manageability**, and **Survivability** so operators can execute **Intelligence Driven Defense** at scale. DEML adopts both frameworks as operational doctrine, not slide-deck vocabulary: every production path in this CONOPS is shaped to make adversary behavior observable, operator response fast, and degraded operation survivable.
+
+#### Visibility
+
+Visibility means the platform exposes enough trustworthy signal—across commands, projections, queries, and batch ML—to detect misuse, misconfiguration, and attack progression without guessing. DEML achieves this through layered telemetry rather than a single dashboard.
+
+The **Event Projections** loop is the primary visibility spine: client commands (`ingestEvent`, Django Outbox → `outbox_relay`) land on Redpanda; `telemetry_worker` enriches from Postgres and materializes Firestore read models while emitting OpenTelemetry traces to ClickHouse. Operators do not infer pipeline health from user complaints—the **Event Projections** synthetic probe on `platform-status` continuously validates end-to-end flow. Network traffic enrichment ([Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry)) adds ASN, GeoIP, UA parsing, and behavioral context at the edge. Threat feeds ingested hourly by `security_worker` ([Chapter 13](#chapter-13-enhancing-data-with-threat-intelligence)) fuse external IoCs with internal telemetry before the `ThreatModel` scores access risk. The **CES dashboard** ([Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces)) distills Threat Level, SLA Level, and Stableness into a single operational gauge. Sentry, GCP Logging, and immutable GCS audit logs complete the picture for release regressions and compliance evidence. Visibility is incomplete if it is tenant-blind: symmetrical worker loops and strict `account_id` / Firestore rule scoping ensure every signal is attributable.
+
+#### Manageability
+
+Manageability means operators can change posture, deploy fixes, rotate secrets, and tune models **without architectural surgery**—controls are centralized, automated, and repeatable across tenants including Tenant0 dogfood.
+
+Automation is the manageability engine. **`outbox_relay`** (5s cadence) and **`telemetry_worker`** run continuously; **`ml_worker`** and **`security_worker`** consume Kafka tasks on schedule—retraining SLA/threat models daily and refreshing AbuseIPDB / OTX feeds hourly ([Chapter 24](#chapter-24-automation-and-maintenance-schedules)). Pre-commit hooks, Semgrep, Trivy, Renovate, and the internal vulnerability Kanban ([Chapter 21](#chapter-21-team-workflows-and-vulnerability-management)) turn supply-chain findings into tracked remediation without manual triage drift. RBAC + ABAC ([Chapter 28](#chapter-28-access-control-matrix-role-based-rbac--attribute-based-abac-paradigms)) and GCP KMS envelope rotation ([Chapter 10](#chapter-10-encrypting-the-data--key-management)) are managed through documented APIs and workers—not ad hoc SQL. CI/CD splits Cloud Run and Firebase deploy paths so Functions, rules, and backend services ship independently ([§14](#14-cicd--release-operations)). Integration health endpoints (`/api/v1/integrations/{platform}`) and the service matrix in [§8](#8-deployment-topology--service-matrix) give operators a single map of what to restart, scale, or roll back. Manageability fails when tenants are exceptions; DEML's symmetrical pipelines guarantee that a control applied to one account applies to all.
+
+#### Survivability
+
+Survivability means the platform **continues its mission under stress**—broker outages, worker stalls, crypto failures, or active attack—without silent data loss or unbounded blast radius.
+
+DEML engineers survivability into the command path itself. When Redpanda is unreachable from Firebase Functions, **`ingestEvent` falls back to Firestore `events`** while internal services continue consuming via the private broker ([§5](#5-operational-modes)). The **Transactional Outbox** ensures API-origin events are never published without a durable Postgres record. **`telemetry_worker` idempotency keys** and the **`frontend-events-dlq`** topic prevent poison messages from stalling the entire projection fleet—operators replay with stable keys after fixing enrichment logic ([§13](#13-contingency--degraded-operations)). Multi-tenant isolation (Postgres `account_id`, Firestore security rules, Hugging Face namespaced model artifacts) contains compromise: one tenant's incident does not become another's data leak. Sanity-backed status communications ([Chapter 14](#chapter-14-scaling-reporting-and-announcements-with-sanity)) survive primary backend outages. Daily **`ml_worker` retraining loops** keep threat and SLA models current even as attack patterns shift. Survivability is not "always up"; it is **graceful degradation with recoverable state** and explicit operator runbooks in [`docs/conops.md`](docs/conops.md).
+
+**Virtuous Knowledge Cycle.** Threat-driven design is not a one-time architecture review—it is a closed loop. **Design** phases prioritize adversary objectives and map them to Visibility / Manageability / Survivability controls. **Build** phases encode those controls in Event Projections, workers, encryption, and access matrices. **Run** phases generate telemetry, CES scores, DLQ depth, and threat-intel matches that validate—or falsify—design assumptions. **Defend** phases feed incident outcomes, new IoCs, and model false-positive rates back into the next design iteration. Each lap tightens detection fidelity, reduces operator toil, and hardens degraded-mode behavior. The platform dogfoods this cycle on Tenant0 (`platform-status`) before any control reaches customer tenants.
+
+These principles are operational scaffolding, not abstract theory. [Chapter 7](#chapter-7-securing-the-compute) and [Chapter 23](#chapter-23-enterprise-security-soc-2-cmmc-20-and-nist-sp-800-171-rev-3) apply them to compute hardening and enterprise compliance evidence; [Chapter 13](#chapter-13-enhancing-data-with-threat-intelligence) details the threat-intelligence fusion pipeline; [Chapter 20](#chapter-20-network-traffic-enrichment-and-cybersecurity-telemetry) covers edge enrichment; and [Chapter 25](#chapter-25-countermeasure-effectiveness-standard-ces) formalizes how countermeasure effectiveness is measured and displayed.
+
+### 11. Observability & Health Monitoring
 
 | Signal                   | Source                                 | Operator use                                                                                           |
 | ------------------------ | -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
@@ -210,7 +236,7 @@ Production runs **14 Cloud Run services** (see [Chapter 22](#chapter-22-producti
 | **Synthetic uptime**     | `telemetry_worker` pingers (30s)       | Status page accuracy                                                                                   |
 | **Infrastructure**       | GCP metrics, GCP Logging               | Capacity, audit trail                                                                                  |
 
-### 11. Maintenance & Automation Cadence
+### 12. Maintenance & Automation Cadence
 
 All schedules are canonical in [Appendix D](#appendix-d-maintenance--automation-schedule). Summary:
 
@@ -220,7 +246,7 @@ All schedules are canonical in [Appendix D](#appendix-d-maintenance--automation-
 - **Daily:** ML retraining, `db_cleanup` (30-day raw retention), Stripe `sync_subscriptions`, DEK rotation checks.
 - **Weekly / Monthly / Quarterly:** Renovate, Semgrep, deep audits via GitHub Actions.
 
-### 12. Contingency & Degraded Operations
+### 13. Contingency & Degraded Operations
 
 | Failure                          | System behavior                                                         | Recovery                                                            |
 | -------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------- |
@@ -231,7 +257,7 @@ All schedules are canonical in [Appendix D](#appendix-d-maintenance--automation-
 | Postgres outage                  | REST mutations fail; cached projections may stale                       | Cloud SQL restore from volume snapshot; run migrations              |
 | KMS unreachable                  | Cannot decrypt integration tokens                                       | Restore GCP credentials; verify `telemetry-app-sa` IAM              |
 
-### 13. CI/CD & Release Operations
+### 14. CI/CD & Release Operations
 
 1. Feature branch → pre-commit (Ruff, ESLint, Axe) → PR.
 2. Merge to `main` → Cloud Build webhook builds affected services (watch paths per service).
@@ -241,7 +267,7 @@ All schedules are canonical in [Appendix D](#appendix-d-maintenance--automation-
 
 Semantic versioning and release notes: `scripts/git_flow.py` ([Chapter 16](#chapter-16-developer-workflow-and-version-management)).
 
-### 14. Documentation Map
+### 15. Documentation Map
 
 | Document                                                   | Audience                 | Content                             |
 | ---------------------------------------------------------- | ------------------------ | ----------------------------------- |
