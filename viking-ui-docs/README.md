@@ -38,6 +38,8 @@ Output: `viking-ui-docs/dist/browser/` (static SPA).
 
 Merges to `main` that touch `viking-ui-docs/` or the library trigger `.github/workflows/firebase-viking-ui-docs-deploy.yml`.
 
+**CI secret (required once):** add repository secret `FIREBASE_SERVICE_ACCOUNT_DEML_UI` with the full JSON for `firebase-adminsdk-fbsvc@deml-ui.iam.gserviceaccount.com`. Never commit service account keys to the repo.
+
 Manual deploy:
 
 ```bash

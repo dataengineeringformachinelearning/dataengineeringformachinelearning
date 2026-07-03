@@ -19,6 +19,8 @@ Thumbs.db
 # Service account keys (use FIREBASE_SERVICE_ACCOUNT_JSON / GCP_SERVICE_ACCOUNT_JSON env vars)
 firebase-service-account.json
 **/firebase-service-account.json
+deml-ui-service-account.json
+**/deml-ui-service-account.json
 gcp-service-account.json
 
 # Python General
