@@ -60,7 +60,17 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 `outbox_relay` (5s), continuous Kafka consumers, hourly threat-intel fetch, daily ML retraining and 30-day raw telemetry purge, weekly Renovate, monthly/quarterly security audits. See [BOOK.md Appendix D](BOOK.md#appendix-d-maintenance--automation-schedule).
 
-## 3. High-Throughput Ingestion Architecture
+## 3. Defendable Architecture Principles
+
+Lockheed Martin's *Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems should exhibit to support intelligence-driven defense rather than static compliance alone. The DEML platform is engineered to embody each characteristic across its operational planes.
+
+**Visibility** enables defenders to observe activity across the network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
+
+**Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and the documented maintenance cadence—`outbox_relay` every 5s, daily model retraining, weekly dependency updates—provides a repeatable rhythm for threat-informed control evolution.
+
+**Survivability** allows essential services to persist during attack, compromise, and recovery. The Event Projections architecture decouples command ingress from transactional persistence via a transactional Outbox and idempotent consumers; failed messages route to `frontend-events-dlq`, and the Firebase Functions gateway falls back to Firestore when Redpanda is unreachable. UUID-scoped multi-tenancy, distroless least-privilege containers, and zero-downtime Cloud Run rolling deploys constrain lateral movement and support graceful degradation. Explicit degraded operational modes (broker, worker, maintenance) defined in Section 2.4 enable operators to sustain read-path availability through Firestore subscriptions while isolating and restoring backend components.
+
+## 4. High-Throughput Ingestion Architecture
 
 The platform uses an **Event Projections** architecture for client telemetry with production-grade reliability:
 
@@ -130,13 +140,13 @@ By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), we ach
 
 Additionally, to standardize distributed tracing and metrics, the platform integrates an OpenTelemetry (OTel) Collector. The collector receives native OTLP telemetry from the application services and infrastructure, exporting it directly to ClickHouse—a lightning-fast columnar database optimized for OLAP workloads. This separation enables scaled observability and efficient distributed tracing without burdening the primary PostgreSQL transactional database.
 
-## 4. Asynchronous Batch Processing with Polars
+## 5. Asynchronous Batch Processing with Polars
 
 Processing streaming events row-by-row introduces significant database write amplification. Our telemetry worker aggregates incoming events from Redpanda and processes them in micro-batches using Polars, an extremely fast multi-threaded DataFrame library written in Rust.
 
 By batching calculations, we compute historical uptime graphs (30-day intervals) and update cumulative SLA and threat records efficiently, reducing disk I/O by over 80%.
 
-## 5. Extensible Deep Learning Pipeline
+## 6. Extensible Deep Learning Pipeline
 
 To transition from reactive monitoring to proactive planning, we introduce a predictive deep learning pipeline built in PyTorch. The pipeline consumes sequence features derived from recent response-time variances, historical error rates, and peak usage patterns.
 
@@ -148,11 +158,11 @@ The primary intelligence layer employs a PyTorch Multi-Layer Perceptron (MLP) to
 - **Hidden Layers**: Fully connected layers utilizing Rectified Linear Unit (ReLU) activation functions.
 - **Optimization**: The model uses the Adam optimizer. Hyperparameters are tuned dynamically using an exhaustive Grid Search protocol (`GridSearchCV`) to continuously adapt the model to shifting operational baselines without manual intervention.
 
-## 6. ML-Powered 30-Day Threat Detection & Telemetry Ingestion
+## 7. ML-Powered 30-Day Threat Detection & Telemetry Ingestion
 
 Our integration within the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that account owners can load directly on their status pages, providing zero-dependency telemetry streaming.
 
-## 7. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing
+## 8. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing
 
 Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and Generative AI, has evolved into a powerful agentic paradigm for threat analysis. Because we can only plan for what we know or what history provides precedent for, we face a distinct challenge: if past data dictates future risk, we must engineer an entirely new way forward.
 
@@ -162,7 +172,7 @@ Using TAXII 2.1 and REST protocols, these indicators are routed natively to fede
 
 Furthermore, to support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 Readiness and compliance audits, the platform implements an end-to-end security architecture. This includes real-time E2E encryption telemetry (TLS 1.3 in-transit, and GCP KMS-backed envelope encryption at-rest with 30-day rotation), immutable audit logging streamed directly to centralized Google Cloud Logging buckets for SIEM ingestion, granular Role-Based Access Control (RBAC) supporting Viewer, Operator, and Security Admin configurations, hardened Google distroless container images executing under least-privilege non-root policies (USER nginx), strict Content-Security-Policy (CSP) and HSTS security headers, and continuous vulnerability guarding via Semgrep (for continuous code and dependency scanning), Renovate (for automated dependency upgrades), local Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets (with custom baseline filters), and Django Migration Linter checks.
 
-## 8. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
+## 9. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
 
 Access control is implemented as defense-in-depth: **RBAC** (what a logged-in user may do) plus **ABAC** (whether a specific resource is visible or mutable in the current session context). The platform uses a **User + Sites** model—one Firebase login maps to one Django `User` and one `UserProfile.account_id`, and that account may own many `StatusPage` sites. There are **no organization hierarchies, sub-users, or shared team logins per workspace**. Authorization therefore hinges on four axes rather than org charts:
 
@@ -208,7 +218,7 @@ Programmatic ingestion (`/api/v1/ingest`, `/api/v1/predict`) resolves scope via 
 
 Private-by-default: until `is_published` is set, only the owning login (and the API with a valid owner session) can read operational stats—anonymous visitors hitting `/status/:slug` or the stats API receive `403`/`404`.
 
-## 9. Data Tenancy, Retention, and Lifecycle Policy
+## 10. Data Tenancy, Retention, and Lifecycle Policy
 
 Observability systems must ensure strict isolation. The DEML Platform enforces **account-scoped isolation** at the database level: telemetry, integrations, threat reports, and status widgets are keyed to `User` / `UserProfile.account_id` (or the `platform` sentinel for `platform-status`). Data is private-by-default; nothing bleeds across accounts.
 
@@ -220,13 +230,13 @@ Additionally, the platform implements a strict 30-day retention and lifecycle po
 
 Furthermore, our engineering roadmap includes integrations with monetization systems like Stripe. This will enable paid tiers where models and forecasts are refreshed at a high-frequency interval (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.
 
-## 10. Team Workflows and Integrated Vulnerability Management
+## 11. Team Workflows and Integrated Vulnerability Management
 
 To facilitate collaborative security workflows and structured issue tracking, the platform implements a self-contained, integrated vulnerability tracking and management component. This component features an interactive Kanban board layout to prioritize, assign, and track remediation efforts natively, allowing security teams to update vulnerability states based on customized impact and likelihood metrics.
 
 Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. For visual quality, the platform unifies every surface under the **Viking-UI** design system documented in [THEME.md](THEME.md): precision engineering and high-end industrial tech with deep charcoal surfaces, machined metallic borders, deep teal primary accents, and rich crimson secondary emphasis. `viking-skeleton` loaders provide structural loading states; native SVG `viking-chart` components bind to tokenized series colors — no third-party chart runtimes or neon gradient effects.
 
-## 10.1 Official Integrations
+## 11.1 Official Integrations
 
 Enterprise teams connect existing infrastructure through six first-class integration paths. Each uses the same bearer API key, `/api/v1/ingest` for batch telemetry, and `/api/v1/predict` for low-latency inference:
 
@@ -241,11 +251,11 @@ Enterprise teams connect existing infrastructure through six first-class integra
 
 Guides with copy-paste examples live in [`docs/integrations/`](../docs/integrations/) and on the [Developer Portal](https://dataengineeringformachinelearning.com/documentation).
 
-## 11. Conclusion
+## 12. Conclusion
 
 By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.
 
-## 12. Acknowledgments
+## 13. Acknowledgments
 
 Special thanks to Google DeepMind and their groundbreaking work in Artificial Intelligence. The documentary _AlphaGo - The Movie_ served as a profound inspiration to delve deeper into the fields of AI and Machine Learning.
 
@@ -258,7 +268,7 @@ This platform was substantially authored with assistance from the following inte
 - **Cursor** — Grok 4.3, Grok Build 0.1 (xAI)
 - **Design system**: `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (Viking-UI premium palette v2 — charcoal / teal / crimson); typography via [Inter](https://rsms.me/inter/), [Orbitron](https://fonts.google.com/specimen/Orbitron), and [Michroma](https://fonts.google.com/specimen/Michroma) (CES instrumentation and marketing display only)
 
-## 13. References
+## 14. References
 
 1. Redpanda Data, Inc. (2026). _Redpanda: A streaming data platform_.
 2. Apache Software Foundation. (2026). _Apache Kafka_.
@@ -279,8 +289,9 @@ This platform was substantially authored with assistance from the following inte
 17. Mend.io. (2026). _Mend: Application Security Testing_.
 18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
 19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
+20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures_. Lockheed Martin Corporation.
 
-## 14. DevSecOps and Platform Standardization Audit
+## 15. DevSecOps and Platform Standardization Audit
 
 In our continuous pursuit of operational excellence, we have recently completed a comprehensive DevSecOps and UI/UX standardization audit. This effort guarantees an uncompromising mobile-first foundation across the platform, standardizing layout wrappers and enforcing identical maximum width containers (`1260px`) on the Viking-UI 4px grid for zero layout shifting. Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI — now shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix (premium standards). On the infrastructure side, we have transitioned our deployment pipeline to leverage strict Google Distroless multi-stage container builds (`gcr.io/distroless/nodejs22-debian12` for Angular SSR and `gcr.io/distroless/python3-debian12` for Django), fundamentally reducing the attack surface by eliminating unnecessary shells and package managers in production. Additionally, we have rigorously audited Django ORM queries and ML workers to ensure robust, leak-proof data tenancy and strict adherence to our 30-day data retention policy.
 
@@ -288,6 +299,6 @@ Most recently, we fully integrated Application-Level Zeek-equivalent middleware 
 
 To ensure long-term, scalable SaaS reliability, we enforce an uncompromising CI/CD and pre-commit stabilization pipeline. The entire Python backend is continuously formatted and linted via `ruff`, while the frontend strictly adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including the telemetry ingestion endpoints, background threat modeling workers, and billing integration—are fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. The core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations that align perfectly with the production cluster.
 
-## 15. License
+## 16. License
 
 This work is licensed under a [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
