@@ -81,21 +81,36 @@ import { VikingSize, VikingTone } from '../core/types';
       .viking-badge-remove {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
+        min-width: var(--viking-touch-target-comfort);
+        min-height: var(--viking-touch-target-comfort);
         border: none;
         background: transparent;
         color: currentColor;
         cursor: pointer;
-        padding: 2px;
+        padding: var(--viking-space-half);
         border-radius: var(--viking-radius-pill);
         transition: var(--viking-transition-interactive);
-        margin-left: var(--viking-space-half);
+        margin-left: calc(var(--viking-space-half) * -1);
+        position: relative;
+      }
+      .viking-badge-remove::before {
+        content: '';
+        position: absolute;
+        inset: 50%;
+        width: var(--viking-touch-target-min);
+        height: var(--viking-touch-target-min);
+        transform: translate(-50%, -50%);
       }
       .viking-badge-remove:hover {
         background: color-mix(in srgb, currentColor 12%, transparent);
       }
       .viking-badge-remove:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
+      }
+      .viking-badge-remove:active {
+        transform: scale(var(--viking-state-active-scale));
       }
     `,
   ],

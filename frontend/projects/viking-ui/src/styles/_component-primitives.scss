@@ -5,6 +5,10 @@
 // ============================================================================
 
 :root {
+  /* Touch targets — WCAG 2.5.5 / mobile-first minimum hit area */
+  --viking-touch-target-min: 44px;
+  --viking-touch-target-comfort: 44px;
+
   /* Interactive state */
   --viking-state-disabled-opacity: 0.48;
   --viking-state-hover-lift: -1px;
@@ -115,6 +119,56 @@
   40%,
   80% {
     transform: translateX(4px);
+  }
+}
+
+@keyframes viking-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes viking-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Shared focus-ring utilities — use on interactive hosts without duplicating tokens */
+.viking-focus-ring:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+.viking-focus-ring-inset:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: calc(var(--viking-ring-offset) * -1);
+}
+
+/* Expand visual-only controls to touch-friendly hit areas without changing layout */
+.viking-touch-target {
+  position: relative;
+  min-width: var(--viking-touch-target-min);
+  min-height: var(--viking-touch-target-min);
+}
+
+.viking-touch-target::before {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  width: max(100%, var(--viking-touch-target-min));
+  height: max(100%, var(--viking-touch-target-min));
+  transform: translate(-50%, -50%);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --viking-touch-target-comfort: 36px;
   }
 }
 

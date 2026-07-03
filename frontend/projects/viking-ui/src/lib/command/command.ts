@@ -102,6 +102,11 @@ import { VikingCommandItem } from '../core/types';
         padding: var(--viking-space-2);
         border-bottom: 1px solid var(--viking-border);
         color: var(--viking-text-muted);
+        transition: var(--viking-transition-colors);
+      }
+      .viking-command-search:focus-within {
+        border-bottom-color: var(--viking-accent);
+        box-shadow: inset 0 -2px 0 var(--viking-accent-soft);
       }
       .viking-command-search input {
         flex: 1;
@@ -141,18 +146,28 @@ import { VikingCommandItem } from '../core/types';
         align-items: center;
         gap: var(--viking-space-1);
         width: 100%;
+        min-height: var(--viking-control-height-sm);
         border: none;
         background: transparent;
         color: var(--viking-text);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
-        padding: var(--viking-space-1);
-        border-radius: calc(var(--viking-radius) / 1.5);
+        padding: var(--viking-space-1) var(--viking-space-1-5);
+        border-radius: var(--viking-radius-sm);
         cursor: pointer;
         text-align: left;
+        transition: var(--viking-transition-interactive);
       }
+      .viking-command-item:hover:not(.viking-active),
       .viking-command-item.viking-active {
         background: var(--viking-accent-soft);
+      }
+      .viking-command-item:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
+      }
+      .viking-command-item:active {
+        transform: scale(var(--viking-state-active-scale));
       }
       .viking-command-label {
         flex: 1;

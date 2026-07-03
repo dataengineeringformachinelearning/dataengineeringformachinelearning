@@ -42,5 +42,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 export class VikingSkeleton {
   readonly shape = input<'line' | 'rect' | 'circle'>('line');
   readonly width = input<string>('100%');
-  readonly height = input<string>('18px');
+  readonly height = input<string>('var(--viking-font-size-sm)');
 }

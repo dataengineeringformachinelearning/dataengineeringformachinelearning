@@ -38,12 +38,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         stroke: currentColor;
         stroke-dasharray: 42 84;
         transform-origin: center;
-        animation: viking-spin 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      }
-      @keyframes viking-spin {
-        to {
-          transform: rotate(360deg);
-        }
+        animation: viking-spin var(--viking-duration-slow) var(--viking-ease-default) infinite;
       }
       @media (prefers-reduced-motion: reduce) {
         .viking-spinner-arc {

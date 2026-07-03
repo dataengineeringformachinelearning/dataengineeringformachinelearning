@@ -1,33 +1,34 @@
 .viking-showcase {
-  max-width: var(--container-max-width, 1260px);
+  max-width: var(--viking-container-max-width, 1260px);
   margin: 0 auto;
-  padding: var(--space-2, 16px);
+  padding: var(--viking-space-2);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3, 24px);
+  gap: var(--viking-space-3);
 }
 
 @media (min-width: 768px) {
   .viking-showcase {
-    padding: var(--space-4, 32px) var(--space-3, 24px);
+    padding: var(--viking-space-4) var(--viking-space-3);
   }
 }
 
 .showcase-header {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 8px);
-  padding-bottom: var(--space-3, 24px);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: var(--space-2, 16px);
+  gap: var(--viking-space-1);
+  padding-bottom: var(--viking-space-3);
+  border-bottom: 1px solid var(--viking-border);
+  margin-bottom: var(--viking-space-2);
 }
 
 .showcase-category {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2, 18px);
-  padding: var(--space-3, 24px) 0;
-  border-bottom: 1px solid var(--border);
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3) 0;
+  border-bottom: 1px solid var(--viking-border);
+  animation: viking-fade-in var(--viking-duration) var(--viking-ease-out);
 }
 
 .showcase-category:last-child {
@@ -38,14 +39,14 @@
 .showcase-category-header {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 8px);
+  gap: var(--viking-space-1);
   max-width: 52rem;
 }
 
 .demo-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-3, 24px);
+  gap: var(--viking-space-3);
 }
 
 @media (min-width: 960px) {
@@ -61,51 +62,64 @@
 .demo {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2, 18px);
-  padding: var(--space-3, 27px);
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-lg, 18px);
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
   min-width: 0;
+  box-shadow: var(--viking-shadow-sm);
+  transition: var(--viking-transition-interactive);
+}
+
+.demo:hover {
+  border-color: var(--viking-border-strong);
+  box-shadow: var(--viking-shadow-md);
 }
 
 .demo-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1, 9px);
+  gap: var(--viking-space-1);
 }
 
 .icon-row {
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
 }
 
 .context-zone {
   display: flex;
   align-items: center;
-  gap: var(--space-1, 9px);
-  padding: var(--space-3, 27px);
-  border: 1px dashed var(--border-layout);
-  border-radius: var(--border-radius-md, 9px);
-  color: var(--text-muted);
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-3);
+  border: 1px dashed var(--viking-border-strong);
+  border-radius: var(--viking-radius);
+  color: var(--viking-text-muted);
+  transition: var(--viking-transition-colors);
+}
+
+.context-zone:hover {
+  border-color: var(--viking-accent-strong);
+  background: var(--viking-accent-soft);
 }
 
 .skeleton-row {
   display: flex;
   align-items: center;
-  gap: var(--space-2, 18px);
+  gap: var(--viking-space-2);
 }
 
 .skeleton-lines {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 9px);
+  gap: var(--viking-space-1);
 }
 
 .slide-body {
-  padding: var(--space-4, 36px);
-  min-height: 162px;
+  padding: var(--viking-space-4);
+  min-height: 10rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -114,14 +128,14 @@
 .chart-gallery {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-3, 24px);
+  gap: var(--viking-space-3);
 }
 
 .site-chrome-preview {
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md, 9px);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
   overflow: hidden;
-  background: var(--bg-color);
+  background: var(--viking-bg);
 
   .navbar-content {
     position: relative;
@@ -173,42 +187,49 @@
 .chart-example {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 9px);
-  padding: var(--space-2, 18px);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md, 9px);
-  background: color-mix(in srgb, var(--card-bg) 96%, var(--bg-color));
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-2);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  background: color-mix(in srgb, var(--viking-surface) 96%, var(--viking-bg));
   min-width: 0;
+  transition: var(--viking-transition-interactive);
+}
+
+.chart-example:hover {
+  border-color: var(--viking-border-strong);
+  box-shadow: var(--viking-shadow-sm);
 }
 
 .sparkline-table-wrap {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .sparkline-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: calc(var(--base-font-size, 18px) * 0.9);
+  font-size: var(--viking-font-size-sm);
 }
 
 .sparkline-table th,
 .sparkline-table td {
-  padding: var(--space-1, 9px);
+  padding: var(--viking-space-1);
   text-align: left;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--viking-border);
 }
 
 .sparkline-table th {
-  color: var(--text-muted);
-  font-weight: 600;
+  color: var(--viking-text-muted);
+  font-weight: var(--viking-font-weight-semibold);
 }
 
 .change-success {
-  color: var(--color-success, #33a1fd);
+  color: var(--viking-success);
 }
 
 .change-danger {
-  color: var(--color-error, #f79824);
+  color: var(--viking-danger);
 }
 
 .stat-card {
@@ -216,12 +237,32 @@
   min-width: 12rem;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1, 9px);
+  gap: var(--viking-space-1);
 }
 
 .stat-card-chart {
-  width: calc(100% + var(--space-4, 36px));
-  margin-inline: calc(var(--space-2, 18px) * -1);
-  margin-bottom: calc(var(--space-2, 18px) * -1);
+  width: calc(100% + var(--viking-space-4));
+  margin-inline: calc(var(--viking-space-2) * -1);
+  margin-bottom: calc(var(--viking-space-2) * -1);
   height: 3rem;
+}
+
+.loading-overlay-demo {
+  position: relative;
+  min-height: 8rem;
+}
+
+.loading-overlay-demo viking-card {
+  position: relative;
+  min-height: 8rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase-category {
+    animation: none;
+  }
+
+  .demo:hover {
+    transform: none;
+  }
 }

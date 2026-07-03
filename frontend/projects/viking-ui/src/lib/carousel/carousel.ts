@@ -110,21 +110,31 @@ export class VikingCarouselSlide {}
       }
       .viking-carousel-nav {
         display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: var(--viking-touch-target-comfort);
+        min-height: var(--viking-touch-target-comfort);
         border: 1px solid var(--viking-border-strong);
         background: var(--viking-surface);
         color: var(--viking-text);
         border-radius: var(--viking-radius-pill);
         padding: var(--viking-space-1);
         cursor: pointer;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
+        -webkit-tap-highlight-color: transparent;
       }
       .viking-carousel-nav:hover:not(:disabled) {
         border-color: var(--viking-accent-strong);
         background: var(--viking-accent-soft);
+        box-shadow: var(--viking-shadow-sm);
+        transform: translateY(var(--viking-state-hover-lift));
+      }
+      .viking-carousel-nav:active:not(:disabled) {
+        transform: translateY(0) scale(var(--viking-state-active-scale));
       }
       .viking-carousel-nav:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-carousel-nav:disabled {
         opacity: 0.45;
@@ -135,22 +145,37 @@ export class VikingCarouselSlide {}
         gap: var(--viking-space-1);
       }
       .viking-carousel-dot {
-        width: 11px;
-        height: 11px;
+        position: relative;
+        width: var(--viking-space-1);
+        height: var(--viking-space-1);
         border-radius: var(--viking-radius-pill);
         border: 1px solid var(--viking-border-strong);
         background: var(--viking-surface-alt);
         cursor: pointer;
         padding: 0;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
+        -webkit-tap-highlight-color: transparent;
+      }
+      .viking-carousel-dot::before {
+        content: '';
+        position: absolute;
+        inset: 50%;
+        width: var(--viking-touch-target-min);
+        height: var(--viking-touch-target-min);
+        transform: translate(-50%, -50%);
+      }
+      .viking-carousel-dot:hover:not(.viking-active) {
+        border-color: var(--viking-accent-strong);
+        background: var(--viking-accent-soft);
       }
       .viking-carousel-dot.viking-active {
         background: var(--viking-accent);
         border-color: var(--viking-accent);
+        box-shadow: 0 0 0 2px var(--viking-accent-soft);
       }
       .viking-carousel-dot:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
       }
     `,
   ],
