@@ -31,7 +31,7 @@
         ></app-status-card>
         } @if (loadFailed()) {
         <div class="status-error-state col-span-4 col-span-md-12" role="alert">
-          <viking-app-icon name="cloud_off" hostClass="error-state-icon" ariaHidden="true" />
+          <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />
           <h2 class="error-title">Unable to Connect</h2>
           <p class="error-subtitle">
             We couldn't reach the status service. Verify the backend is running, then retry.
