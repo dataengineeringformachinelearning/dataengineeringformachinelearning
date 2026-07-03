@@ -1,0 +1,72 @@
+# Deploy Viking-UI documentation site to Firebase Hosting on merge to main.
+# Serves the spartan.ng-style component library docs at ui.dataengineeringformachinelearning.com
+# (configure custom domain in Firebase console after first deploy).
+
+name: Deploy Viking-UI Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'viking-ui-docs/**'
+      - 'frontend/projects/viking-ui/**'
+      - 'packages/deml-design-system/**'
+      - 'firebase.json'
+      - '.firebaserc'
+      - '.github/workflows/firebase-viking-ui-docs-deploy.yml'
+  workflow_dispatch:
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            viking-ui-docs/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci --legacy-peer-deps --prefix frontend
+
+      - name: Build Viking-UI library
+        run: npm run build:viking-ui --prefix frontend
+
+      - name: Install and build Viking-UI docs site
+        run: |
+          npm ci --legacy-peer-deps --prefix viking-ui-docs
+          npm run build --prefix viking-ui-docs
+
+      - name: Authenticate to Google Cloud / Firebase
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
+          create_credentials_file: true
+
+      - name: Install Firebase CLI
+        run: npm install -g firebase-tools
+
+      - name: Deploy Viking-UI docs hosting target
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
+        run: |
+          set +e
+          OUTPUT=$(firebase deploy --only hosting:viking-ui-docs --project demldotcom --non-interactive 2>&1)
+          STATUS=$?
+          echo "$OUTPUT"
+          if [ "$STATUS" -eq 0 ]; then
+            exit 0
+          fi
+          if echo "$OUTPUT" | grep -q "is the current active version"; then
+            echo "Hosting is already on the active version; treating deploy as success."
+            exit 0
+          fi
+          exit "$STATUS"

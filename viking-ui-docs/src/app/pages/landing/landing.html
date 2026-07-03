@@ -1,0 +1,47 @@
+<div class="landing">
+  <header class="landing-hero">
+    <viking-brand name="Viking-UI" />
+    <viking-heading size="xl" [level]="1">Stop fighting your component library.</viking-heading>
+    <viking-text variant="muted" class="landing-lead">
+      Accessible Angular UI primitives built with signals, SSR compatible, and zoneless ready.
+      Install the behavior. Copy the styles. Customize without limits.
+    </viking-text>
+    <div class="landing-actions">
+      <a routerLink="/components" class="landing-cta">
+        <viking-button variant="primary" icon="download">Get Started</viking-button>
+      </a>
+      <a routerLink="/components" class="landing-cta">
+        <viking-button variant="secondary" icon="chevron-right">View Components</viking-button>
+      </a>
+    </div>
+    <viking-text variant="muted" class="landing-meta">
+      Published as
+      <code>&#64;dataengineeringformachinelearning/viking-ui</code> — THEME.md tokens, WCAG 2.1 AA,
+      zero third-party UI runtime deps.
+    </viking-text>
+  </header>
+
+  <section class="landing-features" aria-labelledby="landing-features-heading">
+    <viking-heading size="lg" [level]="2" id="landing-features-heading">Built for precision engineering</viking-heading>
+    <div class="landing-feature-grid">
+      <article class="landing-feature">
+        <viking-heading size="base" [level]="3">Signal-native APIs</viking-heading>
+        <viking-text variant="muted">
+          Every control uses Angular signals — `input()`, `model()`, and `OnPush` change detection out of the box.
+        </viking-text>
+      </article>
+      <article class="landing-feature">
+        <viking-heading size="base" [level]="3">Zero UI runtime deps</viking-heading>
+        <viking-text variant="muted">
+          Native SVG charts, inline icon registry, and platform dialog elements. No Material, no CDK bloat.
+        </viking-text>
+      </article>
+      <article class="landing-feature">
+        <viking-heading size="base" [level]="3">THEME.md tokens</viking-heading>
+        <viking-text variant="muted">
+          Charcoal, teal, and crimson semantic palette with WCAG 2.1 AA contrast enforced by construction.
+        </viking-text>
+      </article>
+    </div>
+  </section>
+</div>

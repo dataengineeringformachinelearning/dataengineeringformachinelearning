@@ -71,7 +71,7 @@ Also exported as `VikingIconComponent` for consumers expecting that name.
 ```bash
 npm run build:viking-ui
 npm run build:viking-ui-css
-npm run serve:viking-ui-showcase
+npm run start:viking-ui-docs   # from repo root — http://localhost:4300
 ```
 
 ## Version bump

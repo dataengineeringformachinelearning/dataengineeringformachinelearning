@@ -4,9 +4,16 @@ from unittest.mock import patch
 import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.test import Client
+from django.test import Client, override_settings
 
 User = get_user_model()
+
+
+@pytest.fixture(autouse=True)
+def disable_ssl_redirect_in_tests() -> Any:
+  """Prevent SECURE_SSL_REDIRECT from leaking between tests and breaking API assertions."""
+  with override_settings(SECURE_SSL_REDIRECT=False, DEBUG=True):
+    yield
 
 
 @pytest.fixture(autouse=True, scope="session")

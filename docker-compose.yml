@@ -227,5 +227,18 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
 
+  scanner:
+    build:
+      context: ./infrastructure/scanner
+    container_name: scanner
+    ports:
+      - "8001:8000"
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
 volumes:
   clickhouse-data:

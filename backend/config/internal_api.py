@@ -24,11 +24,6 @@ from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
-# ── Auth ──────────────────────────────────────────────────────────────────────
-
-INTERNAL_SECRET: Final[str] = getattr(settings, "INTERNAL_SECRET", "dev-internal-secret")
-
-
 class InternalSecretAuth(APIKeyHeader):
   """Validates the `X-Internal-Secret` header against the shared secret.
 
@@ -40,7 +35,7 @@ class InternalSecretAuth(APIKeyHeader):
   param_name = "X-Internal-Secret"
 
   def authenticate(self, request: HttpRequest, key: str | None) -> str | None:
-    if key and key == INTERNAL_SECRET:
+    if key and key == settings.INTERNAL_SECRET:
       return key  # truthy — Ninja grants access
     return None  # None → 401 Unauthorized
 

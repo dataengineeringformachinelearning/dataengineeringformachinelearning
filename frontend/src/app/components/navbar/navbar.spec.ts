@@ -1,5 +1,9 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 
+import { AuthService } from '../../services/auth.service';
+import { ThemeService } from '../../services/theme.service';
 import { Navbar } from './navbar';
 
 describe('Navbar', () => {
@@ -9,11 +13,27 @@ describe('Navbar', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [Navbar],
+      providers: [
+        provideRouter([]),
+        {
+          provide: AuthService,
+          useValue: {
+            isAuthenticated: signal(false),
+            logout: async (): Promise<void> => undefined,
+          },
+        },
+        {
+          provide: ThemeService,
+          useValue: {
+            theme: signal<'light' | 'dark'>('dark'),
+            toggleTheme: (): void => undefined,
+          },
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Navbar);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {

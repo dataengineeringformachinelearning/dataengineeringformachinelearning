@@ -1,17 +1,15 @@
 <div class="viking-showcase">
-  <header class="showcase-header">
-    <viking-brand name="Viking-UI" />
-    <viking-heading size="xl" [level]="1">Viking-UI Component Gallery</viking-heading>
-    <viking-text variant="muted">
-      DEML premium design system — Viking-UI component library on THEME.md tokens. Publishable as
-      <code>&#64;dataengineeringformachinelearning/viking-ui</code>.
-    </viking-text>
+  <header class="showcase-page-header">
     <viking-breadcrumbs [items]="breadcrumbs" />
+    <viking-heading size="lg" [level]="1">Components</viking-heading>
+    <viking-text variant="muted">
+      Interactive previews for every Viking-UI primitive. Copy patterns directly into your Angular app.
+    </viking-text>
   </header>
 
-  <section class="showcase-category" aria-labelledby="cat-foundations">
+  <section class="showcase-category" id="cat-foundations" aria-labelledby="cat-foundations-heading">
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-foundations">Foundations</viking-heading>
+      <viking-heading size="lg" [level]="2" id="cat-foundations-heading">Foundations</viking-heading>
       <viking-text variant="muted"
         >Buttons, badges, typography helpers, and surface primitives.</viking-text
       >
@@ -48,7 +46,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-shell">
+  <section class="showcase-category" id="cat-shell" aria-labelledby="cat-shell">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-shell">Application Shell</viking-heading>
       <viking-text variant="muted"
@@ -147,7 +145,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-auth">
+  <section class="showcase-category" id="cat-auth" aria-labelledby="cat-auth">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-auth">Authentication</viking-heading>
       <viking-text variant="muted">Access portal layouts and sign-in affordances.</viking-text>
@@ -187,7 +185,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-forms">
+  <section class="showcase-category" id="cat-forms" aria-labelledby="cat-forms">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-forms">Forms &amp; Inputs</viking-heading>
       <viking-text variant="muted">Fields, pickers, toggles, and selection controls.</viking-text>
@@ -344,7 +342,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-overlays">
+  <section class="showcase-category" id="cat-overlays" aria-labelledby="cat-overlays">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-overlays"
         >Overlays &amp; Feedback</viking-heading
@@ -452,7 +450,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-nav">
+  <section class="showcase-category" id="cat-nav" aria-labelledby="cat-nav">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-nav">Navigation</viking-heading>
       <viking-text variant="muted">In-app nav bars, pagination, and iconography.</viking-text>
@@ -533,7 +531,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-data">
+  <section class="showcase-category" id="cat-data" aria-labelledby="cat-data">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-data">Data Visualization</viking-heading>
       <viking-text variant="muted">Charts, kanban boards, and quantitative displays.</viking-text>
@@ -685,7 +683,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-content">
+  <section class="showcase-category" id="cat-content" aria-labelledby="cat-content">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-content">Content &amp; Media</viking-heading>
       <viking-text variant="muted">Accordions, timelines, carousels, and rich text.</viking-text>
@@ -784,7 +782,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-marketing">
+  <section class="showcase-category" id="cat-marketing" aria-labelledby="cat-marketing">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-marketing">Marketing</viking-heading>
       <viking-text variant="muted"
@@ -802,7 +800,7 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-drakkar">
+  <section class="showcase-category" id="cat-drakkar" aria-labelledby="cat-drakkar">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-drakkar">Drakkar Shell</viking-heading>
       <viking-text variant="muted"

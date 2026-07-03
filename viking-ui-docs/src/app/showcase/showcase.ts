@@ -187,8 +187,8 @@ export class Showcase {
   ];
 
   protected readonly breadcrumbs: VikingBreadcrumb[] = [
-    { label: '@dataengineeringformachinelearning/viking-ui', href: '/' },
-    { label: 'Component Gallery' },
+    { label: 'Viking-UI', href: '/' },
+    { label: 'Components' },
   ];
 
   protected readonly regionOptions: VikingSelectOption[] = [
@@ -307,7 +307,7 @@ export class Showcase {
   ]);
 
   constructor() {
-    inject(Title).setTitle('Viking-UI Component Gallery');
+    inject(Title).setTitle('Components — Viking-UI');
   }
 
   protected toggleDrakkarTheme = (): void => {

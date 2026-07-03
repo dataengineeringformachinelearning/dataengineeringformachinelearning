@@ -1,0 +1,34 @@
+<div class="doc-shell">
+  <aside class="doc-sidebar" aria-label="Documentation navigation">
+    <a class="doc-sidebar-brand" routerLink="/">
+      <viking-brand name="Viking-UI" />
+    </a>
+
+    <nav class="doc-sidebar-group">
+      <viking-text variant="muted" class="doc-sidebar-label">Getting Started</viking-text>
+      <a class="doc-sidebar-link" routerLink="/" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }">
+        Introduction
+      </a>
+      <a class="doc-sidebar-link" routerLink="/components" routerLinkActive="is-active">Components</a>
+    </nav>
+
+    <nav class="doc-sidebar-group" aria-label="Component sections">
+      <viking-text variant="muted" class="doc-sidebar-label">On this page</viking-text>
+      @for (section of navSections; track section.id) {
+        <a class="doc-sidebar-link doc-sidebar-link--anchor" [routerLink]="['/components']" [fragment]="section.id">
+          {{ section.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="doc-sidebar-footer">
+      <a routerLink="/components" class="doc-sidebar-cta">
+        <viking-button variant="primary" icon="download">Browse components</viking-button>
+      </a>
+    </div>
+  </aside>
+
+  <div class="doc-main">
+    <router-outlet />
+  </div>
+</div>

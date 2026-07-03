@@ -7,6 +7,9 @@
       "hosting": {
         "marketing": [
           "demldotcom"
+        ],
+        "viking-ui-docs": [
+          "viking-ui-docs"
         ]
       }
     }
