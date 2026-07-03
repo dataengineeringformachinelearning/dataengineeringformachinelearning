@@ -151,6 +151,14 @@
           <span id="auth-icon-desktop"></span>
           <span id="auth-text-desktop">Sign In</span>
         </a>
+        <button
+          type="button"
+          class="auth-signout-btn"
+          id="auth-signout-desktop"
+          hidden
+        >
+          Sign Out
+        </button>
       </div>
       <button
         type="button"
@@ -194,8 +202,17 @@
       class="mobile-auth-btn"
       id="auth-btn-mobile"
     >
+      <span id="auth-icon-mobile"></span>
       <span id="auth-text-mobile">Sign In</span>
     </a>
+    <button
+      type="button"
+      class="mobile-auth-btn auth-signout-btn"
+      id="auth-signout-mobile"
+      hidden
+    >
+      Sign Out
+    </button>
   </nav>
 </header>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>

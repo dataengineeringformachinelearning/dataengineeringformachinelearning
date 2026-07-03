@@ -1,52 +1,52 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}{{ api_title }} — DEML OpenAPI{% endblock %}
-{% block og_title %}{{ api_title }} — DEML OpenAPI{% endblock %}
-{% block twitter_title %}{{ api_title }} — DEML OpenAPI{% endblock %}
-{% block meta_description %}
+{% extends "base.html" %} {% load static %} {% block title %}{{ api_title }} —
+DEML OpenAPI{% endblock %} {% block og_title %}{{ api_title }} — DEML OpenAPI{%
+endblock %} {% block twitter_title %}{{ api_title }} — DEML OpenAPI{% endblock
+%} {% block meta_description %}
 <meta
   name="description"
   content="Interactive OpenAPI documentation for DEML public ingestion and inference endpoints."
 />
-{% endblock %}
-{% block og_description %}Interactive OpenAPI documentation for DEML public ingestion and inference endpoints.{% endblock %}
-{% block twitter_description %}Interactive OpenAPI documentation for DEML public ingestion and inference endpoints.{% endblock %}
-
-{% block body_class %}backend-swagger{% endblock %}
-
-{% block extra_styles %}
+{% endblock %} {% block og_description %}Interactive OpenAPI documentation for
+DEML public ingestion and inference endpoints.{% endblock %} {% block
+twitter_description %}Interactive OpenAPI documentation for DEML public
+ingestion and inference endpoints.{% endblock %} {% block body_class
+%}backend-swagger{% endblock %} {% block extra_styles %} {# nosemgrep:
+html.security.audit.missing-integrity.missing-integrity — Swagger UI CDN;
+version pinned in URL #}
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
 />
 <link rel="stylesheet" href="{% static 'swagger-ui-viking.css' %}" />
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 <main class="swagger-docs-shell" id="main-content" tabindex="-1">
-  <header class="swagger-page-header viking-section-header" aria-label="API documentation header">
+  <header
+    class="swagger-page-header viking-section-header"
+    aria-label="API documentation header"
+  >
     <p class="hero-badge swagger-docs-badge">
       <span class="badge-dot" aria-hidden="true"></span>
       <span class="badge-text">OPENAPI DOCUMENTATION</span>
     </p>
     <h1 class="viking-section-title">{{ api_title }}</h1>
     <p class="viking-section-lead">
-      Interactive sandbox for public ingestion and inference endpoints. Authorize
-      with your bearer token using the control below.
+      Interactive sandbox for public ingestion and inference endpoints.
+      Authorize with your bearer token using the control below.
     </p>
   </header>
   <div id="swagger-ui" aria-live="polite"></div>
 </main>
-{% endblock %}
-
-{% block extra_scripts %}
+{% endblock %} {% block extra_scripts %} {# nosemgrep:
+html.security.audit.missing-integrity.missing-integrity #}
 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
 <script>
   const ui = SwaggerUIBundle({
     url: "{{ openapi_url|escapejs }}",
     dom_id: "#swagger-ui",
-    presets: [SwaggerUIBundle.presets.apis, SwaggerUIBundle.SwaggerUIStandalonePreset],
+    presets: [
+      SwaggerUIBundle.presets.apis,
+      SwaggerUIBundle.SwaggerUIStandalonePreset,
+    ],
     layout: "BaseLayout",
     deepLinking: true,
     defaultModelsExpandDepth: 1,

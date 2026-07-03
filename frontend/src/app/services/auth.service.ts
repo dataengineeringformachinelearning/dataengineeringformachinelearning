@@ -42,6 +42,22 @@ export class AuthService {
   private useMock =
     typeof window !== 'undefined' && environment.firebase.apiKey === 'PLACEHOLDER_API_KEY'; // pragma: allowlist secret
 
+  private syncCrossSiteAuthCache(): void {
+    if (typeof window === 'undefined') return;
+    const snapshot = {
+      isAuthenticated: this.isAuthenticated(),
+      userId: this.currentUserId(),
+      role: this.currentUserRole(),
+      timestamp: Date.now(),
+    };
+    if (snapshot.isAuthenticated) {
+      localStorage.setItem('deml_auth_status', JSON.stringify(snapshot));
+    } else {
+      localStorage.removeItem('deml_auth_status');
+      localStorage.removeItem('deml_session_active');
+    }
+  }
+
   constructor() {
     if (typeof window !== 'undefined') {
       if (this.useMock) {
@@ -66,6 +82,7 @@ export class AuthService {
         }
         this.isInitialized.set(true);
         this.isProcessing.set(false);
+        this.syncCrossSiteAuthCache();
       } else {
         const app = getApps().length === 0 ? initializeApp(environment.firebase) : getApp();
         this.auth = getAuth(app);
@@ -104,6 +121,7 @@ export class AuthService {
           }
           this.isInitialized.set(true);
           this.isProcessing.set(false);
+          this.syncCrossSiteAuthCache();
         });
       }
     } else {

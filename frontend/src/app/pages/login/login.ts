@@ -301,6 +301,17 @@ export class Login implements OnInit, OnDestroy {
       return; // The effect will catch this and handle the redirect
     }
     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
+    const marketingOrigin = (() => {
+      try {
+        return new URL(environment.marketingUrl).origin;
+      } catch {
+        return '';
+      }
+    })();
+    if (returnUrl.startsWith('http') && marketingOrigin && returnUrl.startsWith(marketingOrigin)) {
+      void this.authService.navigateToMarketingSite(returnUrl);
+      return;
+    }
     this.router.navigateByUrl(returnUrl);
   }
 

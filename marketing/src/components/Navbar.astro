@@ -48,10 +48,13 @@ const brandHref = resolveBrandHref('marketing', urls);
       </div>
 
       <div class="desktop-auth">
-        <a href={`${FRONTEND_URL}/login`} class="auth-btn" id="auth-btn-desktop">
+        <a href={`${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(MARKETING_URL)}`} class="auth-btn" id="auth-btn-desktop">
           <span id="auth-icon-desktop"><VikingIcon name="arrow-right" size={16} /></span>
           <span id="auth-text-desktop">Sign In</span>
         </a>
+        <button type="button" class="auth-signout-btn" id="auth-signout-desktop" hidden>
+          Sign Out
+        </button>
       </div>
 
       <button type="button" class="theme-toggle-btn" aria-label="Toggle light and dark theme" id="theme-toggle-btn">
@@ -80,10 +83,13 @@ const brandHref = resolveBrandHref('marketing', urls);
 
     <div class="mobile-divider"></div>
 
-    <a href={`${FRONTEND_URL}/login`} class="mobile-auth-btn" id="auth-btn-mobile">
+    <a href={`${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(MARKETING_URL)}`} class="mobile-auth-btn" id="auth-btn-mobile">
       <span id="auth-icon-mobile"><VikingIcon name="arrow-right" size={16} /></span>
       <span id="auth-text-mobile">Sign In</span>
     </a>
+    <button type="button" class="mobile-auth-btn auth-signout-btn" id="auth-signout-mobile" hidden>
+      Sign Out
+    </button>
   </nav>
 </header>
 

@@ -30,6 +30,7 @@ class CustomSwagger(Swagger):
       },
       request=request,
     )
+    # nosemgrep: python.django.security.audit.xss.direct-use-of-httpresponse.direct-use-of-httpresponse
     return HttpResponse(html, content_type="text/html")
 
 

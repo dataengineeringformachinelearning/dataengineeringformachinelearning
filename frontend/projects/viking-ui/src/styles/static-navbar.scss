@@ -315,6 +315,31 @@ html[data-theme='light'] {
   height: 16px;
 }
 
+.auth-signout-btn {
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  font-weight: 600 !important;
+  border-radius: 96px !important;
+  padding: 0 14px !important;
+  border: 1px solid var(--border) !important;
+  height: 40px !important;
+  line-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  white-space: nowrap !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  cursor: pointer;
+  transition: var(--transition-smooth) !important;
+}
+
+.auth-signout-btn:hover {
+  color: var(--text-color) !important;
+  border-color: var(--viking-crimson-500) !important;
+  background: color-mix(in srgb, var(--viking-crimson-500) 10%, transparent) !important;
+}
+
 .mobile-menu {
   display: none;
   flex-direction: column;
