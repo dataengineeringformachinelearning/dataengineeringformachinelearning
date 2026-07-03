@@ -1,4 +1,4 @@
-@use '../../styles/chrome-buttons' as *;
+@use '../../styles/drakkar-buttons' as *;
 
 :host {
   display: block;
@@ -169,12 +169,12 @@
 }
 
 ::ng-deep .viking-app-header-auth-btn {
-  @include viking-chrome-btn-primary;
+  @include viking-drakkar-btn-primary;
   min-width: auto;
 }
 
 ::ng-deep .viking-app-header-auth-btn.viking-app-header-auth-btn-outline {
-  @include viking-chrome-btn-outline;
+  @include viking-drakkar-btn-outline;
 }
 
 ::ng-deep .viking-app-header-auth-btn:hover {

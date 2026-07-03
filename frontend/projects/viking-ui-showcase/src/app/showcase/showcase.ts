@@ -176,7 +176,7 @@ export class Showcase {
   protected readonly viewToggle = signal('grid');
   protected readonly commandOpen = signal(false);
   protected readonly lastMessage = signal('');
-  protected readonly chromeTheme = signal<'light' | 'dark'>(
+  protected readonly drakkarTheme = signal<'light' | 'dark'>(
     document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark',
   );
 
@@ -310,9 +310,9 @@ export class Showcase {
     inject(Title).setTitle('Viking-UI Component Gallery');
   }
 
-  protected toggleChromeTheme = (): void => {
-    const next = this.chromeTheme() === 'light' ? 'dark' : 'light';
-    this.chromeTheme.set(next);
+  protected toggleDrakkarTheme = (): void => {
+    const next = this.drakkarTheme() === 'light' ? 'dark' : 'light';
+    this.drakkarTheme.set(next);
     document.documentElement.setAttribute('data-theme', next);
     document.documentElement.classList.toggle('dark', next === 'dark');
     localStorage.setItem('theme', next);

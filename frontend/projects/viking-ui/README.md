@@ -16,7 +16,7 @@ From [THEME.md](../../../THEME.md):
 ## Features
 
 - **4px grid** spacing (`--viking-space-half` … `--viking-space-10`; legacy `--viking-space-1` = 8px)
-- **16px** main content / **14px** UI chrome typography with full type scale
+- **16px** main content / **14px** Drakkar shell typography with full type scale
 - Zero-dependency components (`viking-*` selectors, `--viking-*` tokens)
 - WCAG 2.1 AA focus rings, smooth theme transitions, axe-core tested templates
 

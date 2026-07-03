@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { VikingFooter } from '../footer/footer';
 import {
@@ -12,10 +7,10 @@ import {
   isAppRouterPath,
   resolveFooterHref,
   SITE_FOOTER_COLUMNS,
-  SiteChromeContext,
+  SiteDrakkarContext,
   SiteFooterLink,
   SiteUrls,
-} from './site-chrome.config';
+} from './site-drakkar.config';
 
 /**
  * viking-site-footer — canonical site footer shared across DEML surfaces.
@@ -26,7 +21,11 @@ import {
   imports: [RouterLink, VikingFooter],
   template: `
     <viking-footer>
-      <nav fluxFooterDirectory class="viking-footer-directory footer-directory" aria-label="Footer Directory">
+      <nav
+        fluxFooterDirectory
+        class="viking-footer-directory footer-directory"
+        aria-label="Footer Directory"
+      >
         @for (column of columns; track column.title) {
           <div class="footer-column">
             <h3 class="footer-column-title">{{ column.title }}</h3>
@@ -73,8 +72,9 @@ import {
           <div class="copyright-info">
             <span class="copyright-text">
               Copyright © {{ year() }} Data Engineering for Machine Learning by
-              <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>.
-              All rights reserved.
+              <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer"
+                >Joe Alongi</a
+              >. All rights reserved.
             </span>
             <span class="copyright-text design-credit">
               UI by
@@ -94,7 +94,7 @@ import {
   `,
 })
 export class VikingSiteFooter {
-  readonly context = input<SiteChromeContext>('app');
+  readonly context = input<SiteDrakkarContext>('app');
   readonly urls = input<SiteUrls>(DEFAULT_SITE_URLS);
   readonly year = input<number>(new Date().getFullYear());
 

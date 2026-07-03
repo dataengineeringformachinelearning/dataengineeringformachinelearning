@@ -497,17 +497,19 @@
         <viking-heading size="sm" [level]="3">Semantic colors</viking-heading>
         <div class="demo-row">
           @for (sample of iconColorSamples; track sample.name) {
-            <viking-icon name="check-circle" [color]="sample.color" [size]="22" />
+          <viking-icon name="check-circle" [color]="sample.color" [size]="22" />
           }
         </div>
 
-        <viking-heading size="sm" [level]="3">Lucide registry ({{ lucideIconNames.length }} icons)</viking-heading>
+        <viking-heading size="sm" [level]="3"
+          >Lucide registry ({{ lucideIconNames.length }} icons)</viking-heading
+        >
         <div class="icon-gallery" role="list" aria-label="Lucide icon registry">
           @for (iconName of lucideIconNames; track iconName) {
-            <div class="icon-gallery-cell" role="listitem" [attr.title]="iconName">
-              <viking-icon [name]="iconName" sizePreset="md" />
-              <span class="icon-gallery-label">{{ iconName }}</span>
-            </div>
+          <div class="icon-gallery-cell" role="listitem" [attr.title]="iconName">
+            <viking-icon [name]="iconName" sizePreset="md" />
+            <span class="icon-gallery-label">{{ iconName }}</span>
+          </div>
           }
         </div>
       </section>
@@ -792,25 +794,26 @@
     </div>
   </section>
 
-  <section class="showcase-category" aria-labelledby="cat-chrome">
+  <section class="showcase-category" aria-labelledby="cat-drakkar">
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-chrome">Site Chrome</viking-heading>
+      <viking-heading size="lg" [level]="2" id="cat-drakkar">Drakkar Shell</viking-heading>
       <viking-text variant="muted"
-        >Shared navbar and footer used across marketing, app, and backend.</viking-text
+        >Shared navbar and footer (the Drakkar longship) across marketing, app, and
+        backend.</viking-text
       >
     </header>
     <div class="demo-grid">
       <section class="demo demo-wide" id="demo-site-navbar">
         <viking-heading size="lg" [level]="3">Site Navbar</viking-heading>
         <viking-text variant="muted">
-          Canonical marketing/app navigation chrome shared across DEML surfaces.
+          Canonical Drakkar navigation shared across DEML surfaces.
         </viking-text>
-        <div class="site-chrome-preview">
+        <div class="site-drakkar-preview">
           <viking-site-navbar
             context="marketing"
             [showSearch]="true"
-            [theme]="chromeTheme()"
-            (themeToggle)="toggleChromeTheme()"
+            [theme]="drakkarTheme()"
+            (themeToggle)="toggleDrakkarTheme()"
           />
         </div>
       </section>
@@ -820,7 +823,7 @@
         <viking-text variant="muted">
           Directory columns, compliance row, and USA badge lockup.
         </viking-text>
-        <div class="site-chrome-preview">
+        <div class="site-drakkar-preview">
           <viking-site-footer context="marketing" />
         </div>
       </section>

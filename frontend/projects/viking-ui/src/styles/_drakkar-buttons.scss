@@ -1,13 +1,13 @@
-// Shared chrome CTA styles — mirrors viking-button variants for static navbar / marketing HTML.
+// Shared Drakkar shell CTA styles — mirrors viking-button variants for static navbar / marketing HTML.
 @use 'buttons' as btn;
 
-@mixin viking-chrome-btn-base {
+@mixin viking-drakkar-btn-base {
   @include btn.viking-btn-base;
   text-transform: uppercase;
 }
 
-@mixin viking-chrome-btn-primary {
-  @include viking-chrome-btn-base;
+@mixin viking-drakkar-btn-primary {
+  @include viking-drakkar-btn-base;
   @include btn.viking-btn-primary;
 
   svg,
@@ -21,8 +21,8 @@
   }
 }
 
-@mixin viking-chrome-btn-outline {
-  @include viking-chrome-btn-base;
+@mixin viking-drakkar-btn-outline {
+  @include viking-drakkar-btn-base;
   @include btn.viking-btn-outline;
 
   &:hover svg {
@@ -32,17 +32,17 @@
 
 .auth-btn,
 a.auth-btn {
-  @include viking-chrome-btn-primary;
+  @include viking-drakkar-btn-primary;
 }
 
 .auth-btn.auth-btn-outline,
 a.auth-btn.auth-btn-outline {
-  @include viking-chrome-btn-outline;
+  @include viking-drakkar-btn-outline;
 }
 
 .mobile-auth-btn,
 a.mobile-auth-btn {
-  @include viking-chrome-btn-primary;
+  @include viking-drakkar-btn-primary;
   width: 100%;
   min-width: 0;
   justify-content: center;
@@ -50,5 +50,5 @@ a.mobile-auth-btn {
 
 .mobile-auth-btn.auth-btn-outline,
 a.mobile-auth-btn.auth-btn-outline {
-  @include viking-chrome-btn-outline;
+  @include viking-drakkar-btn-outline;
 }

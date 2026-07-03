@@ -34,9 +34,9 @@ export type {
 export { VikingControl, provideVikingCva } from './lib/core/cva';
 
 // Components (alphabetical)
-export * from './lib/site-chrome/site-chrome.config';
-export * from './lib/site-chrome/site-navbar';
-export * from './lib/site-chrome/site-footer';
+export * from './lib/site-drakkar/site-drakkar.config';
+export * from './lib/site-drakkar/site-navbar';
+export * from './lib/site-drakkar/site-footer';
 export * from './lib/app-header/app-header';
 export * from './lib/app-sidebar/app-sidebar';
 export * from './lib/accordion/accordion';

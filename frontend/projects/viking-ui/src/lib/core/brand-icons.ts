@@ -5,7 +5,7 @@
 export const VIKING_BRAND_ICON_PATHS = {
   /** Primary bar-chart mark in rounded frame (outline). */
   deml: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V13M12 17V8M16 17V11"/>',
-  /** Compact monogram for favicons and dense chrome. */
+  /** Compact monogram for favicons and dense Drakkar shell. */
   'deml-compact':
     '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 16V12M12 16V9M15 16V13"/>',
   /** Lockup mark with baseline accent bar. */

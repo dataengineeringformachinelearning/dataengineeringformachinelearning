@@ -7,10 +7,10 @@ import {
   resolveBrandHref,
   resolveNavHref,
   SITE_NAV_LINKS,
-  SiteChromeContext,
+  SiteDrakkarContext,
   SiteUrls,
   visibleNavLinks,
-} from './site-chrome.config';
+} from './site-drakkar.config';
 
 /**
  * viking-site-navbar — canonical site header shared across DEML surfaces.
@@ -160,7 +160,7 @@ import {
   `,
 })
 export class VikingSiteNavbar {
-  readonly context = input<SiteChromeContext>('app');
+  readonly context = input<SiteDrakkarContext>('app');
   readonly urls = input<SiteUrls>(DEFAULT_SITE_URLS);
   readonly isAuthenticated = input<boolean>(false);
   readonly theme = input<'light' | 'dark'>('dark');

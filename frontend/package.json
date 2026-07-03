@@ -16,7 +16,7 @@
     "build:viking-ui": "node scripts/sync_lucide_icons.mjs && ng build viking-ui",
     "build:viking-ui-css": "node scripts/build_viking_ui_css.mjs",
     "sync:lucide-icons": "node scripts/sync_lucide_icons.mjs",
-    "build:site-chrome": "node scripts/build_site_chrome.mjs",
+    "build:site-drakkar": "node scripts/build_site_drakkar.mjs",
     "build:viking-ui-showcase": "ng build viking-ui-showcase",
     "build:viking-ui-system": "npm run build:viking-ui && npm run build:viking-ui-showcase",
     "serve:viking-ui-showcase": "ng serve viking-ui-showcase",

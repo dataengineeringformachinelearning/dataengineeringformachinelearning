@@ -1,6 +1,12 @@
 import { VikingIconName } from '../core/icons';
 
-export type SiteChromeContext = 'app' | 'marketing' | 'backend';
+/**
+ * Drakkar — the Viking longship that carries the site shell (navbar, footer, nav links)
+ * across marketing, app, and backend surfaces.
+ */
+
+/** Which DEML surface the Drakkar shell is rendering on (navbar + footer). */
+export type SiteDrakkarContext = 'app' | 'marketing' | 'backend';
 
 export interface SiteUrls {
   app: string;
@@ -197,11 +203,7 @@ const resolveMarketingContentHref = (href: string, urls: SiteUrls): string => {
   return href.startsWith('/') ? href : joinBase(urls.marketing, href);
 };
 
-const resolvePlatformHref = (
-  href: string,
-  context: SiteChromeContext,
-  urls: SiteUrls,
-): string => {
+const resolvePlatformHref = (href: string, context: SiteDrakkarContext, urls: SiteUrls): string => {
   if (context === 'app') {
     return href;
   }
@@ -210,7 +212,7 @@ const resolvePlatformHref = (
 
 export const resolveNavHref = (
   link: SiteNavLink,
-  context: SiteChromeContext,
+  context: SiteDrakkarContext,
   urls: SiteUrls,
 ): string => {
   if (link.platform) {
@@ -224,7 +226,7 @@ export const resolveNavHref = (
 
 export const resolveFooterHref = (
   link: SiteFooterLink,
-  context: SiteChromeContext,
+  context: SiteDrakkarContext,
   urls: SiteUrls,
 ): string => {
   if (link.action === 'bug-report') {
@@ -242,7 +244,7 @@ export const resolveFooterHref = (
   return resolveMarketingContentHref(link.marketingHref, urls);
 };
 
-export const resolveBrandHref = (context: SiteChromeContext, urls: SiteUrls): string => {
+export const resolveBrandHref = (context: SiteDrakkarContext, urls: SiteUrls): string => {
   if (context === 'marketing') {
     return '/';
   }

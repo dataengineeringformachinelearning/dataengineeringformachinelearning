@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/core';
 
 /**
- * viking-footer — site-wide footer chrome. Project directory columns and bottom row via slots.
+ * viking-footer — site-wide Drakkar footer shell. Project directory columns and bottom row via slots.
  * Static apps (marketing, backend) use the same class names from viking-ui.css.
  */
 @Component({

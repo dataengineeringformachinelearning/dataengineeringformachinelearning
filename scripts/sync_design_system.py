@@ -94,8 +94,8 @@ def sync_design_system():
   if os.path.isdir(scss_target):
     print(f" - {scss_target}")
 
-  print("Building site-chrome assets and Django partials...")
-  subprocess.run(["npm", "run", "build:site-chrome"], cwd=frontend_dir, check=True)
+  print("Building site-drakkar assets and Django partials...")
+  subprocess.run(["npm", "run", "build:site-drakkar"], cwd=frontend_dir, check=True)
 
   print("Syncing widget assets...")
   subprocess.run(
