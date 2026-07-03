@@ -170,8 +170,8 @@ export class VikingFormPanel {}
 
       :host(.viking-form-section-status) .viking-form-section-fields {
         flex-direction: row;
-        align-items: flex-start;
-        gap: var(--viking-space-1-5);
+        align-items: center;
+        gap: var(--viking-space-1, 8px);
       }
 
       :host(.viking-form-section-status) .viking-form-section-actions {
