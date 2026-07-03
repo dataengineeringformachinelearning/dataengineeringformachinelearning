@@ -20,8 +20,8 @@
   z-index: 10000;
   padding: var(--space-1, 8px) var(--space-2, 16px);
   border-radius: var(--border-radius-sm, 8px);
-  background-color: var(--black, #000) !important;
-  color: var(--white, #fff) !important;
+  background-color: var(--black, var(--viking-black)) !important;
+  color: var(--white, var(--viking-white-pure)) !important;
   text-decoration: none;
   font-weight: 600;
   font-size: max(16px, var(--base-font-size, 16px));
@@ -43,7 +43,7 @@
   height: auto;
   overflow: visible;
   white-space: normal;
-  outline: var(--focus-ring-width, 3px) solid var(--focus-ring-color, #2176ff);
+  outline: var(--focus-ring-width, 3px) solid var(--focus-ring-color, var(--viking-teal-600));
   outline-offset: var(--focus-ring-offset, 2px);
 }
 
@@ -142,9 +142,9 @@ html[data-theme=light] .status-badge-premium.primary {
   font-size: var(--ui-font-size, 14px);
 }
 .status-badge-premium.pro-verified {
-  background: color-mix(in srgb, var(--golden-pollen) 14%, transparent);
-  color: var(--golden-pollen);
-  border-color: color-mix(in srgb, var(--golden-pollen) 28%, transparent);
+  background: color-mix(in srgb, var(--viking-gold-500) 14%, transparent);
+  color: var(--viking-gold-500);
+  border-color: color-mix(in srgb, var(--viking-gold-500) 28%, transparent);
   text-transform: none;
   letter-spacing: 0.02em;
 }
@@ -157,9 +157,9 @@ html[data-theme=light] .status-badge-premium.primary {
   flex-shrink: 0;
 }
 html[data-theme=light] .status-badge-premium.pro-verified {
-  color: var(--carrot-orange);
-  border-color: color-mix(in srgb, var(--carrot-orange) 28%, transparent);
-  background: color-mix(in srgb, var(--carrot-orange) 10%, transparent);
+  color: var(--viking-crimson-500);
+  border-color: color-mix(in srgb, var(--viking-crimson-500) 28%, transparent);
+  background: color-mix(in srgb, var(--viking-crimson-500) 10%, transparent);
 }
 
 .page-inner-wrapper {
@@ -276,8 +276,8 @@ th,
   justify-content: center;
 }
 
-.navbar-brand .navbar-logo.mat-icon,
-.navbar-brand mat-icon.navbar-logo {
+.navbar-brand .navbar-logo.viking-icon,
+.navbar-brand .brand-icon {
   overflow: visible !important;
   width: 36px !important;
   height: 36px !important;
@@ -367,7 +367,7 @@ th,
   inset: auto 16px 0;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--crayola-blue) 80%, transparent), transparent);
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--viking-teal-600) 80%, transparent), transparent);
   opacity: 0;
   transform: scaleX(0.4);
   transition: opacity 0.25s ease, transform 0.25s ease;
@@ -376,7 +376,7 @@ th,
 
 .nav-btn:hover {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--crayola-blue) 10%, transparent) !important;
+  background-color: color-mix(in srgb, var(--viking-teal-600) 10%, transparent) !important;
   transform: translateY(-1px);
 }
 
@@ -386,7 +386,7 @@ th,
 }
 
 html[data-theme=light] {
-  --nav-link-color: color-mix(in srgb, var(--jet-black) 88%, var(--white));
+  --nav-link-color: color-mix(in srgb, var(--viking-charcoal-900) 88%, var(--white));
 }
 html[data-theme=light] .nav-btn,
 html[data-theme=light] .mobile-nav-btn,
@@ -396,13 +396,13 @@ html[data-theme=light] .theme-toggle-btn {
 }
 html[data-theme=light] .nav-btn:hover,
 html[data-theme=light] .mobile-nav-btn:hover {
-  background-color: color-mix(in srgb, var(--crayola-blue) 10%, transparent) !important;
+  background-color: color-mix(in srgb, var(--viking-teal-600) 10%, transparent) !important;
 }
 
 .nav-btn.active {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--crayola-blue) 14%, transparent) !important;
-  box-shadow: inset 0 -2px 0 0 var(--crayola-blue), 0 0 12px color-mix(in srgb, var(--crayola-blue) 18%, transparent) !important;
+  background-color: color-mix(in srgb, var(--viking-teal-600) 14%, transparent) !important;
+  box-shadow: inset 0 -2px 0 0 var(--viking-teal-600), 0 0 12px color-mix(in srgb, var(--viking-teal-600) 18%, transparent) !important;
 }
 
 .nav-btn.active::before {
@@ -509,8 +509,8 @@ html[data-theme=light] .mobile-nav-btn:hover {
 
 .auth-btn:hover {
   transform: translateY(-2px) !important;
-  background-color: var(--crayola-blue) !important;
-  border-color: var(--crayola-blue) !important;
+  background-color: var(--viking-teal-600) !important;
+  border-color: var(--viking-teal-600) !important;
   color: var(--white) !important;
   box-shadow: var(--shadow-md) !important;
 }
@@ -577,7 +577,7 @@ html[data-theme=light] .mobile-nav-btn:hover {
 .mobile-nav-btn.active {
   color: var(--text-color) !important;
   background-color: rgba(33, 118, 255, 0.1) !important;
-  box-shadow: inset 0 0 0 1px var(--crayola-blue) !important;
+  box-shadow: inset 0 0 0 1px var(--viking-teal-600) !important;
 }
 
 .mobile-divider {
@@ -1210,7 +1210,7 @@ html[data-theme=light] .mobile-nav-btn:hover {
 
 .mode-tag,
 .logs-title,
-.mat-mdc-button,
+.viking-button,
 .mat-mdc-form-field,
 .section-tag,
 .hud-subtitle,
@@ -1271,13 +1271,13 @@ a.viking-btn {
 }
 
 .viking-btn-primary {
-  background-color: var(--crayola-blue);
+  background-color: var(--viking-teal-600);
   color: var(--white);
-  border-color: var(--crayola-blue);
+  border-color: var(--viking-teal-600);
 }
 .viking-btn-primary:hover:not(:disabled) {
-  background-color: var(--blue-bell);
-  border-color: var(--blue-bell);
+  background-color: var(--viking-teal-400);
+  border-color: var(--viking-teal-400);
   color: var(--white);
 }
 .viking-btn-primary:disabled {
@@ -1286,9 +1286,9 @@ a.viking-btn {
 }
 
 .viking-btn-danger {
-  background-color: var(--carrot-orange);
+  background-color: var(--viking-crimson-500);
   color: var(--white);
-  border-color: var(--carrot-orange);
+  border-color: var(--viking-crimson-500);
 }
 .viking-btn-danger:hover:not(:disabled) {
   opacity: 0.9;

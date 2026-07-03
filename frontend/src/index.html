@@ -30,8 +30,8 @@
     <meta name="algolia-site-verification" content="687B59B29612DE68" />
 
     <!-- Theme -->
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="var(--viking-white-pure)" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
     <meta name="supported-color-schemes" content="light dark" />
     <script>
@@ -76,7 +76,7 @@
       property="og:image"
       content="https://deml.app/data-engineering-for-machine-learning-preview.png"
     />
-    <meta property="og:site_name" content="DEML APP" />
+    <meta property="og:site_name" content="DEML (DATA ENGINEERING FOR MACHINE LEARNING)" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter -->
@@ -123,24 +123,21 @@
       rel="stylesheet"
     />
 
-    <!-- Critical theme tokens — prevent Material default purple flash before bundles load -->
+    <!-- Critical Viking-UI tokens — prevent flash before bundles load (THEME.md v2) -->
     <style>
       :root,
-      html[data-theme='light'] {
-        --crayola-blue: #2176ff;
-        --blue-bell: #33a1fd;
-        --golden-pollen: #fdca40;
-        --carrot-orange: #f79824;
-        --jet-black: #31393c;
-        --white: #ffffff;
-        --mat-sys-primary: #2176ff;
-        --mat-sys-on-primary: #ffffff;
-        --mat-sys-primary-container: #33a1fd;
-        --mat-sys-tertiary: #fdca40;
-        --mat-sys-error: #f79824;
-      }
+      html[data-theme='light'],
       html[data-theme='dark'] {
-        --mat-sys-on-primary-container: #ffffff;
+        --viking-teal-600: #0d7377;
+        --viking-teal-400: #14a3a8;
+        --viking-gold-500: #c4a035;
+        --viking-crimson-500: #a83344;
+        --viking-charcoal-900: #111111;
+        --viking-white: #f5f5f5;
+        --viking-white-pure: #ffffff;
+        --color-primary: var(--viking-teal-600);
+        --bg-color: var(--viking-charcoal-900);
+        --text-color: var(--viking-white);
       }
     </style>
 
@@ -153,8 +150,8 @@
         z-index: 10000;
         padding: 8px 16px;
         border-radius: 8px;
-        background-color: #000000;
-        color: #ffffff;
+        background-color: var(--viking-black);
+        color: var(--viking-white-pure);
         text-decoration: none;
         font-weight: 600;
         font-size: 16px;
@@ -176,7 +173,7 @@
         height: auto;
         overflow: visible;
         white-space: normal;
-        outline: 3px solid #2176ff;
+        outline: 3px solid var(--viking-teal-600);
         outline-offset: 2px;
       }
     </style>

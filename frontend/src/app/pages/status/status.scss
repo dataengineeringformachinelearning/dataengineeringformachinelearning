@@ -43,7 +43,7 @@
 .sphere-1 {
   width: 496px;
   height: 496px;
-  background: var(--crayola-blue);
+  background: var(--viking-teal-600);
   top: -150px;
   left: -150px;
 }
@@ -248,7 +248,7 @@
   }
 
   &.bar-warning {
-    background-color: var(--crayola-blue);
+    background-color: var(--viking-teal-600);
   }
 
   &.bar-danger {
@@ -535,7 +535,7 @@
 
   mat-icon,
   viking-app-icon {
-    color: var(--status-accent, var(--crayola-blue));
+    color: var(--status-accent, var(--viking-teal-600));
     font-size: 22px;
     width: 22px;
     height: 22px;

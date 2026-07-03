@@ -36,8 +36,8 @@
       pointer-events: auto;
       width: 100%;
       max-width: 100%;
-      background-color: var(--card-bg, #111);
-      border: 1px solid var(--border, #333);
+      background-color: var(--card-bg, var(--viking-charcoal-900));
+      border: 1px solid var(--border, var(--viking-charcoal-700));
       border-radius: 16px;
       box-shadow: 0 4px 24px rgba(0,0,0,0.4);
       padding: 24px;
@@ -47,7 +47,7 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       transition: all 0.3s ease;
-      color: var(--text-color, #fff);
+      color: var(--text-color, var(--viking-white-pure));
     }
 
     .deml-cookie-header {
@@ -63,7 +63,7 @@
     }
 
     .deml-cookie-icon {
-      color: var(--color-success, #10b981);
+      color: var(--color-success, var(--viking-green-500));
       font-size: 24px;
     }
 
@@ -77,7 +77,7 @@
     .deml-cookie-close-btn {
       background: transparent;
       border: none;
-      color: var(--text-muted, #999);
+      color: var(--text-muted, var(--viking-metallic-300));
       cursor: pointer;
       padding: 8px;
       display: flex;
@@ -89,7 +89,7 @@
 
     .deml-cookie-close-btn:hover {
       background-color: rgba(255, 255, 255, 0.08);
-      color: var(--text-color, #fff);
+      color: var(--text-color, var(--viking-white-pure));
     }
 
     .deml-cookie-body {
@@ -106,15 +106,15 @@
     }
 
     .deml-cookie-description a {
-      color: var(--link-color, #3b82f6);
+      color: var(--link-color, var(--viking-teal-400));
       text-decoration: none;
-      border-bottom: 1px solid var(--link-color, #3b82f6);
+      border-bottom: 1px solid var(--link-color, var(--viking-teal-400));
       font-weight: 500;
     }
 
     .deml-cookie-description a:hover {
-      color: var(--link-hover-color, #60a5fa);
-      border-bottom-color: var(--link-hover-color, #60a5fa);
+      color: var(--link-hover-color, var(--viking-teal-500));
+      border-bottom-color: var(--link-hover-color, var(--viking-teal-500));
     }
 
     .deml-cookie-form {
@@ -124,7 +124,7 @@
       padding: 16px;
       background: rgba(128, 128, 128, 0.05);
       border-radius: 16px;
-      border: 1px solid var(--border, #333);
+      border: 1px solid var(--border, var(--viking-charcoal-700));
       animation: deml-fade-in 0.3s ease-out;
     }
 
@@ -160,7 +160,7 @@
     .deml-pref-desc {
       font-size: 1rem;
       line-height: 1.35;
-      color: var(--text-muted, #999);
+      color: var(--text-muted, var(--viking-metallic-300));
       margin: 0;
     }
 
@@ -168,8 +168,8 @@
       font-size: 1rem;
       font-weight: 600;
       text-transform: uppercase;
-      color: var(--color-success, #10b981);
-      background: color-mix(in srgb, var(--color-success, #10b981) 10%, transparent);
+      color: var(--color-success, var(--viking-green-500));
+      background: color-mix(in srgb, var(--color-success, var(--viking-green-500)) 10%, transparent);
       padding: 8px;
       letter-spacing: 0.5px;
     }
@@ -189,7 +189,7 @@
     }
 
     .deml-toggle-switch.active {
-      background-color: var(--color-success, #10b981);
+      background-color: var(--color-success, var(--viking-green-500));
     }
 
     .deml-toggle-switch.active .deml-toggle-slider {
@@ -201,7 +201,7 @@
       left: 2px;
       width: 20px;
       height: 20px;
-      background-color: #ffffff;
+      background-color: var(--viking-white-pure);
       border-radius: 50%;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       transition: transform 0.3s ease;
@@ -225,16 +225,16 @@
       height: auto;
       font-size: 1rem;
       font-weight: 500;
-      color: var(--link-color, #3b82f6);
+      color: var(--link-color, var(--viking-teal-400));
       border: none;
-      border-bottom: 1px solid var(--link-color, #3b82f6);
+      border-bottom: 1px solid var(--link-color, var(--viking-teal-400));
       align-self: flex-start;
       cursor: pointer;
     }
 
     .deml-settings-btn:hover {
-      color: var(--link-hover-color, #60a5fa);
-      border-bottom-color: var(--link-hover-color, #60a5fa);
+      color: var(--link-hover-color, var(--viking-teal-500));
+      border-bottom-color: var(--link-hover-color, var(--viking-teal-500));
     }
 
     .deml-primary-actions {
@@ -259,8 +259,8 @@
 
     .deml-reject-btn {
       background-color: transparent;
-      color: var(--text-color, #fff);
-      border: 1px solid var(--border, #333);
+      color: var(--text-color, var(--viking-white-pure));
+      border: 1px solid var(--border, var(--viking-charcoal-700));
     }
 
     .deml-reject-btn:hover {
@@ -268,9 +268,9 @@
     }
 
     .deml-save-btn {
-      background-color: var(--color-primary-container, #1e3a8a);
-      color: var(--color-on-primary-container, #bfdbfe);
-      border: 1px solid var(--border, #333);
+      background-color: var(--color-primary-container, var(--viking-teal-700));
+      color: var(--color-on-primary-container, var(--viking-white-pure));
+      border: 1px solid var(--border, var(--viking-charcoal-700));
       display: none;
     }
 
@@ -283,19 +283,19 @@
     }
 
     .deml-save-btn:hover {
-      background-color: var(--color-on-primary-container, #bfdbfe);
-      color: var(--color-primary-container, #1e3a8a);
+      background-color: var(--color-on-primary-container, var(--viking-teal-400));
+      color: var(--color-primary-container, var(--viking-charcoal-900));
     }
 
     .deml-accept-btn {
-      background-color: var(--color-primary, #2563eb);
-      color: #ffffff;
+      background-color: var(--color-primary, var(--viking-teal-600));
+      color: var(--viking-white-pure);
       border: none;
     }
 
     .deml-accept-btn:hover {
-      background-color: #ffffff;
-      color: var(--color-primary, #2563eb);
+      background-color: var(--viking-teal-400);
+      color: var(--viking-white-pure);
     }
 
     @keyframes deml-slide-up {

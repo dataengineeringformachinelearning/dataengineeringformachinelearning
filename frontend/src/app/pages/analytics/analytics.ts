@@ -451,8 +451,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       if (loc.lat && loc.lng) {
         L.circleMarker([loc.lat, loc.lng], {
           radius: Math.max(6, Math.min(24, loc.count / 2)),
-          color: 'var(--crayola-blue)',
-          fillColor: 'var(--crayola-blue)',
+          color: 'var(--viking-teal-600)',
+          fillColor: 'var(--viking-teal-600)',
           fillOpacity: 0.6,
           weight: 2,
         })
