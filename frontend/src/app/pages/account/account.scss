@@ -1,1 +1,34 @@
 @use '../settings/settings.scss';
+
+.integration-info-branded {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+}
+
+.integration-brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  color: var(--text-color);
+
+  .integration-icon {
+    display: block;
+    flex-shrink: 0;
+  }
+}
+
+.integration-brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-half, 4px);
+  min-width: 0;
+}
+
+.integration-info-branded .integration-sub-status {
+  margin-top: 0;
+  font-size: 1rem;
+}
