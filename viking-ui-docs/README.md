@@ -14,7 +14,7 @@ Standalone [spartan.ng](https://spartan.ng)-style documentation site for the `@d
 | `frontend/projects/viking-ui/` | Publishable library source (consumed by deml.app and npm) |
 | `packages/deml-design-system/` | Shared THEME.md tokens                                    |
 
-The main DEML app imports Viking-UI via `file:dist/viking-ui`. This docs site imports the same library for live previews.
+The main DEML app imports Viking-UI via `file:dist/viking-ui`. This docs site resolves the library from `../frontend/projects/viking-ui/src/public-api.ts` via TypeScript path mapping (single Angular compilation graph — avoids duplicate `@angular/core` DI failures).
 
 ## Development
 
