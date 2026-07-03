@@ -78,6 +78,7 @@ export * from './lib/gauge-arc/gauge-arc';
 export * from './lib/hud-panel/hud-panel';
 export * from './lib/icon/icon';
 export { VikingIconComponent } from './lib/icon/icon';
+export * from './lib/icon-text/icon-text';
 export * from './lib/input/input';
 export * from './lib/kanban/kanban';
 export * from './lib/kbd/kbd';

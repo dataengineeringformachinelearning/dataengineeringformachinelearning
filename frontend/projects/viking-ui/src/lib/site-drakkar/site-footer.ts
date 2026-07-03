@@ -76,16 +76,6 @@ import {
                 >Joe Alongi</a
               >. All rights reserved.
             </span>
-            <span class="copyright-text design-credit">
-              UI by
-              <a
-                href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/THEME.md"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Viking-UI
-              </a>
-            </span>
           </div>
         </div>
       </ng-container>
