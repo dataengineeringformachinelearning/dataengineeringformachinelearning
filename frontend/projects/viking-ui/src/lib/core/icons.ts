@@ -1,12 +1,30 @@
 /**
  * Zero-dependency inline SVG icon registry (24×24 stroke icons).
- * Icons are original geometric paths — no third-party icon package required.
+ * Lucide paths are synced at build time; DEML brand marks are custom artwork.
  */
+import { LUCIDE_ICON_PATHS } from './lucide-paths.generated';
+import {
+  VIKING_BRAND_ICON_FILLED_PATHS,
+  VIKING_BRAND_ICON_PATHS,
+  VIKING_BRAND_ICON_NAMES_LIST,
+} from './brand-icons';
+
 export type VikingIconName = keyof typeof VIKING_ICON_PATHS;
 
 export type VikingIconSizePreset = 'sm' | 'md' | 'lg';
 
 export type VikingIconVariant = 'outline' | 'filled';
+
+/** Semantic color tokens resolved to CSS custom properties. */
+export type VikingIconColorToken =
+  | 'inherit'
+  | 'accent'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'muted'
+  | 'text';
 
 /** Pixel sizes for sm / md / lg presets. */
 export const VIKING_ICON_SIZE_PRESETS: Record<VikingIconSizePreset, number> = {
@@ -15,116 +33,25 @@ export const VIKING_ICON_SIZE_PRESETS: Record<VikingIconSizePreset, number> = {
   lg: 24,
 } as const;
 
-export const VIKING_ICON_PATHS = {
-  /** DEML brand mark — bar chart in rounded frame (outline). */
-  deml: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V13M12 17V8M16 17V11"/>',
-  check: '<path d="M4 12.5 9.5 18 20 6.5"/>',
-  x: '<path d="M6 6l12 12M18 6 6 18"/>',
-  plus: '<path d="M12 5v14M5 12h14"/>',
-  minus: '<path d="M5 12h14"/>',
-  'chevron-down': '<path d="m6 9 6 6 6-6"/>',
-  'chevron-up': '<path d="m6 15 6-6 6 6"/>',
-  'chevron-left': '<path d="m15 6-6 6 6 6"/>',
-  'chevron-right': '<path d="m9 6 6 6-6 6"/>',
-  'arrow-right': '<path d="M4 12h16M13 5l7 7-7 7"/>',
-  'arrow-left': '<path d="M20 12H4M11 5l-7 7 7 7"/>',
-  'arrow-up-right': '<path d="M7 17 17 7M8 7h9v9"/>',
-  search: '<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5"/>',
-  calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/>',
-  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
-  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',
-  settings:
-    '<circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6l-1.4 1.4M6.6 17.4l-1.4 1.4"/>',
-  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
-  'alert-triangle': '<path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4M12 17.5h.01"/>',
-  'alert-circle': '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/>',
-  'check-circle': '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8L16.5 9"/>',
-  bell: '<path d="M6 9a6 6 0 0 1 12 0c0 5 2 6.5 2 6.5H4S6 14 6 9"/><path d="M10 19.5a2.2 2.2 0 0 0 4 0"/>',
-  star: '<path d="m12 3 2.7 5.9 6.3.7-4.7 4.3 1.3 6.1L12 16.9 6.4 20l1.3-6.1L3 9.6l6.3-.7L12 3z"/>',
-  heart: '<path d="M12 20.5C5.5 16 3 12.5 3 9a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 3.5-2.5 7-9 11.5z"/>',
-  trash: '<path d="M4 7h16M9 7V4h6v3M6.5 7l1 13h9l1-13M10 11v6M14 11v6"/>',
-  pencil: '<path d="m4 20 .8-3.8L16.6 4.4a2 2 0 0 1 2.8 0l.2.2a2 2 0 0 1 0 2.8L7.8 19.2 4 20z"/>',
-  copy: '<rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/>',
-  upload: '<path d="M12 16V4M6 10l6-6 6 6M4 20h16"/>',
-  download: '<path d="M12 4v12M6 10l6 6 6-6M4 20h16"/>',
-  send: '<path d="M21 3 3 10.5l7 3.5 3.5 7L21 3z"/><path d="M10 14 21 3"/>',
-  paperclip:
-    '<path d="m20 11-8.5 8.5a5 5 0 0 1-7-7L13 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 6"/>',
-  image:
-    '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m3 18 5-5 4 4 3-3 6 6"/>',
-  file: '<path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6z"/><path d="M14 3v6h6"/>',
-  folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>',
-  menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
-  'dots-horizontal':
-    '<circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none"/>',
-  'dots-vertical':
-    '<circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/>',
-  'grip-vertical':
-    '<circle cx="9" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1" fill="currentColor" stroke="none"/>',
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>',
-  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>',
-  eye: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
-  'eye-off':
-    '<path d="m4 4 16 16"/><path d="M10.6 6.2A11 11 0 0 1 12 6c6.5 0 10 6 10 6a17.6 17.6 0 0 1-3 3.6M6.6 6.6C3.9 8.3 2 12 2 12s3.5 6.5 10 6.5c1.4 0 2.7-.3 3.9-.8"/>',
-  bold: '<path d="M7 5h6a3.5 3.5 0 0 1 0 7H7V5zM7 12h7a3.5 3.5 0 0 1 0 7H7v-7z"/>',
-  italic: '<path d="M10 5h9M5 19h9M14 5l-4 14"/>',
-  underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4M5 20h14"/>',
-  list: '<path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01"/>',
-  'list-ordered':
-    '<path d="M10 6h11M10 12h11M10 18h11"/><path d="M4 5h1.5v4M3.8 9h3M3.5 14.5c0-1.2 3-1.4 3 0 0 1-3 1.7-3 3.2h3"/>',
-  link: '<path d="M10 14a4 4 0 0 1 0-5.7l3-3a4 4 0 0 1 5.7 5.7L17.2 12.5"/><path d="M14 10a4 4 0 0 1 0 5.7l-3 3a4 4 0 0 1-5.7-5.7L6.8 11.5"/>',
-  home: '<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/>',
-  mail: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
-  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
-  globe:
-    '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4" ry="9"/>',
-  loader: '<path d="M12 3a9 9 0 1 0 9 9"/>',
-  sparkle: '<path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/>',
-  external: '<path d="M14 5h5v5M19 5 10 14M19 13v6H5V5h6"/>',
-  filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
-  terminal: '<path d="m5 7 5 5-5 5M12 17h7"/>',
-  refresh: '<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 3v4h-4"/>',
-  'log-out': '<path d="M13 4H5v16h8"/><path d="m17 8 4 4-4 4M9 12h12"/>',
-  shield: '<path d="M12 3 4.5 6v5c0 5 3 8.5 7.5 10 4.5-1.5 7.5-5 7.5-10V6L12 3z"/>',
-  'bar-chart': '<path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3"/>',
-  phone:
-    '<path d="M5 4h4l1.5 4L8 10a12 12 0 0 0 6 6l2-2.5L20 15v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
+/** Custom icons not covered by Lucide (hub topology, ML model tile, OAuth stubs). */
+const VIKING_CUSTOM_ICON_PATHS = {
+  hub: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  model: '<rect x="4" y="8" width="16" height="10" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/>',
   google:
     '<path d="M12 11.2v2.4h6.6c-.3 1.5-1.8 4.4-6.6 4.4-4 0-7.2-3.3-7.2-7.3S8 3.4 12 3.4c2.3 0 3.9 1 4.8 1.8l3.2-3.1C17.5.8 14.9 0 12 0 5.4 0 0 5.4 0 12s5.4 12 12 12c6.9 0 11.5-4.8 11.5-11.6 0-.8-.1-1.4-.2-1.9H12z"/>',
   apple:
     '<path d="M16.365 12.14c.02 2.53 2.21 3.38 2.23 3.39-.02.07-.35 1.21-1.16 2.4-.7 1.02-1.43 2.03-2.58 2.05-1.13.02-1.49-.67-2.78-.67-1.29 0-1.69.65-2.75.69-1.11.04-1.95-1.12-2.66-2.13-1.44-2.08-2.54-5.87-1.07-8.43.73-1.27 2.04-2.08 3.46-2.1 1.08-.02 2.1.72 2.78.72.67 0 2.14-.89 3.61-.76.61.03 2.33.25 3.44 1.88-.09.06-2.05 1.2-2.03 3.55M13.75 3.64c.59-.71 1-1.7.89-2.68-.86.03-1.9.57-2.52 1.28-.55.63-1.03 1.65-.9 2.62.95.07 1.92-.49 2.53-1.22"/>',
-  hub: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
-  'trending-up': '<path d="M4 16 9 11l4 4 7-7"/><path d="M16 8h4v4"/>',
-  fingerprint:
-    '<path d="M12 11c0-1.5 2-2 2-3.5a2 2 0 0 0-4 0c0 1.5 2 2 2 3.5"/><path d="M8 14c0-2.5 4-3 4-6"/><path d="M16 14c0-2.5-4-3-4-6"/><path d="M6 17c0-4 6-4.5 6-9"/><path d="M18 17c0-4-6-4.5-6-9"/>',
-  'user-shield':
-    '<circle cx="10" cy="8" r="3"/><path d="M4 20c0-3 2.5-5 6-5"/><path d="M16 11l4-1v5c0 3-2 5.5-5 6.5"/>',
-  chip: '<rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 7V4M15 7V4M9 17v3M15 17v3M7 9H4M7 15H4M17 9h3M17 15h3"/>',
-  brain:
-    '<path d="M9 5a3 3 0 0 0-3 3c0 2 2 3 3 3s3-1 3-3a3 3 0 0 0-3-3z"/><path d="M15 5a3 3 0 0 1 3 3c0 2-2 3-3 3s-3-1-3-3a3 3 0 0 1 3-3z"/><path d="M9 11v2c0 2 1.5 3 3 3s3-1 3-3v-2"/>',
-  bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6l1-7z"/>',
-  cloud: '<path d="M7 18h10a4 4 0 0 0 .5-8A5 5 0 0 0 7 8a4 4 0 0 0 0 10z"/>',
-  network:
-    '<rect x="9" y="9" width="6" height="6" rx="1"/><path d="M12 9V5M12 19v-4M9 12H5M19 12h-4"/>',
-  speed: '<path d="M12 3a9 9 0 0 1 9 9"/><path d="M12 12 16 8"/>',
-  rocket:
-    '<path d="M12 2c0 4-2 6-2 10h4c0-4-2-6-2-10z"/><path d="M8 14l-2 6 6-2M16 14l2 6-6-2"/><circle cx="12" cy="10" r="2"/>',
-  key: '<circle cx="8" cy="15" r="4"/><path d="m11.5 11.5 6-6M16 5l3 3"/>',
-  policy: '<path d="M12 3 4 6v5c0 5 3 8.5 7.5 10"/><path d="M9 12h6M12 9v6"/>',
-  bug: '<path d="M8 8h8M12 8v10M6 12h12M8 18h8M9 5l3-2 3 2"/>',
-  play: '<path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/>',
-  building:
-    '<rect x="4" y="8" width="16" height="12" rx="1"/><path d="M9 8V5h6v3M9 14h.01M12 14h.01M15 14h.01M9 18h.01M12 18h.01M15 18h.01"/>',
-  cookie:
-    '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="15" r="1" fill="currentColor" stroke="none"/>',
-  model: '<rect x="4" y="8" width="16" height="10" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/>',
-  'search-off': '<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5M7 7l10 10"/>',
-  insights: '<path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3"/><path d="M8 16l4-4 4-2"/>',
+} as const;
+
+export const VIKING_ICON_PATHS = {
+  ...LUCIDE_ICON_PATHS,
+  ...VIKING_BRAND_ICON_PATHS,
+  ...VIKING_CUSTOM_ICON_PATHS,
 } as const;
 
 /** Filled-path overrides used when variant="filled" (brand marks, solid shapes). */
 export const VIKING_ICON_FILLED_PATHS: Partial<Record<VikingIconName, string>> = {
-  deml: '<path d="M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4zm2 11h2.5V10H7v5zm4.5-5h2.5v10h-2.5V10zm4.5-3h2.5v13h-2.5V7z"/>',
+  ...VIKING_BRAND_ICON_FILLED_PATHS,
 };
 
 /** Legacy Material Icons ligature names → Viking icon registry keys. */
@@ -174,13 +101,29 @@ export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
 };
 
 /** Icons always rendered with fill (play triangle, dot grids). */
-export const VIKING_FILLED_ICON_NAMES = ['play'] as const satisfies readonly VikingIconName[];
+export const VIKING_FILLED_ICON_NAMES = [
+  'play',
+  'dots-horizontal',
+  'dots-vertical',
+  'grip-vertical',
+] as const satisfies readonly VikingIconName[];
 
 /** OAuth / vendor marks rendered with official brand artwork in viking-icon. */
 export const VIKING_BRAND_ICON_NAMES = [
   'google',
   'apple',
+  ...VIKING_BRAND_ICON_NAMES_LIST,
 ] as const satisfies readonly VikingIconName[];
+
+const VIKING_ICON_COLOR_TOKENS: Record<Exclude<VikingIconColorToken, 'inherit'>, string> = {
+  accent: 'var(--viking-accent)',
+  success: 'var(--viking-success)',
+  warning: 'var(--viking-warning)',
+  danger: 'var(--viking-danger)',
+  info: 'var(--viking-info)',
+  muted: 'var(--viking-text-muted)',
+  text: 'var(--viking-text)',
+};
 
 export const vikingIconViewBox = (_name: VikingIconName): string => '0 0 24 24';
 
@@ -193,6 +136,19 @@ export const resolveVikingIconSize = (
     return VIKING_ICON_SIZE_PRESETS[preset];
   }
   return size ?? VIKING_ICON_SIZE_PRESETS.lg;
+};
+
+/** Resolve semantic color token or raw CSS value for icon tinting. */
+export const resolveVikingIconColor = (
+  color: VikingIconColorToken | string | undefined,
+): string | undefined => {
+  if (!color || color === 'inherit') {
+    return undefined;
+  }
+  if (color in VIKING_ICON_COLOR_TOKENS) {
+    return VIKING_ICON_COLOR_TOKENS[color as Exclude<VikingIconColorToken, 'inherit'>];
+  }
+  return color;
 };
 
 /** Resolve a Viking or legacy Material icon name to a registry key. */
@@ -209,3 +165,6 @@ export const resolveVikingIcon = (name: string): VikingIconName => {
 };
 
 export const VIKING_ICON_NAMES = Object.keys(VIKING_ICON_PATHS) as VikingIconName[];
+
+/** Lucide-sourced icon names (for docs and showcase grouping). */
+export const VIKING_LUCIDE_ICON_NAMES = Object.keys(LUCIDE_ICON_PATHS) as (keyof typeof LUCIDE_ICON_PATHS)[];

@@ -12,12 +12,25 @@ export {
   VIKING_ICON_FILLED_PATHS,
   VIKING_ICON_SIZE_PRESETS,
   VIKING_BRAND_ICON_NAMES,
+  VIKING_LUCIDE_ICON_NAMES,
   MATERIAL_ICON_ALIASES,
   resolveVikingIcon,
+  resolveVikingIconColor,
   resolveVikingIconSize,
   vikingIconViewBox,
 } from './lib/core/icons';
-export type { VikingIconName, VikingIconSizePreset, VikingIconVariant } from './lib/core/icons';
+export {
+  VIKING_BRAND_ICON_PATHS,
+  VIKING_BRAND_ICON_FILLED_PATHS,
+  VIKING_BRAND_ICON_NAMES_LIST,
+} from './lib/core/brand-icons';
+export type { VikingBrandIconName } from './lib/core/brand-icons';
+export type {
+  VikingIconName,
+  VikingIconSizePreset,
+  VikingIconVariant,
+  VikingIconColorToken,
+} from './lib/core/icons';
 export { VikingControl, provideVikingCva } from './lib/core/cva';
 
 // Components (alphabetical)
@@ -57,6 +70,7 @@ export * from './lib/file-upload/file-upload';
 export * from './lib/gauge-arc/gauge-arc';
 export * from './lib/hud-panel/hud-panel';
 export * from './lib/icon/icon';
+export { VikingIconComponent } from './lib/icon/icon';
 export * from './lib/input/input';
 export * from './lib/kanban/kanban';
 export * from './lib/kbd/kbd';

@@ -34,6 +34,26 @@ Load static CSS for non-Angular surfaces (marketing, Django templates):
 <link rel="stylesheet" href="/assets/viking-ui.css" />
 ```
 
+## Icons (Lucide)
+
+`viking-icon` renders themeable inline SVGs with **zero runtime dependencies**. Lucide paths are synced at build time:
+
+```bash
+npm run sync:lucide-icons   # regenerate lucide-paths.generated.ts
+```
+
+```html
+<viking-icon name="search" sizePreset="md" color="accent" />
+<viking-icon name="deml" variant="filled" [size]="28" color="accent" />
+```
+
+- **size** / **sizePreset** (`sm` 16px · `md` 20px · `lg` 24px)
+- **color** — semantic tokens (`accent`, `success`, `warning`, `danger`, `muted`) or any CSS value
+- **variant** — `outline` (stroke) or `filled` (solid)
+- **DEML brand marks** — `deml`, `deml-compact`, `deml-lockup` (optimized SVGs in `src/lib/core/brand/`)
+
+Also exported as `VikingIconComponent` for consumers expecting that name.
+
 ## Build
 
 ```bash
