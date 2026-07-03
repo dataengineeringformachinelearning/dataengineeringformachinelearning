@@ -155,9 +155,8 @@ const generateSiteNavbarHtml = navLinks => `{% load static %}
         id="navbar-brand-link"
       >
         <span
-          class="brand-icon navbar-logo glowing-icon-sm"
+          class="brand-icon navbar-logo"
           data-viking-icon="drakkar"
-          data-viking-icon-variant="filled"
           data-viking-icon-color="accent"
           data-viking-icon-size="28"
           aria-hidden="true"

@@ -43,20 +43,18 @@ import {
             >
               <viking-icon
                 name="drakkar"
-                variant="filled"
                 [size]="28"
                 color="accent"
-                class="brand-icon navbar-logo glowing-icon-sm"
+                class="brand-icon navbar-logo"
               />
             </a>
           } @else {
             <a [href]="brandHref()" class="navbar-brand" aria-label="Go to homepage">
               <viking-icon
                 name="drakkar"
-                variant="filled"
                 [size]="28"
                 color="accent"
-                class="brand-icon navbar-logo glowing-icon-sm"
+                class="brand-icon navbar-logo"
               />
             </a>
           }

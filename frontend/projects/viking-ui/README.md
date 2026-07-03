@@ -55,7 +55,7 @@ npm run sync:lucide-icons   # regenerate lucide-paths.generated.ts
 
 ```html
 <viking-icon name="search" sizePreset="md" color="accent" />
-<viking-icon name="drakkar" variant="filled" [size]="28" color="accent" />
+<viking-icon name="drakkar" [size]="28" color="accent" />
 ```
 
 - **size** / **sizePreset** (`sm` 16px · `md` 20px · `lg` 24px)
