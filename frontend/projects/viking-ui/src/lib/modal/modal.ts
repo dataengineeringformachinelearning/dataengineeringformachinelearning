@@ -132,6 +132,17 @@ import { VikingIcon } from '../icon/icon';
       .viking-modal-footer:empty {
         display: none;
       }
+      @media (prefers-reduced-motion: reduce) {
+        .viking-modal {
+          animation: none;
+        }
+        .viking-modal::backdrop {
+          animation: none;
+        }
+        .viking-modal-body {
+          animation: none;
+        }
+      }
     `,
   ],
 })

@@ -68,7 +68,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
         border-color: var(--viking-accent);
       }
       .viking-otp-cell:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
       }
     `,
   ],

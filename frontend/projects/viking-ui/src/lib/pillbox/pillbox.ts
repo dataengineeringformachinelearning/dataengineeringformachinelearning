@@ -65,7 +65,7 @@ import { VikingIcon } from '../icon/icon';
         outline-offset: var(--viking-ring-offset);
       }
       .viking-disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
       }
       .viking-pill {
         display: inline-flex;

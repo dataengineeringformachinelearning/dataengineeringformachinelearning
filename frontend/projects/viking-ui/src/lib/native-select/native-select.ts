@@ -70,7 +70,7 @@ import { fluxUid } from '../core/uid';
         outline-offset: var(--viking-ring-offset);
       }
       .viking-disabled .viking-native-select-control {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
     `,

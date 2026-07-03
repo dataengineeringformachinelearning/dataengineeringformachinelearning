@@ -144,7 +144,7 @@ export class VikingDropdown {
         outline-offset: -2px;
       }
       .viking-menu-item:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       .viking-menu-item-danger {

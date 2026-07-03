@@ -128,7 +128,7 @@
   background-color: transparent;
   border: 1px solid var(--viking-border);
   cursor: default;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--viking-transition-colors);
   font-size: var(--viking-font-size);
   font-weight: 500;
   color: var(--viking-text-muted);

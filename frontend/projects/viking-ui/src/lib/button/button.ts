@@ -4,7 +4,14 @@ import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
 import { VikingSize } from '../core/types';
 
-export type VikingButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 'ghost' | 'subtle';
+export type VikingButtonVariant =
+  | 'outline'
+  | 'primary'
+  | 'secondary'
+  | 'filled'
+  | 'danger'
+  | 'ghost'
+  | 'subtle';
 
 /**
  * viking-button — composable button.
@@ -167,6 +174,22 @@ export type VikingButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 
         transform: translateY(var(--viking-state-hover-lift));
       }
       .viking-primary:active:not(:disabled):not([aria-busy='true']) {
+        transform: translateY(0) scale(var(--viking-state-active-scale));
+        box-shadow: var(--viking-shadow-sm);
+      }
+      .viking-secondary {
+        background: var(--viking-accent-secondary);
+        color: var(--viking-accent-secondary-content);
+        border-color: color-mix(in srgb, var(--viking-accent-secondary) 80%, var(--viking-black));
+        box-shadow: var(--viking-shadow-sm);
+      }
+      .viking-secondary:hover:not(:disabled):not([aria-busy='true']) {
+        background: var(--viking-accent-secondary-hover);
+        border-color: var(--viking-accent-secondary-hover);
+        box-shadow: var(--viking-shadow-hover);
+        transform: translateY(var(--viking-state-hover-lift));
+      }
+      .viking-secondary:active:not(:disabled):not([aria-busy='true']) {
         transform: translateY(0) scale(var(--viking-state-active-scale));
         box-shadow: var(--viking-shadow-sm);
       }

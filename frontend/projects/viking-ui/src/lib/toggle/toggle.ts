@@ -57,7 +57,7 @@ import { VIKING_TOGGLE_GROUP, VikingToggleGroup } from './toggle-group';
         color: var(--viking-accent-content);
       }
       .viking-toggle:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
     `,

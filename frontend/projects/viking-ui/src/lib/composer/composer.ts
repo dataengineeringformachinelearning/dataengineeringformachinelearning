@@ -135,7 +135,7 @@ import { VikingIcon } from '../icon/icon';
         outline-offset: var(--viking-ring-offset);
       }
       .viking-composer-send:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
     `,

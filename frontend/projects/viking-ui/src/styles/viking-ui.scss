@@ -221,6 +221,20 @@ body,
   animation: viking-tooltip-in var(--viking-duration-fast) var(--viking-ease-out);
 }
 
+html[data-theme='light'] .viking-tooltip {
+  color: var(--viking-white-pure, #ffffff);
+  background: var(--viking-charcoal-800, #1a1a1a);
+  border-color: color-mix(in srgb, var(--viking-charcoal-600, #333333) 45%, transparent);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme='dark']) .viking-tooltip {
+    color: var(--viking-white-pure, #ffffff);
+    background: var(--viking-charcoal-800, #1a1a1a);
+    border-color: color-mix(in srgb, var(--viking-charcoal-600, #333333) 45%, transparent);
+  }
+}
+
 .viking-tooltip-text {
   flex: 1;
   min-width: 0;

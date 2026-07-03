@@ -67,7 +67,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
         margin: var(--viking-space-1) 0;
       }
       input[type='range']:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       input[type='range']::-webkit-slider-thumb {
