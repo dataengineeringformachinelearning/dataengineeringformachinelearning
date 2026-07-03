@@ -13,16 +13,35 @@ import subprocess
 import sys
 from typing import Final
 
-RAILWAY_BIN: Final = "/home/ubuntu/.railway/bin/railway"
+RAILWAY_BIN: Final = "railway"
 
-# Services that run Django and need the full backend env bundle — do not prune.
+# Services that run Django/Rust workers and need the full backend env bundle.
 BACKEND_SERVICES: Final[frozenset[str]] = frozenset(
   {
     "deml-backend",
+    "deml-workers",
     "deml-telemetry-worker",
-    "deml-relay",
-    "deml-machine-learning-worker",
-    "deml-security-worker",
+    "deml-daemon",
+  }
+)
+
+# Railway Postgres plugin vars leaked onto app services during deml-postgres references.
+# DATABASE_URL must stay (Neon); everything else is stale pollution.
+BACKEND_PG_POLLUTION: Final[frozenset[str]] = frozenset(
+  {
+    "ALPINE_DATABASE_MODE",
+    "ALPINE_DATABASE_PASSWORD",
+    "ALPINE_DATABASE_URL",
+    "ALPINE_DATABASE_USERNAME",
+    "PGDATA",
+    "PGDATABASE",
+    "PGHOST",
+    "PGPASSWORD",
+    "PGPORT",
+    "PGUSER",
+    "POSTGRES_DB",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_USER",
   }
 )
 
@@ -51,22 +70,6 @@ QUEUE_KEEP: Final[frozenset[str]] = frozenset(
     "REDPANDA_SASL_USERNAME",
     "REDPANDA_SASL_PASSWORD",
     "REDPANDA_BROKERS",
-  }
-)
-
-POSTGRES_KEEP: Final[frozenset[str]] = frozenset(
-  {
-    "PGDATA",
-    "PGDATABASE",
-    "PGHOST",
-    "PGPASSWORD",
-    "PGPORT",
-    "PGUSER",
-    "POSTGRES_DB",
-    "POSTGRES_PASSWORD",
-    "POSTGRES_USER",
-    "DATABASE_URL",
-    "DATABASE_PUBLIC_URL",
   }
 )
 
@@ -114,7 +117,6 @@ INFRA_EMPTY: Final[frozenset[str]] = frozenset()  # dragonfly, tor-proxy, cpe-gu
 SERVICE_KEEP: Final[dict[str, frozenset[str]]] = {
   "deml-frontend": FRONTEND_KEEP,
   "deml-queue": QUEUE_KEEP,
-  "deml-postgres": POSTGRES_KEEP,
   "deml-clickhouse": CLICKHOUSE_KEEP,
   "deml-scanner": SCANNER_KEEP,
   "deml-dtrack-api": DTRACK_KEEP,
@@ -157,9 +159,22 @@ def _delete_var(service: str, key: str, dry_run: bool) -> bool:
   return True
 
 
+def cleanup_backend_pg_pollution(service: str, dry_run: bool) -> tuple[int, int]:
+  """Remove Railway Postgres plugin vars that leaked onto app services."""
+  vars_map = _railway_vars(service)
+  to_delete = [k for k in sorted(vars_map) if k in BACKEND_PG_POLLUTION]
+  deleted = 0
+  for key in to_delete:
+    prefix = "[dry-run] " if dry_run else ""
+    print(f"{prefix}DELETE {service}: {key}")
+    if _delete_var(service, key, dry_run):
+      deleted += 1
+  return len(to_delete), deleted
+
+
 def cleanup_service(service: str, dry_run: bool) -> tuple[int, int]:
   if service in BACKEND_SERVICES:
-    return 0, 0
+    return cleanup_backend_pg_pollution(service, dry_run)
 
   keep = SERVICE_KEEP.get(service)
   if keep is None:
@@ -179,7 +194,7 @@ def cleanup_service(service: str, dry_run: bool) -> tuple[int, int]:
 
 def main() -> None:
   dry_run = "--dry-run" in sys.argv
-  services = list(SERVICE_KEEP.keys())
+  services = sorted(set(SERVICE_KEEP.keys()) | BACKEND_SERVICES)
   if "--service" in sys.argv:
     idx = sys.argv.index("--service")
     services = [sys.argv[idx + 1]]

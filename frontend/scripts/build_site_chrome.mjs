@@ -14,6 +14,11 @@ const EXPORT_ARRAY_PATTERNS = {
   SITE_FOOTER_COLUMNS: /export const SITE_FOOTER_COLUMNS[\s\S]*?= (\[[\s\S]*?\]) as const/,
 };
 
+const EXPORT_OBJECT_PATTERNS = {
+  LUCIDE_ICON_PATHS: /export const LUCIDE_ICON_PATHS = (\{[\s\S]*?\}) as const/,
+  VIKING_BRAND_ICON_PATHS: /export const VIKING_BRAND_ICON_PATHS = (\{[\s\S]*?\}) as const/,
+};
+
 const readJsonFromTsExport = (filePath, exportName) => {
   const pattern = EXPORT_ARRAY_PATTERNS[exportName];
   if (!pattern) {
@@ -45,8 +50,12 @@ const lucidePath = path.join(vikingUiDir, 'core', 'lucide-paths.generated.ts');
 const brandPath = path.join(vikingUiDir, 'core', 'brand-icons.ts');
 
 const readObjectExport = (filePath, exportName) => {
+  const pattern = EXPORT_OBJECT_PATTERNS[exportName];
+  if (!pattern) {
+    throw new Error(`No extractor registered for ${exportName}`);
+  }
   const content = fs.readFileSync(filePath, 'utf8');
-  const match = content.match(new RegExp(`export const ${exportName} = (\\{[\\s\\S]*?\\}) as const`));
+  const match = content.match(pattern);
   if (!match) {
     throw new Error(`Could not extract ${exportName} from ${filePath}`);
   }
