@@ -159,6 +159,9 @@
     "otp-input": {
       "exports": ["VikingOtpInput"]
     },
+    "verification-code-field": {
+      "exports": ["VikingVerificationCodeField"]
+    },
     "page-header": {
       "exports": ["VikingPageHeader"]
     },

@@ -18,6 +18,9 @@ import { VikingControl, provideVikingCva } from '../core/cva';
   selector: 'viking-otp-input',
   providers: [provideVikingCva(VikingOtpInput)],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.viking-otp-centered]': 'centered()',
+  },
   template: `
     <div class="viking-otp" role="group" [attr.aria-label]="label() || 'One-time passcode'">
       @for (index of indexes(); track index) {
@@ -43,6 +46,10 @@ import { VikingControl, provideVikingCva } from '../core/cva';
       .viking-otp {
         display: flex;
         gap: var(--viking-space-1);
+      }
+      :host(.viking-otp-centered) .viking-otp {
+        justify-content: center;
+        width: 100%;
       }
       .viking-otp-cell {
         width: var(--viking-control-height);
@@ -80,6 +87,7 @@ export class VikingOtpInput extends VikingControl<string> {
   readonly value = model<string>('');
   readonly label = input<string>('');
   readonly disabled = input<boolean>(false);
+  readonly centered = input<boolean>(false);
 
   readonly completed = output<string>();
 

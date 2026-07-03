@@ -73,9 +73,12 @@
                     <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
                   </p>
                   <div class="mfa-inline-form">
-                    <viking-field label="Verification Code" class="mfa-input-full">
-                      <viking-input [(ngModel)]="mfaVerificationCode" placeholder="123456" />
-                    </viking-field>
+                    <viking-verification-code-field
+                      label="Verification Code"
+                      [required]="true"
+                      class="mfa-input-full"
+                      [(ngModel)]="mfaVerificationCode"
+                    />
                     <viking-button
                       variant="primary"
                       type="button"
