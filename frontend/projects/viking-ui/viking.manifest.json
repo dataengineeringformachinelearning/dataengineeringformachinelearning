@@ -123,6 +123,9 @@
     "icon": {
       "exports": ["VikingIcon"]
     },
+    "icon-text": {
+      "exports": ["VikingIconText"]
+    },
     "input": {
       "exports": ["VikingInput"]
     },
