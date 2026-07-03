@@ -222,12 +222,12 @@
   border: 1px dashed var(--viking-border-strong);
   box-shadow: var(--viking-shadow-inner);
   min-height: 220px;
-  gap: var(--viking-space-1-5);
+  gap: var(--viking-space-2);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
   &.compact {
     min-height: 160px;
-    padding: var(--viking-space-3) var(--viking-space-2);
+    padding: var(--viking-space-3) var(--viking-space-3);
   }
 
   &.inline {

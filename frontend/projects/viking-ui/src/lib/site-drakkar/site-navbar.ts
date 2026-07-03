@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+  computed,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { VikingIcon } from '../icon/icon';
 import {
@@ -19,7 +27,9 @@ import {
 @Component({
   selector: 'viking-site-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   imports: [RouterLink, RouterLinkActive, VikingIcon],
+  styleUrl: './site-navbar.scss',
   template: `
     <header class="navbar">
       <div class="navbar-content">

@@ -143,8 +143,8 @@ import { VikingSeparator } from '../separator/separator';
         flex-direction: column;
         gap: var(--viking-space-3);
         width: 100%;
-        margin-top: var(--viking-space-3);
-        padding-top: var(--viking-space-3);
+        margin-top: var(--viking-space-4);
+        padding-top: var(--viking-space-4);
         border-top: 1px solid var(--viking-border);
       }
       :host ::ng-deep [vikingAuthFooter] {
@@ -152,6 +152,15 @@ import { VikingSeparator } from '../separator/separator';
         flex-direction: column;
         gap: var(--viking-space-3);
         width: 100%;
+      }
+      :host ::ng-deep [vikingAuthFooter] viking-button .viking-primary {
+        background: var(--viking-accent);
+        color: var(--viking-accent-content);
+        border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
+        font-weight: var(--viking-font-weight-semibold);
+      }
+      :host ::ng-deep [vikingAuthFooter] viking-button .viking-primary:not(:disabled):not([aria-busy='true']) {
+        box-shadow: var(--viking-shadow-sm);
       }
       :host ::ng-deep [vikingAuthLinks].viking-auth-links,
       :host ::ng-deep .viking-auth-links {
