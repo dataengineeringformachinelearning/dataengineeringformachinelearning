@@ -152,7 +152,7 @@
           </div>
         </div>
 
-        <section class="panel-card threats-panel">
+        <section class="panel-card overview-panel threats-panel">
           <div class="panel-header">
             <h2>Recent Threats</h2>
             <button type="button" class="link-btn" (click)="setTab('security')">View all</button>
@@ -162,7 +162,7 @@
             <div class="panel-loading"><span class="spinner"></span> Scanning...</div>
             } @else if (recentThreats().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               tone="secure"
               icon="check-circle"
               title="Perimeter Clear"
@@ -186,7 +186,7 @@
           </div>
         </section>
 
-        <section class="panel-card metrics-panel">
+        <section class="panel-card overview-panel metrics-panel">
           <div class="panel-header">
             <h2>Performance Snapshot</h2>
             <button type="button" class="link-btn" (click)="setTab('performance')">Details</button>
@@ -220,7 +220,7 @@
             />
             } @else {
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               icon="globe"
               title="Awaiting Telemetry"
               description="Performance data will appear once your site is connected."
@@ -358,7 +358,7 @@
           } @else if (recentThreats().length === 0) {
           <div class="panel-body">
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               tone="secure"
               icon="check-circle"
               title="All Clear"

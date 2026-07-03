@@ -3,7 +3,7 @@ import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
 
 export type VikingChartEmptyTone = 'default' | 'secure';
-export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact';
+export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
 
 /**
  * viking-chart-empty-state — standardized dashed “waiting for data” overlay for chart panels.
@@ -20,6 +20,7 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact';
     '[class.compact]': "layout() === 'compact'",
     '[class.viking-chart-empty-overlay]': "layout() === 'overlay'",
     '[class.viking-chart-empty-fill]': "layout() === 'fill'",
+    '[class.viking-chart-empty-inline]': "layout() === 'inline'",
   },
   template: `
     <div class="viking-chart-empty-icon" aria-hidden="true">
@@ -74,6 +75,16 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact';
       :host(.compact) {
         min-height: 160px;
         padding: var(--viking-space-3);
+      }
+
+      :host(.viking-chart-empty-inline) {
+        border: none;
+        background: transparent;
+        box-shadow: none;
+        min-height: auto;
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: var(--viking-space-4) var(--viking-space-2);
       }
 
       :host(.is-secure) .viking-chart-empty-icon {
