@@ -45,12 +45,17 @@
   width: 36px;
   height: 36px;
   line-height: 1;
-  color: var(--color-primary);
+  color: var(--color-primary, var(--crayola-blue, #2176ff));
   overflow: visible;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.navbar-brand .navbar-logo,
+.navbar-brand viking-icon.navbar-logo {
+  color: var(--color-primary, var(--crayola-blue, #2176ff)) !important;
 }
 
 // Angular mat-icon defaults to overflow:hidden — clips ligature glyphs at tight sizes.
@@ -439,7 +444,7 @@ html[data-theme='light'] {
 }
 
 .glowing-icon-sm {
-  color: var(--primary-text-color) !important;
+  color: var(--color-primary, var(--primary-text-color, var(--crayola-blue, #2176ff))) !important;
   transition: all 0.3s ease;
 }
 
@@ -531,6 +536,34 @@ html[data-theme='light'] {
 }
 
 @media (min-width: 768px) {
+  .navbar-content {
+    position: relative;
+  }
+
+  .navbar-center.desktop-nav {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    pointer-events: auto;
+  }
+
+  .navbar-left,
+  .navbar-right {
+    position: relative;
+    z-index: 2;
+  }
+
+  .navbar-left {
+    flex: 0 0 auto;
+  }
+
+  .navbar-right {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+  }
+
   .desktop-nav {
     display: flex;
   }
@@ -548,9 +581,9 @@ html[data-theme='light'] {
   }
 
   .navbar-search {
-    flex: 1;
+    flex: 0 1 360px;
     max-width: 360px;
-    margin: 0 12px;
+    margin: 0;
   }
 
   .algolia-autocomplete-host {

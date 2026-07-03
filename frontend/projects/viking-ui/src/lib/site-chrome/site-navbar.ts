@@ -65,21 +65,21 @@ import {
           }
         </nav>
 
-        @if (showSearch()) {
-          <div class="navbar-search" role="search">
-            <div id="autocomplete" class="algolia-autocomplete-host"></div>
-            <button
-              type="button"
-              class="navbar-search-mobile-btn"
-              aria-label="Open search"
-              (click)="openSearch()"
-            >
-              <viking-icon name="search" [size]="20" />
-            </button>
-          </div>
-        }
-
         <div class="navbar-right">
+          @if (showSearch()) {
+            <div class="navbar-search" role="search">
+              <div id="autocomplete" class="algolia-autocomplete-host"></div>
+              <button
+                type="button"
+                class="navbar-search-mobile-btn"
+                aria-label="Open search"
+                (click)="openSearch()"
+              >
+                <viking-icon name="search" [size]="20" />
+              </button>
+            </div>
+          }
+
           <div class="desktop-auth">
             @if (!isAuthenticated()) {
               <button type="button" class="auth-btn" (click)="login.emit()">

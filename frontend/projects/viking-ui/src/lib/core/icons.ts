@@ -164,9 +164,13 @@ export const VIKING_ICON_VIEWBOXES: Partial<Record<VikingIconName, string>> = {
 
 export const VIKING_FILLED_ICON_NAMES = [
   'deml',
+  'play',
+] as const satisfies readonly VikingIconName[];
+
+/** OAuth / vendor marks rendered with official brand artwork in viking-icon. */
+export const VIKING_BRAND_ICON_NAMES = [
   'google',
   'apple',
-  'play',
 ] as const satisfies readonly VikingIconName[];
 
 export const vikingIconViewBox = (name: VikingIconName): string =>

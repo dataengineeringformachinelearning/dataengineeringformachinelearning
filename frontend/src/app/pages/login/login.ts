@@ -474,11 +474,6 @@ export class Login implements OnInit, OnDestroy {
     }
   }
 
-  onCancel(): void {
-    const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.router.navigateByUrl(returnUrl);
-  }
-
   async signInWithApple() {
     this.error.set(null);
     this.successMessage.set(null);
