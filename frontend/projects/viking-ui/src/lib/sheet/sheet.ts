@@ -67,7 +67,8 @@ export type VikingSheetSide = 'left' | 'right';
       }
       .viking-sheet::backdrop {
         background: var(--viking-overlay-backdrop);
-        backdrop-filter: blur(4px);
+        backdrop-filter: blur(6px);
+        animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-default);
       }
       .viking-sheet-surface {
         position: fixed;
@@ -79,8 +80,9 @@ export type VikingSheetSide = 'left' | 'right';
         height: 100%;
         background: var(--viking-surface);
         border-left: 1px solid var(--viking-border-strong);
-        box-shadow: var(--viking-shadow-md);
+        box-shadow: var(--viking-shadow-lg);
         font-family: var(--viking-font-family);
+        animation: viking-slide-in-right var(--viking-duration) var(--viking-ease-default);
       }
       .viking-sheet-left .viking-sheet-surface {
         right: auto;
@@ -104,16 +106,25 @@ export type VikingSheetSide = 'left' | 'right';
       }
       .viking-sheet-close {
         display: inline-flex;
-        border: none;
+        align-items: center;
+        justify-content: center;
+        width: var(--viking-control-height-sm);
+        height: var(--viking-control-height-sm);
+        border: 1px solid transparent;
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 4px;
+        padding: 0;
         border-radius: var(--viking-radius);
+        transition: var(--viking-transition-interactive);
       }
       .viking-sheet-close:hover {
         color: var(--viking-text);
         background: var(--viking-accent-soft);
+        border-color: var(--viking-border-subtle);
+      }
+      .viking-sheet-close:active {
+        transform: scale(var(--viking-state-active-scale));
       }
       .viking-sheet-close:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);

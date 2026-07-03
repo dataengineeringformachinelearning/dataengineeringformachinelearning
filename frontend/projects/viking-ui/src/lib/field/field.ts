@@ -15,7 +15,7 @@ import { fluxUid } from '../core/uid';
     <!-- eslint-disable-next-line @angular-eslint/template/label-has-associated-control -->
     <label class="viking-field-label-wrap">
       @if (label()) {
-        <span class="viking-field-label">
+        <span class="viking-field-label" [id]="labelId">
           {{ label() }}
           @if (required()) {
             <span class="viking-field-required" aria-hidden="true">*</span>
@@ -37,34 +37,51 @@ import { fluxUid } from '../core/uid';
         display: block;
         font-family: var(--viking-font-family);
       }
+      :host(.viking-field-invalid) {
+        animation: viking-shake var(--viking-duration-slow) var(--viking-ease-default);
+      }
       .viking-field-label-wrap {
         display: flex;
         flex-direction: column;
-        gap: calc(var(--viking-space-1) / 1.5);
+        gap: var(--viking-space-half);
       }
       .viking-field-label {
-        font-size: var(--viking-font-size);
-        font-weight: 600;
+        font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-text);
+        letter-spacing: var(--viking-letter-spacing-wide);
       }
       .viking-field-required {
         color: var(--viking-danger);
+        margin-left: 2px;
       }
       .viking-field-description,
       .viking-field-error {
-        margin: calc(var(--viking-space-1) / 1.5) 0 0;
-        font-size: var(--viking-font-size);
-        line-height: 1.45;
+        margin: var(--viking-space-half) 0 0;
+        font-size: var(--viking-font-size-sm);
+        line-height: var(--viking-line-height-normal);
       }
       .viking-field-description {
         color: var(--viking-text-muted);
       }
       .viking-field-error {
         color: var(--viking-danger-text, var(--viking-danger));
-        font-weight: 600;
+        font-weight: var(--viking-font-weight-semibold);
+        display: flex;
+        align-items: center;
+        gap: var(--viking-space-half);
+      }
+      .viking-field-error::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: var(--viking-radius-pill);
+        background: var(--viking-danger);
+        flex-shrink: 0;
       }
       :host(.viking-field-invalid) ::ng-deep .viking-control {
         border-color: var(--viking-danger);
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--viking-danger) 25%, transparent);
       }
     `,
   ],
@@ -77,4 +94,5 @@ export class VikingField {
 
   protected readonly descriptionId = fluxUid('viking-field-description');
   protected readonly errorId = fluxUid('viking-field-error');
+  protected readonly labelId = fluxUid('viking-field-label');
 }

@@ -1,0 +1,129 @@
+// ============================================================================
+// Viking-UI Component Primitives
+// Shared interactive state tokens, keyframes, and surface recipes used by
+// core components. Reference via CSS custom properties in inline styles.
+// ============================================================================
+
+:root {
+  /* Interactive state */
+  --viking-state-disabled-opacity: 0.48;
+  --viking-state-hover-lift: -1px;
+  --viking-state-active-scale: 0.985;
+  --viking-state-press-inset: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+
+  --viking-shadow-hover: var(
+    --shadow-hover,
+    0 8px 16px rgba(0, 0, 0, 0.14),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06)
+  );
+
+  --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --viking-surface-recipe: var(--viking-surface) linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+
+  --viking-transition-interactive:
+    color var(--viking-duration) var(--viking-ease-default),
+    background-color var(--viking-duration) var(--viking-ease-default),
+    border-color var(--viking-duration) var(--viking-ease-default),
+    box-shadow var(--viking-duration) var(--viking-ease-default),
+    transform var(--viking-duration-fast) var(--viking-ease-default),
+    opacity var(--viking-duration-fast) var(--viking-ease-default);
+
+  --viking-transition-transform: transform var(--viking-duration-fast) var(--viking-ease-default);
+}
+
+/* Shared keyframes */
+@keyframes viking-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes viking-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes viking-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes viking-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes viking-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes viking-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
+}
+
+@keyframes viking-pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+
+@keyframes viking-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-4px);
+  }
+  40%,
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -33,43 +33,50 @@ import { VikingSize, VikingTone } from '../core/types';
       :host {
         display: inline-flex;
         align-items: center;
-        gap: calc(var(--viking-space-1) / 1.5);
+        gap: var(--viking-space-half);
         font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size-ui);
-        font-weight: 700;
-        line-height: 1.3;
-        padding: calc(var(--viking-space-1) / 3) var(--viking-space-1);
+        font-size: var(--viking-font-size-xs);
+        font-weight: var(--viking-font-weight-semibold);
+        letter-spacing: var(--viking-letter-spacing-wide);
+        line-height: var(--viking-line-height-snug);
+        padding: var(--viking-space-half) var(--viking-space-1);
         border-radius: var(--viking-radius-pill);
         border: 1px solid var(--viking-border);
         background: var(--viking-surface-alt);
         color: var(--viking-text);
         white-space: nowrap;
+        transition: var(--viking-transition-interactive);
+        box-shadow: var(--viking-shadow-xs);
       }
       :host(.viking-badge-sm) {
         padding: 0 var(--viking-space-1);
+        font-size: var(--viking-font-size-2xs);
       }
       :host(.viking-badge-accent) {
         background: var(--viking-accent);
-        border-color: var(--viking-accent);
+        border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
         color: var(--viking-accent-content);
+        box-shadow: var(--viking-shadow-sm);
       }
       :host(.viking-badge-success) {
-        background: color-mix(in srgb, var(--viking-success) 18%, transparent);
-        border-color: var(--viking-success);
-        color: var(--viking-text);
+        background: color-mix(in srgb, var(--viking-success) 16%, var(--viking-surface));
+        border-color: color-mix(in srgb, var(--viking-success) 55%, transparent);
+        color: var(--viking-success);
       }
       :host(.viking-badge-warning) {
-        background: color-mix(in srgb, var(--viking-warning) 22%, transparent);
-        border-color: var(--viking-warning);
-        color: var(--viking-text);
+        background: color-mix(in srgb, var(--viking-warning) 18%, var(--viking-surface));
+        border-color: color-mix(in srgb, var(--viking-warning) 55%, transparent);
+        color: var(--viking-warning);
       }
       :host(.viking-badge-danger) {
-        background: color-mix(in srgb, var(--viking-danger) 18%, transparent);
-        border-color: var(--viking-danger);
-        color: var(--viking-text);
+        background: color-mix(in srgb, var(--viking-danger) 14%, var(--viking-surface));
+        border-color: color-mix(in srgb, var(--viking-danger) 50%, transparent);
+        color: var(--viking-danger-text);
       }
       :host(.viking-badge-muted) {
         color: var(--viking-text-muted);
+        background: var(--viking-surface);
+        border-color: var(--viking-border-subtle);
       }
       .viking-badge-remove {
         display: inline-flex;
@@ -80,9 +87,11 @@ import { VikingSize, VikingTone } from '../core/types';
         cursor: pointer;
         padding: 2px;
         border-radius: var(--viking-radius-pill);
+        transition: var(--viking-transition-interactive);
+        margin-left: var(--viking-space-half);
       }
       .viking-badge-remove:hover {
-        background: var(--viking-accent-soft);
+        background: color-mix(in srgb, currentColor 12%, transparent);
       }
       .viking-badge-remove:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);

@@ -17,30 +17,23 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     `
       :host {
         display: block;
-        border-radius: var(--viking-radius);
+        border-radius: var(--viking-radius-sm);
         background: linear-gradient(
           100deg,
-          var(--viking-surface-alt) 40%,
-          color-mix(in srgb, var(--viking-text-muted) 14%, var(--viking-surface-alt)) 50%,
-          var(--viking-surface-alt) 60%
+          var(--viking-surface-alt) 38%,
+          color-mix(in srgb, var(--viking-text-muted) 10%, var(--viking-surface-alt)) 50%,
+          var(--viking-surface-alt) 62%
         );
         background-size: 200% 100%;
-        animation: viking-skeleton-shimmer 1.4s ease-in-out infinite;
+        animation: viking-shimmer 1.6s ease-in-out infinite;
       }
       :host(.viking-skeleton-circle) {
         border-radius: var(--viking-radius-pill);
       }
-      @keyframes viking-skeleton-shimmer {
-        from {
-          background-position: 120% 0;
-        }
-        to {
-          background-position: -80% 0;
-        }
-      }
       @media (prefers-reduced-motion: reduce) {
         :host {
           animation: none;
+          background: var(--viking-surface-alt);
         }
       }
     `,

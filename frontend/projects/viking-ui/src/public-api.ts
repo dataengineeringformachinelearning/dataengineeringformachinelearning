@@ -46,6 +46,7 @@ export * from './lib/composer/composer';
 export * from './lib/context/context';
 export * from './lib/date-picker/date-picker';
 export * from './lib/dropdown/dropdown';
+export * from './lib/empty-state/empty-state';
 export * from './lib/editor/editor';
 export * from './lib/fab/fab';
 export * from './lib/field/field';

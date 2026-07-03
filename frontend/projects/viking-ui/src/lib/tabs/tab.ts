@@ -25,9 +25,9 @@ import { VIKING_TABS, VikingTabs } from './tabs';
     `
       .viking-tab {
         font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size-ui);
-        font-weight: 700;
-        letter-spacing: 0.02em;
+        font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-semibold);
+        letter-spacing: var(--viking-letter-spacing-wide);
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -39,7 +39,8 @@ import { VIKING_TABS, VikingTabs } from './tabs';
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
+        position: relative;
       }
       .viking-tab:hover:not(:disabled) {
         color: var(--viking-text);
@@ -52,10 +53,11 @@ import { VIKING_TABS, VikingTabs } from './tabs';
       .viking-tab.viking-active {
         color: var(--viking-accent-content);
         background: var(--viking-accent);
-        border-color: var(--viking-accent);
+        border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-tab:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
     `,

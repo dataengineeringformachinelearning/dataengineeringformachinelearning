@@ -44,12 +44,15 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         align-items: flex-start;
         gap: var(--viking-space-2);
         padding: var(--viking-space-2);
-        border-radius: var(--viking-radius);
+        border-radius: var(--viking-radius-lg);
         border: 1px solid var(--viking-border);
+        border-left-width: 3px;
         background: var(--viking-surface-alt);
         color: var(--viking-text);
         font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size);
+        font-size: var(--viking-font-size-sm);
+        box-shadow: var(--viking-shadow-sm);
+        animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
       }
       .viking-callout-icon {
         margin-top: 2px;
@@ -57,25 +60,29 @@ const TONE_ICONS: Record<string, VikingIconName> = {
       }
       :host(.viking-callout-accent) {
         border-color: var(--viking-accent);
+        border-left-color: var(--viking-accent);
         background: var(--viking-accent-soft);
       }
       :host(.viking-callout-accent) .viking-callout-icon {
         color: var(--viking-accent);
       }
       :host(.viking-callout-success) {
-        border-color: var(--viking-success);
-        background: color-mix(in srgb, var(--viking-success) 10%, transparent);
+        border-color: color-mix(in srgb, var(--viking-success) 45%, transparent);
+        border-left-color: var(--viking-success);
+        background: color-mix(in srgb, var(--viking-success) 10%, var(--viking-surface));
       }
       :host(.viking-callout-success) .viking-callout-icon {
         color: var(--viking-success);
       }
       :host(.viking-callout-warning) {
-        border-color: var(--viking-warning);
-        background: color-mix(in srgb, var(--viking-warning) 14%, transparent);
+        border-color: color-mix(in srgb, var(--viking-warning) 45%, transparent);
+        border-left-color: var(--viking-warning);
+        background: color-mix(in srgb, var(--viking-warning) 12%, var(--viking-surface));
       }
       :host(.viking-callout-danger) {
-        border-color: var(--viking-danger);
-        background: color-mix(in srgb, var(--viking-danger) 10%, transparent);
+        border-color: color-mix(in srgb, var(--viking-danger) 45%, transparent);
+        border-left-color: var(--viking-danger);
+        background: color-mix(in srgb, var(--viking-danger) 10%, var(--viking-surface));
       }
       .viking-callout-body {
         flex: 1;
@@ -95,13 +102,14 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 4px;
+        padding: var(--viking-space-half);
         border-radius: var(--viking-radius);
         display: inline-flex;
+        transition: var(--viking-transition-interactive);
       }
       .viking-callout-close:hover {
         color: var(--viking-text);
-        background: var(--viking-accent-soft);
+        background: color-mix(in srgb, currentColor 8%, transparent);
       }
       .viking-callout-close:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);

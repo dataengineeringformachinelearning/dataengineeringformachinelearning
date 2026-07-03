@@ -83,18 +83,19 @@ import { VikingSelectOption } from '../core/types';
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
         cursor: pointer;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
         text-align: left;
       }
       .viking-select-trigger:hover:not(:disabled) {
         border-color: var(--viking-accent-strong);
+        box-shadow: var(--viking-shadow-md);
       }
       .viking-select-trigger:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
       }
       .viking-select-trigger:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       .viking-select-placeholder {
@@ -102,7 +103,7 @@ import { VikingSelectOption } from '../core/types';
       }
       .viking-select-panel {
         position: absolute;
-        top: calc(100% + var(--viking-space-1));
+        top: calc(100% + var(--viking-space-half));
         left: 0;
         right: 0;
         display: flex;
@@ -113,29 +114,31 @@ import { VikingSelectOption } from '../core/types';
         background: var(--viking-surface);
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius);
-        box-shadow: var(--viking-shadow-md);
+        box-shadow: var(--viking-shadow-lg);
         z-index: var(--viking-z-overlay);
         max-height: 315px;
         overflow: auto;
+        animation: viking-slide-up var(--viking-duration-fast) var(--viking-ease-default);
       }
       .viking-select-option {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: var(--viking-space-1);
-        padding: var(--viking-space-1);
+        padding: var(--viking-space-1) var(--viking-space-1-5);
         border: none;
         background: transparent;
         text-align: left;
         width: 100%;
-        border-radius: calc(var(--viking-radius) / 1.5);
+        border-radius: var(--viking-radius-sm);
         font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size);
+        font-size: var(--viking-font-size-sm);
         color: var(--viking-text);
         cursor: pointer;
+        transition: var(--viking-transition-interactive);
       }
       .viking-select-option:disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       .viking-select-option:focus-visible {
@@ -144,10 +147,12 @@ import { VikingSelectOption } from '../core/types';
       }
       .viking-active {
         background: var(--viking-accent-soft);
+        color: var(--viking-text);
       }
       .viking-selected {
-        font-weight: 600;
-        color: var(--viking-accent);
+        font-weight: var(--viking-font-weight-semibold);
+        color: var(--viking-accent-strong);
+        background: color-mix(in srgb, var(--viking-accent) 10%, transparent);
       }
     `,
   ],

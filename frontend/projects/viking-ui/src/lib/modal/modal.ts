@@ -57,12 +57,14 @@ import { VikingIcon } from '../icon/icon';
         border-radius: var(--viking-radius-lg);
         background: var(--viking-surface);
         color: var(--viking-text);
-        box-shadow: var(--viking-shadow-md);
+        box-shadow: var(--viking-shadow-lg);
         width: min(522px, calc(100vw - var(--viking-space-4)));
+        animation: viking-modal-in var(--viking-duration) var(--viking-ease-default);
       }
       .viking-modal::backdrop {
-        background: var(--viking-overlay-backdrop, rgba(49, 57, 60, 0.55));
-        backdrop-filter: blur(4px);
+        background: var(--viking-overlay-backdrop);
+        backdrop-filter: blur(6px);
+        animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-default);
       }
       .viking-modal-surface {
         display: flex;
@@ -76,39 +78,56 @@ import { VikingIcon } from '../icon/icon';
         align-items: flex-start;
         justify-content: space-between;
         gap: var(--viking-space-2);
+        padding-bottom: var(--viking-space-1);
+        border-bottom: 1px solid var(--viking-border-subtle);
       }
       .viking-modal-heading {
         margin: 0;
-        font-size: var(--viking-font-size-ui);
-        font-weight: 700;
-        letter-spacing: var(--header-letter-spacing, -0.02em);
+        font-size: var(--viking-font-size-md);
+        font-weight: var(--viking-font-weight-bold);
+        letter-spacing: var(--viking-letter-spacing-tight);
+        color: var(--viking-text);
+        line-height: var(--viking-line-height-tight);
       }
       .viking-modal-close {
         display: inline-flex;
-        border: none;
+        align-items: center;
+        justify-content: center;
+        width: var(--viking-control-height-sm);
+        height: var(--viking-control-height-sm);
+        border: 1px solid transparent;
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 4px;
+        padding: 0;
         border-radius: var(--viking-radius);
+        transition: var(--viking-transition-interactive);
+        flex-shrink: 0;
       }
       .viking-modal-close:hover {
         color: var(--viking-text);
         background: var(--viking-accent-soft);
+        border-color: var(--viking-border-subtle);
+      }
+      .viking-modal-close:active {
+        transform: scale(var(--viking-state-active-scale));
       }
       .viking-modal-close:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-modal-body {
         font-size: var(--viking-font-size);
-        line-height: 1.6;
+        line-height: var(--viking-line-height-relaxed);
         color: var(--viking-text-muted);
+        animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
       }
       .viking-modal-footer {
         display: flex;
         justify-content: flex-end;
         gap: var(--viking-space-1);
+        padding-top: var(--viking-space-1);
+        border-top: 1px solid var(--viking-border-subtle);
       }
       .viking-modal-footer:empty {
         display: none;

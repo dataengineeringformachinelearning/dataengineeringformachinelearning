@@ -49,7 +49,7 @@ import { VikingIcon } from '../icon/icon';
         cursor: pointer;
       }
       .viking-disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       .viking-checkbox-box {
@@ -59,13 +59,14 @@ import { VikingIcon } from '../icon/icon';
         justify-content: center;
         width: var(--viking-space-2);
         height: var(--viking-space-2);
-        margin-top: 3px;
+        margin-top: 2px;
         border: 1px solid var(--viking-border-strong);
-        border-radius: calc(var(--viking-radius) / 2);
+        border-radius: var(--viking-radius-xs);
         background: var(--viking-surface);
         color: var(--viking-accent-content);
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
         flex-shrink: 0;
+        box-shadow: var(--viking-shadow-xs);
       }
       /* The native input fills the visual box so clicks and focus land on it. */
       .viking-checkbox-box input {
@@ -82,7 +83,8 @@ import { VikingIcon } from '../icon/icon';
       }
       .viking-checkbox-box.viking-checked {
         background: var(--viking-accent);
-        border-color: var(--viking-accent);
+        border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-checkbox-box:has(input:focus-visible) {
         outline: var(--viking-ring-width) solid var(--viking-ring);

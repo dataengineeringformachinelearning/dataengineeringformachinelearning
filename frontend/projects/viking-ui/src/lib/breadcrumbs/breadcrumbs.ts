@@ -54,21 +54,22 @@ export interface VikingBreadcrumb {
         color: var(--viking-text-muted);
         text-decoration: none;
         border-bottom: 1px solid transparent;
-        transition: var(--viking-transition);
+        padding: var(--viking-space-half) 0;
+        transition: var(--viking-transition-interactive);
       }
-      .viking-breadcrumb a:hover,
-      .viking-breadcrumb a:focus-visible {
-        color: var(--viking-accent);
-        border-bottom-color: var(--viking-accent);
+      .viking-breadcrumb a:hover {
+        color: var(--viking-accent-strong);
+        border-bottom-color: var(--viking-accent-strong);
       }
       .viking-breadcrumb a:focus-visible {
+        color: var(--viking-accent-strong);
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
-        border-radius: 3px;
+        border-radius: var(--viking-radius-xs);
       }
       .viking-breadcrumb span[aria-current='page'] {
         color: var(--viking-text);
-        font-weight: 600;
+        font-weight: var(--viking-font-weight-semibold);
       }
     `,
   ],
