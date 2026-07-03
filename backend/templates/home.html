@@ -60,10 +60,6 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet"
-    />
 
     <!-- Shared design system (synced from packages/deml-design-system) -->
     <link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
@@ -79,17 +75,6 @@
         document.documentElement.setAttribute("data-theme", activeTheme);
       })();
     </script>
-
-    <!-- DEML Widgets Hosted by App -->
-    <script
-      src="{{ frontend_url }}/assets/widgets/cookie-consent.js"
-      defer
-    ></script>
-    <script
-      type="module"
-      src="{{ frontend_url }}/assets/widgets/search-dialog.js"
-      defer
-    ></script>
 
     <script type="text/javascript">
       (function (c, l, a, r, i, t, y) {
@@ -124,32 +109,8 @@
     <!-- Skip to content link for keyboard users -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
 
-    <!-- Unified Navbar -->
-    <header class="navbar">
-      <div class="navbar-content">
-        <div class="navbar-left">
-          <a href="/" class="navbar-brand" aria-label="Go to homepage">
-            <span
-              class="material-icons brand-icon navbar-logo glowing-icon-sm"
-              aria-hidden="true"
-              >analytics</span
-            >
-          </a>
-        </div>
-        <div class="navbar-right">
-          <!-- Theme Switch Button -->
-          <button
-            class="theme-toggle-btn"
-            aria-label="Toggle light and dark theme"
-            id="theme-toggle-btn"
-          >
-            <span class="material-icons" id="theme-icon" aria-hidden="true"
-              >light_mode</span
-            >
-          </button>
-        </div>
-      </div>
-    </header>
+    <!-- Unified site chrome -->
+    {% include "partials/site_navbar.html" %}
 
     <main class="main viking-page-shell" id="main-content" tabindex="-1">
       <!-- Simplified Hero Section -->
@@ -222,175 +183,8 @@
           </p>
         </article>
       </section>
-
-      <footer class="mega-footer">
-        <div class="footer-content">
-          <!-- Top section: Footer Directory Columns -->
-          <nav class="footer-directory" aria-label="Footer Directory">
-            <div class="footer-column">
-              <h3 class="footer-column-title">Platform</h3>
-              <ul class="footer-list">
-                <li>
-                  <a href="{{ frontend_url }}/explore">Explore Metrics</a>
-                </li>
-                <li><a href="{{ frontend_url }}/analytics">Analytics</a></li>
-                <li>
-                  <a href="{{ frontend_url }}/vulnerabilities"
-                    >Vulnerabilities</a
-                  >
-                </li>
-                <li><a href="{{ frontend_url }}/settings">Settings</a></li>
-              </ul>
-            </div>
-
-            <div class="footer-column">
-              <h3 class="footer-column-title">Resources</h3>
-              <ul class="footer-list">
-                <li>
-                  <a href="{{ marketing_url }}/documentation">Documentation</a>
-                </li>
-                <li>
-                  <a href="{{ marketing_url }}/whitepaper">The Whitepaper</a>
-                </li>
-                <li><a href="{{ marketing_url }}/book">The Book</a></li>
-              </ul>
-            </div>
-
-            <div class="footer-column">
-              <h3 class="footer-column-title">Support</h3>
-              <ul class="footer-list">
-                <li>
-                  <a href="{{ frontend_url }}/status/platform-status"
-                    >Platform Status</a
-                  >
-                </li>
-                <li>
-                  <a href="mailto:support@dataengineeringformachinelearning.com"
-                    >Report a Bug</a
-                  >
-                </li>
-              </ul>
-            </div>
-
-            <div class="footer-column">
-              <h3 class="footer-column-title">Legal & Compliance</h3>
-              <ul class="footer-list">
-                <li>
-                  <a href="{{ marketing_url }}/privacy">Privacy Policy</a>
-                </li>
-                <li>
-                  <a href="{{ marketing_url }}/terms">Terms of Service</a>
-                </li>
-                <li>
-                  <a href="{{ marketing_url }}/compliance">SOC2 Compliance</a>
-                </li>
-                <li>
-                  <a href="{{ marketing_url }}/privacy#gdpr">GDPR Compliance</a>
-                </li>
-                <li>
-                  <a
-                    href="#"
-                    onclick="
-                      event.preventDefault();
-                      if (window.DemlWidgets)
-                        window.DemlWidgets.openCookieSettings();
-                    "
-                    >Cookie Settings</a
-                  >
-                </li>
-              </ul>
-            </div>
-          </nav>
-
-          <!-- Bottom section: Copyright and Badges -->
-          <section class="footer-bottom">
-            <div class="footer-badges-top">
-              <span class="usa-badge" id="usa-badge">
-                <span class="usa-badge-icon" aria-hidden="true">🇺🇸</span>
-                <span>Made in the U.S.A</span>
-              </span>
-            </div>
-
-            <div class="footer-compliance-row">
-              <div class="copyright-info u-style-4b23f2">
-                <span class="copyright-text"
-                  >Copyright © {% now "Y" %} Data Engineering for Machine
-                  Learning by
-                  <a
-                    href="https://joealongi.dev/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Joe Alongi</a
-                  >. All rights reserved.</span
-                >
-              </div>
-            </div>
-          </section>
-        </div>
-      </footer>
     </main>
 
-    <script>
-      (function () {
-        let currentTheme =
-          document.documentElement.getAttribute("data-theme") || "dark";
-
-        function updateThemeIcon() {
-          const themeIcon = document.getElementById("theme-icon");
-          if (themeIcon) {
-            themeIcon.textContent =
-              currentTheme === "light" ? "dark_mode" : "light_mode";
-          }
-        }
-
-        function setTheme(theme) {
-          document.documentElement.setAttribute("data-theme", theme);
-          localStorage.setItem("theme", theme);
-          currentTheme = theme;
-          if (theme === "dark") {
-            document.documentElement.classList.add("dark");
-          } else {
-            document.documentElement.classList.remove("dark");
-          }
-          updateThemeIcon();
-        }
-
-        window.addEventListener("DOMContentLoaded", () => {
-          updateThemeIcon();
-          const toggleBtn = document.getElementById("theme-toggle-btn");
-          if (toggleBtn) {
-            toggleBtn.addEventListener("click", () => {
-              setTheme(currentTheme === "light" ? "dark" : "light");
-            });
-          }
-
-          // Confetti for USA Badge
-          const usaBadge = document.getElementById("usa-badge");
-          if (usaBadge) {
-            usaBadge.addEventListener("mouseenter", (e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = (rect.left + rect.width / 2) / window.innerWidth;
-              const y = (rect.top + rect.height / 2) / window.innerHeight;
-
-              if (window.confetti) {
-                window.confetti({
-                  particleCount: 50,
-                  spread: 60,
-                  origin: { x, y },
-                  colors: ["#FF0000", "#FFFFFF", "#0000FF"],
-                  disableForReducedMotion: true,
-                  zIndex: 9999,
-                });
-              }
-            });
-          }
-        });
-      })();
-    </script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"
-      integrity="sha384-0esPaJH+F9evp2lsJYN36SW7XkRbaYviuyF+PpnbjDXBC9i1CWGiJyGrXCyiyGqZ"
-      crossorigin="anonymous"
-    ></script>
+    {% include "partials/site_footer.html" %}
   </body>
 </html>

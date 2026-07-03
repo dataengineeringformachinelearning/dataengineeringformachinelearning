@@ -26,24 +26,6 @@
       </div>
     </div>
 
-    @if (!isCollapsed()) {
-    <div
-      class="sidebar-search sidebar-extracted-1"
-      (click)="openSearchDialog()"
-      tabindex="0"
-      role="button"
-      aria-label="Open search dialog"
-      (keydown.enter)="openSearchDialog()"
-      (keydown.space)="$event.preventDefault(); openSearchDialog()"
-    >
-      <div class="search-wrapper">
-        <viking-app-icon name="search" [ariaHidden]="true" />
-        <span class="sidebar-search-placeholder">Search...</span>
-        <kbd class="search-shortcut">⌘K</kbd>
-      </div>
-    </div>
-    }
-
     <div class="sidebar-scroll-container">
       <nav class="sidebar-nav">
         @if (authService.isAuthenticated()) {

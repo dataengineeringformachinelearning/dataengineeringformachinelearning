@@ -1,281 +1,78 @@
 ---
+import VikingIcon from './VikingIcon.astro';
 import { siteEnv } from '../lib/site-env';
+import {
+  SITE_NAV_LINKS,
+  resolveNavHref,
+  resolveBrandHref,
+} from '../../../frontend/projects/viking-ui/src/lib/site-chrome/site-chrome.config';
 
 const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
+const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: BACKEND_URL };
+const navLinks = SITE_NAV_LINKS.filter(link => !link.requireAuth);
+const brandHref = resolveBrandHref('marketing', urls);
 ---
 
 <script define:vars={{ FRONTEND_URL, BACKEND_URL, MARKETING_URL }}>
   window.__DEML = { FRONTEND_URL, BACKEND_URL, MARKETING_URL };
 </script>
+
 <header class="navbar">
   <div class="navbar-content">
     <div class="navbar-left">
-      <a href="/" class="navbar-brand" aria-label="Go to homepage" id="navbar-brand-link">
-        <span class="material-icons brand-icon navbar-logo glowing-icon-sm" aria-hidden="true">analytics</span>
+      <a href={brandHref} class="navbar-brand" aria-label="Go to homepage" id="navbar-brand-link">
+        <VikingIcon name="bar-chart" size={28} class="brand-icon navbar-logo glowing-icon-sm" />
       </a>
     </div>
 
-    <!-- Centered Nav Links -->
-    <div class="navbar-center desktop-nav">
-      <a href={FRONTEND_URL + '/explore'} class="nav-btn">
-        <span class="material-icons">explore</span>
-        <span>Explore</span>
-      </a>
-      <a href="/documentation" class="nav-btn">
-        <span class="material-icons">description</span>
-        <span>Documentation</span>
-      </a>
-    </div>
+    <nav class="navbar-center desktop-nav" aria-label="Main navigation">
+      {navLinks.map(link => (
+        <a href={resolveNavHref(link, 'marketing', urls)} class="nav-btn">
+          <VikingIcon name={link.icon} size={16} />
+          <span>{link.label}</span>
+        </a>
+      ))}
+    </nav>
 
     <div class="navbar-right">
       <div class="desktop-auth">
-        <a href={FRONTEND_URL + '/login'} class="auth-btn" id="auth-btn-desktop">
-          <span class="material-icons" id="auth-icon-desktop">login</span>
+        <a href={`${FRONTEND_URL}/login`} class="auth-btn" id="auth-btn-desktop">
+          <span id="auth-icon-desktop"><VikingIcon name="arrow-right" size={16} /></span>
           <span id="auth-text-desktop">Sign In</span>
         </a>
       </div>
 
-      <!-- Theme Switch Button -->
-      <button class="theme-toggle-btn" aria-label="Toggle light and dark theme" id="theme-toggle-btn">
-        <span class="material-icons" id="theme-icon">light_mode</span>
+      <button type="button" class="theme-toggle-btn" aria-label="Toggle light and dark theme" id="theme-toggle-btn">
+        <span id="theme-icon"><VikingIcon name="sun" size={24} /></span>
       </button>
 
-      <!-- Hamburger Menu Toggle Button (Mobile) -->
-      <button class="menu-toggle-btn" aria-label="Toggle navigation menu" aria-expanded="false" id="mobile-menu-btn">
-        <span class="material-icons" id="menu-icon">menu</span>
+      <button
+        type="button"
+        class="menu-toggle-btn"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        id="mobile-menu-btn"
+      >
+        <span id="menu-icon"><VikingIcon name="menu" size={24} /></span>
       </button>
     </div>
   </div>
 
-  <!-- Mobile Collapsible Menu Dropdown -->
-  <div class="mobile-menu" id="mobile-menu">
-    <a href={FRONTEND_URL + '/explore'} class="mobile-nav-btn">
-      <span class="material-icons">explore</span>
-      <span>Explore</span>
-    </a>
-    <a href="/documentation" class="mobile-nav-btn">
-      <span class="material-icons">description</span>
-      <span>Documentation</span>
-    </a>
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+    {navLinks.map(link => (
+      <a href={resolveNavHref(link, 'marketing', urls)} class="mobile-nav-btn">
+        <VikingIcon name={link.icon} size={16} />
+        <span>{link.label}</span>
+      </a>
+    ))}
 
     <div class="mobile-divider"></div>
 
-    <a href={FRONTEND_URL + '/login'} class="mobile-auth-btn" id="auth-btn-mobile">
-      <span class="material-icons" id="auth-icon-mobile">login</span>
+    <a href={`${FRONTEND_URL}/login`} class="mobile-auth-btn" id="auth-btn-mobile">
+      <span id="auth-icon-mobile"><VikingIcon name="arrow-right" size={16} /></span>
       <span id="auth-text-mobile">Sign In</span>
     </a>
-  </div>
+  </nav>
 </header>
 
-<!-- Navbar styles: @deml/viking-ui → /assets/viking-ui.css -->
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Theme logic
-    const themeBtn = document.getElementById('theme-toggle-btn');
-    const themeIcon = document.getElementById('theme-icon');
-
-    function updateThemeIcon() {
-      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
-    }
-
-    updateThemeIcon();
-
-    themeBtn.addEventListener('click', () => {
-      let currentTheme = document.documentElement.getAttribute('data-theme');
-      let newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-      document.documentElement.setAttribute('data-theme', newTheme);
-      localStorage.setItem('theme', newTheme);
-
-      if (newTheme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-
-      updateThemeIcon();
-    });
-
-    // Mobile menu logic
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    const menuIcon = document.getElementById('menu-icon');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    menuBtn.addEventListener('click', () => {
-      const isOpen = mobileMenu.classList.contains('open');
-      if (isOpen) {
-        mobileMenu.classList.remove('open');
-        menuBtn.setAttribute('aria-expanded', 'false');
-        menuIcon.textContent = 'menu';
-      } else {
-        mobileMenu.classList.add('open');
-        menuBtn.setAttribute('aria-expanded', 'true');
-        menuIcon.textContent = 'close';
-      }
-    });
-
-    // Auth Handoff Logic - informs this marketing site of sign-in state from the main app.
-    // Triggered when navigating from the signed-in Angular app via authService.navigateToMarketingSite()
-    // which generates a short-lived one-time token and redirects here with ?session_handoff=TOKEN
-    // This sets a localStorage flag so UI can reflect logged-in state (e.g. show Dashboard instead of Sign In).
-
-    const config = (window as any).__DEML ?? {};
-    const BACKEND_URL = config.BACKEND_URL ?? config.API_BASE ?? '';
-    const FRONTEND_URL = config.FRONTEND_URL ?? config.MAIN_APP ?? '';
-
-    async function checkAuthHandoff() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const handoffToken = urlParams.get('session_handoff');
-
-      if (handoffToken) {
-        try {
-          const res = await fetch(`${BACKEND_URL}/api/v1/auth/handoff/verify`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ token: handoffToken })
-          });
-
-          if (res.ok) {
-            const data = await res.json();
-            if (data.status === 'success') {
-              // Set for backward compat and expiry
-              const expiry = Date.now() + (24 * 60 * 60 * 1000);
-              localStorage.setItem('deml_session_active', JSON.stringify({ active: true, expires: expiry, user: data.user }));
-              // Update UI using the status
-              updateAuthUIFromStatus({ isAuthenticated: true, ...data });
-            }
-          }
-        } catch (e) {
-          console.error('Failed to verify handoff token', e);
-        }
-
-        // Clean URL to remove the token (one-time use)
-        const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-        window.history.replaceState({path: cleanUrl}, '', cleanUrl);
-      }
-
-      // Update UI based on cached flag if no iframe response yet
-      const flag = localStorage.getItem('deml_session_active');
-      if (flag) {
-        try {
-          const parsed = JSON.parse(flag);
-          if (parsed.active && (!parsed.expires || Date.now() < parsed.expires)) {
-            updateAuthUIFromStatus({ isAuthenticated: true, user: parsed.user });
-          } else {
-            localStorage.removeItem('deml_session_active');
-          }
-        } catch (e) {
-          // legacy
-          if (flag === 'true') {
-            updateAuthUIFromStatus({ isAuthenticated: true });
-          } else {
-            localStorage.removeItem('deml_session_active');
-          }
-        }
-      }
-    }
-
-    checkAuthHandoff();
-
-    // Shared auth status via iframe postMessage (cross-domain browser context sharing)
-    // This allows the marketing site to detect login state on deml.app without explicit redirect/handoff.
-    // The iframe loads a page on the main app domain that can access its own Firebase/auth state.
-    function checkAuthViaIframe() {
-      // Check cached status first (with 5 min TTL to avoid constant loads)
-      const cached = localStorage.getItem('deml_auth_status');
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          if (parsed.timestamp && (Date.now() - parsed.timestamp) < 5 * 60 * 1000) {
-            updateAuthUIFromStatus(parsed);
-            return;
-          }
-        } catch (e) {}
-      }
-
-      const iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.style.width = '0';
-      iframe.style.height = '0';
-      iframe.src = `${FRONTEND_URL}/auth-status`;
-      document.body.appendChild(iframe);
-
-      // Listen for response from the iframe (strict origin check)
-      const listener = (event: MessageEvent) => {
-        // Accept from main app domain (computed from env, fallback for dev)
-        try {
-          const mainOrigin = new URL(FRONTEND_URL).origin;
-          if (event.origin !== mainOrigin && !event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
-        } catch (e) {
-          // ENV-driven only. If FRONTEND_URL not set, be conservative and only trust localhost origins.
-          if (!event.origin.includes('localhost') && !event.origin.includes('127.0.0.1')) return;
-        }
-        if (event.data && event.data.type === 'AUTH_STATUS') {
-          window.removeEventListener('message', listener);
-
-          // Cache it with short TTL
-          const statusWithTime = { ...event.data, timestamp: Date.now() };
-          localStorage.setItem('deml_auth_status', JSON.stringify(statusWithTime));
-
-          updateAuthUIFromStatus(event.data);
-
-          // Remove iframe after use
-          if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-        }
-      };
-      window.addEventListener('message', listener);
-
-      // Fallback: remove iframe after timeout if no response
-      setTimeout(() => {
-        if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-        window.removeEventListener('message', listener);
-      }, 10000);
-    }
-
-    function updateAuthUIFromStatus(status: any) {
-      const isLoggedIn = status.isAuthenticated === true;
-
-      const desktopBtn = document.getElementById('auth-btn-desktop');
-      const desktopIcon = document.getElementById('auth-icon-desktop');
-      const desktopText = document.getElementById('auth-text-desktop');
-
-      const mobileBtn = document.getElementById('auth-btn-mobile');
-      const mobileIcon = document.getElementById('auth-icon-mobile');
-      const mobileText = document.getElementById('auth-text-mobile');
-
-      if (isLoggedIn) {
-        if (desktopBtn && desktopIcon && desktopText) {
-          desktopBtn.href = `${FRONTEND_URL}/dashboard`;
-          desktopIcon.textContent = 'dashboard';
-          desktopText.textContent = 'Dashboard';
-        }
-        if (mobileBtn && mobileIcon && mobileText) {
-          mobileBtn.href = `${FRONTEND_URL}/dashboard`;
-          mobileIcon.textContent = 'dashboard';
-          mobileText.textContent = 'Dashboard';
-        }
-      } else {
-        // Optionally clear stale flag
-        localStorage.removeItem('deml_session_active');
-        localStorage.removeItem('deml_auth_status');
-        if (desktopBtn && desktopIcon && desktopText) {
-          desktopBtn.href = `${FRONTEND_URL}/login`;
-          desktopIcon.textContent = 'login';
-          desktopText.textContent = 'Sign In';
-        }
-        if (mobileBtn && mobileIcon && mobileText) {
-          mobileBtn.href = `${FRONTEND_URL}/login`;
-          mobileIcon.textContent = 'login';
-          mobileText.textContent = 'Sign In';
-        }
-      }
-    }
-
-    // Run the iframe check on load (in addition to handoff)
-    checkAuthViaIframe();
-  });
-</script>
+<script is:inline src="/assets/widgets/navbar.js" defer></script>

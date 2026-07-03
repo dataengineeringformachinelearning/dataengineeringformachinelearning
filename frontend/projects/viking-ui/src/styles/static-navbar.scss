@@ -136,8 +136,31 @@
   overflow: hidden;
 }
 
-.nav-btn .material-icons {
+.nav-btn .material-icons,
+.nav-btn svg,
+.nav-btn .viking-icon,
+.mobile-nav-btn svg,
+.auth-btn svg,
+.theme-toggle-btn svg,
+.menu-toggle-btn svg {
   margin: 0;
+  flex-shrink: 0;
+}
+
+.nav-btn svg,
+.mobile-nav-btn svg,
+.auth-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-toggle-btn svg,
+.menu-toggle-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-btn .material-icons {
   font-size: var(--base-font-size);
   width: 16px;
   height: 16px;
@@ -228,11 +251,11 @@ html[data-theme='light'] {
 }
 
 .navbar .theme-toggle-btn .material-icons,
-.theme-toggle-btn .material-icons {
-  font-size: 24px;
+.navbar .theme-toggle-btn svg,
+.theme-toggle-btn .material-icons,
+.theme-toggle-btn svg {
   width: 24px;
   height: 24px;
-  line-height: 24px;
 }
 
 .navbar .theme-toggle-btn:hover,

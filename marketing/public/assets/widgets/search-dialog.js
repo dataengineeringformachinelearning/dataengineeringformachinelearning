@@ -1,8 +1,4 @@
-import {
-  create,
-  insert,
-  search,
-} from "https://cdn.jsdelivr.net/npm/@orama/orama@2.0.17/+esm";
+import { create, insert, search } from 'https://cdn.jsdelivr.net/npm/@orama/orama@2.0.17/+esm';
 
 const css = `
 .deml-search-overlay {
@@ -13,7 +9,7 @@ const css = `
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding-top: max(10vh, 40px);
+  padding-top: 10vh;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s, visibility 0.2s;
@@ -96,7 +92,16 @@ const css = `
   flex-direction: column;
   gap: 8px;
 }
-
+.deml-search-result-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm, 6px);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid transparent;
+  cursor: pointer;
+  gap: 8px;
+}
 .deml-search-result-item.selected,
 .deml-search-result-item:hover {
   background: rgba(255, 255, 255, 0.05);
@@ -199,14 +204,6 @@ mark.deml-search-highlight {
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
-@media (max-width: 480px) {
-  .deml-suggestions-grid {
-    grid-template-columns: 1fr;
-  }
-  .deml-search-footer {
-    display: none;
-  }
-}
 .deml-suggestion-item {
   display: flex;
   align-items: center;
@@ -254,11 +251,11 @@ async function initDb() {
   try {
     db = await create({
       schema: {
-        id: "string",
-        title: "string",
-        content: "string",
-        type: "string",
-        url: "string",
+        id: 'string',
+        title: 'string',
+        content: 'string',
+        type: 'string',
+        url: 'string',
       },
     });
 
@@ -271,7 +268,7 @@ async function initDb() {
       }
     }
   } catch (e) {
-    console.error("Failed to initialize search DB", e);
+    console.error('Failed to initialize search DB', e);
   }
   isInitializing = false;
 }
@@ -279,12 +276,12 @@ async function initDb() {
 function renderSearch() {
   if (overlayEl) return;
 
-  const styleEl = document.createElement("style");
+  const styleEl = document.createElement('style');
   styleEl.innerHTML = css;
   document.head.appendChild(styleEl);
 
-  overlayEl = document.createElement("div");
-  overlayEl.className = "deml-search-overlay";
+  overlayEl = document.createElement('div');
+  overlayEl.className = 'deml-search-overlay';
   overlayEl.innerHTML = `
     <div class="deml-search-dialog">
       <div class="deml-search-input-wrapper">
@@ -307,15 +304,15 @@ function renderSearch() {
 
   document.body.appendChild(overlayEl);
 
-  const inputEl = overlayEl.querySelector("#deml-search-input");
-  const bodyEl = overlayEl.querySelector("#deml-search-body");
-  const closeBtn = overlayEl.querySelector("#deml-search-close");
+  const inputEl = overlayEl.querySelector('#deml-search-input');
+  const bodyEl = overlayEl.querySelector('#deml-search-body');
+  const closeBtn = overlayEl.querySelector('#deml-search-close');
 
   let selectedIndex = 0;
   let currentResults = [];
 
   const updateResultsUI = () => {
-    if (currentResults.length === 0 && inputEl.value.trim() !== "") {
+    if (currentResults.length === 0 && inputEl.value.trim() !== '') {
       bodyEl.innerHTML = `
         <div class="deml-no-results">
           <span class="material-icons deml-no-results-icon">search_off</span>
@@ -323,7 +320,7 @@ function renderSearch() {
         </div>`;
       return;
     }
-    if (inputEl.value.trim() === "") {
+    if (inputEl.value.trim() === '') {
       bodyEl.innerHTML = `
         <div class="deml-suggestions-container">
           <div class="deml-suggestions-header">Quick Navigation</div>
@@ -348,10 +345,10 @@ function renderSearch() {
         </div>
       `;
 
-      bodyEl.querySelectorAll(".deml-suggestion-item").forEach((item) => {
-        item.addEventListener("click", (e) => {
-          inputEl.value = e.currentTarget.getAttribute("data-term");
-          inputEl.dispatchEvent(new Event("input"));
+      bodyEl.querySelectorAll('.deml-suggestion-item').forEach(item => {
+        item.addEventListener('click', e => {
+          inputEl.value = e.currentTarget.getAttribute('data-term');
+          inputEl.dispatchEvent(new Event('input'));
         });
       });
       return;
@@ -359,9 +356,9 @@ function renderSearch() {
 
     let html = '<div class="deml-results-container">';
     currentResults.forEach((res, i) => {
-      const isSelected = i === selectedIndex ? "selected" : "";
-      const icon = res.type === "chapter" ? "menu_book" : "dns";
-      const badge = res.type === "chapter" ? "Doc" : "Status";
+      const isSelected = i === selectedIndex ? 'selected' : '';
+      const icon = res.type === 'chapter' ? 'menu_book' : 'dns';
+      const badge = res.type === 'chapter' ? 'Doc' : 'Status';
 
       html += `
         <a href="${res.url}" class="deml-search-result-item ${isSelected}" data-index="${i}">
@@ -374,23 +371,23 @@ function renderSearch() {
         </a>
       `;
     });
-    html += "</div>";
+    html += '</div>';
     bodyEl.innerHTML = html;
 
-    const items = bodyEl.querySelectorAll(".deml-search-result-item");
-    items.forEach((item) => {
-      item.addEventListener("mouseenter", (e) => {
-        selectedIndex = parseInt(e.currentTarget.getAttribute("data-index"));
+    const items = bodyEl.querySelectorAll('.deml-search-result-item');
+    items.forEach(item => {
+      item.addEventListener('mouseenter', e => {
+        selectedIndex = parseInt(e.currentTarget.getAttribute('data-index'));
         updateResultsUI();
       });
-      item.addEventListener("click", () => {
+      item.addEventListener('click', () => {
         const res = currentResults[selectedIndex];
-        if (res.type === "chapter") {
+        if (res.type === 'chapter') {
           // Astro site book page structure, navigate to book#chapter-X or select in UI
           // For now, if we are on /book, we can trigger the UI update by finding the sidebar item
-          if (window.location.pathname.includes("/book")) {
+          if (window.location.pathname.includes('/book')) {
             const pageItem = document.querySelector(
-              `.page-item[data-index="${res.id.replace("chapter-", "")}"]`,
+              `.page-item[data-index="${res.id.replace('chapter-', '')}"]`,
             );
             if (pageItem) pageItem.click();
           } else {
@@ -402,7 +399,7 @@ function renderSearch() {
     });
   };
 
-  inputEl.addEventListener("input", async (e) => {
+  inputEl.addEventListener('input', async e => {
     const val = e.target.value;
     if (!val.trim() || !db) {
       currentResults = [];
@@ -411,31 +408,31 @@ function renderSearch() {
     }
     const res = await search(db, {
       term: val,
-      properties: ["title", "content"],
+      properties: ['title', 'content'],
       threshold: 0.1,
       tolerance: 2,
     });
-    currentResults = res.hits.map((h) => h.document);
+    currentResults = res.hits.map(h => h.document);
     selectedIndex = 0;
     updateResultsUI();
   });
 
-  inputEl.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowDown") {
+  inputEl.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       selectedIndex = Math.min(selectedIndex + 1, currentResults.length - 1);
       updateResultsUI();
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       selectedIndex = Math.max(selectedIndex - 1, 0);
       updateResultsUI();
-    } else if (e.key === "Enter") {
+    } else if (e.key === 'Enter') {
       e.preventDefault();
       if (currentResults[selectedIndex]) {
         const res = currentResults[selectedIndex];
-        if (window.location.pathname.includes("/book")) {
+        if (window.location.pathname.includes('/book')) {
           const pageItem = document.querySelector(
-            `.page-item[data-index="${res.id.replace("chapter-", "")}"]`,
+            `.page-item[data-index="${res.id.replace('chapter-', '')}"]`,
           );
           if (pageItem) pageItem.click();
         } else {
@@ -443,13 +440,13 @@ function renderSearch() {
         }
         closeSearch();
       }
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       closeSearch();
     }
   });
 
-  closeBtn.addEventListener("click", closeSearch);
-  overlayEl.addEventListener("click", (e) => {
+  closeBtn.addEventListener('click', closeSearch);
+  overlayEl.addEventListener('click', e => {
     if (e.target === overlayEl) closeSearch();
   });
 }
@@ -458,19 +455,19 @@ function openSearch() {
   if (!db) initDb(); // Async lazy load
   if (!overlayEl) renderSearch();
 
-  overlayEl.classList.add("open");
-  const inputEl = overlayEl.querySelector("#deml-search-input");
+  overlayEl.classList.add('open');
+  const inputEl = overlayEl.querySelector('#deml-search-input');
   if (inputEl) {
-    inputEl.value = "";
+    inputEl.value = '';
     // trigger empty input UI
-    inputEl.dispatchEvent(new Event("input"));
+    inputEl.dispatchEvent(new Event('input'));
     setTimeout(() => inputEl.focus(), 100);
   }
 }
 
 function closeSearch() {
   if (overlayEl) {
-    overlayEl.classList.remove("open");
+    overlayEl.classList.remove('open');
   }
 }
 
@@ -481,8 +478,8 @@ window.DemlWidgets.openSearch = openSearch;
 setTimeout(initDb, 2000);
 
 // Global hotkey
-window.addEventListener("keydown", (e) => {
-  if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+window.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
     e.preventDefault();
     openSearch();
   }
