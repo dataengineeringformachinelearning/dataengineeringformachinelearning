@@ -1,6 +1,6 @@
 {
   "name": "@dataengineeringformachinelearning/viking-ui",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Viking-UI: DEML clinical design system for Angular. THEME.md palette, WCAG 2.1 AA, zero third-party UI runtime deps.",
   "keywords": [
     "angular",
@@ -10,7 +10,17 @@
     "deml",
     "a11y"
   ],
-  "license": "UNLICENSED",
+  "license": "Apache-2.0",
+  "author": "Joe Alongi <support@dataengineeringformachinelearning.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning.git",
+    "directory": "frontend/projects/viking-ui"
+  },
+  "homepage": "https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/frontend/projects/viking-ui#readme",
+  "bugs": {
+    "url": "https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/issues"
+  },
   "publishConfig": {
     "access": "public"
   },

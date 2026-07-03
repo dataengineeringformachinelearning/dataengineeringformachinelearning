@@ -4,5 +4,5 @@
   "lib": {
     "entryFile": "src/public-api.ts"
   },
-  "assets": ["./src/styles/**/*.scss", "./viking.manifest.json", "./README.md"]
+  "assets": ["./src/styles/**/*.scss", "./viking.manifest.json", "./README.md", "./LICENSE"]
 }

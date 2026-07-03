@@ -67,3 +67,7 @@ npm run build:viking-ui
 cd dist/viking-ui
 npm publish --access public --otp=YOUR_CODE
 ```
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE) in this package (same terms as the root [Data Engineering for Machine Learning](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning) repository).
