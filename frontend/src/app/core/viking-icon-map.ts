@@ -5,7 +5,7 @@ const MATERIAL_ICON_MAP: Record<string, VikingIconName> = {
   add: 'plus',
   add_box: 'plus',
   add_circle: 'plus',
-  analytics: 'bar-chart',
+  analytics: 'deml',
   arrow_back: 'arrow-left',
   arrow_forward: 'arrow-right',
   assessment: 'bar-chart',

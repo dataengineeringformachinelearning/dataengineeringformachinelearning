@@ -122,6 +122,31 @@
   border-radius: var(--border-radius-md, 9px);
   overflow: hidden;
   background: var(--bg-color);
+
+  .desktop-nav,
+  .desktop-auth {
+    display: flex !important;
+  }
+
+  .menu-toggle-btn,
+  .mobile-menu {
+    display: none !important;
+  }
+
+  .navbar-search {
+    flex: 1;
+    max-width: 280px;
+    margin: 0 12px;
+  }
+
+  .algolia-autocomplete-host {
+    display: block;
+    min-width: 140px;
+  }
+
+  .navbar-search-mobile-btn {
+    display: none;
+  }
 }
 
 @media (min-width: 720px) {

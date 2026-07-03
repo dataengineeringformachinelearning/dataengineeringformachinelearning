@@ -30,19 +30,11 @@ import {
               aria-label="Go to marketing homepage"
               (click)="onBrandClick($event)"
             >
-              <viking-icon
-                name="bar-chart"
-                [size]="28"
-                class="brand-icon navbar-logo glowing-icon-sm"
-              />
+              <viking-icon name="deml" [size]="28" class="brand-icon navbar-logo glowing-icon-sm" />
             </a>
           } @else {
             <a [href]="brandHref()" class="navbar-brand" aria-label="Go to homepage">
-              <viking-icon
-                name="bar-chart"
-                [size]="28"
-                class="brand-icon navbar-logo glowing-icon-sm"
-              />
+              <viking-icon name="deml" [size]="28" class="brand-icon navbar-logo glowing-icon-sm" />
             </a>
           }
         </div>
@@ -75,11 +67,7 @@ import {
 
         @if (showSearch()) {
           <div class="navbar-search" role="search">
-            <div
-              id="autocomplete"
-              class="algolia-autocomplete-host"
-              aria-label="Search site content"
-            ></div>
+            <div id="autocomplete" class="algolia-autocomplete-host"></div>
             <button
               type="button"
               class="navbar-search-mobile-btn"

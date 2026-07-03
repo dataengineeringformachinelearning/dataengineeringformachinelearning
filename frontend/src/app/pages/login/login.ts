@@ -18,6 +18,7 @@ import {
   VikingCallout,
   VikingField,
   VikingInput,
+  VikingOtpInput,
 } from '@dataengineeringformachinelearning/viking-ui';
 
 import { AuthService } from '../../services/auth.service';
@@ -39,6 +40,7 @@ import {
     VikingCallout,
     VikingField,
     VikingInput,
+    VikingOtpInput,
   ],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,

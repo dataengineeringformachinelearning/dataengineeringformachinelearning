@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
+import WhitepaperCta from '../components/WhitepaperCta.astro';
 import '../styles/landing.scss';
 import { siteEnv } from '../lib/site-env';
 
@@ -353,25 +354,7 @@ const integrations = [
       </div>
     </section>
 
-    <!-- Whitepaper CTA -->
-    <section class="whitepaper-band no-bottom-rule" aria-labelledby="whitepaper-cta-title">
-      <div class="whitepaper-band-inner">
-        <div>
-          <span class="section-tag">RESEARCH & ARCHITECTURE</span>
-          <h2 id="whitepaper-cta-title">The Whitepaper</h2>
-          <p>
-            Architecture diagrams, event projection patterns, and automated threat mitigation
-            strategies powering the platform.
-          </p>
-        </div>
-        <a href="/whitepaper" class="cta-button primary-btn whitepaper-btn viking-btn viking-btn-primary">
-          <span class="cta-content">
-            <VikingIcon name="description" size={20} class="cta-icon" />
-            <span class="cta-label">Read Whitepaper</span>
-          </span>
-        </a>
-      </div>
-    </section>
+    <WhitepaperCta />
 
     <!-- Compliance -->
     <section class="transparency-atmospheric" aria-labelledby="transparency-title">

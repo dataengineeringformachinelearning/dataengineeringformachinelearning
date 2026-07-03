@@ -52,12 +52,7 @@
           </viking-field>
           } @if (codeSent()) {
           <viking-field label="Verification Code" [required]="true">
-            <viking-input
-              type="text"
-              formControlName="verificationCode"
-              placeholder="123456"
-              icon="mail"
-            />
+            <viking-otp-input formControlName="verificationCode" [length]="6" />
           </viking-field>
           } @if (error()) {
           <viking-callout tone="danger" [heading]="error()!" />

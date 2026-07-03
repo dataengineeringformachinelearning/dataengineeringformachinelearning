@@ -9,8 +9,10 @@ export type { VikingChartCurve, VikingChartKind, VikingDonutSegment } from './li
 export {
   VIKING_ICON_NAMES,
   VIKING_ICON_PATHS,
+  VIKING_ICON_VIEWBOXES,
   MATERIAL_ICON_ALIASES,
   resolveVikingIcon,
+  vikingIconViewBox,
 } from './lib/core/icons';
 export type { VikingIconName } from './lib/core/icons';
 export { VikingControl, provideVikingCva } from './lib/core/cva';
@@ -91,6 +93,7 @@ export * from './lib/time-picker/time-picker';
 export * from './lib/timeline/timeline';
 export * from './lib/toast/toast';
 export * from './lib/uptime-bar/uptime-bar';
+export * from './lib/whitepaper-cta/whitepaper-cta';
 export type { VikingUptimeStatus } from './lib/uptime-bar/uptime-bar';
 export * from './lib/tooltip/tooltip';
 export * from './lib/typography/heading';

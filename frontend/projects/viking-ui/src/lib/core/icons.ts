@@ -5,6 +5,7 @@
 export type VikingIconName = keyof typeof VIKING_ICON_PATHS;
 
 export const VIKING_ICON_PATHS = {
+  deml: '<path d="M280-280h80v-200h-80v200Zm320 0h80v-400h-80v400Zm-160 0h80v-120h-80v120Zm0-200h80v-80h-80v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/>',
   check: '<path d="M4 12.5 9.5 18 20 6.5"/>',
   x: '<path d="M6 6l12 12M18 6 6 18"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
@@ -111,7 +112,7 @@ export const VIKING_ICON_PATHS = {
 
 /** Legacy Material Icons ligature names → Viking icon registry keys. */
 export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
-  analytics: 'bar-chart',
+  analytics: 'deml',
   security: 'shield',
   link: 'link',
   visibility: 'eye',
@@ -156,11 +157,20 @@ export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
 };
 
 /** Icons rendered with fill instead of stroke (brand marks). */
+/** Icons using non-default viewBox (Material coordinate space). */
+export const VIKING_ICON_VIEWBOXES: Partial<Record<VikingIconName, string>> = {
+  deml: '0 -960 960 960',
+};
+
 export const VIKING_FILLED_ICON_NAMES = [
+  'deml',
   'google',
   'apple',
   'play',
 ] as const satisfies readonly VikingIconName[];
+
+export const vikingIconViewBox = (name: VikingIconName): string =>
+  VIKING_ICON_VIEWBOXES[name] ?? '0 0 24 24';
 
 /** Resolve a Viking or legacy Material icon name to a registry key. */
 export const resolveVikingIcon = (name: string): VikingIconName => {

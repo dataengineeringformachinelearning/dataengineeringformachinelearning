@@ -60,6 +60,14 @@ select:focus-visible,
   outline-offset: var(--focus-ring-offset) !important;
 }
 
+// Viking shells own the focus ring on the control border — not the inner native input.
+.viking-input-shell input:focus,
+.viking-input-shell input:focus-visible,
+.viking-textarea-shell textarea:focus,
+.viking-textarea-shell textarea:focus-visible {
+  outline: none !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   ::before,

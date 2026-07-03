@@ -4,6 +4,7 @@ import {
   VIKING_FILLED_ICON_NAMES,
   VIKING_ICON_PATHS,
   resolveVikingIcon,
+  vikingIconViewBox,
   VikingIconName,
 } from '../core/icons';
 
@@ -21,7 +22,7 @@ import {
   template: `
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
+      [attr.viewBox]="viewBox()"
       [attr.fill]="filled() ? 'currentColor' : 'none'"
       [attr.stroke]="filled() ? 'none' : 'currentColor'"
       [attr.stroke-width]="filled() ? null : '1.8'"
@@ -60,6 +61,8 @@ export class VikingIcon {
   readonly spin = input<boolean>(false);
 
   private readonly resolvedName = computed(() => resolveVikingIcon(this.name()));
+
+  protected readonly viewBox = computed(() => vikingIconViewBox(this.resolvedName()));
 
   protected readonly filled = computed(() =>
     (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(this.resolvedName()),

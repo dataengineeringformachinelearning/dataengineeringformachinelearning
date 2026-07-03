@@ -71,7 +71,7 @@ import { VikingIconName } from '../core/icons';
         flex: 1;
         min-width: 0;
         border: none;
-        outline: none;
+        outline: none !important;
         background: transparent;
         color: var(--viking-text);
         font-family: var(--viking-font-family);

@@ -1177,7 +1177,12 @@ a.cta-button {
   }
 }
 
-/* ── Whitepaper band ── */
+/* ── Whitepaper CTA (viking-ui) ── */
+.landing-container .viking-whitepaper-cta {
+  margin-block: 56px;
+}
+
+/* ── Whitepaper band (legacy) ── */
 .whitepaper-band {
   padding: 56px 0;
 

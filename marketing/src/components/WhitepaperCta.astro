@@ -1,0 +1,41 @@
+---
+const barHeights = [72, 45, 88, 56, 91, 38, 67, 82, 49, 76, 58, 94];
+
+export interface Props {
+  tag?: string;
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  href?: string;
+}
+
+const {
+  tag = 'Research & Architecture',
+  title = 'The Whitepaper',
+  description = 'Architecture diagrams, event projection patterns, and automated threat mitigation strategies powering the platform.',
+  buttonLabel = 'Read Whitepaper',
+  href = '/whitepaper',
+} = Astro.props;
+---
+
+<section class="viking-whitepaper-cta" aria-labelledby="whitepaper-cta-title">
+  <div class="viking-whitepaper-cta-bg" aria-hidden="true">
+    <div class="viking-whitepaper-polars-grid">
+      {barHeights.map((height) => (
+        <span
+          class="viking-bar viking-whitepaper-polars-bar"
+          style={`--viking-bar-height: ${height}`}
+        />
+      ))}
+    </div>
+  </div>
+
+  <div class="viking-whitepaper-cta-content">
+    <span class="viking-whitepaper-tag">{tag}</span>
+    <h2 id="whitepaper-cta-title" class="viking-whitepaper-title">{title}</h2>
+    <p class="viking-whitepaper-description">{description}</p>
+    <a href={href} class="viking-btn viking-btn-primary viking-whitepaper-btn">
+      {buttonLabel}
+    </a>
+  </div>
+</section>

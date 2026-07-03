@@ -10,46 +10,55 @@ import { VikingControl, provideVikingCva } from '../core/cva';
   providers: [provideVikingCva(VikingTextarea)],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <textarea
-      class="viking-control"
-      [rows]="rows()"
-      [placeholder]="placeholder()"
-      [value]="value()"
-      [disabled]="disabled() || formDisabled()"
-      [attr.aria-label]="label() || placeholder() || 'Text area'"
-      [style.resize]="autoGrow() ? 'none' : 'vertical'"
-      (input)="onInput($event)"
-      (blur)="onTouched()"
-    ></textarea>
+    <div class="viking-control viking-textarea-shell" [class.viking-disabled]="isDisabled()">
+      <textarea
+        [rows]="rows()"
+        [placeholder]="placeholder()"
+        [value]="value()"
+        [disabled]="isDisabled()"
+        [attr.aria-label]="label() || placeholder() || 'Text area'"
+        [style.resize]="autoGrow() ? 'none' : 'vertical'"
+        (input)="onInput($event)"
+        (blur)="onTouched()"
+      ></textarea>
+    </div>
   `,
   styles: [
     `
       :host {
         display: block;
       }
-      textarea {
+      .viking-textarea-shell {
+        display: flex;
         width: 100%;
-        box-sizing: border-box;
         padding: var(--viking-space-1) var(--viking-space-2);
         background: var(--viking-surface);
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius);
         box-shadow: var(--viking-shadow-sm);
+        transition: var(--viking-transition);
+      }
+      .viking-textarea-shell:hover:not(.viking-disabled) {
+        border-color: var(--viking-accent-strong);
+      }
+      .viking-textarea-shell:focus-within {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
+      }
+      .viking-disabled {
+        opacity: 0.55;
+      }
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+        border: none;
+        outline: none !important;
+        background: transparent;
         color: var(--viking-text);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
         line-height: 1.55;
-        transition: border-color 0.2s ease;
-      }
-      textarea:hover:not(:disabled) {
-        border-color: var(--viking-accent-strong);
-      }
-      textarea:focus-visible {
-        outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: var(--viking-ring-offset);
-      }
-      textarea:disabled {
-        opacity: 0.55;
+        padding: 0;
       }
       textarea::placeholder {
         color: var(--viking-text-muted);
@@ -64,6 +73,8 @@ export class VikingTextarea extends VikingControl<string> {
   readonly rows = input<number>(3);
   readonly autoGrow = input<boolean>(true);
   readonly disabled = input<boolean>(false);
+
+  protected isDisabled = (): boolean => this.disabled() || this.formDisabled();
 
   writeValue(value: string): void {
     this.value.set(value ?? '');

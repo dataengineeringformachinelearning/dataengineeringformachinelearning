@@ -725,6 +725,24 @@
     </div>
   </section>
 
+  <section class="showcase-category" aria-labelledby="cat-marketing">
+    <header class="showcase-category-header">
+      <viking-heading size="lg" [level]="2" id="cat-marketing">Marketing</viking-heading>
+      <viking-text variant="muted"
+        >Polars-style research CTA with animated bar grid and sparkline.</viking-text
+      >
+    </header>
+    <div class="demo-grid">
+      <section class="demo demo-wide" id="demo-whitepaper-cta">
+        <viking-heading size="lg" [level]="3">Whitepaper CTA</viking-heading>
+        <viking-text variant="muted">
+          Shared across marketing and app surfaces — update here, syncs everywhere.
+        </viking-text>
+        <viking-whitepaper-cta />
+      </section>
+    </div>
+  </section>
+
   <section class="showcase-category" aria-labelledby="cat-chrome">
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-chrome">Site Chrome</viking-heading>
@@ -739,7 +757,12 @@
           Canonical marketing/app navigation chrome shared across DEML surfaces.
         </viking-text>
         <div class="site-chrome-preview">
-          <viking-site-navbar context="marketing" [showSearch]="true" />
+          <viking-site-navbar
+            context="marketing"
+            [showSearch]="true"
+            [theme]="chromeTheme()"
+            (themeToggle)="toggleChromeTheme()"
+          />
         </div>
       </section>
 

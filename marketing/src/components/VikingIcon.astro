@@ -3,6 +3,7 @@ import {
   VIKING_ICON_PATHS,
   VIKING_FILLED_ICON_NAMES,
   resolveVikingIcon,
+  vikingIconViewBox,
 } from '../../../frontend/projects/viking-ui/src/lib/core/icons.ts';
 
 export interface Props {
@@ -15,11 +16,12 @@ const { name, size = 16, class: className = '' } = Astro.props;
 const resolved = resolveVikingIcon(name);
 const paths = VIKING_ICON_PATHS[resolved] ?? VIKING_ICON_PATHS.info;
 const filled = (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(resolved);
+const viewBox = vikingIconViewBox(resolved);
 ---
 
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 24 24"
+  viewBox={viewBox}
   fill={filled ? 'currentColor' : 'none'}
   stroke={filled ? 'none' : 'currentColor'}
   stroke-width={filled ? undefined : '1.8'}

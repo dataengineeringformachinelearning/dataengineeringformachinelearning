@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { VikingIcon } from '../icon/icon';
 
 /**
  * viking-brand — logo + wordmark lockup.
@@ -7,11 +8,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'viking-brand',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [VikingIcon],
   template: `
     @if (logoSrc()) {
       <img class="viking-brand-logo" [src]="logoSrc()" [alt]="name() + ' logo'" />
     } @else {
-      <span class="viking-brand-mark" aria-hidden="true">{{ name().charAt(0) }}</span>
+      <viking-icon name="deml" [size]="28" class="viking-brand-mark-icon" />
     }
     <span class="viking-brand-name">{{ name() }}</span>
     <ng-content />
@@ -30,18 +32,9 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         height: var(--viking-space-3);
         width: auto;
       }
-      .viking-brand-mark {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: var(--viking-space-3);
-        height: var(--viking-space-3);
-        border-radius: var(--viking-radius);
-        background: var(--viking-accent);
-        color: var(--viking-accent-content);
-        font-weight: 700;
-        font-size: var(--viking-font-size-ui);
-        text-transform: uppercase;
+      .viking-brand-mark-icon {
+        color: var(--viking-accent);
+        flex-shrink: 0;
       }
       .viking-brand-name {
         font-weight: 700;

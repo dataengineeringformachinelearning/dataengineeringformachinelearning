@@ -9,47 +9,120 @@
 <header class="navbar">
   <div class="navbar-content">
     <div class="navbar-left">
-      <a href="{{ marketing_url }}/" class="navbar-brand" aria-label="Go to homepage">
+      <a
+        href="{{ marketing_url }}/"
+        class="navbar-brand"
+        aria-label="Go to homepage"
+      >
         <svg
           class="brand-icon navbar-logo glowing-icon-sm"
           xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          viewBox="0 -960 960 960"
+          fill="currentColor"
           width="28"
           height="28"
           aria-hidden="true"
         >
-          <path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3" />
+          <path
+            d="M280-280h80v-200h-80v200Zm320 0h80v-400h-80v400Zm-160 0h80v-120h-80v120Zm0-200h80v-80h-80v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"
+          />
         </svg>
       </a>
     </div>
 
     <nav class="navbar-center desktop-nav" aria-label="Main navigation">
       <a href="{{ frontend_url }}/explore" class="nav-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><ellipse cx="12" cy="12" rx="4" ry="9"/></svg>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          width="16"
+          height="16"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18" />
+          <ellipse cx="12" cy="12" rx="4" ry="9" />
+        </svg>
         <span>Explore</span>
       </a>
-      <a href="{{ marketing_url }}/documentation/" class="nav-btn" target="_blank" rel="noopener noreferrer">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6z"/><path d="M14 3v6h6"/></svg>
+      <a
+        href="{{ marketing_url }}/documentation/"
+        class="nav-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          width="16"
+          height="16"
+          aria-hidden="true"
+        >
+          <path
+            d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6z"
+          />
+          <path d="M14 3v6h6" />
+        </svg>
         <span>Documentation</span>
       </a>
     </nav>
 
+    <div class="navbar-search" role="search">
+      <div id="autocomplete" class="algolia-autocomplete-host"></div>
+      <button
+        type="button"
+        class="navbar-search-mobile-btn"
+        aria-label="Open search"
+        onclick="if (window.DemlWidgets) window.DemlWidgets.openSearch();"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          width="20"
+          height="20"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m16.5 16.5 4.5 4.5" />
+        </svg>
+      </button>
+    </div>
+
     <div class="navbar-right">
       <div class="desktop-auth">
-        <a href="{{ frontend_url }}/login" class="auth-btn" id="auth-btn-desktop">
+        <a
+          href="{{ frontend_url }}/login"
+          class="auth-btn"
+          id="auth-btn-desktop"
+        >
           <span id="auth-icon-desktop"></span>
           <span id="auth-text-desktop">Sign In</span>
         </a>
       </div>
-      <button type="button" class="theme-toggle-btn" aria-label="Toggle light and dark theme" id="theme-toggle-btn">
+      <button
+        type="button"
+        class="theme-toggle-btn"
+        aria-label="Toggle light and dark theme"
+        id="theme-toggle-btn"
+      >
         <span id="theme-icon"></span>
       </button>
-      <button type="button" class="menu-toggle-btn" aria-label="Toggle navigation menu" aria-expanded="false" id="mobile-menu-btn">
+      <button
+        type="button"
+        class="menu-toggle-btn"
+        aria-label="Toggle navigation menu"
+        aria-expanded="false"
+        id="mobile-menu-btn"
+      >
         <span id="menu-icon"></span>
       </button>
     </div>
@@ -59,13 +132,23 @@
     <a href="{{ frontend_url }}/explore" class="mobile-nav-btn">
       <span>Explore</span>
     </a>
-    <a href="{{ marketing_url }}/documentation/" class="mobile-nav-btn" target="_blank" rel="noopener noreferrer">
+    <a
+      href="{{ marketing_url }}/documentation/"
+      class="mobile-nav-btn"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <span>Documentation</span>
     </a>
     <div class="mobile-divider"></div>
-    <a href="{{ frontend_url }}/login" class="mobile-auth-btn" id="auth-btn-mobile">
+    <a
+      href="{{ frontend_url }}/login"
+      class="mobile-auth-btn"
+      id="auth-btn-mobile"
+    >
       <span id="auth-text-mobile">Sign In</span>
     </a>
   </nav>
 </header>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>
+<script src="{% static 'widgets/algolia-search.js' %}" defer></script>

@@ -141,10 +141,17 @@ import { VikingSeparator } from '../separator/separator';
       .viking-auth-footer {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-3);
         width: 100%;
-        padding-top: var(--viking-space-1);
+        margin-top: var(--viking-space-3);
+        padding-top: var(--viking-space-3);
         border-top: 1px solid var(--viking-border);
+      }
+      :host ::ng-deep [vikingAuthFooter] {
+        display: flex;
+        flex-direction: column;
+        gap: var(--viking-space-3);
+        width: 100%;
       }
       :host ::ng-deep [vikingAuthLinks].viking-auth-links,
       :host ::ng-deep .viking-auth-links {

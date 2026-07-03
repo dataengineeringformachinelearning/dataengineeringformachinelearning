@@ -20,6 +20,8 @@ WIDGET_FILES = (
   "navbar.js",
 )
 
+ALGOLIA_CONFIG = "algolia-config.js"
+
 
 def sync_widgets() -> None:
   root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -36,9 +38,16 @@ def sync_widgets() -> None:
       print(f"Skip missing widget asset: {name}", file=sys.stderr)
       continue
 
-    if name in ("cookie-consent.js", "algolia-search.js"):
+    if name == "cookie-consent.js":
       shutil.copy2(src, os.path.join(marketing_widgets, name))
       print(f"Synced {name} -> marketing")
+      continue
+
+    if name == "algolia-search.js":
+      shutil.copy2(src, os.path.join(marketing_widgets, name))
+      print(f"Synced {name} -> marketing")
+      shutil.copy2(src, os.path.join(backend_widgets, name))
+      print(f"Synced {name} -> backend")
       continue
 
     for dst_dir in (marketing_widgets, backend_widgets):
@@ -46,5 +55,22 @@ def sync_widgets() -> None:
       print(f"Synced {name} -> {dst_dir}")
 
 
+def sync_algolia_config() -> None:
+  root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+  src = os.path.join(root, "frontend", "src", "assets", ALGOLIA_CONFIG)
+  if not os.path.isfile(src):
+    print(f"Skip missing Algolia config: {ALGOLIA_CONFIG}", file=sys.stderr)
+    return
+
+  for dst_dir in (
+    os.path.join(root, "backend", "static"),
+    os.path.join(root, "marketing", "public", "assets"),
+  ):
+    os.makedirs(dst_dir, exist_ok=True)
+    shutil.copy2(src, os.path.join(dst_dir, ALGOLIA_CONFIG))
+    print(f"Synced {ALGOLIA_CONFIG} -> {dst_dir}")
+
+
 if __name__ == "__main__":
   sync_widgets()
+  sync_algolia_config()

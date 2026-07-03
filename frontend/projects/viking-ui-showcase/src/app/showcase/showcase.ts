@@ -78,6 +78,7 @@ import {
   VikingTimelineItem,
   VikingToastService,
   VikingTooltip,
+  VikingWhitepaperCta,
 } from '@dataengineeringformachinelearning/viking-ui';
 
 /**
@@ -157,6 +158,7 @@ import {
     VikingToggle,
     VikingToggleGroup,
     VikingTooltip,
+    VikingWhitepaperCta,
   ],
   templateUrl: './showcase.html',
   styleUrl: './showcase.scss',
@@ -171,6 +173,9 @@ export class Showcase {
   protected readonly viewToggle = signal('grid');
   protected readonly commandOpen = signal(false);
   protected readonly lastMessage = signal('');
+  protected readonly chromeTheme = signal<'light' | 'dark'>(
+    document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark',
+  );
 
   protected readonly navItems = [
     { label: 'Gallery', href: '/', active: true },
@@ -207,7 +212,7 @@ export class Showcase {
 
   protected readonly commandItems: VikingCommandItem[] = [
     { id: 'dashboard', label: 'Open dashboard', group: 'Navigate', icon: 'home', kbd: 'G D' },
-    { id: 'status', label: 'Open status page', group: 'Navigate', icon: 'bar-chart' },
+    { id: 'status', label: 'Open status page', group: 'Navigate', icon: 'deml' },
     { id: 'retrain', label: 'Trigger SLA model training', group: 'Actions', icon: 'sparkle' },
     { id: 'rotate', label: 'Rotate encryption keys', group: 'Actions', icon: 'lock' },
   ];
@@ -288,8 +293,16 @@ export class Showcase {
   ]);
 
   constructor() {
-    inject(Title).setTitle('Viking-Material Component Gallery');
+    inject(Title).setTitle('Viking-UI Component Gallery');
   }
+
+  protected toggleChromeTheme = (): void => {
+    const next = this.chromeTheme() === 'light' ? 'dark' : 'light';
+    this.chromeTheme.set(next);
+    document.documentElement.setAttribute('data-theme', next);
+    document.documentElement.classList.toggle('dark', next === 'dark');
+    localStorage.setItem('theme', next);
+  };
 
   protected showToast = (tone: 'success' | 'danger'): void => {
     if (tone === 'success') {

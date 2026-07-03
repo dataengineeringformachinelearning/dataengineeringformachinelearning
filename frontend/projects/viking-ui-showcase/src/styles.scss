@@ -1,4 +1,7 @@
 @use '../../viking-ui/src/styles/viking-ui' as *;
+@use '../../viking-ui/src/styles/static-navbar' as *;
+@use '../../viking-ui/src/lib/footer/footer' as *;
+@use '../../viking-ui/src/lib/whitepaper-cta/whitepaper-cta' as *;
 
 *,
 *::before,
