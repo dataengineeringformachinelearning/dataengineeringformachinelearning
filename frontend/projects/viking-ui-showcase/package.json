@@ -1,6 +1,6 @@
 {
   "name": "@dataengineeringformachinelearning/viking-ui-showcase",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "description": "Standalone component gallery for @dataengineeringformachinelearning/viking-ui (not deployed on deml.app).",
   "scripts": {
