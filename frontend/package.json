@@ -3,7 +3,8 @@
   "version": "2.0.1",
   "scripts": {
     "ng": "ng",
-    "prebuild": "npm run build:viking-ui",
+    "prebuild": "npm run build:viking-ui && npm run build:sitemap",
+    "build:sitemap": "node scripts/build_sitemap.mjs",
     "prestart": "npm run build:viking-ui",
     "start": "node set-env.js && ng serve",
     "build": "node set-env.js && ng build",

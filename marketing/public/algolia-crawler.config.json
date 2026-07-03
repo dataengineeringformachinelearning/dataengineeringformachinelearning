@@ -1,0 +1,17 @@
+{
+  "name": "dataengineeringformachinelearning.com_ZJAFYOSH2V",
+  "startUrls": [{ "url": "https://dataengineeringformachinelearning.com/" }],
+  "sitemaps": [
+    "https://dataengineeringformachinelearning.com/sitemap.xml",
+    "https://dataengineeringformachinelearning.com/sitemap-index.xml"
+  ],
+  "ignorePatterns": [
+    "https://dataengineeringformachinelearning.com/llms-full.txt",
+    "https://dataengineeringformachinelearning.com/assets/content/search-index.json"
+  ],
+  "notes": [
+    "Algolia looks for /sitemap.xml by default — postbuild copies sitemap-0.xml to sitemap.xml.",
+    "Book chapters are split at /book/{slug}/ so each HTML page stays under crawler size limits.",
+    "After deploy, paste sitemaps into Crawler → Configuration and run Recrawl."
+  ]
+}

@@ -84,11 +84,11 @@ import {
         <div class="navbar-right">
           @if (showSearch()) {
             <div class="navbar-search" role="search">
-              <div id="autocomplete" class="algolia-autocomplete-host"></div>
               <button
                 type="button"
-                class="navbar-search-mobile-btn"
+                class="navbar-search-trigger"
                 aria-label="Open search"
+                title="Search (⌘K)"
                 (click)="openSearch()"
               >
                 <viking-icon name="search" [size]="20" />
@@ -176,6 +176,10 @@ import {
           </button>
         }
       </nav>
+
+      @if (showSearch()) {
+        <div id="autocomplete" class="algolia-autocomplete-host" aria-hidden="true"></div>
+      }
     </header>
   `,
 })

@@ -34,13 +34,31 @@ def api_user(request):
   raise HttpError(401, "Not authenticated")
 
 
-@router.delete("/delete-account", response=SuccessSchema)
+class DeleteAccountOut(Schema):
+  status: str
+  job_id: str | None = None
+  completed: bool = False
+
+
+@router.delete("/delete-account", response=DeleteAccountOut)
 def api_delete_account(request):
   if not request.user.is_authenticated:
     raise HttpError(401, "Not authenticated")
-  user = request.user
-  user.delete()
-  return {"status": "success"}
+
+  from account.lifecycle import request_account_deletion
+  from monitor.models import UserLifecycleJob
+
+  firebase_uid = None
+  if hasattr(request, "firebase_token") and request.firebase_token:
+    firebase_uid = request.firebase_token.get("uid")
+
+  job = request_account_deletion(request.user, firebase_uid=firebase_uid)
+  completed = job.state == UserLifecycleJob.State.COMPLETED
+  return {
+    "status": "success" if completed else "accepted",
+    "job_id": str(job.id),
+    "completed": completed,
+  }
 
 
 import secrets

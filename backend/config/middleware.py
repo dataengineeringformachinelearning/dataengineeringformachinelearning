@@ -1,6 +1,6 @@
 import logging
 
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import AnonymousUser
 from django.utils.deprecation import MiddlewareMixin
 
 INTERNAL_API_PREFIX = "/api/v1/internal/"
@@ -56,63 +56,9 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
         }
       else:
         decoded_token = auth.verify_id_token(token)
-      uid = decoded_token.get("uid")
-      email = decoded_token.get("email")
-      name = decoded_token.get("name") or decoded_token.get("display_name", "")
+      from account.lifecycle import ensure_user_from_firebase
 
-      # Find or create local Django User corresponding to Firebase UID or email
-      user = None
-      if email:
-        user = User.objects.filter(email=email).first()
-
-      if not user:
-        user = User.objects.filter(username=uid).first()
-
-      if not user:
-        user = User.objects.create(username=uid)
-        user.email = email or ""
-        user.first_name = name or ""
-        # Set an unusable password since authentication is offloaded to Firebase
-        user.set_unusable_password()
-        user.save()
-        logger.info("Created Django user for Firebase UID: %s", uid)
-
-      # Ensure user profile and role exists
-      from monitor.models import UserProfile
-
-      profile, p_created = UserProfile.objects.get_or_create(user=user)
-      if p_created:
-        if uid == "system" or (email and email == "admin@dataengineeringformachinelearning.com"):
-          profile.role = "Security Admin"
-        else:
-          profile.role = "Operator"
-        logger.info("Created user profile with role: %s for user: %s", profile.role, user.username)
-
-      # Sync linked_emails
-      identities = decoded_token.get("firebase", {}).get("identities", {})
-      linked_emails = list(identities.get("email", []))
-      if email and email not in linked_emails:
-        linked_emails.append(email)
-
-      profile_updated = False
-      if set(profile.linked_emails) != set(linked_emails):
-        profile.linked_emails = linked_emails
-        profile_updated = True
-
-      if p_created or profile_updated:
-        profile.save()
-
-      if not p_created:
-        # Keep email and display name in sync if they changed
-        updated = False
-        if email and user.email != email:
-          user.email = email
-          updated = True
-        if name and user.first_name != name:
-          user.first_name = name
-          updated = True
-        if updated:
-          user.save()
+      user, _profile, _created = ensure_user_from_firebase(decoded_token)
 
       # Authenticate the request with this user
       request.user = user

@@ -286,6 +286,8 @@
   cursor: pointer;
   transition: all 0.15s ease;
   border: 1px solid transparent;
+  text-decoration: none;
+  color: inherit;
 
   &:hover {
     background-color: var(--hover-color);

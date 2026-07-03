@@ -170,11 +170,11 @@ ${navLinks.map(link => navLinkHtml(link, 'nav-btn')).join('\n')}
 
     <div class="navbar-right">
       <div class="navbar-search" role="search">
-        <div id="autocomplete" class="algolia-autocomplete-host"></div>
         <button
           type="button"
-          class="navbar-search-mobile-btn"
+          class="navbar-search-trigger"
           aria-label="Open search"
+          title="Search (⌘K)"
           onclick="if (window.DemlWidgets) window.DemlWidgets.openSearch();"
         >
           ${iconSlot('search', 20)}
@@ -225,6 +225,8 @@ ${navLinks.map(link => navLinkHtml(link, 'mobile-nav-btn')).join('\n')}
       Sign Out
     </button>
   </nav>
+
+  <div id="autocomplete" class="algolia-autocomplete-host" aria-hidden="true"></div>
 </header>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>
 <script src="{% static 'widgets/algolia-search.js' %}" defer></script>

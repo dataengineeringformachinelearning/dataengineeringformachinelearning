@@ -23,6 +23,17 @@
           administrative modifications to status pages, monitored endpoints, incident reports, or
           integrations.
         </viking-callout>
+        } @else {
+        <viking-callout
+          class="col-span-4 col-span-md-12"
+          tone="info"
+          heading="MFA required to save"
+          icon="shield"
+        >
+          Creating or updating sites requires <strong>multi-factor authentication</strong>. Enroll
+          SMS MFA on your <a routerLink="/account" class="inline-status-link">Account</a> page,
+          then sign out and sign back in so your session includes MFA verification.
+        </viking-callout>
         }
 
         <div class="status-card-outlined col-span-4 col-span-md-12">

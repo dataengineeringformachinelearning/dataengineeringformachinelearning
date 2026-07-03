@@ -1,0 +1,18 @@
+{
+  "name": "DEML App",
+  "startUrls": [{ "url": "https://deml.app/" }],
+  "sitemaps": [
+    "https://deml.app/sitemap.xml",
+    "https://deml.app/sitemap-index.xml"
+  ],
+  "crossDomainSitemaps": [
+    "https://dataengineeringformachinelearning.com/sitemap-index.xml",
+    "https://backend.deml.app/sitemap.xml"
+  ],
+  "notes": [
+    "Paste sitemaps into Algolia Crawler → DEML App → Configuration → sitemaps.",
+    "Algolia auto-discovers /sitemap.xml from the start URL domain; explicit URLs are required when using sitemap-index or cross-domain feeds.",
+    "After deploy, run Recrawl from the Crawler overview.",
+    "Domain verification meta: algolia-site-verification in index.html (687B59B29612DE68)."
+  ]
+}

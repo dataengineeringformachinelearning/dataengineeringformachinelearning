@@ -66,6 +66,7 @@ const jsonLdPayload = jsonLd
 		{keywords && <meta name="keywords" content={keywords} />}
 		<meta name="author" content={AUTHOR_NAME} />
 		<meta name="robots" content={robots} />
+		<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
 		<meta name="algolia-site-verification" content="687B59B29612DE68" /> <!-- pragma: allowlist secret -->
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -130,6 +131,16 @@ const jsonLdPayload = jsonLd
 				apiKey: algolia.API_KEY,
 				experienceId: algolia.EXPERIENCE_ID,
 				env: algolia.ENV,
+				domains: [
+					'https://deml.app',
+					'https://dataengineeringformachinelearning.com',
+					'https://backend.deml.app',
+				],
+				sitemaps: [
+					'https://deml.app/sitemap.xml',
+					'https://dataengineeringformachinelearning.com/sitemap-index.xml',
+					'https://backend.deml.app/sitemap.xml',
+				],
 			};
 		</script>
 		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>

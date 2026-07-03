@@ -45,12 +45,20 @@ def test_get_current_user_unauthenticated(client: Client) -> None:
 
 
 @pytest.mark.django_db
+@patch("account.lifecycle.delete_firebase_user")
+@patch("account.lifecycle.cancel_stripe_for_profile")
 def test_delete_account_authenticated(
-  client: Client, test_user: User, mock_verify_token: Any
+  _mock_stripe: Any,
+  _mock_firebase: Any,
+  client: Client,
+  test_user: User,
+  mock_verify_token: Any,
 ) -> None:
   response = client.delete("/api/v1/auth/delete-account", HTTP_AUTHORIZATION="Bearer valid-token")
   assert response.status_code == 200
-  assert response.json()["status"] == "success"
+  body = response.json()
+  assert body["status"] in ("success", "accepted")
+  assert body.get("completed") is True
   assert not User.objects.filter(username="authuser").exists()
 
 

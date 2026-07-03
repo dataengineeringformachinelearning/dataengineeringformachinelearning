@@ -396,6 +396,10 @@ def add_service(request, page_id: str, payload: MonitoredServiceIn):
     raise HttpError(400, "This service URL is already monitored on this status page.")
 
   service = MonitoredService.objects.create(status_page=page, name=payload.name, url=payload.url)
+  if page.user_id:
+    from account.lifecycle import ensure_validated_site_for_url
+
+    ensure_validated_site_for_url(page.user, payload.url)
   return MonitoredServiceOut(
     id=str(service.id),
     name=service.name,
