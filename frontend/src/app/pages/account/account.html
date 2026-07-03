@@ -189,7 +189,11 @@
                   />
                 </div>
                 } @if (apiKeys().length === 0) {
-                <div class="empty-data-text">No active API keys found.</div>
+                <div class="empty-data-text">
+                  <viking-app-icon name="vpn_key" hostClass="empty-icon" />
+                  <p class="empty-title">No Active Keys</p>
+                  <p class="empty-subtitle">Generate an API key above to authenticate external data ingestion pipelines.</p>
+                </div>
                 }
               </div>
             </div>

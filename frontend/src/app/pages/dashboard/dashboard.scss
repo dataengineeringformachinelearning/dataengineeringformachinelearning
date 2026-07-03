@@ -361,19 +361,6 @@
   line-height: 1.1;
 }
 
-.panel-card {
-  padding: 20px;
-  border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border);
-  background: linear-gradient(
-    160deg,
-    color-mix(in srgb, var(--card-bg) 95%, var(--color-primary) 5%) 0%,
-    var(--card-bg) 55%
-  );
-  box-shadow: var(--shadow-sm);
-}
-
-.threats-panel {
   grid-area: threats;
 }
 
@@ -385,12 +372,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: var(--viking-space-2, 16px);
+  padding-bottom: var(--viking-space-1, 8px);
+  border-bottom: 1px solid var(--viking-border, var(--border));
 
   h2 {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: var(--viking-font-size-sm, 0.875rem);
+    font-weight: var(--viking-font-weight-bold, 700);
+    letter-spacing: var(--viking-letter-spacing-caps, 0.05em);
+    text-transform: uppercase;
   }
 }
 
@@ -480,25 +471,6 @@
   height: 20px;
 }
 
-.threat-clear {
-  .clear-icon-ring {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-    margin-bottom: 8px;
-
-    viking-app-icon {
-      color: var(--color-primary);
-    }
-  }
-}
-
-.detection-panel {
   .detection-header {
     display: flex;
     align-items: center;
@@ -676,29 +648,10 @@
     width: 100%;
     min-height: 0;
   }
-}
 
-.panel-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 32px 16px;
-  color: var(--text-muted);
-  gap: 8px;
-
-  viking-app-icon {
-    opacity: 0.6;
-  }
-
-  &.compact {
-    padding: 24px 12px;
-  }
-
-  h3 {
-    margin: 0;
-    color: var(--text-color);
+  .empty-chart-state.compact {
+    flex: 1 1 auto;
+    min-height: 140px;
   }
 }
 
@@ -760,9 +713,13 @@
   }
 
   h2 {
-    margin: 0 0 16px;
-    font-size: 1rem;
-    font-weight: 700;
+    margin: 0 0 var(--viking-space-2, 16px);
+    padding-bottom: var(--viking-space-1, 8px);
+    border-bottom: 1px solid var(--viking-border, var(--border));
+    font-size: var(--viking-font-size-sm, 0.875rem);
+    font-weight: var(--viking-font-weight-bold, 700);
+    letter-spacing: var(--viking-letter-spacing-caps, 0.05em);
+    text-transform: uppercase;
   }
 }
 
@@ -781,6 +738,15 @@
     flex: 1 1 auto;
     width: 100%;
     min-height: 0;
+  }
+
+  .empty-chart-state {
+    flex: 1 1 auto;
+    min-height: 200px;
+  }
+
+  .empty-chart-state.compact {
+    min-height: 160px;
   }
 }
 

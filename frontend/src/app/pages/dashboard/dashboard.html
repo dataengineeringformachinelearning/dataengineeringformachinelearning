@@ -150,9 +150,10 @@
           @if (vulnService.isLoading()) {
           <div class="panel-loading"><span class="spinner"></span> Scanning...</div>
           } @else if (recentThreats().length === 0) {
-          <div class="panel-empty">
-            <viking-app-icon name="verified_user" />
-            <p>No active threats detected. Your perimeter looks clear.</p>
+          <div class="empty-chart-state compact is-secure">
+            <viking-app-icon name="verified_user" hostClass="empty-icon" />
+            <h3 class="empty-title">Perimeter Clear</h3>
+            <p class="empty-subtitle">No active threats detected. Your perimeter looks clear.</p>
           </div>
           } @else {
           <div class="threat-list" role="list">
@@ -204,9 +205,10 @@
               [fill]="true"
             />
             } @else {
-            <div class="panel-empty compact">
-              <viking-app-icon name="satellite_alt" />
-              <p>Telemetry will appear once your site is connected.</p>
+            <div class="empty-chart-state compact">
+              <viking-app-icon name="satellite_alt" hostClass="empty-icon" />
+              <h3 class="empty-title">Awaiting Telemetry</h3>
+              <p class="empty-subtitle">Performance data will appear once your site is connected.</p>
             </div>
             }
           </div>
@@ -249,9 +251,10 @@
               [fill]="true"
             />
             } @else {
-            <div class="panel-empty">
-              <viking-app-icon name="timeline" />
-              <p>No latency data yet. Add a monitored endpoint in Sites.</p>
+            <div class="empty-chart-state">
+              <viking-app-icon name="timeline" hostClass="empty-icon" />
+              <h3 class="empty-title">No Latency Data</h3>
+              <p class="empty-subtitle">Add a monitored endpoint in Sites to begin collecting latency metrics.</p>
               <viking-button variant="primary" type="button" (pressed)="goToSettings()">
                 Go to Sites
               </viking-button>
@@ -271,8 +274,10 @@
               [fill]="true"
             />
             } @else {
-            <div class="panel-empty compact">
-              <p>No threat severity data available.</p>
+            <div class="empty-chart-state compact is-secure">
+              <viking-app-icon name="verified_user" hostClass="empty-icon" />
+              <h3 class="empty-title">No Threat Data</h3>
+              <p class="empty-subtitle">Threat severity distribution will appear when events are detected.</p>
             </div>
             }
           </div>
@@ -289,8 +294,10 @@
               [fill]="true"
             />
             } @else {
-            <div class="panel-empty compact">
-              <p>No anomaly signals detected.</p>
+            <div class="empty-chart-state compact is-secure">
+              <viking-app-icon name="radar" hostClass="empty-icon" />
+              <h3 class="empty-title">No Anomalies</h3>
+              <p class="empty-subtitle">No anomalous security signals detected in the last 24 hours.</p>
             </div>
             }
           </div>
@@ -328,12 +335,10 @@
           @if (vulnService.isLoading()) {
           <div class="panel-loading"><span class="spinner"></span> Ingesting threat feed...</div>
           } @else if (recentThreats().length === 0) {
-          <div class="panel-empty threat-clear">
-            <div class="clear-icon-ring">
-              <viking-app-icon name="verified_user" />
-            </div>
-            <h3>All clear</h3>
-            <p>No vulnerabilities or threats require your attention right now.</p>
+          <div class="empty-chart-state is-secure">
+            <viking-app-icon name="verified_user" hostClass="empty-icon" />
+            <h3 class="empty-title">All Clear</h3>
+            <p class="empty-subtitle">No vulnerabilities or threats require your attention right now.</p>
           </div>
           } @else {
           <div class="security-queue" role="list">

@@ -39,6 +39,7 @@ const MATERIAL_ICON_MAP: Record<string, VikingIconName> = {
   grid_view: 'menu',
   health_and_safety: 'shield',
   history: 'clock',
+  http: 'bar-chart',
   hub: 'globe',
   info: 'info',
   insights: 'sparkle',
