@@ -13,5 +13,6 @@ Disallow: /auth-status
 Disallow: /api/
 
 Sitemap: https://deml.app/sitemap.xml
+Sitemap: https://deml.app/sitemap-index.xml
 Sitemap: https://dataengineeringformachinelearning.com/sitemap-index.xml
 Sitemap: https://backend.deml.app/sitemap.xml

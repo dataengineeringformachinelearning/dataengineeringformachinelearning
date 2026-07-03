@@ -16,6 +16,7 @@ window.ALGOLIA_CONFIG = window.ALGOLIA_CONFIG || {
   ],
   sitemaps: [
     'https://deml.app/sitemap.xml',
+    'https://deml.app/sitemap-index.xml',
     'https://dataengineeringformachinelearning.com/sitemap-index.xml',
     'https://backend.deml.app/sitemap.xml',
   ],
