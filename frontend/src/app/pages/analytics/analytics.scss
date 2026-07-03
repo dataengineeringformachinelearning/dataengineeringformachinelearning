@@ -7,7 +7,8 @@
 }
 
 .chart-container {
-  height: 400px;
+  min-height: var(--viking-chart-panel-body-min-height-md, 19rem);
+  max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
   width: 100%;
 
   viking-chart {
@@ -276,29 +277,11 @@
   color: var(--text-muted);
 }
 
-.viking-chart-large {
-  --viking-chart-fill-min-height: 20rem;
-
-  width: 100%;
-  flex: 1 1 auto;
-  display: flex;
-  min-height: 20rem;
-}
-
 .dashboard-grid-single {
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
   margin-bottom: var(--grid-gap, 27px);
-}
-
-.viking-chart-medium {
-  --viking-chart-fill-min-height: 17.5rem;
-
-  width: 100%;
-  flex: 1 1 auto;
-  display: flex;
-  min-height: 17.5rem;
 }
 
 .panel-title-flex {

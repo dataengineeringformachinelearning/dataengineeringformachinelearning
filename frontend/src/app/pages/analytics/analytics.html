@@ -216,7 +216,6 @@
             label="System Latency (Last 24h)"
             [showArea]="true"
             [fill]="true"
-            class="viking-chart-large"
           />
           } @else {
           <viking-chart-empty-state
@@ -281,7 +280,6 @@
             [categories]="topRegionsCategories()"
             label="Top Regions"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else {
           <viking-chart-empty-state
@@ -307,7 +305,6 @@
             [categories]="frequencyCategories()"
             label="Request frequency vs latency"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else if (hasFrequencyData()) {
           <viking-chart
@@ -317,7 +314,6 @@
             label="Request Frequency"
             [showArea]="true"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else {
           <viking-chart-empty-state
@@ -343,7 +339,6 @@
             [categories]="endpointCategories()"
             label="Request Counts per Endpoint"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else {
           <viking-chart-empty-state
@@ -380,7 +375,6 @@
             [segments]="threatSeveritySegments()"
             label="Threat Events by Severity"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else {
           <viking-chart-empty-state
@@ -407,7 +401,6 @@
             [categories]="securityAlertCategories()"
             label="Recent Security Anomalies"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else {
           <viking-chart-empty-state
@@ -434,7 +427,6 @@
             [categories]="statusCategories()"
             label="HTTP Status Distribution"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else if (hasStatusData()) {
           <viking-chart
@@ -443,7 +435,6 @@
             [categories]="statusCategories()"
             label="HTTP Status Distribution"
             [fill]="true"
-            class="viking-chart-medium"
           />
           } @else {
           <viking-chart-empty-state

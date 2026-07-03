@@ -53,7 +53,7 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
 
       :host(.viking-chart-empty-fill) {
         flex: 1 1 auto;
-        min-height: var(--viking-chart-empty-min-height, 260px);
+        min-height: var(--viking-chart-empty-min-height, var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem)));
       }
 
       :host(.viking-chart-empty-overlay) {
