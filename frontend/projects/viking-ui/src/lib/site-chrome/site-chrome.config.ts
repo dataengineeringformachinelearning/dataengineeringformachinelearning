@@ -16,6 +16,8 @@ export interface SiteNavLink {
   marketingHref: string;
   external?: boolean;
   requireAuth?: boolean;
+  /** Routes served by deml.app — resolved to absolute app URLs off-app. */
+  platform?: boolean;
 }
 
 export interface SiteFooterLink {
@@ -24,6 +26,8 @@ export interface SiteFooterLink {
   marketingHref: string;
   external?: boolean;
   action?: 'cookie-settings' | 'bug-report';
+  /** Routes served by deml.app — resolved to absolute app URLs off-app. */
+  platform?: boolean;
 }
 
 export interface SiteFooterColumn {
@@ -31,7 +35,7 @@ export interface SiteFooterColumn {
   links: SiteFooterLink[];
 }
 
-/** Primary navbar links (desktop + mobile). Auth-only links filtered at render time. */
+/** Primary navbar links (desktop + mobile). Shown on every surface. */
 export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
   {
     id: 'explore',
@@ -39,6 +43,7 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
     icon: 'globe',
     appHref: '/explore',
     marketingHref: '/explore',
+    platform: true,
   },
   {
     id: 'documentation',
@@ -46,7 +51,6 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
     icon: 'file',
     appHref: 'https://dataengineeringformachinelearning.com/documentation/',
     marketingHref: '/documentation',
-    external: true,
   },
   {
     id: 'dashboard',
@@ -55,14 +59,16 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
     appHref: '/dashboard',
     marketingHref: '/dashboard',
     requireAuth: true,
+    platform: true,
   },
   {
-    id: 'setup',
-    label: 'Setup',
+    id: 'sites',
+    label: 'Sites',
     icon: 'globe',
     appHref: '/settings',
     marketingHref: '/settings',
     requireAuth: true,
+    platform: true,
   },
   {
     id: 'account',
@@ -71,6 +77,7 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
     appHref: '/account',
     marketingHref: '/account',
     requireAuth: true,
+    platform: true,
   },
 ] as const;
 
@@ -78,14 +85,15 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
   {
     title: 'Platform',
     links: [
-      { label: 'Explore', appHref: '/explore', marketingHref: '/explore' },
-      { label: 'Dashboard', appHref: '/dashboard', marketingHref: '/dashboard' },
-      { label: 'Setup', appHref: '/settings', marketingHref: '/settings' },
-      { label: 'Account', appHref: '/account', marketingHref: '/account' },
+      { label: 'Explore', appHref: '/explore', marketingHref: '/explore', platform: true },
+      { label: 'Dashboard', appHref: '/dashboard', marketingHref: '/dashboard', platform: true },
+      { label: 'Sites', appHref: '/settings', marketingHref: '/settings', platform: true },
+      { label: 'Account', appHref: '/account', marketingHref: '/account', platform: true },
       {
         label: 'Platform Status',
         appHref: '/status/platform-status',
         marketingHref: '/status/platform-status',
+        platform: true,
       },
     ],
   },
@@ -96,19 +104,16 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         label: 'Documentation',
         appHref: 'https://dataengineeringformachinelearning.com/documentation/',
         marketingHref: '/documentation',
-        external: true,
       },
       {
         label: 'Whitepaper',
         appHref: 'https://dataengineeringformachinelearning.com/whitepaper/',
         marketingHref: '/whitepaper',
-        external: true,
       },
       {
         label: 'Book',
         appHref: 'https://dataengineeringformachinelearning.com/book/',
         marketingHref: '/book',
-        external: true,
       },
     ],
   },
@@ -119,11 +124,12 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         label: 'Platform Status',
         appHref: '/status/platform-status',
         marketingHref: '/status/platform-status',
+        platform: true,
       },
       {
         label: 'Report a Bug',
         appHref: '#',
-        marketingHref: 'mailto:support@dataengineeringformachinelearning.com',
+        marketingHref: '#',
         action: 'bug-report',
       },
     ],
@@ -135,25 +141,21 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
         label: 'Privacy Policy',
         appHref: 'https://dataengineeringformachinelearning.com/privacy/',
         marketingHref: '/privacy',
-        external: true,
       },
       {
         label: 'Terms of Service',
         appHref: 'https://dataengineeringformachinelearning.com/terms/',
         marketingHref: '/terms',
-        external: true,
       },
       {
         label: 'SOC2 Compliance',
         appHref: 'https://dataengineeringformachinelearning.com/compliance/',
         marketingHref: '/compliance',
-        external: true,
       },
       {
         label: 'GDPR Compliance',
         appHref: 'https://dataengineeringformachinelearning.com/privacy/#gdpr',
         marketingHref: '/privacy#gdpr',
-        external: true,
       },
       {
         label: 'Cookie Settings',
@@ -164,6 +166,9 @@ export const SITE_FOOTER_COLUMNS: readonly SiteFooterColumn[] = [
     ],
   },
 ] as const;
+
+export const BUG_REPORT_QUERY = 'reportBug=1';
+export const COOKIE_SETTINGS_QUERY = 'cookieSettings=1';
 
 const isAbsoluteUrl = (href: string): boolean => /^https?:\/\//i.test(href);
 
@@ -176,23 +181,45 @@ const joinBase = (base: string, path: string): string => {
   return `${normalizedBase}${normalizedPath}`;
 };
 
+export const bugReportHref = (urls: SiteUrls): string =>
+  `${joinBase(urls.app, '/')}?${BUG_REPORT_QUERY}`;
+
+export const cookieSettingsHref = (urls: SiteUrls): string =>
+  `${joinBase(urls.marketing, '/')}?${COOKIE_SETTINGS_QUERY}`;
+
+const resolveMarketingContentHref = (href: string, urls: SiteUrls): string => {
+  if (isAbsoluteUrl(href)) {
+    return href;
+  }
+  if (href.startsWith('mailto:')) {
+    return href;
+  }
+  return href.startsWith('/') ? href : joinBase(urls.marketing, href);
+};
+
+const resolvePlatformHref = (
+  href: string,
+  context: SiteChromeContext,
+  urls: SiteUrls,
+): string => {
+  if (context === 'app') {
+    return href;
+  }
+  return joinBase(urls.app, href);
+};
+
 export const resolveNavHref = (
   link: SiteNavLink,
   context: SiteChromeContext,
   urls: SiteUrls,
 ): string => {
+  if (link.platform) {
+    return resolvePlatformHref(link.appHref, context, urls);
+  }
   if (context === 'app') {
     return link.appHref;
   }
-  if (context === 'marketing') {
-    if (isAbsoluteUrl(link.marketingHref)) {
-      return link.marketingHref;
-    }
-    return link.marketingHref.startsWith('/')
-      ? link.marketingHref
-      : joinBase(urls.marketing, link.marketingHref);
-  }
-  return isAbsoluteUrl(link.appHref) ? link.appHref : joinBase(urls.app, link.appHref);
+  return resolveMarketingContentHref(link.marketingHref, urls);
 };
 
 export const resolveFooterHref = (
@@ -200,40 +227,33 @@ export const resolveFooterHref = (
   context: SiteChromeContext,
   urls: SiteUrls,
 ): string => {
-  if (link.action) {
-    return '#';
+  if (link.action === 'bug-report') {
+    return context === 'app' ? '#' : bugReportHref(urls);
+  }
+  if (link.action === 'cookie-settings') {
+    return cookieSettingsHref(urls);
+  }
+  if (link.platform) {
+    return resolvePlatformHref(link.appHref, context, urls);
   }
   if (context === 'app') {
     return link.appHref;
   }
-  if (context === 'marketing') {
-    if (isAbsoluteUrl(link.marketingHref)) {
-      return link.marketingHref;
-    }
-    if (link.marketingHref.startsWith('mailto:')) {
-      return link.marketingHref;
-    }
-    return link.marketingHref.startsWith('/')
-      ? link.marketingHref
-      : joinBase(urls.marketing, link.marketingHref);
-  }
-  return isAbsoluteUrl(link.appHref) ? link.appHref : joinBase(urls.app, link.appHref);
+  return resolveMarketingContentHref(link.marketingHref, urls);
 };
 
 export const resolveBrandHref = (context: SiteChromeContext, urls: SiteUrls): string => {
   if (context === 'marketing') {
     return '/';
   }
-  if (context === 'app') {
-    return urls.marketing;
-  }
   return urls.marketing;
 };
 
-export const visibleNavLinks = (
-  links: readonly SiteNavLink[],
-  isAuthenticated: boolean,
-): SiteNavLink[] => links.filter(link => !link.requireAuth || isAuthenticated);
+/** All navbar links are shown on every surface for a consistent cross-app experience. */
+export const visibleNavLinks = (links: readonly SiteNavLink[]): SiteNavLink[] => [...links];
+
+export const isAppRouterPath = (href: string): boolean =>
+  !isAbsoluteUrl(href) && href.startsWith('/');
 
 export const DEFAULT_SITE_URLS: SiteUrls = {
   app: 'https://deml.app',

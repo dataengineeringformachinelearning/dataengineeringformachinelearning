@@ -41,11 +41,31 @@ const siteChrome = {
 };
 
 const iconsContent = fs.readFileSync(iconsPath, 'utf8');
-const iconsMatch = iconsContent.match(/export const VIKING_ICON_PATHS = (\{[\s\S]*?\}) as const/);
-if (!iconsMatch) {
-  throw new Error('Could not extract VIKING_ICON_PATHS');
+const lucidePath = path.join(vikingUiDir, 'core', 'lucide-paths.generated.ts');
+const brandPath = path.join(vikingUiDir, 'core', 'brand-icons.ts');
+
+const readObjectExport = (filePath, exportName) => {
+  const content = fs.readFileSync(filePath, 'utf8');
+  const match = content.match(new RegExp(`export const ${exportName} = (\\{[\\s\\S]*?\\}) as const`));
+  if (!match) {
+    throw new Error(`Could not extract ${exportName} from ${filePath}`);
+  }
+  return Function(`"use strict"; return (${match[1]});`)();
+};
+
+let iconPaths = {};
+try {
+  iconPaths = {
+    ...readObjectExport(lucidePath, 'LUCIDE_ICON_PATHS'),
+    ...readObjectExport(brandPath, 'VIKING_BRAND_ICON_PATHS'),
+  };
+} catch (error) {
+  const iconsMatch = iconsContent.match(/export const VIKING_ICON_PATHS = (\{[\s\S]*?\}) as const/);
+  if (!iconsMatch) {
+    throw error;
+  }
+  iconPaths = Function(`"use strict"; return (${iconsMatch[1]});`)();
 }
-const iconPaths = Function(`"use strict"; return (${iconsMatch[1]});`)();
 
 const outputs = [
   path.join(frontendDir, 'public', 'assets', 'site-chrome.json'),

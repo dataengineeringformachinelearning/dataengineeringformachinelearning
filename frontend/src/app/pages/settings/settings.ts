@@ -195,7 +195,7 @@ export class Settings implements OnInit {
   }
 
   ngOnInit(): void {
-    this.titleService.setTitle('Site Setup - DEML');
+    this.titleService.setTitle('Sites - DEML');
     this.metaService.updateTag({
       name: 'description',
       content: 'Set up monitoring sites, health checks, and status widgets for your product.',

@@ -5,15 +5,15 @@
       "label": "Explore",
       "icon": "globe",
       "appHref": "/explore",
-      "marketingHref": "/explore"
+      "marketingHref": "/explore",
+      "platform": true
     },
     {
       "id": "documentation",
       "label": "Documentation",
       "icon": "file",
       "appHref": "https://dataengineeringformachinelearning.com/documentation/",
-      "marketingHref": "/documentation",
-      "external": true
+      "marketingHref": "/documentation"
     },
     {
       "id": "dashboard",
@@ -21,15 +21,17 @@
       "icon": "home",
       "appHref": "/dashboard",
       "marketingHref": "/dashboard",
-      "requireAuth": true
+      "requireAuth": true,
+      "platform": true
     },
     {
-      "id": "setup",
-      "label": "Setup",
+      "id": "sites",
+      "label": "Sites",
       "icon": "globe",
       "appHref": "/settings",
       "marketingHref": "/settings",
-      "requireAuth": true
+      "requireAuth": true,
+      "platform": true
     },
     {
       "id": "account",
@@ -37,7 +39,8 @@
       "icon": "user",
       "appHref": "/account",
       "marketingHref": "/account",
-      "requireAuth": true
+      "requireAuth": true,
+      "platform": true
     }
   ],
   "footerColumns": [
@@ -47,27 +50,32 @@
         {
           "label": "Explore",
           "appHref": "/explore",
-          "marketingHref": "/explore"
+          "marketingHref": "/explore",
+          "platform": true
         },
         {
           "label": "Dashboard",
           "appHref": "/dashboard",
-          "marketingHref": "/dashboard"
+          "marketingHref": "/dashboard",
+          "platform": true
         },
         {
-          "label": "Setup",
+          "label": "Sites",
           "appHref": "/settings",
-          "marketingHref": "/settings"
+          "marketingHref": "/settings",
+          "platform": true
         },
         {
           "label": "Account",
           "appHref": "/account",
-          "marketingHref": "/account"
+          "marketingHref": "/account",
+          "platform": true
         },
         {
           "label": "Platform Status",
           "appHref": "/status/platform-status",
-          "marketingHref": "/status/platform-status"
+          "marketingHref": "/status/platform-status",
+          "platform": true
         }
       ]
     },
@@ -77,20 +85,17 @@
         {
           "label": "Documentation",
           "appHref": "https://dataengineeringformachinelearning.com/documentation/",
-          "marketingHref": "/documentation",
-          "external": true
+          "marketingHref": "/documentation"
         },
         {
           "label": "Whitepaper",
           "appHref": "https://dataengineeringformachinelearning.com/whitepaper/",
-          "marketingHref": "/whitepaper",
-          "external": true
+          "marketingHref": "/whitepaper"
         },
         {
           "label": "Book",
           "appHref": "https://dataengineeringformachinelearning.com/book/",
-          "marketingHref": "/book",
-          "external": true
+          "marketingHref": "/book"
         }
       ]
     },
@@ -100,12 +105,13 @@
         {
           "label": "Platform Status",
           "appHref": "/status/platform-status",
-          "marketingHref": "/status/platform-status"
+          "marketingHref": "/status/platform-status",
+          "platform": true
         },
         {
           "label": "Report a Bug",
           "appHref": "#",
-          "marketingHref": "mailto:support@dataengineeringformachinelearning.com",
+          "marketingHref": "#",
           "action": "bug-report"
         }
       ]
@@ -116,26 +122,22 @@
         {
           "label": "Privacy Policy",
           "appHref": "https://dataengineeringformachinelearning.com/privacy/",
-          "marketingHref": "/privacy",
-          "external": true
+          "marketingHref": "/privacy"
         },
         {
           "label": "Terms of Service",
           "appHref": "https://dataengineeringformachinelearning.com/terms/",
-          "marketingHref": "/terms",
-          "external": true
+          "marketingHref": "/terms"
         },
         {
           "label": "SOC2 Compliance",
           "appHref": "https://dataengineeringformachinelearning.com/compliance/",
-          "marketingHref": "/compliance",
-          "external": true
+          "marketingHref": "/compliance"
         },
         {
           "label": "GDPR Compliance",
           "appHref": "https://dataengineeringformachinelearning.com/privacy/#gdpr",
-          "marketingHref": "/privacy#gdpr",
-          "external": true
+          "marketingHref": "/privacy#gdpr"
         },
         {
           "label": "Cookie Settings",

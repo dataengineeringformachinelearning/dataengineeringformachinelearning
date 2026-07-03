@@ -9,7 +9,7 @@ import {
 
 const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
 const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: BACKEND_URL };
-const navLinks = SITE_NAV_LINKS.filter(link => !link.requireAuth);
+const navLinks = SITE_NAV_LINKS;
 const brandHref = resolveBrandHref('marketing', urls);
 ---
 
