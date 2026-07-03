@@ -3,7 +3,7 @@ import { VikingAvatar } from '../avatar/avatar';
 import { VikingTone } from '../core/types';
 
 /**
- * viking-profile — user identity block (https://fluxui.dev/components/profile).
+ * viking-profile — user identity block.
  * Project actions (e.g. viking-button) as content.
  */
 @Component({

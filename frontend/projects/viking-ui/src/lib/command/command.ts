@@ -11,7 +11,7 @@ import { VikingIcon } from '../icon/icon';
 import { VikingCommandItem } from '../core/types';
 
 /**
- * viking-command — command palette (https://fluxui.dev/components/command).
+ * viking-command — command palette.
  * Toggle with the `open` model; emits `executed` when an item is chosen.
  */
 @Component({

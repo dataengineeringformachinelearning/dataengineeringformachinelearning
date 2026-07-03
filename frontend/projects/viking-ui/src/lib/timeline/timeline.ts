@@ -4,7 +4,7 @@ import { VikingIconName } from '../core/icons';
 import { VikingTone } from '../core/types';
 
 /**
- * viking-timeline — vertical event feed (https://fluxui.dev/components/timeline).
+ * viking-timeline — vertical event feed.
  * Compose with viking-timeline-item.
  */
 @Component({

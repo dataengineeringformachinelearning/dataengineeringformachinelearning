@@ -1,23 +1,15 @@
 <div class="dashboard-page-container">
   <div class="dashboard-content-area">
-    <div class="page-inner-wrapper login-extracted-2">
-      <header class="hud-header login-extracted-3">
-        <div class="title-group">
-          <div class="section-tag-row">
-            <span class="section-tag">Access Portal</span>
-          </div>
-          <viking-heading [level]="1" size="xl" class="hud-title">
-            {{ isForgotMode() ? 'Reset Password' : isResetMode() ? 'Set New Password' :
-            mfaRequired() ? 'Two-Factor verification' : isPhoneMode() ? 'Sign In with Phone' :
-            isRegisterMode() ? 'Sign Up' : 'Sign In' }}
-          </viking-heading>
-          <viking-text variant="muted" class="hud-subtitle">
-            Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING).
-          </viking-text>
-        </div>
-      </header>
-
-      <div class="modal-body login-extracted-1">
+    <div class="page-inner-wrapper login-shell">
+      <viking-auth-panel
+        tag="Access Portal"
+        [title]="pageTitle()"
+        subtitle="Secure entry to the DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+        [showSocial]="showSocialLogin()"
+        [socialLoading]="isLoading()"
+        (googleSignIn)="signInWithGoogle()"
+        (appleSignIn)="signInWithApple()"
+      >
         @if (successMessage()) {
         <viking-callout tone="success" [heading]="successMessage()!" />
         } @if (mfaRequired() && !successMessage()) {
@@ -70,65 +62,64 @@
           } @if (error()) {
           <viking-callout tone="danger" [heading]="error()!" />
           }
-
-          <div class="toggle-link">
-            @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
-            <viking-button variant="ghost" type="button" (pressed)="toggleMode()">
-              {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account?
-              Sign Up" }}
-            </viking-button>
-            } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
-            !mfaRequired()) {
-            <viking-button variant="ghost" type="button" (pressed)="switchToPhone()">
-              Sign In with Phone Number
-            </viking-button>
-            } @if (isPhoneMode() && !codeSent()) {
-            <viking-button variant="ghost" type="button" (pressed)="switchToLogin()">
-              Sign In with Email
-            </viking-button>
-            } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
-            !mfaRequired()) {
-            <viking-button variant="ghost" type="button" (pressed)="switchToForgot()">
-              Forgot password?
-            </viking-button>
-            } @if (isForgotMode() || isResetMode() || (isPhoneMode() && codeSent())) {
-            <viking-button variant="ghost" type="button" (pressed)="switchToLogin()">
-              Back to Sign In
-            </viking-button>
-            }
-          </div>
-
-          @if (!isForgotMode() && !isResetMode() && !mfaRequired() && !codeSent()) {
-          <viking-separator text="or" />
-          <div class="social-buttons-container">
-            <viking-button
-              variant="outline"
-              type="button"
-              [loading]="isLoading()"
-              [disabled]="isLoading()"
-              (pressed)="signInWithGoogle()"
-            >
-              Sign In with Google
-            </viking-button>
-            <viking-button
-              variant="outline"
-              type="button"
-              [loading]="isLoading()"
-              [disabled]="isLoading()"
-              (pressed)="signInWithApple()"
-            >
-              Sign In with Apple
-            </viking-button>
-          </div>
-          }
         </form>
+
+        <div vikingAuthLinks class="viking-auth-links">
+          @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
+          <viking-button
+            variant="outline"
+            type="button"
+            [fullWidth]="true"
+            (pressed)="toggleMode()"
+          >
+            {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account? Sign
+            Up" }}
+          </viking-button>
+          } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
+          !mfaRequired()) {
+          <viking-button
+            variant="outline"
+            type="button"
+            [fullWidth]="true"
+            (pressed)="switchToPhone()"
+          >
+            Sign In with Phone Number
+          </viking-button>
+          <viking-button
+            variant="outline"
+            type="button"
+            [fullWidth]="true"
+            (pressed)="switchToForgot()"
+          >
+            Forgot password?
+          </viking-button>
+          } @if (isPhoneMode() && !codeSent()) {
+          <viking-button
+            variant="outline"
+            type="button"
+            [fullWidth]="true"
+            (pressed)="switchToLogin()"
+          >
+            Sign In with Email
+          </viking-button>
+          } @if (isForgotMode() || isResetMode() || (isPhoneMode() && codeSent())) {
+          <viking-button
+            variant="outline"
+            type="button"
+            [fullWidth]="true"
+            (pressed)="switchToLogin()"
+          >
+            Back to Sign In
+          </viking-button>
+          }
+        </div>
         }
 
-        <div class="modal-footer">
-          <viking-separator />
+        <div vikingAuthFooter>
           <viking-button
             variant="primary"
             type="button"
+            [fullWidth]="true"
             [loading]="isLoading()"
             [disabled]="(loginForm.invalid && !successMessage()) || isLoading()"
             [icon]="submitIcon()"
@@ -137,8 +128,9 @@
             {{ submitLabel() }}
           </viking-button>
           <viking-button
-            variant="ghost"
+            variant="outline"
             type="button"
+            [fullWidth]="true"
             icon="x"
             [disabled]="isLoading()"
             (pressed)="onCancel()"
@@ -146,7 +138,7 @@
             Cancel
           </viking-button>
         </div>
-      </div>
+      </viking-auth-panel>
     </div>
   </div>
 </div>

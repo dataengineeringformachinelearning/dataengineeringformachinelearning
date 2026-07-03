@@ -3,6 +3,7 @@ import { Title } from '@angular/platform-browser';
 import {
   VikingAccordion,
   VikingAccordionItem,
+  VikingAuthPanel,
   VikingAutocomplete,
   VikingAvatar,
   VikingBadge,
@@ -79,13 +80,14 @@ import {
 
 /**
  * Living gallery for the @dataengineeringformachinelearning/viking-ui UI kit: every free Viking UI
- * component (https://fluxui.dev), themed with DEML Material tokens.
+ * component, themed with DEML Material tokens.
  */
 @Component({
   selector: 'app-showcase',
   imports: [
     VikingAccordion,
     VikingAccordionItem,
+    VikingAuthPanel,
     VikingAutocomplete,
     VikingAvatar,
     VikingBadge,

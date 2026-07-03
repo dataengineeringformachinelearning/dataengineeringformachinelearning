@@ -11,7 +11,7 @@ import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
 
 /**
- * viking-dropdown — expandable menu (https://fluxui.dev/components/dropdown).
+ * viking-dropdown — expandable menu.
  * Project the trigger with `vikingTrigger`; fill the menu with viking-menu-item.
  */
 @Component({

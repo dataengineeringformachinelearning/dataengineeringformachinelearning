@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 /**
- * viking-text — body text with semantic variants (https://fluxui.dev/components/text).
+ * viking-text — body text with semantic variants.
  */
 @Component({
   selector: 'viking-text',

@@ -1,7 +1,7 @@
 import { DOCUMENT, Directive, ElementRef, OnDestroy, inject, input } from '@angular/core';
 
 /**
- * fluxTooltip — attribute directive tooltip (https://fluxui.dev/components/tooltip).
+ * fluxTooltip — attribute directive tooltip.
  * Shows on hover and keyboard focus; positions itself relative to the host.
  */
 @Directive({

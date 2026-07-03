@@ -20,20 +20,10 @@ import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon'
 import { RouterModule } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { StatusCard } from '../../components/status-card/status-card';
-import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
-
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [
-    CommonModule,
-    VikingButton,
-    VikingAppIcon,
-    RouterModule,
-    StatusCta,
-    StatusCard,
-    WhitepaperCta,
-  ],
+  imports: [CommonModule, VikingButton, VikingAppIcon, RouterModule, StatusCta, StatusCard],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './explore.scss',

@@ -4,7 +4,7 @@ import { VikingSelectOption } from '../core/types';
 import { fluxUid } from '../core/uid';
 
 /**
- * viking-radio-group — radio group (https://fluxui.dev/components/radio).
+ * viking-radio-group — radio group.
  * ControlValueAccessor-compatible; options-driven for symmetry with viking-select.
  */
 @Component({

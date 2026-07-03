@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, model } from '@ang
 import { VikingIcon } from '../icon/icon';
 
 /**
- * viking-pagination — page navigation (https://fluxui.dev/components/pagination).
+ * viking-pagination — page navigation.
  */
 @Component({
   selector: 'viking-pagination',

@@ -11,7 +11,7 @@ import {
 import { VikingControl, provideVikingCva } from '../core/cva';
 
 /**
- * viking-otp-input — one-time-passcode input (https://fluxui.dev/components/otp-input).
+ * viking-otp-input — one-time-passcode input.
  * Auto-advances between cells and supports paste. ControlValueAccessor-compatible.
  */
 @Component({

@@ -135,8 +135,8 @@
     @if (showViewButton) {
     <div class="view-btn-container">
       <viking-button
-        variant="filled"
-        class="view-btn"
+        variant="primary"
+        [fullWidth]="true"
         [href]="'/status/' + page.slug"
         iconTrailing="arrow-right"
       >

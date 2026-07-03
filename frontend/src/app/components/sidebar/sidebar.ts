@@ -15,7 +15,6 @@ import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
-import { OramaSearchService } from '../../services/orama-search.service';
 import { filter } from 'rxjs/operators';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 
@@ -28,7 +27,6 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 })
 export class Sidebar implements OnInit {
   public authService = inject(AuthService);
-  private searchService = inject(OramaSearchService);
   private monitorService = inject(MonitorService);
   private cdr = inject(ChangeDetectorRef);
   public settingsService = inject(SettingsService);
@@ -54,10 +52,6 @@ export class Sidebar implements OnInit {
     this.startWidth = this.sidebarWidth();
     document.body.style.cursor = 'col-resize';
     event.preventDefault();
-  }
-
-  openSearchDialog() {
-    this.searchService.openSearchDialog();
   }
 
   @HostListener('document:mousemove', ['$event'])

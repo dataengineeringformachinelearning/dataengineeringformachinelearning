@@ -15,7 +15,7 @@ import { fluxUid } from '../core/uid';
 
 /**
  * viking-autocomplete — text input with filtered suggestions
- * (https://fluxui.dev/components/autocomplete). ControlValueAccessor-compatible.
+ *. ControlValueAccessor-compatible.
  */
 @Component({
   selector: 'viking-autocomplete',

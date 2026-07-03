@@ -27,7 +27,7 @@ const ACTIONS: EditorAction[] = [
 ];
 
 /**
- * viking-editor — lightweight rich text editor (https://fluxui.dev/components/editor).
+ * viking-editor — lightweight rich text editor.
  * Zero-dependency contenteditable with a formatting toolbar.
  * Value is HTML. ControlValueAccessor-compatible.
  */

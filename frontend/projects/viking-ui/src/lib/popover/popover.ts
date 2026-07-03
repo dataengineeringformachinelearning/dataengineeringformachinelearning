@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 
 /**
- * viking-popover — anchored floating panel (https://fluxui.dev/components/popover).
+ * viking-popover — anchored floating panel.
  * Project the trigger with the `vikingTrigger` attribute; everything else becomes
  * the panel content. Closes on Escape or outside interaction.
  */

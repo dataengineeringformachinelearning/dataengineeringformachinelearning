@@ -3,7 +3,7 @@ import { VikingIcon } from '../icon/icon';
 
 /**
  * viking-composer — message composer with attachments and send action
- * (https://fluxui.dev/components/composer).
+ *.
  */
 @Component({
   selector: 'viking-composer',

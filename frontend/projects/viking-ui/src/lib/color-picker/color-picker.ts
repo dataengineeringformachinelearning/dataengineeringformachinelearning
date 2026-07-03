@@ -4,7 +4,7 @@ import { VikingIcon } from '../icon/icon';
 
 /**
  * viking-color-picker — swatch presets + custom color input
- * (https://fluxui.dev/components/color-picker). ControlValueAccessor-compatible.
+ *. ControlValueAccessor-compatible.
  * Default presets are the THEME.md palette.
  */
 @Component({

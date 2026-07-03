@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 /**
- * viking-heading — consistent heading sizes (https://fluxui.dev/components/heading).
+ * viking-heading — consistent heading sizes.
  */
 @Component({
   selector: 'viking-heading',

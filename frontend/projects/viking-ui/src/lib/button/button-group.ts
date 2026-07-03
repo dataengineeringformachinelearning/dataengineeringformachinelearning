@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
  * viking-button-group — fuses buttons with shared borders
- * (https://fluxui.dev/components/button#button-groups).
+ *.
  */
 @Component({
   selector: 'viking-button-group',

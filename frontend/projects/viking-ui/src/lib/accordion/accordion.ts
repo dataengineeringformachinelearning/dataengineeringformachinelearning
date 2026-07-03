@@ -3,7 +3,7 @@ import { VikingIcon } from '../icon/icon';
 import { fluxUid } from '../core/uid';
 
 /**
- * viking-accordion — collapsible content panels (https://fluxui.dev/components/accordion).
+ * viking-accordion — collapsible content panels.
  * Set exclusive to allow only one open item at a time.
  */
 @Component({

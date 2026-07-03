@@ -30,7 +30,7 @@ const toIso = (date: Date): string =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 /**
- * viking-calendar — month-grid date selection (https://fluxui.dev/components/calendar).
+ * viking-calendar — month-grid date selection.
  * Value is an ISO date string (YYYY-MM-DD). ControlValueAccessor-compatible.
  */
 @Component({

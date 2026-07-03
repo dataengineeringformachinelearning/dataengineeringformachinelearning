@@ -3,7 +3,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
 
 /**
- * viking-checkbox — custom checkbox (https://fluxui.dev/components/checkbox).
+ * viking-checkbox — custom checkbox.
  * ControlValueAccessor-compatible.
  */
 @Component({

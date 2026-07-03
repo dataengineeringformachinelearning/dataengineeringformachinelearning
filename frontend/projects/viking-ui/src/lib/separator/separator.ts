@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
  * viking-separator — horizontal/vertical rule with optional label
- * (https://fluxui.dev/components/separator).
+ *.
  */
 @Component({
   selector: 'viking-separator',

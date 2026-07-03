@@ -13,7 +13,7 @@ import { VikingIcon } from '../icon/icon';
 import { VikingSelectOption } from '../core/types';
 
 /**
- * viking-select — custom listbox select (https://fluxui.dev/components/select).
+ * viking-select — custom listbox select.
  * ControlValueAccessor-compatible with full keyboard support.
  */
 @Component({

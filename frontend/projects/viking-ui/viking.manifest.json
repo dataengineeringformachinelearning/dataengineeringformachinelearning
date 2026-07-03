@@ -1,189 +1,238 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
   "name": "@dataengineeringformachinelearning/viking-ui",
-  "description": "Tracks which Viking UI (fluxui.dev) components this package mirrors, so upstream additions/renames are detectable via `npm run check:viking-upstream`.",
-  "upstream": {
-    "site": "https://fluxui.dev",
-    "componentsIndex": "https://fluxui.dev/components",
-    "lastAudited": "2026-07-01",
-    "notes": "Viking UI is a Livewire/Blade + Tailwind library; viking-ui re-implements the free component styles as zero-dependency Angular standalone components themed with DEML Material tokens (THEME.md)."
-  },
+  "description": "Machine-readable catalog of Viking-UI components and their Angular exports. Validated by `npm run check:viking-upstream`.",
+  "lastAudited": "2026-07-02",
   "components": {
-    "app-header": {
-      "upstream": "https://fluxui.dev/components/navbar",
-      "exports": ["VikingAppHeader"],
-      "notes": "DEML app shell — sticky header with mobile menu slots."
-    },
-    "app-sidebar": {
-      "upstream": "https://fluxui.dev/components/navbar",
-      "exports": ["VikingAppSidebar"],
-      "notes": "DEML app shell — collapsible dashboard sidebar."
-    },
-    "footer": {
-      "upstream": "https://fluxui.dev/components/card",
-      "exports": ["VikingFooter"],
-      "notes": "DEML site-wide footer chrome."
-    },
-    "hud-panel": {
-      "upstream": "https://fluxui.dev/components/card",
-      "exports": ["VikingHudPanel"],
-      "notes": "DEML dashboard panel with icon header."
-    },
-    "metric-card": {
-      "upstream": "https://fluxui.dev/components/card",
-      "exports": ["VikingMetricRow", "VikingMetricCard"],
-      "notes": "DEML HUD KPI metric tiles."
-    },
-    "page-header": {
-      "upstream": "https://fluxui.dev/components/navbar",
-      "exports": ["VikingPageHeader"],
-      "notes": "DEML unified page header (HUD + sidebar topbar)."
-    },
-    "fab": {
-      "upstream": "https://fluxui.dev/components/button",
-      "exports": ["VikingFab"],
-      "notes": "DEML floating action button."
-    },
-    "search-palette": {
-      "upstream": "https://fluxui.dev/components/command",
-      "exports": ["VikingSearchPalette"],
-      "notes": "DEML search overlay (command-palette pattern)."
-    },
     "accordion": {
-      "upstream": "https://fluxui.dev/components/accordion",
       "exports": ["VikingAccordion", "VikingAccordionItem"]
     },
+    "app-header": {
+      "exports": ["VikingAppHeader"]
+    },
+    "app-sidebar": {
+      "exports": ["VikingAppSidebar"]
+    },
+    "auth-panel": {
+      "exports": ["VikingAuthPanel"]
+    },
     "autocomplete": {
-      "upstream": "https://fluxui.dev/components/autocomplete",
       "exports": ["VikingAutocomplete"]
     },
-    "avatar": { "upstream": "https://fluxui.dev/components/avatar", "exports": ["VikingAvatar"] },
-    "badge": { "upstream": "https://fluxui.dev/components/badge", "exports": ["VikingBadge"] },
-    "brand": { "upstream": "https://fluxui.dev/components/brand", "exports": ["VikingBrand"] },
-    "button": {
-      "upstream": "https://fluxui.dev/components/button",
-      "exports": ["VikingButton", "VikingButtonGroup"]
+    "avatar": {
+      "exports": ["VikingAvatar"]
+    },
+    "badge": {
+      "exports": ["VikingBadge"]
+    },
+    "bar": {
+      "exports": ["VikingBar"]
+    },
+    "brand": {
+      "exports": ["VikingBrand"]
     },
     "breadcrumbs": {
-      "upstream": "https://fluxui.dev/components/breadcrumbs",
-      "exports": ["VikingBreadcrumbs"]
+      "exports": ["VikingBreadcrumb", "VikingBreadcrumbs"]
+    },
+    "button": {
+      "exports": ["VikingButton", "VikingButtonGroup", "VikingButtonVariant"]
     },
     "calendar": {
-      "upstream": "https://fluxui.dev/components/calendar",
       "exports": ["VikingCalendar"]
     },
     "callout": {
-      "upstream": "https://fluxui.dev/components/callout",
       "exports": ["VikingCallout"]
     },
     "card": {
-      "upstream": "https://fluxui.dev/components/card",
-      "exports": ["VikingCard", "VikingCardHeader", "VikingCardFooter"]
+      "exports": ["VikingCard", "VikingCardFooter", "VikingCardHeader"]
     },
     "carousel": {
-      "upstream": "https://fluxui.dev/components/carousel",
       "exports": ["VikingCarousel", "VikingCarouselSlide"]
     },
-    "chart": { "upstream": "https://fluxui.dev/components/chart", "exports": ["VikingChart"] },
+    "chart": {
+      "exports": ["VikingChart"]
+    },
     "checkbox": {
-      "upstream": "https://fluxui.dev/components/checkbox",
       "exports": ["VikingCheckbox"]
     },
     "color-picker": {
-      "upstream": "https://fluxui.dev/components/color-picker",
       "exports": ["VikingColorPicker"]
     },
     "command": {
-      "upstream": "https://fluxui.dev/components/command",
       "exports": ["VikingCommand"]
     },
-    "context": {
-      "upstream": "https://fluxui.dev/components/context",
-      "exports": ["VikingContext"]
-    },
     "composer": {
-      "upstream": "https://fluxui.dev/components/composer",
       "exports": ["VikingComposer"]
     },
+    "context": {
+      "exports": ["VikingContext"]
+    },
+    "core": {
+      "exports": [
+        "VIKING_FILLED_ICON_NAMES",
+        "VIKING_ICON_NAMES",
+        "VIKING_ICON_PATHS",
+        "VikingChartCurve",
+        "VikingChartKind",
+        "VikingChartSeries",
+        "VikingCommandItem",
+        "VikingControl",
+        "VikingDonutSegment",
+        "VikingIconName",
+        "VikingKanbanCard",
+        "VikingKanbanColumn",
+        "VikingKanbanMove",
+        "VikingSelectOption",
+        "VikingSize",
+        "VikingToastInstance",
+        "VikingToastOptions",
+        "VikingTone",
+        "provideVikingCva"
+      ]
+    },
     "date-picker": {
-      "upstream": "https://fluxui.dev/components/date-picker",
       "exports": ["VikingDatePicker"]
     },
     "dropdown": {
-      "upstream": "https://fluxui.dev/components/dropdown",
       "exports": ["VikingDropdown", "VikingMenuItem"]
     },
-    "editor": { "upstream": "https://fluxui.dev/components/editor", "exports": ["VikingEditor"] },
-    "field": { "upstream": "https://fluxui.dev/components/field", "exports": ["VikingField"] },
+    "editor": {
+      "exports": ["VikingEditor"]
+    },
+    "fab": {
+      "exports": ["VikingFab"]
+    },
+    "field": {
+      "exports": ["VikingField"]
+    },
     "file-upload": {
-      "upstream": "https://fluxui.dev/components/file-upload",
       "exports": ["VikingFileUpload"]
     },
-    "heading": {
-      "upstream": "https://fluxui.dev/components/heading",
-      "exports": ["VikingHeading"]
+    "footer": {
+      "exports": ["VikingFooter"]
     },
-    "icon": { "upstream": "https://fluxui.dev/components/icon", "exports": ["VikingIcon"] },
-    "input": { "upstream": "https://fluxui.dev/components/input", "exports": ["VikingInput"] },
-    "kanban": { "upstream": "https://fluxui.dev/components/kanban", "exports": ["VikingKanban"] },
-    "modal": { "upstream": "https://fluxui.dev/components/modal", "exports": ["VikingModal"] },
+    "gauge-arc": {
+      "exports": ["VikingGaugeArc"]
+    },
+    "hud-panel": {
+      "exports": ["VikingHudPanel"]
+    },
+    "icon": {
+      "exports": ["VikingIcon"]
+    },
+    "input": {
+      "exports": ["VikingInput"]
+    },
+    "kanban": {
+      "exports": ["VikingKanban"]
+    },
+    "kbd": {
+      "exports": ["VikingKbd"]
+    },
+    "label": {
+      "exports": ["VikingLabel"]
+    },
+    "menubar": {
+      "exports": ["VikingMenubar", "VikingMenubarItem"]
+    },
+    "metric-card": {
+      "exports": ["VikingMetricCard", "VikingMetricRow"]
+    },
+    "modal": {
+      "exports": ["VikingModal"]
+    },
+    "native-select": {
+      "exports": ["VikingNativeSelect"]
+    },
     "navbar": {
-      "upstream": "https://fluxui.dev/components/navbar",
       "exports": ["VikingNavbar", "VikingNavbarItem"]
     },
+    "navigation-menu": {
+      "exports": ["VikingNavItem", "VikingNavigationMenu"]
+    },
     "otp-input": {
-      "upstream": "https://fluxui.dev/components/otp-input",
       "exports": ["VikingOtpInput"]
     },
+    "page-header": {
+      "exports": ["VikingPageHeader"]
+    },
     "pagination": {
-      "upstream": "https://fluxui.dev/components/pagination",
       "exports": ["VikingPagination"]
     },
     "pillbox": {
-      "upstream": "https://fluxui.dev/components/pillbox",
       "exports": ["VikingPillbox"]
     },
     "popover": {
-      "upstream": "https://fluxui.dev/components/popover",
       "exports": ["VikingPopover"]
     },
     "profile": {
-      "upstream": "https://fluxui.dev/components/profile",
       "exports": ["VikingProfile"]
     },
     "progress": {
-      "upstream": "https://fluxui.dev/components/progress",
       "exports": ["VikingProgress"]
     },
-    "radio": { "upstream": "https://fluxui.dev/components/radio", "exports": ["VikingRadioGroup"] },
-    "select": { "upstream": "https://fluxui.dev/components/select", "exports": ["VikingSelect"] },
+    "radio": {
+      "exports": ["VikingRadioGroup"]
+    },
+    "ring-gauge": {
+      "exports": ["VikingRingGauge"]
+    },
+    "scroll-area": {
+      "exports": ["VikingScrollArea"]
+    },
+    "search-palette": {
+      "exports": ["VikingSearchPalette"]
+    },
+    "select": {
+      "exports": ["VikingSelect"]
+    },
     "separator": {
-      "upstream": "https://fluxui.dev/components/separator",
       "exports": ["VikingSeparator"]
     },
+    "sheet": {
+      "exports": ["VikingSheet", "VikingSheetSide"]
+    },
     "skeleton": {
-      "upstream": "https://fluxui.dev/components/skeleton",
       "exports": ["VikingSkeleton"]
     },
-    "slider": { "upstream": "https://fluxui.dev/components/slider", "exports": ["VikingSlider"] },
-    "switch": { "upstream": "https://fluxui.dev/components/switch", "exports": ["VikingSwitch"] },
-    "text": { "upstream": "https://fluxui.dev/components/text", "exports": ["VikingText"] },
+    "slider": {
+      "exports": ["VikingSlider"]
+    },
+    "spinner": {
+      "exports": ["VikingSpinner"]
+    },
+    "switch": {
+      "exports": ["VikingSwitch"]
+    },
+    "table": {
+      "exports": ["VikingTable"]
+    },
+    "tabs": {
+      "exports": ["VIKING_TABS", "VikingTab", "VikingTabPanel", "VikingTabs"]
+    },
     "textarea": {
-      "upstream": "https://fluxui.dev/components/textarea",
       "exports": ["VikingTextarea"]
     },
     "time-picker": {
-      "upstream": "https://fluxui.dev/components/time-picker",
       "exports": ["VikingTimePicker"]
     },
     "timeline": {
-      "upstream": "https://fluxui.dev/components/timeline",
       "exports": ["VikingTimeline", "VikingTimelineItem"]
     },
     "toast": {
-      "upstream": "https://fluxui.dev/components/toast",
       "exports": ["VikingToastService", "VikingToaster"]
     },
-    "tooltip": { "upstream": "https://fluxui.dev/components/tooltip", "exports": ["VikingTooltip"] }
+    "toggle": {
+      "exports": ["VIKING_TOGGLE_GROUP", "VikingToggle", "VikingToggleGroup"]
+    },
+    "tooltip": {
+      "exports": ["VikingTooltip"]
+    },
+    "typography": {
+      "exports": ["VikingHeading", "VikingText"]
+    },
+    "uptime-bar": {
+      "exports": ["VikingUptimeBar", "VikingUptimeStatus"]
+    }
   }
 }

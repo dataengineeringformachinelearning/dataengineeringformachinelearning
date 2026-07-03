@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * viking-card — surface container (https://fluxui.dev/components/card).
+ * viking-card — surface container.
  * Compose with viking-card-header / viking-card-footer for structured layouts.
  */
 @Component({

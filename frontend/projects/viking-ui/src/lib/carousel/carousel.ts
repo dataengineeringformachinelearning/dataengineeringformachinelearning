@@ -28,7 +28,7 @@ import { VikingIcon } from '../icon/icon';
 export class VikingCarouselSlide {}
 
 /**
- * viking-carousel — scroll-snap slideshow (https://fluxui.dev/components/carousel).
+ * viking-carousel — scroll-snap slideshow.
  */
 @Component({
   selector: 'viking-carousel',

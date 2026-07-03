@@ -4,7 +4,7 @@ import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
 
 /**
- * viking-navbar — horizontal navigation container (https://fluxui.dev/components/navbar).
+ * viking-navbar — horizontal navigation container.
  * Compose with viking-navbar-item and any other inline content.
  */
 @Component({
