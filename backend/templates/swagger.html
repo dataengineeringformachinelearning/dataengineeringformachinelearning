@@ -1,26 +1,32 @@
-{% extends "base.html" %} {% load static %} {% block title %}{{ api_title }} —
-DEML OpenAPI{% endblock %} {% block og_title %}{{ api_title }} — DEML OpenAPI{%
-endblock %} {% block twitter_title %}{{ api_title }} — DEML OpenAPI{% endblock
-%} {% block meta_description %}
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ api_title }} — DEML OpenAPI{% endblock %}
+{% block og_title %}{{ api_title }} — DEML OpenAPI{% endblock %}
+{% block twitter_title %}{{ api_title }} — DEML OpenAPI{% endblock %}
+
+{% block meta_description %}
 <meta
   name="description"
   content="Interactive OpenAPI documentation for DEML public ingestion and inference endpoints."
 />
-{% endblock %} {% block og_description %}Interactive OpenAPI documentation for
-DEML public ingestion and inference endpoints.{% endblock %} {% block
-twitter_description %}Interactive OpenAPI documentation for DEML public
-ingestion and inference endpoints.{% endblock %} {% block meta_keywords %}DEML
-OpenAPI, Swagger docs, REST API, telemetry ingestion, inference endpoints{%
-endblock %} {% block body_class %}backend-swagger{% endblock %} {% block
-extra_styles %} {# nosemgrep:
-html.security.audit.missing-integrity.missing-integrity — Swagger UI CDN;
-version pinned in URL #}
+{% endblock %}
+{% block og_description %}Interactive OpenAPI documentation for DEML public ingestion and inference endpoints.{% endblock %}
+{% block twitter_description %}Interactive OpenAPI documentation for DEML public ingestion and inference endpoints.{% endblock %}
+{% block meta_keywords %}DEML OpenAPI, Swagger docs, REST API, telemetry ingestion, inference endpoints{% endblock %}
+
+{% block body_class %}backend-swagger{% endblock %}
+
+{% block extra_styles %}
+{# nosemgrep: html.security.audit.missing-integrity.missing-integrity — Swagger UI CDN; version pinned in URL #}
 <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css"
 />
 <link rel="stylesheet" href="{% static 'swagger-ui-viking.css' %}" />
-{% endblock %} {% block content %}
+{% endblock %}
+
+{% block content %}
 <main class="swagger-docs-shell" id="main-content" tabindex="-1">
   <header
     class="swagger-page-header viking-section-header"
@@ -38,8 +44,10 @@ version pinned in URL #}
   </header>
   <div id="swagger-ui" aria-live="polite"></div>
 </main>
-{% endblock %} {% block extra_scripts %} {# nosemgrep:
-html.security.audit.missing-integrity.missing-integrity #}
+{% endblock %}
+
+{% block extra_scripts %}
+{# nosemgrep: html.security.audit.missing-integrity.missing-integrity #}
 <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
 <script>
   const ui = SwaggerUIBundle({
