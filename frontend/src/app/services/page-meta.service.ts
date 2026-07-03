@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 const OG_IMAGE = '/data-engineering-for-machine-learning-preview.png';
 const OG_IMAGE_ALT =
   'DEML application preview — data engineering and machine learning telemetry dashboard';
+const ALGOLIA_SITE_VERIFICATION = '687B59B29612DE68'; // pragma: allowlist secret
 
 @Injectable({ providedIn: 'root' })
 export class PageMetaService {
@@ -20,6 +21,7 @@ export class PageMetaService {
     const canonical = `${environment.frontendUrl}${path.startsWith('/') ? path : `/${path}`}`;
 
     this.title.setTitle(title);
+    this.meta.updateTag({ name: 'algolia-site-verification', content: ALGOLIA_SITE_VERIFICATION });
     this.meta.updateTag({ name: 'description', content: description });
     this.meta.updateTag({ name: 'title', content: title });
     this.meta.updateTag({ name: 'robots', content: robots });

@@ -20,7 +20,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard),
   },
-  { path: 'home', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'home', redirectTo: '', pathMatch: 'full' },
   { path: 'explore', loadComponent: () => import('./pages/explore/explore').then(m => m.Explore) },
   {
     path: 'vulnerabilities',
@@ -43,7 +43,7 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/account/account').then(m => m.Account),
   },
 
-  { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.Login) },
+  { path: 'login', redirectTo: '', pathMatch: 'full' },
   { path: 'success', loadComponent: () => import('./pages/success/success').then(m => m.Success) },
   {
     path: 'auth-status',

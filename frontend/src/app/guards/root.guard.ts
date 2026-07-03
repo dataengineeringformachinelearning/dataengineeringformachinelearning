@@ -12,12 +12,17 @@ export const rootGuard: CanActivateFn = (
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const getRedirectTarget = (isAuthenticated: boolean): UrlTree => {
+  const getRedirectTarget = (isAuthenticated: boolean): boolean | UrlTree => {
     const reportBug = _state.url.includes('reportBug=1') ? { reportBug: '1' } : {};
     if (isAuthenticated) {
       return router.createUrlTree(['/dashboard'], { queryParams: reportBug });
     }
-    return router.createUrlTree(['/login'], { queryParams: reportBug });
+    // Render login at / so SSR serves index.html meta (e.g. Algolia site verification).
+    const path = (_state.url.split('?')[0] ?? '/').replace(/\/+$/, '') || '/';
+    if (path === '/') {
+      return true;
+    }
+    return router.createUrlTree(['/'], { queryParams: reportBug });
   };
 
   if (authService.isInitialized()) {
@@ -27,6 +32,6 @@ export const rootGuard: CanActivateFn = (
   return toObservable(authService.isInitialized).pipe(
     filter((initialized): boolean => initialized),
     take(1),
-    map((): UrlTree => getRedirectTarget(authService.isAuthenticated())),
+    map((): boolean | UrlTree => getRedirectTarget(authService.isAuthenticated())),
   );
 };
