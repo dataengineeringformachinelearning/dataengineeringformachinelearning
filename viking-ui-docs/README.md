@@ -6,11 +6,11 @@ Standalone [spartan.ng](https://spartan.ng)-style documentation site for the `@d
 
 ## Architecture
 
-| Path | Purpose |
-| ---- | ------- |
-| `viking-ui-docs/` | Doc site (this folder) — landing + component browser |
+| Path                           | Purpose                                                   |
+| ------------------------------ | --------------------------------------------------------- |
+| `viking-ui-docs/`              | Doc site (this folder) — landing + component browser      |
 | `frontend/projects/viking-ui/` | Publishable library source (consumed by deml.app and npm) |
-| `packages/deml-design-system/` | Shared THEME.md tokens |
+| `packages/deml-design-system/` | Shared THEME.md tokens                                    |
 
 The main DEML app imports Viking-UI via `file:dist/viking-ui`. This docs site imports the same library for live previews.
 
@@ -43,16 +43,16 @@ Manual deploy:
 ```bash
 npm run build:viking-ui --prefix frontend
 npm run build --prefix viking-ui-docs
-firebase deploy --only hosting:deml-ui --project demldotcom
+firebase deploy --only hosting:deml-ui --project deml-ui
 ```
 
 Configure a custom domain (e.g. `ui.dataengineeringformachinelearning.com`) in the Firebase console for the **`deml-ui`** site.
 
 ## Routes
 
-| Route | Page |
-| ----- | ---- |
-| `/` | Introduction landing |
+| Route         | Page                                              |
+| ------------- | ------------------------------------------------- |
+| `/`           | Introduction landing                              |
 | `/components` | Full-width component browser with section anchors |
 
 ## Publish library to npm

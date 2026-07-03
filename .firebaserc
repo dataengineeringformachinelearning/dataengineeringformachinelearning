@@ -1,13 +1,18 @@
 {
   "projects": {
-    "default": "demldotcom"
+    "default": "demldotcom",
+    "viking-ui-docs": "deml-ui"
   },
   "targets": {
     "demldotcom": {
       "hosting": {
         "marketing": [
           "demldotcom"
-        ],
+        ]
+      }
+    },
+    "deml-ui": {
+      "hosting": {
         "deml-ui": [
           "deml-ui"
         ]

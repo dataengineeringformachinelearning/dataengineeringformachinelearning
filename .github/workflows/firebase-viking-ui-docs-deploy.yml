@@ -48,7 +48,7 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEMLDOTCOM }}
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI }}
           create_credentials_file: true
 
       - name: Install Firebase CLI
@@ -59,7 +59,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
         run: |
           set +e
-          OUTPUT=$(firebase deploy --only hosting:deml-ui --project demldotcom --non-interactive 2>&1)
+          OUTPUT=$(firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive 2>&1)
           STATUS=$?
           echo "$OUTPUT"
           if [ "$STATUS" -eq 0 ]; then
