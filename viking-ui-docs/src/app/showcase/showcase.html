@@ -436,11 +436,16 @@
         >
         <viking-calendar />
         <viking-field
-          label="Verification code"
-          description="Paste the 6-digit code from your email."
+          label="One-time passcode"
+          description="Lower-level OTP cells without the verification field wrapper."
         >
-          <viking-otp-input [length]="6" />
+          <viking-otp-input [length]="6" [centered]="true" />
         </viking-field>
+        <viking-verification-code-field
+          label="Verification Code"
+          description="Centered MFA template — label, 6-digit cells, and helper text."
+          [required]="true"
+        />
       </section>
     </div>
   </section>

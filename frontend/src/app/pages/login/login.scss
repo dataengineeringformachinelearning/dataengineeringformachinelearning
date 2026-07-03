@@ -29,10 +29,6 @@
   min-width: 0;
 }
 
-:host ::ng-deep viking-otp-input {
-  margin-bottom: var(--viking-space-2, 16px);
-}
-
 :host ::ng-deep .viking-auth-links {
   margin-top: var(--viking-space-2, 16px);
 }

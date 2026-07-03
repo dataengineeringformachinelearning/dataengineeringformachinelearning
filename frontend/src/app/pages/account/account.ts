@@ -20,6 +20,7 @@ import {
   VikingInput,
   VikingProgress,
   VikingPageHeader,
+  VikingVerificationCodeField,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
@@ -41,6 +42,7 @@ import { environment } from '../../../environments/environment';
     VikingInput,
     VikingProgress,
     VikingPageHeader,
+    VikingVerificationCodeField,
     VikingAppIcon,
     FormsModule,
     RouterModule,
