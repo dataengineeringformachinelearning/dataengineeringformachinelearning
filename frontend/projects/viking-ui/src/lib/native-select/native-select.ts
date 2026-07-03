@@ -4,7 +4,7 @@ import { VikingSelectOption } from '../core/types';
 import { fluxUid } from '../core/uid';
 
 /**
- * viking-native-select — styled native &lt;select&gt; (Spartan-inspired).
+ * viking-native-select — styled native &lt;select&gt;.
  */
 @Component({
   selector: 'viking-native-select',

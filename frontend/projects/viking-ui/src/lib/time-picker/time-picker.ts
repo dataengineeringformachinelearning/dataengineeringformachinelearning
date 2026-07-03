@@ -12,7 +12,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
 
 /**
- * viking-time-picker — dropdown time selection (https://fluxui.dev/components/time-picker).
+ * viking-time-picker — dropdown time selection.
  * Value is a 24h HH:MM string. ControlValueAccessor-compatible.
  */
 @Component({

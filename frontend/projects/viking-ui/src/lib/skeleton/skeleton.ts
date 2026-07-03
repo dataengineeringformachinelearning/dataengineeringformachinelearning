@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * viking-skeleton — loading placeholder (https://fluxui.dev/components/skeleton).
+ * viking-skeleton — loading placeholder.
  */
 @Component({
   selector: 'viking-skeleton',

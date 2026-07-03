@@ -13,12 +13,13 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import {
+  VikingAuthFooter,
+  VikingAuthPanel,
   VikingButton,
   VikingCallout,
   VikingField,
   VikingHeading,
   VikingInput,
-  VikingSeparator,
   VikingText,
 } from '@dataengineeringformachinelearning/viking-ui';
 
@@ -36,12 +37,13 @@ import {
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    VikingAuthFooter,
+    VikingAuthPanel,
     VikingButton,
     VikingCallout,
     VikingField,
     VikingHeading,
     VikingInput,
-    VikingSeparator,
     VikingText,
   ],
   templateUrl: './login.html',

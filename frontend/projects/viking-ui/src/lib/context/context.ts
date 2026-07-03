@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
 
 /**
- * viking-context — right-click context menu (https://fluxui.dev/components/context).
+ * viking-context — right-click context menu.
  * Wrap the target content and project menu content with the `vikingMenu` attribute
  * (typically viking-menu-item elements).
  */

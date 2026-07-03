@@ -4,7 +4,7 @@ import { VikingBadge } from '../badge/badge';
 import { VikingKanbanCard, VikingKanbanColumn, VikingKanbanMove } from '../core/types';
 
 /**
- * viking-kanban — drag & drop board (https://fluxui.dev/components/kanban).
+ * viking-kanban — drag & drop board.
  * Native HTML5 drag and drop; emits `moved` and updates the `columns` model.
  */
 @Component({

@@ -3,7 +3,7 @@ import { fluxUid } from '../core/uid';
 
 /**
  * viking-field — label / description / error wrapper for any control
- * (https://fluxui.dev/components/field).
+ *.
  * The projected control is associated with the label by wrapping.
  */
 @Component({

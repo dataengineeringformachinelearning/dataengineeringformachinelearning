@@ -10,7 +10,9 @@ export { VIKING_ICON_NAMES, VIKING_ICON_PATHS } from './lib/core/icons';
 export type { VikingIconName } from './lib/core/icons';
 export { VikingControl, provideVikingCva } from './lib/core/cva';
 
-// Components (alphabetical, mirrors fluxui.dev/components)
+// Components (alphabetical)
+export * from './lib/auth/auth-footer';
+export * from './lib/auth/auth-panel';
 export * from './lib/site-chrome/site-chrome.config';
 export * from './lib/site-chrome/site-navbar';
 export * from './lib/site-chrome/site-footer';

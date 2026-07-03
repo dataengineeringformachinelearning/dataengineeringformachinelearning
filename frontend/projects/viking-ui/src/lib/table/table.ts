@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * viking-table — clinical data table wrapper (Spartan-inspired).
+ * viking-table — clinical data table wrapper.
  */
 @Component({
   selector: 'viking-table',

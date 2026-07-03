@@ -74,14 +74,6 @@ import {
               <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>.
               All rights reserved.
             </span>
-            @if (context() === 'marketing') {
-              <span class="footer-separator" aria-hidden="true">·</span>
-              <span class="design-attribution">
-                UI patterns inspired by
-                <a href="https://fluxui.dev/" target="_blank" rel="noopener noreferrer">Viking</a>
-                (Livewire UI)
-              </span>
-            }
           </div>
         </div>
       </ng-container>

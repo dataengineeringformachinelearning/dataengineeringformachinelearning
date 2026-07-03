@@ -8,7 +8,7 @@ export interface VikingNavItem {
 }
 
 /**
- * viking-navigation-menu — primary nav links with active indicator (Spartan-inspired).
+ * viking-navigation-menu — primary nav links with active indicator.
  */
 @Component({
   selector: 'viking-navigation-menu',

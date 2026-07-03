@@ -4,7 +4,7 @@ import { VikingIconName } from '../core/icons';
 import { VikingSize, VikingTone } from '../core/types';
 
 /**
- * viking-badge — status pill (https://fluxui.dev/components/badge).
+ * viking-badge — status pill.
  * Tones map to THEME.md semantic colors only.
  */
 @Component({

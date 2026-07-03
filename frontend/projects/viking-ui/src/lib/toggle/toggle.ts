@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, model, output } from
 import { VIKING_TOGGLE_GROUP, VikingToggleGroup } from './toggle-group';
 
 /**
- * viking-toggle — pressed-state button toggle (Spartan-inspired).
+ * viking-toggle — pressed-state button toggle.
  */
 @Component({
   selector: 'viking-toggle',

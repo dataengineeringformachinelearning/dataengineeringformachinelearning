@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input, model } from '@ang
 import { VikingControl, provideVikingCva } from '../core/cva';
 
 /**
- * viking-slider — range slider (https://fluxui.dev/components/slider).
+ * viking-slider — range slider.
  * ControlValueAccessor-compatible.
  */
 @Component({

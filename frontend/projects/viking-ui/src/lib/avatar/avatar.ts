@@ -3,7 +3,7 @@ import { VikingTone } from '../core/types';
 
 /**
  * viking-avatar — image or initials avatar with optional status indicator
- * (https://fluxui.dev/components/avatar).
+ *.
  */
 @Component({
   selector: 'viking-avatar',

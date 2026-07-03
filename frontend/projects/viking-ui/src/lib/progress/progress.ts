@@ -3,7 +3,7 @@ import { VikingTone } from '../core/types';
 
 /**
  * viking-progress — determinate/indeterminate progress bar
- * (https://fluxui.dev/components/progress).
+ *.
  */
 @Component({
   selector: 'viking-progress',

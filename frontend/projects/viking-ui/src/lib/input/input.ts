@@ -5,7 +5,7 @@ import { VikingIconName } from '../core/icons';
 
 /**
  * viking-input — text input with icons, kbd hint and clearable state
- * (https://fluxui.dev/components/input). ControlValueAccessor-compatible.
+ *. ControlValueAccessor-compatible.
  */
 @Component({
   selector: 'viking-input',

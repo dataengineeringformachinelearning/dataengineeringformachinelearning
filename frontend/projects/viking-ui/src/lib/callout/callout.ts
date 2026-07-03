@@ -12,7 +12,7 @@ const TONE_ICONS: Record<string, VikingIconName> = {
 };
 
 /**
- * viking-callout — highlighted message block (https://fluxui.dev/components/callout).
+ * viking-callout — highlighted message block.
  */
 @Component({
   selector: 'viking-callout',

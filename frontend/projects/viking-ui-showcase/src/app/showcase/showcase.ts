@@ -3,6 +3,8 @@ import { Title } from '@angular/platform-browser';
 import {
   VikingAccordion,
   VikingAccordionItem,
+  VikingAuthFooter,
+  VikingAuthPanel,
   VikingAutocomplete,
   VikingAvatar,
   VikingBadge,
@@ -58,6 +60,8 @@ import {
   VikingSelectOption,
   VikingSeparator,
   VikingSheet,
+  VikingSiteFooter,
+  VikingSiteNavbar,
   VikingSkeleton,
   VikingSlider,
   VikingSpinner,
@@ -78,14 +82,15 @@ import {
 } from '@dataengineeringformachinelearning/viking-ui';
 
 /**
- * Living gallery for the @dataengineeringformachinelearning/viking-ui UI kit: every free Viking UI
- * component (https://fluxui.dev), themed with DEML Material tokens.
+ * Living gallery for the @dataengineeringformachinelearning/viking-ui UI kit, themed with DEML tokens.
  */
 @Component({
   selector: 'app-showcase',
   imports: [
     VikingAccordion,
     VikingAccordionItem,
+    VikingAuthFooter,
+    VikingAuthPanel,
     VikingAutocomplete,
     VikingAvatar,
     VikingBadge,
@@ -136,6 +141,8 @@ import {
     VikingSelect,
     VikingSeparator,
     VikingSheet,
+    VikingSiteFooter,
+    VikingSiteNavbar,
     VikingSkeleton,
     VikingSlider,
     VikingSpinner,

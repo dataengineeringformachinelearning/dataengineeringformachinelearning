@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * viking-brand — logo + wordmark lockup (https://fluxui.dev/components/brand).
+ * viking-brand — logo + wordmark lockup.
  * Project a custom logo (img/svg) or fall back to a monogram tile.
  */
 @Component({

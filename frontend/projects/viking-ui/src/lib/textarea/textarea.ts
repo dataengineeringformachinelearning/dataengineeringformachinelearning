@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { VikingControl, provideVikingCva } from '../core/cva';
 
 /**
- * viking-textarea — auto-growing textarea (https://fluxui.dev/components/textarea).
+ * viking-textarea — auto-growing textarea.
  * ControlValueAccessor-compatible.
  */
 @Component({

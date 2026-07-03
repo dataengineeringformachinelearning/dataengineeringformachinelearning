@@ -12,7 +12,7 @@ import { VikingCalendar } from '../calendar/calendar';
 import { VikingIcon } from '../icon/icon';
 
 /**
- * viking-date-picker — input + calendar popover (https://fluxui.dev/components/date-picker).
+ * viking-date-picker — input + calendar popover.
  * Value is an ISO date string (YYYY-MM-DD). ControlValueAccessor-compatible.
  */
 @Component({

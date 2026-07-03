@@ -3,7 +3,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { VIKING_ICON_PATHS, VikingIconName } from '../core/icons';
 
 /**
- * viking-icon — inline SVG icon (https://fluxui.dev/components/icon).
+ * viking-icon — inline SVG icon.
  * Zero-dependency 24x24 stroke icons from the internal registry.
  */
 @Component({

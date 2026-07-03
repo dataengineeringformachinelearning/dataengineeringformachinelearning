@@ -13,7 +13,7 @@ import { VikingIcon } from '../icon/icon';
 export type VikingSheetSide = 'left' | 'right';
 
 /**
- * viking-sheet — slide-over panel (Spartan-inspired sheet).
+ * viking-sheet — slide-over panel.
  */
 @Component({
   selector: 'viking-sheet',

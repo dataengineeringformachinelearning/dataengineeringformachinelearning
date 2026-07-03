@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output, signal } from '@angu
 import { VikingIcon } from '../icon/icon';
 
 /**
- * viking-file-upload — drag & drop file zone (https://fluxui.dev/components/file-upload).
+ * viking-file-upload — drag & drop file zone.
  */
 @Component({
   selector: 'viking-file-upload',

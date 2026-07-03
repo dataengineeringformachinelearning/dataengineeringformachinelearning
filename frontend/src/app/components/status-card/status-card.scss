@@ -35,31 +35,11 @@
 .view-btn-container {
   display: flex;
   width: 100%;
+  margin-top: var(--space-2, 16px);
 }
 
 .view-btn {
   width: 100%;
-  justify-content: center;
-  border-radius: 16px !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  background: var(--button-primary) !important;
-  color: var(--button-primary-text) !important;
-
-  mat-icon {
-    margin: 0;
-    font-size: var(--base-font-size);
-    width: 16px;
-    height: 16px;
-  }
-
-  &:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-  }
 }
 
 /* Extracted Inline Styles */

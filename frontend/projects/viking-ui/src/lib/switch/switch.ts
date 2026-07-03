@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { VikingControl, provideVikingCva } from '../core/cva';
 
 /**
- * viking-switch — toggle switch (https://fluxui.dev/components/switch).
+ * viking-switch — toggle switch.
  * ControlValueAccessor-compatible.
  */
 @Component({

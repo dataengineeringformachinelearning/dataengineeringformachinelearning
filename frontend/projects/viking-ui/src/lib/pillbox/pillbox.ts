@@ -3,7 +3,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
 
 /**
- * viking-pillbox — multi-value tag input (https://fluxui.dev/components/pillbox).
+ * viking-pillbox — multi-value tag input.
  * Type and press Enter (or comma) to add pills. ControlValueAccessor-compatible.
  */
 @Component({

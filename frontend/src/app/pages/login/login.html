@@ -99,33 +99,17 @@
           </div>
 
           @if (!isForgotMode() && !isResetMode() && !mfaRequired() && !codeSent()) {
-          <viking-separator text="or" />
-          <div class="social-buttons-container">
-            <viking-button
-              variant="outline"
-              type="button"
-              [loading]="isLoading()"
-              [disabled]="isLoading()"
-              (pressed)="signInWithGoogle()"
-            >
-              Sign In with Google
-            </viking-button>
-            <viking-button
-              variant="outline"
-              type="button"
-              [loading]="isLoading()"
-              [disabled]="isLoading()"
-              (pressed)="signInWithApple()"
-            >
-              Sign In with Apple
-            </viking-button>
-          </div>
+          <viking-auth-panel
+            [showSocial]="true"
+            [loading]="isLoading()"
+            (googleSignIn)="signInWithGoogle()"
+            (appleSignIn)="signInWithApple()"
+          />
           }
         </form>
         }
 
-        <div class="modal-footer">
-          <viking-separator />
+        <viking-auth-footer>
           <viking-button
             variant="primary"
             type="button"
@@ -145,7 +129,7 @@
           >
             Cancel
           </viking-button>
-        </div>
+        </viking-auth-footer>
       </div>
     </div>
   </div>

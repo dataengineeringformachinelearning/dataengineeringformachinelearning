@@ -12,7 +12,7 @@ import { VikingIcon } from '../icon/icon';
 
 /**
  * viking-modal — dialog built on the native <dialog> element
- * (https://fluxui.dev/components/modal). Toggle via the `open` model.
+ *. Toggle via the `open` model.
  */
 @Component({
   selector: 'viking-modal',

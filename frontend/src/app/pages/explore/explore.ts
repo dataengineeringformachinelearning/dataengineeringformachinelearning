@@ -20,8 +20,6 @@ import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon'
 import { RouterModule } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { StatusCard } from '../../components/status-card/status-card';
-import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
-
 @Component({
   selector: 'app-explore',
   standalone: true,
@@ -32,11 +30,9 @@ import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
     RouterModule,
     StatusCta,
     StatusCard,
-    WhitepaperCta,
   ],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './explore.scss',
 })
 export class Explore implements OnInit {
   private monitorService = inject(MonitorService);

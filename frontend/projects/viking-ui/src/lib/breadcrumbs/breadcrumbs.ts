@@ -7,7 +7,7 @@ export interface VikingBreadcrumb {
 }
 
 /**
- * viking-breadcrumbs — hierarchy navigation (https://fluxui.dev/components/breadcrumbs).
+ * viking-breadcrumbs — hierarchy navigation.
  */
 @Component({
   selector: 'viking-breadcrumbs',

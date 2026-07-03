@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * viking-label — accessible form label (Spartan-inspired).
+ * viking-label — accessible form label.
  */
 @Component({
   selector: 'viking-label',

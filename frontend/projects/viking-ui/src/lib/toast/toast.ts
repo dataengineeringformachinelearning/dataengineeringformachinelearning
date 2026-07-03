@@ -19,7 +19,7 @@ const TONE_ICONS: Record<string, VikingIconName> = {
 };
 
 /**
- * VikingToastService — imperative toast API (https://fluxui.dev/components/toast).
+ * VikingToastService — imperative toast API.
  * Render a single <viking-toaster> outlet near the app root.
  */
 @Injectable({ providedIn: 'root' })

@@ -7,7 +7,7 @@ import { VikingSize } from '../core/types';
 export type VikingButtonVariant = 'outline' | 'primary' | 'filled' | 'danger' | 'ghost' | 'subtle';
 
 /**
- * viking-button — composable button (https://fluxui.dev/components/button).
+ * viking-button — composable button.
  * Variants: outline (default), primary, filled, danger, ghost, subtle.
  */
 @Component({
