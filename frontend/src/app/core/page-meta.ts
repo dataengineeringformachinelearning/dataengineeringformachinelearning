@@ -32,7 +32,7 @@ export const ROUTE_PAGE_META: Record<string, PageMeta> = {
     description: 'Platform-wide service health, incident history, and uptime summaries.',
   },
   settings: {
-    title: 'Site Setup - DEML APP',
+    title: 'Sites - DEML APP',
     description: 'Configure monitors, embed widgets, and manage site-level DEML integrations.',
   },
   account: {

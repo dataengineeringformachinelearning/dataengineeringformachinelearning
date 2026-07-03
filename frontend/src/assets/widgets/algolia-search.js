@@ -1,8 +1,8 @@
 /**
  * Bridge for Algolia Experiences autocomplete (#autocomplete).
- * Loads the Experiences script from config and keeps book sidebar search + ⌘K working.
+ * Waits for the navbar host (including Angular SSR hydration) before loading Experiences.
  */
-function loadAlgoliaExperiences() {
+const loadAlgoliaExperiences = () => {
   if (document.querySelector('script[data-deml-algolia-experiences]')) {
     return;
   }
@@ -24,9 +24,9 @@ function loadAlgoliaExperiences() {
   script.defer = true;
   script.setAttribute('data-deml-algolia-experiences', 'true');
   document.head.appendChild(script);
-}
+};
 
-function focusAlgoliaSearch() {
+const focusAlgoliaSearch = () => {
   const host = document.getElementById('autocomplete');
   if (!host) return;
   host.classList.add('algolia-autocomplete-open');
@@ -35,7 +35,35 @@ function focusAlgoliaSearch() {
     input.focus();
     if (typeof input.select === 'function') input.select();
   }
-}
+};
+
+const mountAlgoliaWhenReady = () => {
+  const host = document.getElementById('autocomplete');
+  if (!host) {
+    return false;
+  }
+  loadAlgoliaExperiences();
+  return true;
+};
+
+const watchForAutocompleteHost = () => {
+  if (mountAlgoliaWhenReady()) {
+    return;
+  }
+
+  const observer = new MutationObserver(() => {
+    if (mountAlgoliaWhenReady()) {
+      observer.disconnect();
+    }
+  });
+
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  window.setTimeout(() => {
+    observer.disconnect();
+    mountAlgoliaWhenReady();
+  }, 15000);
+};
 
 document.addEventListener('click', event => {
   const host = document.getElementById('autocomplete');
@@ -55,4 +83,8 @@ window.addEventListener('keydown', event => {
   }
 });
 
-loadAlgoliaExperiences();
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', watchForAutocompleteHost);
+} else {
+  watchForAutocompleteHost();
+}

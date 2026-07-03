@@ -54,6 +54,7 @@ export class App implements OnInit {
       .subscribe((event: NavigationEnd) => {
         const url = event.urlAfterRedirects || event.url || '';
         this.pageMeta.applyForUrl(url);
+        this.checkDeepLinkActions();
         const isStandalone = url.startsWith('/status/') && url !== '/status';
         this.isStandaloneStatusPage.set(isStandalone);
 
@@ -119,6 +120,20 @@ export class App implements OnInit {
           },
         });
       }
+    }
+  }
+
+  checkDeepLinkActions(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('reportBug') === '1') {
+      urlParams.delete('reportBug');
+      const nextQuery = urlParams.toString();
+      const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+      window.history.replaceState({}, document.title, nextUrl);
+      window.dispatchEvent(new CustomEvent('openBugReporter'));
     }
   }
 }

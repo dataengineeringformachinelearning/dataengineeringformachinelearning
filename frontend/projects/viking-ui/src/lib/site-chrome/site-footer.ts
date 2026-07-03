@@ -7,7 +7,9 @@ import {
 import { RouterLink } from '@angular/router';
 import { VikingFooter } from '../footer/footer';
 import {
+  cookieSettingsHref,
   DEFAULT_SITE_URLS,
+  isAppRouterPath,
   resolveFooterHref,
   SITE_FOOTER_COLUMNS,
   SiteChromeContext,
@@ -34,19 +36,19 @@ import {
                   @if (link.action === 'cookie-settings') {
                     @if (context() === 'marketing') {
                       <a href="#" (click)="onCookieSettings($event)">{{ link.label }}</a>
+                    } @else {
+                      <a [href]="cookieSettingsUrl()">{{ link.label }}</a>
                     }
                   } @else if (link.action === 'bug-report') {
-                    <a href="#" (click)="onBugReport($event)">{{ link.label }}</a>
+                    @if (context() === 'app') {
+                      <a href="#" (click)="onBugReport($event)">{{ link.label }}</a>
+                    } @else {
+                      <a [href]="resolveHref(link)">{{ link.label }}</a>
+                    }
                   } @else if (context() === 'app' && isAppRoute(link)) {
                     <a [routerLink]="link.appHref">{{ link.label }}</a>
                   } @else {
-                    <a
-                      [href]="resolveHref(link)"
-                      [attr.target]="isExternal(link) ? '_blank' : null"
-                      [attr.rel]="isExternal(link) ? 'noopener noreferrer' : null"
-                    >
-                      {{ link.label }}
-                    </a>
+                    <a [href]="resolveHref(link)">{{ link.label }}</a>
                   }
                 </li>
               }
@@ -91,14 +93,13 @@ export class VikingSiteFooter {
 
   protected readonly columns = SITE_FOOTER_COLUMNS;
 
+  protected readonly cookieSettingsUrl = () => cookieSettingsHref(this.urls());
+
   protected resolveHref = (link: SiteFooterLink): string =>
     resolveFooterHref(link, this.context(), this.urls());
 
   protected isAppRoute = (link: SiteFooterLink): boolean =>
-    !link.action && !/^https?:\/\//i.test(link.appHref) && link.appHref !== '#';
-
-  protected isExternal = (link: SiteFooterLink): boolean =>
-    /^https?:\/\//i.test(this.resolveHref(link));
+    !link.action && isAppRouterPath(link.appHref);
 
   protected onCookieSettings(event: Event): void {
     event.preventDefault();

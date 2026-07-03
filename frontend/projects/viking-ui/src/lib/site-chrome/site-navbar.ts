@@ -3,6 +3,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { VikingIcon } from '../icon/icon';
 import {
   DEFAULT_SITE_URLS,
+  isAppRouterPath,
   resolveBrandHref,
   resolveNavHref,
   SITE_NAV_LINKS,
@@ -41,7 +42,7 @@ import {
 
         <nav class="navbar-center desktop-nav" aria-label="Main navigation">
           @for (link of navLinks(); track link.id) {
-            @if (context() === 'app' && !link.external && !isAbsolute(link.appHref)) {
+            @if (context() === 'app' && isAppRouterPath(link.appHref)) {
               <a
                 [routerLink]="link.appHref"
                 routerLinkActive="active"
@@ -52,12 +53,7 @@ import {
                 <span>{{ link.label }}</span>
               </a>
             } @else {
-              <a
-                [href]="resolveHref(link)"
-                class="nav-btn"
-                [attr.target]="link.external ? '_blank' : null"
-                [attr.rel]="link.external ? 'noopener noreferrer' : null"
-              >
+              <a [href]="resolveHref(link)" class="nav-btn">
                 <viking-icon [name]="link.icon" [size]="16" />
                 <span>{{ link.label }}</span>
               </a>
@@ -117,7 +113,7 @@ import {
 
       <nav class="mobile-menu" [class.open]="mobileMenuOpen()" aria-label="Mobile navigation">
         @for (link of navLinks(); track link.id + '-mobile') {
-          @if (context() === 'app' && !link.external && !isAbsolute(link.appHref)) {
+          @if (context() === 'app' && isAppRouterPath(link.appHref)) {
             <a
               [routerLink]="link.appHref"
               routerLinkActive="active"
@@ -129,13 +125,7 @@ import {
               <span>{{ link.label }}</span>
             </a>
           } @else {
-            <a
-              [href]="resolveHref(link)"
-              class="mobile-nav-btn"
-              [attr.target]="link.external ? '_blank' : null"
-              [attr.rel]="link.external ? 'noopener noreferrer' : null"
-              (click)="closeMobileMenu()"
-            >
+            <a [href]="resolveHref(link)" class="mobile-nav-btn" (click)="closeMobileMenu()">
               <viking-icon [name]="link.icon" [size]="16" />
               <span>{{ link.label }}</span>
             </a>
@@ -172,9 +162,7 @@ export class VikingSiteNavbar {
 
   protected readonly mobileMenuOpen = signal(false);
 
-  protected readonly navLinks = computed(() =>
-    visibleNavLinks(SITE_NAV_LINKS, this.isAuthenticated()),
-  );
+  protected readonly navLinks = computed(() => visibleNavLinks(SITE_NAV_LINKS));
 
   protected readonly brandHref = computed(() => resolveBrandHref(this.context(), this.urls()));
 
@@ -183,7 +171,7 @@ export class VikingSiteNavbar {
   protected resolveHref = (link: (typeof SITE_NAV_LINKS)[number]): string =>
     resolveNavHref(link, this.context(), this.urls());
 
-  protected isAbsolute = (href: string): boolean => /^https?:\/\//i.test(href);
+  protected isAppRouterPath = isAppRouterPath;
 
   protected onBrandClick(event: MouseEvent): void {
     event.preventDefault();

@@ -29,9 +29,7 @@ const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: '' };
                 ) : link.action === 'bug-report' ? (
                   <a href={resolveFooterHref(link, 'marketing', urls)}>{link.label}</a>
                 ) : (
-                  <a href={resolveFooterHref(link, 'marketing', urls)}>
-                    {link.label}
-                  </a>
+                  <a href={resolveFooterHref(link, 'marketing', urls)}>{link.label}</a>
                 )}
               </li>
             ))}

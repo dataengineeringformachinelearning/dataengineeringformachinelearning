@@ -544,7 +544,7 @@ html[data-theme='light'] {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    z-index: 1;
+    z-index: 3;
     pointer-events: auto;
   }
 
@@ -552,6 +552,14 @@ html[data-theme='light'] {
   .navbar-right {
     position: relative;
     z-index: 2;
+  }
+
+  .navbar-right {
+    pointer-events: none;
+  }
+
+  .navbar-right > * {
+    pointer-events: auto;
   }
 
   .navbar-left {

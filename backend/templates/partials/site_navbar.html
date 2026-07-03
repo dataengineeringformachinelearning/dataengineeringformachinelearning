@@ -48,12 +48,7 @@
         </svg>
         <span>Explore</span>
       </a>
-      <a
-        href="{{ marketing_url }}/documentation/"
-        class="nav-btn"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
+      <a href="{{ marketing_url }}/documentation/" class="nav-btn">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -70,6 +65,55 @@
           <path d="M14 3v6h6" />
         </svg>
         <span>Documentation</span>
+      </a>
+      <a href="{{ frontend_url }}/dashboard" class="nav-btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          width="16"
+          height="16"
+          aria-hidden="true"
+        >
+          <path d="M3 10.5 12 3l9 7.5" />
+          <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5" />
+        </svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="{{ frontend_url }}/settings" class="nav-btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          width="16"
+          height="16"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M3 12h18" />
+          <ellipse cx="12" cy="12" rx="4" ry="9" />
+        </svg>
+        <span>Sites</span>
+      </a>
+      <a href="{{ frontend_url }}/account" class="nav-btn">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          width="16"
+          height="16"
+          aria-hidden="true"
+        >
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c1.5-4 6.5-4 8-4s6.5 0 8 4" />
+        </svg>
+        <span>Account</span>
       </a>
     </nav>
 
@@ -132,13 +176,17 @@
     <a href="{{ frontend_url }}/explore" class="mobile-nav-btn">
       <span>Explore</span>
     </a>
-    <a
-      href="{{ marketing_url }}/documentation/"
-      class="mobile-nav-btn"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <a href="{{ marketing_url }}/documentation/" class="mobile-nav-btn">
       <span>Documentation</span>
+    </a>
+    <a href="{{ frontend_url }}/dashboard" class="mobile-nav-btn">
+      <span>Dashboard</span>
+    </a>
+    <a href="{{ frontend_url }}/settings" class="mobile-nav-btn">
+      <span>Sites</span>
+    </a>
+    <a href="{{ frontend_url }}/account" class="mobile-nav-btn">
+      <span>Account</span>
     </a>
     <div class="mobile-divider"></div>
     <a
@@ -152,3 +200,4 @@
 </header>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>
 <script src="{% static 'widgets/algolia-search.js' %}" defer></script>
+<script src="{% static 'algolia-config.js' %}" defer></script>

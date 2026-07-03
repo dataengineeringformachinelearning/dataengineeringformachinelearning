@@ -516,9 +516,26 @@
     }
   };
 
+  const openCookieSettingsFromQuery = () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('cookieSettings') === '1') {
+        window.DemlWidgets.openCookieSettings();
+        params.delete('cookieSettings');
+        const nextQuery = params.toString();
+        const nextUrl = `${window.location.pathname}${nextQuery ? `?${nextQuery}` : ''}${window.location.hash}`;
+        window.history.replaceState({}, document.title, nextUrl);
+      }
+    } catch (e) {
+      console.error('Failed to open cookie settings from query', e);
+    }
+  };
+
   // Auto-show logic
   if (getPreferences() === null) {
     // Slight delay to allow layout to settle
     setTimeout(renderDialog, 1000);
   }
+
+  openCookieSettingsFromQuery();
 })();
