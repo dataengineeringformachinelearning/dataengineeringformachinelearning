@@ -100,9 +100,11 @@
   color: var(--text-color);
   letter-spacing: 0.02em;
 
-  .material-icons {
-    font-size: 18px;
+  svg {
+    width: 18px;
+    height: 18px;
     color: var(--crayola-blue);
+    flex-shrink: 0;
   }
 }
 
@@ -173,8 +175,7 @@ a.cta-button {
   }
 
   .cta-icon,
-  .material-icons.cta-icon {
-    font-size: 20px;
+  svg.cta-icon {
     flex: 0 0 auto;
     width: 20px;
     height: 20px;
@@ -625,8 +626,9 @@ a.cta-button {
       color-mix(in srgb, var(--crayola-blue) 15%, transparent);
   }
 
-  .material-icons {
-    font-size: 32px;
+  svg {
+    width: 32px;
+    height: 32px;
     color: var(--crayola-blue);
   }
 
@@ -707,8 +709,9 @@ a.cta-button {
   text-transform: uppercase;
   transition: color 0.2s ease;
 
-  .material-icons {
-    font-size: 22px;
+  svg {
+    width: 22px;
+    height: 22px;
     color: var(--crayola-blue);
   }
 
@@ -830,9 +833,10 @@ a.cta-button {
   font-size: 0.9rem;
   color: var(--text-muted);
 
-  .material-icons {
+  svg {
+    width: 24px;
+    height: 24px;
     color: var(--crayola-blue);
-    font-size: 24px;
   }
 }
 
@@ -1121,10 +1125,12 @@ a.cta-button {
         color: var(--text-color);
         font-size: 1rem;
 
-        .material-icons {
+        svg {
+          width: 20px;
+          height: 20px;
           color: var(--crayola-blue);
           margin-right: 0.75rem;
-          font-size: 1.2rem;
+          flex-shrink: 0;
         }
       }
     }
@@ -1293,8 +1299,9 @@ a.cta-button {
       gap: 16px;
       max-width: 220px;
 
-      .material-icons {
-        font-size: 48px;
+      svg {
+        width: 48px;
+        height: 48px;
         color: var(--crayola-blue);
         filter: drop-shadow(
           0 0 10px color-mix(in srgb, var(--crayola-blue) 40%, transparent)
@@ -1327,9 +1334,8 @@ a.cta-button {
   text-transform: uppercase;
 }
 
-/* Icons must not clip in marketing pages (consistent with app) */
-.material-icons,
-.material-symbols-outlined {
+/* Inline Viking SVG icons must not clip in marketing pages */
+.landing-container svg[aria-hidden='true'] {
   overflow: visible;
   line-height: 1;
   display: inline-flex;

@@ -14,6 +14,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { IssueReporter } from './components/issue-reporter/issue-reporter';
 import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
+import { PageMetaService } from './services/page-meta.service';
 
 import { VikingToaster } from '@deml/viking-ui';
 import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
@@ -42,6 +43,7 @@ export class App implements OnInit {
   public authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
+  private pageMeta = inject(PageMetaService);
 
   isStandaloneStatusPage = signal(false);
   isDashboardPage = signal(false);
@@ -51,6 +53,7 @@ export class App implements OnInit {
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         const url = event.urlAfterRedirects || event.url || '';
+        this.pageMeta.applyForUrl(url);
         const isStandalone = url.startsWith('/status/') && url !== '/status';
         this.isStandaloneStatusPage.set(isStandalone);
 

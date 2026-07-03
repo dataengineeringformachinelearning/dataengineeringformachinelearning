@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { VikingIcon } from '../icon/icon';
 import {
@@ -37,11 +30,19 @@ import {
               aria-label="Go to marketing homepage"
               (click)="onBrandClick($event)"
             >
-              <viking-icon name="bar-chart" [size]="28" class="brand-icon navbar-logo glowing-icon-sm" />
+              <viking-icon
+                name="bar-chart"
+                [size]="28"
+                class="brand-icon navbar-logo glowing-icon-sm"
+              />
             </a>
           } @else {
             <a [href]="brandHref()" class="navbar-brand" aria-label="Go to homepage">
-              <viking-icon name="bar-chart" [size]="28" class="brand-icon navbar-logo glowing-icon-sm" />
+              <viking-icon
+                name="bar-chart"
+                [size]="28"
+                class="brand-icon navbar-logo glowing-icon-sm"
+              />
             </a>
           }
         </div>
@@ -71,6 +72,24 @@ import {
             }
           }
         </nav>
+
+        @if (showSearch()) {
+          <div class="navbar-search" role="search">
+            <div
+              id="autocomplete"
+              class="algolia-autocomplete-host"
+              aria-label="Search site content"
+            ></div>
+            <button
+              type="button"
+              class="navbar-search-mobile-btn"
+              aria-label="Open search"
+              (click)="openSearch()"
+            >
+              <viking-icon name="search" [size]="20" />
+            </button>
+          </div>
+        }
 
         <div class="navbar-right">
           <div class="desktop-auth">
@@ -108,11 +127,7 @@ import {
         </div>
       </div>
 
-      <nav
-        class="mobile-menu"
-        [class.open]="mobileMenuOpen()"
-        aria-label="Mobile navigation"
-      >
+      <nav class="mobile-menu" [class.open]="mobileMenuOpen()" aria-label="Mobile navigation">
         @for (link of navLinks(); track link.id + '-mobile') {
           @if (context() === 'app' && !link.external && !isAbsolute(link.appHref)) {
             <a
@@ -161,6 +176,7 @@ export class VikingSiteNavbar {
   readonly urls = input<SiteUrls>(DEFAULT_SITE_URLS);
   readonly isAuthenticated = input<boolean>(false);
   readonly theme = input<'light' | 'dark'>('dark');
+  readonly showSearch = input<boolean>(false);
 
   readonly login = output<void>();
   readonly logout = output<void>();
@@ -192,5 +208,10 @@ export class VikingSiteNavbar {
 
   protected closeMobileMenu(): void {
     this.mobileMenuOpen.set(false);
+  }
+
+  protected openSearch(): void {
+    const widgets = (globalThis as { DemlWidgets?: { openSearch?: () => void } }).DemlWidgets;
+    widgets?.openSearch?.();
   }
 }

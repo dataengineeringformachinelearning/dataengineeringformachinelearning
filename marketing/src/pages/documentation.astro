@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import VikingIcon from '../components/VikingIcon.astro';
 import { siteEnv } from '../lib/site-env';
 
 const { FRONTEND_URL } = siteEnv();
@@ -32,7 +33,10 @@ const quickStartSteps = [
 ];
 ---
 
-<Layout title="Documentation - DEML Platform">
+<Layout
+  title="Documentation - DEML Platform"
+  description="Integration guides for Kubernetes, TensorFlow, PyTorch, Spark, Databricks, and the DEML telemetry API."
+>
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">
       <div class="page-inner-wrapper">
@@ -48,11 +52,11 @@ const quickStartSteps = [
           </p>
           <div class="docs-hero-actions">
             <a href={FRONTEND_URL + '/login'} class="docs-cta primary">
-              <span class="material-icons" aria-hidden="true">rocket_launch</span>
+              <VikingIcon name="rocket_launch" size={20} />
               <span>Create Free Account</span>
             </a>
             <a href="#quick-start" class="docs-cta secondary">
-              <span class="material-icons" aria-hidden="true">play_circle</span>
+              <VikingIcon name="play_circle" size={20} />
               <span>Quick Start Guide</span>
             </a>
           </div>
@@ -65,7 +69,7 @@ const quickStartSteps = [
               <li>
                 <a href={step.href} class="docs-quick-start-card">
                   <span class="step-index" aria-hidden="true">{String(idx + 1).padStart(2, '0')}</span>
-                  <span class="material-icons" aria-hidden="true">{step.icon}</span>
+                  <VikingIcon name="{step.icon}" size={20} />
                   <h3>{step.title}</h3>
                   <p>{step.description}</p>
                 </a>
@@ -75,7 +79,7 @@ const quickStartSteps = [
         </section>
 
         <aside class="docs-security-banner" aria-label="Security highlights">
-          <span class="material-icons" aria-hidden="true">security</span>
+          <VikingIcon name="security" size={20} />
           <div>
             <strong>Security-first by default</strong>
             <p>
@@ -88,7 +92,7 @@ const quickStartSteps = [
         <div class="docs-bento-grid">
           <div class="docs-bento-card docs-bento-full">
             <div class="bento-header">
-              <span class="material-icons" aria-hidden="true">vpn_key</span>
+              <VikingIcon name="vpn_key" size={20} />
               <h2>Authentication & Access</h2>
             </div>
             <p class="u-style-7f7d6d">
@@ -103,7 +107,7 @@ const quickStartSteps = [
 
           <div class="docs-bento-card" id="data-ingestion">
             <div class="bento-header">
-              <span class="material-icons" aria-hidden="true">input</span>
+              <VikingIcon name="input" size={20} />
               <h2>Data Ingestion</h2>
             </div>
             <p class="u-style-efd290">
@@ -125,7 +129,7 @@ const quickStartSteps = [
 
           <div class="docs-bento-card">
             <div class="bento-header">
-              <span class="material-icons" aria-hidden="true">model_training</span>
+              <VikingIcon name="model_training" size={20} />
               <h2>Real-time Inference</h2>
             </div>
             <p class="u-style-efd290">
@@ -147,7 +151,7 @@ const quickStartSteps = [
 
           <div class="docs-bento-card">
             <div class="bento-header">
-              <span class="material-icons" aria-hidden="true">shield</span>
+              <VikingIcon name="shield" size={20} />
               <h2>Threat Monitoring</h2>
             </div>
             <p class="u-style-efd290">
@@ -169,7 +173,7 @@ const quickStartSteps = [
 
           <div class="docs-bento-card">
             <div class="bento-header">
-              <span class="material-icons" aria-hidden="true">security</span>
+              <VikingIcon name="security" size={20} />
               <h2>Enterprise Security</h2>
             </div>
             <p class="u-style-efd290">
@@ -195,7 +199,7 @@ const quickStartSteps = [
           <div class="integration-cards">
             <article class="integration-card">
               <div class="integration-card-header">
-                <span class="material-icons" aria-hidden="true">hub</span>
+                <VikingIcon name="hub" size={20} />
                 <h3>Kubernetes</h3>
               </div>
               <p>
@@ -215,7 +219,7 @@ DEML_API_KEY=&lt;from Secret&gt;</code></pre>
 
             <article class="integration-card">
               <div class="integration-card-header">
-                <span class="material-icons" aria-hidden="true">memory</span>
+                <VikingIcon name="memory" size={20} />
                 <h3>TensorFlow</h3>
               </div>
               <p>
@@ -234,7 +238,7 @@ dataset.batch(32).prefetch(AUTOTUNE)</code></pre>
 
             <article class="integration-card">
               <div class="integration-card-header">
-                <span class="material-icons" aria-hidden="true">psychology</span>
+                <VikingIcon name="psychology" size={20} />
                 <h3>PyTorch</h3>
               </div>
               <p>
@@ -253,7 +257,7 @@ for features, labels in loader: ...</code></pre>
 
             <article class="integration-card">
               <div class="integration-card-header">
-                <span class="material-icons" aria-hidden="true">bolt</span>
+                <VikingIcon name="bolt" size={20} />
                 <h3>Apache Spark</h3>
               </div>
               <p>
@@ -273,7 +277,7 @@ for features, labels in loader: ...</code></pre>
 
             <article class="integration-card">
               <div class="integration-card-header">
-                <span class="material-icons" aria-hidden="true">cloud</span>
+                <VikingIcon name="cloud" size={20} />
                 <h3>Databricks</h3>
               </div>
               <p>
@@ -292,7 +296,7 @@ for features, labels in loader: ...</code></pre>
 
             <article class="integration-card">
               <div class="integration-card-header">
-                <span class="material-icons" aria-hidden="true">auto_awesome</span>
+                <VikingIcon name="auto_awesome" size={20} />
                 <h3>Hugging Face</h3>
               </div>
               <p>

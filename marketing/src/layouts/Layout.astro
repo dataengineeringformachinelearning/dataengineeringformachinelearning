@@ -6,7 +6,6 @@ import Footer from '../components/Footer.astro';
 import { algoliaEnv } from '../lib/site-env';
 
 const algolia = algoliaEnv();
-const algoliaScriptUrl = `https://cdn.jsdelivr.net/npm/@algolia/experiences/dist/experiences.js?appId=${algolia.APP_ID}&apiKey=${algolia.API_KEY}&experienceId=${algolia.EXPERIENCE_ID}&env=${algolia.ENV}`;
 
 export interface Props {
 	title: string;
@@ -93,6 +92,14 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 		</script>
 
 		<!-- DEML Widgets (served locally from marketing to avoid cross-origin/CORS; data attrs point to main app) -->
+		<script is:inline define:vars={{ algolia }}>
+			window.ALGOLIA_CONFIG = {
+				appId: algolia.APP_ID,
+				apiKey: algolia.API_KEY,
+				experienceId: algolia.EXPERIENCE_ID,
+				env: algolia.ENV,
+			};
+		</script>
 		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>
 		<script is:inline src="/assets/widgets/algolia-search.js" defer></script>
 
@@ -121,7 +128,5 @@ const { title, description = "Interactive steps, working notes, and AI annotatio
 		</main>
 		<Footer />
 
-		<!-- Algolia Experiences site search (requires #autocomplete in Navbar) -->
-		<script is:inline src={algoliaScriptUrl}></script>
 	</body>
 </html>

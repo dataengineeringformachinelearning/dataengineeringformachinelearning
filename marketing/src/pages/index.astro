@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import VikingIcon from '../components/VikingIcon.astro';
 import '../styles/landing.scss';
 import { siteEnv } from '../lib/site-env';
 
@@ -99,7 +100,10 @@ const integrations = [
 ];
 ---
 
-<Layout title="DEML (DATA ENGINEERING FOR MACHINE LEARNING)">
+<Layout
+  title="DEML (DATA ENGINEERING FOR MACHINE LEARNING)"
+  description="Secure your data pipeline and ship ML faster. Real-time telemetry, threat intelligence, and tenant-safe event projections for modern data teams."
+>
   <div class="landing-container showcase-layout">
 
     <!-- Hero: split layout with mock dashboard -->
@@ -116,32 +120,32 @@ const integrations = [
         </p>
         <div class="hero-stats" aria-label="Platform highlights">
           <div class="hero-stat-pill">
-            <span class="material-icons" aria-hidden="true">shield</span>
+            <VikingIcon name="shield" size={20} />
             <span>847 threats blocked today</span>
           </div>
           <div class="hero-stat-pill">
-            <span class="material-icons" aria-hidden="true">speed</span>
+            <VikingIcon name="speed" size={20} />
             <span>42ms P99 latency</span>
           </div>
           <div class="hero-stat-pill">
-            <span class="material-icons" aria-hidden="true">verified_user</span>
+            <VikingIcon name="verified_user" size={20} />
             <span>Zero-trust by default</span>
           </div>
           <div class="hero-stat-pill">
-            <span class="material-icons" aria-hidden="true">hub</span>
+            <VikingIcon name="hub" size={20} />
             <span>Tenant-safe routing</span>
           </div>
         </div>
         <div class="cta-group">
           <a href="/documentation" class="cta-button primary-btn viking-btn viking-btn-primary">
             <span class="cta-content">
-              <span class="material-icons cta-icon" aria-hidden="true">rocket_launch</span>
+              <VikingIcon name="rocket_launch" size={20} class="cta-icon" />
               <span class="cta-label">Get Started in 5 Minutes</span>
             </span>
           </a>
           <a href={FRONTEND_URL + '/status/platform-status'} class="cta-button secondary-btn viking-btn viking-btn-subtle">
             <span class="cta-content">
-              <span class="material-icons cta-icon" aria-hidden="true">insights</span>
+              <VikingIcon name="insights" size={20} class="cta-icon" />
               <span class="cta-label">See Live Security Posture</span>
             </span>
           </a>
@@ -200,7 +204,7 @@ const integrations = [
         {quickStartSteps.map((item) => (
           <li class="quick-start-step">
             <span class="step-number" aria-hidden="true">{item.step}</span>
-            <span class="material-icons step-icon" aria-hidden="true">{item.icon}</span>
+            <VikingIcon name="{item.icon}" size={20} class="step-icon" />
             <h3>{item.title}</h3>
             <p>{item.description}</p>
           </li>
@@ -214,7 +218,7 @@ const integrations = [
       <div class="integration-logos">
         {integrations.map((item) => (
           <a href="/documentation" class="integration-logo-item">
-            <span class="material-icons" aria-hidden="true">{item.icon}</span>
+            <VikingIcon name="{item.icon}" size={20} />
             <span>{item.name}</span>
           </a>
         ))}
@@ -238,7 +242,7 @@ const integrations = [
         <div class="showcase-band-visual" aria-hidden="true">
           <div class="visual-panel">
             <div class="visual-panel-header">
-              <span class="material-icons">{cap.icon}</span>
+              <VikingIcon name="{cap.icon}" size={20} />
               <span>{cap.title}</span>
             </div>
             <div class="visual-metrics">
@@ -307,7 +311,7 @@ const integrations = [
       <ul class="security-pillars-grid">
         {securityPillars.map((pillar) => (
           <li class="security-pillar">
-            <span class="material-icons" aria-hidden="true">{pillar.icon}</span>
+            <VikingIcon name="{pillar.icon}" size={20} />
             <strong>{pillar.label}</strong>
             <span>{pillar.detail}</span>
           </li>
@@ -327,9 +331,9 @@ const integrations = [
           <h3>Standard Tier</h3>
           <div class="price">Free</div>
           <ul class="features-list">
-            <li><span class="material-icons" aria-hidden="true">check</span> 60 requests / minute</li>
-            <li><span class="material-icons" aria-hidden="true">check</span> Core Analytics</li>
-            <li><span class="material-icons" aria-hidden="true">check</span> Community Support</li>
+            <li><VikingIcon name="check" size={20} /> 60 requests / minute</li>
+            <li><VikingIcon name="check" size={20} /> Core Analytics</li>
+            <li><VikingIcon name="check" size={20} /> Community Support</li>
           </ul>
           <a href={FRONTEND_URL + '/login'} class="cta-button secondary-btn">Get Started</a>
         </div>
@@ -338,9 +342,9 @@ const integrations = [
           <h3>Pro Tier</h3>
           <div class="price">$39<span>/mo</span></div>
           <ul class="features-list">
-            <li><span class="material-icons" aria-hidden="true">check</span> 1,000 requests / minute</li>
-            <li><span class="material-icons" aria-hidden="true">check</span> Advanced Threat Detection</li>
-            <li><span class="material-icons" aria-hidden="true">check</span> Priority Support</li>
+            <li><VikingIcon name="check" size={20} /> 1,000 requests / minute</li>
+            <li><VikingIcon name="check" size={20} /> Advanced Threat Detection</li>
+            <li><VikingIcon name="check" size={20} /> Priority Support</li>
           </ul>
           <a href={FRONTEND_URL + '/login?action=checkout'} class="cta-button primary-btn pro-btn">
             Upgrade to Pro
@@ -362,7 +366,7 @@ const integrations = [
         </div>
         <a href="/whitepaper" class="cta-button primary-btn whitepaper-btn viking-btn viking-btn-primary">
           <span class="cta-content">
-            <span class="material-icons cta-icon" aria-hidden="true">description</span>
+            <VikingIcon name="description" size={20} class="cta-icon" />
             <span class="cta-label">Read Whitepaper</span>
           </span>
         </a>
@@ -378,28 +382,28 @@ const integrations = [
       </div>
       <ul class="purpose-list">
         <li>
-          <span class="material-icons" aria-hidden="true">shield</span>
+          <VikingIcon name="shield" size={20} />
           <div class="purpose-text">
             <strong>System Telemetry</strong>
             Aggregates anonymized parameters with full audit trails.
           </div>
         </li>
         <li>
-          <span class="material-icons" aria-hidden="true">vpn_key</span>
+          <VikingIcon name="vpn_key" size={20} />
           <div class="purpose-text">
             <strong>Data Tenancy</strong>
             UUID-scoped isolation across every pipeline boundary.
           </div>
         </li>
         <li>
-          <span class="material-icons" aria-hidden="true">policy</span>
+          <VikingIcon name="policy" size={20} />
           <div class="purpose-text">
             <strong>30-Day Retention</strong>
             Automated purge policies keep you compliant by default.
           </div>
         </li>
         <li>
-          <span class="material-icons" aria-hidden="true">bug_report</span>
+          <VikingIcon name="bug_report" size={20} />
           <div class="purpose-text">
             <strong>Vuln Triage</strong>
             Semgrep and Trivy findings auto-ticketed to your Kanban.

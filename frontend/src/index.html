@@ -118,7 +118,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Critical theme tokens — prevent Material default purple flash before bundles load -->
     <style>
@@ -180,6 +183,10 @@
 
     <!-- Theme tokens are included via Angular global styles (styles.scss + theme.scss).
          Dedicated per-app stylesheets + shared tokens for other services (marketing, backend). -->
+
+    <!-- Algolia Experiences site search (config + dynamic CDN loader) -->
+    <script src="assets/algolia-config.js"></script>
+    <script src="assets/widgets/algolia-search.js" defer></script>
 
     <!-- Local Firebase Configuration Override -->
     <script src="assets/firebase-config.js"></script>

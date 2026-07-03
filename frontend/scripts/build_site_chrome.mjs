@@ -8,9 +8,19 @@ const frontendDir = path.join(dirname, '..');
 const rootDir = path.join(frontendDir, '..');
 const vikingUiDir = path.join(frontendDir, 'projects', 'viking-ui', 'src', 'lib');
 
+/** Hardcoded extractors — avoids dynamic RegExp (Semgrep ReDoS rule). */
+const EXPORT_ARRAY_PATTERNS = {
+  SITE_NAV_LINKS: /export const SITE_NAV_LINKS[\s\S]*?= (\[[\s\S]*?\]) as const/,
+  SITE_FOOTER_COLUMNS: /export const SITE_FOOTER_COLUMNS[\s\S]*?= (\[[\s\S]*?\]) as const/,
+};
+
 const readJsonFromTsExport = (filePath, exportName) => {
+  const pattern = EXPORT_ARRAY_PATTERNS[exportName];
+  if (!pattern) {
+    throw new Error(`No extractor registered for ${exportName}`);
+  }
   const content = fs.readFileSync(filePath, 'utf8');
-  const match = content.match(new RegExp(`export const ${exportName}[\\s\\S]*?= (\\[[\\s\\S]*?\\]) as const`));
+  const match = content.match(pattern);
   if (!match) {
     throw new Error(`Could not extract ${exportName} from ${filePath}`);
   }

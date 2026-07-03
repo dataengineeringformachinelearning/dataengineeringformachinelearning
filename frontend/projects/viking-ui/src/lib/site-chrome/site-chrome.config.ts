@@ -185,9 +185,12 @@ export const resolveNavHref = (
     return link.appHref;
   }
   if (context === 'marketing') {
-    return isAbsoluteUrl(link.marketingHref)
+    if (isAbsoluteUrl(link.marketingHref)) {
+      return link.marketingHref;
+    }
+    return link.marketingHref.startsWith('/')
       ? link.marketingHref
-      : joinBase(urls.app, link.marketingHref);
+      : joinBase(urls.marketing, link.marketingHref);
   }
   return isAbsoluteUrl(link.appHref) ? link.appHref : joinBase(urls.app, link.appHref);
 };
@@ -230,8 +233,7 @@ export const resolveBrandHref = (context: SiteChromeContext, urls: SiteUrls): st
 export const visibleNavLinks = (
   links: readonly SiteNavLink[],
   isAuthenticated: boolean,
-): SiteNavLink[] =>
-  links.filter(link => !link.requireAuth || isAuthenticated);
+): SiteNavLink[] => links.filter(link => !link.requireAuth || isAuthenticated);
 
 export const DEFAULT_SITE_URLS: SiteUrls = {
   app: 'https://deml.app',

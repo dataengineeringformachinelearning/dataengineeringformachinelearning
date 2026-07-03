@@ -14,6 +14,7 @@ import { environment } from '../../../environments/environment';
       [urls]="siteUrls"
       [isAuthenticated]="authService.isAuthenticated()"
       [theme]="themeService.theme()"
+      [showSearch]="true"
       (login)="login()"
       (logout)="logout()"
       (themeToggle)="themeService.toggleTheme()"

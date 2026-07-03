@@ -6,7 +6,12 @@
 // Core
 export * from './lib/core/types';
 export type { VikingChartCurve, VikingChartKind, VikingDonutSegment } from './lib/core/types';
-export { VIKING_ICON_NAMES, VIKING_ICON_PATHS } from './lib/core/icons';
+export {
+  VIKING_ICON_NAMES,
+  VIKING_ICON_PATHS,
+  MATERIAL_ICON_ALIASES,
+  resolveVikingIcon,
+} from './lib/core/icons';
 export type { VikingIconName } from './lib/core/icons';
 export { VikingControl, provideVikingCva } from './lib/core/cva';
 

@@ -80,12 +80,99 @@ export const VIKING_ICON_PATHS = {
     '<path d="M12 11.2v2.4h6.6c-.3 1.5-1.8 4.4-6.6 4.4-4 0-7.2-3.3-7.2-7.3S8 3.4 12 3.4c2.3 0 3.9 1 4.8 1.8l3.2-3.1C17.5.8 14.9 0 12 0 5.4 0 0 5.4 0 12s5.4 12 12 12c6.9 0 11.5-4.8 11.5-11.6 0-.8-.1-1.4-.2-1.9H12z"/>',
   apple:
     '<path d="M16.365 12.14c.02 2.53 2.21 3.38 2.23 3.39-.02.07-.35 1.21-1.16 2.4-.7 1.02-1.43 2.03-2.58 2.05-1.13.02-1.49-.67-2.78-.67-1.29 0-1.69.65-2.75.69-1.11.04-1.95-1.12-2.66-2.13-1.44-2.08-2.54-5.87-1.07-8.43.73-1.27 2.04-2.08 3.46-2.1 1.08-.02 2.1.72 2.78.72.67 0 2.14-.89 3.61-.76.61.03 2.33.25 3.44 1.88-.09.06-2.05 1.2-2.03 3.55M13.75 3.64c.59-.71 1-1.7.89-2.68-.86.03-1.9.57-2.52 1.28-.55.63-1.03 1.65-.9 2.62.95.07 1.92-.49 2.53-1.22"/>',
+  hub: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+  'trending-up': '<path d="M4 16 9 11l4 4 7-7"/><path d="M16 8h4v4"/>',
+  fingerprint:
+    '<path d="M12 11c0-1.5 2-2 2-3.5a2 2 0 0 0-4 0c0 1.5 2 2 2 3.5"/><path d="M8 14c0-2.5 4-3 4-6"/><path d="M16 14c0-2.5-4-3-4-6"/><path d="M6 17c0-4 6-4.5 6-9"/><path d="M18 17c0-4-6-4.5-6-9"/>',
+  'user-shield':
+    '<circle cx="10" cy="8" r="3"/><path d="M4 20c0-3 2.5-5 6-5"/><path d="M16 11l4-1v5c0 3-2 5.5-5 6.5"/>',
+  chip: '<rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 7V4M15 7V4M9 17v3M15 17v3M7 9H4M7 15H4M17 9h3M17 15h3"/>',
+  brain:
+    '<path d="M9 5a3 3 0 0 0-3 3c0 2 2 3 3 3s3-1 3-3a3 3 0 0 0-3-3z"/><path d="M15 5a3 3 0 0 1 3 3c0 2-2 3-3 3s-3-1-3-3a3 3 0 0 1 3-3z"/><path d="M9 11v2c0 2 1.5 3 3 3s3-1 3-3v-2"/>',
+  bolt: '<path d="M13 3 5 14h6l-1 7 8-11h-6l1-7z"/>',
+  cloud: '<path d="M7 18h10a4 4 0 0 0 .5-8A5 5 0 0 0 7 8a4 4 0 0 0 0 10z"/>',
+  network:
+    '<rect x="9" y="9" width="6" height="6" rx="1"/><path d="M12 9V5M12 19v-4M9 12H5M19 12h-4"/>',
+  speed: '<path d="M12 3a9 9 0 0 1 9 9"/><path d="M12 12 16 8"/>',
+  rocket:
+    '<path d="M12 2c0 4-2 6-2 10h4c0-4-2-6-2-10z"/><path d="M8 14l-2 6 6-2M16 14l2 6-6-2"/><circle cx="12" cy="10" r="2"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="m11.5 11.5 6-6M16 5l3 3"/>',
+  policy: '<path d="M12 3 4 6v5c0 5 3 8.5 7.5 10"/><path d="M9 12h6M12 9v6"/>',
+  bug: '<path d="M8 8h8M12 8v10M6 12h12M8 18h8M9 5l3-2 3 2"/>',
+  play: '<polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/>',
+  building:
+    '<rect x="4" y="8" width="16" height="12" rx="1"/><path d="M9 8V5h6v3M9 14h.01M12 14h.01M15 14h.01M9 18h.01M12 18h.01M15 18h.01"/>',
+  cookie:
+    '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="11" r="1" fill="currentColor"/><circle cx="11" cy="15" r="1" fill="currentColor"/>',
+  model: '<rect x="4" y="8" width="16" height="10" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/>',
+  'search-off': '<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5M7 7l10 10"/>',
+  insights: '<path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3"/>',
 } as const;
+
+/** Legacy Material Icons ligature names → Viking icon registry keys. */
+export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
+  analytics: 'bar-chart',
+  security: 'shield',
+  link: 'link',
+  visibility: 'eye',
+  shield: 'shield',
+  trending_up: 'trending-up',
+  lock: 'lock',
+  fingerprint: 'fingerprint',
+  gpp_maybe: 'shield',
+  verified_user: 'user-shield',
+  memory: 'chip',
+  psychology: 'brain',
+  bolt: 'bolt',
+  cloud: 'cloud',
+  lan: 'network',
+  hub: 'hub',
+  speed: 'speed',
+  rocket_launch: 'rocket',
+  insights: 'insights',
+  check: 'check',
+  description: 'file',
+  vpn_key: 'key',
+  policy: 'policy',
+  bug_report: 'bug',
+  search: 'search',
+  chevron_left: 'chevron-left',
+  chevron_right: 'chevron-right',
+  verified: 'check-circle',
+  warning: 'alert-triangle',
+  close: 'x',
+  account_balance: 'building',
+  send: 'send',
+  check_circle: 'check-circle',
+  play_circle: 'play',
+  input: 'terminal',
+  model_training: 'model',
+  auto_awesome: 'sparkle',
+  error_outline: 'alert-circle',
+  home: 'home',
+  cookie: 'cookie',
+  search_off: 'search-off',
+  person_add: 'user',
+};
 
 /** Icons rendered with fill instead of stroke (brand marks). */
 export const VIKING_FILLED_ICON_NAMES = [
   'google',
   'apple',
+  'play',
 ] as const satisfies readonly VikingIconName[];
+
+/** Resolve a Viking or legacy Material icon name to a registry key. */
+export const resolveVikingIcon = (name: string): VikingIconName => {
+  const normalized = name.trim().toLowerCase().replace(/\s+/g, '_');
+  if (normalized in VIKING_ICON_PATHS) {
+    return normalized as VikingIconName;
+  }
+  const alias = MATERIAL_ICON_ALIASES[normalized];
+  if (alias) {
+    return alias;
+  }
+  return 'info';
+};
 
 export const VIKING_ICON_NAMES = Object.keys(VIKING_ICON_PATHS) as VikingIconName[];

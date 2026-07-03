@@ -1,7 +1,33 @@
 /**
  * Bridge for Algolia Experiences autocomplete (#autocomplete).
- * Keeps book sidebar search + ⌘K working after migrating off Orama.
+ * Loads the Experiences script from config and keeps book sidebar search + ⌘K working.
  */
+function loadAlgoliaExperiences() {
+  if (document.querySelector("script[data-deml-algolia-experiences]")) {
+    return;
+  }
+  const cfg = window.ALGOLIA_CONFIG || {};
+  const appId = cfg.appId || "ZJAFYOSH2V";
+  const apiKey = cfg.apiKey || ""; // pragma: allowlist secret
+  const experienceId = cfg.experienceId || appId;
+  const env = cfg.env || "prod";
+  if (!apiKey) {
+    return;
+  }
+  const url = new URL(
+    "https://cdn.jsdelivr.net/npm/@algolia/experiences/dist/experiences.js",
+  );
+  url.searchParams.set("appId", appId);
+  url.searchParams.set("apiKey", apiKey);
+  url.searchParams.set("experienceId", experienceId);
+  url.searchParams.set("env", env);
+  const script = document.createElement("script");
+  script.src = url.toString();
+  script.defer = true;
+  script.setAttribute("data-deml-algolia-experiences", "true");
+  document.head.appendChild(script);
+}
+
 function focusAlgoliaSearch() {
   const host = document.getElementById("autocomplete");
   if (!host) return;
@@ -30,3 +56,5 @@ window.addEventListener("keydown", (event) => {
     focusAlgoliaSearch();
   }
 });
+
+loadAlgoliaExperiences();

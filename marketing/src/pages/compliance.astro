@@ -1,8 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import VikingIcon from '../components/VikingIcon.astro';
 ---
 
-<Layout title="Compliance - DEML Platform">
+<Layout
+  title="SOC2 Compliance - DEML Platform"
+  description="SOC2 controls, data retention policies, encryption practices, and audit-ready compliance documentation for DEML."
+>
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">
       <div class="content-wrapper compliance-container-inner page-inner-wrapper">
@@ -23,7 +27,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="compliance-grid">
           <section class="compliance-card" aria-labelledby="e2e-section-title">
             <div class="card-header">
-              <span class="material-icons icon-primary" aria-hidden="true">lock</span>
+              <VikingIcon name="lock" size={20} class="icon-primary" />
               <h2 id="e2e-section-title">End-to-End Encryption Telemetry</h2>
             </div>
             <p class="card-description">
@@ -33,28 +37,28 @@ import Layout from '../layouts/Layout.astro';
 
             <ul class="telemetry-list">
               <li>
-                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <VikingIcon name="verified" size={20} class="icon-success" />
                 <div class="item-details">
                   <strong>Data in Transit</strong>
                   <p>TLS 1.3 Active (RSA 2048-bit)</p>
                 </div>
               </li>
               <li>
-                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <VikingIcon name="verified" size={20} class="icon-success" />
                 <div class="item-details">
                   <strong>Data at Rest</strong>
                   <p>AES-256 (Google Cloud KMS)</p>
                 </div>
               </li>
               <li>
-                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <VikingIcon name="verified" size={20} class="icon-success" />
                 <div class="item-details">
                   <strong>Ingestion Integrity</strong>
                   <p>SHA-256 Checksums Verified</p>
                 </div>
               </li>
               <li>
-                <span class="material-icons icon-success" aria-hidden="true">verified</span>
+                <VikingIcon name="verified" size={20} class="icon-success" />
                 <div class="item-details">
                   <strong>Client Encryption Key Rotation</strong>
                   <p>
@@ -67,7 +71,7 @@ import Layout from '../layouts/Layout.astro';
 
           <section class="compliance-card" aria-labelledby="soc-section-title">
             <div class="card-header">
-              <span class="material-icons icon-primary" aria-hidden="true">verified_user</span>
+              <VikingIcon name="verified_user" size={20} class="icon-primary" />
               <h2 id="soc-section-title">SOC 2 Readiness Score</h2>
             </div>
             <div class="score-display">
@@ -125,7 +129,7 @@ import Layout from '../layouts/Layout.astro';
           </div>
 
           <div class="safety-warning-box" role="alert" id="safety-warning">
-            <span class="material-icons warning-icon" aria-hidden="true">warning</span>
+            <VikingIcon name="warning" size={20} class="warning-icon" />
             <div class="warning-content">
               <strong>Important Safety & Integrity Rail:</strong>
               <p>
@@ -136,7 +140,7 @@ import Layout from '../layouts/Layout.astro';
               </p>
             </div>
             <button class="icon-button" id="dismiss-warning-btn" aria-label="Dismiss safety warning">
-              <span class="material-icons" aria-hidden="true">close</span>
+              <VikingIcon name="close" size={20} />
             </button>
           </div>
 
@@ -147,22 +151,22 @@ import Layout from '../layouts/Layout.astro';
 
               <div class="target-selector" role="radiogroup" aria-label="Ingestion ISAC Target">
                 <button type="button" class="selector-btn active" data-isac="CISA" role="radio" aria-checked="true">
-                  <span class="material-icons" aria-hidden="true">account_balance</span>
+                  <VikingIcon name="account_balance" size={20} />
                   <span>CISA AIS (TAXII)</span>
                 </button>
                 <button type="button" class="selector-btn" data-isac="MS-ISAC" role="radio" aria-checked="false">
-                  <span class="material-icons" aria-hidden="true">security</span>
+                  <VikingIcon name="security" size={20} />
                   <span>MS-ISAC</span>
                 </button>
                 <button type="button" class="selector-btn" data-isac="IT-ISAC" role="radio" aria-checked="false">
-                  <span class="material-icons" aria-hidden="true">lan</span>
+                  <VikingIcon name="lan" size={20} />
                   <span>IT-ISAC</span>
                 </button>
               </div>
 
               <div class="submit-action-box">
                 <button class="submit-report-btn" id="submit-threat-btn">
-                  <span class="material-icons u-style-8f2b4f" aria-hidden="true" >send</span>
+                  <VikingIcon name="send" size={20} class="u-style-8f2b4f" />
                   <span id="submit-btn-text">Submit Threat Indicator</span>
                 </button>
                 <span class="mode-tag">Currently Active: Sandbox Ingestion Mode</span>
@@ -170,7 +174,7 @@ import Layout from '../layouts/Layout.astro';
 
               <div class="submission-response is-hidden" role="status" id="submission-result">
                 <div class="response-header success">
-                  <span class="material-icons" aria-hidden="true">check_circle</span>
+                  <VikingIcon name="check_circle" size={20} />
                   <span>Threat indicator successfully validated and transmitted to Sandbox.</span>
                 </div>
                 <div class="transmission-logs">

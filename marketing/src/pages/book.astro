@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import VikingIcon from '../components/VikingIcon.astro';
 import fs from 'node:fs';
 import { marked } from 'marked';
 
@@ -43,12 +44,15 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
 }
 ---
 
-<Layout title="The Book - DEML Platform">
+<Layout
+  title="The Book - DEML Platform"
+  description="Interactive chapters, deployment notes, and annotated walkthroughs for Data Engineering for Machine Learning."
+>
   <div class="dashboard-page-container dashboard-layout" id="book-app">
     <aside class="dashboard-sidebar no-print">
       <div class="sidebar-search sidebar-extracted-1 u-style-328aaa" tabindex="0" role="button" aria-label="Open search dialog"  onclick="if(window.DemlWidgets) window.DemlWidgets.openSearch()">
         <div class="search-wrapper">
-          <span class="material-icons u-style-315c1f" >search</span>
+          <VikingIcon name="search" size={20} class="u-style-315c1f" />
           <span class="sidebar-search-placeholder">Search...</span>
           <kbd class="search-shortcut">⌘K</kbd>
         </div>
@@ -116,7 +120,7 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
                       <div  class="u-style-34ef33"></div>
                       <div  class="u-style-ec5da2">
                         <div  class="u-style-10c394">Interactive Guide</div>
-                        <span class="material-icons u-style-5c1531" >rocket_launch</span>
+                        <VikingIcon name="rocket_launch" size={20} class="u-style-5c1531" />
                         <h1  class="u-style-c46697">Data Engineering<br />for Machine Learning</h1>
                         <p  class="u-style-85912f">Building High-Throughput Event Platforms</p>
                         <div  class="u-style-fe3035">
@@ -139,13 +143,13 @@ if (chapters.length === 1 && chapters[0].title === 'Cover') {
 
           <div class="pagination-controls-outlined u-style-fef210" >
             <button class="pagination-btn" id="prev-btn" disabled>
-              <span class="material-icons">chevron_left</span> Previous
+              <VikingIcon name="chevron_left" size={20} /> Previous
             </button>
             <span class="page-counter" id="page-counter-text">
               Chapter 1 of {chapters.length}
             </span>
             <button class="pagination-btn" id="next-btn">
-              Next <span class="material-icons">chevron_right</span>
+              Next <VikingIcon name="chevron_right" size={20} />
             </button>
           </div>
         </div>
