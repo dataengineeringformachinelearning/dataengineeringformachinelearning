@@ -3,18 +3,28 @@
  * Requires window.__DEML = { FRONTEND_URL, BACKEND_URL, MARKETING_URL } and viking-ui.css.
  */
 (() => {
-  const ICON_PATHS = window.__VIKING_ICON_PATHS ?? {};
   const AUTH_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-  const IFRAME_AUTH_TTL_MS = 5 * 60 * 1000;
+
+  const iconPaths = () => window.__VIKING_ICON_PATHS ?? {};
 
   const svgIcon = (name, size = 16) => {
-    const paths = ICON_PATHS[name] ?? ICON_PATHS.info ?? '';
+    const paths = iconPaths()[name] ?? iconPaths().info ?? '';
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" aria-hidden="true">${paths}</svg>`;
   };
 
   const setIcon = (el, name, size = 16) => {
     if (!el) return;
     el.innerHTML = svgIcon(name, size);
+  };
+
+  const initNavIcons = () => {
+    document.querySelectorAll('[data-viking-icon]').forEach(el => {
+      const name = el.getAttribute('data-viking-icon');
+      const size = Number(el.getAttribute('data-viking-icon-size') || 16);
+      if (name) {
+        setIcon(el, name, size);
+      }
+    });
   };
 
   const initThemeToggle = () => {
@@ -269,7 +279,7 @@
   };
 
   const loadIconPaths = async () => {
-    if (Object.keys(ICON_PATHS).length > 0) return;
+    if (Object.keys(iconPaths()).length > 0) return;
     try {
       const res = await fetch('/assets/viking-icon-paths.json');
       if (res.ok) {
@@ -282,6 +292,7 @@
 
   const init = async () => {
     await loadIconPaths();
+    initNavIcons();
     initThemeToggle();
     initMobileMenu();
     initAuth();

@@ -25,6 +25,12 @@ repos:
         language: system
         files: ^packages/deml-design-system/
         pass_filenames: false
+      - id: sync-site-chrome
+        name: Sync site chrome JSON and Django partials
+        entry: bash -c 'cd frontend && npm run build:site-chrome && cd .. && python scripts/sync_widgets.py'
+        language: system
+        files: ^frontend/projects/viking-ui/src/lib/site-chrome/|^frontend/scripts/build_site_chrome\.mjs$|^frontend/src/assets/widgets/navbar\.js$
+        pass_filenames: false
       - id: semgrep
         name: Semgrep SAST Scan
         entry: uvx semgrep scan --error
