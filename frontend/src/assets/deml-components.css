@@ -870,7 +870,6 @@ th,
 
 .mode-tag,
 .logs-title,
-.viking-button,
 .mat-mdc-form-field,
 .section-tag,
 .hud-subtitle,
@@ -881,90 +880,17 @@ th,
   font-size: max(16px, var(--base-font-size, 16px));
 }
 
-.viking-btn,
-button.viking-btn,
-a.viking-btn {
-  font-family: "Inter", sans-serif;
-  font-size: max(16px, var(--base-font-size));
-  font-weight: 600;
-  letter-spacing: 0.25px;
-  border-radius: var(--border-radius-sm);
-  padding: 0 var(--space-2, 16px);
-  min-width: var(--btn-min-width, 120px);
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  transition: var(--transition-smooth);
-  text-decoration: none;
-  border: 1px solid transparent;
-  cursor: pointer;
-}
-
-.viking-btn-subtle {
-  background-color: transparent;
-  color: var(--text-color);
-  border-color: var(--border);
-}
-.viking-btn-subtle:hover:not(:disabled) {
-  background-color: color-mix(in srgb, var(--hover-color) 15%, transparent);
-  border-color: var(--color-primary-container);
-}
-.viking-btn-subtle:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
-}
-
-.viking-btn-ghost {
-  background-color: transparent;
-  color: var(--text-muted);
-  border-color: transparent;
-}
-.viking-btn-ghost:hover:not(:disabled) {
-  color: var(--text-color);
-  background-color: color-mix(in srgb, var(--hover-color) 10%, transparent);
-}
-.viking-btn-ghost:focus-visible {
-  outline: var(--focus-ring-width) solid var(--focus-ring-color);
-  outline-offset: var(--focus-ring-offset);
-}
-
-.viking-btn-primary {
-  background-color: var(--viking-teal-600);
-  color: var(--white);
-  border-color: var(--viking-teal-600);
-}
-.viking-btn-primary:hover:not(:disabled) {
-  background-color: var(--viking-teal-400);
-  border-color: var(--viking-teal-400);
-  color: var(--white);
-}
-.viking-btn-primary:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.viking-btn-danger {
-  background-color: var(--viking-crimson-500);
-  color: var(--white);
-  border-color: var(--viking-crimson-500);
-}
-.viking-btn-danger:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
 .viking-button-group {
   display: inline-flex;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--viking-radius, var(--border-radius-md, 8px));
   overflow: hidden;
-  border: 1px solid var(--border);
+  border: 1px solid var(--viking-border, var(--border));
 }
 .viking-button-group > .viking-btn,
 .viking-button-group > button,
 .viking-button-group > a {
   border-radius: 0;
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--viking-border, var(--border));
   margin: 0;
 }
 .viking-button-group > .viking-btn:last-child,

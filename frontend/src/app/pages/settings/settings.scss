@@ -75,9 +75,9 @@
 .create-page-btn {
   display: flex;
   align-items: center;
-  justify-content: center !important;
+  justify-content: center;
   gap: 8px;
-  width: 100% !important;
+  width: 100%;
 }
 
 .settings-form-panel {
@@ -103,16 +103,6 @@
     align-items: stretch;
     gap: 16px;
     margin-top: 8px;
-
-    button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      background: var(--button-primary) !important;
-      color: var(--button-primary-text) !important;
-    }
   }
 }
 
@@ -182,21 +172,7 @@
 }
 
 .add-service-btn {
-  background: var(--viking-teal-600) !important;
-  color: var(--white) !important;
-  font-weight: 600 !important;
-  border-radius: var(--border-radius-sm) !important;
-  height: 48px !important;
-  padding: 0 24px !important;
-  border: 1px solid var(--viking-teal-400) !important;
-  transition: var(--transition-smooth) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-
-  &:hover {
-    opacity: 0.9;
-  }
+  width: 100%;
 }
 
 /* Outlined Data List */
@@ -324,61 +300,16 @@
   }
 }
 
-/* Yellow Accent Post Incident Button (Theme-compliant Warning button) */
+/* Post incident — layout only; variant styling from viking-button primary */
 .post-incident-btn {
-  background-color: var(--color-warning) !important;
-  color: var(--black) !important; /* High contrast dark forest green on yellow background */
-  font-weight: 600 !important;
-  border-radius: 8px !important;
-  height: 56px !important;
-  padding: 0 32px !important;
-  border: none !important;
-  box-shadow: 0 4px 10px color-mix(in srgb, var(--viking-gold-500) 15%, transparent) !important;
-  transition: all 0.2s ease !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-
-  &:hover:not([disabled]) {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px color-mix(in srgb, var(--viking-gold-500) 30%, transparent) !important;
-    opacity: 0.9;
-  }
-
-  &[disabled] {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: var(--text-muted) !important;
-    box-shadow: none !important;
-    cursor: not-allowed;
-  }
+  width: 100%;
+  justify-content: center;
 }
 
-/* Copy button styling using the theme dark grey buttons */
+/* Copy button — layout only in code blocks */
 .copy-btn {
-  background-color: var(--viking-charcoal-900) !important;
-  color: var(--white) !important;
-  font-weight: 600 !important;
-  border-radius: var(--border-radius-sm) !important;
-  height: 56px !important;
-  padding: 0 24px !important;
-  border: 1px solid var(--viking-teal-400) !important;
-  transition: var(--transition-smooth) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  min-width: 112px !important;
-  flex-shrink: 0 !important;
-  margin: 0 !important;
-
-  &:hover:not([disabled]) {
-    opacity: 0.9;
-  }
-
-  &[disabled] {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  flex-shrink: 0;
+  margin: 0;
 }
 
 .embed-desc {
@@ -414,7 +345,7 @@
   }
 
   .copy-btn {
-    width: 100% !important;
+    width: 100%;
   }
 }
 
@@ -571,67 +502,8 @@
   }
 }
 
-.add-service-btn {
-  background: var(--viking-teal-600) !important;
-  color: var(--white) !important;
-  font-weight: 600 !important;
-  border-radius: var(--border-radius-sm) !important;
-  height: 48px !important;
-  padding: 0 24px !important;
-  border: 1px solid var(--viking-teal-400) !important;
-  transition: var(--transition-smooth) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  width: 100% !important;
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
-
-
-
 .save-settings-btn {
-  background-color: var(--color-primary) !important;
-  color: var(--color-on-primary) !important;
-  font-weight: 600 !important;
-  border-radius: var(--border-radius-sm) !important;
-  height: 48px !important;
-  padding: 0 24px !important;
-  border: 1px solid var(--border) !important;
-  transition: var(--transition-smooth) !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  width: 100% !important;
-
-  &:hover:not([disabled]) {
-    transform: translateY(-2px) !important;
-    background-color: var(--color-primary-container) !important;
-    color: var(--color-on-primary-container) !important;
-    border-color: var(--primary-color) !important;
-    box-shadow: var(--shadow-glow), var(--shadow-hover) !important;
-  }
-
-  &[disabled] {
-    background: rgba(255, 255, 255, 0.05) !important;
-    color: var(--text-muted) !important;
-    border-color: transparent !important;
-    box-shadow: none !important;
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-}
-
-:host-context(html[data-theme='light']) {
-  .save-settings-btn,
-  .save-settings-btn {
-    &[disabled] {
-      background: rgba(0, 0, 0, 0.03) !important;
-    }
-  }
+  width: 100%;
 }
 
 .status-icon {
@@ -724,11 +596,6 @@
       align-items: center;
       margin-top: 0;
       width: auto;
-
-      button {
-        width: auto !important;
-        padding: 0 24px !important;
-      }
     }
   }
 }

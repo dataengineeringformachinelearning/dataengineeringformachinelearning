@@ -68,7 +68,6 @@
                     (pressed)="sendMfaCode()"
                     [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
                     [loading]="isSendingMfaCode()"
-                    class="mfa-btn"
                   >
                     Send SMS Code
                   </viking-button>
@@ -89,7 +88,6 @@
                       (pressed)="verifyMfaCode()"
                       [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
                       [loading]="isVerifyingMfaCode()"
-                      class="mfa-btn"
                     >
                       Verify & Enroll
                     </viking-button>
