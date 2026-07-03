@@ -7,13 +7,8 @@
         tag="Security Operations"
         title="Vulnerability Prioritization & Triage"
         subtitle="Active security threat monitoring and telemetry orchestration"
+        backTo="/dashboard"
       >
-        <nav vikingPageHeaderBack class="page-back-nav" aria-label="Return to dashboard">
-          <a class="back-link" routerLink="/dashboard" aria-label="Back to Dashboard">
-            <viking-app-icon name="arrow_back" [ariaHidden]="true" />
-            <span>Back to Dashboard</span>
-          </a>
-        </nav>
         @if (tenants.length > 0) {
         <div vikingPageHeaderActions class="tenant-selector-group">
           <app-unified-select

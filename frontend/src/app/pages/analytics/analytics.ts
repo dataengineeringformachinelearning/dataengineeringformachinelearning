@@ -11,13 +11,13 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {
   VikingChart,
   VikingBadge,
   VikingChartSeries,
   VikingGaugeArc,
+  VikingPageHeader,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { ThemeService } from '../../services/theme.service';
 import {
@@ -42,12 +42,12 @@ import * as L from 'leaflet';
   standalone: true,
   imports: [
     CommonModule,
-    RouterLink,
     UnifiedSelect,
     VikingChart,
     VikingBadge,
     VikingGaugeArc,
     VikingAppIcon,
+    VikingPageHeader,
   ],
   templateUrl: './analytics.html',
   styleUrls: ['./analytics.scss'],

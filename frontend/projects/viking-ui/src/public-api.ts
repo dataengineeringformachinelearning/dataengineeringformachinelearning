@@ -87,6 +87,7 @@ export * from './lib/navigation-menu/navigation-menu';
 export type { VikingNavItem } from './lib/navigation-menu/navigation-menu';
 export * from './lib/navbar/navbar';
 export * from './lib/otp-input/otp-input';
+export * from './lib/page-back-link/page-back-link';
 export * from './lib/page-header/page-header';
 export * from './lib/pagination/pagination';
 export * from './lib/pillbox/pillbox';
