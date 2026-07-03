@@ -12,7 +12,10 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', true);
-const angularApp = new AngularNodeAppEngine();
+const angularApp = new AngularNodeAppEngine({
+  // Railway + Cloudflare set X-Forwarded-* headers; trust them for SSR URL construction.
+  trustProxyHeaders: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto'],
+});
 
 /**
  * Global CORS Middleware

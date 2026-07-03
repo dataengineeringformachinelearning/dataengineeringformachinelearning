@@ -40,6 +40,7 @@ def query_teacher_model(prompt: str) -> float:
   """
   import hashlib
   import random
+  import time
 
   import requests
   from django.core.cache import cache
@@ -50,6 +51,10 @@ def query_teacher_model(prompt: str) -> float:
   if cached is not None:
     logger.debug("query_teacher_model: cache hit for %s", cache_key)
     return float(cached)
+
+  if cache.get("teacher_model:quota_exhausted"):
+    logger.debug("query_teacher_model: quota cooldown active; using heuristic fallback")
+    return _teacher_model_heuristic(prompt)
 
   google_api_key = os.environ.get("GOOGLE_API_KEY")
   if not google_api_key:
@@ -63,32 +68,78 @@ def query_teacher_model(prompt: str) -> float:
     "generationConfig": {"temperature": 0.1, "maxOutputTokens": 10},
   }
 
+  backoff_secs = (1, 2, 4)
   try:
-    response = requests.post(
-      API_URL,
-      json=payload,
-      timeout=5,
-    )
-    if response.status_code == 200:
-      result = response.json()
-      candidates = result.get("candidates") or []
-      if candidates:
-        parts = candidates[0].get("content", {}).get("parts") or []
-        if parts:
-          text = parts[0].get("text", "").strip()
-          try:
-            score = min(1.0, max(0.0, float(text)))
-            cache.set(cache_key, score, 3600)  # 1h in Dragonfly
-            return score
-          except ValueError:
-            logger.warning(
-              "Teacher model returned non-numeric output: '%s'; using random fallback", text
-            )
-    else:
+    for attempt, delay in enumerate(backoff_secs, start=1):
+      response = requests.post(
+        API_URL,
+        json=payload,
+        timeout=10,
+      )
+      if response.status_code == 200:
+        result = response.json()
+        candidates = result.get("candidates") or []
+        if candidates:
+          parts = candidates[0].get("content", {}).get("parts") or []
+          if parts:
+            text = parts[0].get("text", "").strip()
+            try:
+              score = min(1.0, max(0.0, float(text)))
+              cache.set(cache_key, score, 3600)  # 1h in Dragonfly
+              return score
+            except ValueError:
+              logger.warning(
+                "Teacher model returned non-numeric output: '%s'; using heuristic fallback", text
+              )
+        break
+
+      if response.status_code == 429:
+        if attempt < len(backoff_secs):
+          logger.info(
+            "Teacher model HTTP 429 (attempt %d/%d); retrying in %ds",
+            attempt,
+            len(backoff_secs),
+            delay,
+          )
+          time.sleep(delay)
+          continue
+        logger.warning(
+          "Teacher model quota exceeded after %d attempts; cooling down for 10 minutes",
+          len(backoff_secs),
+        )
+        cache.set("teacher_model:quota_exhausted", True, 600)
+        break
+
       logger.warning("Teacher model HTTP %s: %s", response.status_code, response.text[:200])
+      break
   except Exception as exc:
-    logger.warning("Teacher model query failed: %s; using random fallback", exc)
-  return random.uniform(0.0, 1.0)
+    logger.warning("Teacher model query failed: %s; using heuristic fallback", exc)
+
+  fallback = _teacher_model_heuristic(prompt)
+  cache.set(cache_key, fallback, 300)
+  return fallback
+
+
+def _teacher_model_heuristic(prompt: str) -> float:
+  """Deterministic SLA score when Gemini is unavailable (quota or outage)."""
+  import re
+
+  status_match = re.search(r"\b(\d{3})\b", prompt)
+  latency_match = re.search(r"([\d.]+)s response time", prompt)
+  status = int(status_match.group(1)) if status_match else 200
+  latency = float(latency_match.group(1)) if latency_match else 0.0
+
+  if status >= 500 or status == 0:
+    return 0.0
+  if status >= 400:
+    return 0.25
+  if latency > 5.0:
+    return 0.35
+  if latency > 2.0:
+    return 0.6
+  if latency > 1.0:
+    return 0.8
+  return 0.95
 
 
 def extract_fused_threat_features(

@@ -6,7 +6,7 @@ These endpoints are NOT public. They are protected by a shared secret
 (they are added to the Ninja router with `include_in_schema=False`).
 
 Endpoints:
-  POST /api/v1/internal/ingest/ping  — receives batch HTTP probe results from
+  POST /api/v1/internal/ingest/ping/ — receives batch HTTP probe results from
                                        the Rust health_pinger task and writes
                                        enriched Endpoints rows via the Django ORM.
 """
@@ -70,7 +70,7 @@ class IngestResponse(BaseModel):
 # ── Endpoint ──────────────────────────────────────────────────────────────────
 
 
-@router.post("/ingest/ping", response=IngestResponse, include_in_schema=False)
+@router.post("/ingest/ping/", response=IngestResponse, include_in_schema=False)
 def ingest_ping_results(request: HttpRequest, results: list[PingResultIn]) -> IngestResponse:
   """Accept a batch of HTTP probe timings from deml-daemon and write Endpoints rows.
 

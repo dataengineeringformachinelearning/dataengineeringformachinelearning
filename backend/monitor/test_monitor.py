@@ -19,6 +19,13 @@ def test_api_health(client: Client) -> None:
 
 
 @pytest.mark.django_db
+def test_api_health_alias(client: Client) -> None:
+  response = client.get("/api/v1/health")
+  assert response.status_code == 200
+  assert response.json() == {"status": "ok"}
+
+
+@pytest.mark.django_db
 def test_get_all_endpoints(authenticated_client: Client, test_user: User) -> None:
   page = StatusPage.objects.create(user=test_user, title="My Status", slug="my-status")
   MonitoredService.objects.create(status_page=page, name="test", url="http://test.com")

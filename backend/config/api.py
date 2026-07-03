@@ -123,3 +123,9 @@ add_router_if_not_exists("/billing/", billing_router)
 from .internal_api import router as internal_router
 
 add_router_if_not_exists("/internal/", internal_router)
+
+
+@api.get("/health")
+def api_health(request):
+  """Lightweight health probe for load balancers and integration monitors."""
+  return {"status": "ok"}

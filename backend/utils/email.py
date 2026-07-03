@@ -36,19 +36,25 @@ def send_alert_email(subject: str, message: str):
   """
   Sends an alert email using the Resend API with a marketing-style HTML template.
   """
-  api_key = os.environ.get("RESEND_API_KEY")
+  from django.conf import settings
+
+  api_key = getattr(settings, "RESEND_API_KEY", "") or os.environ.get("RESEND_API_KEY")
   if not api_key:
     logger.warning("RESEND_API_KEY is not set. Skipping email sending.")
     return
 
   resend.api_key = api_key
 
-  target_email = os.environ.get("ALERT_EMAIL_TARGET")
+  target_email = getattr(settings, "ALERT_EMAIL_TARGET", "") or os.environ.get("ALERT_EMAIL_TARGET")
   if not target_email:
     logger.warning("ALERT_EMAIL_TARGET is not set. Skipping email sending.")
     return
 
-  from_email = os.environ.get("ALERT_EMAIL_FROM", "notifications@deml.app")
+  from_email = (
+    getattr(settings, "ALERT_EMAIL_FROM", "")
+    or os.environ.get("ALERT_EMAIL_FROM")
+    or "notifications@deml.app"
+  )
 
   html_message = f"""
   <!DOCTYPE html>

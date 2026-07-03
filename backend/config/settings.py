@@ -291,6 +291,8 @@ _csrf_origins = get_csv("CSRF_TRUSTED_ORIGINS")
 CSRF_TRUSTED_ORIGINS = _csrf_origins if _csrf_origins else CORS_ALLOWED_ORIGINS
 
 RESEND_API_KEY = os.getenv("RESEND_API_KEY", "")
+ALERT_EMAIL_TARGET = os.getenv("ALERT_EMAIL_TARGET", "notifications@deml.app")
+ALERT_EMAIL_FROM = os.getenv("ALERT_EMAIL_FROM", "notifications@deml.app")
 from typing import Final
 
 FRONTEND_URL = get_str("FRONTEND_URL")
