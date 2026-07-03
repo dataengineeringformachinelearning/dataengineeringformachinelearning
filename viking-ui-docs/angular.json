@@ -25,7 +25,7 @@
               },
               {
                 "glob": "**/*",
-                "input": "../frontend/src/assets/fonts",
+                "input": "public/assets/fonts",
                 "output": "/assets/fonts"
               }
             ],

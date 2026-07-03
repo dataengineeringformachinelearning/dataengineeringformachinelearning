@@ -91,6 +91,11 @@
   margin-top: auto;
   padding-top: var(--viking-space-3);
   border-top: 1px solid var(--viking-border);
+
+  viking-button {
+    display: block;
+    width: 100%;
+  }
 }
 
 .doc-main {
