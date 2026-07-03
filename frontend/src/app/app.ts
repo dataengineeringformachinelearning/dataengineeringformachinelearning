@@ -20,7 +20,7 @@ import { OramaSearchService, SearchItem } from './services/orama-search.service'
 import { MonitorService } from './services/monitor.service';
 import { effect, HostListener } from '@angular/core';
 
-import { VikingToaster } from '@deml/viking-ui';
+import { VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
 import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { SearchDialog } from './components/search-dialog/search-dialog';

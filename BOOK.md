@@ -1204,7 +1204,8 @@ By combining per-account RBAC with publication- and ownership-aware ABAC, the pl
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
 
-- **Frontend**: [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/)
+- **Frontend**: [Angular](https://angular.dev/), [ng-packagr](https://github.com/ng-packagr/ng-packagr), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/), [Vitest](https://vitest.dev/), [AnalogJS](https://analogjs.org/)
+- **UI patterns (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
@@ -2080,16 +2081,27 @@ To ensure long-term maintainability, the platform is strictly governed by automa
 
 Furthermore, critical business logic—such as billing, telemetry, and background workers—is protected by a comprehensive test suite using `pytest`. Database interactions are mocked or verified via test databases (`@pytest.mark.django_db`) to guarantee functional parity with production. By codifying these invariants and test cases, the platform ensures SaaS-level reliability while moving at the velocity of a startup.
 
-## Chapter 31: Viking-Material — The Zero-Dependency UI Kit
+## Chapter 31: Viking-UI — The Zero-Dependency UI Kit
 
-The frontend design language of the platform is consolidated into a dedicated, workspace-local Angular library: `@deml/viking-ui` (`frontend/projects/viking-ui`). The kit re-implements the free component styles of [Viking UI](https://fluxui.dev) as native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies. Icons are an internal inline-SVG registry, charts are native SVG paths, modals use the platform `<dialog>` element, and every color resolves through THEME.md semantic tokens — light/dark modes, the 9px grid, and the 18px font floor are enforced by construction rather than convention. All 46 free upstream components are covered, from `viking-button` and `viking-badge` up to `viking-command`, `viking-editor`, `viking-kanban`, and `viking-toast`.
+The frontend design language of the platform is consolidated into a dedicated, workspace-local Angular library: `@dataengineeringformachinelearning/viking-ui` (`frontend/projects/viking-ui`). The kit ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through THEME.md semantic tokens — light/dark modes, the 8px grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. The library covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
 
 deml.app ships a marketing-parity landing page at `/home` (hero, capability bands, pricing, Polars-style whitepaper CTA) so the authenticated app feels cohesive with [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/). Unauthenticated visitors hitting `/` are routed to `/home`; signed-in users go to `/dashboard`.
 
-Consumption follows the path of least resistance. Inside the repository, deml.app imports `@deml/viking-ui` as a local npm package (`file:dist/viking-ui`, built via `prebuild`) while development can still resolve the library from source through the TypeScript path alias. Production pages consume flux components directly—buttons, fields, charts, modals, toasts, and selects—rather than hosting a component gallery on deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). Because the project is also registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, the exact same source produces a publishable Angular Package Format bundle with `npm run build:viking-ui`, which means the kit can be lifted onto a private npm registry the moment a second application needs it. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box. A **separate** Angular showcase app (`projects/viking-ui-showcase`) renders every component with realistic platform data for visual regression and contributor onboarding — build it with `npm run build:viking-ui-system` and deploy it independently of deml.app.
+Consumption follows the path of least resistance. Inside the repository, deml.app imports `@dataengineeringformachinelearning/viking-ui` as a local npm package (`file:dist/viking-ui`, built via `prebuild`) while development can still resolve the library from source through the TypeScript path alias. Production pages consume Viking-UI components directly — buttons, fields, charts, modals, toasts, and selects — rather than hosting a component gallery on deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). The project is registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, so the same source produces a publishable Angular Package Format bundle. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box. A **separate** Angular showcase app (`projects/viking-ui-showcase`) renders every component with realistic platform data for visual regression and contributor onboarding — build it with `npm run build:viking-ui-system` and deploy it independently of deml.app.
+
+Non-Angular surfaces (marketing Astro pages, Django templates) load the static CSS bundle synced from the design system:
+
+```html
+<link rel="stylesheet" href="/assets/design-tokens.css" />
+<link rel="stylesheet" href="/assets/viking-ui.css" />
+```
 
 ```ts
-import { VikingButton, VikingCard, VikingToastService } from "@deml/viking-ui";
+import {
+  VikingButton,
+  VikingCard,
+  VikingToastService,
+} from "@dataengineeringformachinelearning/viking-ui";
 
 @Component({
   imports: [VikingButton, VikingCard],
@@ -2107,7 +2119,71 @@ export class Example {
 }
 ```
 
-Staying current with upstream Viking is a governed, observable process instead of ad-hoc copying. The library carries a machine-readable manifest (`viking.manifest.json`) that maps each of the 46 components to its upstream documentation URL and to the Angular exports that implement it, along with the date of the last audit. The `npm run check:viking-upstream` script fetches the live fluxui.dev component index, diffs it against the manifest, and exits non-zero when upstream adds or renames components — surfacing drift in CI the same way a failing contract test would. Accessibility is treated as a WCAG 2.1 AA contract: visible `:focus-visible` rings on every interactive element, full keyboard navigation for listboxes, menus and the command palette, `role`/`aria-*` semantics throughout, and `prefers-reduced-motion` handling on animated pieces such as skeletons and progress bars. The suite is verified by dedicated [Vitest](https://vitest.dev/) component tests (`npm run test:viking-ui`) that compile real templates through the [AnalogJS](https://analogjs.org/) Angular plugin, plus the standard `ng lint` accessibility rules that run over the library's inline templates.
+### Build
+
+Run from the `frontend/` workspace:
+
+```bash
+npm run test:viking-ui            # Vitest component tests (AnalogJS + axe patterns)
+npm run build:viking-ui           # ng-packagr bundle → dist/viking-ui
+npm run build:viking-ui-css       # Static CSS for marketing/backend templates
+npm run build:viking-ui-showcase  # Optional component gallery app
+```
+
+Sync design tokens and `viking-ui.css` to marketing, backend, and frontend public assets:
+
+```bash
+python3 scripts/sync_design_system.py
+```
+
+The main Angular app rebuilds the library automatically via `prebuild` / `prestart` / `pretest` hooks.
+
+### Version bump
+
+The published version lives in `frontend/projects/viking-ui/package.json` (currently read by ng-packagr into `dist/viking-ui/package.json` on build). Bump **before** every npm publish — npm rejects re-publishing an existing version.
+
+Follow [Semantic Versioning](https://semver.org/):
+
+| Bump  | When                                                    |
+| ----- | ------------------------------------------------------- |
+| patch | Bug fixes, token/CSS tweaks, a11y fixes                 |
+| minor | New `viking-*` components, additive APIs                |
+| major | Breaking changes to inputs, outputs, or removed exports |
+
+```bash
+cd frontend/projects/viking-ui
+
+# Choose one:
+npm version patch --no-git-tag-version   # 1.0.0 → 1.0.1
+npm version minor --no-git-tag-version   # 1.0.0 → 1.1.0
+npm version major --no-git-tag-version   # 1.0.0 → 2.0.0
+```
+
+`--no-git-tag-version` updates only `package.json` (and `package-lock.json` if present in that folder); commit the bump with your release changes. After bumping, rebuild so `dist/viking-ui` carries the new version.
+
+### Publish to npm
+
+Published scope: `@dataengineeringformachinelearning` (npm org `dataengineeringformachinelearning`). You must be a member of that org and use a 2FA one-time password when publishing.
+
+```bash
+cd frontend
+npm run test:viking-ui
+npm run build:viking-ui
+cd dist/viking-ui
+npm publish --access public --otp=YOUR_CODE
+```
+
+Install in downstream Angular apps:
+
+```bash
+npm install @dataengineeringformachinelearning/viking-ui
+```
+
+Peer dependencies: `@angular/core`, `@angular/common`, and `@angular/forms` ^22.
+
+### Quality & accessibility
+
+The library carries a machine-readable manifest (`viking.manifest.json`) that maps each component to its Angular exports and the date of the last audit. The `npm run check:viking-upstream` script diffs manifest coverage and exits non-zero when the catalog drifts — surfacing gaps in CI the same way a failing contract test would. Accessibility is treated as a WCAG 2.1 AA / Section 508 contract: visible `:focus-visible` rings on every interactive element, full keyboard navigation for listboxes, menus and the command palette, `role`/`aria-*` semantics throughout, and `prefers-reduced-motion` handling on animated pieces such as skeletons and progress bars. The suite is verified by dedicated [Vitest](https://vitest.dev/) component tests (`npm run test:viking-ui`) that compile real templates through the [AnalogJS](https://analogjs.org/) Angular plugin, plus `ng lint` accessibility rules over the library's inline templates.
 
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 

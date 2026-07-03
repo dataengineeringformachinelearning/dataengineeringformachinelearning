@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { VikingIcon } from '@deml/viking-ui';
+import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
 
 /** Official DEML brand mark via viking-ui icons. */
 @Component({

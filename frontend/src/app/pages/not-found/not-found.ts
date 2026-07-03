@@ -1,6 +1,11 @@
 import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
-import { VikingButton, VikingCard, VikingHeading, VikingText } from '@deml/viking-ui';
+import {
+  VikingButton,
+  VikingCard,
+  VikingHeading,
+  VikingText,
+} from '@dataengineeringformachinelearning/viking-ui';
 
 @Component({
   selector: 'app-not-found',

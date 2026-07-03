@@ -1,4 +1,4 @@
-import { VikingChartSeries, VikingTone } from '@deml/viking-ui';
+import { VikingChartSeries, VikingTone } from '@dataengineeringformachinelearning/viking-ui';
 
 export interface VikingDonutSegment {
   label: string;

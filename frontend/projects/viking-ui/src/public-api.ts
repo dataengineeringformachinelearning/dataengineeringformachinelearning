@@ -1,5 +1,5 @@
 /*
- * @deml/viking-ui — public API surface.
+ * @dataengineeringformachinelearning/viking-ui — public API surface.
  * Viking-UI: DEML clinical design system for Angular (THEME.md palette only).
  */
 

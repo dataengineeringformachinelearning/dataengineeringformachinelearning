@@ -1,4 +1,4 @@
-# @deml/viking-ui
+# @dataengineeringformachinelearning/viking-ui
 
 **Viking-UI** is DEML's clinical Angular design system — lab-coat aesthetics on THEME.md tokens.
 
@@ -8,12 +8,10 @@
 - Zero-dependency components (`viking-*` selectors, `--viking-*` tokens)
 - WCAG 2.1 AA focus rings, axe-core tested templates
 
-Inspired by [Flux UI](https://fluxui.dev) composability and [Spartan](https://spartan.ng) headless patterns — implemented natively for Angular without Radix/CDK UI deps.
-
 ## Install
 
 ```bash
-npm install @deml/viking-ui
+npm install @dataengineeringformachinelearning/viking-ui
 ```
 
 Peer dependencies: `@angular/core` ^22, `@angular/common` ^22, `@angular/forms` ^22.
@@ -21,7 +19,11 @@ Peer dependencies: `@angular/core` ^22, `@angular/common` ^22, `@angular/forms` 
 ## Usage
 
 ```typescript
-import { VikingButton, VikingField, VikingInput } from '@deml/viking-ui';
+import {
+  VikingButton,
+  VikingField,
+  VikingInput,
+} from '@dataengineeringformachinelearning/viking-ui';
 ```
 
 Load static CSS for non-Angular surfaces (marketing, Django templates):
@@ -39,9 +41,29 @@ npm run build:viking-ui-css
 npm run serve:viking-ui-showcase
 ```
 
-## Publish
+## Version bump
+
+Bump `package.json` in this directory before every publish (npm will not overwrite an existing version).
 
 ```bash
-cd frontend && npm run build:viking-ui
-cd dist/viking-ui && npm publish --access public
+cd frontend/projects/viking-ui
+npm version patch --no-git-tag-version   # or minor / major
+```
+
+| Bump  | When                                     |
+| ----- | ---------------------------------------- |
+| patch | Bug fixes, token/CSS tweaks, a11y fixes  |
+| minor | New components, additive APIs            |
+| major | Breaking input/output or removed exports |
+
+## Publish
+
+Requires membership in the npm org `dataengineeringformachinelearning` (scope `@dataengineeringformachinelearning`).
+
+```bash
+cd frontend
+npm run test:viking-ui
+npm run build:viking-ui
+cd dist/viking-ui
+npm publish --access public --otp=YOUR_CODE
 ```

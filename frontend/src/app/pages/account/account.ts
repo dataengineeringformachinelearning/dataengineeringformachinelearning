@@ -11,7 +11,12 @@ import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
-import { VikingButton, VikingField, VikingInput, VikingProgress } from '@deml/viking-ui';
+import {
+  VikingButton,
+  VikingField,
+  VikingInput,
+  VikingProgress,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';

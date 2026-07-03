@@ -1,7 +1,7 @@
 # Viking-Material Showcase
 
 Standalone Angular application for browsing and validating every component in
-`@deml/viking-ui`. This gallery is **not** part of deml.app — it ships as
+`@dataengineeringformachinelearning/viking-ui`. This gallery is **not** part of deml.app — it ships as
 its own static bundle for design-system review, visual regression, and
 downstream consumers evaluating the library.
 
@@ -31,9 +31,9 @@ npm run build:viking-ui-showcase   # gallery app only
 
 ## Packaging
 
-The component system is `@deml/viking-ui` under `projects/viking-ui/`.
+The component system is `@dataengineeringformachinelearning/viking-ui` under `projects/viking-ui/`.
 The showcase app consumes it via the same TypeScript path alias as the main
-DEML frontend (`@deml/viking-ui` → source during dev, built package when
+DEML frontend (`@dataengineeringformachinelearning/viking-ui` → source during dev, built package when
 published).
 
 To publish the library:

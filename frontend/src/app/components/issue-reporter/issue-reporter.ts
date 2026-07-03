@@ -8,7 +8,7 @@ import {
   VikingModal,
   VikingText,
   VikingTextarea,
-} from '@deml/viking-ui';
+} from '@dataengineeringformachinelearning/viking-ui';
 import { API_ENDPOINTS } from '../../core/constants/api.constants';
 
 @Component({

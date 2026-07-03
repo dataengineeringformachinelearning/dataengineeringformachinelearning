@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { VikingToaster } from '@deml/viking-ui';
+import { VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
 
 @Component({
   selector: 'app-root',

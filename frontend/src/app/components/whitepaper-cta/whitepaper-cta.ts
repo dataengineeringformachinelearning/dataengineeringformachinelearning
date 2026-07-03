@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { VikingBar, VikingButton, VikingChart, VikingChartSeries } from '@deml/viking-ui';
+import { VikingBar, VikingButton, VikingChart, VikingChartSeries } from '@dataengineeringformachinelearning/viking-ui';
+import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 
 const WHITEPAPER_SPARKLINE: VikingChartSeries[] = [
   {

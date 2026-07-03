@@ -20,7 +20,7 @@ import {
   VikingInput,
   VikingSeparator,
   VikingText,
-} from '@deml/viking-ui';
+} from '@dataengineeringformachinelearning/viking-ui';
 
 import { AuthService } from '../../services/auth.service';
 import {

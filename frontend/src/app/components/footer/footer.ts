@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { VikingFooter } from '@deml/viking-ui';
+import { VikingFooter } from '@dataengineeringformachinelearning/viking-ui';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 
 const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];

@@ -13,7 +13,12 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { VikingChart, VikingBadge, VikingChartSeries, VikingGaugeArc } from '@deml/viking-ui';
+import {
+  VikingChart,
+  VikingBadge,
+  VikingChartSeries,
+  VikingGaugeArc,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { ThemeService } from '../../services/theme.service';
 import {
   UnifiedSelect,

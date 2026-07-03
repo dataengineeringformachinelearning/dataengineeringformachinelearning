@@ -17,7 +17,7 @@ import {
   VikingInput,
   VikingModal,
   VikingProgress,
-} from '@deml/viking-ui';
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { SettingsService } from '../../services/settings.service';

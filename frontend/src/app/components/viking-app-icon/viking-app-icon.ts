@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { VikingIcon } from '@deml/viking-ui';
+import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
 import { mapMaterialIcon } from '../../core/viking-icon-map';
 
 /** Bridges legacy Material icon names to viking-icon for incremental migration. */

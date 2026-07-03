@@ -20,7 +20,7 @@ import {
   VikingBadge,
   VikingChartSeries,
   VikingRingGauge,
-} from '@deml/viking-ui';
+} from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
 import { SettingsService } from '../../services/settings.service';

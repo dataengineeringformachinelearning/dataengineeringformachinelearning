@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { VikingBar, VikingButton, VikingChart, VikingChartSeries } from '@deml/viking-ui';
+import { VikingBar, VikingButton, VikingChart, VikingChartSeries } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
 

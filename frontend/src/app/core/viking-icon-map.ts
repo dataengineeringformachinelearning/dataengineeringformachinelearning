@@ -1,6 +1,6 @@
-import { VikingIconName } from '@deml/viking-ui';
+import { VikingIconName } from '@dataengineeringformachinelearning/viking-ui';
 
-/** Maps legacy Material icon ligatures to @deml/viking-ui icon names. */
+/** Maps legacy Material icon ligatures to @dataengineeringformachinelearning/viking-ui icon names. */
 const MATERIAL_ICON_MAP: Record<string, VikingIconName> = {
   add: 'plus',
   add_box: 'plus',
