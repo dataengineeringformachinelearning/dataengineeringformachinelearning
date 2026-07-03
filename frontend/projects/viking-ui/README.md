@@ -1,12 +1,12 @@
 # @dataengineeringformachinelearning/viking-ui
 
-**Viking-UI** is DEML's premium Angular design system — dark-first engineering aesthetics with luxurious minimalism. Visual tokens and Porsche/Wallace standards are defined in the canonical **[THEME.md](../../../THEME.md)** at the repository root.
+**Viking-UI** is DEML's premium Angular design system — dark-first engineering aesthetics with luxurious minimalism. Visual tokens are defined in the canonical **[THEME.md](../../../THEME.md)** at the repository root.
 
 ## Design philosophy
 
 From [THEME.md](../../../THEME.md):
 
-- **Porsche-like precision** and **Wallace Corp high-end industrial tech**
+- **Precision engineering** and **high-end industrial tech**
 - **Dark-first** — deep charcoals, machined metallic edges, no decorative noise
 - **Deep teal** (`#0D7377`) primary CTA, **rich crimson** (`#922B3E`) secondary accent
 - **Charcoal surfaces** (`#111`, `#1A1A1A`, `#2A2A2A`) with metallic borders
