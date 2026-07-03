@@ -1,11 +1,11 @@
 import { DOCUMENT, Directive, ElementRef, OnDestroy, inject, input } from '@angular/core';
 
 /**
- * fluxTooltip — attribute directive tooltip.
+ * vikingTooltip — attribute directive tooltip.
  * Shows on hover and keyboard focus; positions itself relative to the host.
  */
 @Directive({
-  selector: '[fluxTooltip]',
+  selector: '[vikingTooltip]',
   host: {
     '(mouseenter)': 'show()',
     '(mouseleave)': 'hide()',
@@ -18,19 +18,19 @@ export class VikingTooltip implements OnDestroy {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly document = inject(DOCUMENT);
 
-  readonly fluxTooltip = input.required<string>();
+  readonly vikingTooltip = input.required<string>();
   readonly tooltipPosition = input<'top' | 'bottom'>('top');
   readonly tooltipKbd = input<string>('');
 
   private element: HTMLElement | null = null;
 
   protected show = (): void => {
-    if (this.element || !this.fluxTooltip()) {
+    if (this.element || !this.vikingTooltip()) {
       return;
     }
     const tip = this.document.createElement('div');
     tip.setAttribute('role', 'tooltip');
-    tip.textContent = this.fluxTooltip();
+    tip.textContent = this.vikingTooltip();
     if (this.tooltipKbd()) {
       const kbd = this.document.createElement('kbd');
       kbd.textContent = this.tooltipKbd();

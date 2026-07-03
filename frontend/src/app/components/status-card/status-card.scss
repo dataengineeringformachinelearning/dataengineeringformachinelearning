@@ -34,6 +34,9 @@
 .view-btn-container {
   display: flex;
   width: 100%;
+  margin-top: var(--space-2, 16px);
+}
+
 }
 
 /* Extracted Inline Styles */

@@ -1,21 +1,21 @@
-(() => {
-  const PREFS_KEY = "deml_cookie_preferences";
+(function () {
+  const PREFS_KEY = 'deml_cookie_preferences';
 
-  const getPreferences = () => {
+  function getPreferences() {
     try {
       const stored = localStorage.getItem(PREFS_KEY);
       if (stored) {
         return JSON.parse(stored);
       }
     } catch (e) {
-      console.error("Failed to read cookie preferences", e);
+      console.error('Failed to read cookie preferences', e);
     }
     return null;
-  };
+  }
 
-  const setPreferences = (prefs) => {
+  function setPreferences(prefs) {
     localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
-  };
+  }
 
   const css = `
     .deml-cookie-overlay {
@@ -207,18 +207,6 @@
       transition: transform 0.3s ease;
     }
 
-    .deml-toggle-switch:focus-visible {
-      outline: 2px solid var(--color-primary, #2563eb);
-      outline-offset: 2px;
-    }
-
-    .deml-primary-actions button:focus-visible,
-    .deml-settings-btn:focus-visible,
-    .deml-cookie-close-btn:focus-visible {
-      outline: 2px solid var(--color-primary, #2563eb);
-      outline-offset: 2px;
-    }
-
     .deml-cookie-footer {
       margin-top: 8px;
     }
@@ -352,18 +340,18 @@
 
   let overlayEl = null;
 
-  const renderDialog = () => {
+  function renderDialog() {
     if (overlayEl) {
       overlayEl.remove();
     }
 
-    overlayEl = document.createElement("div");
-    overlayEl.className = "deml-cookie-overlay";
+    overlayEl = document.createElement('div');
+    overlayEl.className = 'deml-cookie-overlay';
 
     // Inject styles if not present
-    if (!document.getElementById("deml-cookie-styles")) {
-      const styleEl = document.createElement("style");
-      styleEl.id = "deml-cookie-styles";
+    if (!document.getElementById('deml-cookie-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'deml-cookie-styles';
       styleEl.innerHTML = css;
       document.head.appendChild(styleEl);
     }
@@ -382,7 +370,7 @@
             <span class="material-icons">close</span>
           </button>
           `
-              : ""
+              : ''
           }
         </div>
         <div class="deml-cookie-body">
@@ -407,7 +395,7 @@
                 <p class="deml-pref-desc">Enable analysis of platform usage, response speeds, and optimize core API performance.</p>
               </div>
               <div class="deml-pref-action">
-                <button type="button" class="deml-toggle-switch ${analyticalConsent ? "active" : ""}" id="deml-toggle-analytical" role="switch" aria-checked="${analyticalConsent}">
+                <button type="button" class="deml-toggle-switch ${analyticalConsent ? 'active' : ''}" id="deml-toggle-analytical" role="switch" aria-checked="${analyticalConsent}">
                   <span class="deml-toggle-slider"></span>
                 </button>
               </div>
@@ -418,7 +406,7 @@
                 <p class="deml-pref-desc">Enable personalized telemetry dashboards, feature flag rollouts, and custom platform layout settings.</p>
               </div>
               <div class="deml-pref-action">
-                <button type="button" class="deml-toggle-switch ${marketingConsent ? "active" : ""}" id="deml-toggle-marketing" role="switch" aria-checked="${marketingConsent}">
+                <button type="button" class="deml-toggle-switch ${marketingConsent ? 'active' : ''}" id="deml-toggle-marketing" role="switch" aria-checked="${marketingConsent}">
                   <span class="deml-toggle-slider"></span>
                 </button>
               </div>
@@ -444,76 +432,73 @@
     document.body.appendChild(overlayEl);
 
     // Bind events
-    const closeBtn = overlayEl.querySelector("#deml-close-btn");
+    const closeBtn = overlayEl.querySelector('#deml-close-btn');
     if (closeBtn) {
-      closeBtn.addEventListener("click", closeBanner);
+      closeBtn.addEventListener('click', closeBanner);
     }
 
-    const customizeBtn = overlayEl.querySelector("#deml-customize-btn");
-    const formEl = overlayEl.querySelector("#deml-cookie-form");
-    const rejectBtn = overlayEl.querySelector("#deml-reject-btn");
-    const saveBtn = overlayEl.querySelector("#deml-save-btn");
-    const acceptBtn = overlayEl.querySelector("#deml-accept-btn");
+    const customizeBtn = overlayEl.querySelector('#deml-customize-btn');
+    const formEl = overlayEl.querySelector('#deml-cookie-form');
+    const rejectBtn = overlayEl.querySelector('#deml-reject-btn');
+    const saveBtn = overlayEl.querySelector('#deml-save-btn');
+    const acceptBtn = overlayEl.querySelector('#deml-accept-btn');
 
-    customizeBtn.addEventListener("click", () => {
+    customizeBtn.addEventListener('click', () => {
       showCustomize = !showCustomize;
       if (showCustomize) {
-        formEl.classList.add("open");
-        customizeBtn.textContent = "Hide Options";
-        rejectBtn.classList.add("hide");
-        saveBtn.classList.add("show");
+        formEl.classList.add('open');
+        customizeBtn.textContent = 'Hide Options';
+        rejectBtn.classList.add('hide');
+        saveBtn.classList.add('show');
       } else {
-        formEl.classList.remove("open");
-        customizeBtn.textContent = "Cookie Settings";
-        rejectBtn.classList.remove("hide");
-        saveBtn.classList.remove("show");
+        formEl.classList.remove('open');
+        customizeBtn.textContent = 'Cookie Settings';
+        rejectBtn.classList.remove('hide');
+        saveBtn.classList.remove('show');
       }
     });
 
-    const toggleAnalytical = overlayEl.querySelector("#deml-toggle-analytical");
-    toggleAnalytical.addEventListener("click", () => {
+    const toggleAnalytical = overlayEl.querySelector('#deml-toggle-analytical');
+    toggleAnalytical.addEventListener('click', () => {
       analyticalConsent = !analyticalConsent;
-      toggleAnalytical.classList.toggle("active", analyticalConsent);
-      toggleAnalytical.setAttribute("aria-checked", analyticalConsent);
+      toggleAnalytical.classList.toggle('active', analyticalConsent);
+      toggleAnalytical.setAttribute('aria-checked', analyticalConsent);
     });
 
-    const toggleMarketing = overlayEl.querySelector("#deml-toggle-marketing");
-    toggleMarketing.addEventListener("click", () => {
+    const toggleMarketing = overlayEl.querySelector('#deml-toggle-marketing');
+    toggleMarketing.addEventListener('click', () => {
       marketingConsent = !marketingConsent;
-      toggleMarketing.classList.toggle("active", marketingConsent);
-      toggleMarketing.setAttribute("aria-checked", marketingConsent);
+      toggleMarketing.classList.toggle('active', marketingConsent);
+      toggleMarketing.setAttribute('aria-checked', marketingConsent);
     });
 
-    rejectBtn.addEventListener("click", () => {
+    rejectBtn.addEventListener('click', () => {
       setPreferences({ analytical: false, marketing: false });
       closeBanner();
     });
 
-    saveBtn.addEventListener("click", () => {
-      setPreferences({
-        analytical: analyticalConsent,
-        marketing: marketingConsent,
-      });
+    saveBtn.addEventListener('click', () => {
+      setPreferences({ analytical: analyticalConsent, marketing: marketingConsent });
       closeBanner();
     });
 
-    acceptBtn.addEventListener("click", () => {
+    acceptBtn.addEventListener('click', () => {
       setPreferences({ analytical: true, marketing: true });
       closeBanner();
     });
-  };
+  }
 
-  const closeBanner = () => {
+  function closeBanner() {
     if (overlayEl) {
       overlayEl.remove();
       overlayEl = null;
     }
     // Update currentPrefs to reflect the recent save, so we can render the close button
     currentPrefs = getPreferences();
-  };
+  }
 
   window.DemlWidgets = window.DemlWidgets || {};
-  window.DemlWidgets.openCookieSettings = () => {
+  window.DemlWidgets.openCookieSettings = function () {
     currentPrefs = getPreferences();
     if (currentPrefs) {
       analyticalConsent = currentPrefs.analytical;
@@ -525,8 +510,8 @@
     showCustomize = true;
     renderDialog();
     // Force open customize view
-    const customizeBtn = overlayEl.querySelector("#deml-customize-btn");
-    if (customizeBtn && customizeBtn.textContent.trim() === "Cookie Settings") {
+    const customizeBtn = overlayEl.querySelector('#deml-customize-btn');
+    if (customizeBtn && customizeBtn.textContent.trim() === 'Cookie Settings') {
       customizeBtn.click();
     }
   };

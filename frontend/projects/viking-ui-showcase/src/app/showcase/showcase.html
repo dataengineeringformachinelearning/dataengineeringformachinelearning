@@ -38,8 +38,8 @@
       </div>
     </section>
 
-    <section class="demo demo-wide" id="demo-spartan">
-      <viking-heading size="lg" [level]="2">Spartan Shell Components</viking-heading>
+    <section class="demo demo-wide" id="demo-shell">
+      <viking-heading size="lg" [level]="2">Application Shell</viking-heading>
       <viking-text variant="muted">
         Tabs, table, sheet, scroll area, toggles, menubar, native select, and navigation menu.
       </viking-text>
@@ -322,7 +322,7 @@
         <viking-button
           variant="subtle"
           icon="shield"
-          fluxTooltip="Semgrep and Trivy scans passed on the last push"
+          vikingTooltip="Semgrep and Trivy scans passed on the last push"
           >Security</viking-button
         >
       </div>
@@ -639,6 +639,26 @@
       @if (lastMessage()) {
       <viking-text variant="muted">Last message: {{ lastMessage() }}</viking-text>
       }
+    </section>
+
+    <section class="demo demo-wide" id="demo-site-navbar">
+      <viking-heading size="lg" [level]="2">Site Navbar</viking-heading>
+      <viking-text variant="muted">
+        Canonical marketing/app navigation chrome shared across DEML surfaces.
+      </viking-text>
+      <div class="site-chrome-preview">
+        <viking-site-navbar context="marketing" />
+      </div>
+    </section>
+
+    <section class="demo demo-wide" id="demo-site-footer">
+      <viking-heading size="lg" [level]="2">Site Footer</viking-heading>
+      <viking-text variant="muted">
+        Directory columns, compliance row, and USA badge lockup.
+      </viking-text>
+      <div class="site-chrome-preview">
+        <viking-site-footer context="marketing" />
+      </div>
     </section>
   </div>
 </div>

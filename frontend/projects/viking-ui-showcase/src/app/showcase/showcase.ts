@@ -59,6 +59,8 @@ import {
   VikingSelectOption,
   VikingSeparator,
   VikingSheet,
+  VikingSiteFooter,
+  VikingSiteNavbar,
   VikingSkeleton,
   VikingSlider,
   VikingSpinner,
@@ -79,8 +81,7 @@ import {
 } from '@dataengineeringformachinelearning/viking-ui';
 
 /**
- * Living gallery for the @dataengineeringformachinelearning/viking-ui UI kit: every free Viking UI
- * component, themed with DEML Material tokens.
+ * Living gallery for the @dataengineeringformachinelearning/viking-ui UI kit, themed with DEML tokens.
  */
 @Component({
   selector: 'app-showcase',
@@ -138,6 +139,8 @@ import {
     VikingSelect,
     VikingSeparator,
     VikingSheet,
+    VikingSiteFooter,
+    VikingSiteNavbar,
     VikingSkeleton,
     VikingSlider,
     VikingSpinner,

@@ -1,0 +1,27 @@
+---
+import { VIKING_ICON_PATHS, type VikingIconName } from '../../../frontend/projects/viking-ui/src/lib/core/icons.ts';
+
+export interface Props {
+  name: VikingIconName;
+  size?: number;
+  class?: string;
+}
+
+const { name, size = 16, class: className = '' } = Astro.props;
+const paths = VIKING_ICON_PATHS[name] ?? VIKING_ICON_PATHS.info ?? '';
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.8"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  width={size}
+  height={size}
+  class={className}
+  aria-hidden="true"
+  set:html={paths}
+/>

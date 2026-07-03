@@ -12,18 +12,12 @@ import { Footer } from './components/footer/footer';
 import { AuthService } from './services/auth.service';
 import { isPlatformBrowser } from '@angular/common';
 import { IssueReporter } from './components/issue-reporter/issue-reporter';
-import { CookieBanner } from './components/cookie-banner/cookie-banner';
 import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
-import { SettingsService } from './services/settings.service';
-import { OramaSearchService, SearchItem } from './services/orama-search.service';
-import { MonitorService } from './services/monitor.service';
-import { effect, HostListener } from '@angular/core';
 
-import { VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
+import { VikingToaster } from '@deml/viking-ui';
 import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
-import { SearchDialog } from './components/search-dialog/search-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
 
 @Component({
@@ -34,11 +28,9 @@ import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wiza
     Sidebar,
     Footer,
     IssueReporter,
-    CookieBanner,
     DemlBrandLogo,
     VikingToaster,
     ConfirmDialog,
-    SearchDialog,
     OnboardingWizard,
   ],
   templateUrl: './app.html',
@@ -50,56 +42,9 @@ export class App implements OnInit {
   public authService = inject(AuthService);
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
-  public settingsService = inject(SettingsService);
-  private searchService = inject(OramaSearchService);
-  private monitorService = inject(MonitorService);
 
   isStandaloneStatusPage = signal(false);
   isDashboardPage = signal(false);
-
-  constructor() {
-    effect(() => {
-      const pages = this.settingsService.statusPages();
-      this.indexSearchItems(pages);
-    });
-  }
-
-  private async indexSearchItems(pages: any[]) {
-    const items: SearchItem[] = [];
-
-    if (Array.isArray(pages)) {
-      pages.forEach(page => {
-        items.push({
-          id: page.id,
-          title: page.title,
-          content: page.description || '',
-          type: 'status-page',
-          url: page.id,
-        });
-      });
-    }
-
-    await this.searchService.clearAndIndex(items);
-  }
-
-  @HostListener('window:keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-    const isModifier = event.metaKey || event.ctrlKey;
-    const isK = event.key.toLowerCase() === 'k';
-    const isSlash = event.key === '/';
-
-    const activeEl = document.activeElement;
-    const isTyping =
-      activeEl &&
-      (activeEl.tagName === 'INPUT' ||
-        activeEl.tagName === 'TEXTAREA' ||
-        activeEl.hasAttribute('contenteditable'));
-
-    if ((isModifier && isK) || (isSlash && !isTyping)) {
-      event.preventDefault();
-      this.searchService.openSearchDialog();
-    }
-  }
 
   ngOnInit() {
     this.router.events
@@ -130,7 +75,7 @@ export class App implements OnInit {
 
             const dashboardContent = document.querySelector('.dashboard-content');
             if (dashboardContent) dashboardContent.scrollTop = 0;
-          }, 50); // Small delay to allow DOM to render
+          }, 50);
         }
       });
 
@@ -138,17 +83,6 @@ export class App implements OnInit {
       this.authService.checkAuth();
       this.checkResetToken();
       this.registerServiceWorker();
-
-      this.monitorService.getStatusPages().subscribe({
-        next: data => {
-          if (Array.isArray(data)) {
-            this.settingsService.statusPages.set(data);
-          } else {
-            this.settingsService.statusPages.set([]);
-          }
-        },
-        error: err => console.error('Error fetching pages for global search:', err),
-      });
     }
   }
 
@@ -169,14 +103,12 @@ export class App implements OnInit {
       const resetUid = urlParams.get('reset_uid');
       const resetToken = urlParams.get('reset_token');
       if (resetUid && resetToken) {
-        // Clear params from URL
         const url = new URL(window.location.href);
         url.searchParams.delete('reset_uid');
         url.searchParams.delete('reset_token');
         window.history.replaceState({}, document.title, url.pathname);
 
-        // Navigate to /login page with parameters
-        this.router.navigate(['/login'], {
+        void this.router.navigate(['/login'], {
           queryParams: {
             mode: 'reset',
             uid: resetUid,

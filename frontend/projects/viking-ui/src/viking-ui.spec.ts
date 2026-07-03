@@ -62,7 +62,7 @@ describe('viking-ui', () => {
 
   it('renders an anchor with rel guard when href and target are set', async (): Promise<void> => {
     const fixture = TestBed.createComponent(VikingButton);
-    fixture.componentRef.setInput('href', 'https://example.com');
+    fixture.componentRef.setInput('href', 'https://deml.app');
     fixture.componentRef.setInput('target', '_blank');
     fixture.detectChanges();
     const anchor = fixture.nativeElement.querySelector('a') as HTMLAnchorElement;

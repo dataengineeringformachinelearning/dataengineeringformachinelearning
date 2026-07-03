@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
- * viking-kbd — keyboard hint chip (Spartan-inspired, zero-dependency).
+ * viking-kbd — keyboard hint chip.
  */
 @Component({
   selector: 'viking-kbd',

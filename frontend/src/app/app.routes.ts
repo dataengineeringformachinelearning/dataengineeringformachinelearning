@@ -20,7 +20,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.Dashboard),
   },
-  { path: 'home', loadComponent: () => import('./pages/landing/landing').then(m => m.Landing) },
+  { path: 'home', redirectTo: 'login', pathMatch: 'full' },
   { path: 'explore', loadComponent: () => import('./pages/explore/explore').then(m => m.Explore) },
   {
     path: 'vulnerabilities',

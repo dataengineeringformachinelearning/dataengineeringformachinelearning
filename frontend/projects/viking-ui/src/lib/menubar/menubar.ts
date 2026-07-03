@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 
 /**
- * viking-menubar — horizontal application menu bar (Spartan-inspired).
+ * viking-menubar — horizontal application menu bar.
  */
 @Component({
   selector: 'viking-menubar',

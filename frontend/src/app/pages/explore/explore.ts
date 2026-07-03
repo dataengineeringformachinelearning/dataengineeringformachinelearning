@@ -26,7 +26,6 @@ import { StatusCard } from '../../components/status-card/status-card';
   imports: [CommonModule, VikingButton, VikingAppIcon, RouterModule, StatusCta, StatusCard],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './explore.scss',
 })
 export class Explore implements OnInit {
   private monitorService = inject(MonitorService);

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 /**
- * viking-spinner — clinical loading indicator (Spartan-inspired SVG).
+ * viking-spinner — clinical loading indicator.
  */
 @Component({
   selector: 'viking-spinner',

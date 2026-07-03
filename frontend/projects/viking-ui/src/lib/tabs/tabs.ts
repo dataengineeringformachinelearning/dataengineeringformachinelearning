@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, InjectionToken, model } from '@angu
 export const VIKING_TABS = new InjectionToken<VikingTabs>('VIKING_TABS');
 
 /**
- * viking-tabs — tablist container (Spartan-inspired, clinical chrome).
+ * viking-tabs — tablist container.
  */
 @Component({
   selector: 'viking-tabs',

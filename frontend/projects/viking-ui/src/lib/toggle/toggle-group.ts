@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, InjectionToken, model } from '@angu
 export const VIKING_TOGGLE_GROUP = new InjectionToken<VikingToggleGroup>('VIKING_TOGGLE_GROUP');
 
 /**
- * viking-toggle-group — exclusive or multi toggle cluster (Spartan-inspired).
+ * viking-toggle-group — exclusive or multi toggle cluster.
  */
 @Component({
   selector: 'viking-toggle-group',

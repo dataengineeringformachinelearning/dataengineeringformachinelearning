@@ -141,84 +141,6 @@ html[data-theme='light'] .viking-app-sidebar-host {
   }
 }
 
-.sidebar-search {
-  padding: 16px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-bottom: 1px solid var(--sidebar-border);
-
-  .search-wrapper {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(0, 0, 0, 0.15);
-    border: 1px solid var(--sidebar-border);
-    padding: 8px 8px;
-    border-radius: 16px;
-    transition: var(--transition-smooth);
-
-    &:focus-within {
-      border-color: var(--sidebar-accent);
-      box-shadow: 0 0 10px color-mix(in srgb, var(--sidebar-accent) 15%, transparent);
-    }
-
-    .search-shortcut {
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--sidebar-border);
-      border-radius: 0px;
-      padding: 0px 8px;
-      line-height: 1;
-      pointer-events: none;
-      white-space: nowrap;
-
-      :host-context(html[data-theme='light']) & {
-        background: rgba(0, 0, 0, 0.05);
-      }
-    }
-  }
-
-  :host-context(html[data-theme='light']) & .search-wrapper {
-    background: rgba(255, 255, 255, 0.7);
-  }
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-    color: var(--text-muted);
-  }
-
-  .sidebar-search-placeholder {
-    color: var(--text-muted);
-    font-size: 1rem;
-    flex: 1;
-  }
-
-  .sidebar-search-input {
-    background: transparent;
-    border: none;
-    color: var(--text-color);
-    font-size: 1rem;
-    width: 100%;
-    outline: none;
-
-    &:focus-visible {
-      outline: none !important;
-    }
-
-    &::placeholder {
-      color: var(--text-muted);
-    }
-  }
-}
-
 .sidebar-scroll-container {
   flex: 1;
   overflow-y: auto;
@@ -464,7 +386,6 @@ html[data-theme='light'] .viking-app-sidebar-host {
 
   .brand-title,
   .brand-icon,
-  .sidebar-search,
   .nav-text,
   .nav-tree-section,
   .health-text {

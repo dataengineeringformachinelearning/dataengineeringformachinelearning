@@ -1,27 +1,28 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { VikingFooter } from '@dataengineeringformachinelearning/viking-ui';
-import { CookieConsentService } from '../../services/cookie-consent.service';
+import { VikingSiteFooter } from '@deml/viking-ui';
+import { environment } from '../../../environments/environment';
 
-const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
+const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'] as const;
 
 @Component({
   selector: 'app-footer',
-  imports: [RouterLink, VikingFooter],
-  templateUrl: './footer.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  imports: [VikingSiteFooter],
+  template: `
+    <viking-site-footer
+      context="app"
+      [urls]="siteUrls"
+      (bugReport)="openBugReporter($event)"
+      (usaBadgeHover)="fireConfetti($event)"
+    />
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Footer {
-  private consentService = inject(CookieConsentService);
-
-  getCurrentYear(): number {
-    return new Date().getFullYear();
-  }
-
-  openCookieSettings(event: Event): void {
-    event.preventDefault();
-    this.consentService.openSettings();
-  }
+  protected readonly siteUrls = {
+    app: environment.frontendUrl ?? '',
+    marketing: environment.marketingUrl ?? 'https://dataengineeringformachinelearning.com',
+    backend: environment.backendUrl ?? '',
+  };
 
   openBugReporter(event: Event): void {
     event.preventDefault();
@@ -34,12 +35,11 @@ export class Footer {
     const y = (rect.top + rect.height / 2) / window.innerHeight;
 
     const confettiModule = await import('canvas-confetti');
-    const confetti = confettiModule.default;
-    confetti({
+    confettiModule.default({
       particleCount: 50,
       spread: 60,
       origin: { x, y },
-      colors: USA_CONFETTI_COLORS,
+      colors: [...USA_CONFETTI_COLORS],
       disableForReducedMotion: true,
       zIndex: 9999,
     });

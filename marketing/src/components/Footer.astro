@@ -1,50 +1,43 @@
 ---
 const currentYear = new Date().getFullYear();
 import { siteEnv } from '../lib/site-env';
-const { FRONTEND_URL } = siteEnv();
+import {
+  SITE_FOOTER_COLUMNS,
+  resolveFooterHref,
+} from '../../../frontend/projects/viking-ui/src/lib/site-chrome/site-chrome.config';
+
+const { FRONTEND_URL, MARKETING_URL } = siteEnv();
+const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: '' };
 ---
 
 <footer class="mega-footer">
   <div class="footer-content">
     <nav class="footer-directory" aria-label="Footer Directory">
-      <div class="footer-column">
-        <h3 class="footer-column-title">Platform</h3>
-        <ul class="footer-list">
-          <li><a href={FRONTEND_URL + '/explore'}>Explore</a></li>
-          <li><a href={FRONTEND_URL + '/dashboard'}>Dashboard</a></li>
-          <li><a href={FRONTEND_URL + '/settings'}>Setup</a></li>
-          <li><a href={FRONTEND_URL + '/account'}>Account</a></li>
-          <li><a href={FRONTEND_URL + '/status/platform-status'}>Platform Status</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-column">
-        <h3 class="footer-column-title">Resources</h3>
-        <ul class="footer-list">
-          <li><a href="/documentation">Documentation</a></li>
-          <li><a href="/whitepaper">Whitepaper</a></li>
-          <li><a href="/book">Book</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-column">
-        <h3 class="footer-column-title">Support</h3>
-        <ul class="footer-list">
-          <li><a href={FRONTEND_URL + '/status/platform-status'}>Platform Status</a></li>
-          <li><a href="mailto:support@dataengineeringformachinelearning.com">Report a Bug</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-column">
-        <h3 class="footer-column-title">Legal & Compliance</h3>
-        <ul class="footer-list">
-          <li><a href="/privacy">Privacy Policy</a></li>
-          <li><a href="/terms">Terms of Service</a></li>
-          <li><a href="/compliance">SOC2 Compliance</a></li>
-          <li><a href="/privacy#gdpr">GDPR Compliance</a></li>
-          <li><a href="#" onclick="event.preventDefault(); if(window.DemlWidgets) window.DemlWidgets.openCookieSettings();">Cookie Settings</a></li>
-        </ul>
-      </div>
+      {SITE_FOOTER_COLUMNS.map(column => (
+        <div class="footer-column">
+          <h3 class="footer-column-title">{column.title}</h3>
+          <ul class="footer-list">
+            {column.links.map(link => (
+              <li>
+                {link.action === 'cookie-settings' ? (
+                  <a
+                    href="#"
+                    onclick="event.preventDefault(); if(window.DemlWidgets) window.DemlWidgets.openCookieSettings();"
+                  >
+                    {link.label}
+                  </a>
+                ) : link.action === 'bug-report' ? (
+                  <a href={resolveFooterHref(link, 'marketing', urls)}>{link.label}</a>
+                ) : (
+                  <a href={resolveFooterHref(link, 'marketing', urls)}>
+                    {link.label}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </nav>
 
     <section class="footer-bottom">
@@ -56,10 +49,11 @@ const { FRONTEND_URL } = siteEnv();
       </div>
 
       <div class="footer-compliance-row">
-        <div class="copyright-info u-style-e3ae3d" >
+        <div class="copyright-info">
           <span class="copyright-text">
-            <!-- Cursor - Grok 4.3 (2026-06-30): End-of-day hardening — removed Railway from copyright; fixed stray "|" separator; unified 1260px container per THEME.md -->
-            Copyright © {currentYear} Data Engineering for Machine Learning by <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>. All rights reserved.
+            Copyright © {currentYear} Data Engineering for Machine Learning by{' '}
+            <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>.
+            All rights reserved.
           </span>
         </div>
       </div>
@@ -67,14 +61,12 @@ const { FRONTEND_URL } = siteEnv();
   </div>
 </footer>
 
-<!-- Footer chrome from /assets/viking-ui.css (@dataengineeringformachinelearning/viking-ui) -->
-
 <script>
   import confetti from 'canvas-confetti';
 
   const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
 
-  function fireUsaConfetti(target: HTMLElement) {
+  const fireUsaConfetti = (target: HTMLElement) => {
     const rect = target.getBoundingClientRect();
     confetti({
       particleCount: 50,
@@ -87,20 +79,15 @@ const { FRONTEND_URL } = siteEnv();
         y: (rect.top + rect.height / 2) / window.innerHeight,
       },
     });
-  }
+  };
 
-  function bindUsaBadgeConfetti() {
+  const bindUsaBadgeConfetti = () => {
     const usaBadge = document.getElementById('usa-badge');
     if (!usaBadge || usaBadge.dataset.confettiBound === 'true') return;
     usaBadge.dataset.confettiBound = 'true';
     usaBadge.addEventListener('mouseenter', () => fireUsaConfetti(usaBadge));
-    usaBadge.addEventListener('click', () => fireUsaConfetti(usaBadge));
-  }
+  };
 
-  // Astro hoists this module to the end of <body>; DOMContentLoaded has often already fired.
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindUsaBadgeConfetti);
-  } else {
-    bindUsaBadgeConfetti();
-  }
+  bindUsaBadgeConfetti();
+  document.addEventListener('astro:page-load', bindUsaBadgeConfetti);
 </script>
