@@ -514,7 +514,7 @@ import Layout from '../layouts/Layout.astro';
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(33, 118, 255, 0.15);
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--viking-teal-600) 15%, transparent);
     }
 
     &.primary { border-color: var(--color-primary); color: var(--color-on-primary); background: var(--color-primary); }
@@ -549,8 +549,8 @@ import Layout from '../layouts/Layout.astro';
 .arxiv-endorsement-banner {
   margin-top: 1.5rem;
   padding: 1rem 1.5rem;
-  background: rgba(59, 130, 246, 0.1);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: color-mix(in srgb, var(--viking-teal-400) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--viking-teal-400) 30%, transparent);
   border-radius: 8px;
   font-size: 1rem;
   line-height: 1.5;

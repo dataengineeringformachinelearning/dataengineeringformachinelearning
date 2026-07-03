@@ -161,6 +161,8 @@ const LEGACY_HEX_TO_VAR = new Map([
   ["#2a2a2a", "var(--viking-charcoal-700)"],
   ["#2A2A2A", "var(--viking-charcoal-700)"],
   ["#666666", "var(--viking-metallic-500)"],
+  ["#1e1e1e", "var(--viking-charcoal-800)"],
+  ["#1E1E1E", "var(--viking-charcoal-800)"],
 ]);
 
 /** Legacy CSS custom properties → Viking tokens. */
@@ -409,6 +411,15 @@ const isPrintContext = (content, index) => {
 const isBrandMulticolorSvg = (filePath) =>
   /[/\\]icon\.ts$/.test(filePath) ||
   /google|oauth|brand|orcid|whitepaper/i.test(filePath);
+
+/** Google / ORCID brand colors allowed in multicolor marks. */
+const BRAND_PALETTE_HEX = new Set([
+  "#ea4335",
+  "#4285f4",
+  "#fbbc05",
+  "#34a853",
+  "#a6ce39",
+]);
 
 /**
  * @param {string} content
@@ -716,17 +727,20 @@ const fixIndexHtmlBlocks = (content, filePath) => {
  * @param {string} filePath
  */
 const scanHardcodedHex = (content, filePath) => {
-  if (isTokenDefinitionFile(filePath)) {
+  if (isTokenDefinitionFile(filePath) || isBrandMulticolorSvg(filePath)) {
     return;
   }
   const hexPattern = /#([0-9a-fA-F]{3,8})\b/g;
   let match;
   while ((match = hexPattern.exec(content)) !== null) {
     const hex = `#${match[1]}`.toLowerCase();
-    if (PALETTE_HEX.has(hex)) {
+    if (PALETTE_HEX.has(hex) || BRAND_PALETTE_HEX.has(hex)) {
       continue;
     }
     if (isPrintContext(content, match.index)) {
+      continue;
+    }
+    if (content.charAt(match.index - 1) === "&") {
       continue;
     }
     if (LEGACY_HEX_TO_VAR.has(hex) || LEGACY_HEX_TO_VAR.has(`#${match[1]}`)) {
@@ -736,6 +750,35 @@ const scanHardcodedHex = (content, filePath) => {
       "hardcoded-hex",
       filePath,
       `Off-palette hex ${hex} — use --viking-* CSS variables per THEME.md`,
+      lineNumberAt(content, match.index),
+    );
+  }
+};
+
+/**
+ * @param {string} content
+ * @param {string} filePath
+ */
+const scanLegacyRgba = (content, filePath) => {
+  if (isTokenDefinitionFile(filePath)) {
+    return;
+  }
+  const legacyBlue = /rgba\(\s*33\s*,\s*118\s*,\s*255\s*,/gi;
+  const tailwindBlue = /rgba\(\s*59\s*,\s*130\s*,\s*246\s*,/gi;
+  let match;
+  while ((match = legacyBlue.exec(content)) !== null) {
+    addFinding(
+      "legacy-rgba",
+      filePath,
+      "Legacy Lab Coat blue rgba(33, 118, 255, …) — use color-mix(in srgb, var(--viking-teal-600) …, transparent)",
+      lineNumberAt(content, match.index),
+    );
+  }
+  while ((match = tailwindBlue.exec(content)) !== null) {
+    addFinding(
+      "legacy-rgba",
+      filePath,
+      "Off-palette Tailwind blue rgba(59, 130, 246, …) — use color-mix(in srgb, var(--viking-teal-400) …, transparent)",
       lineNumberAt(content, match.index),
     );
   }
@@ -881,6 +924,7 @@ const applyFixes = (content, filePath) => {
  */
 const scanFile = (content, filePath) => {
   scanHardcodedHex(content, filePath);
+  scanLegacyRgba(content, filePath);
   scanMaterialTokens(content, filePath);
   scanLegacyPaletteNames(content, filePath);
   scanInlineStyles(content, filePath);
