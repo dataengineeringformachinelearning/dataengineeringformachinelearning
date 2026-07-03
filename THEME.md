@@ -9,7 +9,7 @@
 | [backend.deml.app](https://backend.deml.app)                                           | Django API + templates         | `backend/static/viking-ui.css`            |
 | Swagger / OpenAPI UI                                                                   | Django Ninja docs              | Same tokens via static CSS                |
 | Marketing site                                                                         | `marketing/`                   | `marketing/public/assets/viking-ui.css`   |
-| Docs & Book                                                                            | Synced content + Drakkar shell | THEME.md tokens in prose and components   |
+| Docs, Book & Whitepaper                                                                | Synced content + Drakkar shell | THEME.md tokens in prose and components   |
 | Viking-UI Showcase                                                                     | Component gallery              | `viking-ui-showcase`                      |
 
 **Canonical implementation:** `frontend/projects/viking-ui/src/styles/_variables.scss`
@@ -540,11 +540,26 @@ series = [
 
 ---
 
-## 12. Maintenance
+## 12. Documentation surfaces
+
+Marketing documentation pages (`/book`, `/whitepaper`, `/documentation`) share Viking-UI tokens via `viking-ui.css` and follow these layout rules:
+
+| Page | Source | Layout |
+| ---- | ------ | ------ |
+| **The Book** | `BOOK.md` → `sync_content.py` → `page.md` | Sidebar chapter nav, glass hero, 900px reading column |
+| **The Whitepaper** | `WHITEPAPER.md` → `whitepaper.md` | Sticky section nav, two-column card grid, integration pill strip |
+| **Documentation** | Static Astro + `docs/integrations/*.md` links | Sticky outline nav, bento API cards, six integration examples |
+
+All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900` code blocks, and `--container-max-width` (1260px) outer wrappers. Never hardcode integration names inconsistently — the six official platforms are Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and AWS Redshift.
+
+---
+
+## 13. Maintenance
 
 1. Edit `frontend/projects/viking-ui/src/styles/_variables.scss` for token changes.
 2. Run `npm run build:viking-ui-css` to regenerate `viking-ui.css` artifacts.
 3. Update this document and `viking-color-picker` presets if the series palette changes.
 4. Sync marketing/backend copies of `viking-ui.css` in CI or publish step.
+5. Run `python scripts/sync_content.py` after editing `BOOK.md`, `WHITEPAPER.md`, or `README.md`.
 
 **Version:** Viking-UI premium palette v2 (charcoal / teal / crimson). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

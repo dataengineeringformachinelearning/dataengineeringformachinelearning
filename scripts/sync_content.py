@@ -38,6 +38,10 @@ def sync_readme():
   marketing_readme_md_path = os.path.join(
     root_dir, "marketing", "src", "assets", "content", "readme.md"
   )
+  marketing_whitepaper_md_path = os.path.join(
+    root_dir, "marketing", "src", "assets", "content", "whitepaper.md"
+  )
+  whitepaper_path = os.path.join(root_dir, "WHITEPAPER.md")
 
   try:
     # --- 1. Process BOOK.md for page.md ---
@@ -66,6 +70,15 @@ def sync_readme():
     with open(marketing_readme_md_path, "w", encoding="utf-8") as f:
       f.write(readme_content)
 
+    # --- 2b. Process WHITEPAPER.md for whitepaper.md ---
+    whitepaper_content = ""
+    if os.path.exists(whitepaper_path):
+      with open(whitepaper_path, encoding="utf-8") as f:
+        whitepaper_content = f.read()
+      os.makedirs(os.path.dirname(marketing_whitepaper_md_path), exist_ok=True)
+      with open(marketing_whitepaper_md_path, "w", encoding="utf-8") as f:
+        f.write(whitepaper_content)
+
     # --- 3. Process LLMS-full.txt ---
     llms_full_content = readme_content + "\n\n"
 
@@ -85,6 +98,9 @@ def sync_readme():
     # Add BOOK.md
     llms_full_content += "".join(book_lines)
 
+    if whitepaper_content:
+      llms_full_content += "\n\n" + whitepaper_content
+
     marketing_llms_full_path = os.path.join(root_dir, "marketing", "public", "llms-full.txt")
     os.makedirs(os.path.dirname(marketing_llms_full_path), exist_ok=True)
     for path in [llms_full_path, marketing_llms_full_path]:
@@ -95,6 +111,8 @@ def sync_readme():
     print(f" - {llms_full_path} & {marketing_llms_full_path}")
     print(f" - {marketing_page_md_path}")
     print(f" - {marketing_readme_md_path}")
+    if whitepaper_content:
+      print(f" - {marketing_whitepaper_md_path}")
 
     # Sync llms.txt for frontend and marketing (site-specific headers)
     marketing_llms_path = os.path.join(root_dir, "marketing", "public", "llms.txt")
@@ -212,9 +230,12 @@ if __name__ == "__main__":
   version_path = os.path.join(root_dir, "version.txt")
   agents_path = os.path.join(root_dir, "AGENTS.md")
 
+  whitepaper_path = os.path.join(root_dir, "WHITEPAPER.md")
+
   content_dests = [
     os.path.join(root_dir, "marketing", "src", "assets", "content", "page.md"),
     os.path.join(root_dir, "marketing", "src", "assets", "content", "readme.md"),
+    os.path.join(root_dir, "marketing", "src", "assets", "content", "whitepaper.md"),
     os.path.join(root_dir, "frontend", "public", "llms-full.txt"),
     os.path.join(root_dir, "marketing", "public", "llms-full.txt"),
     os.path.join(root_dir, "frontend", "public", "llms.txt"),
@@ -225,7 +246,7 @@ if __name__ == "__main__":
     os.path.join(root_dir, "backend", "version.txt"),
   ]
 
-  if _needs_sync([book_path, readme_path, agents_path], content_dests):
+  if _needs_sync([book_path, readme_path, agents_path, whitepaper_path], content_dests):
     sync_readme()
     sync_search_index()
   else:

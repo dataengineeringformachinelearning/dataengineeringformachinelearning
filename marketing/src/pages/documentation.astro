@@ -7,7 +7,7 @@ import { techArticleJsonLd, canonicalHref } from '../lib/seo';
 const { MARKETING_URL } = siteEnv();
 const pageTitle = 'Documentation - DEML Platform';
 const pageDescription =
-  'Integration guides for Kubernetes, TensorFlow, PyTorch, Spark, Databricks, and the DEML telemetry API.';
+  'Integration guides for Kubernetes, TensorFlow, PyTorch, Spark, Databricks, AWS Redshift, and the DEML telemetry API.';
 const docsJsonLd = techArticleJsonLd(
   pageTitle,
   pageDescription,
@@ -15,6 +15,78 @@ const docsJsonLd = techArticleJsonLd(
 );
 
 const { FRONTEND_URL } = siteEnv();
+
+const integrationPlatforms = [
+  {
+    icon: 'hub',
+    name: 'Kubernetes',
+    summary: 'Sidecar proxy or cluster gateway for /predict and /ingest without exposing API keys in app code.',
+    exampleLabel: 'Sidecar env',
+    example: `DEML_UPSTREAM_URL=https://backend.deml.app/api/v1
+DEML_API_KEY=<from Secret>`,
+    guide: 'docs/integrations/kubernetes.md',
+    health: '/api/v1/integrations/kubernetes',
+  },
+  {
+    icon: 'memory',
+    name: 'TensorFlow',
+    summary: 'Stream training batches into tf.data.Dataset pipelines with prefetch and autotune.',
+    exampleLabel: 'Dataset',
+    example: `dataset = tf.data.Dataset.from_generator(...)
+dataset.batch(32).prefetch(AUTOTUNE)`,
+    guide: 'docs/integrations/tensorflow.md',
+    health: '/api/v1/integrations/tensorflow',
+  },
+  {
+    icon: 'psychology',
+    name: 'PyTorch',
+    summary: 'Back custom Dataset and DataLoader classes with remote ingest. Models ship as state_dict — no pickle.',
+    exampleLabel: 'DataLoader',
+    example: `loader = DataLoader(DemlRemoteDataset(), batch_size=64)
+for features, labels in loader: ...`,
+    guide: 'docs/integrations/pytorch.md',
+    health: '/api/v1/integrations/pytorch',
+  },
+  {
+    icon: 'bolt',
+    name: 'Apache Spark',
+    summary: 'Push batch and Structured Streaming micro-batches directly to ingestion endpoints.',
+    exampleLabel: 'Streaming',
+    example: `payload.writeStream
+  .foreachBatch(write_batch)
+  .start()`,
+    guide: 'docs/integrations/apache-spark.md',
+    health: '/api/v1/integrations/apache-spark',
+  },
+  {
+    icon: 'cloud',
+    name: 'Databricks',
+    summary: 'Store API keys in Secret Scopes, ingest from notebooks, and schedule hourly rollup jobs.',
+    exampleLabel: 'Secret Scope',
+    example: `api_key = dbutils.secrets.get(
+  scope="deml", key="api-key")`,
+    guide: 'docs/integrations/databricks.md',
+    health: '/api/v1/integrations/databricks',
+  },
+  {
+    icon: 'storage',
+    name: 'AWS Redshift',
+    summary: 'UNLOAD warehouse rollups to S3 or query via the Data API, then POST batches to /ingest.',
+    exampleLabel: 'UNLOAD + ingest',
+    example: `requests.post(INGEST_URL,
+  headers={"Authorization": f"Bearer {api_key}"},
+  json={"source": "aws-redshift", "records": rows})`,
+    guide: 'docs/integrations/redshift.md',
+    health: '/api/v1/integrations/redshift',
+  },
+];
+
+const docsOutline = [
+  { id: 'quick-start', label: 'Quick Start', icon: 'rocket_launch' },
+  { id: 'data-ingestion', label: 'Data Ingestion', icon: 'input' },
+  { id: 'integrations-title', label: 'Integrations', icon: 'hub' },
+  { id: 'health-checks', label: 'Health Checks', icon: 'monitor_heart' },
+];
 
 const quickStartSteps = [
   {
@@ -47,7 +119,7 @@ const quickStartSteps = [
 <Layout
   title={pageTitle}
   description={pageDescription}
-  keywords="DEML API documentation, telemetry ingestion, Kubernetes integration, TensorFlow, PyTorch, Spark, Databricks"
+  keywords="DEML API documentation, telemetry ingestion, Kubernetes integration, TensorFlow, PyTorch, Spark, Databricks, AWS Redshift"
   ogType="article"
   jsonLd={docsJsonLd}
 >
@@ -75,6 +147,15 @@ const quickStartSteps = [
             </a>
           </div>
         </header>
+
+        <nav class="docs-outline no-print" aria-label="Documentation outline">
+          {docsOutline.map(item => (
+            <a href={`#${item.id}`} class="outline-link">
+              <VikingIcon name={item.icon} size={18} />
+              <span>{item.label}</span>
+            </a>
+          ))}
+        </nav>
 
         <aside class="docs-design-system-note" aria-label="Design system">
           <VikingIcon name="auto_awesome" size={20} />
@@ -224,139 +305,39 @@ const quickStartSteps = [
             <span class="section-tag">NATIVE INTEGRATIONS</span>
             <h2 id="integrations-title">Connect Your Stack</h2>
             <p>
-              First-class guides for Kubernetes, TensorFlow, PyTorch, Apache Spark, and Databricks.
-              Each integration uses the same API key and health-check endpoints.
+              First-class guides for Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and
+              AWS Redshift. Each integration uses the same API key and dedicated health-check endpoint.
             </p>
           </header>
 
           <div class="integration-cards">
-            <article class="integration-card">
-              <div class="integration-card-header">
-                <VikingIcon name="hub" size={20} />
-                <h3>Kubernetes</h3>
-              </div>
-              <p>
-                Deploy a sidecar proxy or cluster gateway to inject credentials and route traffic to
-                <code>/api/v1/predict</code> and <code>/api/v1/ingest</code> without exposing keys in
-                application code.
-              </p>
-              <div class="code-block-premium compact">
-                <div class="code-header">Sidecar env</div>
-                <pre><code>DEML_UPSTREAM_URL=https://backend.deml.app/api/v1
-DEML_API_KEY=&lt;from Secret&gt;</code></pre>
-              </div>
-              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/kubernetes.md" class="integration-link">
-                Read Kubernetes guide →
-              </a>
-            </article>
-
-            <article class="integration-card">
-              <div class="integration-card-header">
-                <VikingIcon name="memory" size={20} />
-                <h3>TensorFlow</h3>
-              </div>
-              <p>
-                Stream training batches into <code>tf.data.Dataset</code> pipelines with prefetch and
-                autotune for high-throughput training loops.
-              </p>
-              <div class="code-block-premium compact">
-                <div class="code-header">Dataset</div>
-                <pre><code>dataset = tf.data.Dataset.from_generator(...)
-dataset.batch(32).prefetch(AUTOTUNE)</code></pre>
-              </div>
-              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/tensorflow.md" class="integration-link">
-                Read TensorFlow guide →
-              </a>
-            </article>
-
-            <article class="integration-card">
-              <div class="integration-card-header">
-                <VikingIcon name="psychology" size={20} />
-                <h3>PyTorch</h3>
-              </div>
-              <p>
-                Back custom <code>Dataset</code> and <code>DataLoader</code> classes with remote ingest.
-                Models ship as secure <code>state_dict</code> checkpoints — no pickle.
-              </p>
-              <div class="code-block-premium compact">
-                <div class="code-header">DataLoader</div>
-                <pre><code>loader = DataLoader(DemlRemoteDataset(), batch_size=64)
-for features, labels in loader: ...</code></pre>
-              </div>
-              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/pytorch.md" class="integration-link">
-                Read PyTorch guide →
-              </a>
-            </article>
-
-            <article class="integration-card">
-              <div class="integration-card-header">
-                <VikingIcon name="bolt" size={20} />
-                <h3>Apache Spark</h3>
-              </div>
-              <p>
-                Push batch and Structured Streaming micro-batches directly to ingestion endpoints from
-                PySpark or Scala jobs.
-              </p>
-              <div class="code-block-premium compact">
-                <div class="code-header">Streaming</div>
-                <pre><code>payload.writeStream
-  .foreachBatch(write_batch)
-  .start()</code></pre>
-              </div>
-              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/apache-spark.md" class="integration-link">
-                Read Spark guide →
-              </a>
-            </article>
-
-            <article class="integration-card">
-              <div class="integration-card-header">
-                <VikingIcon name="cloud" size={20} />
-                <h3>Databricks</h3>
-              </div>
-              <p>
-                Store API keys in Secret Scopes, ingest from notebooks, and schedule jobs that push
-                hourly rollups to your analytics dashboard.
-              </p>
-              <div class="code-block-premium compact">
-                <div class="code-header">Secret Scope</div>
-                <pre><code>api_key = dbutils.secrets.get(
-  scope="deml", key="api-key")</code></pre>
-              </div>
-              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/databricks.md" class="integration-link">
-                Read Databricks guide →
-              </a>
-            </article>
-
-            <article class="integration-card">
-              <div class="integration-card-header">
-                <VikingIcon name="auto_awesome" size={20} />
-                <h3>Hugging Face</h3>
-              </div>
-              <p>
-                Host teacher models namespaced by tenant. Distill to on-prem PyTorch state_dicts
-                without ever shipping pickles.
-              </p>
-              <div class="code-block-premium compact">
-                <div class="code-header">Inference</div>
-                <pre><code>from huggingface_hub import InferenceClient
-client = InferenceClient(token=...)</code></pre>
-              </div>
-              <a href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/docs/integrations/huggingface.md" class="integration-link">
-                Read Hugging Face guide →
-              </a>
-            </article>
+            {integrationPlatforms.map(platform => (
+              <article class="integration-card">
+                <div class="integration-card-header">
+                  <VikingIcon name={platform.icon} size={20} />
+                  <h3>{platform.name}</h3>
+                </div>
+                <p>{platform.summary}</p>
+                <div class="code-block-premium compact">
+                  <div class="code-header">{platform.exampleLabel}</div>
+                  <pre><code>{platform.example}</code></pre>
+                </div>
+                <a
+                  href={`https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/${platform.guide}`}
+                  class="integration-link"
+                >
+                  Read {platform.name} guide →
+                </a>
+              </article>
+            ))}
           </div>
 
-          <div class="health-check-block">
+          <div class="health-check-block" id="health-checks">
             <h3>Integration Health Checks</h3>
-            <p>Verify connectivity from any environment:</p>
+            <p>Verify connectivity from any environment — one GET per platform:</p>
             <div class="code-block-premium">
               <div class="code-header">Health endpoints</div>
-              <pre><code>GET /api/v1/integrations/kubernetes
-GET /api/v1/integrations/tensorflow
-GET /api/v1/integrations/pytorch
-GET /api/v1/integrations/apache-spark
-GET /api/v1/integrations/databricks</code></pre>
+              <pre><code>{integrationPlatforms.map(p => `GET ${p.health}`).join('\n')}</code></pre>
             </div>
           </div>
         </section>
@@ -377,9 +358,15 @@ GET /api/v1/integrations/databricks</code></pre>
 
 .docs-hero {
   position: relative;
-  margin: 0 auto 56px auto;
+  margin: 0 auto 32px auto;
   text-align: center;
-  padding: 32px 0;
+  padding: 48px 24px 40px;
+  border-radius: 24px;
+  border: 1px solid var(--border);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--viking-teal-600) 10%, transparent), transparent),
+    var(--color-surface);
+  box-shadow: var(--shadow-sm);
 
   .docs-title {
     font-size: clamp(2rem, 5vw, 4rem);
@@ -464,6 +451,43 @@ GET /api/v1/integrations/databricks</code></pre>
   }
   50% {
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--viking-teal-600) 0%, transparent);
+  }
+}
+
+.docs-outline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: var(--container-max-width, 1260px);
+  margin: 0 auto 32px auto;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--color-surface);
+  position: sticky;
+  top: 72px;
+  z-index: 10;
+  box-shadow: var(--shadow-sm);
+
+  .outline-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none !important;
+    color: var(--text-muted) !important;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--viking-teal-600) !important;
+      border-color: color-mix(in srgb, var(--viking-teal-600) 35%, transparent);
+      background: color-mix(in srgb, var(--viking-teal-600) 8%, transparent);
+    }
   }
 }
 
