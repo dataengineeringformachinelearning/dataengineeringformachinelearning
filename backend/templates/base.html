@@ -1,0 +1,128 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}DEML Backend API{% endblock %}</title>
+    {% block meta_description %}
+    <meta
+      name="description"
+      content="Core REST API, authentication, billing, and telemetry services for DEML (DATA ENGINEERING FOR MACHINE LEARNING)."
+    />
+    {% endblock %}
+    <meta
+      name="keywords"
+      content="data engineering, machine learning, backend, API, services, swagger, openapi"
+    />
+    <meta name="author" content="Joe Alongi" />
+    <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+
+    <!-- Favicons -->
+    <link
+      rel="icon"
+      type="image/png"
+      href="{% static 'favicon-96x96.png' %}"
+      sizes="96x96"
+    />
+    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
+    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="{% static 'apple-touch-icon.png' %}"
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="og:title" content="{% block og_title %}DEML Backend API{% endblock %}" />
+    <meta
+      property="og:description"
+      content="{% block og_description %}Core REST API and services for Data Engineering for Machine Learning.{% endblock %}"
+    />
+    <meta
+      property="og:image"
+      content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}"
+    />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="{{ request.build_absolute_uri }}" />
+    <meta property="twitter:title" content="{% block twitter_title %}DEML Backend API{% endblock %}" />
+    <meta
+      property="twitter:description"
+      content="{% block twitter_description %}Core REST API and services for Data Engineering for Machine Learning.{% endblock %}"
+    />
+    <meta
+      property="twitter:image"
+      content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
+
+    <!-- Viking-UI design system -->
+    <link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
+    <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
+    <link rel="stylesheet" href="{% static 'backend-styles.css' %}" />
+    {% block extra_styles %}{% endblock %}
+
+    <script>
+      (function () {
+        const savedTheme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+        const activeTheme = savedTheme || (prefersDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", activeTheme);
+      })();
+    </script>
+
+    {% block analytics %}
+    <script type="text/javascript">
+      (function (c, l, a, r, i, t, y) {
+        c[a] =
+          c[a] ||
+          function () {
+            (c[a].q = c[a].q || []).push(arguments);
+          };
+        t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+      })(window, document, "clarity", "script", "xddv4klojn");
+    </script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-KYZRDR2MY4"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-KYZRDR2MY4");
+    </script>
+    {% endblock %}
+    {% block extra_head %}{% endblock %}
+  </head>
+  <body class="{% block body_class %}backend-landing{% endblock %}">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    {% include "partials/site_navbar.html" %}
+
+    {% block content %}{% endblock %}
+
+    {% include "partials/site_footer.html" %}
+
+    {% block extra_scripts %}{% endblock %}
+  </body>
+</html>

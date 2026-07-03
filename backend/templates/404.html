@@ -1,120 +1,47 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>404 Not Found - Data Engineering for Machine Learning</title>
-    <meta
-      name="description"
-      content="The requested backend resource could not be found on the DEML API service."
-    />
-    <meta
-      name="keywords"
-      content="data engineering, machine learning, backend, API, services"
-    />
-    <meta name="author" content="Joe Alongi" />
-    <link rel="canonical" href="{{ request.build_absolute_uri }}" />
 
-    <!-- Favicons -->
-    <link
-      rel="icon"
-      type="image/png"
-      href="{% static 'favicon-96x96.png' %}"
-      sizes="96x96"
-    />
-    <link rel="icon" type="image/svg+xml" href="{% static 'favicon.svg' %}" />
-    <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="{% static 'apple-touch-icon.png' %}"
-    />
+{% block title %}404 Not Found - Data Engineering for Machine Learning{% endblock %}
+{% block og_title %}404 Not Found - Data Engineering for Machine Learning{% endblock %}
+{% block twitter_title %}404 Not Found - Data Engineering for Machine Learning{% endblock %}
+{% block meta_description %}
+<meta
+  name="description"
+  content="The requested backend resource could not be found on the DEML API service."
+/>
+{% endblock %}
+{% block og_description %}The requested backend resource could not be found on the DEML API service.{% endblock %}
+{% block twitter_description %}The requested backend resource could not be found on the DEML API service.{% endblock %}
 
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="{{ request.build_absolute_uri }}" />
-    <meta
-      property="og:title"
-      content="Data Engineering for Machine Learning - Backend"
-    />
-    <meta
-      property="og:description"
-      content="Backend API and services for Data Engineering for Machine Learning."
-    />
-    <meta
-      property="og:image"
-      content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}"
-    />
+{% block body_class %}backend-404{% endblock %}
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="{{ request.build_absolute_uri }}" />
-    <meta
-      property="twitter:title"
-      content="Data Engineering for Machine Learning - Backend"
-    />
-    <meta
-      property="twitter:description"
-      content="Backend API and services for Data Engineering for Machine Learning."
-    />
-    <meta
-      property="twitter:image"
-      content="{{ request.scheme }}://{{ request.get_host }}{% static 'data-engineering-for-machine-learning-preview.png' %}"
-    />
+{% block analytics %}{% endblock %}
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Shared tokens (synced) + backend stylesheet with same class names -->
-    <link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
-    <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
-    <link rel="stylesheet" href="{% static 'backend-styles.css' %}" />
-    <script src="{% static 'algolia-config.js' %}"></script>
-    <script>
-      (function () {
-        const savedTheme = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)",
-        ).matches;
-        const activeTheme = savedTheme || (prefersDark ? "dark" : "light");
-        document.documentElement.setAttribute("data-theme", activeTheme);
-      })();
-    </script>
-  </head>
-  <body class="backend-404">
-    <!-- Skip to content link for keyboard users -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
+{% block content %}
+<main class="main" id="main-content" tabindex="-1">
+  <div class="content">
+    <article class="backend-card">
+      <img
+        class="logo"
+        src="{% static 'data-engineering-for-machine-learning.svg' %}"
+        alt="DEML APP Brand Icon"
+      />
+      <h1 class="title">404 - Not Found</h1>
+      <h2 class="subtitle">
+        The requested resource was not found on this server.
+      </h2>
 
-    {% include "partials/site_navbar.html" %}
+      <p>
+        It looks like you took a wrong turn. The page or endpoint you are looking
+        for does not exist.
+      </p>
 
-    <main class="main" id="main-content" tabindex="-1">
-      <div class="content">
-        <article class="backend-card">
-          <img
-            class="logo"
-            src="{% static 'data-engineering-for-machine-learning.svg' %}"
-            alt="DEML APP Brand Icon"
-          />
-          <h1 class="title">404 - Not Found</h1>
-          <h2 class="subtitle">
-            The requested resource was not found on this server.
-          </h2>
-
-          <p>
-            It looks like you took a wrong turn. The page or endpoint you are
-            looking for does not exist.
-          </p>
-
-          <div class="cta-group">
-            <a href="/" class="cta-button primary-btn">
-              <span>Return to Home</span>
-            </a>
-          </div>
-        </article>
+      <div class="cta-group">
+        <a href="/" class="cta-button primary-btn">
+          <span>Return to Home</span>
+        </a>
       </div>
-    </main>
-
-    {% include "partials/site_footer.html" %}
-  </body>
-</html>
+    </article>
+  </div>
+</main>
+{% endblock %}
