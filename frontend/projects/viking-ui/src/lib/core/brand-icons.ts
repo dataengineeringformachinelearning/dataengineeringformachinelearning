@@ -42,11 +42,11 @@ export const VIKING_DRAKKAR_ICON_FILLED_PATHS: Partial<
   Record<keyof typeof VIKING_DRAKKAR_ICON_PATHS, string>
 > = {
   drakkar:
-    '<path d="M7 5h10a2 2 0 0 1 2 2v6H5V7a2 2 0 0 1 2-2z"/><path d="M12 2v3"/><path d="M4.5 14.2 12 10.8l7.5 3.4c.9 2.1.6 4.5-.6 6.4H5.1c-1.2-1.9-1.5-4.3-.6-6.4z"/><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/>',
+    '<path d="M7 5h10a2 2 0 0 1 2 2v3.5L20.8 14.2l-7.8-3.5a1.8 1.8 0 0 0-1.4 0L3.2 14.2a10.5 10.5 0 0 0 2.6 7.2L5.2 13V7a2 2 0 0 0-2-2z"/><rect x="10.85" y="2" width="2.3" height="12" rx="0.4"/>',
   'drakkar-compact':
-    '<path d="M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4z"/><path d="M8 7h8a1 1 0 0 1 1 1v4H7V8a1 1 0 0 1 1-1z"/><path d="M11 5.5V8"/><path d="M6.5 12.5 12 10l5.5 2.5c.5 1.2.4 2.5-.3 3.5H6.8c-.7-1-.8-2.3-.3-3.5z"/><path d="M5 16.5c.4.3.8.5 1.5.5 1.5 0 1.5-1 3-1 .6 0 1 .2 1.5.5"/>',
+    '<path d="M3 3h18a2 2 0 0 1 2 2v18a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7.5 12.5 12 9.8l4.5 2.7v2.2c0 .8-.5 1.4-1.2 1.7L12 17.8l-3.3-1.6c-.7-.3-1.2-.9-1.2-1.7v-2.2z"/><rect x="11" y="6" width="2" height="5.5" rx="0.35"/>',
   'drakkar-lockup':
-    '<path d="M7 5h10a2 2 0 0 1 2 2v6H5V7a2 2 0 0 1 2-2z"/><path d="M12 2v3"/><path d="M4.5 14.2 12 10.8l7.5 3.4c.9 2.1.6 4.5-.6 6.4H5.1c-1.2-1.9-1.5-4.3-.6-6.4z"/><path d="M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1s1.2 1 2.5 1c2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><rect x="2" y="20" width="20" height="2" rx="1"/>',
+    '<path d="M7 5h10a2 2 0 0 1 2 2v3.5L20.8 14.2l-7.8-3.5a1.8 1.8 0 0 0-1.4 0L3.2 14.2a10.5 10.5 0 0 0 2.6 7.2L5.2 13V7a2 2 0 0 0-2-2z"/><rect x="10.85" y="2" width="2.3" height="12" rx="0.4"/><rect x="2" y="20" width="20" height="2" rx="1"/>',
 };
 
 export type VikingBrandIconName = keyof typeof VIKING_BRAND_ICON_PATHS;
