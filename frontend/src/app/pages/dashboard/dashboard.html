@@ -109,11 +109,13 @@
             <span class="kpi-label">Threat Exposure</span>
             <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
             <div class="kpi-sparkline-slot">
-              @if (securitySparkline().length) {
+              @if (threatSparkline().length) {
               <viking-chart
                 kind="sparkline"
-                [series]="securitySparkline()"
-                label="Threat exposure trend"
+                [series]="threatSparkline()"
+                label="Threat exposure trend (24h)"
+                curve="smooth"
+                [showArea]="true"
                 class="kpi-sparkline viking-chart-wide"
               />
               }
@@ -130,11 +132,13 @@
             <span class="kpi-label">Uptime</span>
             <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
             <div class="kpi-sparkline-slot">
-              @if (latencySparkline().length) {
+              @if (uptimeSparkline().length) {
               <viking-chart
                 kind="sparkline"
-                [series]="latencySparkline()"
-                label="Latency trend"
+                [series]="uptimeSparkline()"
+                label="Uptime trend (24h)"
+                curve="smooth"
+                [showArea]="true"
                 class="kpi-sparkline viking-chart-wide"
               />
               }
@@ -148,7 +152,7 @@
           </div>
         </div>
 
-        <section class="panel-card threats-panel">
+        <section class="panel-card overview-panel threats-panel">
           <div class="panel-header">
             <h2>Recent Threats</h2>
             <button type="button" class="link-btn" (click)="setTab('security')">View all</button>
@@ -158,7 +162,7 @@
             <div class="panel-loading"><span class="spinner"></span> Scanning...</div>
             } @else if (recentThreats().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               tone="secure"
               icon="check-circle"
               title="Perimeter Clear"
@@ -182,7 +186,7 @@
           </div>
         </section>
 
-        <section class="panel-card metrics-panel">
+        <section class="panel-card overview-panel metrics-panel">
           <div class="panel-header">
             <h2>Performance Snapshot</h2>
             <button type="button" class="link-btn" (click)="setTab('performance')">Details</button>
@@ -216,7 +220,7 @@
             />
             } @else {
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               icon="globe"
               title="Awaiting Telemetry"
               description="Performance data will appear once your site is connected."
@@ -354,7 +358,7 @@
           } @else if (recentThreats().length === 0) {
           <div class="panel-body">
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               tone="secure"
               icon="check-circle"
               title="All Clear"

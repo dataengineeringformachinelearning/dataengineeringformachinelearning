@@ -377,6 +377,56 @@
   grid-area: metrics;
 }
 
+/* Overview status panels — single card shell, no nested dashed empty boxes */
+.panel-card.overview-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  padding: var(--viking-space-3, 24px);
+
+  .panel-header {
+    margin-bottom: 0;
+    padding-bottom: var(--viking-space-2, 16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .panel-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: var(--viking-space-2, 16px);
+  }
+
+  .snapshot-stats {
+    margin-bottom: 0;
+    padding-bottom: var(--viking-space-2, 16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .mini-chart {
+    flex: 1 1 auto;
+    min-height: 140px;
+    padding-top: var(--viking-space-2, 16px);
+  }
+
+  .threat-list {
+    gap: 0;
+  }
+
+  .threat-item {
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: var(--viking-space-2, 16px) 0;
+    border-bottom: 1px solid var(--border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
 .panel-card.threats-panel,
 .panel-card.metrics-panel,
 .panel-card.security-panel {
@@ -671,7 +721,7 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 180px;
+  min-height: 160px;
 
   viking-chart {
     display: flex;
@@ -682,7 +732,7 @@
 
   viking-chart-empty-state {
     flex: 1 1 auto;
-    --viking-chart-empty-min-height: 160px;
+    min-height: 160px;
   }
 }
 

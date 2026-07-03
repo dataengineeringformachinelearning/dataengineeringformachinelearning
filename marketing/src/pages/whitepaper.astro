@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import { marked } from 'marked';
 import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
+import '../styles/publication.scss';
 
 const { MARKETING_URL } = siteEnv();
 const pageTitle = 'The Whitepaper - DEML Platform';
@@ -22,14 +23,27 @@ const rawMarkdown = fs.existsSync(whitepaperPath)
   : '# Whitepaper\n\nContent syncing from WHITEPAPER.md…';
 
 const rawSections = rawMarkdown.split(/(?=^## )/m).filter(Boolean);
-const sections = rawSections.map(chunk => {
+
+interface WhitepaperSection {
+  title: string;
+  html: string;
+  num: string;
+  label: string;
+  anchor: string;
+}
+
+const sections: WhitepaperSection[] = rawSections.map(chunk => {
   const trimmed = chunk.trim();
   const lines = trimmed.split('\n');
   const titleLine = lines[0] ?? '';
   const title = titleLine.startsWith('## ')
     ? titleLine.replace(/^##\s+/, '').trim()
     : 'Overview';
-  return { title, html: marked.parse(trimmed) };
+  const numMatch = title.match(/^(\d+)\.\s*/);
+  const num = numMatch?.[1] ?? '';
+  const label = title.replace(/^\d+\.\s*/, '');
+  const anchor = `section-${title.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}`;
+  return { title, html: marked.parse(trimmed) as string, num, label, anchor };
 });
 
 const integrationPlatforms = [
@@ -51,29 +65,42 @@ const integrationPlatforms = [
 >
   <div class="dashboard-page-container whitepaper-page">
     <div class="dashboard-content-area">
-      <div class="page-inner-wrapper">
-        <article class="whitepaper-shell">
-          <header class="whitepaper-hero">
+      <div class="page-inner-wrapper whitepaper-wrapper">
+        <article class="publication-shell">
+          <header class="publication-hero">
             <div class="hero-glow" aria-hidden="true"></div>
+            <div class="hero-brand">
+              <VikingIcon name="drakkar" size={36} color="accent" class="hero-brand-icon" />
+            </div>
             <div class="section-tag-row">
               <span class="section-tag">Research · Architecture</span>
             </div>
             <h1 class="hero-title">Scalable Telemetry, Predictive SLAs, &amp; Automated Threat Mitigation</h1>
-            <p class="hero-abstract">
+            <p class="hero-subtitle">
               Architecting the DEML platform: high-throughput event pipelines, ML-forecasted service
               levels, automated STIX 2.1 threat sharing, and integrated vulnerability management.
             </p>
 
             <div class="hero-meta">
               <span>Published: July 2026</span>
-              <span class="bullet">•</span>
-              <span>Author:&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a></span>
-              <span class="bullet">•</span>
-              <a href="https://orcid.org/0009-0007-2401-2603" target="_blank" rel="me noopener noreferrer" class="orcid-link">
+              <span class="meta-dot">•</span>
+              <span>
+                Author:&nbsp;<a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>
+              </span>
+              <span class="meta-dot">•</span>
+              <a
+                href="https://orcid.org/0009-0007-2401-2603"
+                target="_blank"
+                rel="me noopener noreferrer"
+              >
                 ORCID 0009-0007-2401-2603
               </a>
-              <span class="bullet">•</span>
-              <a href="https://doi.org/10.5281/zenodo.20778532" target="_blank" rel="noopener noreferrer" class="zenodo-link">
+              <span class="meta-dot">•</span>
+              <a
+                href="https://doi.org/10.5281/zenodo.20778532"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 DOI 10.5281/zenodo.20778532
               </a>
             </div>
@@ -101,26 +128,31 @@ const integrationPlatforms = [
                 <strong>arXiv Endorsement Request:</strong> We are seeking an arXiv endorsement to
                 publish this whitepaper to <code>cs.CR</code>. Qualified authors may endorse using code{' '}
                 <strong>ZISEYL</strong>{' '}
-                <a href="https://arxiv.org/auth/endorse?x=ZISEYL" target="_blank" rel="noopener noreferrer">here</a>.
+                <a href="https://arxiv.org/auth/endorse?x=ZISEYL" target="_blank" rel="noopener noreferrer">
+                  here
+                </a>.
               </div>
             </aside>
           </header>
 
-          <nav class="section-nav no-print" aria-label="Whitepaper sections">
-            {sections.map(section => (
-              <a href={`#section-${section.title.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}`} class="nav-pill">
-                {section.title.replace(/^\d+\.\s*/, '')}
-              </a>
-            ))}
+          <nav class="publication-toc no-print" aria-label="Whitepaper sections">
+            <h2 class="toc-heading">Contents</h2>
+            <ol class="toc-list">
+              {sections.map(section => (
+                <li>
+                  <a href={`#${section.anchor}`} class="toc-item">
+                    <span class="toc-num">{section.num || '—'}</span>
+                    <span class="toc-label">{section.label}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
           </nav>
 
-          <div class="whitepaper-grid">
+          <div class="publication-body">
             {sections.map(section => (
-              <section
-                class="paper-card"
-                id={`section-${section.title.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}`}
-              >
-                <div class="paper-body" set:html={section.html} />
+              <section class="publication-section" id={section.anchor}>
+                <div set:html={section.html}></div>
               </section>
             ))}
           </div>
@@ -134,89 +166,53 @@ const integrationPlatforms = [
 .whitepaper-page {
   min-height: calc(100vh - 64px);
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--viking-teal-600) 12%, transparent), transparent),
+    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--viking-teal-600) 10%, transparent), transparent),
     var(--bg-color);
 }
 
-.whitepaper-shell {
-  max-width: 1100px;
+.whitepaper-wrapper {
+  max-width: 860px;
   margin: 0 auto;
-  padding: 32px 0 80px;
+  padding: 32px 16px 80px;
+
+  @media (min-width: 768px) {
+    padding: 40px 24px 80px;
+  }
 }
 
-.whitepaper-hero {
-  position: relative;
-  text-align: center;
-  padding: 48px 32px 40px;
-  margin-bottom: 32px;
-  border-radius: 24px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--color-surface) 88%, transparent);
-  backdrop-filter: blur(20px);
-  overflow: hidden;
-
-  .hero-glow {
-    position: absolute;
-    inset: -40% -20% auto;
-    height: 280px;
-    background: radial-gradient(circle, color-mix(in srgb, var(--viking-teal-600) 18%, transparent), transparent 70%);
-    pointer-events: none;
-  }
-
-  .section-tag-row { justify-content: center; margin-bottom: 16px; }
-
-  .hero-title {
-    position: relative;
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
-    font-weight: 800;
-    line-height: 1.15;
-    letter-spacing: -0.03em;
-    margin: 0 0 20px;
-    max-width: 820px;
-    margin-inline: auto;
-  }
-
-  .hero-abstract {
-    position: relative;
-    font-size: 1.1rem;
-    line-height: 1.65;
-    color: var(--text-muted);
-    max-width: 720px;
-    margin: 0 auto 24px;
-    font-style: italic;
-  }
-
+.publication-hero {
   .hero-meta {
-    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    font-size: 0.95rem;
-    margin-bottom: 28px;
 
-    a { color: var(--viking-teal-600); text-decoration: none; &:hover { text-decoration: underline; } }
-    .bullet { opacity: 0.4; }
+    a {
+      color: var(--viking-teal-600);
+      text-decoration: none;
+      &:hover { text-decoration: underline; }
+    }
+
+    .meta-dot { opacity: 0.4; }
   }
 
   .hero-actions {
-    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
   }
 
   .hero-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 12px 20px;
-    border-radius: 12px;
+    padding: 10px 18px;
+    border-radius: 10px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     text-decoration: none !important;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -225,32 +221,36 @@ const integrationPlatforms = [
       background: var(--viking-teal-600);
       color: var(--white) !important;
       border: 1px solid var(--viking-teal-600);
-      &:hover { background: var(--viking-teal-400); border-color: var(--viking-teal-400); }
+      &:hover {
+        background: var(--viking-teal-400);
+        border-color: var(--viking-teal-400);
+      }
     }
 
     &.secondary {
       background: transparent;
       color: var(--viking-teal-600) !important;
       border: 1px solid color-mix(in srgb, var(--viking-teal-600) 40%, var(--border));
-      &:hover { background: color-mix(in srgb, var(--viking-teal-600) 10%, transparent); }
+      &:hover {
+        background: color-mix(in srgb, var(--viking-teal-600) 10%, transparent);
+      }
     }
   }
 
   .integration-strip {
-    position: relative;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 8px;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
 
   .integration-pill {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 6px 12px;
+    padding: 5px 10px;
     border-radius: 999px;
     border: 1px solid color-mix(in srgb, var(--viking-teal-600) 30%, var(--border));
     background: color-mix(in srgb, var(--viking-teal-600) 8%, var(--color-surface));
@@ -258,149 +258,46 @@ const integrationPlatforms = [
   }
 
   .arxiv-banner {
-    position: relative;
     display: flex;
     align-items: flex-start;
     gap: 12px;
     text-align: left;
-    padding: 16px 20px;
-    border-radius: 12px;
+    padding: 14px 18px;
+    border-radius: 10px;
     border: 1px solid color-mix(in srgb, var(--viking-teal-600) 25%, transparent);
     background: color-mix(in srgb, var(--viking-teal-600) 6%, var(--color-surface));
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.55;
+    max-width: 680px;
+    margin: 0 auto;
 
     code {
-      padding: 2px 6px;
+      padding: 1px 5px;
       border-radius: 4px;
       background: var(--bg-color);
       border: 1px solid var(--border);
+      font-size: 0.84em;
     }
 
-    a { color: var(--viking-teal-600); font-weight: 600; }
-  }
-}
-
-.section-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin-bottom: 40px;
-  padding: 16px;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  background: var(--color-surface);
-  position: sticky;
-  top: 72px;
-  z-index: 10;
-  box-shadow: var(--shadow-sm);
-
-  .nav-pill {
-    font-size: 0.8rem;
-    font-weight: 600;
-    padding: 8px 14px;
-    border-radius: 999px;
-    text-decoration: none !important;
-    color: var(--text-muted) !important;
-    border: 1px solid transparent;
-    transition: all 0.2s ease;
-
-    &:hover {
-      color: var(--viking-teal-600) !important;
-      border-color: color-mix(in srgb, var(--viking-teal-600) 35%, transparent);
-      background: color-mix(in srgb, var(--viking-teal-600) 8%, transparent);
+    a {
+      color: var(--viking-teal-600);
+      font-weight: 600;
     }
   }
 }
 
-.whitepaper-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-
-  @media (min-width: 900px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.paper-card {
-  break-inside: avoid;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: var(--color-surface);
-  padding: 28px 32px;
-  box-shadow: var(--shadow-sm);
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-
-  &:hover {
-    border-color: color-mix(in srgb, var(--viking-teal-600) 35%, var(--border));
-    box-shadow: var(--shadow-hover);
-  }
-
-  :global(h2) {
-    font-size: 1.25rem;
-    font-weight: 800;
-    margin: 0 0 16px;
-    letter-spacing: -0.02em;
-    color: var(--text-color);
-    border-bottom: 2px solid color-mix(in srgb, var(--viking-teal-600) 40%, transparent);
-    padding-bottom: 8px;
-  }
-
-  :global(h3) {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin: 20px 0 12px;
-    color: var(--text-color);
-  }
-
-  :global(p), :global(li) {
-    font-size: 1rem;
-    line-height: 1.65;
-    color: var(--text-muted);
-    margin: 0 0 12px;
-  }
-
-  :global(ul), :global(ol) { padding-left: 1.25rem; margin: 0 0 12px; }
-
-  :global(pre) {
-    background: var(--viking-charcoal-900);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 16px;
-    overflow-x: auto;
-    margin: 16px 0;
-    font-size: 0.85rem;
-  }
-
-  :global(table) {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-    margin: 16px 0;
-
-    th, td {
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      text-align: left;
-    }
-
-    th { background: color-mix(in srgb, var(--viking-teal-600) 10%, var(--color-surface)); }
-  }
-
-  :global(a) { color: var(--viking-teal-600); }
-
-  /* Full-width cards for mermaid-heavy or wide sections */
-  &:has(:global(.mermaid)), &:has(:global(table)) {
-    @media (min-width: 900px) { grid-column: span 2; }
-  }
+.publication-toc .toc-list {
+  list-style: none;
 }
 
 @media print {
-  .no-print { display: none !important; }
-  .whitepaper-grid { grid-template-columns: repeat(2, 1fr); }
-  .paper-card { break-inside: avoid; box-shadow: none; }
+  .no-print {
+    display: none !important;
+  }
+
+  .publication-section {
+    break-inside: avoid;
+  }
 }
 </style>
 

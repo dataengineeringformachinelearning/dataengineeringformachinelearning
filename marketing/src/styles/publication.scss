@@ -1,0 +1,524 @@
+// Shared publication styles for Book and Whitepaper — single-card, structured prose.
+
+.publication-shell {
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.publication-hero {
+  position: relative;
+  text-align: center;
+  padding: 36px 28px 28px;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+
+  .hero-glow {
+    position: absolute;
+    inset: -30% 0 auto;
+    height: 200px;
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--viking-teal-600) 14%, transparent),
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
+  .hero-brand {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .hero-brand-icon {
+    filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--viking-teal-600) 25%, transparent));
+  }
+
+  .hero-title {
+    position: relative;
+    font-size: clamp(1.65rem, 4vw, 2.35rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 12px;
+  }
+
+  .hero-subtitle {
+    position: relative;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    max-width: 640px;
+    margin: 0 auto 16px;
+  }
+
+  .hero-meta {
+    position: relative;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .hero-meta-row {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+
+    a {
+      color: var(--viking-teal-600);
+      text-decoration: none;
+      font-weight: 600;
+      &:hover { text-decoration: underline; }
+    }
+
+    .meta-dot { opacity: 0.4; }
+  }
+}
+
+.publication-toc {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+
+  .toc-heading {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+
+    @media (min-width: 640px) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px 24px;
+    }
+
+    @media (min-width: 900px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    text-decoration: none !important;
+    color: var(--text-muted) !important;
+    border-radius: 6px;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--viking-teal-600) !important;
+    }
+
+    .toc-num {
+      flex-shrink: 0;
+      min-width: 1.5rem;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      font-size: 0.78rem;
+      color: var(--viking-teal-600);
+      opacity: 0.85;
+    }
+
+    .toc-label {
+      flex: 1;
+      font-weight: 500;
+    }
+  }
+}
+
+.publication-body {
+  padding: 28px 32px 36px;
+
+  @media (min-width: 768px) {
+    padding: 32px 40px 40px;
+  }
+}
+
+.publication-section {
+  padding: 28px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  :global(h2) {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin: 0 0 16px;
+    letter-spacing: -0.02em;
+    color: var(--text-color);
+    border-bottom: 2px solid color-mix(in srgb, var(--viking-teal-600) 35%, transparent);
+    padding-bottom: 8px;
+  }
+
+  :global(h3) {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 24px 0 10px;
+    color: var(--text-color);
+  }
+
+  :global(h4) {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 20px 0 8px;
+    color: var(--text-color);
+  }
+
+  :global(p),
+  :global(li) {
+    font-size: 1rem;
+    line-height: 1.65;
+    color: var(--text-muted);
+    margin: 0 0 14px;
+  }
+
+  :global(ul),
+  :global(ol) {
+    padding-left: 1.35rem;
+    margin: 0 0 14px;
+  }
+
+  :global(a) {
+    color: var(--viking-teal-600);
+  }
+
+  :global(pre) {
+    background: var(--viking-charcoal-900);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  :global(:not(pre) > code) {
+    background: color-mix(in srgb, var(--color-dark-grey-btn-bg) 70%, transparent);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 0.84em;
+    color: var(--text-color);
+    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    white-space: nowrap;
+  }
+
+  :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 0.9rem;
+
+    th,
+    td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    th {
+      background: color-mix(in srgb, var(--viking-teal-600) 10%, var(--color-surface));
+    }
+  }
+
+  :global(blockquote) {
+    margin: 16px 0;
+    padding: 12px 16px;
+    border-left: 3px solid var(--viking-teal-600);
+    background: color-mix(in srgb, var(--viking-teal-600) 6%, var(--color-surface));
+    border-radius: 0 8px 8px 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+  }
+}
+
+// Book sidebar chapter index
+.pub-sidebar-group {
+  margin-bottom: 16px;
+
+  .pub-sidebar-group-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 6px 8px;
+    opacity: 0.75;
+  }
+}
+
+.pub-chapter-item {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+  text-decoration: none;
+  color: inherit;
+
+  &:hover {
+    background-color: var(--hover-color);
+    border-color: var(--border);
+  }
+
+  &.active {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-surface) 25%, transparent) 0%,
+      rgba(192, 197, 193, 0.08) 100%
+    );
+    border-color: var(--color-primary-container, var(--viking-teal-400));
+
+    .pub-chapter-num,
+    .pub-chapter-title {
+      color: var(--color-primary-container, var(--viking-teal-400));
+    }
+
+    .pub-chapter-title {
+      font-weight: 600;
+    }
+  }
+
+  .pub-chapter-num {
+    flex-shrink: 0;
+    min-width: 1.25rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  .pub-chapter-title {
+    font-size: 0.85rem;
+    line-height: 1.35;
+    color: var(--text-color);
+  }
+}
+
+// Book cover with Drakkar branding
+.book-cover-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
+}
+
+.book-cover-card {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 3 / 4.2;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px 16px 16px 8px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.book-cover-spine {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  background-color: color-mix(in srgb, var(--black) 50%, transparent);
+  z-index: 10;
+  border-right: 1px solid color-mix(in srgb, var(--black) 20%, transparent);
+}
+
+.book-cover-binding {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: color-mix(in srgb, var(--black) 10%, transparent);
+  z-index: 9;
+}
+
+.book-cover-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 32px 40px 48px;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+}
+
+.book-cover-label {
+  margin-bottom: auto;
+  letter-spacing: 0.15em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.book-cover-logo {
+  margin: 24px 0;
+  filter: drop-shadow(0 6px 16px color-mix(in srgb, var(--viking-teal-600) 30%, transparent));
+}
+
+.book-cover-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.book-cover-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-style: italic;
+}
+
+.book-cover-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+
+  a {
+    font-weight: 600;
+    color: var(--text-color);
+    text-decoration: none;
+    &:hover { color: var(--viking-teal-600); }
+  }
+
+  .book-cover-vol {
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+  }
+}
+
+.publication-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 28px;
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--color-surface) 50%, transparent);
+
+  @media (min-width: 600px) {
+    justify-content: space-between;
+    padding: 16px 32px;
+  }
+
+  .pagination-btn {
+    background: var(--color-primary) !important;
+    color: white !important;
+    font-weight: 600;
+    border-radius: 12px;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.2s;
+    font-size: 0.9rem;
+
+    &[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:not([disabled]):hover {
+      opacity: 0.9;
+    }
+  }
+
+  .page-counter {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+}
+
+.publication-progress {
+  max-width: 480px;
+  margin: 0 auto;
+
+  .progress-bar-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .progress-percentage {
+    color: var(--color-primary-container);
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background-color: var(--hover-color);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .progress-bar-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--progress, 0%);
+    background-color: var(--color-primary);
+    transition: width 0.3s ease-out;
+    border-radius: 999px;
+  }
+}

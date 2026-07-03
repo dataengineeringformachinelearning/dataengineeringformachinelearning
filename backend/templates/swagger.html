@@ -28,21 +28,17 @@
 
 {% block content %}
 <main class="swagger-docs-shell" id="main-content" tabindex="-1">
-  <header
-    class="swagger-page-header viking-section-header"
-    aria-label="API documentation header"
-  >
-    <p class="hero-badge swagger-docs-badge">
-      <span class="badge-dot" aria-hidden="true"></span>
-      <span class="badge-text">OPENAPI DOCUMENTATION</span>
-    </p>
-    <h1 class="viking-section-title">{{ api_title }}</h1>
-    <p class="viking-section-lead">
-      Interactive sandbox for public ingestion and inference endpoints.
-      Authorize with your bearer token using the control below.
-    </p>
-  </header>
-  <div id="swagger-ui" aria-live="polite"></div>
+  <article class="swagger-panel">
+    <header class="swagger-panel-hero" aria-label="API documentation header">
+      <p class="swagger-eyebrow">OpenAPI · v{{ api_version }}</p>
+      <h1 class="swagger-title">{{ api_title }}</h1>
+      <p class="swagger-lead">
+        Interactive sandbox for public ingestion and inference endpoints. Authorize with your
+        bearer token using the control below.
+      </p>
+    </header>
+    <div id="swagger-ui" aria-live="polite"></div>
+  </article>
 </main>
 {% endblock %}
 
@@ -59,10 +55,15 @@
     ],
     layout: "BaseLayout",
     deepLinking: true,
-    defaultModelsExpandDepth: 1,
+    defaultModelsExpandDepth: -1,
     docExpansion: "list",
+    displayOperationId: false,
+    displayRequestDuration: false,
     filter: true,
     tryItOutEnabled: true,
+    persistAuthorization: true,
+    operationsSorter: "alpha",
+    tagsSorter: "alpha",
     requestInterceptor: (req) => {
       req.headers["X-CSRFToken"] = "{{ csrf_token|escapejs }}";
       return req;

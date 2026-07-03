@@ -143,10 +143,20 @@ class OverviewService:
         widget_interactions += ga_data.get("clicks", 0)
 
     vulns = Vulnerability.objects.filter(created_at__gte=last_24h, **vuln_filter)
+    threat_by_hour: Counter[str] = Counter(
+      t.timestamp.strftime("%H:00") for t in threats if t.timestamp
+    )
+    vuln_by_hour: Counter[str] = Counter(
+      v.created_at.strftime("%H:00") for v in vulns if v.created_at
+    )
     security_alerts = [
       {
         "time": (now - timedelta(hours=24 - i)).strftime("%H:00"),
-        "count": (threats.count() + vulns.count()) // 24,
+        "count": threat_by_hour.get(
+          (now - timedelta(hours=24 - i)).strftime("%H:00"),
+          0,
+        )
+        + vuln_by_hour.get((now - timedelta(hours=24 - i)).strftime("%H:00"), 0),
       }
       for i in range(24)
     ]
@@ -271,6 +281,10 @@ class OverviewService:
       empty_time = [
         {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "latency": 0} for i in range(24)
       ]
+      empty_uptime = [
+        {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "uptime": 100.0}
+        for i in range(24)
+      ]
       empty_req = [
         {"time": (now - timedelta(hours=24 - i)).strftime("%H:00"), "requests": 0}
         for i in range(24)
@@ -287,6 +301,7 @@ class OverviewService:
       ]
       return {
         "time_series": empty_time,
+        "uptime_series": empty_uptime,
         "request_frequency": empty_req,
         "candlestick_data": empty_candle,
         "origin_distribution": [],
@@ -299,7 +314,7 @@ class OverviewService:
     for ep in raw_endpoints:
       raw_by_hour[ep.last_tested.strftime("%H:00")].append(ep)
 
-    time_series, candlestick_data, request_frequency = [], [], []
+    time_series, uptime_series, candlestick_data, request_frequency = [], [], [], []
     for i in range(24):
       hour_time = now - timedelta(hours=24 - i)
       time_str = hour_time.strftime("%H:00")
@@ -308,6 +323,7 @@ class OverviewService:
         a = agg_map[time_str]
         latency = a.avg_latency_ms
         p99 = a.p99_latency_ms
+        hour_uptime = round(100.0 - float(a.error_rate_percent), 2)
         candlestick_data.append(
           {
             "time": time_str,
@@ -318,11 +334,14 @@ class OverviewService:
           }
         )
         time_series.append({"time": time_str, "latency": latency})
+        uptime_series.append({"time": time_str, "uptime": hour_uptime})
         request_frequency.append({"time": time_str, "requests": a.total_requests})
       elif time_str in raw_by_hour:
         eps = raw_by_hour[time_str]
         latencies = [ep.response_time.total_seconds() * 1000.0 for ep in eps]
         avg_lat = sum(latencies) / len(latencies)
+        raw_failed = sum(1 for ep in eps if not (ep.is_active and ep.status_code < 500))
+        hour_uptime = round(100.0 - ((raw_failed / len(eps)) * 100.0), 2)
         candlestick_data.append(
           {
             "time": time_str,
@@ -333,8 +352,18 @@ class OverviewService:
           }
         )
         time_series.append({"time": time_str, "latency": avg_lat})
+        uptime_series.append({"time": time_str, "uptime": hour_uptime})
         request_frequency.append({"time": time_str, "requests": len(eps)})
       else:
+        fallback_uptime = round(
+          100.0
+          - (
+            sum(a.error_rate_percent for a in aggregated) / len(aggregated)
+            if aggregated
+            else 0.0
+          ),
+          2,
+        )
         candlestick_data.append(
           {
             "time": time_str,
@@ -345,6 +374,7 @@ class OverviewService:
           }
         )
         time_series.append({"time": time_str, "latency": p99_latency})
+        uptime_series.append({"time": time_str, "uptime": fallback_uptime})
         request_frequency.append({"time": time_str, "requests": 0})
 
     origin_distribution = [
@@ -379,6 +409,7 @@ class OverviewService:
 
     return {
       "time_series": time_series,
+      "uptime_series": uptime_series,
       "candlestick_data": candlestick_data,
       "request_frequency": request_frequency,
       "origin_distribution": origin_distribution,

@@ -23,6 +23,7 @@ class CustomSwagger(Swagger):
       "swagger.html",
       {
         "api_title": api.title,
+        "api_version": api.version,
         "openapi_url": openapi_url,
         "csrf_token": csrf_token,
         "frontend_url": settings.FRONTEND_URL.rstrip("/"),

@@ -1,34 +1,73 @@
 /**
- * Swagger UI — Viking-UI premium theme overrides.
+ * Swagger UI — Viking-UI theme (single-panel, flat operation list).
  * Load after swagger-ui.css; tokens from design-tokens.css + viking-ui.css.
  */
 
+body.backend-swagger {
+  background: var(--bg-color);
+}
+
 .swagger-docs-shell {
   width: 100%;
-  max-width: var(
-    --viking-container-max-width,
-    var(--container-max-width, 1260px)
-  );
+  max-width: var(--viking-container-max-width, var(--container-max-width, 1260px));
   margin: 0 auto;
-  padding: var(--viking-space-3, var(--space-3, 24px))
-    var(--viking-space-2, var(--space-2, 16px))
-    var(--viking-space-6, var(--space-6, 48px));
+  padding: var(--viking-space-3, 24px) var(--viking-space-2, 16px)
+    var(--viking-space-6, 48px);
   box-sizing: border-box;
 }
 
-/* Hide default Swagger UI frame — Drakkar navbar is authoritative */
+/* ── Single publication-style panel ─────────────────────────────────────── */
+.swagger-panel {
+  border: 1px solid var(--viking-border, var(--border));
+  border-radius: var(--viking-radius-lg, 12px);
+  background: color-mix(in srgb, var(--viking-surface, var(--card-bg)) 94%, transparent);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  overflow: hidden;
+}
+
+.swagger-panel-hero {
+  padding: var(--viking-space-3, 24px) var(--viking-space-3, 24px) var(--viking-space-2, 16px);
+  border-bottom: 1px solid var(--viking-border, var(--border));
+  text-align: left;
+}
+
+.swagger-eyebrow {
+  margin: 0 0 var(--viking-space-1, 8px);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--viking-accent, var(--color-primary));
+}
+
+.swagger-title {
+  margin: 0 0 var(--viking-space-1, 8px);
+  font-size: clamp(1.35rem, 3vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: var(--viking-text, var(--text-color));
+}
+
+.swagger-lead {
+  margin: 0;
+  max-width: 52rem;
+  font-size: var(--viking-font-size, 1rem);
+  line-height: 1.6;
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.swagger-panel #swagger-ui {
+  padding: 0 var(--viking-space-3, 24px) var(--viking-space-3, 24px);
+}
+
+/* ── Base resets ─────────────────────────────────────────────────────────── */
 .swagger-ui .topbar {
   display: none;
 }
 
 .swagger-ui {
-  font-family: var(
-    --viking-font-family,
-    "Inter",
-    "Segoe UI",
-    system-ui,
-    sans-serif
-  );
+  font-family: var(--viking-font-family, "Inter", system-ui, sans-serif);
   color: var(--viking-text, var(--text-color));
 }
 
@@ -38,88 +77,72 @@
   background: transparent;
 }
 
-/* ── Info / header block ─────────────────────────────────────────────────── */
-.swagger-ui .info {
-  margin: 0 0 var(--viking-space-4, 32px);
-  text-align: left;
-}
-
-/* Page chrome already renders the API title — keep version pills only */
+/* Hide duplicate Swagger title — page hero is authoritative */
 .swagger-ui .info .title {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--viking-space-1, 8px);
-  margin: 0 0 var(--viking-space-2, 16px);
-  font-size: 0;
-  line-height: 0;
+  display: none;
 }
 
-.swagger-ui .info .title small {
-  background: var(
-    --viking-accent-soft,
-    color-mix(in srgb, var(--viking-teal-600) 14%, transparent)
-  );
-  border: 1px solid var(--viking-border, var(--border));
-  border-radius: var(--viking-radius-pill, 999px);
-  color: var(--viking-accent, var(--color-primary));
-  font-size: var(--viking-font-size-sm, 14px);
-  font-weight: 600;
-  line-height: 1.4;
-  padding: 4px 12px;
-  vertical-align: middle;
+.swagger-ui .info {
+  margin: 0;
+  padding: var(--viking-space-2, 16px) 0;
+  border-bottom: 1px solid var(--viking-border, var(--border));
 }
 
-.swagger-ui .info .title small.version-stamp,
-.swagger-ui .info .title small:last-child {
-  border-color: var(--viking-border-strong, var(--border));
-  color: var(--viking-text-muted, var(--text-muted));
+.swagger-ui .info .markdown,
+.swagger-ui .info .description {
+  margin: 0;
+  max-width: none;
+  text-align: left;
 }
 
 .swagger-ui .info .base-url,
 .swagger-ui .info p,
 .swagger-ui .info li,
 .swagger-ui .info .markdown p {
-  font-size: var(--viking-font-size, var(--base-font-size, 16px));
-  line-height: var(--viking-line-height-relaxed, 1.625);
+  font-size: 0.92rem;
+  line-height: 1.6;
   color: var(--viking-text-muted, var(--text-muted));
-  text-align: left;
 }
 
-.swagger-ui .info .markdown,
 .swagger-ui .info .description {
-  text-align: left;
-  max-width: none;
+  padding: var(--viking-space-2, 16px);
+  border-radius: var(--viking-radius, 8px);
+  border: 1px solid color-mix(in srgb, var(--viking-accent, var(--color-primary)) 22%, var(--border));
+  background: color-mix(in srgb, var(--viking-accent, var(--color-primary)) 6%, transparent);
 }
 
 .swagger-ui .info a {
   color: var(--viking-accent, var(--color-primary));
   text-decoration: none;
-  transition: var(--viking-transition-colors, color 0.25s ease);
 }
 
 .swagger-ui .info a:hover,
 .swagger-ui .info a:focus-visible {
-  color: var(--viking-accent-hover, var(--viking-teal-500));
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
-/* ── Scheme / authorize bar ──────────────────────────────────────────────── */
+/* ── Toolbar: authorize + filter ─────────────────────────────────────────── */
 .swagger-ui .scheme-container {
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border, var(--border));
-  border-radius: var(--viking-radius-lg, 12px);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  margin: 0 0 var(--viking-space-3, 24px);
-  padding: var(--viking-space-2, 16px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--viking-space-2, 16px);
+  margin: 0;
+  padding: var(--viking-space-2, 16px) 0;
+  border: none;
+  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
 }
 
 .swagger-ui .scheme-container .schemes > label {
   color: var(--viking-text-muted, var(--text-muted));
-  font-size: var(--viking-font-size-sm, 14px);
-  font-weight: 600;
-  letter-spacing: var(--viking-letter-spacing-wide, 0.025em);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -128,16 +151,27 @@
   border: 1px solid var(--viking-border-strong, var(--border));
   border-radius: var(--viking-radius-sm, 6px);
   color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
+  font-family: inherit;
   font-size: var(--viking-font-size-sm, 14px);
-  min-height: var(--viking-control-height, 40px);
+  min-height: 36px;
   padding: 0 var(--viking-space-2, 16px);
 }
 
-.swagger-ui .scheme-container select:focus-visible {
-  outline: var(--viking-ring-width, 2px) solid
-    var(--viking-ring, var(--focus-ring-color));
-  outline-offset: var(--viking-ring-offset, 2px);
+.swagger-ui .filter-container {
+  margin: 0;
+  padding: var(--viking-space-2, 16px) 0;
+  border-bottom: 1px solid var(--viking-border, var(--border));
+}
+
+.swagger-ui .filter-container input[type="text"] {
+  width: 100%;
+  max-width: 100%;
+  min-height: 36px;
+  padding: 0 var(--viking-space-2, 16px);
+  border: 1px solid var(--viking-border, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  background: var(--viking-surface-alt, var(--viking-charcoal-800));
+  box-shadow: none;
 }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
@@ -145,191 +179,169 @@
   background: var(--viking-surface, var(--card-bg));
   border: 1px solid var(--viking-border-strong, var(--border));
   border-radius: var(--viking-radius, 8px);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  box-shadow: none;
   color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
-  font-size: var(--viking-font-size-sm, 14px);
+  font-family: inherit;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: var(--viking-letter-spacing-wide, 0.025em);
-  min-height: var(--viking-control-height, 40px);
+  letter-spacing: 0.04em;
+  min-height: 36px;
   padding: 0 var(--viking-space-2, 16px);
   text-transform: uppercase;
-  transition: var(--viking-transition-interactive, all 0.25s ease);
+  transition: var(--viking-transition-interactive, all 0.2s ease);
 }
 
 .swagger-ui .btn:hover {
   background: var(--viking-surface-raised, var(--viking-charcoal-600));
   border-color: var(--viking-accent-strong, var(--viking-teal-400));
-  box-shadow: var(--viking-shadow-hover, var(--shadow-hover));
-  transform: translateY(var(--viking-state-hover-lift, -1px));
+  transform: none;
 }
 
 .swagger-ui .btn:focus-visible {
-  outline: var(--viking-ring-width, 2px) solid
-    var(--viking-ring, var(--focus-ring-color));
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--focus-ring-color));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
 .swagger-ui .btn.authorize,
-.swagger-ui .btn.authorize.unlocked {
-  background: var(--viking-accent, var(--color-primary));
-  border-color: transparent;
-  color: var(--viking-accent-content, var(--viking-white-pure));
-}
-
-.swagger-ui .btn.authorize:hover,
-.swagger-ui .btn.authorize.unlocked:hover {
-  background: var(--viking-accent-hover, var(--viking-teal-500));
-  color: var(--viking-accent-content, var(--viking-white-pure));
-}
-
+.swagger-ui .btn.authorize.unlocked,
 .swagger-ui .btn.execute {
   background: var(--viking-accent, var(--color-primary));
   border-color: transparent;
   color: var(--viking-accent-content, var(--viking-white-pure));
 }
 
+.swagger-ui .btn.authorize:hover,
+.swagger-ui .btn.authorize.unlocked:hover,
 .swagger-ui .btn.execute:hover {
   background: var(--viking-accent-hover, var(--viking-teal-500));
+  color: var(--viking-accent-content, var(--viking-white-pure));
 }
 
 .swagger-ui .btn.cancel {
-  background: var(--viking-surface-raised, var(--viking-charcoal-600));
-  border-color: var(--viking-border-strong, var(--border));
-  color: var(--viking-text, var(--text-color));
-}
-
-.swagger-ui .btn.cancel:hover {
-  background: var(--viking-surface-alt, var(--viking-charcoal-700));
-  border-color: var(--viking-accent-strong, var(--viking-teal-400));
-  color: var(--viking-text, var(--text-color));
+  background: transparent;
+  color: var(--viking-text-muted, var(--text-muted));
 }
 
 /* ── Tag groups ──────────────────────────────────────────────────────────── */
+.swagger-ui .opblock-tag-section {
+  margin: 0;
+}
+
 .swagger-ui .opblock-tag {
+  margin: var(--viking-space-3, 24px) 0 var(--viking-space-1, 8px);
+  padding: 0 0 var(--viking-space-1, 8px);
   border-bottom: 1px solid var(--viking-border, var(--border));
-  color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
-  font-size: var(--viking-font-size-lg, 20px);
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
-  margin: var(--viking-space-3, 24px) 0 var(--viking-space-2, 16px);
-  padding: var(--viking-space-2, 16px) 0;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--viking-text-muted, var(--text-muted));
 }
 
 .swagger-ui .opblock-tag small {
-  color: var(--viking-text-muted, var(--text-muted));
-  font-size: var(--viking-font-size-sm, 14px);
+  font-size: 0.85rem;
   font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 .swagger-ui .opblock-tag svg {
   fill: var(--viking-text-muted, var(--text-muted));
 }
 
-/* ── Operation blocks ────────────────────────────────────────────────────── */
+/* ── Operations — flat rows, no nested cards ─────────────────────────────── */
 .swagger-ui .opblock {
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border, var(--border));
-  border-radius: var(--viking-radius-lg, 12px);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  margin: 0 0 var(--viking-space-2, 16px);
-  overflow: hidden;
+  margin: 0;
+  border: none;
+  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.swagger-ui .opblock.opblock-post,
+.swagger-ui .opblock.opblock-get,
+.swagger-ui .opblock.opblock-put,
+.swagger-ui .opblock.opblock-patch,
+.swagger-ui .opblock.opblock-delete,
+.swagger-ui .opblock.opblock-options,
+.swagger-ui .opblock.opblock-head {
+  border: none;
+  border-bottom: 1px solid var(--viking-border, var(--border));
+  background: transparent;
 }
 
 .swagger-ui .opblock .opblock-summary {
   border: none;
-  padding: var(--viking-space-2, 16px);
+  background: transparent !important;
+  padding: var(--viking-space-2, 16px) 0;
+}
+
+.swagger-ui .opblock.is-open .opblock-summary {
+  border-bottom: 1px solid var(--viking-border-subtle, var(--border));
 }
 
 .swagger-ui .opblock .opblock-summary-method {
   border-radius: var(--viking-radius-sm, 6px);
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
-  font-size: var(--viking-font-size-xs, 12px);
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
-  min-width: 72px;
+  letter-spacing: 0.06em;
+  min-width: 64px;
   text-align: center;
 }
 
 .swagger-ui .opblock.opblock-get .opblock-summary-method {
-  background: var(
-    --viking-accent-soft,
-    color-mix(in srgb, var(--viking-teal-600) 18%, transparent)
-  );
-  color: var(--viking-accent-strong, var(--viking-teal-400));
+  background: color-mix(in srgb, var(--viking-teal-600) 16%, transparent);
+  color: var(--viking-teal-400);
 }
 
 .swagger-ui .opblock.opblock-post .opblock-summary-method {
-  background: color-mix(
-    in srgb,
-    var(--viking-success, var(--viking-green-500)) 18%,
-    transparent
-  );
-  color: var(--viking-success, var(--viking-green-500));
+  background: color-mix(in srgb, var(--viking-green-500) 16%, transparent);
+  color: var(--viking-green-500);
 }
 
 .swagger-ui .opblock.opblock-put .opblock-summary-method,
 .swagger-ui .opblock.opblock-patch .opblock-summary-method {
-  background: color-mix(
-    in srgb,
-    var(--viking-warning, var(--viking-gold-500)) 18%,
-    transparent
-  );
-  color: var(--viking-warning, var(--viking-gold-500));
+  background: color-mix(in srgb, var(--viking-gold-500) 16%, transparent);
+  color: var(--viking-gold-500);
 }
 
 .swagger-ui .opblock.opblock-delete .opblock-summary-method {
-  background: var(
-    --viking-accent-secondary-soft,
-    color-mix(in srgb, var(--viking-crimson-600) 14%, transparent)
-  );
-  color: var(--viking-danger-text, var(--viking-crimson-400));
+  background: color-mix(in srgb, var(--viking-crimson-600) 14%, transparent);
+  color: var(--viking-crimson-400);
 }
 
 .swagger-ui .opblock .opblock-summary-path,
 .swagger-ui .opblock .opblock-summary-path__deprecated {
   color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
-  font-size: var(--viking-font-size-sm, 14px);
+  font-size: 0.88rem;
 }
 
 .swagger-ui .opblock .opblock-summary-description {
   color: var(--viking-text-muted, var(--text-muted));
-  font-size: var(--viking-font-size-sm, 14px);
-}
-
-.swagger-ui .opblock.is-open .opblock-summary {
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  font-size: 0.88rem;
 }
 
 .swagger-ui .opblock-body,
 .swagger-ui .opblock-section {
-  background: var(--viking-surface-alt, var(--viking-charcoal-700));
+  background: color-mix(in srgb, var(--viking-bg, var(--bg-color)) 35%, transparent);
 }
 
 .swagger-ui .opblock-section-header {
-  background: color-mix(
-    in srgb,
-    var(--viking-bg, var(--bg-color)) 40%,
-    transparent
-  );
+  background: transparent;
   border-bottom: 1px solid var(--viking-border-subtle, var(--border));
   box-shadow: none;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--viking-space-2, 16px);
-  padding: var(--viking-space-1-5, 12px) var(--viking-space-2, 16px);
+  padding: var(--viking-space-1-5, 12px) 0;
 }
 
 .swagger-ui .opblock-section-header h4,
 .swagger-ui .opblock-section-header label {
-  color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
-  font-size: var(--viking-font-size-sm, 14px);
-  font-weight: 600;
-  letter-spacing: var(--viking-letter-spacing-wide, 0.025em);
+  color: var(--viking-text-muted, var(--text-muted));
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -354,65 +366,52 @@
   border-radius: var(--viking-radius-sm, 6px);
   color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
-  font-size: var(--viking-font-size-sm, 14px);
-  min-height: var(--viking-control-height-sm, 32px);
+  font-size: 0.88rem;
+  min-height: 32px;
   padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
-  transition: var(--viking-transition-colors, border-color 0.25s ease);
-}
-
-.swagger-ui textarea {
-  font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
-  line-height: var(--viking-line-height-normal, 1.5);
 }
 
 .swagger-ui input:focus-visible,
 .swagger-ui textarea:focus-visible,
 .swagger-ui select:focus-visible {
   border-color: var(--viking-accent-strong, var(--viking-teal-400));
-  outline: var(--viking-ring-width, 2px) solid
-    var(--viking-ring, var(--focus-ring-color));
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--focus-ring-color));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
 .swagger-ui .parameter__name,
 .swagger-ui .parameter__type,
 .swagger-ui .parameter__in {
-  color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
-  font-size: var(--viking-font-size-sm, 14px);
+  font-size: 0.88rem;
 }
 
 .swagger-ui .parameter__in {
   color: var(--viking-text-muted, var(--text-muted));
-  font-style: normal;
 }
 
 .swagger-ui table thead tr th,
 .swagger-ui table thead tr td {
   border-bottom: 1px solid var(--viking-border, var(--border));
   color: var(--viking-text-muted, var(--text-muted));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
-  font-size: var(--viking-font-size-xs, 12px);
-  font-weight: 600;
-  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .swagger-ui table tbody tr td {
   border-bottom: 1px solid var(--viking-border-subtle, var(--border));
-  color: var(--viking-text, var(--text-color));
-  font-size: var(--viking-font-size-sm, 14px);
-  padding: var(--viking-space-1-5, 12px) var(--viking-space-2, 16px);
+  font-size: 0.88rem;
+  padding: var(--viking-space-1-5, 12px) 0;
 }
 
-/* ── Responses ───────────────────────────────────────────────────────────── */
+/* ── Responses & code ────────────────────────────────────────────────────── */
 .swagger-ui .responses-inner {
-  background: transparent;
-  padding: var(--viking-space-2, 16px);
+  padding: var(--viking-space-2, 16px) 0;
 }
 
 .swagger-ui .response-col_status {
-  color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
   font-weight: 700;
 }
@@ -420,7 +419,7 @@
 .swagger-ui .response-col_description__inner p,
 .swagger-ui .response-col_links {
   color: var(--viking-text-muted, var(--text-muted));
-  font-size: var(--viking-font-size-sm, 14px);
+  font-size: 0.88rem;
 }
 
 .swagger-ui .highlight-code,
@@ -431,52 +430,50 @@
   border: 1px solid var(--viking-border, var(--border));
   border-radius: var(--viking-radius, 8px);
   color: var(--viking-text, var(--text-color)) !important;
-  font-family: var(
-    --viking-font-family-mono,
-    "JetBrains Mono",
-    monospace
-  ) !important;
-  font-size: var(--viking-font-size-sm, 14px) !important;
-  line-height: var(--viking-line-height-relaxed, 1.625);
+  font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace) !important;
+  font-size: 0.84rem !important;
+  line-height: 1.55;
   padding: var(--viking-space-2, 16px) !important;
 }
 
-.swagger-ui .copy-to-clipboard {
-  background: var(--viking-surface-raised, var(--viking-charcoal-600));
-  border-radius: var(--viking-radius-xs, 4px);
+.swagger-ui .markdown code,
+.swagger-ui .renderedMarkdown code {
+  background: color-mix(in srgb, var(--viking-surface-alt, #1a1a1a) 70%, transparent);
+  border: 1px solid var(--viking-border-subtle, var(--border));
+  border-radius: 4px;
+  color: var(--viking-accent-strong, var(--viking-teal-400));
+  font-size: 0.84em;
+  padding: 1px 5px;
 }
 
-.swagger-ui .copy-to-clipboard button {
-  background: transparent;
-}
-
-/* ── Models ──────────────────────────────────────────────────────────────── */
+/* ── Schemas — flat index, no gray pill buttons ────────────────────────────── */
 .swagger-ui section.models {
-  border: 1px solid var(--viking-border, var(--border));
-  border-radius: var(--viking-radius-lg, 12px);
-  margin-top: var(--viking-space-4, 32px);
-  overflow: hidden;
-}
-
-.swagger-ui section.models.is-open h4 {
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  margin-top: var(--viking-space-3, 24px);
+  border: none;
+  border-top: 1px solid var(--viking-border, var(--border));
+  border-radius: 0;
+  overflow: visible;
 }
 
 .swagger-ui section.models h4 {
-  background: var(--viking-surface, var(--card-bg));
-  color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
-  font-size: var(--viking-font-size, 16px);
-  font-weight: 700;
   margin: 0;
-  padding: var(--viking-space-2, 16px);
+  padding: var(--viking-space-3, 24px) 0 var(--viking-space-1, 8px);
+  border: none;
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.swagger-ui section.models.is-open h4 {
+  border-bottom: none;
 }
 
 .swagger-ui section.models .model-container {
-  background: transparent;
-  border-radius: 0;
   margin: 0;
-  padding: 0 var(--viking-space-2, 16px) var(--viking-space-1, 8px);
+  padding: 0;
 }
 
 .swagger-ui section.models .model-box {
@@ -484,8 +481,16 @@
   align-items: center;
   flex-wrap: wrap;
   gap: var(--viking-space-1, 8px);
-  padding: var(--viking-space-1-5, 12px) var(--viking-space-2, 16px);
+  margin: 0;
+  padding: var(--viking-space-2, 16px) 0;
+  border: none;
   border-bottom: 1px solid var(--viking-border-subtle, var(--border));
+  border-radius: 0;
+  background: transparent;
+}
+
+.swagger-ui section.models .model-box:last-child {
+  border-bottom: none;
 }
 
 .swagger-ui section.models .model-box-control {
@@ -494,38 +499,48 @@
   display: flex;
   align-items: center;
   gap: var(--viking-space-1, 8px);
+  margin: 0;
   padding: 0;
+  border: none;
+  background: transparent !important;
+  box-shadow: none !important;
   text-align: left;
 }
 
-.swagger-ui section.models .model-toggle {
-  position: static;
-  top: auto;
-  margin: 0;
-  flex-shrink: 0;
+.swagger-ui section.models .model-box .btn,
+.swagger-ui section.models .model-toggle,
+.swagger-ui section.models button.model-box-control {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-height: auto;
+  padding: 0;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 600;
+  color: var(--viking-text, var(--text-color));
 }
 
-.swagger-ui section.models .model-jump-to-path,
-.swagger-ui section.models .model-box .model-title__text {
-  min-width: 0;
+.swagger-ui section.models .model-box > .btn {
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.swagger-ui section.models .model-title,
+.swagger-ui section.models .model-title__text {
+  color: var(--viking-text, var(--text-color));
+  font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
+  font-size: 0.88rem;
+  font-weight: 600;
 }
 
 .swagger-ui section.models .model .prop-type,
 .swagger-ui section.models .model .prop-format {
   margin-left: auto;
-  flex-shrink: 0;
-}
-
-.swagger-ui .model-box {
-  background: var(--viking-surface-alt, var(--viking-charcoal-700));
-  border-radius: var(--viking-radius, 8px);
-}
-
-.swagger-ui .model .prop-type,
-.swagger-ui .model .prop-format,
-.swagger-ui .model-title {
   color: var(--viking-accent, var(--color-primary));
-  font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
+  font-size: 0.78rem;
 }
 
 .swagger-ui .model .property-row {
@@ -534,10 +549,7 @@
 
 /* ── Modal (Authorize) ───────────────────────────────────────────────────── */
 .swagger-ui .dialog-ux .modal-ux {
-  background: var(
-    --viking-overlay-backdrop,
-    color-mix(in srgb, #0a0a0a 72%, transparent)
-  );
+  background: color-mix(in srgb, #0a0a0a 72%, transparent);
 }
 
 .swagger-ui .dialog-ux .modal-ux-content {
@@ -545,92 +557,40 @@
   border: 1px solid var(--viking-border-strong, var(--border));
   border-radius: var(--viking-radius-lg, 12px);
   box-shadow: var(--viking-shadow-lg, var(--shadow-lg));
+  padding: var(--viking-space-3, 24px);
 }
 
 .swagger-ui .dialog-ux .modal-ux-header {
   border-bottom: 1px solid var(--viking-border, var(--border));
-  padding: var(--viking-space-2, 16px) var(--viking-space-3, 24px);
+  padding: 0 0 var(--viking-space-2, 16px);
+  margin-bottom: var(--viking-space-2, 16px);
 }
 
 .swagger-ui .dialog-ux .modal-ux-header h3 {
-  color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
-  font-size: var(--viking-font-size-lg, 20px);
+  font-size: 1.1rem;
   font-weight: 700;
-}
-
-.swagger-ui .dialog-ux .modal-ux-content {
-  padding: var(--viking-space-3, 24px);
+  color: var(--viking-text, var(--text-color));
 }
 
 .swagger-ui .auth-container h4,
 .swagger-ui .auth-container label {
   color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", sans-serif);
 }
 
-/* ── Loading / errors ──────────────────────────────────────────────────────── */
+/* ── Loading / errors ────────────────────────────────────────────────────── */
 .swagger-ui .loading-container .loading {
   color: var(--viking-text-muted, var(--text-muted));
 }
 
-.swagger-ui .loading-container .loading:after {
-  border-color: var(--viking-accent, var(--color-primary)) transparent
-    transparent;
-}
-
 .swagger-ui .errors-wrapper {
-  background: color-mix(
-    in srgb,
-    var(--viking-danger, var(--viking-crimson-500)) 12%,
-    transparent
-  );
-  border: 1px solid
-    color-mix(
-      in srgb,
-      var(--viking-danger, var(--viking-crimson-500)) 35%,
-      transparent
-    );
+  background: color-mix(in srgb, var(--viking-crimson-500) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--viking-crimson-500) 30%, transparent);
   border-radius: var(--viking-radius, 8px);
-  color: var(--viking-danger-text, var(--viking-crimson-400));
+  color: var(--viking-crimson-400);
   margin: var(--viking-space-2, 16px) 0;
   padding: var(--viking-space-2, 16px);
 }
 
-/* ── Filter bar ────────────────────────────────────────────────────────────── */
-.swagger-ui .filter-container {
-  margin: 0 0 var(--viking-space-3, 24px);
-}
-
-.swagger-ui .filter-container input[type="text"] {
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border, var(--border));
-  border-radius: var(--viking-radius-pill, 999px);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  min-height: var(--viking-control-height, 40px);
-  padding: 0 var(--viking-space-3, 24px);
-  width: 100%;
-  max-width: 420px;
-}
-
-/* ── Markdown in descriptions ──────────────────────────────────────────────── */
-.swagger-ui .markdown code,
-.swagger-ui .renderedMarkdown code {
-  background: var(--viking-surface-alt, var(--viking-charcoal-700));
-  border-radius: var(--viking-radius-xs, 4px);
-  color: var(--viking-accent-strong, var(--viking-teal-400));
-  font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
-  font-size: 0.92em;
-  padding: 2px 6px;
-}
-
-.swagger-ui .markdown strong,
-.swagger-ui .renderedMarkdown strong {
-  color: var(--viking-text, var(--text-color));
-  font-weight: 600;
-}
-
-/* ── Light mode adjustments ────────────────────────────────────────────────── */
 html[data-theme="light"] .swagger-ui .highlight-code,
 html[data-theme="light"] .swagger-ui .microlight,
 html[data-theme="light"] .swagger-ui pre {
@@ -640,5 +600,17 @@ html[data-theme="light"] .swagger-ui pre {
 @media (prefers-reduced-motion: reduce) {
   .swagger-ui .btn:hover {
     transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .swagger-panel-hero,
+  .swagger-panel #swagger-ui {
+    padding-inline: var(--viking-space-2, 16px);
+  }
+
+  .swagger-ui .opblock .opblock-summary {
+    flex-wrap: wrap;
+    gap: var(--viking-space-1, 8px);
   }
 }

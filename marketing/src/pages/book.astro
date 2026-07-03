@@ -1,9 +1,10 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
-import { loadBookChapters } from '../lib/book-chapters';
+import { loadBookChapters, SIDEBAR_GROUPS } from '../lib/book-chapters';
 import { bookJsonLd, canonicalHref } from '../lib/seo';
 import { siteEnv } from '../lib/site-env';
+import '../styles/publication.scss';
 
 const chapters = loadBookChapters();
 const { MARKETING_URL } = siteEnv();
@@ -21,145 +22,133 @@ const bookJsonLdPayload = bookJsonLd(pageTitle, pageDescription, canonicalHref('
   ogType="book"
   jsonLd={bookJsonLdPayload}
 >
-  <div class="dashboard-page-container dashboard-layout book-toc-page" id="main-content">
-    <div class="content-wrapper page-inner-wrapper">
-      <div class="whitepaper-container book-shell">
-        <div class="whitepaper-header book-hero">
+  <div class="dashboard-page-container book-toc-page" id="main-content">
+    <div class="page-inner-wrapper book-toc-wrapper">
+      <article class="publication-shell">
+        <header class="publication-hero">
           <div class="hero-glow" aria-hidden="true"></div>
-          <div class="section-tag-row u-style-541ffc">
+          <div class="hero-brand">
+            <VikingIcon name="drakkar" size={36} color="accent" class="hero-brand-icon" />
+          </div>
+          <div class="section-tag-row">
             <span class="section-tag">Interactive Reference · {chapters.length - 1} Chapters</span>
           </div>
-          <h1 class="title">Data Engineering for Machine Learning</h1>
-          <p class="subtitle">
+          <h1 class="hero-title">Data Engineering for Machine Learning</h1>
+          <p class="hero-subtitle">
             Building High-Throughput Event Platforms for Real-Time Detection and Response
           </p>
-          <div class="author-meta u-style-17e119">
-            <span>Interactive Guides, Working Notes, & Reference Material for Security Engineers</span>
-          </div>
-        </div>
+          <p class="hero-meta">
+            Interactive Guides, Working Notes, & Reference Material for Security Engineers
+          </p>
 
-        <div class="book-toc-grid">
-          {chapters.map(chapter => (
-            <a href={`/book/${chapter.slug}/`} class="book-toc-card">
-              <VikingIcon name="menu_book" size={20} />
-              <span>{chapter.title}</span>
+          <div class="hero-meta-row">
+            <a href="/documentation">Integration Guides</a>
+            <span class="meta-dot">•</span>
+            <a href="/whitepaper">The Whitepaper</a>
+            <span class="meta-dot">•</span>
+            <a
+              href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/THEME.md"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              THEME.md
             </a>
-          ))}
-        </div>
+          </div>
+        </header>
+
+        <nav class="publication-toc" aria-label="Book chapters">
+          <h2 class="toc-heading">Contents</h2>
+          {SIDEBAR_GROUPS.map(group => {
+            const groupChapters = chapters.filter(chapter => chapter.group === group);
+            if (groupChapters.length === 0) return null;
+            return (
+              <div class="book-toc-group">
+                <div class="book-toc-group-title">{group}</div>
+                <ol class="toc-list">
+                  {groupChapters.map(chapter => (
+                    <li>
+                      <a href={`/book/${chapter.slug}/`} class="toc-item">
+                        <span class="toc-num">{chapter.num || '—'}</span>
+                        <span class="toc-label">{chapter.shortTitle}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            );
+          })}
+        </nav>
 
         {firstChapter && (
           <div class="book-toc-cta">
-            <a href={`/book/${firstChapter.slug}/`} class="pagination-btn">
+            <a href={`/book/${firstChapter.slug}/`} class="book-start-btn">
               Start reading <VikingIcon name="chevron_right" size={20} />
             </a>
           </div>
         )}
-      </div>
+      </article>
     </div>
   </div>
 </Layout>
 
 <style lang="scss">
 .book-toc-page {
+  min-height: calc(100vh - 64px);
   background:
     radial-gradient(ellipse 60% 40% at 10% 0%, color-mix(in srgb, var(--viking-teal-600) 8%, transparent), transparent),
     var(--bg-color);
 }
 
-.book-shell {
-  border-radius: 24px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
-  backdrop-filter: blur(16px);
-  padding: 0 0 32px;
-  box-shadow: var(--shadow-sm);
-}
-
-.book-hero {
-  position: relative;
-  overflow: hidden;
-  padding: 40px 24px 32px;
-  border-radius: 24px 24px 0 0;
-  border-bottom: 1px solid var(--border);
-  text-align: center;
-
-  .hero-glow {
-    position: absolute;
-    inset: -30% 0 auto;
-    height: 200px;
-    background: radial-gradient(circle, color-mix(in srgb, var(--viking-teal-600) 15%, transparent), transparent 70%);
-    pointer-events: none;
-  }
-
-  .title, .subtitle, .author-meta { position: relative; }
-}
-
-.title {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: 800;
-  line-height: 1.15;
-  margin-bottom: 12px;
-}
-
-.subtitle {
-  font-size: 1.05rem;
-  color: var(--text-muted);
-  max-width: 640px;
-  margin: 0 auto 20px;
-  line-height: 1.6;
-}
-
-.content-wrapper {
-  padding: 24px 16px;
-  max-width: 900px;
+.book-toc-wrapper {
+  max-width: 860px;
   margin: 0 auto;
-  width: 100%;
-}
+  padding: 32px 16px 80px;
 
-.book-toc-grid {
-  display: grid;
-  gap: 12px;
-  padding: 24px;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  @media (min-width: 768px) {
+    padding: 40px 24px 80px;
   }
 }
 
-.book-toc-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--card-bg);
-  color: var(--text-color);
-  text-decoration: none;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+.book-toc-group {
+  margin-bottom: 20px;
 
-  &:hover {
-    border-color: color-mix(in srgb, var(--viking-teal-600) 35%, var(--border));
-    box-shadow: var(--shadow-sm);
+  &:last-child {
+    margin-bottom: 0;
   }
+}
+
+.book-toc-group-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  opacity: 0.75;
 }
 
 .book-toc-cta {
   display: flex;
   justify-content: center;
-  padding: 0 24px 8px;
+  padding: 24px 28px 32px;
+  border-top: 1px solid var(--border);
 }
 
-.pagination-btn {
+.book-start-btn {
   background: var(--color-primary) !important;
   color: white !important;
   font-weight: 600;
-  border-radius: 16px;
+  border-radius: 12px;
   border: none;
   padding: 10px 18px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   text-decoration: none;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
 }
 </style>
