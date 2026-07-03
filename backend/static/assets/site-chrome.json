@@ -27,7 +27,7 @@
     {
       "id": "sites",
       "label": "Sites",
-      "icon": "globe",
+      "icon": "building",
       "appHref": "/settings",
       "marketingHref": "/settings",
       "requireAuth": true,

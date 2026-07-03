@@ -94,6 +94,15 @@ def sync_design_system():
   if os.path.isdir(scss_target):
     print(f" - {scss_target}")
 
+  print("Building site-chrome assets and Django partials...")
+  subprocess.run(["npm", "run", "build:site-chrome"], cwd=frontend_dir, check=True)
+
+  print("Syncing widget assets...")
+  subprocess.run(
+    [sys.executable, os.path.join(root_dir, "scripts", "sync_widgets.py")],
+    check=True,
+  )
+
 
 if __name__ == "__main__":
   sync_design_system()

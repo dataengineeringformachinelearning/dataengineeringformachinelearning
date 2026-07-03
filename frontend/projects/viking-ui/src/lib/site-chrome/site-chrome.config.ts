@@ -64,7 +64,7 @@ export const SITE_NAV_LINKS: readonly SiteNavLink[] = [
   {
     id: 'sites',
     label: 'Sites',
-    icon: 'globe',
+    icon: 'building',
     appHref: '/settings',
     marketingHref: '/settings',
     requireAuth: true,
