@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
+import { VikingIcon, VikingIconSizePreset } from '@dataengineeringformachinelearning/viking-ui';
 import { mapMaterialIcon } from '../../core/viking-icon-map';
 
 /** Bridges legacy Material icon names to viking-icon for incremental migration. */
@@ -11,7 +11,12 @@ import { mapMaterialIcon } from '../../core/viking-icon-map';
     '[attr.aria-hidden]': 'ariaHidden() ? "true" : null',
     '[class]': 'hostClass()',
   },
-  template: `<viking-icon [name]="resolvedName()" [size]="size()" [spin]="spin()" />`,
+  template: `<viking-icon
+    [name]="resolvedName()"
+    [size]="size()"
+    [sizePreset]="sizePreset()"
+    [spin]="spin()"
+  />`,
   styles: [
     `
       :host {
@@ -26,7 +31,8 @@ import { mapMaterialIcon } from '../../core/viking-icon-map';
 })
 export class VikingAppIcon {
   readonly name = input.required<string>();
-  readonly size = input<number>(22);
+  readonly size = input<number | undefined>(22);
+  readonly sizePreset = input<VikingIconSizePreset | null>(null);
   readonly spin = input<boolean>(false);
   readonly ariaHidden = input<boolean>(false);
   readonly hostClass = input<string>('');

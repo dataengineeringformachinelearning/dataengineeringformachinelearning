@@ -10,7 +10,7 @@ import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
     'aria-hidden': 'true',
     '[class]': 'hostClass()',
   },
-  template: `<viking-icon name="deml" [size]="size()" />`,
+  template: `<viking-icon name="deml" variant="filled" [size]="size()" />`,
   styles: [
     `
       :host {

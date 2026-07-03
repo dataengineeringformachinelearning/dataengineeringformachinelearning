@@ -12,17 +12,16 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     '[attr.aria-label]': 'label()',
   },
   template: `
-    <svg viewBox="0 0 24 24" [attr.width]="size()" [attr.height]="size()" aria-hidden="true">
-      <circle class="viking-spinner-track" cx="12" cy="12" r="9" fill="none" stroke-width="2.5" />
-      <circle
-        class="viking-spinner-arc"
-        cx="12"
-        cy="12"
-        r="9"
-        fill="none"
-        stroke-width="2.5"
-        stroke-linecap="round"
-      />
+    <svg
+      class="viking-spinner-svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      [attr.width]="size()"
+      [attr.height]="size()"
+      aria-hidden="true"
+    >
+      <circle class="viking-spinner-track" cx="12" cy="12" r="9" />
+      <circle class="viking-spinner-arc" cx="12" cy="12" r="9" stroke-linecap="round" />
     </svg>
   `,
   styles: [
@@ -31,15 +30,29 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         display: inline-flex;
         color: var(--viking-accent);
       }
-      .viking-spinner-track {
-        stroke: color-mix(in srgb, var(--viking-accent) 14%, transparent);
+
+      .viking-spinner-svg {
+        --viking-spinner-stroke: 2;
+        shape-rendering: geometricPrecision;
       }
+
+      .viking-spinner-track,
+      .viking-spinner-arc {
+        fill: none;
+        stroke-width: var(--viking-spinner-stroke);
+      }
+
+      .viking-spinner-track {
+        stroke: color-mix(in srgb, currentColor 14%, transparent);
+      }
+
       .viking-spinner-arc {
         stroke: currentColor;
         stroke-dasharray: 42 84;
         transform-origin: center;
         animation: viking-spin var(--viking-duration-slow) var(--viking-ease-default) infinite;
       }
+
       @media (prefers-reduced-motion: reduce) {
         .viking-spinner-arc {
           animation: none;

@@ -12,11 +12,11 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
     '[class.viking-gauge-arc-primary]': "tone() === 'primary'",
   },
   template: `
-    <svg class="viking-gauge-arc-svg" viewBox="0 0 100 60">
-      <path class="viking-gauge-arc-bg" d="M 10 50 A 40 40 0 0 1 90 50" />
+    <svg class="viking-gauge-arc-svg" viewBox="0 0 100 60" fill="none">
+      <path class="viking-gauge-arc-bg" d="M10 50A40 40 0 0 1 90 50" />
       <path
         class="viking-gauge-arc-fill"
-        d="M 10 50 A 40 40 0 0 1 90 50"
+        d="M10 50A40 40 0 0 1 90 50"
         [attr.stroke-dasharray]="strokeDasharray()"
       />
     </svg>
@@ -26,33 +26,42 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
       :host {
         display: block;
         width: 100%;
+        color: var(--viking-accent);
       }
+
       .viking-gauge-arc-svg {
         width: 100%;
         height: auto;
         overflow: visible;
+        shape-rendering: geometricPrecision;
       }
+
       .viking-gauge-arc-bg,
       .viking-gauge-arc-fill {
         fill: none;
         stroke-width: 8;
         stroke-linecap: round;
       }
+
       .viking-gauge-arc-bg {
         stroke: color-mix(in srgb, var(--viking-text-muted) 25%, transparent);
       }
+
       .viking-gauge-arc-fill {
-        stroke: var(--viking-accent);
-        transition: stroke-dasharray 0.4s ease;
+        stroke: currentColor;
+        transition: stroke-dasharray 0.4s var(--viking-ease-default);
       }
-      :host(.viking-gauge-arc-amber) .viking-gauge-arc-fill {
-        stroke: var(--viking-warning);
+
+      :host(.viking-gauge-arc-amber) {
+        color: var(--viking-warning);
       }
-      :host(.viking-gauge-arc-danger) .viking-gauge-arc-fill {
-        stroke: var(--viking-danger);
+
+      :host(.viking-gauge-arc-danger) {
+        color: var(--viking-danger);
       }
-      :host(.viking-gauge-arc-primary) .viking-gauge-arc-fill {
-        stroke: var(--viking-accent);
+
+      :host(.viking-gauge-arc-primary) {
+        color: var(--viking-accent);
       }
     `,
   ],

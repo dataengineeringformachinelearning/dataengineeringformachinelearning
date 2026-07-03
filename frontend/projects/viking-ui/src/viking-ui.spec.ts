@@ -10,6 +10,7 @@ import {
   VikingChart,
   VikingCheckbox,
   VikingHeading,
+  VikingIcon,
   VikingPagination,
   VikingProgress,
   VikingSelect,
@@ -204,5 +205,36 @@ describe('viking-ui', () => {
     expect(service.toasts().length).toBe(1);
     service.dismiss(id);
     expect(service.toasts().length).toBe(0);
+  });
+
+  it('renders outline and filled DEML brand icons at 24×24 viewBox', async (): Promise<void> => {
+    const outline = TestBed.createComponent(VikingIcon);
+    outline.componentRef.setInput('name', 'deml');
+    outline.componentRef.setInput('sizePreset', 'lg');
+    outline.detectChanges();
+    const outlineSvg = outline.nativeElement.querySelector('svg') as SVGSVGElement;
+    expect(outlineSvg.getAttribute('viewBox')).toBe('0 0 24 24');
+    expect(outlineSvg.getAttribute('stroke')).toBe('currentColor');
+    expect(outline.nativeElement.classList.contains('viking-icon-outline')).toBe(true);
+
+    const filled = TestBed.createComponent(VikingIcon);
+    filled.componentRef.setInput('name', 'deml');
+    filled.componentRef.setInput('variant', 'filled');
+    filled.componentRef.setInput('size', 28);
+    filled.detectChanges();
+    const filledSvg = filled.nativeElement.querySelector('svg') as SVGSVGElement;
+    expect(filledSvg.getAttribute('fill')).toBe('currentColor');
+    expect(filledSvg.getAttribute('stroke')).toBe('none');
+    expect(filled.nativeElement.classList.contains('viking-icon-filled')).toBe(true);
+  });
+
+  it('maps size presets to pixel dimensions', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingIcon);
+    fixture.componentRef.setInput('name', 'check');
+    fixture.componentRef.setInput('sizePreset', 'sm');
+    fixture.detectChanges();
+    const svg = fixture.nativeElement.querySelector('svg') as SVGSVGElement;
+    expect(svg.style.width).toBe('16px');
+    expect(svg.style.height).toBe('16px');
   });
 });

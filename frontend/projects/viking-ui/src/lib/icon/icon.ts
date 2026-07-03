@@ -3,30 +3,50 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   VIKING_BRAND_ICON_NAMES,
   VIKING_FILLED_ICON_NAMES,
+  VIKING_ICON_FILLED_PATHS,
   VIKING_ICON_PATHS,
   resolveVikingIcon,
+  resolveVikingIconSize,
   vikingIconViewBox,
   VikingIconName,
+  VikingIconSizePreset,
+  VikingIconVariant,
 } from '../core/icons';
 
 /**
  * viking-icon — inline SVG icon.
  * Zero-dependency stroke icons from the internal registry; brand marks use official artwork.
+ *
+ * @example Outline (default)
+ * ```html
+ * <viking-icon name="search" sizePreset="md" />
+ * ```
+ *
+ * @example Filled brand mark
+ * ```html
+ * <viking-icon name="deml" variant="filled" [size]="28" />
+ * ```
  */
 @Component({
   selector: 'viking-icon',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.viking-icon-spin]': 'spin()',
+    '[class.viking-icon-filled]': 'isFilled()',
+    '[class.viking-icon-outline]': '!isFilled()',
+    '[class.viking-icon-sm]': 'sizePreset() === "sm"',
+    '[class.viking-icon-md]': 'sizePreset() === "md"',
+    '[class.viking-icon-lg]': 'sizePreset() === "lg" || (!sizePreset() && !size())',
     'aria-hidden': 'true',
   },
   template: `
     @if (resolvedName() === 'google') {
       <svg
+        class="viking-icon-svg viking-icon-brand"
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 48 48"
-        [style.width.px]="size()"
-        [style.height.px]="size()"
+        [style.width.px]="resolvedSize()"
+        [style.height.px]="resolvedSize()"
         aria-hidden="true"
       >
         <path
@@ -48,28 +68,29 @@ import {
       </svg>
     } @else if (resolvedName() === 'apple') {
       <svg
+        class="viking-icon-svg viking-icon-brand"
         xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 170 170"
+        viewBox="0 0 24 24"
         fill="currentColor"
-        [style.width.px]="size()"
-        [style.height.px]="size()"
+        [style.width.px]="resolvedSize()"
+        [style.height.px]="resolvedSize()"
         aria-hidden="true"
       >
         <path
-          d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.34.25-9.3-.9-14.86-3.47-5.56-2.57-9.9-6.93-13.01-13.06-7.72-14.88-11.58-30.82-11.58-47.81 0-14.93 3.33-27.07 9.99-36.42 6.66-9.35 15.26-14.07 25.81-14.17 5.11-.1 10.13 1.54 15.06 4.9 4.93 3.37 8.52 4.9 10.77 4.58 2.05-.32 5.56-1.92 10.53-4.78 4.96-2.87 9.87-4.22 14.72-4.05 15.2.85 26.68 6.58 34.41 17.2-12.18 7.37-18.15 17.51-17.9 30.4.25 10.3 4.18 18.91 11.78 25.8 7.6 6.89 16.48 10.5 26.63 10.82-1.95 5.66-4.66 11.45-8.12 17.38zm-30.34-114.7c0 8.16-2.92 15.53-8.76 21.09-5.84 5.56-12.79 8.78-20.85 9.68-.2-1.63-.3-3.23-.3-4.79 0-8.41 3.12-16.14 9.35-23.19 6.23-7.05 13.68-11.02 22.37-11.9.1.86.19 2.06.19 3.61z"
+          d="M16.365 12.14c.02 2.53 2.21 3.38 2.23 3.39-.02.07-.35 1.21-1.16 2.4-.7 1.02-1.43 2.03-2.58 2.05-1.13.02-1.49-.67-2.78-.67-1.29 0-1.69.65-2.75.69-1.11.04-1.95-1.12-2.66-2.13-1.44-2.08-2.54-5.87-1.07-8.43.73-1.27 2.04-2.08 3.46-2.1 1.08-.02 2.1.72 2.78.72.67 0 2.14-.89 3.61-.76.61.03 2.33.25 3.44 1.88-.09.06-2.05 1.2-2.03 3.55M13.75 3.64c.59-.71 1-1.7.89-2.68-.86.03-1.9.57-2.52 1.28-.55.63-1.03 1.65-.9 2.62.95.07 1.92-.49 2.53-1.22"
         />
       </svg>
     } @else {
       <svg
+        class="viking-icon-svg"
         xmlns="http://www.w3.org/2000/svg"
         [attr.viewBox]="viewBox()"
-        [attr.fill]="filled() ? 'currentColor' : 'none'"
-        [attr.stroke]="filled() ? 'none' : 'currentColor'"
-        [attr.stroke-width]="filled() ? null : '1.8'"
+        [attr.fill]="isFilled() ? 'currentColor' : 'none'"
+        [attr.stroke]="isFilled() ? 'none' : 'currentColor'"
         stroke-linecap="round"
         stroke-linejoin="round"
-        [style.width.px]="size()"
-        [style.height.px]="size()"
+        [style.width.px]="resolvedSize()"
+        [style.height.px]="resolvedSize()"
         [innerHTML]="paths()"
       ></svg>
     }
@@ -82,10 +103,31 @@ import {
         justify-content: center;
         flex-shrink: 0;
         line-height: 0;
+        color: inherit;
       }
+
+      .viking-icon-svg {
+        --viking-icon-stroke-width: 1.75;
+        stroke-width: var(--viking-icon-stroke-width);
+        shape-rendering: geometricPrecision;
+      }
+
+      :host(.viking-icon-sm) .viking-icon-svg {
+        --viking-icon-stroke-width: 1.5;
+      }
+
+      :host(.viking-icon-lg) .viking-icon-svg {
+        --viking-icon-stroke-width: 1.75;
+      }
+
+      :host(.viking-icon-filled) .viking-icon-svg {
+        stroke: none;
+      }
+
       :host(.viking-icon-spin) svg {
         animation: viking-icon-rotate 0.9s linear infinite;
       }
+
       @keyframes viking-icon-rotate {
         to {
           transform: rotate(360deg);
@@ -98,23 +140,40 @@ export class VikingIcon {
   private readonly sanitizer = inject(DomSanitizer);
 
   readonly name = input.required<VikingIconName | string>();
-  readonly size = input<number>(24);
+  /** Explicit pixel size — overridden by sizePreset when set. */
+  readonly size = input<number | undefined>(undefined);
+  /** sm (16px) · md (20px) · lg (24px) */
+  readonly sizePreset = input<VikingIconSizePreset | null>(null);
+  /** outline (stroke) or filled (solid) */
+  readonly variant = input<VikingIconVariant>('outline');
   readonly spin = input<boolean>(false);
 
   protected readonly resolvedName = computed(() => resolveVikingIcon(this.name()));
 
+  protected readonly resolvedSize = computed(() =>
+    resolveVikingIconSize(this.size(), this.sizePreset()),
+  );
+
   protected readonly viewBox = computed(() => vikingIconViewBox(this.resolvedName()));
 
-  protected readonly filled = computed(() => {
+  protected readonly isFilled = computed(() => {
     const name = this.resolvedName();
     if ((VIKING_BRAND_ICON_NAMES as readonly string[]).includes(name)) {
       return false;
     }
+    if (this.variant() === 'filled') {
+      return true;
+    }
     return (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(name);
   });
 
-  protected readonly paths = computed<SafeHtml>(() =>
+  protected readonly paths = computed<SafeHtml>(() => {
+    const name = this.resolvedName();
+    const html =
+      this.isFilled() && VIKING_ICON_FILLED_PATHS[name]
+        ? VIKING_ICON_FILLED_PATHS[name]
+        : (VIKING_ICON_PATHS[name] ?? '');
     // Registry content is a static, trusted constant defined inside this package.
-    this.sanitizer.bypassSecurityTrustHtml(VIKING_ICON_PATHS[this.resolvedName()] ?? ''),
-  );
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  });
 }

@@ -13,7 +13,7 @@ import { VikingIcon } from '../icon/icon';
     @if (logoSrc()) {
       <img class="viking-brand-logo" [src]="logoSrc()" [alt]="name() + ' logo'" />
     } @else {
-      <viking-icon name="deml" [size]="28" class="viking-brand-mark-icon" />
+      <viking-icon name="deml" variant="filled" [size]="28" class="viking-brand-mark-icon" />
     }
     <span class="viking-brand-name">{{ name() }}</span>
     <ng-content />
