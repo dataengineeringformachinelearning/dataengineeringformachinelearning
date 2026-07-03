@@ -59,7 +59,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.auth.outputs.credentials_file_path }}
         run: |
           set +e
-          OUTPUT=$(firebase deploy --only hosting:viking-ui-docs --project demldotcom --non-interactive 2>&1)
+          OUTPUT=$(firebase deploy --only hosting:deml-ui --project demldotcom --non-interactive 2>&1)
           STATUS=$?
           echo "$OUTPUT"
           if [ "$STATUS" -eq 0 ]; then

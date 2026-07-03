@@ -7,7 +7,7 @@ This is the **standalone documentation site** for Viking-UI. Do not merge this i
 - Read `THEME.md` before editing styles or components.
 - Library source lives in `../frontend/projects/viking-ui/` — edit components there, not in this app.
 - This app only **demonstrates** library components; keep demo pages thin.
-- Deploy via Firebase Hosting target `viking-ui-docs`, not marketing or deml.app.
+- Deploy via Firebase Hosting site **`deml-ui`**, not marketing or deml.app.
 
 ## Local dev
 
