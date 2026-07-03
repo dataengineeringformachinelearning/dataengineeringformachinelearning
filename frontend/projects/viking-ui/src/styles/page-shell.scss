@@ -208,6 +208,15 @@
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 }
 
+/* Chart cards — shared header/body rhythm for dashboard analytics grids */
+.status-card-outlined:has(.chart-custom-header) {
+  .chart-custom-header {
+    border-bottom: 1px solid var(--viking-border-subtle);
+    padding-bottom: var(--viking-space-2);
+    margin-bottom: 0;
+  }
+}
+
 .viking-chart-empty,
 .empty-chart-state,
 .panel-empty {

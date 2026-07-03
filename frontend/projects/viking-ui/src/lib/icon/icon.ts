@@ -23,9 +23,9 @@ import {
  * <viking-icon name="search" sizePreset="md" color="accent" />
  * ```
  *
- * @example Filled brand mark
+ * @example Brand mark (outline)
  * ```html
- * <viking-icon name="drakkar" variant="filled" [size]="28" color="accent" />
+ * <viking-icon name="drakkar" [size]="28" color="accent" />
  * ```
  */
 @Component({

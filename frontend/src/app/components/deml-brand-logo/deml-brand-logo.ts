@@ -10,7 +10,7 @@ import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
     'aria-hidden': 'true',
     '[class]': 'hostClass()',
   },
-  template: `<viking-icon name="deml" variant="filled" [size]="size()" />`,
+  template: `<viking-icon name="deml" [size]="size()" color="accent" />`,
   styles: [
     `
       :host {
@@ -26,6 +26,6 @@ import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
   ],
 })
 export class DemlBrandLogo {
-  readonly hostClass = input<string>('brand-icon navbar-logo glowing-icon-sm');
+  readonly hostClass = input<string>('brand-icon navbar-logo');
   readonly size = input<number>(28);
 }

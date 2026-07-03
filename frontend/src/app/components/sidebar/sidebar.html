@@ -16,7 +16,7 @@
       (keydown.enter)="toggleCollapse()"
       (keydown.space)="$event.preventDefault(); toggleCollapse()"
     >
-      <deml-brand-logo hostClass="brand-icon" />
+      <deml-brand-logo hostClass="brand-icon" [size]="24" />
       <h2 class="brand-title">DEML</h2>
       <div class="collapse-toggle-btn" aria-hidden="true">
         <viking-app-icon
