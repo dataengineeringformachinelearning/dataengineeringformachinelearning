@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Injectable,
-  inject,
-  input,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Injectable, input, signal } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
 import { VikingToastInstance, VikingToastOptions } from '../core/types';
@@ -180,9 +173,9 @@ export class VikingToastService {
   ],
 })
 export class VikingToaster {
-  protected readonly service = inject(VikingToastService);
-
   readonly position = input<'bottom-end' | 'top-end'>('bottom-end');
+
+  constructor(protected readonly service: VikingToastService) {}
 
   protected toneIcon = (tone: string): VikingIconName => TONE_ICONS[tone] ?? 'info';
 }
