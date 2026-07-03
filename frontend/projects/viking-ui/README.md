@@ -1,12 +1,13 @@
 # @dataengineeringformachinelearning/viking-ui
 
-**Viking-UI** is DEML's clinical Angular design system — lab-coat aesthetics on THEME.md tokens.
+**Viking-UI** is DEML's premium Angular design system — dark-first engineering aesthetics with luxurious minimalism.
 
-- **8px grid** spacing (`--space-1` … `--space-8`)
-- **16px** main content / **14px** UI chrome typography
-- **Crayola blue** (`#2176ff`) primary, **blue-bell** (`#33a1fd`) accents
+- **4px grid** spacing (`--viking-space-half` … `--viking-space-10`; legacy `--viking-space-1` = 8px)
+- **16px** main content / **14px** UI chrome typography with full type scale
+- **Deep teal** (`#0D7377`) primary CTA, **rich crimson** (`#922B3E`) secondary accent
+- **Charcoal surfaces** (`#111`, `#1A1A1A`, `#2A2A2A`) with metallic borders (`#555`–`#AAA`)
 - Zero-dependency components (`viking-*` selectors, `--viking-*` tokens)
-- WCAG 2.1 AA focus rings, axe-core tested templates
+- WCAG 2.1 AA focus rings, smooth theme transitions, axe-core tested templates
 
 ## Install
 

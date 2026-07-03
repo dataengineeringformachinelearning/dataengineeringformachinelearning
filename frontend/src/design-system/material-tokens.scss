@@ -1,51 +1,77 @@
-// Angular Material M3 system variables — mapped to THEME.md palette only.
+// Angular Material M3 system variables — mapped to premium palette via legacy aliases.
 // Used with mat.theme(..., use-system-variables: true) in the Angular app.
 
+:root,
 html[data-theme='dark'] {
   --mat-sys-primary: var(--crayola-blue);
   --mat-sys-on-primary: var(--white);
   --mat-sys-primary-container: var(--blue-bell);
-  --mat-sys-on-primary-container: var(--black);
-  --mat-sys-secondary: var(--blue-bell);
-  --mat-sys-on-secondary: var(--black);
+  --mat-sys-on-primary-container: var(--charcoal-900, var(--jet-black));
+  --mat-sys-secondary: var(--accent-color);
+  --mat-sys-on-secondary: var(--white);
   --mat-sys-tertiary: var(--golden-pollen);
-  --mat-sys-on-tertiary: var(--black);
+  --mat-sys-on-tertiary: var(--charcoal-900, var(--jet-black));
   --mat-sys-error: var(--carrot-orange);
   --mat-sys-on-error: var(--white);
   --mat-sys-surface: var(--color-surface);
-  --mat-sys-on-surface: var(--white);
+  --mat-sys-on-surface: var(--color-on-surface);
   --mat-sys-surface-variant: var(--color-surface-variant);
   --mat-sys-on-surface-variant: var(--text-muted);
   --mat-sys-background: var(--bg-color);
-  --mat-sys-on-background: var(--white);
+  --mat-sys-on-background: var(--color-on-background);
   --mat-sys-outline: var(--border);
   --mat-sys-outline-variant: var(--border-layout);
-  --mat-sys-inverse-surface: var(--white);
-  --mat-sys-inverse-on-surface: var(--jet-black);
-  --mat-sys-inverse-primary: var(--crayola-blue);
+  --mat-sys-inverse-surface: #f5f5f5;
+  --mat-sys-inverse-on-surface: var(--charcoal-900, var(--jet-black));
+  --mat-sys-inverse-primary: var(--blue-bell);
 }
 
-html[data-theme='light'],
-:root {
+html[data-theme='light'] {
   --mat-sys-primary: var(--crayola-blue);
   --mat-sys-on-primary: var(--white);
   --mat-sys-primary-container: var(--blue-bell);
   --mat-sys-on-primary-container: var(--white);
-  --mat-sys-secondary: var(--crayola-blue);
+  --mat-sys-secondary: var(--accent-color);
   --mat-sys-on-secondary: var(--white);
   --mat-sys-tertiary: var(--golden-pollen);
-  --mat-sys-on-tertiary: var(--jet-black);
+  --mat-sys-on-tertiary: var(--charcoal-900, var(--jet-black));
   --mat-sys-error: var(--carrot-orange);
   --mat-sys-on-error: var(--white);
   --mat-sys-surface: var(--color-surface);
-  --mat-sys-on-surface: var(--jet-black);
+  --mat-sys-on-surface: var(--color-on-surface);
   --mat-sys-surface-variant: var(--color-surface-variant);
   --mat-sys-on-surface-variant: var(--text-muted);
   --mat-sys-background: var(--white);
-  --mat-sys-on-background: var(--jet-black);
+  --mat-sys-on-background: var(--color-on-background);
   --mat-sys-outline: var(--border);
   --mat-sys-outline-variant: var(--border-layout);
-  --mat-sys-inverse-surface: var(--jet-black);
+  --mat-sys-inverse-surface: var(--charcoal-900, var(--jet-black));
   --mat-sys-inverse-on-surface: var(--white);
   --mat-sys-inverse-primary: var(--blue-bell);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme='dark']) {
+    --mat-sys-primary: var(--crayola-blue);
+    --mat-sys-on-primary: var(--white);
+    --mat-sys-primary-container: var(--blue-bell);
+    --mat-sys-on-primary-container: var(--white);
+    --mat-sys-secondary: var(--accent-color);
+    --mat-sys-on-secondary: var(--white);
+    --mat-sys-tertiary: var(--golden-pollen);
+    --mat-sys-on-tertiary: var(--charcoal-900, var(--jet-black));
+    --mat-sys-error: var(--carrot-orange);
+    --mat-sys-on-error: var(--white);
+    --mat-sys-surface: var(--color-surface);
+    --mat-sys-on-surface: var(--color-on-surface);
+    --mat-sys-surface-variant: var(--color-surface-variant);
+    --mat-sys-on-surface-variant: var(--text-muted);
+    --mat-sys-background: var(--white);
+    --mat-sys-on-background: var(--color-on-background);
+    --mat-sys-outline: var(--border);
+    --mat-sys-outline-variant: var(--border-layout);
+    --mat-sys-inverse-surface: var(--charcoal-900, var(--jet-black));
+    --mat-sys-inverse-on-surface: var(--white);
+    --mat-sys-inverse-primary: var(--blue-bell);
+  }
 }
