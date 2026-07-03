@@ -52,7 +52,7 @@ def cmd_hygiene(args: argparse.Namespace) -> None:
     _run(["bash", "scripts/deml-cleanup.sh"])
 
   if args.theme:
-    theme_args = ["node", "cleanup-theme.js"]
+    theme_args = ["node", "scripts/enforce-theme.js"]
     theme_args.append("--apply" if args.apply else "--dry-run")
     if args.verbose:
       theme_args.append("--verbose")
@@ -119,7 +119,7 @@ def build_parser() -> argparse.ArgumentParser:
 
   hygiene = sub.add_parser("hygiene", help="Cache purge and theme cleanup")
   hygiene.add_argument("--cache", action="store_true", help="Purge build caches (deml-cleanup.sh)")
-  hygiene.add_argument("--theme", action="store_true", help="Run cleanup-theme.js audit")
+  hygiene.add_argument("--theme", action="store_true", help="Run enforce-theme.js audit")
   hygiene.add_argument("--apply", action="store_true", help="Apply safe theme fixes")
   hygiene.add_argument("-v", "--verbose", action="store_true")
   hygiene.set_defaults(func=cmd_hygiene, cache=True, theme=False, apply=False, verbose=False)

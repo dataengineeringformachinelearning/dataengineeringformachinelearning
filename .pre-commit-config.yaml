@@ -63,7 +63,7 @@ repos:
 
       - id: cleanup-theme
         name: Viking-UI theme consistency (dry-run)
-        entry: node cleanup-theme.js --dry-run
+        entry: node scripts/enforce-theme.js
         language: system
         files: ^(frontend|marketing|backend|packages)/.*\.(scss|css|astro|html|ts|js|svg)$
         exclude: ^.*/(viking-ui|design-tokens|deml-components)\.css$
