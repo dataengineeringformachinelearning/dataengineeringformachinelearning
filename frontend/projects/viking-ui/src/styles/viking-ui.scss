@@ -191,3 +191,57 @@ body,
 .viking-panel-card {
   transition: var(--viking-transition-colors);
 }
+
+/* Mobile-first control sizing — touch-friendly on small screens */
+@media (max-width: 767px) {
+  :root {
+    --viking-control-height: var(--viking-touch-target-min, 44px);
+    --viking-control-height-sm: 40px;
+  }
+}
+
+/* Global tooltip surface (rendered on document.body by vikingTooltip directive) */
+.viking-tooltip {
+  position: fixed;
+  z-index: var(--viking-z-tooltip);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  max-width: min(20rem, calc(100vw - var(--viking-space-4)));
+  padding: var(--viking-space-half) var(--viking-space-1);
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  line-height: var(--viking-line-height-snug);
+  color: var(--viking-text-inverted);
+  background: var(--viking-charcoal-900, #111111);
+  border: 1px solid var(--viking-border-strong);
+  border-radius: var(--viking-radius);
+  box-shadow: var(--viking-shadow-md);
+  pointer-events: none;
+  animation: viking-tooltip-in var(--viking-duration-fast) var(--viking-ease-out);
+}
+
+.viking-tooltip-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.viking-tooltip-kbd {
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-xs);
+  padding: 0 var(--viking-space-half);
+  border: 1px solid color-mix(in srgb, var(--viking-text-inverted) 35%, transparent);
+  border-radius: var(--viking-radius-xs);
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.viking-tooltip-host {
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-tooltip {
+    animation: none;
+  }
+}

@@ -59,6 +59,7 @@ export * from './lib/input/input';
 export * from './lib/kanban/kanban';
 export * from './lib/kbd/kbd';
 export * from './lib/label/label';
+export * from './lib/loading-overlay/loading-overlay';
 export * from './lib/metric-card/metric-card';
 export * from './lib/menubar/menubar';
 export * from './lib/modal/modal';

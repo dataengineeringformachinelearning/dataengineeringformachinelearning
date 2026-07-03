@@ -370,7 +370,15 @@
             variant="subtle"
             icon="shield"
             vikingTooltip="Semgrep and Trivy scans passed on the last push"
+            tooltipKbd="S"
             >Security</viking-button
+          >
+          <viking-button
+            variant="ghost"
+            icon="info"
+            vikingTooltip="Projection lag is within SLA"
+            tooltipPosition="bottom"
+            >Tooltip bottom</viking-button
           >
         </div>
         <viking-context>
@@ -422,6 +430,13 @@
         <viking-progress label="Model training" [value]="72" />
         <viking-progress label="Snapshot compaction" tone="warning" [value]="41" />
         <viking-progress label="Replaying DLQ" [indeterminate]="true" />
+        <div class="loading-overlay-demo">
+          <viking-card>
+            <viking-heading [level]="3">Worker status</viking-heading>
+            <viking-text variant="muted">Refreshing telemetry projections…</viking-text>
+            <viking-loading-overlay message="Syncing Firestore projections" />
+          </viking-card>
+        </div>
         <div class="skeleton-row">
           <viking-skeleton shape="circle" width="45px" height="45px" />
           <div class="skeleton-lines">

@@ -1,5 +1,7 @@
 import { DOCUMENT, Directive, ElementRef, OnDestroy, inject, input } from '@angular/core';
 
+let tooltipIdCounter = 0;
+
 /**
  * vikingTooltip — attribute directive tooltip.
  * Shows on hover and keyboard focus; positions itself relative to the host.
@@ -7,11 +9,13 @@ import { DOCUMENT, Directive, ElementRef, OnDestroy, inject, input } from '@angu
 @Directive({
   selector: '[vikingTooltip]',
   host: {
+    class: 'viking-tooltip-host viking-focus-ring',
     '(mouseenter)': 'show()',
     '(mouseleave)': 'hide()',
     '(focusin)': 'show()',
     '(focusout)': 'hide()',
     '(keydown.escape)': 'hide()',
+    '[attr.aria-describedby]': 'visible() ? tooltipId : null',
   },
 })
 export class VikingTooltip implements OnDestroy {
@@ -19,53 +23,68 @@ export class VikingTooltip implements OnDestroy {
   private readonly document = inject(DOCUMENT);
 
   readonly vikingTooltip = input.required<string>();
-  readonly tooltipPosition = input<'top' | 'bottom'>('top');
+  readonly tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
   readonly tooltipKbd = input<string>('');
 
+  protected readonly tooltipId = `viking-tooltip-${++tooltipIdCounter}`;
+
   private element: HTMLElement | null = null;
+
+  protected visible = (): boolean => this.element !== null;
 
   protected show = (): void => {
     if (this.element || !this.vikingTooltip()) {
       return;
     }
     const tip = this.document.createElement('div');
+    tip.id = this.tooltipId;
     tip.setAttribute('role', 'tooltip');
-    tip.textContent = this.vikingTooltip();
+    tip.className = 'viking-tooltip';
+
+    const text = this.document.createElement('span');
+    text.className = 'viking-tooltip-text';
+    text.textContent = this.vikingTooltip();
+    tip.appendChild(text);
+
     if (this.tooltipKbd()) {
       const kbd = this.document.createElement('kbd');
+      kbd.className = 'viking-tooltip-kbd';
       kbd.textContent = this.tooltipKbd();
-      kbd.style.cssText =
-        'margin-left:9px;padding:0 5px;border:1px solid color-mix(in srgb, var(--viking-accent-content, #ffffff) 35%, transparent);border-radius:5px;';
       tip.appendChild(kbd);
     }
-    tip.style.cssText = [
-      'position:fixed',
-      'z-index:var(--viking-z-tooltip, 1200)',
-      'background:var(--jet-black, #31393c)',
-      'color:var(--white, #ffffff)',
-      'font-family:var(--viking-font-family, Inter, sans-serif)',
-      'font-size:var(--viking-font-size-ui, 14px)',
-      'line-height:1.35',
-      'padding:5px 9px',
-      'border-radius:var(--viking-radius, 9px)',
-      'border:1px solid var(--viking-border-strong, rgba(255,255,255,0.2))',
-      'box-shadow:var(--viking-shadow-md)',
-      'pointer-events:none',
-      'max-width:315px',
-      'white-space:normal',
-    ].join(';');
-    this.document.body.appendChild(tip);
 
+    this.document.body.appendChild(tip);
+    this.position(tip);
+    this.element = tip;
+  };
+
+  private position = (tip: HTMLElement): void => {
     const anchor = this.host.nativeElement.getBoundingClientRect();
     const rect = tip.getBoundingClientRect();
-    const left = Math.max(
-      9,
-      Math.min(anchor.left + anchor.width / 2 - rect.width / 2, window.innerWidth - rect.width - 9),
-    );
-    const top = this.tooltipPosition() === 'top' ? anchor.top - rect.height - 9 : anchor.bottom + 9;
-    tip.style.left = `${left}px`;
-    tip.style.top = `${Math.max(9, top)}px`;
-    this.element = tip;
+    const gap = parseInt(getComputedStyle(this.document.documentElement).getPropertyValue('--viking-space-1'), 10) || 8;
+    const edge = parseInt(getComputedStyle(this.document.documentElement).getPropertyValue('--viking-space-1'), 10) || 8;
+
+    let left = anchor.left + anchor.width / 2 - rect.width / 2;
+    let top = anchor.top - rect.height - gap;
+
+    switch (this.tooltipPosition()) {
+      case 'bottom':
+        top = anchor.bottom + gap;
+        break;
+      case 'left':
+        left = anchor.left - rect.width - gap;
+        top = anchor.top + anchor.height / 2 - rect.height / 2;
+        break;
+      case 'right':
+        left = anchor.right + gap;
+        top = anchor.top + anchor.height / 2 - rect.height / 2;
+        break;
+      default:
+        break;
+    }
+
+    tip.style.left = `${Math.max(edge, Math.min(left, window.innerWidth - rect.width - edge))}px`;
+    tip.style.top = `${Math.max(edge, top)}px`;
   };
 
   protected hide = (): void => {

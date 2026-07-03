@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, input } from '@angular/core';
 import { VikingSkeleton } from '../skeleton/skeleton';
 
 /**
@@ -12,13 +12,17 @@ import { VikingSkeleton } from '../skeleton/skeleton';
     '[class.viking-card-interactive]': 'interactive()',
     '[class.viking-card-loading]': 'loading()',
     '[attr.aria-busy]': "loading() ? 'true' : null",
+    '[attr.tabindex]': 'interactive() ? 0 : null',
+    '[attr.role]': "interactive() ? 'button' : null",
+    '(keydown.enter)': 'onActivate($event)',
+    '(keydown.space)': 'onActivate($event)',
   },
   template: `
     @if (loading()) {
       <div class="viking-card-skeleton" aria-hidden="true">
-        <viking-skeleton height="20px" width="45%" />
-        <viking-skeleton height="14px" width="80%" />
-        <viking-skeleton height="14px" width="65%" />
+        <viking-skeleton height="var(--viking-font-size-lg)" width="45%" />
+        <viking-skeleton height="var(--viking-font-size-sm)" width="80%" />
+        <viking-skeleton height="var(--viking-font-size-sm)" width="65%" />
       </div>
     } @else {
       <ng-content />
@@ -80,8 +84,18 @@ import { VikingSkeleton } from '../skeleton/skeleton';
   ],
 })
 export class VikingCard {
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+
   readonly interactive = input<boolean>(false);
   readonly loading = input<boolean>(false);
+
+  protected onActivate = (event: KeyboardEvent): void => {
+    if (!this.interactive() || this.loading()) {
+      return;
+    }
+    event.preventDefault();
+    this.host.nativeElement.click();
+  };
 }
 
 /** Header row for viking-card. */

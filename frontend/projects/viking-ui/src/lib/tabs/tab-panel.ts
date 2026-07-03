@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { VIKING_TABS, VikingTabs } from './tabs';
 
 /**
@@ -9,6 +9,8 @@ import { VIKING_TABS, VikingTabs } from './tabs';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     role: 'tabpanel',
+    '[attr.id]': 'panelId()',
+    '[attr.aria-labelledby]': 'tabId()',
     '[attr.hidden]': 'hidden() ? "" : null',
     '[class.viking-hidden]': 'hidden()',
   },
@@ -24,10 +26,16 @@ import { VIKING_TABS, VikingTabs } from './tabs';
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size);
         color: var(--viking-text);
-        line-height: 1.6;
+        line-height: var(--viking-line-height-relaxed);
+        animation: viking-fade-in var(--viking-duration-fast) var(--viking-ease-out);
       }
       :host(.viking-hidden) {
         display: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        :host {
+          animation: none;
+        }
       }
     `,
   ],
@@ -36,6 +44,9 @@ export class VikingTabPanel {
   private readonly tabs = inject(VikingTabs, { optional: true });
 
   readonly value = input.required<string>();
+
+  protected readonly panelId = computed(() => `viking-tab-panel-${this.value()}`);
+  protected readonly tabId = computed(() => `viking-tab-${this.value()}`);
 
   protected hidden = () => (this.tabs?.value() ?? '') !== this.value();
 }

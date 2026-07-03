@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { VIKING_TABS, VikingTabs } from './tabs';
 
 /**
@@ -13,7 +13,9 @@ import { VIKING_TABS, VikingTabs } from './tabs';
       role="tab"
       class="viking-tab"
       [class.viking-active]="active()"
+      [id]="tabId()"
       [attr.aria-selected]="active()"
+      [attr.aria-controls]="panelId()"
       [attr.tabindex]="active() ? 0 : -1"
       [disabled]="disabled()"
       (click)="select()"
@@ -41,14 +43,24 @@ import { VIKING_TABS, VikingTabs } from './tabs';
         cursor: pointer;
         transition: var(--viking-transition-interactive);
         position: relative;
+        -webkit-tap-highlight-color: transparent;
       }
-      .viking-tab:hover:not(:disabled) {
+      @media (max-width: 767px) {
+        .viking-tab {
+          min-height: var(--viking-control-height);
+          flex: 1 1 auto;
+        }
+      }
+      .viking-tab:hover:not(:disabled):not(.viking-active) {
         color: var(--viking-text);
         background: var(--viking-accent-soft);
       }
       .viking-tab:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
+      }
+      .viking-tab:active:not(:disabled) {
+        transform: scale(var(--viking-state-active-scale));
       }
       .viking-tab.viking-active {
         color: var(--viking-accent-content);
@@ -69,10 +81,15 @@ export class VikingTab {
   readonly value = input.required<string>();
   readonly disabled = input(false);
 
+  protected readonly tabId = computed(() => `viking-tab-${this.value()}`);
+  protected readonly panelId = computed(() => `viking-tab-panel-${this.value()}`);
+
   protected active = () => (this.tabs?.value() ?? '') === this.value();
 
   protected select = (): void => {
-    if (this.disabled() || !this.tabs) return;
+    if (this.disabled() || !this.tabs) {
+      return;
+    }
     this.tabs.value.set(this.value());
   };
 }

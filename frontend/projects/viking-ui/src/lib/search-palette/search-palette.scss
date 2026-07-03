@@ -5,7 +5,7 @@
 .viking-search-palette-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 10000;
+  z-index: var(--viking-z-overlay);
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -14,6 +14,7 @@
   backdrop-filter: blur(4px);
   border: none;
   cursor: default;
+  animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-out);
 }
 
 .viking-search-palette {
@@ -22,14 +23,15 @@
   background: color-mix(in srgb, var(--viking-surface) 85%, transparent);
   backdrop-filter: blur(20px) saturate(160%);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius);
-  box-shadow: var(--viking-shadow-md);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-lg);
   overflow: hidden;
   max-width: 600px;
   width: 100%;
   margin: 0 auto;
   font-family: var(--viking-font-family);
   color: var(--viking-text);
+  animation: viking-modal-in var(--viking-duration) var(--viking-ease-out);
 }
 
 .viking-search-palette-header {
@@ -43,6 +45,7 @@
 
 .viking-search-palette-header:focus-within {
   border-bottom-color: var(--viking-accent);
+  box-shadow: inset 0 -2px 0 var(--viking-accent-soft);
 }
 
 .viking-search-palette-input {
@@ -57,17 +60,32 @@
 
 .viking-search-palette-close {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--viking-touch-target-comfort);
+  min-height: var(--viking-touch-target-comfort);
   border: none;
   background: transparent;
   color: var(--viking-text-muted);
   cursor: pointer;
-  padding: 4px;
+  padding: var(--viking-space-half);
   border-radius: var(--viking-radius);
+  transition: var(--viking-transition-interactive);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .viking-search-palette-close:hover {
   color: var(--viking-text);
   background: var(--viking-accent-soft);
+}
+
+.viking-search-palette-close:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+.viking-search-palette-close:active {
+  transform: scale(var(--viking-state-active-scale));
 }
 
 .viking-search-palette-body {
@@ -113,20 +131,27 @@
 ::ng-deep .viking-search-result {
   display: flex;
   align-items: center;
+  min-height: var(--viking-control-height-sm);
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius);
   background: color-mix(in srgb, var(--viking-surface) 2%, transparent);
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: var(--viking-transition-interactive);
   gap: var(--viking-space-1);
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::ng-deep .viking-search-result.viking-selected,
 ::ng-deep .viking-search-result:hover {
   background: color-mix(in srgb, var(--viking-accent) 5%, transparent);
   border-color: color-mix(in srgb, var(--viking-accent) 30%, transparent);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--viking-accent) 10%, transparent);
+  box-shadow: var(--viking-shadow-sm);
+}
+
+::ng-deep .viking-search-result:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
 }
 
 ::ng-deep .viking-search-result-icon {
@@ -217,16 +242,23 @@
   display: flex;
   align-items: center;
   gap: var(--viking-space-1);
+  min-height: var(--viking-control-height-sm);
   padding: var(--viking-space-1) var(--viking-space-2);
   background: color-mix(in srgb, var(--viking-surface) 2%, transparent);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: var(--viking-transition-interactive);
+  -webkit-tap-highlight-color: transparent;
 }
 
 ::ng-deep .viking-search-suggestion:hover {
   background: color-mix(in srgb, var(--viking-accent) 5%, transparent);
   border-color: color-mix(in srgb, var(--viking-accent) 30%, transparent);
   box-shadow: var(--viking-shadow-sm);
+}
+
+::ng-deep .viking-search-suggestion:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
 }

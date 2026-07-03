@@ -102,6 +102,8 @@ import { VikingSpinner } from '../spinner/spinner';
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        min-width: var(--viking-touch-target-comfort);
+        min-height: var(--viking-touch-target-comfort);
         border: none;
         background: transparent;
         color: var(--viking-text-muted);
@@ -109,6 +111,9 @@ import { VikingSpinner } from '../spinner/spinner';
         padding: var(--viking-space-half);
         border-radius: var(--viking-radius-pill);
         transition: var(--viking-transition-interactive);
+        position: relative;
+        flex-shrink: 0;
+        -webkit-tap-highlight-color: transparent;
       }
       .viking-input-clear:hover {
         color: var(--viking-text);
@@ -116,7 +121,10 @@ import { VikingSpinner } from '../spinner/spinner';
       }
       .viking-input-clear:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
+      }
+      .viking-input-clear:active {
+        transform: scale(var(--viking-state-active-scale));
       }
       .viking-input-kbd {
         font-family: var(--viking-font-family);

@@ -99,26 +99,35 @@ const toIso = (date: Date): string =>
       }
       .viking-calendar-nav {
         display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: var(--viking-touch-target-comfort);
+        min-height: var(--viking-touch-target-comfort);
         border: 1px solid var(--viking-border);
         background: transparent;
         color: var(--viking-text-muted);
-        border-radius: calc(var(--viking-radius) / 1.5);
-        padding: 5px;
+        border-radius: var(--viking-radius-sm);
+        padding: var(--viking-space-half);
         cursor: pointer;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
+        -webkit-tap-highlight-color: transparent;
       }
       .viking-calendar-nav:hover {
         color: var(--viking-text);
         border-color: var(--viking-accent-strong);
+        background: var(--viking-accent-soft);
+      }
+      .viking-calendar-nav:active {
+        transform: scale(var(--viking-state-active-scale));
       }
       .viking-calendar-nav:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-calendar-grid {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 2px;
+        gap: var(--viking-space-half);
       }
       .viking-calendar-weekday {
         text-align: center;
@@ -127,27 +136,33 @@ const toIso = (date: Date): string =>
         padding: calc(var(--viking-space-1) / 2);
       }
       .viking-calendar-day {
-        width: var(--viking-space-4);
-        height: var(--viking-space-4);
+        width: 100%;
+        aspect-ratio: 1;
+        min-width: var(--viking-control-height-sm);
+        min-height: var(--viking-control-height-sm);
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border: 1px solid transparent;
         background: transparent;
         color: var(--viking-text);
-        border-radius: calc(var(--viking-radius) / 1.5);
+        border-radius: var(--viking-radius-sm);
         font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size);
+        font-size: var(--viking-font-size-sm);
         cursor: pointer;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
         font-variant-numeric: tabular-nums;
+        -webkit-tap-highlight-color: transparent;
       }
       .viking-calendar-day:hover:not(.viking-selected) {
         background: var(--viking-accent-soft);
       }
+      .viking-calendar-day:active:not(.viking-selected) {
+        transform: scale(var(--viking-state-active-scale));
+      }
       .viking-calendar-day:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-outside {
         color: var(--viking-text-muted);
