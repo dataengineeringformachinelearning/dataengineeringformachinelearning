@@ -103,10 +103,11 @@
       </div>
 
       @if (availableSites.length > 0) {
-      <div class="filter-group-mobile u-style-7bafc4">
+      <div class="filter-group-mobile">
         <app-unified-select
           id="siteSelect"
           label="Filter by Site:"
+          width="half"
           [options]="siteOptions"
           [value]="selectedSite || 'All'"
           (valueChange)="onSiteChange($event)"

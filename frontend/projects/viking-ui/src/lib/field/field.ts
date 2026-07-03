@@ -84,6 +84,12 @@ import { fluxUid } from '../core/uid';
         border-color: var(--viking-danger);
         box-shadow: 0 0 0 1px color-mix(in srgb, var(--viking-danger) 25%, transparent);
       }
+      :host ::ng-deep viking-select,
+      :host ::ng-deep viking-native-select {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      }
     `,
   ],
 })

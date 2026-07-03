@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingSelectOption } from '../core/types';
+import type { VikingSelectWidth } from '../select/select';
 import { fluxUid } from '../core/uid';
 
 /**
@@ -10,6 +11,10 @@ import { fluxUid } from '../core/uid';
   selector: 'viking-native-select',
   providers: [provideVikingCva(VikingNativeSelect)],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.viking-native-select-full]': "width() === 'full'",
+    '[class.viking-native-select-half]': "width() === 'half'",
+  },
   template: `
     <label class="viking-native-select" [class.viking-disabled]="disabled() || formDisabled()">
       @if (label()) {
@@ -38,7 +43,15 @@ import { fluxUid } from '../core/uid';
     `
       :host {
         display: block;
+        min-width: 0;
         font-family: var(--viking-font-family);
+      }
+      :host(.viking-native-select-full) {
+        width: 100%;
+      }
+      :host(.viking-native-select-half) {
+        width: 100%;
+        max-width: var(--viking-select-half-max-width, min(100%, 24rem));
       }
       .viking-native-select {
         display: flex;
@@ -81,6 +94,7 @@ export class VikingNativeSelect extends VikingControl<string | number | null> {
   readonly placeholder = input('');
   readonly options = input<VikingSelectOption[]>([]);
   readonly disabled = input(false);
+  readonly width = input<VikingSelectWidth>('full');
 
   readonly value = model<string | number | null>(null);
 

@@ -163,6 +163,8 @@
   --viking-control-height-xs: 24px;
   --viking-control-padding-x: var(--viking-space-2);
   --viking-btn-min-width: 120px;
+  --viking-select-panel-bg: var(--viking-surface-raised);
+  --viking-select-half-max-width: min(100%, 24rem);
 
   /* ── Layout ────────────────────────────────────────────────────────────── */
   --viking-container-max-width: 1260px;

@@ -325,15 +325,21 @@
 .filter-group-mobile {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: stretch;
+  gap: var(--viking-space-1, 8px);
   width: 100%;
+  margin-bottom: var(--viking-space-3, 24px);
+
+  app-unified-select {
+    width: 100%;
+    min-width: 0;
+  }
 
   @media (min-width: 768px) {
     flex-direction: row;
-    align-items: center;
-    gap: 16px;
-    width: auto;
+    align-items: flex-end;
+    gap: var(--viking-space-2, 16px);
+    width: 100%;
   }
 }
 
