@@ -58,7 +58,7 @@
           <viking-callout tone="danger" [heading]="error()!" />
           }
         </form>
-
+        } @if (!successMessage() || isResetMode()) {
         <div vikingAuthLinks class="viking-auth-links">
           @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
           <viking-button

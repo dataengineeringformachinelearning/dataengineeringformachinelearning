@@ -16,7 +16,7 @@ import { Sidebar } from './components/sidebar/sidebar';
 import { filter } from 'rxjs/operators';
 import { PageMetaService } from './services/page-meta.service';
 
-import { VikingToaster } from '@deml/viking-ui';
+import { VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
 import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';

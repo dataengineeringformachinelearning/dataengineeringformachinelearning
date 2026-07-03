@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { VikingSiteFooter } from '@deml/viking-ui';
+import { VikingSiteFooter } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 
 const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'] as const;

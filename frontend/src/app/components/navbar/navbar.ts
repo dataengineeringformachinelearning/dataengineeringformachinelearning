@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { VikingSiteNavbar } from '@deml/viking-ui';
+import { VikingSiteNavbar } from '@dataengineeringformachinelearning/viking-ui';
 import { AuthService } from '../../services/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { environment } from '../../../environments/environment';
