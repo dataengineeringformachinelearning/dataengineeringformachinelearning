@@ -103,13 +103,16 @@ export class VikingColorPicker extends VikingControl<string> {
   readonly value = model<string>('#0d7377');
   readonly label = input<string>('');
   readonly disabled = input<boolean>(false);
-  /** Preset swatches — Viking premium palette mapped to THEME.md semantic roles. */
+  /** Preset swatches — THEME.md Series color palette (premium charcoal / teal / crimson). */
   readonly presets = input<string[]>([
-    '#111111',
     '#0d7377',
+    '#922b3e',
     '#2a9d8f',
     '#c4a035',
     '#a83344',
+    '#3d8bfd',
+    '#2a2a2a',
+    '#666666',
   ]);
 
   writeValue(value: string): void {
