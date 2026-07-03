@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input, model, output } from '@angul
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
+import { VikingSpinner } from '../spinner/spinner';
 
 /**
  * viking-input — text input with icons, kbd hint and clearable state
@@ -9,11 +10,15 @@ import { VikingIconName } from '../core/icons';
  */
 @Component({
   selector: 'viking-input',
-  imports: [VikingIcon],
+  imports: [VikingIcon, VikingSpinner],
   providers: [provideVikingCva(VikingInput)],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="viking-control viking-input-shell" [class.viking-disabled]="isDisabled()">
+    <div
+      class="viking-control viking-input-shell"
+      [class.viking-disabled]="isDisabled()"
+      [class.viking-loading]="loading()"
+    >
       @if (icon()) {
         <viking-icon class="viking-input-icon" [name]="icon()!" [size]="20" />
       }
@@ -21,13 +26,16 @@ import { VikingIconName } from '../core/icons';
         [type]="type()"
         [placeholder]="placeholder()"
         [value]="value()"
-        [disabled]="isDisabled()"
+        [disabled]="isDisabled() || loading()"
         [attr.aria-label]="label() || placeholder() || 'Text input'"
+        [attr.aria-busy]="loading() ? 'true' : null"
         [attr.autocomplete]="autocomplete() || null"
         (input)="onInput($event)"
         (blur)="onTouched()"
       />
-      @if (clearable() && value()) {
+      @if (loading()) {
+        <viking-spinner [size]="16" label="Loading input" />
+      } @else if (clearable() && value()) {
         <button type="button" class="viking-input-clear" aria-label="Clear input" (click)="clear()">
           <viking-icon name="x" [size]="16" />
         </button>
@@ -55,17 +63,23 @@ import { VikingIconName } from '../core/icons';
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius);
         box-shadow: var(--viking-shadow-sm);
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
       }
-      .viking-input-shell:hover:not(.viking-disabled) {
+      .viking-input-shell:hover:not(.viking-disabled):not(.viking-loading) {
         border-color: var(--viking-accent-strong);
+        box-shadow: var(--viking-shadow-md);
       }
-      .viking-input-shell:focus-within {
+      .viking-input-shell:focus-within:not(.viking-loading) {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
+        border-color: var(--viking-accent);
       }
-      .viking-disabled {
-        opacity: 0.55;
+      .viking-disabled,
+      .viking-loading {
+        opacity: var(--viking-state-disabled-opacity);
+      }
+      .viking-loading {
+        cursor: wait;
       }
       input {
         flex: 1;
@@ -86,16 +100,23 @@ import { VikingIconName } from '../core/icons';
       }
       .viking-input-clear {
         display: inline-flex;
+        align-items: center;
+        justify-content: center;
         border: none;
         background: transparent;
         color: var(--viking-text-muted);
         cursor: pointer;
-        padding: 3px;
+        padding: var(--viking-space-half);
         border-radius: var(--viking-radius-pill);
+        transition: var(--viking-transition-interactive);
       }
       .viking-input-clear:hover {
         color: var(--viking-text);
         background: var(--viking-accent-soft);
+      }
+      .viking-input-clear:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: 1px;
       }
       .viking-input-kbd {
         font-family: var(--viking-font-family);
@@ -119,6 +140,7 @@ export class VikingInput extends VikingControl<string> {
   readonly iconTrailing = input<VikingIconName | null>(null);
   readonly kbd = input<string | null>(null);
   readonly clearable = input<boolean>(false);
+  readonly loading = input<boolean>(false);
   readonly disabled = input<boolean>(false);
   readonly autocomplete = input<string>('');
 

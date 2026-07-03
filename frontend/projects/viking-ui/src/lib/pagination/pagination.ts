@@ -61,35 +61,41 @@ import { VikingIcon } from '../icon/icon';
         min-width: var(--viking-control-height-sm);
         height: var(--viking-control-height-sm);
         padding: 0 var(--viking-space-1);
-        border: 1px solid transparent;
+        border: 1px solid var(--viking-border-subtle);
         border-radius: var(--viking-radius);
-        background: transparent;
+        background: var(--viking-surface);
         color: var(--viking-text);
         font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size);
-        font-weight: 500;
+        font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-medium);
         cursor: pointer;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
         font-variant-numeric: tabular-nums;
+        box-shadow: var(--viking-shadow-xs);
       }
       .viking-page-btn:hover:not(:disabled):not(.viking-page-current) {
         background: var(--viking-accent-soft);
+        border-color: var(--viking-accent-strong);
+        transform: translateY(var(--viking-state-hover-lift));
+      }
+      .viking-page-btn:active:not(:disabled):not(.viking-page-current) {
+        transform: translateY(0) scale(var(--viking-state-active-scale));
       }
       .viking-page-btn:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: 1px;
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-page-btn:disabled {
-        opacity: 0.45;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
       .viking-page-current {
         background: var(--viking-accent);
-        border-color: var(--viking-accent);
+        border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
         color: var(--viking-accent-content);
-        /* >= 18.67px bold qualifies as WCAG large text (3:1 on accent fill). */
-        font-size: calc(var(--viking-font-size) * 1.05);
-        font-weight: 700;
+        font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-bold);
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-page-ellipsis {
         color: var(--viking-text-muted);

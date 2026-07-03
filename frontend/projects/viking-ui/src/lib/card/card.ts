@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { VikingSkeleton } from '../skeleton/skeleton';
 
 /**
  * viking-card — surface container.
@@ -7,8 +8,23 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'viking-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { '[class.viking-card-interactive]': 'interactive()' },
-  template: `<ng-content />`,
+  host: {
+    '[class.viking-card-interactive]': 'interactive()',
+    '[class.viking-card-loading]': 'loading()',
+    '[attr.aria-busy]': "loading() ? 'true' : null",
+  },
+  template: `
+    @if (loading()) {
+      <div class="viking-card-skeleton" aria-hidden="true">
+        <viking-skeleton height="20px" width="45%" />
+        <viking-skeleton height="14px" width="80%" />
+        <viking-skeleton height="14px" width="65%" />
+      </div>
+    } @else {
+      <ng-content />
+    }
+  `,
+  imports: [VikingSkeleton],
   styles: [
     `
       :host {
@@ -19,18 +35,53 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         box-shadow: var(--viking-shadow-sm);
         padding: var(--viking-space-3);
         color: var(--viking-text);
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
+        position: relative;
+        overflow: hidden;
+      }
+      :host::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(in srgb, var(--viking-metallic-200, #aaa) 18%, transparent),
+          transparent
+        );
+        pointer-events: none;
+      }
+      :host(.viking-card-interactive) {
+        cursor: pointer;
       }
       :host(.viking-card-interactive):hover {
         border-color: var(--viking-accent-strong);
+        box-shadow: var(--viking-shadow-hover);
+        transform: translateY(var(--viking-state-hover-lift));
+      }
+      :host(.viking-card-interactive):active {
+        transform: translateY(0) scale(var(--viking-state-active-scale));
         box-shadow: var(--viking-shadow-md);
-        transform: translateY(-2px);
+      }
+      :host(.viking-card-interactive):focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
+      }
+      :host(.viking-card-loading) {
+        pointer-events: none;
+      }
+      .viking-card-skeleton {
+        display: flex;
+        flex-direction: column;
+        gap: var(--viking-space-1-5);
       }
     `,
   ],
 })
 export class VikingCard {
   readonly interactive = input<boolean>(false);
+  readonly loading = input<boolean>(false);
 }
 
 /** Header row for viking-card. */
@@ -47,7 +98,7 @@ export class VikingCard {
         gap: var(--viking-space-2);
         padding-bottom: var(--viking-space-2);
         margin-bottom: var(--viking-space-2);
-        border-bottom: 1px solid var(--viking-border);
+        border-bottom: 1px solid var(--viking-border-subtle);
       }
     `,
   ],
@@ -67,7 +118,7 @@ export class VikingCardHeader {}
         gap: var(--viking-space-1);
         padding-top: var(--viking-space-2);
         margin-top: var(--viking-space-2);
-        border-top: 1px solid var(--viking-border);
+        border-top: 1px solid var(--viking-border-subtle);
       }
     `,
   ],

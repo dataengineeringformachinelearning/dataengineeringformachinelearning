@@ -20,12 +20,13 @@ import { VikingIconName } from '../core/icons';
       .viking-navbar {
         display: flex;
         align-items: center;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-half);
         flex-wrap: wrap;
-        padding: var(--viking-space-1);
-        background: var(--viking-surface);
+        padding: var(--viking-space-half);
+        background: color-mix(in srgb, var(--viking-surface) 96%, transparent);
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius);
+        border-radius: var(--viking-radius-lg);
+        box-shadow: var(--viking-shadow-sm);
       }
     `,
   ],
@@ -70,17 +71,18 @@ export class VikingNavbar {
         display: inline-flex;
         align-items: center;
         gap: var(--viking-space-1);
-        border: none;
+        border: 1px solid transparent;
         background: transparent;
         color: var(--viking-text-muted);
         font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size);
-        font-weight: 500;
-        padding: var(--viking-space-1) var(--viking-space-2);
-        border-radius: calc(var(--viking-radius) / 1.5);
+        font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-medium);
+        padding: var(--viking-space-1) var(--viking-space-1-5);
+        border-radius: var(--viking-radius);
         text-decoration: none;
         cursor: pointer;
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
+        position: relative;
       }
       .viking-navbar-item:hover {
         color: var(--viking-text);
@@ -88,13 +90,22 @@ export class VikingNavbar {
       }
       .viking-navbar-item:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: -2px;
+        outline-offset: var(--viking-ring-offset);
       }
       .viking-current {
         color: var(--viking-text);
-        font-weight: 700;
+        font-weight: var(--viking-font-weight-semibold);
         background: var(--viking-accent-soft);
-        box-shadow: inset 0 -2px 0 var(--viking-accent);
+      }
+      .viking-current::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: var(--viking-space-1);
+        right: var(--viking-space-1);
+        height: 2px;
+        border-radius: var(--viking-radius-pill);
+        background: var(--viking-accent);
       }
     `,
   ],

@@ -55,13 +55,14 @@ export interface VikingNavItem {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-half);
         margin: 0;
-        padding: var(--viking-space-1);
+        padding: var(--viking-space-half);
         list-style: none;
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius);
-        background: var(--viking-surface-alt);
+        border-radius: var(--viking-radius-lg);
+        background: color-mix(in srgb, var(--viking-surface-alt) 80%, var(--viking-surface));
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-nav-link {
         display: inline-flex;
@@ -70,16 +71,19 @@ export interface VikingNavItem {
         min-height: var(--viking-control-height-sm);
         min-width: var(--viking-btn-min-width, 120px);
         padding: 0 var(--viking-space-2);
-        font-size: var(--viking-font-size-ui);
-        font-weight: 700;
+        font-size: var(--viking-font-size-sm);
+        font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-text-muted);
         text-decoration: none;
         border-radius: var(--viking-radius);
-        transition: var(--viking-transition);
+        border: 1px solid transparent;
+        transition: var(--viking-transition-interactive);
+        position: relative;
       }
       a.viking-nav-link:hover {
         color: var(--viking-text);
         background: var(--viking-accent-soft);
+        border-color: var(--viking-border-subtle);
       }
       a.viking-nav-link:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
@@ -88,9 +92,11 @@ export interface VikingNavItem {
       .viking-nav-link.viking-active {
         color: var(--viking-accent-content);
         background: var(--viking-accent);
+        border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-nav-link.viking-disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
         cursor: not-allowed;
       }
     `,

@@ -27,11 +27,12 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>('VIKING_TABS');
       .viking-tabs-list {
         display: flex;
         flex-wrap: wrap;
-        gap: var(--viking-space-1);
-        padding: var(--viking-space-1);
+        gap: var(--viking-space-half);
+        padding: var(--viking-space-half);
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius);
-        background: var(--viking-surface-alt);
+        border-radius: var(--viking-radius-lg);
+        background: color-mix(in srgb, var(--viking-surface-alt) 80%, var(--viking-surface));
+        box-shadow: var(--viking-shadow-sm);
       }
     `,
   ],

@@ -32,13 +32,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         color: var(--viking-accent);
       }
       .viking-spinner-track {
-        stroke: color-mix(in srgb, var(--viking-accent) 18%, transparent);
+        stroke: color-mix(in srgb, var(--viking-accent) 14%, transparent);
       }
       .viking-spinner-arc {
         stroke: currentColor;
         stroke-dasharray: 42 84;
         transform-origin: center;
-        animation: viking-spin 0.8s linear infinite;
+        animation: viking-spin 0.75s cubic-bezier(0.4, 0, 0.2, 1) infinite;
       }
       @keyframes viking-spin {
         to {

@@ -31,22 +31,25 @@ import { VikingControl, provideVikingCva } from '../core/cva';
       .viking-textarea-shell {
         display: flex;
         width: 100%;
-        padding: var(--viking-space-1) var(--viking-space-2);
+        padding: var(--viking-space-1-5) var(--viking-space-2);
         background: var(--viking-surface);
         border: 1px solid var(--viking-border-strong);
         border-radius: var(--viking-radius);
         box-shadow: var(--viking-shadow-sm);
-        transition: var(--viking-transition);
+        transition: var(--viking-transition-interactive);
       }
       .viking-textarea-shell:hover:not(.viking-disabled) {
         border-color: var(--viking-accent-strong);
+        box-shadow: var(--viking-shadow-md);
       }
       .viking-textarea-shell:focus-within {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
+        border-color: var(--viking-accent);
       }
       .viking-disabled {
-        opacity: 0.55;
+        opacity: var(--viking-state-disabled-opacity);
+        cursor: not-allowed;
       }
       textarea {
         width: 100%;

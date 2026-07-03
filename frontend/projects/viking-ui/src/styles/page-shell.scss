@@ -170,10 +170,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--viking-space-2) * 2);
+  padding: var(--viking-space-4) var(--viking-space-3);
   text-align: center;
   color: var(--viking-text-muted);
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-1-5);
+  animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 }
 
 .viking-loader-state,
@@ -182,9 +183,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--viking-space-2) * 2);
+  padding: var(--viking-space-4) var(--viking-space-3);
   gap: var(--viking-space-2);
   color: var(--viking-text-muted);
+  animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 }
 
 .viking-spinner,
