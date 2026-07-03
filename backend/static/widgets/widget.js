@@ -341,7 +341,7 @@
             --viking-gold-500: #c4a035;
             --viking-crimson-500: #a83344;
             --viking-green-500: #2a9d8f;
-            --viking-blue-500: #3d8bfd;
+            --viking-blue-500: #14a3a8;
             --viking-metallic-300: #999999;
             --viking-metallic-500: #666666;
             --viking-metallic-200: #aaaaaa;

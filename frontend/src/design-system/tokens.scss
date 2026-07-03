@@ -20,7 +20,7 @@
   --viking-crimson-500: #a83344;
   --viking-green-500: #2a9d8f;
   --viking-gold-500: #c4a035;
-  --viking-blue-500: #3d8bfd;
+  --viking-blue-500: var(--viking-teal-400);
 
   --white: #ffffff;
   --black: #000000;
@@ -100,7 +100,7 @@ html[data-theme='dark'] {
   --color-success: #2a9d8f;
   --color-warning: var(--viking-gold-500);
   --color-error: var(--viking-crimson-500);
-  --color-info: #3d8bfd;
+  --color-info: var(--viking-teal-400);
   --color-gauge-red: var(--color-error);
 
   --border: color-mix(in srgb, var(--metallic-600) 35%, transparent);
@@ -154,7 +154,7 @@ html[data-theme='light'] {
   --color-success: #2a9d8f;
   --color-warning: var(--viking-gold-500);
   --color-error: var(--viking-crimson-700);
-  --color-info: #3d8bfd;
+  --color-info: var(--viking-teal-400);
   --color-gauge-red: var(--color-error);
 
   --border: color-mix(in srgb, var(--metallic-600) 22%, transparent);
@@ -198,7 +198,7 @@ html[data-theme='light'] {
     --color-success: #2a9d8f;
     --color-warning: var(--viking-gold-500);
     --color-error: var(--viking-crimson-700);
-    --color-info: #3d8bfd;
+    --color-info: var(--viking-teal-400);
     --color-gauge-red: var(--color-error);
     --border: color-mix(in srgb, var(--metallic-600) 22%, transparent);
     --border-layout: color-mix(in srgb, var(--metallic-600) 38%, transparent);

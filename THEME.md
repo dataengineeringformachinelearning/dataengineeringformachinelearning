@@ -83,11 +83,11 @@ Secondary emphasis, destructive actions, critical series.
 
 ### 1.5 Semantic status
 
-| Token                | HEX       | RGB                 | Role                      |
-| -------------------- | --------- | ------------------- | ------------------------- |
-| `--viking-green-500` | `#2A9D8F` | `rgb(42, 157, 143)` | Success, stable, series 3 |
-| `--viking-gold-500`  | `#C4A035` | `rgb(196, 160, 53)` | Warning, series 4         |
-| `--viking-blue-500`  | `#3D8BFD` | `rgb(61, 139, 253)` | Info, series 6            |
+| Token                | HEX       | RGB                 | Role                                 |
+| -------------------- | --------- | ------------------- | ------------------------------------ |
+| `--viking-green-500` | `#2A9D8F` | `rgb(42, 157, 143)` | Success, stable, series 3            |
+| `--viking-gold-500`  | `#C4A035` | `rgb(196, 160, 53)` | Warning, series 4                    |
+| `--viking-blue-500`  | `#14A3A8` | `rgb(20, 163, 168)` | Info, series 6 (`--viking-teal-400`) |
 
 ### 1.6 Absolute neutrals
 
@@ -392,16 +392,16 @@ The **Series color** control assigns colors to telemetry series, chart lines, an
 
 #### Preset swatches (default order)
 
-| #   | HEX       | Token / role            | Use                               |
-| --- | --------- | ----------------------- | --------------------------------- |
-| 1   | `#0D7377` | `--viking-teal-600`     | Primary series, default selection |
-| 2   | `#922B3E` | `--viking-crimson-600`  | Secondary / comparison series     |
-| 3   | `#2A9D8F` | `--viking-green-500`    | Success / stable metrics          |
-| 4   | `#C4A035` | `--viking-gold-500`     | Warning / threshold proximity     |
-| 5   | `#A83344` | `--viking-crimson-500`  | Critical / anomaly series         |
-| 6   | `#3D8BFD` | `--viking-blue-500`     | Info / auxiliary series           |
-| 7   | `#2A2A2A` | `--viking-charcoal-700` | Baseline / muted series           |
-| 8   | `#666666` | `--viking-metallic-500` | Disabled / archived series        |
+| #   | HEX       | Token / role            | Use                                |
+| --- | --------- | ----------------------- | ---------------------------------- |
+| 1   | `#0D7377` | `--viking-teal-600`     | Primary series, default selection  |
+| 2   | `#922B3E` | `--viking-crimson-600`  | Secondary / comparison series      |
+| 3   | `#2A9D8F` | `--viking-green-500`    | Success / stable metrics           |
+| 4   | `#C4A035` | `--viking-gold-500`     | Warning / threshold proximity      |
+| 5   | `#A83344` | `--viking-crimson-500`  | Critical / anomaly series          |
+| 6   | `#14A3A8` | `--viking-blue-500`     | Info / auxiliary series (teal-400) |
+| 7   | `#2A2A2A` | `--viking-charcoal-700` | Baseline / muted series            |
+| 8   | `#666666` | `--viking-metallic-500` | Disabled / archived series         |
 
 **Default value:** `#0D7377` (`--viking-teal-600`)
 
@@ -411,7 +411,7 @@ The **Series color** control assigns colors to telemetry series, chart lines, an
 // frontend/projects/viking-ui/src/lib/color-picker/color-picker.ts
 readonly presets = input<string[]>([
   '#0d7377', '#922b3e', '#2a9d8f', '#c4a035',
-  '#a83344', '#3d8bfd', '#2a2a2a', '#666666',
+  '#a83344', '#14a3a8', '#2a2a2a', '#666666',
 ]);
 readonly value = model<string>('#0d7377');
 ```
@@ -419,10 +419,7 @@ readonly value = model<string>('#0d7377');
 **Showcase usage:**
 
 ```html
-<viking-field
-  label="Series color"
-  description="Presets are the THEME.md premium palette."
->
+<viking-field label="Series color" description="Presets are the THEME.md premium palette.">
   <viking-color-picker />
 </viking-field>
 ```
@@ -474,7 +471,7 @@ Shimmer uses `--viking-charcoal-700` → `--viking-charcoal-600` (dark) or `#EFE
 ### 10.1 Angular app
 
 ```scss
-@use "@dataengineeringformachinelearning/viking-ui/styles/viking-ui";
+@use '@dataengineeringformachinelearning/viking-ui/styles/viking-ui';
 ```
 
 ```html

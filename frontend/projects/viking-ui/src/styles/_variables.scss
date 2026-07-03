@@ -39,7 +39,8 @@
   /* ── Status (refined for premium palette) ──────────────────────────────── */
   --viking-green-500: #2a9d8f;
   --viking-gold-500: #c4a035;
-  --viking-blue-500: #3d8bfd;
+  /* Info / chart series 6 — same hue family as focus ring (not Bootstrap blue) */
+  --viking-blue-500: var(--viking-teal-400);
 
   /* ── Neutrals ──────────────────────────────────────────────────────────── */
   --viking-white: #f5f5f5;

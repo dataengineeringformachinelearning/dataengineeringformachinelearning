@@ -115,7 +115,7 @@ export class VikingColorPicker extends VikingControl<string> {
     '#2a9d8f',
     '#c4a035',
     '#a83344',
-    '#3d8bfd',
+    '#14a3a8',
     '#2a2a2a',
     '#666666',
   ]);
