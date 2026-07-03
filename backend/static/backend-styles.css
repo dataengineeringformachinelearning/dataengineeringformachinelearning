@@ -1,10 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 /* Tokens: design-tokens.css (synced from packages/deml-design-system) */
 :root {
   --primary-color: var(--color-primary);
   --accent-color: var(--color-primary-container);
-  --shadow-glow: 0 0 12px rgba(33, 118, 255, 0.3);
+  --shadow-glow: var(--viking-shadow-md, var(--shadow-md));
   --focus-offset: 4px;
   --color-amber: var(--viking-gold-500);
 }
@@ -18,16 +18,14 @@ body {
 }
 
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  font-family: "Inter", sans-serif;
-  font-size: 1.125rem;
-  line-height: 1.65;
+  background-color: var(--viking-bg, var(--bg-color));
+  color: var(--viking-text, var(--text-color));
+  font-family: var(--viking-font-family, "Inter", sans-serif);
+  font-size: var(--viking-font-size, 1.125rem);
+  line-height: var(--viking-line-height-relaxed, 1.65);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition:
-    background-color 0.3s,
-    color 0.3s;
+  transition: var(--viking-transition-colors, background-color 0.3s, color 0.3s);
   position: relative;
 }
 
@@ -58,26 +56,21 @@ main.main {
 
 /* Glassmorphism Card style */
 .backend-card {
-  background: var(--color-surface);
-  border: 1px solid var(--border);
-  border-radius: 27px;
-  padding: 3rem 2rem;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-sm);
+  background: var(--viking-surface, var(--color-surface));
+  border: 1px solid var(--viking-border, var(--border));
+  border-radius: var(--viking-radius-xl, 16px);
+  padding: var(--viking-space-6, 3rem) var(--viking-space-4, 2rem);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
   max-width: 720px;
   width: 100%;
   box-sizing: border-box;
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
+  transition: var(--viking-transition-interactive, transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease);
 }
 
 .backend-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-hover);
-  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(var(--viking-state-hover-lift, -4px));
+  box-shadow: var(--viking-shadow-hover, var(--shadow-hover));
+  border-color: var(--viking-border-strong, var(--border));
 }
 
 .logo {
@@ -88,12 +81,12 @@ main.main {
 }
 
 h1.title {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 900;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin: 0 0 0.5rem 0;
-  color: var(--text-color);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--viking-font-weight-bold, 700);
+  line-height: var(--viking-line-height-tight, 1.05);
+  letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
+  margin: 0 0 var(--viking-space-1, 0.5rem) 0;
+  color: var(--viking-text, var(--text-color));
   text-transform: uppercase;
 }
 
@@ -116,43 +109,50 @@ p {
 }
 
 /* Status Indicator Dot styling */
-.status-badge {
+.status-badge,
+.hero-badge,
+.swagger-docs-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
-  background: rgba(51, 161, 253, 0.12);
-  border: 1px solid rgba(51, 161, 253, 0.25);
-  border-radius: 100px;
-  padding: 0.5rem 1.25rem;
-  margin-bottom: 2.5rem;
+  gap: var(--viking-space-1, 0.75rem);
+  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-teal-600) 12%, transparent));
+  border: 1px solid var(--viking-border, var(--border));
+  border-radius: var(--viking-radius-pill, 100px);
+  padding: var(--viking-space-1, 0.5rem) var(--viking-space-2, 1.25rem);
+  margin-bottom: var(--viking-space-3, 2.5rem);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
-.status-dot {
+.status-dot,
+.badge-dot {
   width: 9px;
   height: 9px;
-  background-color: var(--color-success);
+  background-color: var(--viking-success, var(--color-success));
   border-radius: 50%;
   position: relative;
-  animation: pulse 2s infinite;
+  animation: viking-pulse-dot 2s infinite;
+  flex-shrink: 0;
 }
 
-@keyframes pulse {
+@keyframes viking-pulse-dot {
   0% {
-    box-shadow: 0 0 0 0 rgba(51, 161, 253, 0.7);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-success, var(--color-success)) 70%, transparent);
   }
   70% {
-    box-shadow: 0 0 0 9px rgba(51, 161, 253, 0);
+    box-shadow: 0 0 0 9px color-mix(in srgb, var(--viking-success, var(--color-success)) 0%, transparent);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(51, 161, 253, 0);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-success, var(--color-success)) 0%, transparent);
   }
 }
 
-.status-text {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-success);
-  letter-spacing: 0.5px;
+.status-text,
+.badge-text {
+  font-size: var(--viking-font-size-sm, 14px);
+  font-weight: var(--viking-font-weight-semibold, 600);
+  color: var(--viking-text, var(--text-color));
+  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+  text-transform: uppercase;
 }
 
 /* Interactive CTA group styling */
@@ -165,48 +165,52 @@ p {
 }
 
 .cta-button {
-  padding: 0.9rem 2rem;
-  border-radius: 100px;
-  font-size: 1rem;
-  font-weight: 600;
+  padding: var(--viking-space-1-5, 0.9rem) var(--viking-space-4, 2rem);
+  border-radius: var(--viking-radius-pill, 100px);
+  font-size: var(--viking-font-size-sm, 1rem);
+  font-weight: var(--viking-font-weight-semibold, 600);
+  letter-spacing: var(--viking-letter-spacing-wide, 0.025em);
   text-decoration: none;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s,
-    background-color 0.2s,
-    color 0.2s,
-    border-color 0.2s;
+  transition: var(--viking-transition-interactive, transform 0.2s, box-shadow 0.2s, background-color 0.2s, color 0.2s, border-color 0.2s);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  min-height: var(--viking-control-height, 40px);
+  min-width: var(--viking-btn-min-width, 120px);
 }
 
 .cta-button:hover {
-  transform: translateY(-2px);
+  transform: translateY(var(--viking-state-hover-lift, -2px));
+}
+
+.cta-button:focus-visible {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--focus-ring-color));
+  outline-offset: var(--viking-ring-offset, 2px);
 }
 
 .primary-btn {
-  background-color: var(--primary-color);
-  color: var(--viking-white-pure);
+  background-color: var(--viking-accent, var(--primary-color));
+  color: var(--viking-accent-content, var(--viking-white-pure));
   border: 1px solid transparent;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
 .primary-btn:hover {
-  box-shadow: var(--shadow-glow);
-  background-color: var(--accent-color);
+  box-shadow: var(--viking-shadow-hover, var(--shadow-hover));
+  background-color: var(--viking-accent-hover, var(--viking-teal-500));
+  color: var(--viking-accent-content, var(--viking-white-pure));
 }
 
 .secondary-btn {
-  background-color: rgba(255, 255, 255, 0.04);
-  color: var(--text-color);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(8px);
+  background-color: var(--viking-surface, var(--color-surface));
+  color: var(--viking-text, var(--text-color));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
 .secondary-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--viking-surface-raised, var(--viking-charcoal-600));
+  border-color: var(--viking-accent-strong, var(--viking-teal-400));
 }
 
 footer {
@@ -500,41 +504,36 @@ footer {
 .hero-section {
   width: 100%;
   max-width: 896px;
-  margin: 0 auto 3rem auto;
+  margin: 0 auto var(--viking-space-4, 3rem) auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  padding: 2rem 0;
+  gap: var(--viking-space-3, 1.5rem);
+  padding: var(--viking-space-4, 2rem) 0;
 }
 
 .hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  padding: 8px 16px;
-  border-radius: 1000px;
-  box-shadow: var(--shadow-sm);
+  margin-bottom: 0;
 }
 
-.badge-dot {
-  display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background-color: var(--color-success);
-  margin-right: 9px;
-  flex-shrink: 0;
+.swagger-page-header {
+  margin-bottom: var(--viking-space-4, 32px);
 }
 
-.badge-text {
-  font-size: var(--base-font-size);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--text-color);
+.swagger-page-header .swagger-docs-badge {
+  margin-bottom: var(--viking-space-2, 16px);
+}
+
+body.backend-swagger {
+  background-color: var(--viking-bg, var(--bg-color));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-dot,
+  .badge-dot {
+    animation: none;
+  }
 }
 
 /* Bento Features Grid */
@@ -548,28 +547,26 @@ footer {
 }
 
 .feature-card {
-  background: var(--color-surface);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 2rem;
+  background: var(--viking-surface, var(--color-surface));
+  border: 1px solid var(--viking-border, var(--border));
+  border-radius: var(--viking-radius-lg, 12px);
+  padding: var(--viking-space-4, 2rem);
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s,
-    border-color 0.2s;
+  gap: var(--viking-space-1-5, 12px);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  transition: var(--viking-transition-interactive, transform 0.2s, box-shadow 0.2s, border-color 0.2s);
 }
 
 .feature-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: var(--shadow-md);
+  transform: translateY(var(--viking-state-hover-lift, -2px));
+  border-color: var(--viking-accent-strong, var(--viking-teal-400));
+  box-shadow: var(--viking-shadow-hover, var(--shadow-hover));
 }
 
 .feature-icon {
-  color: var(--color-primary);
+  color: var(--viking-accent, var(--color-primary));
   font-size: 32px;
   width: 32px;
   height: 32px;

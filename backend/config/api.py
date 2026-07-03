@@ -10,6 +10,7 @@ from typing import Any, Final
 
 from django.http import HttpRequest, HttpResponse
 from django.middleware.csrf import get_token
+from django.template.loader import render_to_string
 from integrations.constants import SWAGGER_DEMO_API_KEY
 from ninja.openapi.docs import Swagger
 
@@ -18,47 +19,17 @@ class CustomSwagger(Swagger):
   def render_page(self, request: HttpRequest, api: NinjaAPI, **kwargs: Any) -> HttpResponse:
     openapi_url: Final[str] = self.get_openapi_url(api, kwargs)
     csrf_token: Final[str] = get_token(request) or ""
-
-    html: Final[str] = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>{api.title}</title>
-    <link type="text/css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
-    <link rel="shortcut icon" href="https://deml.app/favicon.ico">
-    <!-- Shared tokens for cohesion -->
-    <link rel="stylesheet" href="https://deml.app/assets/design-tokens.css">
-    <link rel="stylesheet" href="https://deml.app/assets/viking-ui.css">
-    <style>
-        .swagger-ui .topbar {{
-            background-color: #111827;
-            border-bottom: 1px solid #1f2937;
-        }}
-        body {{ font-family: var(--font-family, system-ui); background: var(--bg-color); color: var(--text-color); }}
-    </style>
-</head>
-<body data-theme="dark">
-    <div id="swagger-ui"></div>
-    <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
-    <script>
-        const ui = SwaggerUIBundle({{
-            url: "{openapi_url}",
-            dom_id: '#swagger-ui',
-            presets: [
-                SwaggerUIBundle.presets.apis,
-                SwaggerUIBundle.SwaggerUIStandalonePreset
-            ],
-            layout: "BaseLayout",
-            deepLinking: true,
-            requestInterceptor: (req) => {{
-                req.headers['X-CSRFToken'] = "{csrf_token}";
-                return req;
-            }}
-        }});
-    </script>
-</body>
-</html>"""
-    # nosemgrep: python.django.security.audit.xss.direct-use-of-httpresponse.direct-use-of-httpresponse
+    html: Final[str] = render_to_string(
+      "swagger.html",
+      {
+        "api_title": api.title,
+        "openapi_url": openapi_url,
+        "csrf_token": csrf_token,
+        "frontend_url": settings.FRONTEND_URL.rstrip("/"),
+        "marketing_url": settings.MARKETING_URL.rstrip("/"),
+      },
+      request=request,
+    )
     return HttpResponse(html, content_type="text/html")
 
 
