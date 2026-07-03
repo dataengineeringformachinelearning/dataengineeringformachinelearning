@@ -177,6 +177,27 @@
   box-shadow: var(--viking-shadow-xs);
 }
 
+.viking-page-header-main,
+.title-group.topbar-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--viking-space-3);
+  min-width: 0;
+}
+
+.viking-page-header-title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+}
+
+.viking-page-back-link-host {
+  flex-shrink: 0;
+}
+
 .viking-page-header-title,
 .hud-title,
 .page-title {

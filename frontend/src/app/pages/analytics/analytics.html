@@ -2,29 +2,15 @@
   <!-- Glow Spheres for Homepage Unity -->
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
-      <nav class="page-back-nav" aria-label="Return to dashboard">
-        <a
-          class="back-link"
-          routerLink="/dashboard"
-          [queryParams]="{ tab: 'performance' }"
-          aria-label="Back to Dashboard performance view"
-        >
-          <viking-app-icon name="arrow_back" [ariaHidden]="true" />
-          <span>Back to Dashboard</span>
-        </a>
-      </nav>
-
-      <header class="hud-header">
-        <div class="title-group">
-          <div class="section-tag-row">
-            <span class="section-tag">Platform Analytics</span>
-          </div>
-          <h1 class="hud-title">System Analytics</h1>
-          <p class="hud-subtitle">
-            Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse.
-          </p>
-        </div>
-      </header>
+      <viking-page-header
+        tag="Platform Analytics"
+        title="System Analytics"
+        subtitle="Real-time telemetry and performance data powered by OpenTelemetry and ClickHouse."
+        backTo="/dashboard"
+        [backQueryParams]="{ tab: 'performance' }"
+        backLabel="Back to Dashboard"
+        backNavLabel="Return to dashboard performance view"
+      />
 
       <!-- GLOBAL METRICS SECTION -->
       <div class="metrics-overview-header">
