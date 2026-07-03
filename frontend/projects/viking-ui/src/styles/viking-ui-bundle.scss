@@ -1,4 +1,5 @@
-// Static CSS bundle entry — tokens + page shell + footer + navbar for non-Angular apps.
+// Static CSS bundle entry — tokens + page shell + footer + navbar + a11y for non-Angular apps.
 @use 'viking-ui' as *;
+@use '../../../../../packages/deml-design-system/src/components/a11y' as *;
 @use 'static-navbar' as *;
 @use '../lib/footer/footer' as *;

@@ -108,6 +108,14 @@
             <viking-app-icon name="security" />
             <span class="kpi-label">Threat Exposure</span>
             <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
+            @if (securitySparkline().length) {
+            <viking-chart
+              kind="sparkline"
+              [series]="securitySparkline()"
+              label="Threat exposure trend"
+              class="kpi-sparkline viking-chart-wide"
+            />
+            }
           </div>
           <div class="kpi-card" [class.alert]="openVulnCount() > 0">
             <viking-app-icon name="bug_report" />
@@ -118,6 +126,14 @@
             <viking-app-icon name="speed" />
             <span class="kpi-label">Uptime</span>
             <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
+            @if (latencySparkline().length) {
+            <viking-chart
+              kind="sparkline"
+              [series]="latencySparkline()"
+              label="Latency trend"
+              class="kpi-sparkline viking-chart-wide"
+            />
+            }
           </div>
           <div class="kpi-card" [class.alert]="activeIncidents > 0">
             <viking-app-icon name="report" />

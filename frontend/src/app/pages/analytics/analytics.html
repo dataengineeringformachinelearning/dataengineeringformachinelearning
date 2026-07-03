@@ -317,7 +317,16 @@
             <div class="chart-custom-trend">{{ frequencyTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasFrequencyData()) {
+            @if (hasTrafficGroupedData()) {
+            <viking-chart
+              kind="grouped-bar"
+              [series]="trafficGroupedSeries()"
+              [categories]="frequencyCategories()"
+              label="Request frequency vs latency"
+              [fill]="true"
+              class="viking-chart-medium"
+            />
+            } @else if (hasFrequencyData()) {
             <viking-chart
               kind="line"
               [series]="frequencySeries()"
@@ -437,7 +446,16 @@
             <div class="chart-custom-trend">{{ statusTrend }}</div>
           </div>
           <div class="card-body-clean chart-container-medium">
-            @if (hasStatusData()) {
+            @if (hasStatusStackedData()) {
+            <viking-chart
+              kind="stacked-bar"
+              [series]="statusStackedSeries()"
+              [categories]="statusCategories()"
+              label="HTTP Status Distribution"
+              [fill]="true"
+              class="viking-chart-medium"
+            />
+            } @else if (hasStatusData()) {
             <viking-chart
               kind="bar"
               [series]="statusSeries()"
