@@ -271,9 +271,14 @@ export class Settings implements OnInit {
           error: async err => {
             console.error('Error creating page:', err);
             this.isCreatingPage.set(false);
+            const apiMessage =
+              err?.error?.detail || err?.error?.message || err?.message || '';
+            const message =
+              apiMessage ||
+              'Failed to create status page. The slug may already be in use, or MFA may be required.';
             await this.fluxDialog.openConfirm({
               title: 'Creation Failed',
-              message: 'Failed to create status page. The slug may already be in use.',
+              message,
               type: 'alert',
               confirmBtnText: 'OK',
               confirmBtnColor: 'warn',
