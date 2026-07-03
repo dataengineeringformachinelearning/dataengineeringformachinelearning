@@ -32,11 +32,11 @@ export type VikingChartPanelBody = 'default' | 'origin-map';
       }
 
       :host(.viking-chart-panel-large) {
-        min-height: 420px;
+        min-height: 28rem;
       }
 
       :host(.viking-chart-panel-medium) {
-        min-height: 380px;
+        min-height: 24rem;
       }
 
       .viking-chart-panel-body {
@@ -50,13 +50,15 @@ export type VikingChartPanelBody = 'default' | 'origin-map';
       }
 
       :host(.viking-chart-panel-large) .viking-chart-panel-body {
-        --viking-chart-empty-min-height: 300px;
-        min-height: 320px;
+        --viking-chart-empty-min-height: 18.75rem;
+        --viking-chart-fill-min-height: 20rem;
+        min-height: 22.5rem;
       }
 
       :host(.viking-chart-panel-medium) .viking-chart-panel-body {
-        --viking-chart-empty-min-height: 260px;
-        min-height: 280px;
+        --viking-chart-empty-min-height: 16.25rem;
+        --viking-chart-fill-min-height: 17.5rem;
+        min-height: 19rem;
       }
 
       :host(.viking-chart-panel-medium.viking-chart-panel-origin-map) .viking-chart-panel-body,
@@ -72,8 +74,7 @@ export class VikingChartPanel {
   readonly body = input<VikingChartPanelBody>('default');
 
   protected readonly bodyClasses = computed(() => {
-    const sizeClass =
-      this.size() === 'large' ? 'chart-container-large' : 'chart-container-medium';
+    const sizeClass = this.size() === 'large' ? 'chart-container-large' : 'chart-container-medium';
     const bodyVariant = this.body() === 'origin-map' ? ' origin-map-container' : '';
     return `card-body-clean viking-chart-panel-body ${sizeClass}${bodyVariant}`;
   });

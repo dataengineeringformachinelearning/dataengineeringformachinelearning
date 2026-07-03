@@ -3,15 +3,23 @@
     <viking-breadcrumbs [items]="breadcrumbs" />
     <viking-heading size="lg" [level]="1">Components</viking-heading>
     <viking-text variant="muted">
-      Interactive previews for every Viking-UI primitive. Copy patterns directly into your Angular app.
+      Interactive previews for every Viking-UI primitive. Copy patterns directly
+      into your Angular app.
     </viking-text>
   </header>
 
-  <section class="showcase-category" id="cat-foundations" aria-labelledby="cat-foundations-heading">
+  <section
+    class="showcase-category"
+    id="cat-foundations"
+    aria-labelledby="cat-foundations-heading"
+  >
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-foundations-heading">Foundations</viking-heading>
+      <viking-heading size="lg" [level]="2" id="cat-foundations-heading"
+        >Foundations</viking-heading
+      >
       <viking-text variant="muted"
-        >Buttons, badges, typography helpers, and surface primitives.</viking-text
+        >Buttons, badges, typography helpers, and surface
+        primitives.</viking-text
       >
     </header>
     <div class="demo-grid">
@@ -27,7 +35,9 @@
           <viking-button variant="subtle">Subtle</viking-button>
         </div>
         <div class="demo-row">
-          <viking-button variant="primary" icon="download">Export</viking-button>
+          <viking-button variant="primary" icon="download"
+            >Export</viking-button
+          >
           <viking-button iconTrailing="chevron-down">Open</viking-button>
           <viking-button [loading]="true">Saving</viking-button>
           <viking-button [square]="true" icon="settings" label="Settings" />
@@ -48,16 +58,20 @@
 
   <section class="showcase-category" id="cat-shell" aria-labelledby="cat-shell">
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-shell">Application Shell</viking-heading>
+      <viking-heading size="lg" [level]="2" id="cat-shell"
+        >Application Shell</viking-heading
+      >
       <viking-text variant="muted"
-        >Navigation, tables, sheets, and multi-panel workspace patterns.</viking-text
+        >Navigation, tables, sheets, and multi-panel workspace
+        patterns.</viking-text
       >
     </header>
     <div class="demo-grid">
       <section class="demo demo-wide" id="demo-shell">
         <viking-heading size="lg" [level]="2">Application Shell</viking-heading>
         <viking-text variant="muted">
-          Tabs, table, sheet, scroll area, toggles, menubar, native select, and navigation menu.
+          Tabs, table, sheet, scroll area, toggles, menubar, native select, and
+          navigation menu.
         </viking-text>
 
         <viking-navigation-menu label="Site" [items]="navItems" />
@@ -67,13 +81,16 @@
           <viking-tab value="metrics">Metrics</viking-tab>
           <viking-tab value="audit">Audit</viking-tab>
           <viking-tab-panel value="overview">
-            Transactional outbox events materialize into Firestore within one second at p99.
+            Transactional outbox events materialize into Firestore within one
+            second at p99.
           </viking-tab-panel>
           <viking-tab-panel value="metrics">
-            ClickHouse rollups power the analytics dashboard with sub-50ms query latency.
+            ClickHouse rollups power the analytics dashboard with sub-50ms query
+            latency.
           </viking-tab-panel>
           <viking-tab-panel value="audit">
-            Semgrep and Trivy findings sync to the unified triage board every fifteen minutes.
+            Semgrep and Trivy findings sync to the unified triage board every
+            fifteen minutes.
           </viking-tab-panel>
         </viking-tabs>
 
@@ -134,7 +151,9 @@
         </viking-scroll-area>
 
         <viking-sheet [(open)]="sheetOpen" heading="Incident panel">
-          <viking-text>Shift traffic to the healthy Cloud Run revision.</viking-text>
+          <viking-text
+            >Shift traffic to the healthy Cloud Run revision.</viking-text
+          >
           <div vikingSheetActions>
             <viking-button variant="primary" (pressed)="sheetOpen.set(false)"
               >Acknowledge</viking-button
@@ -147,14 +166,21 @@
 
   <section class="showcase-category" id="cat-auth" aria-labelledby="cat-auth">
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-auth">Authentication</viking-heading>
-      <viking-text variant="muted">Access portal layouts and sign-in affordances.</viking-text>
+      <viking-heading size="lg" [level]="2" id="cat-auth"
+        >Authentication</viking-heading
+      >
+      <viking-text variant="muted"
+        >Access portal layouts and sign-in affordances.</viking-text
+      >
     </header>
     <div class="demo-grid">
       <section class="demo demo-wide" id="demo-auth-panel">
-        <viking-heading size="lg" [level]="2">Auth Panel Template</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Auth Panel Template</viking-heading
+        >
         <viking-text variant="muted">
-          Access portal layout — full-width actions, Google and Apple sign-in with brand icons.
+          Access portal layout — full-width actions, Google and Apple sign-in
+          with brand icons.
         </viking-text>
         <viking-auth-panel
           tag="Access Portal"
@@ -163,7 +189,11 @@
           [showSocial]="true"
         >
           <viking-field label="Email Address" [required]="true">
-            <viking-input type="email" placeholder="email@example.com" icon="mail" />
+            <viking-input
+              type="email"
+              placeholder="email@example.com"
+              icon="mail"
+            />
           </viking-field>
           <viking-field label="Password" [required]="true">
             <viking-input type="password" icon="lock" />
@@ -175,10 +205,14 @@
             <viking-button variant="outline" [fullWidth]="true"
               >Sign In with Phone Number</viking-button
             >
-            <viking-button variant="outline" [fullWidth]="true">Forgot password?</viking-button>
+            <viking-button variant="outline" [fullWidth]="true"
+              >Forgot password?</viking-button
+            >
           </div>
           <div vikingAuthFooter>
-            <viking-button variant="primary" [fullWidth]="true">Sign In</viking-button>
+            <viking-button variant="primary" [fullWidth]="true"
+              >Sign In</viking-button
+            >
           </div>
         </viking-auth-panel>
       </section>
@@ -187,30 +221,45 @@
 
   <section class="showcase-category" id="cat-forms" aria-labelledby="cat-forms">
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-forms">Forms &amp; Inputs</viking-heading>
-      <viking-text variant="muted">Fields, pickers, toggles, and selection controls.</viking-text>
+      <viking-heading size="lg" [level]="2" id="cat-forms"
+        >Forms &amp; Inputs</viking-heading
+      >
+      <viking-text variant="muted"
+        >Fields, pickers, toggles, and selection controls.</viking-text
+      >
     </header>
     <div class="demo-grid">
       <section class="demo" id="demo-kbd-label">
-        <viking-heading size="lg" [level]="2">Kbd, Label &amp; Spinner</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Kbd, Label &amp; Spinner</viking-heading
+        >
         <div class="demo-row">
           <viking-kbd>⌘</viking-kbd>
           <viking-kbd>K</viking-kbd>
           <viking-spinner />
           <viking-spinner [size]="28" label="Syncing projections" />
         </div>
-        <viking-label htmlFor="demo-field" [required]="true">Endpoint URL</viking-label>
-        <viking-field label="Worker name" description="Shown in the operations dashboard.">
+        <viking-label htmlFor="demo-field" [required]="true"
+          >Endpoint URL</viking-label
+        >
+        <viking-field
+          label="Worker name"
+          description="Shown in the operations dashboard."
+        >
           <viking-input id="demo-field" placeholder="telemetry_worker" />
         </viking-field>
       </section>
 
       <section class="demo" id="demo-badge">
-        <viking-heading size="lg" [level]="2">Badge, Avatar &amp; Brand</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Badge, Avatar &amp; Brand</viking-heading
+        >
         <div class="demo-row">
           <viking-badge>Neutral</viking-badge>
           <viking-badge tone="accent">Accent</viking-badge>
-          <viking-badge tone="success" icon="check-circle">Healthy</viking-badge>
+          <viking-badge tone="success" icon="check-circle"
+            >Healthy</viking-badge
+          >
           <viking-badge tone="warning">Degraded</viking-badge>
           <viking-badge tone="danger">Incident</viking-badge>
           <viking-badge [removable]="true">Removable</viking-badge>
@@ -229,9 +278,14 @@
       <section class="demo" id="demo-callout">
         <viking-heading size="lg" [level]="2">Callout</viking-heading>
         <viking-callout tone="accent" heading="Event projections">
-          Commands flow through the transactional outbox before materializing in Firestore.
+          Commands flow through the transactional outbox before materializing in
+          Firestore.
         </viking-callout>
-        <viking-callout tone="warning" heading="Key rotation due" [dismissible]="true">
+        <viking-callout
+          tone="warning"
+          heading="Key rotation due"
+          [dismissible]="true"
+        >
           Tenant0 AES-256-GCM keys rotate in 3 days via the KMS worker.
         </viking-callout>
         <viking-callout tone="danger" heading="DLQ growth">
@@ -240,15 +294,17 @@
       </section>
 
       <section class="demo" id="demo-card">
-        <viking-heading size="lg" [level]="2">Card, Profile &amp; Separator</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Card, Profile &amp; Separator</viking-heading
+        >
         <viking-card [interactive]="true">
           <viking-card-header>
             <viking-heading [level]="3">Telemetry worker</viking-heading>
             <viking-badge tone="success">Running</viking-badge>
           </viking-card-header>
           <viking-text variant="muted">
-            Consumes frontend-events, enriches from Postgres, projects into the deml Firestore
-            database.
+            Consumes frontend-events, enriches from Postgres, projects into the
+            deml Firestore database.
           </viking-text>
           <viking-card-footer>
             <viking-button variant="primary">Inspect</viking-button>
@@ -256,13 +312,24 @@
           </viking-card-footer>
         </viking-card>
         <viking-separator text="operators on call" />
-        <viking-profile name="Ada Lovelace" detail="Security Admin — Tenant0" status="success">
-          <viking-button variant="subtle" icon="mail" label="Contact" [square]="true" />
+        <viking-profile
+          name="Ada Lovelace"
+          detail="Security Admin — Tenant0"
+          status="success"
+        >
+          <viking-button
+            variant="subtle"
+            icon="mail"
+            label="Contact"
+            [square]="true"
+          />
         </viking-profile>
       </section>
 
       <section class="demo" id="demo-inputs">
-        <viking-heading size="lg" [level]="2">Field, Input &amp; Textarea</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Field, Input &amp; Textarea</viking-heading
+        >
         <viking-field
           label="Endpoint URL"
           description="Health checks run every 60 seconds."
@@ -274,47 +341,81 @@
             [clearable]="true"
           />
         </viking-field>
-        <viking-field label="API key" error="This key was revoked by the KMS rotation worker.">
+        <viking-field
+          label="API key"
+          error="This key was revoked by the KMS rotation worker."
+        >
           <viking-input type="password" placeholder="deml_live_…" icon="lock" />
         </viking-field>
         <viking-field label="Incident notes">
-          <viking-textarea placeholder="What happened during the deploy?" [rows]="3" />
+          <viking-textarea
+            placeholder="What happened during the deploy?"
+            [rows]="3"
+          />
         </viking-field>
       </section>
 
       <section class="demo" id="demo-selection">
-        <viking-heading size="lg" [level]="2">Select, Autocomplete &amp; Pillbox</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Select, Autocomplete &amp; Pillbox</viking-heading
+        >
         <viking-field label="Deployment region">
-          <viking-select [options]="regionOptions" placeholder="Choose region" />
+          <viking-select
+            [options]="regionOptions"
+            placeholder="Choose region"
+          />
         </viking-field>
         <viking-field label="Worker pipeline">
-          <viking-autocomplete [suggestions]="pipelineSuggestions" placeholder="Search workers…" />
+          <viking-autocomplete
+            [suggestions]="pipelineSuggestions"
+            placeholder="Search workers…"
+          />
         </viking-field>
         <viking-field label="Alert channels">
-          <viking-pillbox [values]="['pagerduty', 'status-page']" placeholder="Add channel…" />
+          <viking-pillbox
+            [values]="['pagerduty', 'status-page']"
+            placeholder="Add channel…"
+          />
         </viking-field>
       </section>
 
       <section class="demo" id="demo-toggles">
-        <viking-heading size="lg" [level]="2">Checkbox, Radio, Switch &amp; Slider</viking-heading>
-        <viking-checkbox [checked]="true" description="Publish uptime metrics on the public page.">
+        <viking-heading size="lg" [level]="2"
+          >Checkbox, Radio, Switch &amp; Slider</viking-heading
+        >
+        <viking-checkbox
+          [checked]="true"
+          description="Publish uptime metrics on the public page."
+        >
           Public status page
         </viking-checkbox>
-        <viking-checkbox [indeterminate]="true">Select all monitors</viking-checkbox>
+        <viking-checkbox [indeterminate]="true"
+          >Select all monitors</viking-checkbox
+        >
         <viking-radio-group
           label="Data retention"
           orientation="horizontal"
           [options]="retentionOptions"
           [value]="60"
         />
-        <viking-switch [checked]="true" description="Route suspicious traffic to the threat model.">
+        <viking-switch
+          [checked]="true"
+          description="Route suspicious traffic to the threat model."
+        >
           Behavioral threat intel
         </viking-switch>
-        <viking-slider label="Sampling rate" [value]="35" [min]="0" [max]="100" />
+        <viking-slider
+          label="Sampling rate"
+          [value]="35"
+          [min]="0"
+          [max]="100"
+        />
       </section>
 
       <section class="demo" id="demo-pickers">
-        <viking-heading size="lg" [level]="2">Date, Time &amp; Color Pickers</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Date, Time &amp; Color Pickers</viking-heading
+        >
         <viking-field label="Maintenance window date">
           <viking-date-picker />
         </viking-field>
@@ -330,7 +431,9 @@
       </section>
 
       <section class="demo" id="demo-calendar">
-        <viking-heading size="lg" [level]="2">Calendar &amp; OTP Input</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Calendar &amp; OTP Input</viking-heading
+        >
         <viking-calendar />
         <viking-field
           label="Verification code"
@@ -342,12 +445,18 @@
     </div>
   </section>
 
-  <section class="showcase-category" id="cat-overlays" aria-labelledby="cat-overlays">
+  <section
+    class="showcase-category"
+    id="cat-overlays"
+    aria-labelledby="cat-overlays"
+  >
     <header class="showcase-category-header">
       <viking-heading size="lg" [level]="2" id="cat-overlays"
         >Overlays &amp; Feedback</viking-heading
       >
-      <viking-text variant="muted">Dialogs, toasts, commands, and loading states.</viking-text>
+      <viking-text variant="muted"
+        >Dialogs, toasts, commands, and loading states.</viking-text
+      >
     </header>
     <div class="demo-grid">
       <section class="demo" id="demo-overlays">
@@ -356,13 +465,21 @@
         >
         <div class="demo-row">
           <viking-dropdown>
-            <viking-button vikingTrigger iconTrailing="chevron-down">Actions</viking-button>
-            <viking-menu-item icon="refresh" kbd="R">Replay events</viking-menu-item>
+            <viking-button vikingTrigger iconTrailing="chevron-down"
+              >Actions</viking-button
+            >
+            <viking-menu-item icon="refresh" kbd="R"
+              >Replay events</viking-menu-item
+            >
             <viking-menu-item icon="copy">Duplicate monitor</viking-menu-item>
-            <viking-menu-item icon="trash" [danger]="true">Delete monitor</viking-menu-item>
+            <viking-menu-item icon="trash" [danger]="true"
+              >Delete monitor</viking-menu-item
+            >
           </viking-dropdown>
           <viking-popover>
-            <viking-button vikingTrigger variant="filled" icon="info">Popover</viking-button>
+            <viking-button vikingTrigger variant="filled" icon="info"
+              >Popover</viking-button
+            >
             <viking-heading [level]="3">Projection lag</viking-heading>
             <viking-text variant="muted"
               >Firestore projections are 220ms behind Redpanda.</viking-text
@@ -393,33 +510,51 @@
           <div vikingMenu>
             <viking-menu-item icon="pencil">Rename</viking-menu-item>
             <viking-menu-item icon="copy">Copy UUID</viking-menu-item>
-            <viking-menu-item icon="trash" [danger]="true">Archive</viking-menu-item>
+            <viking-menu-item icon="trash" [danger]="true"
+              >Archive</viking-menu-item
+            >
           </div>
         </viking-context>
       </section>
 
       <section class="demo" id="demo-feedback">
-        <viking-heading size="lg" [level]="2">Modal, Toast &amp; Command</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Modal, Toast &amp; Command</viking-heading
+        >
         <div class="demo-row">
           <viking-button variant="primary" (pressed)="modalOpen.set(true)"
             >Open modal</viking-button
           >
-          <viking-button variant="filled" icon="check-circle" (pressed)="showToast('success')"
+          <viking-button
+            variant="filled"
+            icon="check-circle"
+            (pressed)="showToast('success')"
             >Success toast</viking-button
           >
-          <viking-button variant="danger" icon="alert-circle" (pressed)="showToast('danger')"
+          <viking-button
+            variant="danger"
+            icon="alert-circle"
+            (pressed)="showToast('danger')"
             >Danger toast</viking-button
           >
-          <viking-button icon="terminal" kbd="⌘K" (pressed)="commandOpen.set(true)"
+          <viking-button
+            icon="terminal"
+            kbd="⌘K"
+            (pressed)="commandOpen.set(true)"
             >Command palette</viking-button
           >
         </div>
         <viking-modal heading="Confirm key rotation" [(open)]="modalOpen">
-          Rotating the tenant KMS key re-encrypts all secrets. Workers stay online during the
-          rotation.
+          Rotating the tenant KMS key re-encrypts all secrets. Workers stay
+          online during the rotation.
           <div vikingModalActions>
-            <viking-button variant="outline" (pressed)="modalOpen.set(false)">Cancel</viking-button>
-            <viking-button variant="primary" icon="lock" (pressed)="modalOpen.set(false)"
+            <viking-button variant="outline" (pressed)="modalOpen.set(false)"
+              >Cancel</viking-button
+            >
+            <viking-button
+              variant="primary"
+              icon="lock"
+              (pressed)="modalOpen.set(false)"
               >Rotate keys</viking-button
             >
           </div>
@@ -428,14 +563,22 @@
       </section>
 
       <section class="demo" id="demo-progress">
-        <viking-heading size="lg" [level]="2">Progress &amp; Skeleton</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Progress &amp; Skeleton</viking-heading
+        >
         <viking-progress label="Model training" [value]="72" />
-        <viking-progress label="Snapshot compaction" tone="warning" [value]="41" />
+        <viking-progress
+          label="Snapshot compaction"
+          tone="warning"
+          [value]="41"
+        />
         <viking-progress label="Replaying DLQ" [indeterminate]="true" />
         <div class="loading-overlay-demo">
           <viking-card>
             <viking-heading [level]="3">Worker status</viking-heading>
-            <viking-text variant="muted">Refreshing telemetry projections…</viking-text>
+            <viking-text variant="muted"
+              >Refreshing telemetry projections…</viking-text
+            >
             <viking-loading-overlay message="Syncing Firestore projections" />
           </viking-card>
         </div>
@@ -452,14 +595,22 @@
 
   <section class="showcase-category" id="cat-nav" aria-labelledby="cat-nav">
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-nav">Navigation</viking-heading>
-      <viking-text variant="muted">In-app nav bars, pagination, and iconography.</viking-text>
+      <viking-heading size="lg" [level]="2" id="cat-nav"
+        >Navigation</viking-heading
+      >
+      <viking-text variant="muted"
+        >In-app nav bars, pagination, and iconography.</viking-text
+      >
     </header>
     <div class="demo-grid">
       <section class="demo" id="demo-navigation">
-        <viking-heading size="lg" [level]="2">Navbar &amp; Pagination</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Navbar &amp; Pagination</viking-heading
+        >
         <viking-navbar label="Showcase navigation">
-          <viking-navbar-item icon="home" [current]="true">Overview</viking-navbar-item>
+          <viking-navbar-item icon="home" [current]="true"
+            >Overview</viking-navbar-item
+          >
           <viking-navbar-item icon="bar-chart">Analytics</viking-navbar-item>
           <viking-navbar-item icon="shield">Security</viking-navbar-item>
           <viking-navbar-item icon="settings">Settings</viking-navbar-item>
@@ -468,13 +619,18 @@
       </section>
 
       <section class="demo demo-wide" id="demo-icons">
-        <viking-heading size="lg" [level]="2">Icon System (Lucide)</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Icon System (Lucide)</viking-heading
+        >
         <viking-text variant="muted">
-          Themeable <code>viking-icon</code> — Lucide paths inlined at build time (zero runtime
-          deps). Supports size presets, semantic colors, and outline/filled variants.
+          Themeable <code>viking-icon</code> — Lucide paths inlined at build
+          time (zero runtime deps). Supports size presets, semantic colors, and
+          outline/filled variants.
         </viking-text>
 
-        <viking-heading size="sm" [level]="3">Drakkar brand marks (Viking-UI)</viking-heading>
+        <viking-heading size="sm" [level]="3"
+          >Drakkar brand marks (Viking-UI)</viking-heading
+        >
         <div class="demo-row icon-brand-row">
           <viking-icon name="drakkar" [size]="32" color="accent" />
           <viking-icon name="drakkar-compact" [size]="28" color="accent" />
@@ -482,7 +638,9 @@
           <viking-icon name="drakkar" [size]="32" color="muted" />
         </div>
 
-        <viking-heading size="sm" [level]="3">DEML product marks</viking-heading>
+        <viking-heading size="sm" [level]="3"
+          >DEML product marks</viking-heading
+        >
         <div class="demo-row icon-brand-row">
           <viking-icon name="deml" [size]="32" color="accent" />
           <viking-icon name="deml-compact" [size]="28" color="accent" />
@@ -490,7 +648,9 @@
           <viking-icon name="deml" [size]="32" color="muted" />
         </div>
 
-        <viking-heading size="sm" [level]="3">Sizes &amp; variants</viking-heading>
+        <viking-heading size="sm" [level]="3"
+          >Sizes &amp; variants</viking-heading
+        >
         <div class="demo-row">
           <viking-icon name="shield" sizePreset="sm" color="accent" />
           <viking-icon name="shield" sizePreset="md" color="accent" />
@@ -512,7 +672,11 @@
         >
         <div class="icon-gallery" role="list" aria-label="Lucide icon registry">
           @for (iconName of lucideIconNames; track iconName) {
-          <div class="icon-gallery-cell" role="listitem" [attr.title]="iconName">
+          <div
+            class="icon-gallery-cell"
+            role="listitem"
+            [attr.title]="iconName"
+          >
             <viking-icon [name]="iconName" sizePreset="md" />
             <span class="icon-gallery-label">{{ iconName }}</span>
           </div>
@@ -533,21 +697,27 @@
 
   <section class="showcase-category" id="cat-data" aria-labelledby="cat-data">
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-data">Data Visualization</viking-heading>
-      <viking-text variant="muted">Charts, kanban boards, and quantitative displays.</viking-text>
+      <viking-heading size="lg" [level]="2" id="cat-data"
+        >Data Visualization</viking-heading
+      >
+      <viking-text variant="muted"
+        >Charts, kanban boards, and quantitative displays.</viking-text
+      >
     </header>
     <div class="demo-grid">
       <section class="demo demo-wide" id="demo-chart">
         <viking-heading size="lg" [level]="2">Chart</viking-heading>
         <viking-text variant="muted">
-          Viking-inspired zero-dependency SVG charts — line, area, bar, grouped, stacked, sparkline,
-          and donut.
+          Viking-inspired zero-dependency SVG charts — line, area, bar, grouped,
+          stacked, sparkline, and donut.
         </viking-text>
 
         <div class="chart-gallery">
           <article class="chart-example">
             <viking-heading [level]="3">Line</viking-heading>
-            <viking-text variant="muted">Memory usage with points and axis ticks.</viking-text>
+            <viking-text variant="muted"
+              >Memory usage with points and axis ticks.</viking-text
+            >
             <viking-chart
               kind="line"
               [series]="memorySeries"
@@ -559,7 +729,9 @@
 
           <article class="chart-example">
             <viking-heading [level]="3">Area</viking-heading>
-            <viking-text variant="muted">Filled area beneath a linear series.</viking-text>
+            <viking-text variant="muted"
+              >Filled area beneath a linear series.</viking-text
+            >
             <viking-chart
               kind="area"
               [series]="stockSeries"
@@ -585,7 +757,9 @@
 
           <article class="chart-example">
             <viking-heading [level]="3">Bar</viking-heading>
-            <viking-text variant="muted">Vertical bars with grid and baseline.</viking-text>
+            <viking-text variant="muted"
+              >Vertical bars with grid and baseline.</viking-text
+            >
             <viking-chart
               kind="bar"
               [series]="revenueSeries"
@@ -597,7 +771,9 @@
 
           <article class="chart-example">
             <viking-heading [level]="3">Grouped bar</viking-heading>
-            <viking-text variant="muted">Side-by-side bars per category.</viking-text>
+            <viking-text variant="muted"
+              >Side-by-side bars per category.</viking-text
+            >
             <viking-chart
               kind="grouped-bar"
               [series]="browserSeries"
@@ -608,7 +784,9 @@
 
           <article class="chart-example">
             <viking-heading [level]="3">Stacked bar</viking-heading>
-            <viking-text variant="muted">Cumulative values stacked per category.</viking-text>
+            <viking-text variant="muted"
+              >Cumulative values stacked per category.</viking-text
+            >
             <viking-chart
               kind="stacked-bar"
               [series]="orderSeries"
@@ -620,7 +798,9 @@
 
           <article class="chart-example chart-example-inline">
             <viking-heading [level]="3">Sparkline</viking-heading>
-            <viking-text variant="muted">Compact trend lines for tables and KPI rows.</viking-text>
+            <viking-text variant="muted"
+              >Compact trend lines for tables and KPI rows.</viking-text
+            >
             <div class="sparkline-table-wrap">
               <table class="sparkline-table">
                 <thead>
@@ -653,7 +833,9 @@
 
           <article class="chart-example chart-example-stat">
             <viking-heading [level]="3">Dashboard stat</viking-heading>
-            <viking-text variant="muted">KPI card with an embedded area sparkline.</viking-text>
+            <viking-text variant="muted"
+              >KPI card with an embedded area sparkline.</viking-text
+            >
             <viking-card class="stat-card">
               <viking-text variant="muted">Revenue</viking-text>
               <viking-heading size="xl" [level]="3">$12,345</viking-heading>
@@ -667,10 +849,16 @@
             </viking-card>
           </article>
 
-          <article class="chart-example">
+          <article class="chart-example chart-example-donut">
             <viking-heading [level]="3">Donut</viking-heading>
-            <viking-text variant="muted">Segment distribution with centered total.</viking-text>
-            <viking-chart kind="donut" [segments]="donutSegments" label="Threat severity" />
+            <viking-text variant="muted"
+              >Segment distribution with centered total.</viking-text
+            >
+            <viking-chart
+              kind="donut"
+              [segments]="donutSegments"
+              label="Threat severity"
+            />
           </article>
         </div>
       </section>
@@ -683,26 +871,40 @@
     </div>
   </section>
 
-  <section class="showcase-category" id="cat-content" aria-labelledby="cat-content">
+  <section
+    class="showcase-category"
+    id="cat-content"
+    aria-labelledby="cat-content"
+  >
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-content">Content &amp; Media</viking-heading>
-      <viking-text variant="muted">Accordions, timelines, carousels, and rich text.</viking-text>
+      <viking-heading size="lg" [level]="2" id="cat-content"
+        >Content &amp; Media</viking-heading
+      >
+      <viking-text variant="muted"
+        >Accordions, timelines, carousels, and rich text.</viking-text
+      >
     </header>
     <div class="demo-grid">
       <section class="demo" id="demo-accordion">
         <viking-heading size="lg" [level]="2">Accordion</viking-heading>
         <viking-accordion [exclusive]="true">
-          <viking-accordion-item heading="What is the transactional outbox?" [expanded]="true">
-            Django writes OutboxEvent rows atomically with business data; the outbox_relay command
-            publishes them to Redpanda for reliable delivery.
+          <viking-accordion-item
+            heading="What is the transactional outbox?"
+            [expanded]="true"
+          >
+            Django writes OutboxEvent rows atomically with business data; the
+            outbox_relay command publishes them to Redpanda for reliable
+            delivery.
           </viking-accordion-item>
           <viking-accordion-item heading="How are projections kept idempotent?">
-            The telemetry worker de-duplicates by idempotency_key and dead-letters poison events to
-            frontend-events-dlq.
+            The telemetry worker de-duplicates by idempotency_key and
+            dead-letters poison events to frontend-events-dlq.
           </viking-accordion-item>
-          <viking-accordion-item heading="Where do real-time queries read from?">
-            Angular subscribes directly to Firestore documents such as the per-user stats
-            projection.
+          <viking-accordion-item
+            heading="Where do real-time queries read from?"
+          >
+            Angular subscribes directly to Firestore documents such as the
+            per-user stats projection.
           </viking-accordion-item>
         </viking-accordion>
       </section>
@@ -752,7 +954,8 @@
             <div class="slide-body">
               <viking-heading [level]="3">Enhance</viking-heading>
               <viking-text variant="muted"
-                >Enrichment from Postgres, threat intel and ASN data.</viking-text
+                >Enrichment from Postgres, threat intel and ASN
+                data.</viking-text
               >
             </div>
           </viking-carousel-slide>
@@ -760,7 +963,8 @@
             <div class="slide-body">
               <viking-heading [level]="3">Showcase</viking-heading>
               <viking-text variant="muted"
-                >Materialized projections power real-time dashboards.</viking-text
+                >Materialized projections power real-time
+                dashboards.</viking-text
               >
             </div>
           </viking-carousel-slide>
@@ -768,44 +972,65 @@
       </section>
 
       <section class="demo demo-wide" id="demo-composer">
-        <viking-heading size="lg" [level]="2">Editor &amp; Composer</viking-heading>
+        <viking-heading size="lg" [level]="2"
+          >Editor &amp; Composer</viking-heading
+        >
         <viking-field label="Runbook entry">
           <viking-editor placeholder="Document the remediation steps…" />
         </viking-field>
         <viking-field label="Incident channel">
-          <viking-composer placeholder="Message the on-call channel…" (sent)="onMessage($event)" />
+          <viking-composer
+            placeholder="Message the on-call channel…"
+            (sent)="onMessage($event)"
+          />
         </viking-field>
         @if (lastMessage()) {
-        <viking-text variant="muted">Last message: {{ lastMessage() }}</viking-text>
+        <viking-text variant="muted"
+          >Last message: {{ lastMessage() }}</viking-text
+        >
         }
       </section>
     </div>
   </section>
 
-  <section class="showcase-category" id="cat-marketing" aria-labelledby="cat-marketing">
+  <section
+    class="showcase-category"
+    id="cat-marketing"
+    aria-labelledby="cat-marketing"
+  >
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-marketing">Marketing</viking-heading>
+      <viking-heading size="lg" [level]="2" id="cat-marketing"
+        >Marketing</viking-heading
+      >
       <viking-text variant="muted"
-        >Polars-style research CTA with animated bar grid and sparkline.</viking-text
+        >Polars-style research CTA with animated bar grid and
+        sparkline.</viking-text
       >
     </header>
     <div class="demo-grid">
       <section class="demo demo-wide" id="demo-whitepaper-cta">
         <viking-heading size="lg" [level]="3">Whitepaper CTA</viking-heading>
         <viking-text variant="muted">
-          Shared across marketing and app surfaces — update here, syncs everywhere.
+          Shared across marketing and app surfaces — update here, syncs
+          everywhere.
         </viking-text>
         <viking-whitepaper-cta />
       </section>
     </div>
   </section>
 
-  <section class="showcase-category" id="cat-drakkar" aria-labelledby="cat-drakkar">
+  <section
+    class="showcase-category"
+    id="cat-drakkar"
+    aria-labelledby="cat-drakkar"
+  >
     <header class="showcase-category-header">
-      <viking-heading size="lg" [level]="2" id="cat-drakkar">Drakkar Shell</viking-heading>
+      <viking-heading size="lg" [level]="2" id="cat-drakkar"
+        >Drakkar Shell</viking-heading
+      >
       <viking-text variant="muted"
-        >Shared navbar and footer (the Drakkar longship) across marketing, app, and
-        backend.</viking-text
+        >Shared navbar and footer (the Drakkar longship) across marketing, app,
+        and backend.</viking-text
       >
     </header>
     <div class="demo-grid">

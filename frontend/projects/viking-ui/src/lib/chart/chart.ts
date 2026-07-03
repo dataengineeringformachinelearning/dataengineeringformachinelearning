@@ -338,13 +338,18 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       :host {
         display: block;
         width: 100%;
+        --viking-chart-min-height: 11rem;
+        --viking-chart-max-height: 20rem;
+        --viking-chart-ratio: 5 / 2;
+        --viking-chart-fill-min-height: 17.5rem;
       }
       :host(.viking-chart-fill-host) {
         display: flex;
         flex-direction: column;
         flex: 1 1 auto;
-        min-height: 240px;
+        min-height: var(--viking-chart-fill-min-height, 17.5rem);
         height: 100%;
+        max-height: none;
       }
       :host(.viking-chart-sparkline-host) {
         display: inline-block;
@@ -364,14 +369,19 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         container-type: inline-size;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
-        aspect-ratio: 3 / 1;
+        aspect-ratio: var(--viking-chart-ratio, 5 / 2);
+        min-height: var(--viking-chart-min-height, 11rem);
+        max-height: var(--viking-chart-max-height, 20rem);
+        height: auto;
       }
       .viking-chart-fill {
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
-        min-height: 240px;
+        min-height: var(--viking-chart-fill-min-height, 17.5rem);
         height: 100%;
+        max-height: none;
+        aspect-ratio: auto;
       }
       .viking-chart-sparkline {
         width: 5rem;
@@ -386,13 +396,14 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         display: block;
         width: 100%;
         height: 100%;
-        min-height: 120px;
+        min-height: var(--viking-chart-min-height, 11rem);
+        max-height: var(--viking-chart-max-height, 20rem);
         background: transparent;
         overflow: visible;
       }
       .viking-chart-fill svg {
         flex: 1 1 auto;
-        min-height: 200px;
+        min-height: var(--viking-chart-fill-min-height, 17.5rem);
         max-height: none;
       }
       .viking-chart-sparkline svg {
@@ -400,7 +411,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         border: none;
       }
       .viking-chart-compact svg {
-        max-height: 220px;
+        max-height: min(var(--viking-chart-max-height, 20rem), 13.75rem);
       }
       .viking-chart-grid {
         stroke: color-mix(in srgb, var(--viking-border) 55%, transparent);

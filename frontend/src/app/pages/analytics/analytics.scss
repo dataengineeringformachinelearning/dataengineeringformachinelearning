@@ -277,10 +277,12 @@
 }
 
 .viking-chart-large {
+  --viking-chart-fill-min-height: 20rem;
+
   width: 100%;
   flex: 1 1 auto;
   display: flex;
-  min-height: 300px;
+  min-height: 20rem;
 }
 
 .dashboard-grid-single {
@@ -291,10 +293,12 @@
 }
 
 .viking-chart-medium {
+  --viking-chart-fill-min-height: 17.5rem;
+
   width: 100%;
   flex: 1 1 auto;
   display: flex;
-  min-height: 260px;
+  min-height: 17.5rem;
 }
 
 .panel-title-flex {
