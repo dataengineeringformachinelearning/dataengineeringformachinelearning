@@ -10,13 +10,14 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
     '[attr.data-status]': 'status()',
   },
   template: `
-    <svg viewBox="0 0 120 120">
+    <svg class="viking-ring-gauge-svg" viewBox="0 0 120 120" fill="none">
       <circle class="viking-ring-bg" cx="60" cy="60" r="52" />
       <circle
         class="viking-ring-fill"
         cx="60"
         cy="60"
         r="52"
+        stroke-linecap="round"
         [attr.stroke-dasharray]="strokeDasharray()"
       />
     </svg>
@@ -27,11 +28,15 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
         display: block;
         width: 100%;
         height: 100%;
+        color: var(--viking-accent);
       }
-      svg {
+
+      .viking-ring-gauge-svg {
         width: 100%;
         height: 100%;
+        shape-rendering: geometricPrecision;
       }
+
       .viking-ring-bg,
       .viking-ring-fill {
         fill: none;
@@ -39,12 +44,14 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
         transform: rotate(-90deg);
         transform-origin: 50% 50%;
       }
+
       .viking-ring-bg {
         stroke: color-mix(in srgb, var(--viking-text-muted) 20%, transparent);
       }
+
       .viking-ring-fill {
-        stroke: var(--viking-accent);
-        transition: stroke-dasharray 0.4s ease;
+        stroke: currentColor;
+        transition: stroke-dasharray 0.4s var(--viking-ease-default);
       }
     `,
   ],

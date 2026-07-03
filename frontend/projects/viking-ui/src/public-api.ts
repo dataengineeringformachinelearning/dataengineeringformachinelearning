@@ -9,13 +9,15 @@ export type { VikingChartCurve, VikingChartKind, VikingDonutSegment } from './li
 export {
   VIKING_ICON_NAMES,
   VIKING_ICON_PATHS,
-  VIKING_ICON_VIEWBOXES,
+  VIKING_ICON_FILLED_PATHS,
+  VIKING_ICON_SIZE_PRESETS,
   VIKING_BRAND_ICON_NAMES,
   MATERIAL_ICON_ALIASES,
   resolveVikingIcon,
+  resolveVikingIconSize,
   vikingIconViewBox,
 } from './lib/core/icons';
-export type { VikingIconName } from './lib/core/icons';
+export type { VikingIconName, VikingIconSizePreset, VikingIconVariant } from './lib/core/icons';
 export { VikingControl, provideVikingCva } from './lib/core/cva';
 
 // Components (alphabetical)

@@ -1,11 +1,23 @@
 /**
- * Zero-dependency inline SVG icon registry (24x24 stroke icons).
+ * Zero-dependency inline SVG icon registry (24×24 stroke icons).
  * Icons are original geometric paths — no third-party icon package required.
  */
 export type VikingIconName = keyof typeof VIKING_ICON_PATHS;
 
+export type VikingIconSizePreset = 'sm' | 'md' | 'lg';
+
+export type VikingIconVariant = 'outline' | 'filled';
+
+/** Pixel sizes for sm / md / lg presets. */
+export const VIKING_ICON_SIZE_PRESETS: Record<VikingIconSizePreset, number> = {
+  sm: 16,
+  md: 20,
+  lg: 24,
+} as const;
+
 export const VIKING_ICON_PATHS = {
-  deml: '<path d="M280-280h80v-200h-80v200Zm320 0h80v-400h-80v400Zm-160 0h80v-120h-80v120Zm0-200h80v-80h-80v80ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Z"/>',
+  /** DEML brand mark — bar chart in rounded frame (outline). */
+  deml: '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 17V13M12 17V8M16 17V11"/>',
   check: '<path d="M4 12.5 9.5 18 20 6.5"/>',
   x: '<path d="M6 6l12 12M18 6 6 18"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
@@ -22,7 +34,7 @@ export const VIKING_ICON_PATHS = {
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',
   user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/>',
   settings:
-    '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',
+    '<circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6l-1.4 1.4M6.6 17.4l-1.4 1.4"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',
   'alert-triangle': '<path d="M12 3 2.5 20h19L12 3z"/><path d="M12 10v4M12 17.5h.01"/>',
   'alert-circle': '<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/>',
@@ -44,11 +56,11 @@ export const VIKING_ICON_PATHS = {
   folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
   'dots-horizontal':
-    '<circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/>',
+    '<circle cx="5" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="19" cy="12" r="1" fill="currentColor" stroke="none"/>',
   'dots-vertical':
-    '<circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/>',
+    '<circle cx="12" cy="5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/>',
   'grip-vertical':
-    '<circle cx="9" cy="6" r="1" fill="currentColor"/><circle cx="9" cy="12" r="1" fill="currentColor"/><circle cx="9" cy="18" r="1" fill="currentColor"/><circle cx="15" cy="6" r="1" fill="currentColor"/><circle cx="15" cy="12" r="1" fill="currentColor"/><circle cx="15" cy="18" r="1" fill="currentColor"/>',
+    '<circle cx="9" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="9" cy="18" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="18" r="1" fill="currentColor" stroke="none"/>',
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/>',
   moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4 8.5 8.5 0 1 0 20 14.5z"/>',
   eye: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
@@ -100,15 +112,20 @@ export const VIKING_ICON_PATHS = {
   key: '<circle cx="8" cy="15" r="4"/><path d="m11.5 11.5 6-6M16 5l3 3"/>',
   policy: '<path d="M12 3 4 6v5c0 5 3 8.5 7.5 10"/><path d="M9 12h6M12 9v6"/>',
   bug: '<path d="M8 8h8M12 8v10M6 12h12M8 18h8M9 5l3-2 3 2"/>',
-  play: '<polygon points="10,8 16,12 10,16" fill="currentColor" stroke="none"/>',
+  play: '<path d="M10 8l6 4-6 4V8z" fill="currentColor" stroke="none"/>',
   building:
     '<rect x="4" y="8" width="16" height="12" rx="1"/><path d="M9 8V5h6v3M9 14h.01M12 14h.01M15 14h.01M9 18h.01M12 18h.01M15 18h.01"/>',
   cookie:
-    '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor"/><circle cx="15" cy="11" r="1" fill="currentColor"/><circle cx="11" cy="15" r="1" fill="currentColor"/>',
+    '<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="11" cy="15" r="1" fill="currentColor" stroke="none"/>',
   model: '<rect x="4" y="8" width="16" height="10" rx="2"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/>',
   'search-off': '<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.5 4.5M7 7l10 10"/>',
-  insights: '<path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3"/>',
+  insights: '<path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3"/><path d="M8 16l4-4 4-2"/>',
 } as const;
+
+/** Filled-path overrides used when variant="filled" (brand marks, solid shapes). */
+export const VIKING_ICON_FILLED_PATHS: Partial<Record<VikingIconName, string>> = {
+  deml: '<path d="M5 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4zm2 11h2.5V10H7v5zm4.5-5h2.5v10h-2.5V10zm4.5-3h2.5v13h-2.5V7z"/>',
+};
 
 /** Legacy Material Icons ligature names → Viking icon registry keys. */
 export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
@@ -156,16 +173,8 @@ export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
   person_add: 'user',
 };
 
-/** Icons rendered with fill instead of stroke (brand marks). */
-/** Icons using non-default viewBox (Material coordinate space). */
-export const VIKING_ICON_VIEWBOXES: Partial<Record<VikingIconName, string>> = {
-  deml: '0 -960 960 960',
-};
-
-export const VIKING_FILLED_ICON_NAMES = [
-  'deml',
-  'play',
-] as const satisfies readonly VikingIconName[];
+/** Icons always rendered with fill (play triangle, dot grids). */
+export const VIKING_FILLED_ICON_NAMES = ['play'] as const satisfies readonly VikingIconName[];
 
 /** OAuth / vendor marks rendered with official brand artwork in viking-icon. */
 export const VIKING_BRAND_ICON_NAMES = [
@@ -173,8 +182,18 @@ export const VIKING_BRAND_ICON_NAMES = [
   'apple',
 ] as const satisfies readonly VikingIconName[];
 
-export const vikingIconViewBox = (name: VikingIconName): string =>
-  VIKING_ICON_VIEWBOXES[name] ?? '0 0 24 24';
+export const vikingIconViewBox = (_name: VikingIconName): string => '0 0 24 24';
+
+/** Resolve pixel size from preset or explicit value. */
+export const resolveVikingIconSize = (
+  size: number | undefined,
+  preset: VikingIconSizePreset | null | undefined,
+): number => {
+  if (preset) {
+    return VIKING_ICON_SIZE_PRESETS[preset];
+  }
+  return size ?? VIKING_ICON_SIZE_PRESETS.lg;
+};
 
 /** Resolve a Viking or legacy Material icon name to a registry key. */
 export const resolveVikingIcon = (name: string): VikingIconName => {
