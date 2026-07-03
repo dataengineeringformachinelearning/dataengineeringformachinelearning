@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy, Input } from '@angular/core';
 
 import { Router } from '@angular/router';
-import { VikingButton } from '@deml/viking-ui';
+import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { AuthService } from '../../services/auth.service';
 

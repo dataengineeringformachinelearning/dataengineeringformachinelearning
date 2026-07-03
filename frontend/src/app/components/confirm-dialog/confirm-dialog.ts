@@ -8,9 +8,9 @@ import {
   VikingInput,
   VikingModal,
   VikingText,
-} from '@deml/viking-ui';
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingDialogService } from '../../services/viking-dialog.service';
-import type { VikingIconName } from '@deml/viking-ui';
+import type { VikingIconName } from '@dataengineeringformachinelearning/viking-ui';
 
 export interface ConfirmDialogData {
   title?: string;

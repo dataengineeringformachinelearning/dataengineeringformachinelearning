@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { VikingButton } from '@deml/viking-ui';
+import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';

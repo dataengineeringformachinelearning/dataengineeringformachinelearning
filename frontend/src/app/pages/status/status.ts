@@ -15,7 +15,11 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { VikingBadge, VikingButton, VikingPageHeader } from '@deml/viking-ui';
+import {
+  VikingBadge,
+  VikingButton,
+  VikingPageHeader,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule, Router } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';

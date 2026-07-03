@@ -75,10 +75,10 @@ import {
   VikingTimelineItem,
   VikingToastService,
   VikingTooltip,
-} from '@deml/viking-ui';
+} from '@dataengineeringformachinelearning/viking-ui';
 
 /**
- * Living gallery for the @deml/viking-ui UI kit: every free Viking UI
+ * Living gallery for the @dataengineeringformachinelearning/viking-ui UI kit: every free Viking UI
  * component (https://fluxui.dev), themed with DEML Material tokens.
  */
 @Component({
@@ -174,7 +174,7 @@ export class Showcase {
   ];
 
   protected readonly breadcrumbs: VikingBreadcrumb[] = [
-    { label: '@deml/viking-ui', href: '/' },
+    { label: '@dataengineeringformachinelearning/viking-ui', href: '/' },
     { label: 'Component Gallery' },
   ];
 

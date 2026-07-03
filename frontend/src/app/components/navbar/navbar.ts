@@ -1,6 +1,6 @@
 import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { VikingAppHeader } from '@deml/viking-ui';
+import { VikingAppHeader } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { AuthService } from '../../services/auth.service';

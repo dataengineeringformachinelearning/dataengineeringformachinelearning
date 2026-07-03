@@ -17,8 +17,8 @@ import {
   VikingMetricCard,
   VikingMetricRow,
   VikingPageHeader,
-} from '@deml/viking-ui';
-import type { VikingTone } from '@deml/viking-ui';
+} from '@dataengineeringformachinelearning/viking-ui';
+import type { VikingTone } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import {
   UnifiedSelect,

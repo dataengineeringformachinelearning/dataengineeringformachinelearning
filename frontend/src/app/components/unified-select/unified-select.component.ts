@@ -1,6 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { VikingField, VikingSelect, VikingSelectOption } from '@deml/viking-ui';
+import {
+  VikingField,
+  VikingSelect,
+  VikingSelectOption,
+} from '@dataengineeringformachinelearning/viking-ui';
 
 export interface SelectOption {
   value: string;

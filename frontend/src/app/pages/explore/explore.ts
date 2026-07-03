@@ -15,7 +15,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { VikingButton } from '@deml/viking-ui';
+import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule } from '@angular/router';
 import { StatusCta } from '../../components/status-cta/status-cta';

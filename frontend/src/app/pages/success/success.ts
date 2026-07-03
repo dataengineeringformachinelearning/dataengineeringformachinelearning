@@ -9,7 +9,7 @@ import { Title, Meta } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment';
-import { VikingButton } from '@deml/viking-ui';
+import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
 
 @Component({
   selector: 'app-success',

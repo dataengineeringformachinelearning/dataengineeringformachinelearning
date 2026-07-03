@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { VikingBadge } from '@deml/viking-ui';
+import { VikingBadge } from '@dataengineeringformachinelearning/viking-ui';
 
 @Component({
   selector: 'app-pro-verified-badge',

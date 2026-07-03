@@ -4,7 +4,10 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
   resolve: {
     alias: {
-      '@deml/viking-ui': path.resolve(__dirname, 'projects/viking-ui/src/public-api.ts'),
+      '@dataengineeringformachinelearning/viking-ui': path.resolve(
+        __dirname,
+        'projects/viking-ui/src/public-api.ts',
+      ),
     },
   },
   plugins: [

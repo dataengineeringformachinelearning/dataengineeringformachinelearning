@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { VikingBadge, VikingSearchPalette } from '@deml/viking-ui';
+import { VikingBadge, VikingSearchPalette } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { VikingDialogService } from '../../services/viking-dialog.service';
 import { OramaSearchService, SearchItem } from '../../services/orama-search.service';

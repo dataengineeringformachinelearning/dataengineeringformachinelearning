@@ -1,6 +1,6 @@
 import { Component, inject, signal, ChangeDetectionStrategy, OnInit } from '@angular/core';
 
-import { VikingButton, VikingSwitch } from '@deml/viking-ui';
+import { VikingButton, VikingSwitch } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { CookieConsentService } from '../../services/cookie-consent.service';
 

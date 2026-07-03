@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema",
-  "name": "@deml/viking-ui",
+  "name": "@dataengineeringformachinelearning/viking-ui",
   "description": "Tracks which Viking UI (fluxui.dev) components this package mirrors, so upstream additions/renames are detectable via `npm run check:viking-upstream`.",
   "upstream": {
     "site": "https://fluxui.dev",

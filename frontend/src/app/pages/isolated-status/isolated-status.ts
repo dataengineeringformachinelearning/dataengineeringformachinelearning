@@ -16,7 +16,11 @@ import { Title, Meta } from '@angular/platform-browser';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService, ThreatReportResponse } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
-import { VikingButton, VikingUptimeBar, VikingUptimeStatus } from '@deml/viking-ui';
+import {
+  VikingButton,
+  VikingUptimeBar,
+  VikingUptimeStatus,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { formatServiceName } from '../../core/utils/formatter.utils';

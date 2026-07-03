@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "scripts": {
     "ng": "ng",
     "prebuild": "npm run build:viking-ui",
@@ -36,7 +36,7 @@
     "@angular/platform-server": "^22.0.0",
     "@angular/router": "^22.0.0",
     "@angular/ssr": "^22.0.0",
-    "@deml/viking-ui": "file:dist/viking-ui",
+    "@dataengineeringformachinelearning/viking-ui": "file:dist/viking-ui",
     "@orama/orama": "^3.1.18",
     "@sanity/client": "^7.22.1",
     "@sentry/angular": "^10.57.0",
