@@ -254,13 +254,15 @@
 }
 
 .chart-container-large {
-  --viking-chart-fill-min-height: 20rem;
-  min-height: 22.5rem;
+  --viking-chart-fill-min-height: var(--viking-chart-fill-min-height-lg, clamp(17.5rem, 36vw, 20rem));
+  --viking-chart-fill-max-height: var(--viking-chart-fill-max-height-lg, clamp(20rem, 44vw, 22rem));
+  min-height: var(--viking-chart-panel-body-min-height-lg, 22.5rem);
 }
 
 .chart-container-medium {
-  --viking-chart-fill-min-height: 17.5rem;
-  min-height: 19rem;
+  --viking-chart-fill-min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+  --viking-chart-fill-max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+  min-height: var(--viking-chart-panel-body-min-height-md, 19rem);
 }
 
 .viking-chart-empty,

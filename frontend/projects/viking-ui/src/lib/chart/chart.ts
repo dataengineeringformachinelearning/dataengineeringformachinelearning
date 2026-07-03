@@ -69,6 +69,16 @@ const WIDTH = 720;
 const HEIGHT_DEFAULT = 240;
 const HEIGHT_COMPACT = 200;
 const HEIGHT_SPARKLINE = 48;
+const BAR_WIDTH_MIN = 8;
+const BAR_WIDTH_MAX = 52;
+const SINGLE_BAR_WIDTH = 36;
+
+const resolveBarWidth = (slotWidth: number, count: number, widthPercent: number): number => {
+  if (count <= 1) {
+    return SINGLE_BAR_WIDTH;
+  }
+  return Math.min(BAR_WIDTH_MAX, Math.max(BAR_WIDTH_MIN, slotWidth * (widthPercent / 100)));
+};
 
 const formatTick = (value: number): string => {
   if (value >= 1_000_000) {
@@ -189,7 +199,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
               class="viking-chart-donut-hole"
               [attr.cx]="width / 2"
               [attr.cy]="plotCy()"
-              r="46"
+              [attr.r]="donutInnerRadius()"
             />
             <text
               class="viking-chart-donut-total"
@@ -338,18 +348,14 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       :host {
         display: block;
         width: 100%;
-        --viking-chart-min-height: 11rem;
-        --viking-chart-max-height: 20rem;
-        --viking-chart-ratio: 5 / 2;
-        --viking-chart-fill-min-height: 17.5rem;
       }
       :host(.viking-chart-fill-host) {
         display: flex;
         flex-direction: column;
         flex: 1 1 auto;
-        min-height: var(--viking-chart-fill-min-height, 17.5rem);
+        min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+        max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
         height: 100%;
-        max-height: none;
       }
       :host(.viking-chart-sparkline-host) {
         display: inline-block;
@@ -369,18 +375,18 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         container-type: inline-size;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
-        aspect-ratio: var(--viking-chart-ratio, 5 / 2);
-        min-height: var(--viking-chart-min-height, 11rem);
-        max-height: var(--viking-chart-max-height, 20rem);
+        aspect-ratio: var(--viking-chart-ratio, 3 / 1);
+        min-height: var(--viking-chart-min-height, clamp(9.5rem, 22vw, 12rem));
+        max-height: var(--viking-chart-max-height, clamp(13rem, 36vw, 17.5rem));
         height: auto;
       }
       .viking-chart-fill {
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
-        min-height: var(--viking-chart-fill-min-height, 17.5rem);
+        min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+        max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
         height: 100%;
-        max-height: none;
         aspect-ratio: auto;
       }
       .viking-chart-sparkline {
@@ -390,28 +396,30 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       :host(.viking-chart-wide) .viking-chart-sparkline {
         width: 100%;
         aspect-ratio: auto;
-        height: 3rem;
+        height: var(--viking-chart-sparkline-height, 2.5rem);
       }
       svg {
         display: block;
         width: 100%;
         height: 100%;
-        min-height: var(--viking-chart-min-height, 11rem);
-        max-height: var(--viking-chart-max-height, 20rem);
         background: transparent;
         overflow: visible;
       }
+      .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) svg {
+        min-height: var(--viking-chart-min-height, clamp(9.5rem, 22vw, 12rem));
+        max-height: var(--viking-chart-max-height, clamp(13rem, 36vw, 17.5rem));
+      }
       .viking-chart-fill svg {
         flex: 1 1 auto;
-        min-height: var(--viking-chart-fill-min-height, 17.5rem);
-        max-height: none;
+        min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+        max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
       }
       .viking-chart-sparkline svg {
         min-height: 0;
         border: none;
       }
       .viking-chart-compact svg {
-        max-height: min(var(--viking-chart-max-height, 20rem), 13.75rem);
+        max-height: min(var(--viking-chart-max-height, clamp(13rem, 36vw, 17.5rem)), 13.75rem);
       }
       .viking-chart-grid {
         stroke: color-mix(in srgb, var(--viking-border) 55%, transparent);
@@ -510,7 +518,7 @@ export class VikingChart {
   readonly curve = input<VikingChartCurve>('linear');
   readonly showPoints = input<boolean>(false);
   readonly pointRadius = input<number>(4);
-  readonly barWidth = input<number>(85);
+  readonly barWidth = input<number>(62);
   readonly barRadius = input<number>(4);
   readonly gutter = input<number | string | undefined>(undefined);
   readonly tickCount = input<number>(4);
@@ -553,6 +561,13 @@ export class VikingChart {
   protected readonly plotBottom = computed(() => this.height() - this.resolvedGutter().bottom);
   protected readonly plotTop = computed(() => this.resolvedGutter().top);
   protected readonly plotCy = computed(() => this.height() / 2);
+
+  protected readonly donutInnerRadius = computed(() => {
+    const plotH = this.plotBottom() - this.plotTop();
+    const plotW = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
+    const outer = Math.min(plotW, plotH) / 2 - 6;
+    return outer * 0.58;
+  });
 
   protected readonly isBarKind = computed(() => {
     const kind = this.kind();
@@ -752,9 +767,9 @@ export class VikingChart {
     const top = this.plotTop();
     const plotHeight = bottom - top;
     const plotWidth = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
-    const widthPercent = this.barWidth() / 100;
+    const widthPercent = this.barWidth();
     const slotWidth = plotWidth / primary.data.length;
-    const barWidth = Math.max(4, slotWidth * widthPercent);
+    const barWidth = resolveBarWidth(slotWidth, primary.data.length, widthPercent);
 
     return primary.data.map((value, index) => {
       const normalized = (value - min) / range;
@@ -786,13 +801,14 @@ export class VikingChart {
     const plotHeight = bottom - top;
     const plotWidth = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
     const groupWidth = plotWidth / count;
-    const widthPercent = this.barWidth() / 100;
-    const barWidth = Math.max(3, (groupWidth * widthPercent) / series.length);
+    const widthPercent = this.barWidth();
+    const groupBarWidth = resolveBarWidth(groupWidth, count, widthPercent);
+    const barWidth = Math.max(3, groupBarWidth / series.length);
     const rects: BarRect[] = [];
 
     for (let index = 0; index < count; index += 1) {
       const groupStart = this.resolvedGutter().left + index * groupWidth;
-      const groupInner = groupWidth * widthPercent;
+      const groupInner = groupBarWidth;
       const groupOffset = (groupWidth - groupInner) / 2;
 
       series.forEach((item, seriesIndex) => {
@@ -828,9 +844,9 @@ export class VikingChart {
     const top = this.plotTop();
     const plotHeight = bottom - top;
     const plotWidth = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
-    const widthPercent = this.barWidth() / 100;
+    const widthPercent = this.barWidth();
     const slotWidth = plotWidth / count;
-    const barWidth = Math.max(4, slotWidth * widthPercent);
+    const barWidth = resolveBarWidth(slotWidth, count, widthPercent);
     const rects: BarRect[] = [];
 
     for (let index = 0; index < count; index += 1) {

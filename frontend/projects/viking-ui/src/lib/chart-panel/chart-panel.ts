@@ -32,11 +32,11 @@ export type VikingChartPanelBody = 'default' | 'origin-map';
       }
 
       :host(.viking-chart-panel-large) {
-        min-height: 28rem;
+        min-height: var(--viking-chart-panel-min-height-lg, 28rem);
       }
 
       :host(.viking-chart-panel-medium) {
-        min-height: 24rem;
+        min-height: var(--viking-chart-panel-min-height-md, 24rem);
       }
 
       .viking-chart-panel-body {
@@ -50,21 +50,23 @@ export type VikingChartPanelBody = 'default' | 'origin-map';
       }
 
       :host(.viking-chart-panel-large) .viking-chart-panel-body {
-        --viking-chart-empty-min-height: 18.75rem;
-        --viking-chart-fill-min-height: 20rem;
-        min-height: 22.5rem;
+        --viking-chart-empty-min-height: var(--viking-chart-empty-min-height-lg, 18.75rem);
+        --viking-chart-fill-min-height: var(--viking-chart-fill-min-height-lg, clamp(17.5rem, 36vw, 20rem));
+        --viking-chart-fill-max-height: var(--viking-chart-fill-max-height-lg, clamp(20rem, 44vw, 22rem));
+        min-height: var(--viking-chart-panel-body-min-height-lg, 22.5rem);
       }
 
       :host(.viking-chart-panel-medium) .viking-chart-panel-body {
-        --viking-chart-empty-min-height: 16.25rem;
-        --viking-chart-fill-min-height: 17.5rem;
-        min-height: 19rem;
+        --viking-chart-empty-min-height: var(--viking-chart-empty-min-height, clamp(16rem, 32vw, 17.5rem));
+        --viking-chart-fill-min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+        --viking-chart-fill-max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+        min-height: var(--viking-chart-panel-body-min-height-md, 19rem);
       }
 
       :host(.viking-chart-panel-medium.viking-chart-panel-origin-map) .viking-chart-panel-body,
       :host(.viking-chart-panel-medium) .viking-chart-panel-body.origin-map-container {
-        --viking-chart-empty-min-height: 360px;
-        min-height: 360px;
+        --viking-chart-empty-min-height: var(--viking-chart-map-min-height, 22.5rem);
+        min-height: var(--viking-chart-map-min-height, 22.5rem);
       }
     `,
   ],

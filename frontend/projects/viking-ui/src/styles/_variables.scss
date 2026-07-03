@@ -125,6 +125,23 @@
     0 8px 16px rgba(0, 0, 0, 0.14), 0 4px 8px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
+  /* ── Chart scale — unified responsive min/max (matches 720×240 SVG viewBox) ─ */
+  --viking-chart-ratio: 3 / 1;
+  --viking-chart-min-height: clamp(9.5rem, 22vw, 12rem);
+  --viking-chart-max-height: clamp(13rem, 36vw, 17.5rem);
+  --viking-chart-fill-min-height: clamp(16rem, 32vw, 17.5rem);
+  --viking-chart-fill-max-height: clamp(17.5rem, 40vw, 21rem);
+  --viking-chart-fill-min-height-lg: clamp(17.5rem, 36vw, 20rem);
+  --viking-chart-fill-max-height-lg: clamp(20rem, 44vw, 22rem);
+  --viking-chart-empty-min-height: var(--viking-chart-fill-min-height);
+  --viking-chart-empty-min-height-lg: var(--viking-chart-fill-min-height-lg);
+  --viking-chart-panel-min-height-md: 24rem;
+  --viking-chart-panel-min-height-lg: 28rem;
+  --viking-chart-panel-body-min-height-md: 19rem;
+  --viking-chart-panel-body-min-height-lg: 22.5rem;
+  --viking-chart-sparkline-height: 2.5rem;
+  --viking-chart-map-min-height: 22.5rem;
+
   /* ── Motion ──────────────────────────────────────────────────────────────── */
   --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --viking-ease-in: cubic-bezier(0.4, 0, 1, 1);
