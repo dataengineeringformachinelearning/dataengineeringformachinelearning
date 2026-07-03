@@ -20,6 +20,7 @@ sitemaps = {
 
 urlpatterns = [
   path("", views.home, name="home"),
+  path("assets/<path:path>", views.serve_asset, name="serve_asset"),
   path("api/v1/", api.urls),  # Using /api/v1/ for the ninja router
   path("robots.txt", views.robots_txt, name="robots_txt"),
   path(

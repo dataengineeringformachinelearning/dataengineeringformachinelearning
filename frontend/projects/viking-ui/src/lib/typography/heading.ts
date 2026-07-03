@@ -23,6 +23,9 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
         font-size: var(--viking-font-size-ui);
         line-height: 1.25;
       }
+      :host(.viking-heading-sm) {
+        font-size: var(--viking-font-size-sm);
+      }
       :host(.viking-heading-lg) {
         font-size: var(--viking-font-size);
       }
@@ -34,7 +37,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   ],
 })
 export class VikingHeading {
-  readonly size = input<'base' | 'lg' | 'xl'>('base');
+  readonly size = input<'sm' | 'base' | 'lg' | 'xl'>('base');
   readonly level = input<1 | 2 | 3 | 4>(3);
 
   protected readonly ariaLevel = computed(() => this.level());

@@ -1,5 +1,7 @@
+import mimetypes
+
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse
+from django.http import FileResponse, Http404, HttpRequest, HttpResponse
 from django.shortcuts import render
 
 
@@ -28,6 +30,16 @@ def custom_404(request: HttpRequest, exception: Exception) -> HttpResponse:
     },
     status=404,
   )
+
+
+def serve_asset(request: HttpRequest, path: str) -> FileResponse:
+  """Serve shared JSON/CSS assets at /assets/* (marketing + widget parity)."""
+  assets_root = (settings.BASE_DIR / "static" / "assets").resolve()
+  file_path = (assets_root / path).resolve()
+  if not str(file_path).startswith(str(assets_root)) or not file_path.is_file():
+    raise Http404
+  content_type = mimetypes.guess_type(file_path.name)[0] or "application/octet-stream"
+  return FileResponse(file_path.open("rb"), content_type=content_type)
 
 
 def robots_txt(request: HttpRequest) -> HttpResponse:

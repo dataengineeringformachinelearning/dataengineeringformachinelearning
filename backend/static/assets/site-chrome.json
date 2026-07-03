@@ -1,0 +1,156 @@
+{
+  "navLinks": [
+    {
+      "id": "explore",
+      "label": "Explore",
+      "icon": "globe",
+      "appHref": "/explore",
+      "marketingHref": "/explore",
+      "platform": true
+    },
+    {
+      "id": "documentation",
+      "label": "Documentation",
+      "icon": "file",
+      "appHref": "https://dataengineeringformachinelearning.com/documentation/",
+      "marketingHref": "/documentation"
+    },
+    {
+      "id": "dashboard",
+      "label": "Dashboard",
+      "icon": "home",
+      "appHref": "/dashboard",
+      "marketingHref": "/dashboard",
+      "requireAuth": true,
+      "platform": true
+    },
+    {
+      "id": "sites",
+      "label": "Sites",
+      "icon": "globe",
+      "appHref": "/settings",
+      "marketingHref": "/settings",
+      "requireAuth": true,
+      "platform": true
+    },
+    {
+      "id": "account",
+      "label": "Account",
+      "icon": "user",
+      "appHref": "/account",
+      "marketingHref": "/account",
+      "requireAuth": true,
+      "platform": true
+    }
+  ],
+  "footerColumns": [
+    {
+      "title": "Platform",
+      "links": [
+        {
+          "label": "Explore",
+          "appHref": "/explore",
+          "marketingHref": "/explore",
+          "platform": true
+        },
+        {
+          "label": "Dashboard",
+          "appHref": "/dashboard",
+          "marketingHref": "/dashboard",
+          "platform": true
+        },
+        {
+          "label": "Sites",
+          "appHref": "/settings",
+          "marketingHref": "/settings",
+          "platform": true
+        },
+        {
+          "label": "Account",
+          "appHref": "/account",
+          "marketingHref": "/account",
+          "platform": true
+        },
+        {
+          "label": "Platform Status",
+          "appHref": "/status/platform-status",
+          "marketingHref": "/status/platform-status",
+          "platform": true
+        }
+      ]
+    },
+    {
+      "title": "Resources",
+      "links": [
+        {
+          "label": "Documentation",
+          "appHref": "https://dataengineeringformachinelearning.com/documentation/",
+          "marketingHref": "/documentation"
+        },
+        {
+          "label": "Whitepaper",
+          "appHref": "https://dataengineeringformachinelearning.com/whitepaper/",
+          "marketingHref": "/whitepaper"
+        },
+        {
+          "label": "Book",
+          "appHref": "https://dataengineeringformachinelearning.com/book/",
+          "marketingHref": "/book"
+        }
+      ]
+    },
+    {
+      "title": "Support",
+      "links": [
+        {
+          "label": "Platform Status",
+          "appHref": "/status/platform-status",
+          "marketingHref": "/status/platform-status",
+          "platform": true
+        },
+        {
+          "label": "Report a Bug",
+          "appHref": "#",
+          "marketingHref": "#",
+          "action": "bug-report"
+        }
+      ]
+    },
+    {
+      "title": "Legal & Compliance",
+      "links": [
+        {
+          "label": "Privacy Policy",
+          "appHref": "https://dataengineeringformachinelearning.com/privacy/",
+          "marketingHref": "/privacy"
+        },
+        {
+          "label": "Terms of Service",
+          "appHref": "https://dataengineeringformachinelearning.com/terms/",
+          "marketingHref": "/terms"
+        },
+        {
+          "label": "SOC2 Compliance",
+          "appHref": "https://dataengineeringformachinelearning.com/compliance/",
+          "marketingHref": "/compliance"
+        },
+        {
+          "label": "GDPR Compliance",
+          "appHref": "https://dataengineeringformachinelearning.com/privacy/#gdpr",
+          "marketingHref": "/privacy#gdpr"
+        },
+        {
+          "label": "Cookie Settings",
+          "appHref": "#",
+          "marketingHref": "#",
+          "action": "cookie-settings"
+        }
+      ]
+    }
+  ],
+  "defaultUrls": {
+    "app": "https://deml.app",
+    "marketing": "https://dataengineeringformachinelearning.com",
+    "backend": "https://backend.deml.app"
+  }
+}

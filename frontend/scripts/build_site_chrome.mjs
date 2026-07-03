@@ -80,14 +80,14 @@ const outputs = [
   path.join(frontendDir, 'public', 'assets', 'site-chrome.json'),
   path.join(frontendDir, 'src', 'assets', 'site-chrome.json'),
   path.join(rootDir, 'marketing', 'public', 'assets', 'site-chrome.json'),
-  path.join(rootDir, 'backend', 'static', 'site-chrome.json'),
+  path.join(rootDir, 'backend', 'static', 'assets', 'site-chrome.json'),
 ];
 
 const iconOutputs = [
   path.join(frontendDir, 'public', 'assets', 'viking-icon-paths.json'),
   path.join(frontendDir, 'src', 'assets', 'viking-icon-paths.json'),
   path.join(rootDir, 'marketing', 'public', 'assets', 'viking-icon-paths.json'),
-  path.join(rootDir, 'backend', 'static', 'viking-icon-paths.json'),
+  path.join(rootDir, 'backend', 'static', 'assets', 'viking-icon-paths.json'),
 ];
 
 for (const out of outputs) {
