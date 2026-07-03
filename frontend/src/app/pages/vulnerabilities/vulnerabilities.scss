@@ -290,26 +290,26 @@
   }
 
   &[data-level='medium'] {
-    background-color: rgba(255, 193, 7, 0.15);
+    background-color: color-mix(in srgb, var(--viking-gold-500) 15%, transparent);
     color: var(--color-warning);
     &:hover {
-      background-color: rgba(255, 193, 7, 0.3);
+      background-color: color-mix(in srgb, var(--viking-gold-500) 30%, transparent);
     }
   }
 
   &[data-level='high'] {
-    background-color: rgba(244, 67, 54, 0.15);
+    background-color: color-mix(in srgb, var(--viking-crimson-500) 15%, transparent);
     color: var(--color-error);
     &:hover {
-      background-color: rgba(244, 67, 54, 0.3);
+      background-color: color-mix(in srgb, var(--viking-crimson-500) 30%, transparent);
     }
   }
 
   &[data-level='critical'] {
-    background-color: rgba(33, 118, 255, 0.15);
-    color: var(--viking-teal-600);
+    background-color: color-mix(in srgb, var(--viking-crimson-600) 15%, transparent);
+    color: var(--viking-crimson-400);
     &:hover {
-      background-color: rgba(33, 118, 255, 0.3);
+      background-color: color-mix(in srgb, var(--viking-crimson-600) 30%, transparent);
     }
   }
 

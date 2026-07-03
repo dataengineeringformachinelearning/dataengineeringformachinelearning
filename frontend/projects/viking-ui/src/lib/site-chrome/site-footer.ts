@@ -76,6 +76,17 @@ import {
               <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>.
               All rights reserved.
             </span>
+            <span class="copyright-text design-credit">
+              UI by
+              <a
+                href="https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/blob/main/THEME.md"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Viking-UI
+              </a>
+              — Porsche/Wallace premium theme (<code>THEME.md</code>)
+            </span>
           </div>
         </div>
       </ng-container>

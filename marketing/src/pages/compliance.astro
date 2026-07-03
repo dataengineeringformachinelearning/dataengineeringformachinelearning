@@ -443,7 +443,7 @@ import VikingIcon from '../components/VikingIcon.astro';
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  background: rgba(33, 118, 255, 0.15);
+  background: color-mix(in srgb, var(--viking-teal-600) 15%, transparent);
   border: 1px solid var(--color-warning);
   border-radius: 8px;
   padding: 16px;
@@ -496,9 +496,9 @@ import VikingIcon from '../components/VikingIcon.astro';
 
     .material-icons { font-size: 1.25rem; width: 1.25rem; height: 1.25rem; color: var(--text-muted); }
 
-    &:hover { border-color: var(--color-primary); background: rgba(33, 118, 255, 0.05); }
+    &:hover { border-color: var(--color-primary); background: color-mix(in srgb, var(--viking-teal-600) 5%, transparent); }
     &.active {
-      border-color: var(--color-primary); background: rgba(33, 118, 255, 0.1); color: var(--color-primary);
+      border-color: var(--color-primary); background: color-mix(in srgb, var(--viking-teal-600) 10%, transparent); color: var(--color-primary);
       .material-icons { color: var(--color-primary); }
     }
   }
@@ -590,7 +590,7 @@ import VikingIcon from '../components/VikingIcon.astro';
 
   pre {
     margin: 0;
-    background: #1e1e1e;
+    background: var(--viking-charcoal-800);
     padding: 16px;
     overflow-x: auto;
     max-height: 416px;

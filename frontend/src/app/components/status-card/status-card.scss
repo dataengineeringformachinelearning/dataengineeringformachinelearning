@@ -6,9 +6,9 @@
   min-height: unset !important;
 
   --status-accent: var(--color-primary-container);
-  --status-badge-bg: rgba(192, 197, 193, 0.1);
+  --status-badge-bg: color-mix(in srgb, var(--viking-teal-600) 10%, transparent);
   --status-badge-text: var(--color-primary-container);
-  --status-badge-border: rgba(192, 197, 193, 0.3);
+  --status-badge-border: color-mix(in srgb, var(--viking-teal-600) 30%, transparent);
   --timeline-warning: var(--color-warning);
 }
 

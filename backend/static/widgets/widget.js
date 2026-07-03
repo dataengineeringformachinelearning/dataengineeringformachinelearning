@@ -536,7 +536,7 @@
           .form-field input:focus,
           .form-field textarea:focus {
             border-color: var(--viking-blue-500);
-            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--viking-teal-400) 20%, transparent);
           }
           .form-row {
             display: flex;

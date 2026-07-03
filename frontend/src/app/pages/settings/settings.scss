@@ -333,7 +333,7 @@
   height: 56px !important;
   padding: 0 32px !important;
   border: none !important;
-  box-shadow: 0 4px 10px rgba(255, 193, 7, 0.15) !important;
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--viking-gold-500) 15%, transparent) !important;
   transition: all 0.2s ease !important;
   display: inline-flex !important;
   align-items: center !important;
@@ -341,7 +341,7 @@
 
   &:hover:not([disabled]) {
     transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3) !important;
+    box-shadow: 0 6px 15px color-mix(in srgb, var(--viking-gold-500) 30%, transparent) !important;
     opacity: 0.9;
   }
 
@@ -650,13 +650,13 @@
   line-height: 1.4;
 
   &.alert-error {
-    background: rgba(211, 47, 47, 0.08);
+    background: color-mix(in srgb, var(--viking-crimson-500) 8%, transparent);
     border-color: var(--color-error);
     color: var(--color-error);
   }
 
   &.alert-warning {
-    background: rgba(255, 193, 7, 0.08);
+    background: color-mix(in srgb, var(--viking-gold-500) 8%, transparent);
     border-color: var(--color-warning);
     color: var(--color-warning);
   }
