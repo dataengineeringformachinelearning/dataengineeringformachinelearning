@@ -33,6 +33,7 @@ import { Router, RouterModule } from '@angular/router';
 import { VikingDialogService } from '../../services/viking-dialog.service';
 import { SettingsService } from '../../services/settings.service';
 import { environment } from '../../../environments/environment';
+import { apiErrorMessage } from '../../core/utils/api-error.utils';
 import {
   UnifiedSelect,
   SelectOption,
@@ -271,14 +272,12 @@ export class Settings implements OnInit {
           error: async err => {
             console.error('Error creating page:', err);
             this.isCreatingPage.set(false);
-            const apiMessage =
-              err?.error?.detail || err?.error?.message || err?.message || '';
-            const message =
-              apiMessage ||
-              'Failed to create status page. The slug may already be in use, or MFA may be required.';
             await this.fluxDialog.openConfirm({
               title: 'Creation Failed',
-              message,
+              message: apiErrorMessage(
+                err,
+                'Failed to create status page. The slug may already be in use.',
+              ),
               type: 'alert',
               confirmBtnText: 'OK',
               confirmBtnColor: 'warn',
@@ -315,12 +314,14 @@ export class Settings implements OnInit {
 
   updateStatusPage() {
     const page = this.selectedPage();
-    if (page && this.editTitle && this.editSlug) {
+    const slug = this.editSlug.trim();
+    const title = this.editTitle.trim();
+    if (page && title && slug) {
       this.isUpdatingPage.set(true);
       this.monitorService
         .updateStatusPage(page.id, {
-          title: this.editTitle,
-          slug: this.editSlug,
+          title,
+          slug,
           description: this.editDescription,
           is_published: this.editIsPublished,
           google_analytics_id: this.editGoogleAnalyticsId || undefined,
@@ -344,7 +345,10 @@ export class Settings implements OnInit {
             this.isUpdatingPage.set(false);
             await this.fluxDialog.openConfirm({
               title: 'Update Failed',
-              message: 'Failed to update status page. Slug may already be taken.',
+              message: apiErrorMessage(
+                err,
+                'Failed to update status page. The slug may already be in use.',
+              ),
               type: 'alert',
               confirmBtnText: 'OK',
               confirmBtnColor: 'warn',
