@@ -1,6 +1,6 @@
 /**
  * Bridge for Algolia Experiences autocomplete (#autocomplete).
- * Waits for the navbar host (including Angular SSR hydration) before loading Experiences.
+ * Opens in a viking-search-palette modal on all breakpoints (trigger: navbar button or ⌘K).
  */
 const loadAlgoliaExperiences = () => {
   if (document.querySelector('script[data-deml-algolia-experiences]')) {
@@ -26,24 +26,34 @@ const loadAlgoliaExperiences = () => {
   document.head.appendChild(script);
 };
 
-const isMobileSearch = () => window.matchMedia('(max-width: 767px)').matches;
+const getSearchPanel = host =>
+  host?.querySelector('.aa-Autocomplete, .aa-DetachedContainer, .aa-Form, form') ?? null;
 
 const setSearchActive = active => {
   const root = document.querySelector('.navbar-search');
   if (root) root.classList.toggle('algolia-search-active', active);
-  document.body.classList.toggle('algolia-search-backdrop', active && isMobileSearch());
+  document.body.classList.toggle('algolia-search-open', active);
 };
 
 const focusAlgoliaSearch = () => {
   const host = document.getElementById('autocomplete');
   if (!host) return;
   host.classList.add('algolia-autocomplete-open');
+  host.setAttribute('aria-hidden', 'false');
   setSearchActive(true);
   const input = host.querySelector("input, textarea, [contenteditable='true']");
   if (input && typeof input.focus === 'function') {
     input.focus();
     if (typeof input.select === 'function') input.select();
   }
+};
+
+const closeSearch = () => {
+  const host = document.getElementById('autocomplete');
+  if (!host) return;
+  host.classList.remove('algolia-autocomplete-open');
+  host.setAttribute('aria-hidden', 'true');
+  setSearchActive(false);
 };
 
 const mountAlgoliaWhenReady = () => {
@@ -74,34 +84,34 @@ const watchForAutocompleteHost = () => {
   }, 15000);
 };
 
-const closeMobileSearch = () => {
-  const host = document.getElementById('autocomplete');
-  if (!host) return;
-  host.classList.remove('algolia-autocomplete-open');
-  setSearchActive(false);
-};
-
 document.addEventListener('click', event => {
   const host = document.getElementById('autocomplete');
-  if (!host || !host.classList.contains('algolia-autocomplete-open')) return;
-  if (!isMobileSearch()) return;
-  if (host.contains(event.target)) return;
-  closeMobileSearch();
+  if (!host?.classList.contains('algolia-autocomplete-open')) return;
+  const panel = getSearchPanel(host);
+  if (panel?.contains(event.target)) return;
+  closeSearch();
 });
 
 document.addEventListener('keydown', event => {
   if (event.key !== 'Escape') return;
   const host = document.getElementById('autocomplete');
   if (!host?.classList.contains('algolia-autocomplete-open')) return;
-  closeMobileSearch();
+  event.preventDefault();
+  closeSearch();
 });
 
 window.DemlWidgets = window.DemlWidgets || {};
 window.DemlWidgets.openSearch = focusAlgoliaSearch;
+window.DemlWidgets.closeSearch = closeSearch;
 
 window.addEventListener('keydown', event => {
   if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
     event.preventDefault();
+    const host = document.getElementById('autocomplete');
+    if (host?.classList.contains('algolia-autocomplete-open')) {
+      closeSearch();
+      return;
+    }
     focusAlgoliaSearch();
   }
 });
