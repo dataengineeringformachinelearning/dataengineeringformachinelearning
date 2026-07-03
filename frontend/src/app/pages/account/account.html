@@ -375,15 +375,13 @@
                   <viking-progress [indeterminate]="true" label="Loading subscription" />
                 </div>
                 } @else { @if (!subscriptionActive()) {
-                <div class="mfa-info-group">
-                  <viking-app-icon
-                    name="info"
-                    hostClass="status-icon info mfa-icon-inline u-style-fa919b"
-                  />
-                  <div class="mfa-info mfa-info-inline">
-                    <strong>Standard Plan</strong>
-                    <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
-                  </div>
+                <viking-app-icon
+                  name="info"
+                  hostClass="status-icon info mfa-icon-inline u-style-fa919b"
+                />
+                <div class="mfa-info mfa-info-inline">
+                  <strong>Standard Plan</strong>
+                  <div class="mfa-status-desc">Upgrade to Pro to unlock advanced features.</div>
                 </div>
                 <ng-container vikingFormActions>
                   <viking-button variant="primary" type="button" (pressed)="subscribeToPro()">
@@ -391,18 +389,18 @@
                   </viking-button>
                 </ng-container>
                 } @else {
-                <div class="mfa-info-group">
-                  <viking-app-icon
-                    name="check_circle"
-                    hostClass="status-icon success mfa-icon-inline"
-                  />
-                  <div class="mfa-info mfa-info-inline">
-                    <strong>Pro Plan Active</strong>
-                    <div class="mfa-status-desc">
-                      {{ subscriptionCancelAtPeriodEnd() ? 'Your subscription will cancel at the
-                      end of the current billing cycle.' : 'Your subscription is active and will
-                      auto-renew.' }}
-                    </div>
+                <viking-app-icon
+                  name="check_circle"
+                  hostClass="status-icon success mfa-icon-inline"
+                />
+                <div class="mfa-info mfa-info-inline">
+                  <strong>Pro Plan Active</strong>
+                  <div class="mfa-status-desc">
+                    {{
+                      subscriptionCancelAtPeriodEnd()
+                        ? 'Your subscription will cancel at the end of the current billing cycle.'
+                        : 'Your subscription is active and will auto-renew.'
+                    }}
                   </div>
                 </div>
                 <ng-container vikingFormActions>
