@@ -1,4 +1,11 @@
+# DEML quality gates — fast checks on commit, heavy scans on push.
+# Install: uvx pre-commit install --hook-type pre-commit --hook-type pre-push
+# Run all:  python scripts/deml_tooling.py quality --ci
+# Run fast: python scripts/deml_tooling.py quality --fast
 exclude: '^(?:\.venv|backend/\.venv|frontend/node_modules)/'
+
+default_stages: [pre-commit]
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -7,7 +14,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
-        args: ["--maxkb=1000"]
+        args: ['--maxkb=1000']
         exclude: ^frontend/public/data-engineering-for-machine-learning\.mp4$
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -19,63 +26,95 @@ repos:
 
   - repo: local
     hooks:
+      # --- Sync (only when sources change) ---
+      - id: sync-content
+        name: Sync BOOK.md / README / version to consumers
+        entry: python scripts/sync_content.py
+        language: system
+        files: ^(BOOK\.md|README\.md|version\.txt|AGENTS\.md|scripts/build_search_index\.py)$
+        pass_filenames: false
+
       - id: sync-design-system
         name: Sync design system package to consumers
         entry: python scripts/sync_design_system.py
         language: system
         files: ^packages/deml-design-system/
         pass_filenames: false
-      - id: semgrep
-        name: Semgrep SAST Scan
-        entry: uvx semgrep scan --error
+
+      - id: sync-widgets
+        name: Sync navbar/widget assets to marketing and backend
+        entry: python scripts/sync_widgets.py
         language: system
+        files: ^frontend/src/assets/(widgets/|algolia-config\.js|widget\.(js|css))
         pass_filenames: false
-      - id: axe-core
-        name: Accessibility Scan (axe-core)
-        entry: node scripts/run_axe.js
-        language: system
-        files: \.(html)$
-        pass_filenames: true
-      - id: sync-content
-        name: Sync BOOK.md to frontend files
-        entry: python scripts/sync_content.py
-        language: system
-        files: ^(BOOK\.md|version\.txt|scripts/build_search_index\.py)$
-        pass_filenames: false
+
       - id: check-mobile-first
         name: Verify styles are mobile-first
         entry: node frontend/scripts/check_mobile_first.js
         language: system
         files: \.(css|scss)$
         pass_filenames: false
+
+      - id: axe-core
+        name: Accessibility Scan (axe-core)
+        entry: node scripts/run_axe.js
+        language: system
+        files: \.(html|astro)$
+        exclude: ^backend/templates/swagger\.html$
+        pass_filenames: true
+
+      - id: cleanup-theme
+        name: Viking-UI theme consistency (dry-run)
+        entry: node cleanup-theme.js --dry-run
+        language: system
+        files: ^(frontend|marketing|backend|packages)/.*\.(scss|css|astro|html|ts|js|svg)$
+        exclude: ^.*/(viking-ui|design-tokens|deml-components)\.css$
+        pass_filenames: false
+        stages: [manual]
+
+      # --- Pre-push security & infra scans ---
+      - id: semgrep
+        name: Semgrep SAST Scan
+        entry: bash scripts/run_semgrep.sh
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
       - id: socket-scan
         name: Socket.dev Dependency Scan
         entry: bash -c 'if [ -z "$SOCKET_API_KEY" ]; then echo "Socket API key not set, skipping scan."; else npx -y socket ci; fi'
         language: system
         pass_filenames: false
+        stages: [pre-push]
+
       - id: checkov
         name: Checkov IaC Security Scan
-        entry: uvx checkov -d terraform/ --framework terraform
+        entry: uvx checkov -d terraform/ --framework terraform --quiet
         language: system
         pass_filenames: false
+        stages: [pre-push]
+
       - id: trivy
         name: Trivy Config Security Scan
         entry: trivy fs . --scanners config --severity HIGH,CRITICAL --exit-code 1 --quiet --skip-dirs .venv --skip-dirs backend/.venv --skip-dirs frontend/node_modules
         language: system
         pass_filenames: false
+        stages: [pre-push]
+
       - id: django-migration-linter
         name: Django Migration Linter
         entry: env DATABASE_URL=sqlite:// uv run python backend/manage.py lintmigrations --ignore-name 0018_endpoints_traffic_enrichment 0002_alter_endpoints_ip_address_statuspage_and_more 0005_statuspage_is_published 0004_remove_threatreport_user_and_more 0023_tenant_stripe_customer_id_and_more 0029_threatintelligence_threat_inte_ip_addr_03311d_idx_and_more 0031_userprofile_linked_emails 0009_rename_model_to_ml 0033_user_centric_squash 0034_drop_tenant_tables 0006_user_centric_squash
         language: system
-        always_run: true
+        files: ^backend/.*/migrations/
         pass_filenames: false
+        stages: [pre-push]
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
-        files: \.(js|ts|css|html|json|md)$
-        exclude: ^(frontend/(public/llms-full.txt|public/llms-full.txt)|marketing/src/assets/content/page\.md|(.*/)?(design-tokens|deml-components|viking-ui)\.css)$
+        files: \.(js|ts|css|html|json|md|mjs)$
+        exclude: ^(frontend/(public/llms-full\.txt|public/llms\.txt)|marketing/(public/llms-full\.txt|public/llms\.txt|src/assets/content/page\.md)|(.*/)?(design-tokens|deml-components|viking-ui)\.css|marketing/public/assets/content/search-index\.json)$
         additional_dependencies:
           - prettier@3.8.2
 
@@ -89,5 +128,5 @@ repos:
     rev: v1.5.0
     hooks:
       - id: detect-secrets
-        args: ["--baseline", ".secrets.baseline"]
+        args: ['--baseline', '.secrets.baseline']
         exclude: 'package-lock\.json|frontend/src/app/bones/.*\.bones\.json|backend/templates/home\.html|skills-lock\.json|\.agents/skills/.*|docs/.*|marketing/public/.*|frontend/public/.*'

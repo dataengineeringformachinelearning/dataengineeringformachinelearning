@@ -1,7 +1,15 @@
 const { spawnSync } = require("child_process");
 const path = require("path");
 
-const files = process.argv.slice(2);
+const SKIP_AXE = [
+  /[/\\]swagger\.html$/i,
+  /[/\\]node_modules[/\\]/,
+];
+
+const files = process.argv
+  .slice(2)
+  .filter((file) => !SKIP_AXE.some((pattern) => pattern.test(file)));
+
 if (files.length === 0) {
   process.exit(0);
 }

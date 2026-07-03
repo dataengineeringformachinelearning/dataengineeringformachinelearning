@@ -2,3 +2,13 @@
 docker-compose.yml
 # Ignore GitHub Actions workflows to bypass mutable tag warnings
 .github/workflows/
+# Swagger UI loads version-pinned CDN assets (SRI not practical for dynamic dist paths)
+backend/templates/swagger.html
+# Generated design-system CSS bundles
+**/viking-ui.css
+**/design-tokens.css
+**/deml-components.css
+# Synced marketing book content (large markdown, not executable)
+marketing/src/assets/content/page.md
+marketing/public/llms-full.txt
+frontend/public/llms-full.txt
