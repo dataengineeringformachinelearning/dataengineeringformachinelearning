@@ -156,12 +156,21 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       [class.viking-chart-compact]="compact() && !fill()"
       [class.viking-chart-sparkline]="isSparkline()"
       [class.viking-chart-has-legend]="legendVisible()"
+      [attr.aria-labelledby]="label() ? 'viking-chart-label-' + chartId : null"
+      [attr.aria-describedby]="summary() ? 'viking-chart-summary-' + chartId : null"
     >
+      @if (label()) {
+        <figcaption class="sr-only" [id]="'viking-chart-label-' + chartId">{{ label() }}</figcaption>
+      }
+      @if (summary()) {
+        <p class="sr-only" [id]="'viking-chart-summary-' + chartId">{{ summary() }}</p>
+      }
       <svg
         [attr.viewBox]="'0 0 ' + width + ' ' + height()"
         preserveAspectRatio="xMidYMid meet"
         role="img"
         [attr.aria-label]="label() || 'Chart'"
+        aria-hidden="true"
       >
         @if (kind() === 'donut') {
           @for (slice of donutSlices(); track slice.label) {
@@ -348,6 +357,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         overflow: hidden;
         width: 100%;
         max-width: 100%;
+        container-type: inline-size;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) {
         aspect-ratio: 3 / 1;
@@ -400,7 +410,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       .viking-chart-axis-y,
       .viking-chart-axis-x {
         fill: var(--viking-text-muted);
-        font-size: var(--viking-chart-axis-size, 12px);
+        font-size: max(11px, var(--viking-chart-axis-size, 12px));
         font-family: var(--viking-font-family);
       }
       .viking-chart-line {
@@ -431,7 +441,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       .viking-chart-donut-total {
         fill: var(--viking-text);
-        font-size: 14px;
+        font-size: max(12px, min(16px, 3.5cqw));
         font-weight: 700;
         font-family: var(--viking-font-family);
       }
@@ -457,10 +467,23 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         display: inline-block;
         flex-shrink: 0;
       }
+      .sr-only {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
     `,
   ],
 })
 export class VikingChart {
+  protected readonly chartId = `vc-${Math.random().toString(36).slice(2, 9)}`;
+
   readonly kind = input<VikingChartKind>('line');
   readonly series = input<VikingChartSeries[]>([{ name: 'Series', data: [] }]);
   readonly categories = input<string[]>([]);
@@ -477,6 +500,7 @@ export class VikingChart {
   readonly gutter = input<number | string | undefined>(undefined);
   readonly tickCount = input<number>(4);
   readonly showLegend = input<boolean | undefined>(undefined);
+  readonly summary = input<string>('');
 
   protected readonly width = WIDTH;
 

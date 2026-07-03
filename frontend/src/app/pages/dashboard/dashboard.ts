@@ -156,6 +156,22 @@ export class Dashboard implements OnInit, OnDestroy {
 
   hasThreatDonutData = computed(() => hasDonutValues(this.threatDonutSegments()));
 
+  latencySparkline = computed(() => {
+    const data = this.latencySeries()[0]?.data ?? [];
+    if (data.length < 2) {
+      return [];
+    }
+    return [{ name: 'Latency', data, tone: 'accent' as const }];
+  });
+
+  securitySparkline = computed(() => {
+    const data = this.securityAlertSeries()[0]?.data ?? [];
+    if (data.length < 2) {
+      return [];
+    }
+    return [{ name: 'Anomalies', data, tone: 'warning' as const }];
+  });
+
   constructor() {
     afterNextRender(() => {
       if (this.isBrowser) {

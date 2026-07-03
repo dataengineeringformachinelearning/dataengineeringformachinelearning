@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { VikingBar, VikingButton } from '@deml/viking-ui';
+import { VikingBar, VikingButton, VikingChart, VikingChartSeries } from '@deml/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { WhitepaperCta } from '../../components/whitepaper-cta/whitepaper-cta';
 
@@ -39,6 +39,7 @@ const CAPABILITIES = [
       { label: 'Uptime', value: '99.97%', trend: 'stable' },
       { label: 'Requests/min', value: '12.4K', trend: 'up' },
     ],
+    sparkline: [45, 72, 58, 85, 63, 91, 78, 55],
     link: {
       href: 'https://dataengineeringformachinelearning.com/documentation/',
       label: 'View integration docs →',
@@ -56,6 +57,7 @@ const CAPABILITIES = [
       { label: 'Open CVEs', value: '3', trend: 'down' },
       { label: 'Blocked', value: '847', trend: 'up' },
     ],
+    sparkline: [82, 74, 68, 55, 48, 42, 38, 32],
     link: { href: '/login', label: 'Start threat monitoring →', muted: true },
   },
   {
@@ -69,6 +71,7 @@ const CAPABILITIES = [
       { label: 'DLQ Rate', value: '0.01%', trend: 'down' },
       { label: 'Tenants', value: 'Symmetrical', trend: 'stable' },
     ],
+    sparkline: [28, 35, 42, 58, 64, 72, 78, 88],
     link: { href: '/status/platform-status', label: 'See live projections →', muted: true },
   },
 ] as const;
@@ -103,7 +106,7 @@ const INTEGRATIONS = [
 @Component({
   selector: 'app-landing',
   standalone: true,
-  imports: [VikingBar, VikingButton, VikingAppIcon, WhitepaperCta],
+  imports: [VikingBar, VikingButton, VikingChart, VikingAppIcon, WhitepaperCta],
   templateUrl: './landing.html',
   styleUrl: './landing.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -114,6 +117,10 @@ export class Landing {
   readonly capabilities = CAPABILITIES;
   readonly securityPillars = SECURITY_PILLARS;
   readonly integrations = INTEGRATIONS;
+
+  sparklineSeries(data: readonly number[]): VikingChartSeries[] {
+    return [{ name: 'Trend', data: [...data], tone: 'accent' }];
+  }
 
   trendSymbol(trend: string): string {
     if (trend === 'up') return '↑';

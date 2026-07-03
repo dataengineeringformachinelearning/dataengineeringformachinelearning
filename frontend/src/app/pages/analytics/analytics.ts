@@ -27,6 +27,7 @@ import {
   toVikingBarSeries,
   toVikingDonutSegments,
   toVikingLineSeries,
+  toVikingStackedStatusSeries,
 } from '../../core/chart-data.util';
 import { environment } from '../../../environments/environment';
 import * as L from 'leaflet';
@@ -87,6 +88,8 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
   frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
   statusSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Count', []));
+  statusStackedSeries = signal<VikingChartSeries[]>([]);
+  trafficGroupedSeries = signal<VikingChartSeries[]>([]);
   endpointSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Calls', []));
   topRegionsSeries = signal<VikingChartSeries[]>(toVikingBarSeries('Requests', [], 'warning'));
   threatSeveritySegments = signal<VikingDonutSegment[]>([]);
@@ -107,6 +110,13 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   );
   hasStatusData = computed(() =>
     hasChartValues(this.statusSeries().flatMap(series => series.data)),
+  );
+  hasStatusStackedData = computed(() =>
+    hasChartValues(this.statusStackedSeries().flatMap(series => series.data)),
+  );
+  hasTrafficGroupedData = computed(() =>
+    this.trafficGroupedSeries().length > 1 &&
+    hasChartValues(this.trafficGroupedSeries().flatMap(series => series.data)),
   );
   hasEndpointData = computed(() =>
     hasChartValues(this.endpointSeries().flatMap(series => series.data)),
@@ -262,6 +272,18 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
             ),
           );
 
+          const freqData = reqFreq.map((d: { requests: number }) => d.requests ?? 0);
+          const latData = timeSeries.map((d: { latency: number }) => d.latency ?? 0);
+          const groupedLen = Math.min(freqData.length, latData.length);
+          if (groupedLen >= 2) {
+            this.trafficGroupedSeries.set([
+              { name: 'Requests', data: freqData.slice(0, groupedLen), tone: 'accent' },
+              { name: 'Latency (ms)', data: latData.slice(0, groupedLen), tone: 'warning' },
+            ]);
+          } else {
+            this.trafficGroupedSeries.set([]);
+          }
+
           const statuses = user_metrics?.http_statuses || [];
           this.statusCategories.set(
             statuses.map((d: { status?: string | number; code?: string | number }) =>
@@ -274,6 +296,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
               statuses.map((d: { count: number }) => d.count ?? 0),
             ),
           );
+          this.statusStackedSeries.set(toVikingStackedStatusSeries(statuses));
 
           const endpoints = user_metrics?.endpoint_counts || [];
           this.endpointCategories.set(
