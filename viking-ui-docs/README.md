@@ -2,6 +2,8 @@
 
 Standalone [spartan.ng](https://spartan.ng)-style documentation site for the `@dataengineeringformachinelearning/viking-ui` Angular component library.
 
+**Live site:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/)
+
 **This site is not part of deml.app.** It deploys to Firebase Hosting site `deml-ui` (target `deml-ui`).
 
 ## Architecture
@@ -48,7 +50,7 @@ npm run build --prefix viking-ui-docs
 firebase deploy --only hosting:deml-ui --project deml-ui
 ```
 
-Configure a custom domain (e.g. `ui.dataengineeringformachinelearning.com`) in the Firebase console for the **`deml-ui`** site.
+**Production URL:** `https://ui.dataengineeringformachinelearning.com/` (custom domain on Firebase site `deml-ui`).
 
 ## Routes
 

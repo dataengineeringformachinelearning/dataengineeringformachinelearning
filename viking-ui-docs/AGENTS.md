@@ -8,6 +8,7 @@ This is the **standalone documentation site** for Viking-UI. Do not merge this i
 - Library source lives in `../frontend/projects/viking-ui/` — edit components there, not in this app.
 - This app only **demonstrates** library components; keep demo pages thin.
 - Deploy via Firebase Hosting site **`deml-ui`**, not marketing or deml.app.
+- **Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/)
 
 ## Local dev
 
