@@ -9,14 +9,17 @@ export function apiErrorMessage(err: unknown, fallback: string): string {
     }
     if (body && typeof body === 'object') {
       const record = body as Record<string, unknown>;
-      if (typeof record.detail === 'string' && record.detail) {
-        return record.detail;
+      const detail = record['detail'];
+      if (typeof detail === 'string' && detail) {
+        return detail;
       }
-      if (typeof record.message === 'string' && record.message) {
-        return record.message;
+      const message = record['message'];
+      if (typeof message === 'string' && message) {
+        return message;
       }
-      if (typeof record.error === 'string' && record.error) {
-        return record.error;
+      const error = record['error'];
+      if (typeof error === 'string' && error) {
+        return error;
       }
     }
     if (err.status === 403) {
