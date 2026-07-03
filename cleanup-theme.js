@@ -6,39 +6,58 @@
  *   node cleanup-theme.js --dry-run   Report violations (default)
  *   node cleanup-theme.js --apply     Apply safe automatic fixes
  */
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 const WORKSPACE_ROOT = path.resolve(__dirname);
 
+/** @param {string} targetPath */
+const isWithinWorkspace = (targetPath) => {
+  const normalized = path.normalize(targetPath);
+  return (
+    normalized === WORKSPACE_ROOT ||
+    normalized.startsWith(`${WORKSPACE_ROOT}${path.sep}`)
+  );
+};
+
 const args = process.argv.slice(2);
-const apply = args.includes('--apply');
-const verbose = args.includes('--verbose') || args.includes('-v');
+const apply = args.includes("--apply");
+const verbose = args.includes("--verbose") || args.includes("-v");
 
 /** @type {Set<string>} */
 const SKIP_DIR_NAMES = new Set([
-  'node_modules',
-  '.git',
-  'dist',
-  '.angular',
-  'coverage',
-  'htmlcov',
-  '__pycache__',
-  '.vite',
-  '.sanity',
+  "node_modules",
+  ".git",
+  "dist",
+  ".angular",
+  "coverage",
+  "htmlcov",
+  "__pycache__",
+  ".vite",
+  ".sanity",
 ]);
 
 /** @type {readonly string[]} */
 const SCAN_ROOTS = [
-  'frontend/src',
-  'frontend/projects/viking-ui/src',
-  'frontend/projects/viking-ui-showcase/src',
-  'marketing/src',
-  'marketing/public/assets/widgets',
-  'backend/templates',
-  'backend/static',
-  'packages/deml-design-system/src',
+  "frontend/src",
+  "frontend/projects/viking-ui/src",
+  "frontend/projects/viking-ui-showcase/src",
+  "marketing/src",
+  "marketing/public/assets/widgets",
+  "backend/templates",
+  "backend/static",
+  "packages/deml-design-system/src",
 ];
+
+/** @type {readonly string[]} */
+const RESOLVED_SCAN_ROOTS = SCAN_ROOTS.map((root) => {
+  // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+  const resolved = path.join(WORKSPACE_ROOT, root);
+  if (!isWithinWorkspace(resolved)) {
+    throw new Error(`Invalid scan root: ${root}`);
+  }
+  return resolved;
+});
 
 /** @type {RegExp[]} */
 const SKIP_FILE_PATTERNS = [
@@ -56,114 +75,127 @@ const SKIP_FILE_PATTERNS = [
 const SCANNABLE_EXTENSIONS = /\.(html|htm|astro|scss|css|ts|tsx|js|jsx|svg)$/i;
 
 /** @type {RegExp} */
-const TOKEN_DEFINITION_FILE = /[/\\](_variables\.scss|tokens\.scss|viking-ui-bundle\.scss)$/;
+const TOKEN_DEFINITION_FILE =
+  /[/\\](_variables\.scss|tokens\.scss|viking-ui-bundle\.scss)$/;
 
 /** Canonical series palette from THEME.md §8.4 */
 const SERIES_PRESETS = [
-  '#0d7377',
-  '#922b3e',
-  '#2a9d8f',
-  '#c4a035',
-  '#a83344',
-  '#3d8bfd',
-  '#2a2a2a',
-  '#666666',
+  "#0d7377",
+  "#922b3e",
+  "#2a9d8f",
+  "#c4a035",
+  "#a83344",
+  "#3d8bfd",
+  "#2a2a2a",
+  "#666666",
 ];
 
 /** Hex literals allowed outside token definition files when on canonical palette. */
 const PALETTE_HEX = new Set([
-  '#0a0a0a',
-  '#111111',
-  '#1a1a1a',
-  '#2a2a2a',
-  '#333333',
-  '#444444',
-  '#555555',
-  '#666666',
-  '#777777',
-  '#999999',
-  '#aaaaaa',
-  '#bbbbbb',
-  '#0a5c5f',
-  '#0d7377',
-  '#109094',
-  '#14a3a8',
-  '#2db8bd',
-  '#7a2231',
-  '#922b3e',
-  '#a83344',
-  '#c44355',
-  '#2a9d8f',
-  '#c4a035',
-  '#3d8bfd',
-  '#f5f5f5',
-  '#ffffff',
-  '#000000',
-  '#f7f7f7',
-  '#efefef',
+  "#0a0a0a",
+  "#111111",
+  "#1a1a1a",
+  "#2a2a2a",
+  "#333333",
+  "#444444",
+  "#555555",
+  "#666666",
+  "#777777",
+  "#999999",
+  "#aaaaaa",
+  "#bbbbbb",
+  "#0a5c5f",
+  "#0d7377",
+  "#109094",
+  "#14a3a8",
+  "#2db8bd",
+  "#7a2231",
+  "#922b3e",
+  "#a83344",
+  "#c44355",
+  "#2a9d8f",
+  "#c4a035",
+  "#3d8bfd",
+  "#f5f5f5",
+  "#ffffff",
+  "#000000",
+  "#f7f7f7",
+  "#efefef",
 ]);
 
 /** Retired Lab Coat / legacy hex → Viking CSS variable replacements. */
 const LEGACY_HEX_TO_VAR = new Map([
-  ['#2176ff', 'var(--viking-teal-600)'],
-  ['#2176FF', 'var(--viking-teal-600)'],
-  ['#31393c', 'var(--viking-charcoal-900)'],
-  ['#31393C', 'var(--viking-charcoal-900)'],
-  ['#33a1fd', 'var(--viking-teal-400)'],
-  ['#33A1FD', 'var(--viking-teal-400)'],
-  ['#fdca40', 'var(--viking-gold-500)'],
-  ['#FDCA40', 'var(--viking-gold-500)'],
-  ['#f79824', 'var(--viking-crimson-500)'],
-  ['#F79824', 'var(--viking-crimson-500)'],
-  ['#121212', 'var(--viking-charcoal-900)'],
-  ['#ffffff', 'var(--viking-white-pure)'],
-  ['#fff', 'var(--viking-white-pure)'],
-  ['#FFFFFF', 'var(--viking-white-pure)'],
-  ['#FFF', 'var(--viking-white-pure)'],
-  ['#000000', 'var(--viking-black)'],
-  ['#000', 'var(--viking-black)'],
-  ['#f5f5f5', 'var(--viking-white)'],
-  ['#F5F5F5', 'var(--viking-white)'],
-  ['#0d7377', 'var(--viking-teal-600)'],
-  ['#0D7377', 'var(--viking-teal-600)'],
-  ['#922b3e', 'var(--viking-crimson-600)'],
-  ['#922B3E', 'var(--viking-crimson-600)'],
-  ['#2a9d8f', 'var(--viking-green-500)'],
-  ['#2A9D8F', 'var(--viking-green-500)'],
-  ['#c4a035', 'var(--viking-gold-500)'],
-  ['#C4A035', 'var(--viking-gold-500)'],
-  ['#a83344', 'var(--viking-crimson-500)'],
-  ['#A83344', 'var(--viking-crimson-500)'],
-  ['#3d8bfd', 'var(--viking-blue-500)'],
-  ['#3D8BFD', 'var(--viking-blue-500)'],
-  ['#2a2a2a', 'var(--viking-charcoal-700)'],
-  ['#2A2A2A', 'var(--viking-charcoal-700)'],
-  ['#666666', 'var(--viking-metallic-500)'],
+  ["#2176ff", "var(--viking-teal-600)"],
+  ["#2176FF", "var(--viking-teal-600)"],
+  ["#31393c", "var(--viking-charcoal-900)"],
+  ["#31393C", "var(--viking-charcoal-900)"],
+  ["#33a1fd", "var(--viking-teal-400)"],
+  ["#33A1FD", "var(--viking-teal-400)"],
+  ["#fdca40", "var(--viking-gold-500)"],
+  ["#FDCA40", "var(--viking-gold-500)"],
+  ["#f79824", "var(--viking-crimson-500)"],
+  ["#F79824", "var(--viking-crimson-500)"],
+  ["#121212", "var(--viking-charcoal-900)"],
+  ["#ffffff", "var(--viking-white-pure)"],
+  ["#fff", "var(--viking-white-pure)"],
+  ["#FFFFFF", "var(--viking-white-pure)"],
+  ["#FFF", "var(--viking-white-pure)"],
+  ["#000000", "var(--viking-black)"],
+  ["#000", "var(--viking-black)"],
+  ["#f5f5f5", "var(--viking-white)"],
+  ["#F5F5F5", "var(--viking-white)"],
+  ["#0d7377", "var(--viking-teal-600)"],
+  ["#0D7377", "var(--viking-teal-600)"],
+  ["#922b3e", "var(--viking-crimson-600)"],
+  ["#922B3E", "var(--viking-crimson-600)"],
+  ["#2a9d8f", "var(--viking-green-500)"],
+  ["#2A9D8F", "var(--viking-green-500)"],
+  ["#c4a035", "var(--viking-gold-500)"],
+  ["#C4A035", "var(--viking-gold-500)"],
+  ["#a83344", "var(--viking-crimson-500)"],
+  ["#A83344", "var(--viking-crimson-500)"],
+  ["#3d8bfd", "var(--viking-blue-500)"],
+  ["#3D8BFD", "var(--viking-blue-500)"],
+  ["#2a2a2a", "var(--viking-charcoal-700)"],
+  ["#2A2A2A", "var(--viking-charcoal-700)"],
+  ["#666666", "var(--viking-metallic-500)"],
 ]);
 
 /** Legacy CSS custom properties → Viking tokens. */
 const LEGACY_VAR_REPLACEMENTS = [
-  [/var\(\s*--jet-black\s*(?:,\s*[^)]+)?\)/g, 'var(--viking-charcoal-900)'],
-  [/var\(\s*--crayola-blue\s*\)/g, 'var(--viking-teal-600)'],
-  [/var\(\s*--blue-bell\s*\)/g, 'var(--viking-teal-400)'],
-  [/var\(\s*--golden-pollen\s*\)/g, 'var(--viking-gold-500)'],
-  [/var\(\s*--carrot-orange\s*\)/g, 'var(--viking-crimson-500)'],
-  [/--jet-black:\s*#[0-9a-fA-F]{3,8}/g, '--viking-charcoal-900: var(--viking-charcoal-900)'],
-  [/--crayola-blue:\s*#[0-9a-fA-F]{3,8}/g, '--crayola-blue: var(--viking-teal-600)'],
-  [/--blue-bell:\s*#[0-9a-fA-F]{3,8}/g, '--blue-bell: var(--viking-teal-400)'],
-  [/--golden-pollen:\s*#[0-9a-fA-F]{3,8}/g, '--golden-pollen: var(--viking-gold-500)'],
-  [/--carrot-orange:\s*#[0-9a-fA-F]{3,8}/g, '--carrot-orange: var(--viking-crimson-500)'],
+  [/var\(\s*--jet-black\s*(?:,\s*[^)]+)?\)/g, "var(--viking-charcoal-900)"],
+  [/var\(\s*--crayola-blue\s*\)/g, "var(--viking-teal-600)"],
+  [/var\(\s*--blue-bell\s*\)/g, "var(--viking-teal-400)"],
+  [/var\(\s*--golden-pollen\s*\)/g, "var(--viking-gold-500)"],
+  [/var\(\s*--carrot-orange\s*\)/g, "var(--viking-crimson-500)"],
+  [
+    /--jet-black:\s*#[0-9a-fA-F]{3,8}/g,
+    "--viking-charcoal-900: var(--viking-charcoal-900)",
+  ],
+  [
+    /--crayola-blue:\s*#[0-9a-fA-F]{3,8}/g,
+    "--crayola-blue: var(--viking-teal-600)",
+  ],
+  [/--blue-bell:\s*#[0-9a-fA-F]{3,8}/g, "--blue-bell: var(--viking-teal-400)"],
+  [
+    /--golden-pollen:\s*#[0-9a-fA-F]{3,8}/g,
+    "--golden-pollen: var(--viking-gold-500)",
+  ],
+  [
+    /--carrot-orange:\s*#[0-9a-fA-F]{3,8}/g,
+    "--carrot-orange: var(--viking-crimson-500)",
+  ],
 ];
 
 /** Material class / token patterns to replace. */
 const MATERIAL_CLASS_REPLACEMENTS = [
-  [/\bmat-mdc-raised-button\b/g, 'viking-button'],
-  [/\bmat-mdc-outlined-button\b/g, 'viking-button viking-button--outline'],
-  [/\bmat-mdc-button\b/g, 'viking-button'],
-  [/\bmat-primary\b/g, 'viking-button--primary'],
-  [/\bmat-accent\b/g, 'viking-button--secondary'],
-  [/\bmat-typography\b/g, 'viking-ui-body'],
-  [/\bmdc-button\b/g, 'viking-button'],
+  [/\bmat-mdc-raised-button\b/g, "viking-button"],
+  [/\bmat-mdc-outlined-button\b/g, "viking-button viking-button--outline"],
+  [/\bmat-mdc-button\b/g, "viking-button"],
+  [/\bmat-primary\b/g, "viking-button--primary"],
+  [/\bmat-accent\b/g, "viking-button--secondary"],
+  [/\bmat-typography\b/g, "viking-ui-body"],
+  [/\bmdc-button\b/g, "viking-button"],
 ];
 
 /** Meta tag brand standardization (THEME.md + marketing Layout.astro). */
@@ -303,12 +335,16 @@ const report = { findings: [], fixes: [] };
  * @returns {string[]}
  */
 const collectFiles = (dir, acc = []) => {
-  if (!fs.existsSync(dir)) {
+  if (!isWithinWorkspace(dir) || !fs.existsSync(dir)) {
     return acc;
   }
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
-    const entryPath = path.join(dir, entry.name);
+    // nosemgrep: javascript.lang.security.audit.path-traversal.path-join-resolve-traversal.path-join-resolve-traversal
+    const entryPath = path.join(dir, path.basename(entry.name));
+    if (!isWithinWorkspace(entryPath)) {
+      continue;
+    }
     if (entry.isDirectory()) {
       if (SKIP_DIR_NAMES.has(entry.name)) {
         continue;
@@ -319,7 +355,7 @@ const collectFiles = (dir, acc = []) => {
     if (!SCANNABLE_EXTENSIONS.test(entry.name)) {
       continue;
     }
-    if (SKIP_FILE_PATTERNS.some(pattern => pattern.test(entryPath))) {
+    if (SKIP_FILE_PATTERNS.some((pattern) => pattern.test(entryPath))) {
       continue;
     }
     acc.push(entryPath);
@@ -348,13 +384,15 @@ const addFinding = (rule, filePath, message, line) => {
  * @param {number} index
  * @returns {number}
  */
-const lineNumberAt = (content, index) => content.slice(0, index).split('\n').length;
+const lineNumberAt = (content, index) =>
+  content.slice(0, index).split("\n").length;
 
 /**
  * @param {string} filePath
  * @returns {boolean}
  */
-const isTokenDefinitionFile = (filePath) => TOKEN_DEFINITION_FILE.test(filePath);
+const isTokenDefinitionFile = (filePath) =>
+  TOKEN_DEFINITION_FILE.test(filePath);
 
 /**
  * @param {string} content
@@ -379,7 +417,7 @@ const isBrandMulticolorSvg = (filePath) =>
  * @param {string} rule
  * @returns {string}
  */
-const fixLegacyVars = (content, filePath, rule = 'legacy-css-vars') => {
+const fixLegacyVars = (content, filePath, rule = "legacy-css-vars") => {
   let updated = content;
   let count = 0;
   for (const [pattern, replacement] of LEGACY_VAR_REPLACEMENTS) {
@@ -407,8 +445,8 @@ const fixLegacyHex = (content, filePath) => {
   let updated = content;
   let count = 0;
   for (const [hex, token] of LEGACY_HEX_TO_VAR.entries()) {
-    const escaped = hex.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const pattern = new RegExp(escaped, 'g');
+    const escaped = hex.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(escaped, "g");
     const before = updated;
     updated = updated.replace(pattern, token);
     if (updated !== before) {
@@ -416,7 +454,11 @@ const fixLegacyHex = (content, filePath) => {
     }
   }
   if (count > 0) {
-    report.fixes.push({ file: relativePath(filePath), rule: 'legacy-hex-to-var', count });
+    report.fixes.push({
+      file: relativePath(filePath),
+      rule: "legacy-hex-to-var",
+      count,
+    });
   }
   return updated;
 };
@@ -440,7 +482,11 @@ const fixMaterialClasses = (content, filePath) => {
     }
   }
   if (count > 0) {
-    report.fixes.push({ file: relativePath(filePath), rule: 'material-classes', count });
+    report.fixes.push({
+      file: relativePath(filePath),
+      rule: "material-classes",
+      count,
+    });
   }
   return updated;
 };
@@ -464,7 +510,11 @@ const fixMetaTags = (content, filePath) => {
     }
   }
   if (count > 0) {
-    report.fixes.push({ file: relativePath(filePath), rule: 'meta-brand', count });
+    report.fixes.push({
+      file: relativePath(filePath),
+      rule: "meta-brand",
+      count,
+    });
   }
   return updated;
 };
@@ -480,9 +530,12 @@ const fixSeriesColorPicker = (content, filePath) => {
 
   if (/\.(html|astro)$/i.test(filePath)) {
     const standaloneColorInput = /<input[^>]*type=["']color["'][^>]*\/?>/gi;
-    if (standaloneColorInput.test(content) && !content.includes('viking-color-picker')) {
+    if (
+      standaloneColorInput.test(content) &&
+      !content.includes("viking-color-picker")
+    ) {
       addFinding(
-        'series-color',
+        "series-color",
         filePath,
         'Standalone <input type="color"> detected — use <viking-color-picker /> with Series color label',
       );
@@ -495,15 +548,20 @@ const fixSeriesColorPicker = (content, filePath) => {
   }
 
   if (/color-picker\.ts$/i.test(filePath)) {
-    const offPalettePreset = /readonly\s+presets\s*=\s*input<string\[\]>\(\[\s*([^\]]+)\]/;
+    const offPalettePreset =
+      /readonly\s+presets\s*=\s*input<string\[\]>\(\[\s*([^\]]+)\]/;
     const match = updated.match(offPalettePreset);
     if (match) {
       const presetsBlock = match[1];
       const hexes = presetsBlock.match(/#[0-9a-fA-F]{3,8}/g) || [];
-      const normalized = hexes.map(h => h.toLowerCase());
+      const normalized = hexes.map((h) => h.toLowerCase());
       const mismatch = normalized.some((hex, i) => hex !== SERIES_PRESETS[i]);
       if (mismatch) {
-        addFinding('series-color', filePath, 'Color picker presets diverge from THEME.md §8.4');
+        addFinding(
+          "series-color",
+          filePath,
+          "Color picker presets diverge from THEME.md §8.4",
+        );
         updated = updated.replace(
           offPalettePreset,
           `readonly presets = input<string[]>([\n    '${SERIES_PRESETS.join("',\n    '")}',\n  ]`,
@@ -514,7 +572,11 @@ const fixSeriesColorPicker = (content, filePath) => {
   }
 
   if (count > 0) {
-    report.fixes.push({ file: relativePath(filePath), rule: 'series-color', count });
+    report.fixes.push({
+      file: relativePath(filePath),
+      rule: "series-color",
+      count,
+    });
   }
   return updated;
 };
@@ -525,7 +587,7 @@ const fixSeriesColorPicker = (content, filePath) => {
  * @returns {string}
  */
 const fixSvgIcons = (content, filePath) => {
-  if (!filePath.endsWith('.svg') || isBrandMulticolorSvg(filePath)) {
+  if (!filePath.endsWith(".svg") || isBrandMulticolorSvg(filePath)) {
     return content;
   }
 
@@ -533,50 +595,81 @@ const fixSvgIcons = (content, filePath) => {
   let count = 0;
 
   if (!/<svg[^>]*xmlns=/i.test(updated)) {
-    updated = updated.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+    updated = updated.replace(
+      "<svg",
+      '<svg xmlns="http://www.w3.org/2000/svg"',
+    );
     count += 1;
   }
 
   const hardcodedFill = updated.match(/\bfill=["']#([0-9a-fA-F]{3,8})["']/g);
   if (hardcodedFill) {
     for (const fill of hardcodedFill) {
-      addFinding('svg-icon', filePath, `Hardcoded SVG fill ${fill} — prefer currentColor`);
+      addFinding(
+        "svg-icon",
+        filePath,
+        `Hardcoded SVG fill ${fill} — prefer currentColor`,
+      );
     }
-    updated = updated.replace(/\bfill=["']#([0-9a-fA-F]{3,8})["']/g, 'fill="currentColor"');
+    updated = updated.replace(
+      /\bfill=["']#([0-9a-fA-F]{3,8})["']/g,
+      'fill="currentColor"',
+    );
     count += hardcodedFill.length;
   }
 
-  const hardcodedStroke = updated.match(/\bstroke=["']#([0-9a-fA-F]{3,8})["']/g);
+  const hardcodedStroke = updated.match(
+    /\bstroke=["']#([0-9a-fA-F]{3,8})["']/g,
+  );
   if (hardcodedStroke) {
     for (const stroke of hardcodedStroke) {
-      addFinding('svg-icon', filePath, `Hardcoded SVG stroke ${stroke} — prefer currentColor`);
+      addFinding(
+        "svg-icon",
+        filePath,
+        `Hardcoded SVG stroke ${stroke} — prefer currentColor`,
+      );
     }
-    updated = updated.replace(/\bstroke=["']#([0-9a-fA-F]{3,8})["']/g, 'stroke="currentColor"');
+    updated = updated.replace(
+      /\bstroke=["']#([0-9a-fA-F]{3,8})["']/g,
+      'stroke="currentColor"',
+    );
     count += hardcodedStroke.length;
   }
 
-  if (!/\bstroke=["']currentColor["']/i.test(updated) && /<path|<line|<circle|<rect/.test(updated)) {
+  if (
+    !/\bstroke=["']currentColor["']/i.test(updated) &&
+    /<path|<line|<circle|<rect/.test(updated)
+  ) {
     if (!/\bstroke=/.test(updated)) {
-      updated = updated.replace('<svg', '<svg stroke="currentColor"');
+      updated = updated.replace("<svg", '<svg stroke="currentColor"');
       count += 1;
     }
   }
 
-  const viewBoxMatch = updated.match(/viewBox=["']0\s+0\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)["']/);
+  const viewBoxMatch = updated.match(
+    /viewBox=["']0\s+0\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)["']/,
+  );
   if (viewBoxMatch && !/\bwidth=/.test(updated)) {
     const size = Math.max(Number(viewBoxMatch[1]), Number(viewBoxMatch[2]));
     const normalized = [16, 20, 24].includes(size) ? size : 24;
-    updated = updated.replace('<svg', `<svg width="${normalized}" height="${normalized}"`);
+    updated = updated.replace(
+      "<svg",
+      `<svg width="${normalized}" height="${normalized}"`,
+    );
     count += 1;
   }
 
   if (!/\bfill=["']none["']/i.test(updated) && /\bstroke=/.test(updated)) {
-    updated = updated.replace('<svg', '<svg fill="none"');
+    updated = updated.replace("<svg", '<svg fill="none"');
     count += 1;
   }
 
   if (count > 0) {
-    report.fixes.push({ file: relativePath(filePath), rule: 'svg-icon', count });
+    report.fixes.push({
+      file: relativePath(filePath),
+      rule: "svg-icon",
+      count,
+    });
   }
   return updated;
 };
@@ -601,7 +694,11 @@ const fixIndexHtmlBlocks = (content, filePath) => {
     count += 1;
   }
   if (count > 0) {
-    report.fixes.push({ file: relativePath(filePath), rule: 'critical-theme-block', count });
+    report.fixes.push({
+      file: relativePath(filePath),
+      rule: "critical-theme-block",
+      count,
+    });
   }
   return updated;
 };
@@ -628,7 +725,7 @@ const scanHardcodedHex = (content, filePath) => {
       continue;
     }
     addFinding(
-      'hardcoded-hex',
+      "hardcoded-hex",
       filePath,
       `Off-palette hex ${hex} — use --viking-* CSS variables per THEME.md`,
       lineNumberAt(content, match.index),
@@ -645,11 +742,11 @@ const scanMaterialTokens = (content, filePath) => {
   let match;
   while ((match = matHex.exec(content)) !== null) {
     const hex = match[1].toLowerCase();
-    if (['#ffffff', '#fff'].includes(hex)) {
+    if (["#ffffff", "#fff"].includes(hex)) {
       continue;
     }
     addFinding(
-      'material-tokens',
+      "material-tokens",
       filePath,
       `Legacy Material token ${match[0]} — map to --viking-* per THEME.md`,
       lineNumberAt(content, match.index),
@@ -663,20 +760,20 @@ const scanMaterialTokens = (content, filePath) => {
  */
 const scanLegacyPaletteNames = (content, filePath) => {
   const legacyNames = [
-    '--jet-black',
-    '--crayola-blue',
-    '--blue-bell',
-    '--golden-pollen',
-    '--carrot-orange',
-    'jet-black',
-    'crayola-blue',
-    'Lab Coat',
+    "--jet-black",
+    "--crayola-blue",
+    "--blue-bell",
+    "--golden-pollen",
+    "--carrot-orange",
+    "jet-black",
+    "crayola-blue",
+    "Lab Coat",
   ];
   for (const name of legacyNames) {
     if (content.includes(name) && !isTokenDefinitionFile(filePath)) {
       const index = content.indexOf(name);
       addFinding(
-        'legacy-palette',
+        "legacy-palette",
         filePath,
         `Legacy Lab Coat reference "${name}" — use --viking-* tokens`,
         lineNumberAt(content, index),
@@ -697,9 +794,9 @@ const scanInlineStyles = (content, filePath) => {
   let match;
   while ((match = styleAttr.exec(content)) !== null) {
     addFinding(
-      'inline-style',
+      "inline-style",
       filePath,
-      'Inline hardcoded color in style attribute — prefer CSS variables',
+      "Inline hardcoded color in style attribute — prefer CSS variables",
       lineNumberAt(content, match.index),
     );
   }
@@ -713,9 +810,12 @@ const scanFooterBrand = (content, filePath) => {
   if (!/footer|index\.html|Layout\.astro/i.test(filePath)) {
     return;
   }
-  if (/©\s*20\d{2}\s+DEML\s+App/i.test(content) && !/Data Engineering for Machine Learning/i.test(content)) {
+  if (
+    /©\s*20\d{2}\s+DEML\s+App/i.test(content) &&
+    !/Data Engineering for Machine Learning/i.test(content)
+  ) {
     addFinding(
-      'footer-brand',
+      "footer-brand",
       filePath,
       'Footer copyright should reference "Data Engineering for Machine Learning"',
     );
@@ -726,23 +826,23 @@ const scanFooterBrand = (content, filePath) => {
  * Validate THEME.md tokens exist in _variables.scss.
  */
 const validateThemeMd = () => {
-  const themePath = path.join(WORKSPACE_ROOT, 'THEME.md');
+  const themePath = path.join(WORKSPACE_ROOT, "THEME.md");
   const variablesPath = path.join(
     WORKSPACE_ROOT,
-    'frontend/projects/viking-ui/src/styles/_variables.scss',
+    "frontend/projects/viking-ui/src/styles/_variables.scss",
   );
   if (!fs.existsSync(themePath) || !fs.existsSync(variablesPath)) {
-    addFinding('theme-md', themePath, 'THEME.md or _variables.scss missing');
+    addFinding("theme-md", themePath, "THEME.md or _variables.scss missing");
     return;
   }
-  const theme = fs.readFileSync(themePath, 'utf8');
-  const variables = fs.readFileSync(variablesPath, 'utf8');
+  const theme = fs.readFileSync(themePath, "utf8");
+  const variables = fs.readFileSync(variablesPath, "utf8");
   const tokenPattern = /--viking-[a-z0-9-]+/g;
   const themeTokens = new Set(theme.match(tokenPattern) || []);
   for (const token of themeTokens) {
     if (!variables.includes(token)) {
       addFinding(
-        'theme-md',
+        "theme-md",
         variablesPath,
         `Token ${token} documented in THEME.md but missing from _variables.scss`,
       );
@@ -783,24 +883,28 @@ const scanFile = (content, filePath) => {
  * @param {string} filePath
  */
 const processFile = (filePath) => {
-  const original = fs.readFileSync(filePath, 'utf8');
+  const original = fs.readFileSync(filePath, "utf8");
   scanFile(original, filePath);
   if (!apply) {
     return;
   }
   const updated = applyFixes(original, filePath);
   if (updated !== original) {
-    fs.writeFileSync(filePath, updated, 'utf8');
+    fs.writeFileSync(filePath, updated, "utf8");
   }
 };
 
 const main = () => {
-  console.log(`\n=== DEML Viking-UI Theme Cleanup (${apply ? 'APPLY' : 'DRY-RUN'}) ===\n`);
+  console.log(
+    `\n=== DEML Viking-UI Theme Cleanup (${apply ? "APPLY" : "DRY-RUN"}) ===\n`,
+  );
 
-  const files = SCAN_ROOTS.flatMap(root => collectFiles(path.join(WORKSPACE_ROOT, root)));
+  const files = RESOLVED_SCAN_ROOTS.flatMap((root) => collectFiles(root));
   const uniqueFiles = [...new Set(files)].filter(fs.existsSync);
 
-  console.log(`Scanning ${uniqueFiles.length} files across ${SCAN_ROOTS.length} property roots...\n`);
+  console.log(
+    `Scanning ${uniqueFiles.length} files across ${SCAN_ROOTS.length} property roots...\n`,
+  );
 
   for (const filePath of uniqueFiles) {
     processFile(filePath);
@@ -814,7 +918,7 @@ const main = () => {
   }, /** @type {Record<string, number>} */ ({}));
 
   if (report.findings.length > 0) {
-    console.log('Findings:');
+    console.log("Findings:");
     const grouped = new Map();
     for (const finding of report.findings) {
       const key = `${finding.file}:${finding.rule}:${finding.message}`;
@@ -823,34 +927,38 @@ const main = () => {
       }
     }
     for (const finding of grouped.values()) {
-      const loc = finding.line ? `:${finding.line}` : '';
+      const loc = finding.line ? `:${finding.line}` : "";
       console.log(`  [${finding.rule}] ${finding.file}${loc}`);
       console.log(`    ${finding.message}`);
       if (verbose) {
-        console.log('');
+        console.log("");
       }
     }
-    console.log('');
-    console.log('Summary by rule:');
+    console.log("");
+    console.log("Summary by rule:");
     for (const [rule, count] of Object.entries(findingsByRule)) {
       console.log(`  ${rule}: ${count}`);
     }
     console.log(`\nTotal findings: ${report.findings.length}`);
   } else {
-    console.log('No theme violations found.');
+    console.log("No theme violations found.");
   }
 
   if (apply && report.fixes.length > 0) {
-    console.log('\nApplied fixes:');
+    console.log("\nApplied fixes:");
     for (const fix of report.fixes) {
-      console.log(`  [${fix.rule}] ${fix.file} (${fix.count} change${fix.count === 1 ? '' : 's'})`);
+      console.log(
+        `  [${fix.rule}] ${fix.file} (${fix.count} change${fix.count === 1 ? "" : "s"})`,
+      );
     }
-    console.log(`\nTotal fix operations: ${report.fixes.reduce((n, f) => n + f.count, 0)}`);
+    console.log(
+      `\nTotal fix operations: ${report.fixes.reduce((n, f) => n + f.count, 0)}`,
+    );
   } else if (!apply && report.findings.length > 0) {
-    console.log('\nRun with --apply to apply safe automatic fixes.');
+    console.log("\nRun with --apply to apply safe automatic fixes.");
   }
 
-  console.log('\nReference: THEME.md — Viking-UI premium palette v2\n');
+  console.log("\nReference: THEME.md — Viking-UI premium palette v2\n");
 
   if (report.findings.length > 0 && !apply) {
     process.exit(1);

@@ -10,14 +10,15 @@ _CSP_SCRIPT_SRC = (
   "https://apis.google.com https://*.firebaseapp.com "
   "https://www.googletagmanager.com https://*.googletagmanager.com "
   "https://www.clarity.ms https://*.clarity.ms "
-  "https://static.cloudflareinsights.com"
+  "https://static.cloudflareinsights.com "
+  "https://experiences.cdn.algolia.com"
 )
 _CSP_CONNECT_SRC = (
   "'self' "
   "https://cdn.jsdelivr.net https://*.jsdelivr.net "
   "https://*.googleapis.com https://*.firebaseio.com "
   "https://*.algolia.net https://*.algolianet.com https://*.algolia.io "
-  "https://experiences.resolver.algolia.com "
+  "https://experiences.resolver.algolia.com https://experiences.cdn.algolia.com "
   "https://deml.app https://*.deml.app "
   "https://backend.deml.app https://*.backend.deml.app "
   "https://dataengineeringformachinelearning.com https://*.dataengineeringformachinelearning.com "
