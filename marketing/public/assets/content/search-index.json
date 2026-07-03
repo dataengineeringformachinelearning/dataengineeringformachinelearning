@@ -457,7 +457,7 @@
   {
     "id": "appendix-g-extra-code-samples-17187a",
     "title": "Appendix G: Extra Code Samples",
-    "content": "## Appendix G: Extra Code Samples\n\n```python\n# A sample background worker for processing data\ndef process_telemetry_batch():\n    # Simulated lab-coat clean data processing\n    import polars as pl\n    df = pl.DataFrame({\"status\": [200, 500, 200], \"latency\": [12, 104, 15]})\n    clean_df = df.filter(pl.col(\"latency\") < 100)\n    return clean_df\n```\n\n```typescript\n// A sample clean UI state manager\nimport { signal } from \"@angular/core\";\n\nexport const globalState = signal({\n  isLabCoatMode: true,\n  theme: \"light\",\n});\n```\n\n---",
+    "content": "## Appendix G: Extra Code Samples\n\n```python\n# A sample background worker for processing data\ndef process_telemetry_batch():\n    # Simulated telemetry batch processing\n    import polars as pl\n    df = pl.DataFrame({\"status\": [200, 500, 200], \"latency\": [12, 104, 15]})\n    clean_df = df.filter(pl.col(\"latency\") < 100)\n    return clean_df\n```\n\n```typescript\n// A sample clean UI state manager\nimport { signal } from \"@angular/core\";\n\nexport const globalState = signal({\n  isDarkMode: false,\n  theme: \"light\",\n});\n```\n\n---",
     "type": "chapter",
     "url": "/book"
   },

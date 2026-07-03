@@ -45,7 +45,7 @@
   width: 36px;
   height: 36px;
   line-height: 1;
-  color: var(--color-primary, var(--crayola-blue, var(--viking-teal-600)));
+  color: var(--color-primary, var(--viking-teal-600));
   overflow: visible;
   flex-shrink: 0;
   display: inline-flex;
@@ -55,7 +55,7 @@
 
 .navbar-brand .navbar-logo,
 .navbar-brand viking-icon.navbar-logo {
-  color: var(--color-primary, var(--crayola-blue, var(--viking-teal-600))) !important;
+  color: var(--color-primary, var(--viking-teal-600)) !important;
 }
 
 // Angular mat-icon defaults to overflow:hidden — clips ligature glyphs at tight sizes.
@@ -444,7 +444,7 @@ html[data-theme='light'] {
 }
 
 .glowing-icon-sm {
-  color: var(--color-primary, var(--primary-text-color, var(--crayola-blue, var(--viking-teal-600)))) !important;
+  color: var(--color-primary, var(--primary-text-color, var(--viking-teal-600))) !important;
   transition: all 0.3s ease;
 }
 

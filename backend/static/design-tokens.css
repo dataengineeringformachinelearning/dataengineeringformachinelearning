@@ -19,12 +19,6 @@
   --viking-green-500: #2a9d8f;
   --viking-gold-500: #c4a035;
   --viking-blue-500: #3d8bfd;
-  /* Legacy THEME.md aliases (mapped to premium palette) */
-  --jet-black: var(--charcoal-900);
-  --crayola-blue: var(--viking-teal-600);
-  --blue-bell: var(--viking-teal-400);
-  --golden-pollen: var(--viking-gold-500);
-  --carrot-orange: var(--viking-crimson-500);
   --white: #ffffff;
   --black: #000000;
   /* Typography — 16px main content floor, 14px UI chrome */

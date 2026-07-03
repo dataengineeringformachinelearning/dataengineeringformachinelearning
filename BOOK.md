@@ -2020,7 +2020,7 @@ All data collected is anonymized before leaving the client's browser. Personally
 ```python
 # A sample background worker for processing data
 def process_telemetry_batch():
-    # Simulated lab-coat clean data processing
+    # Simulated telemetry batch processing
     import polars as pl
     df = pl.DataFrame({"status": [200, 500, 200], "latency": [12, 104, 15]})
     clean_df = df.filter(pl.col("latency") < 100)
@@ -2032,7 +2032,7 @@ def process_telemetry_batch():
 import { signal } from "@angular/core";
 
 export const globalState = signal({
-  isLabCoatMode: true,
+  isDarkMode: false,
   theme: "light",
 });
 ```

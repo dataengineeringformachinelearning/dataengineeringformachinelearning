@@ -1085,8 +1085,8 @@
   }
 
   input:checked + .slider {
-    background-color: var(--crayola-blue, var(--viking-teal-600));
-    border-color: var(--crayola-blue, var(--viking-teal-600));
+    background-color: var(--viking-teal-600);
+    border-color: var(--viking-teal-600);
   }
 
   input:checked + .slider:before {
@@ -1191,7 +1191,7 @@
 
 .siem-item-selectable:focus-visible,
 .playbook-item .playbook-info[role='button']:focus-visible {
-  outline: 2px solid var(--crayola-blue, var(--viking-teal-600));
+  outline: 2px solid var(--viking-teal-600);
   outline-offset: 2px;
   border-radius: 6px;
 }

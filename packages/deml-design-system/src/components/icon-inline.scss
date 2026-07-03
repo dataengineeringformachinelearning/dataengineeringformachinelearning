@@ -1,0 +1,72 @@
+// Vertical alignment for icons paired with text (buttons, links, titles).
+
+viking-app-icon,
+viking-icon,
+.material-icons,
+.material-symbols-outlined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.nav-btn,
+.mobile-nav-btn,
+.auth-btn,
+.mobile-auth-btn,
+.back-link,
+.viking-btn,
+.sidebar-brand,
+.gauge-card-footer,
+.gauge-card-header,
+.section-title-premium,
+.panel-title-flex,
+.status-badge-premium,
+.feature-item {
+  viking-app-icon,
+  viking-icon,
+  .material-icons {
+    align-self: center;
+  }
+}
+
+.nav-btn viking-app-icon,
+.nav-btn viking-icon,
+.mobile-nav-btn viking-app-icon,
+.auth-btn viking-app-icon,
+.mobile-auth-btn viking-app-icon {
+  width: 18px;
+  height: 18px;
+  align-self: center;
+}
+
+.theme-toggle-btn viking-app-icon,
+.menu-toggle-btn viking-app-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.section-title-premium viking-app-icon {
+  color: var(--status-accent, var(--viking-teal-600));
+  width: 22px;
+  height: 22px;
+}
+
+.navbar-brand .material-icons.navbar-logo,
+.navbar-brand deml-brand-logo .material-icons {
+  font-size: 28px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  overflow: visible;
+}
+
+.sidebar-brand .material-icons.brand-icon,
+.sidebar-brand deml-brand-logo .material-icons {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+}
