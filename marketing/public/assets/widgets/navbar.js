@@ -6,23 +6,38 @@
   const AUTH_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
   const iconPaths = () => window.__VIKING_ICON_PATHS ?? {};
+  const filledIconPaths = () => window.__VIKING_ICON_FILLED_PATHS ?? {};
 
-  const svgIcon = (name, size = 16) => {
-    const paths = iconPaths()[name] ?? iconPaths().info ?? '';
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" aria-hidden="true">${paths}</svg>`;
+  const resolveIconColor = color => {
+    if (color === 'accent') return 'var(--viking-accent, #0d7377)';
+    if (color === 'muted') return 'var(--viking-text-muted, #777777)';
+    return color || '';
   };
 
-  const setIcon = (el, name, size = 16) => {
+  const svgIcon = (name, size = 16, options = {}) => {
+    const variant = options.variant ?? 'outline';
+    const isFilled = variant === 'filled';
+    const paths = isFilled
+      ? (filledIconPaths()[name] ?? iconPaths()[name] ?? iconPaths().info ?? '')
+      : (iconPaths()[name] ?? iconPaths().info ?? '');
+    const color = resolveIconColor(options.color);
+    const style = color ? ` style="color:${color}"` : '';
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${isFilled ? 'currentColor' : 'none'}" stroke="${isFilled ? 'none' : 'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" aria-hidden="true"${style}>${paths}</svg>`;
+  };
+
+  const setIcon = (el, name, size = 16, options = {}) => {
     if (!el) return;
-    el.innerHTML = svgIcon(name, size);
+    el.innerHTML = svgIcon(name, size, options);
   };
 
   const initNavIcons = () => {
     document.querySelectorAll('[data-viking-icon]').forEach(el => {
       const name = el.getAttribute('data-viking-icon');
       const size = Number(el.getAttribute('data-viking-icon-size') || 16);
+      const variant = el.getAttribute('data-viking-icon-variant') || 'outline';
+      const color = el.getAttribute('data-viking-icon-color') || undefined;
       if (name) {
-        setIcon(el, name, size);
+        setIcon(el, name, size, { variant, color });
       }
     });
   };
@@ -281,9 +296,15 @@
   const loadIconPaths = async () => {
     if (Object.keys(iconPaths()).length > 0) return;
     try {
-      const res = await fetch('/assets/viking-icon-paths.json');
-      if (res.ok) {
-        window.__VIKING_ICON_PATHS = await res.json();
+      const [pathsRes, filledRes] = await Promise.all([
+        fetch('/assets/viking-icon-paths.json'),
+        fetch('/assets/viking-icon-filled-paths.json'),
+      ]);
+      if (pathsRes.ok) {
+        window.__VIKING_ICON_PATHS = await pathsRes.json();
+      }
+      if (filledRes.ok) {
+        window.__VIKING_ICON_FILLED_PATHS = await filledRes.json();
       }
     } catch {
       /* icons optional */

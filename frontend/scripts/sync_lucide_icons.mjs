@@ -95,6 +95,7 @@ const LUCIDE_MAP = {
   cookie: 'Cookie',
   'search-off': 'SearchX',
   insights: 'LineChart',
+  ship: 'Ship',
 };
 
 /** Icons that render as filled dot grids (not stroke outlines). */

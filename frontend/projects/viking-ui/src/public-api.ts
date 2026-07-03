@@ -23,8 +23,11 @@ export {
   VIKING_BRAND_ICON_PATHS,
   VIKING_BRAND_ICON_FILLED_PATHS,
   VIKING_BRAND_ICON_NAMES_LIST,
+  VIKING_DRAKKAR_ICON_PATHS,
+  VIKING_DRAKKAR_ICON_FILLED_PATHS,
+  VIKING_DRAKKAR_ICON_NAMES_LIST,
 } from './lib/core/brand-icons';
-export type { VikingBrandIconName } from './lib/core/brand-icons';
+export type { VikingBrandIconName, VikingDrakkarIconName } from './lib/core/brand-icons';
 export type {
   VikingIconName,
   VikingIconSizePreset,
