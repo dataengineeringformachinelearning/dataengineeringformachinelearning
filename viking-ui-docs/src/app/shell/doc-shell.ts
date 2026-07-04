@@ -12,8 +12,8 @@ import {
 } from "@angular/router";
 import {
   VikingAppSidebar,
-  VikingBrand,
   VikingButton,
+  VikingIcon,
   VikingSiteNavbar,
 } from "@dataengineeringformachinelearning/viking-ui";
 
@@ -35,8 +35,8 @@ const readTheme = (): "light" | "dark" => {
     RouterLink,
     RouterLinkActive,
     VikingAppSidebar,
-    VikingBrand,
     VikingButton,
+    VikingIcon,
     VikingSiteNavbar,
   ],
   templateUrl: "./doc-shell.html",
