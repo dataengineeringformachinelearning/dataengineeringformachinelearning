@@ -364,8 +364,12 @@ html[data-theme='light'] {
   @include viking-navbar-utility-btn;
 
   &:hover {
-    transform: rotate(15deg);
-    background-color: color-mix(in srgb, var(--viking-teal-600) 5%, var(--viking-surface, var(--card-bg)));
+    background-color: color-mix(
+      in srgb,
+      var(--viking-accent, var(--viking-teal-600)) 8%,
+      var(--viking-surface, var(--card-bg))
+    );
+    color: var(--viking-accent-strong, var(--viking-teal-400));
   }
 }
 

@@ -93,8 +93,8 @@
   gap: 8px;
   padding: 8px 14px;
   border-radius: 1000px;
-  background: color-mix(in srgb, var(--viking-teal-600) 10%, var(--color-surface));
-  border: 1px solid color-mix(in srgb, var(--viking-teal-600) 25%, transparent);
+  background: color-mix(in srgb, var(--viking-accent) 10%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--viking-accent) 25%, transparent);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text-color);
@@ -103,7 +103,7 @@
   svg {
     width: 18px;
     height: 18px;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
     flex-shrink: 0;
   }
 }
@@ -115,11 +115,11 @@
 @keyframes pulseDot {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-teal-600) 60%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-accent) 60%, transparent);
   }
   50% {
     box-shadow: 0 0 0 6px
-      color-mix(in srgb, var(--viking-teal-600) 0%, transparent);
+      color-mix(in srgb, var(--viking-accent) 0%, transparent);
   }
 }
 
@@ -214,8 +214,8 @@ a.cta-button {
   border: 1px solid var(--border);
 
   &:hover {
-    border-color: var(--viking-teal-600);
-    background: color-mix(in srgb, var(--viking-teal-600) 8%, transparent);
+    border-color: var(--viking-accent);
+    background: color-mix(in srgb, var(--viking-accent) 8%, transparent);
   }
 }
 
@@ -231,7 +231,7 @@ a.cta-button {
   overflow: hidden;
   box-shadow:
     0 24px 64px color-mix(in srgb, var(--viking-charcoal-900) 40%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--viking-teal-600) 15%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--viking-accent) 15%, transparent);
   transform: rotateY(-4deg) rotateX(2deg);
   transition: transform 0.4s ease;
 
@@ -264,7 +264,7 @@ a.cta-button {
       opacity: 0.8;
     }
     &:nth-child(3) {
-      background: var(--viking-teal-400);
+      background: var(--viking-accent-strong);
       opacity: 0.8;
     }
   }
@@ -298,8 +298,8 @@ a.cta-button {
     background: color-mix(in srgb, var(--text-muted) 20%, transparent);
 
     &.active {
-      background: color-mix(in srgb, var(--viking-teal-600) 35%, transparent);
-      box-shadow: inset 0 0 0 1px var(--viking-teal-600);
+      background: color-mix(in srgb, var(--viking-accent) 35%, transparent);
+      box-shadow: inset 0 0 0 1px var(--viking-accent);
     }
   }
 }
@@ -330,9 +330,9 @@ a.cta-button {
   text-align: center;
 
   &.primary {
-    border-color: var(--viking-teal-600);
+    border-color: var(--viking-accent);
     box-shadow: 0 0 16px
-      color-mix(in srgb, var(--viking-teal-600) 25%, transparent);
+      color-mix(in srgb, var(--viking-accent) 25%, transparent);
   }
 
   .gauge-label {
@@ -364,7 +364,7 @@ a.cta-button {
 
   .chart-bar {
     flex: 1;
-    background: linear-gradient(180deg, var(--viking-teal-600), var(--viking-teal-400));
+    background: linear-gradient(180deg, var(--viking-accent), var(--viking-accent-strong));
     border-radius: 4px 4px 0 0;
     opacity: 0.85;
     animation: barPulse 3s ease-in-out infinite;
@@ -419,7 +419,7 @@ a.cta-button {
 
     strong {
       font-size: 1rem;
-      color: var(--viking-teal-600);
+      color: var(--viking-accent);
     }
   }
 }
@@ -444,7 +444,7 @@ a.cta-button {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--viking-teal-600),
+    var(--viking-accent),
     transparent
   );
   opacity: 0.35;
@@ -502,7 +502,7 @@ a.cta-button {
     box-shadow 0.25s ease;
 
   &:hover {
-    border-color: var(--viking-teal-600);
+    border-color: var(--viking-accent);
     transform: translateY(-4px);
     box-shadow: var(--shadow-hover);
   }
@@ -514,16 +514,16 @@ a.cta-button {
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0.1em;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
     opacity: 0.7;
   }
 
   .step-icon {
     font-size: 36px;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
     margin-bottom: 16px;
     filter: drop-shadow(
-      0 0 8px color-mix(in srgb, var(--viking-teal-600) 35%, transparent)
+      0 0 8px color-mix(in srgb, var(--viking-accent) 35%, transparent)
     );
   }
 
@@ -562,7 +562,7 @@ a.cta-button {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--viking-teal-600),
+    var(--viking-accent),
     transparent
   );
   opacity: 0.25;
@@ -614,22 +614,22 @@ a.cta-button {
   gap: 10px;
   padding: 28px 20px;
   border-radius: 16px;
-  background: color-mix(in srgb, var(--viking-teal-600) 6%, var(--color-surface));
-  border: 1px solid color-mix(in srgb, var(--viking-teal-600) 18%, transparent);
+  background: color-mix(in srgb, var(--viking-accent) 6%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
 
   &:hover {
-    border-color: var(--viking-teal-600);
+    border-color: var(--viking-accent);
     box-shadow: 0 0 24px
-      color-mix(in srgb, var(--viking-teal-600) 15%, transparent);
+      color-mix(in srgb, var(--viking-accent) 15%, transparent);
   }
 
   svg {
     width: 32px;
     height: 32px;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
   }
 
   strong {
@@ -668,7 +668,7 @@ a.cta-button {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--viking-teal-600),
+    var(--viking-accent),
     transparent
   );
   opacity: 0.3;
@@ -712,7 +712,7 @@ a.cta-button {
   svg {
     width: 22px;
     height: 22px;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
   }
 
   &:hover {
@@ -748,7 +748,7 @@ a.cta-button {
     background: linear-gradient(
       90deg,
       transparent,
-      var(--viking-teal-600),
+      var(--viking-accent),
       transparent
     );
     opacity: 0.2;
@@ -771,7 +771,7 @@ a.cta-button {
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.15em;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
     text-transform: uppercase;
     display: block;
     margin-bottom: 16px;
@@ -796,12 +796,12 @@ a.cta-button {
 
 .showcase-link {
   font-weight: 600;
-  color: var(--viking-teal-600) !important;
+  color: var(--viking-accent) !important;
   text-decoration: none !important;
   letter-spacing: 0.04em;
 
   &:hover {
-    color: var(--viking-teal-400) !important;
+    color: var(--viking-accent-strong) !important;
   }
 
   &.muted-link {
@@ -809,7 +809,7 @@ a.cta-button {
     font-weight: 600;
 
     &:hover {
-      color: var(--viking-teal-600) !important;
+      color: var(--viking-accent) !important;
     }
   }
 }
@@ -836,7 +836,7 @@ a.cta-button {
   svg {
     width: 24px;
     height: 24px;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
   }
 }
 
@@ -886,7 +886,7 @@ a.cta-button {
     font-weight: 700;
 
     &.trend-up {
-      color: var(--viking-teal-400);
+      color: var(--viking-accent-strong);
     }
     &.trend-down {
       color: var(--viking-gold-500);
@@ -926,7 +926,7 @@ a.cta-button {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--viking-teal-600),
+    var(--viking-accent),
     transparent
   );
   opacity: 0.25;
@@ -949,7 +949,7 @@ a.cta-button {
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.15em;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
     text-transform: uppercase;
     display: block;
     margin-bottom: 16px;
@@ -972,11 +972,11 @@ a.cta-button {
     background: color-mix(in srgb, var(--viking-charcoal-900) 70%, transparent);
     padding: 16px;
     border-radius: var(--viking-radius-lg);
-    border: 1px solid color-mix(in srgb, var(--viking-teal-600) 30%, transparent);
+    border: 1px solid color-mix(in srgb, var(--viking-accent) 30%, transparent);
     overflow-x: auto;
 
     code {
-      color: var(--viking-teal-600);
+      color: var(--viking-accent);
       font-family: monospace;
       font-size: 0.85rem;
       white-space: pre-wrap;
@@ -1017,7 +1017,7 @@ a.cta-button {
   background: linear-gradient(
     90deg,
     transparent,
-    var(--viking-teal-600),
+    var(--viking-accent),
     transparent
   );
   opacity: 0.25;
@@ -1030,7 +1030,7 @@ a.cta-button {
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.15em;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
     text-transform: uppercase;
     display: block;
     margin-bottom: 16px;
@@ -1128,7 +1128,7 @@ a.cta-button {
         svg {
           width: 20px;
           height: 20px;
-          color: var(--viking-teal-600);
+          color: var(--viking-accent);
           margin-right: 0.75rem;
           flex-shrink: 0;
         }
@@ -1141,11 +1141,11 @@ a.cta-button {
     }
 
     &.pro-tier {
-      border: 2px solid var(--viking-teal-600);
+      border: 2px solid var(--viking-accent);
       position: relative;
       background: color-mix(
         in srgb,
-        var(--viking-teal-600) 6%,
+        var(--viking-accent) 6%,
         var(--color-surface)
       );
 
@@ -1154,7 +1154,7 @@ a.cta-button {
         top: -14px;
         left: 50%;
         transform: translateX(-50%);
-        background: var(--viking-teal-600);
+        background: var(--viking-accent);
         color: var(--white);
         padding: 6px 14px;
         border-radius: 1000px;
@@ -1165,12 +1165,12 @@ a.cta-button {
       }
 
       .pro-btn {
-        background: var(--viking-teal-600);
+        background: var(--viking-accent);
         color: var(--white);
         border: none;
 
         &:hover {
-          background: var(--viking-teal-400);
+          background: var(--viking-accent-strong);
         }
       }
     }
@@ -1198,8 +1198,8 @@ a.cta-button {
   align-items: flex-start;
   padding: 40px;
   border-radius: var(--viking-radius-xl, 16px);
-  background: color-mix(in srgb, var(--viking-teal-600) 8%, var(--color-surface));
-  border: 1px solid color-mix(in srgb, var(--viking-teal-600) 20%, transparent);
+  background: color-mix(in srgb, var(--viking-accent) 8%, var(--color-surface));
+  border: 1px solid color-mix(in srgb, var(--viking-accent) 20%, transparent);
 
   @media (min-width: 768px) {
     flex-direction: row;
@@ -1211,7 +1211,7 @@ a.cta-button {
     font-size: 0.85rem;
     font-weight: 700;
     letter-spacing: 0.15em;
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
     text-transform: uppercase;
     display: block;
     margin-bottom: 12px;
@@ -1250,7 +1250,7 @@ a.cta-button {
   padding: 64px 24px;
   position: relative;
   z-index: 10;
-  border-top: 1px solid color-mix(in srgb, var(--viking-teal-600) 25%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--viking-accent) 25%, transparent);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1264,7 +1264,7 @@ a.cta-button {
       font-size: 0.85rem;
       font-weight: 700;
       letter-spacing: 0.2em;
-      color: var(--viking-teal-600);
+      color: var(--viking-accent);
       text-transform: uppercase;
       margin-bottom: 16px;
       display: block;
@@ -1307,9 +1307,9 @@ a.cta-button {
       svg {
         width: 48px;
         height: 48px;
-        color: var(--viking-teal-600);
+        color: var(--viking-accent);
         filter: drop-shadow(
-          0 0 10px color-mix(in srgb, var(--viking-teal-600) 40%, transparent)
+          0 0 10px color-mix(in srgb, var(--viking-accent) 40%, transparent)
         );
       }
 
@@ -1335,7 +1335,7 @@ a.cta-button {
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.15em;
-  color: var(--viking-teal-600);
+  color: var(--viking-accent);
   text-transform: uppercase;
 }
 
