@@ -12,6 +12,7 @@ import {
   VikingIconName,
   VikingIconSizePreset,
   VikingIconVariant,
+  VIKING_DRAKKAR_ICON_NAMES_LIST,
 } from '../core/icons';
 
 /**
@@ -35,6 +36,7 @@ import {
     '[class.viking-icon-spin]': 'spin()',
     '[class.viking-icon-filled]': 'isFilled()',
     '[class.viking-icon-outline]': '!isFilled()',
+    '[class.viking-icon-brand-drakkar]': 'isDrakkarBrand()',
     '[class.viking-icon-sm]': 'sizePreset() === "sm"',
     '[class.viking-icon-md]': 'sizePreset() === "md"',
     '[class.viking-icon-lg]': 'sizePreset() === "lg" || (!sizePreset() && !size())',
@@ -111,10 +113,14 @@ import {
         color: inherit;
       }
 
-      .viking-icon-svg {
+      :host(.viking-icon-outline) .viking-icon-svg {
         --viking-icon-stroke-width: 1.75;
         stroke-width: var(--viking-icon-stroke-width);
         shape-rendering: geometricPrecision;
+      }
+
+      :host(.viking-icon-outline.viking-icon-brand-drakkar) .viking-icon-svg {
+        --viking-icon-stroke-width: 1.5;
       }
 
       :host(.viking-icon-sm) .viking-icon-svg {
@@ -173,6 +179,10 @@ export class VikingIcon {
     }
     return (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(name);
   });
+
+  protected readonly isDrakkarBrand = computed(() =>
+    (VIKING_DRAKKAR_ICON_NAMES_LIST as readonly string[]).includes(this.resolvedName()),
+  );
 
   protected readonly paths = computed<SafeHtml>(() => {
     const name = this.resolvedName();
