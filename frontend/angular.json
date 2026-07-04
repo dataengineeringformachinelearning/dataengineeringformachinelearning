@@ -62,7 +62,12 @@
               "entry": "src/server.ts"
             },
             "security": {
-              "allowedHosts": ["dataengineeringformachinelearning.com", "deml.app"]
+              "allowedHosts": [
+                "dataengineeringformachinelearning.com",
+                "deml.app",
+                "localhost",
+                "127.0.0.1"
+              ]
             },
             "allowedCommonJsDependencies": [
               "leaflet",

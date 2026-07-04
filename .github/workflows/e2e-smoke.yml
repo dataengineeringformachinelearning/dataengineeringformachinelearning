@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - 'frontend/cypress/**'
-      - 'frontend/cypress.config.ts'
+      - 'frontend/cypress.config.mjs'
       - 'frontend/src/**'
       - 'viking-ui-docs/**'
       - '.github/workflows/e2e-smoke.yml'
@@ -35,9 +35,6 @@ jobs:
 
       - name: Build viking-ui and frontend
         run: npm run build
-
-      - name: Validate Cypress config compiles
-        run: npx tsc --noEmit cypress.config.ts
 
       - name: Start SSR server
         run: |
