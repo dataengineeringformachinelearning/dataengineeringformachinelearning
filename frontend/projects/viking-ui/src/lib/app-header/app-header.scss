@@ -12,8 +12,6 @@
   width: 100%;
   min-height: var(--viking-navbar-height, 64px);
   background-color: var(--navbar-bg, var(--viking-surface));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--viking-border-strong);
   display: flex;
   flex-direction: column;

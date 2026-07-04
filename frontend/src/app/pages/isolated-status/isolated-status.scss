@@ -671,28 +671,27 @@
 
 /* North Star Promo Banner */
 .northstar-promo-banner {
-  margin-top: 56px;
-  border-radius: 16px;
-  border: 1px solid rgba(var(--color-primary-container), 0.25);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.02) 0%,
-    rgba(var(--color-primary-container), 0.04) 100%
-  );
-  padding: 32px;
+  margin-top: var(--viking-space-7, 56px);
+  border-radius: var(--viking-radius-lg, 12px);
+  border: 1px solid var(--viking-border);
+  border-left: 3px solid var(--viking-accent);
+  background: var(--viking-surface);
+  padding: var(--viking-space-4, 32px);
   position: relative;
   overflow: hidden;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 
-  .promo-glow {
+  &::before {
+    content: '';
     position: absolute;
-    width: 200px;
-    height: 200px;
-    background: var(--status-accent);
-    filter: blur(80px);
-    opacity: 0.06;
-    bottom: -100px;
-    right: -100px;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      transparent
+    );
     pointer-events: none;
   }
 
@@ -704,11 +703,11 @@
   .promo-header {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    gap: var(--viking-space-1, 8px);
+    margin-bottom: var(--viking-space-1, 8px);
 
     .promo-icon {
-      color: var(--status-accent);
+      color: var(--viking-accent);
       font-size: 26px;
       width: 24px;
       height: 24px;
@@ -716,16 +715,16 @@
 
     h4 {
       margin: 0;
-      font-size: 1.25rem;
+      font-size: var(--viking-font-size-lg, 1.25rem);
       font-weight: 700;
-      letter-spacing: -0.01em;
-      color: var(--text-color);
+      letter-spacing: var(--viking-letter-spacing-tight, -0.01em);
+      color: var(--viking-text, var(--text-color));
     }
   }
 
   .promo-desc {
-    margin: 0 0 24px;
-    font-size: 1rem;
+    margin: 0 0 var(--viking-space-3, 24px);
+    font-size: var(--viking-font-size, 1rem);
     line-height: 1.6;
     color: var(--text-muted);
     max-width: 680px;

@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft-07/schema",
   "name": "@dataengineeringformachinelearning/viking-ui",
   "description": "Machine-readable catalog of Viking-UI components and their Angular exports. Validated by `npm run check:viking-upstream`.",
-  "lastAudited": "2026-07-03",
+  "lastAudited": "2026-07-04",
   "components": {
     "accordion": {
       "exports": ["VikingAccordion", "VikingAccordionItem"]

@@ -9,6 +9,7 @@ const SCAN_DIRS = [
   path.resolve(__dirname, '../../marketing/src/pages'),
   path.resolve(__dirname, '../../marketing/src/layouts'),
   path.resolve(__dirname, '../../backend/static'),
+  path.resolve(__dirname, '../../viking-ui-docs/src'),
 ];
 
 // Generated bundles may minify entire files onto one line; property names like

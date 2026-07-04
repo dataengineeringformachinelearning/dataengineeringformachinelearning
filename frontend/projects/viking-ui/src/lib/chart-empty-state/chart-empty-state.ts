@@ -62,14 +62,7 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
         z-index: 1;
         min-height: 100%;
         margin: 0;
-        background:
-          linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--viking-surface-alt) 12%, transparent) 0%,
-            color-mix(in srgb, var(--viking-surface-alt) 88%, transparent) 42%,
-            var(--viking-surface-alt) 100%
-          );
-        backdrop-filter: blur(2px);
+        background: color-mix(in srgb, var(--viking-surface-alt) 94%, transparent);
       }
 
       :host(.compact) {
