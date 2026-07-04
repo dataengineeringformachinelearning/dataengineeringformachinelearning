@@ -44,4 +44,3 @@ jobs:
 
       - name: Run manual gates (theme dry-run)
         run: uvx pre-commit run cleanup-theme --all-files --hook-stage manual
-        continue-on-error: true

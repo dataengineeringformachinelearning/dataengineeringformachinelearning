@@ -190,10 +190,10 @@
 
 /* Semantic Layout Classes — origin map canvas (panel shell lives in viking-chart-panel) */
 .origin-map-container {
-  min-height: 360px;
+  min-height: var(--viking-chart-map-min-height, 22.5rem);
 
   .origin-map-canvas {
-    height: 360px;
+    height: var(--viking-chart-map-min-height, 22.5rem);
     width: 100%;
     display: block;
     border-radius: var(--border-radius-md);
@@ -216,7 +216,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
-  margin-bottom: var(--grid-gap, 27px);
+  margin-bottom: var(--viking-space-3, var(--grid-gap, 24px));
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -281,7 +281,7 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
-  margin-bottom: var(--grid-gap, 27px);
+  margin-bottom: var(--viking-space-3, var(--grid-gap, 24px));
 }
 
 .panel-title-flex {

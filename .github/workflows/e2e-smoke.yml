@@ -6,12 +6,13 @@ on:
     paths:
       - 'frontend/cypress/**'
       - 'frontend/cypress.config.ts'
+      - 'frontend/src/**'
       - 'viking-ui-docs/**'
       - '.github/workflows/e2e-smoke.yml'
 
 jobs:
   cypress-smoke:
-    name: Cypress smoke (build-only validation)
+    name: Cypress smoke (build + run)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -32,14 +33,29 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Build viking-ui
-        run: npm run build:viking-ui
+      - name: Build viking-ui and frontend
+        run: npm run build
 
       - name: Validate Cypress config compiles
         run: npx tsc --noEmit cypress.config.ts
 
-      - name: Verify e2e spec files exist
-        run: test -f cypress/e2e/smoke.cy.ts
+      - name: Start SSR server
+        run: |
+          npm run serve:ssr:frontend &
+          for i in $(seq 1 60); do
+            if curl -sf http://localhost:4000/ > /dev/null 2>&1; then
+              echo "SSR server ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "SSR server failed to start"
+          exit 1
+
+      - name: Run Cypress smoke tests
+        env:
+          CYPRESS_baseUrl: http://localhost:4000
+        run: npm run test:e2e
 
       - name: Build Viking-UI docs site
         run: |

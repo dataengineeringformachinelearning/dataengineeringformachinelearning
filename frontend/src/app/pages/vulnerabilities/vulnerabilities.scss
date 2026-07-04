@@ -66,7 +66,6 @@
 
   viking-chart-empty-state {
     flex: 1 1 auto;
-    --viking-chart-empty-min-height: 220px;
   }
 }
 
@@ -448,12 +447,11 @@
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: 360px;
+  min-height: var(--viking-chart-map-min-height, 22.5rem);
   padding: 24px;
 
   viking-chart-empty-state {
     flex: 1 1 auto;
-    --viking-chart-empty-min-height: 320px;
   }
 }
 
@@ -603,7 +601,6 @@
 
   viking-chart-empty-state {
     flex: 1 1 auto;
-    --viking-chart-empty-min-height: 220px;
   }
 }
 

@@ -65,18 +65,32 @@ def sync_widgets() -> None:
 
 def sync_algolia_config() -> None:
   root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-  src = os.path.join(root, "frontend", "src", "assets", ALGOLIA_CONFIG)
+  src = os.path.join(root, "frontend", "public", "assets", ALGOLIA_CONFIG)
+  if not os.path.isfile(src):
+    src = os.path.join(root, "frontend", "src", "assets", ALGOLIA_CONFIG)
   if not os.path.isfile(src):
     print(f"Skip missing Algolia config: {ALGOLIA_CONFIG}", file=sys.stderr)
     return
 
-  for dst_dir in (
+  targets = (
     os.path.join(root, "backend", "static"),
     os.path.join(root, "marketing", "public", "assets"),
-  ):
+    os.path.join(root, "frontend", "public", "assets"),
+  )
+
+  for dst_dir in targets:
     os.makedirs(dst_dir, exist_ok=True)
-    shutil.copy2(src, os.path.join(dst_dir, ALGOLIA_CONFIG))
+    dst = os.path.join(dst_dir, ALGOLIA_CONFIG)
+    shutil.copy2(src, dst)
     print(f"Synced {ALGOLIA_CONFIG} -> {dst_dir}")
+
+  # Verify cross-surface parity (canonical source is frontend/public).
+  canonical = os.path.join(root, "frontend", "public", "assets", ALGOLIA_CONFIG)
+  for dst_dir in targets:
+    dst = os.path.join(dst_dir, ALGOLIA_CONFIG)
+    if os.path.getsize(canonical) != os.path.getsize(dst):
+      print(f"Algolia config drift detected: {dst}", file=sys.stderr)
+      sys.exit(1)
 
 
 if __name__ == "__main__":

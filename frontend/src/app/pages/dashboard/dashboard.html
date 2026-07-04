@@ -1,17 +1,13 @@
 <div class="dashboard-page-container">
   <div class="dashboard-content-area">
     <div class="page-inner-wrapper">
-      <header class="product-header">
-        <div class="title-group">
-          <span class="product-badge">Security & Observability</span>
-          <h1 class="product-title">Command Center</h1>
-          <p class="product-subtitle">
-            Monitor performance, review threats, and triage vulnerabilities — all in one place.
-          </p>
-        </div>
-
+      <viking-page-header
+        tag="Security & Observability"
+        title="Command Center"
+        subtitle="Monitor performance, review threats, and triage vulnerabilities — all in one place."
+      >
         @if (tenantOptions.length > 0) {
-        <div class="scope-filters">
+        <div vikingPageHeaderActions class="scope-filters">
           <app-unified-select
             id="dashboardTenant"
             label="Workspace"
@@ -30,7 +26,7 @@
           }
         </div>
         }
-      </header>
+      </viking-page-header>
 
       <nav class="tab-bar" aria-label="Dashboard views">
         <button
