@@ -163,6 +163,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  flex: 0 1 auto;
   min-width: 0;
   flex-shrink: 0;
 }
@@ -172,6 +173,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  flex: 0 0 auto;
   gap: var(--viking-space-1, 8px);
   min-width: 0;
   flex-shrink: 0;
@@ -949,22 +951,6 @@ button.auth-btn {
   border: 0 !important;
   box-shadow: none !important;
   max-height: 50vh !important;
-}
-
-@media (max-width: 767px) {
-  .navbar-content {
-    gap: var(--viking-space-1, 8px);
-  }
-
-  .navbar-left {
-    flex: 0 1 auto;
-    min-width: 0;
-  }
-
-  .navbar-right {
-    flex: 0 0 auto;
-    gap: var(--viking-space-1, 8px);
-  }
 }
 
 @media (min-width: 768px) {
