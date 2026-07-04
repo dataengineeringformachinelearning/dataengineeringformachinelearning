@@ -1,0 +1,206 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import { SITE } from '../lib/site';
+import '../styles/showcase.scss';
+---
+
+<DocLayout
+  title="Theming & Customization"
+  description="Customize Viking-UI with CSS custom properties, data-theme, and token overrides — no runtime theme engine."
+>
+  <div class="page-inner-wrapper">
+    <header class="showcase-page-header">
+      <p class="showcase-label">Customization</p>
+      <h1 class="showcase-heading showcase-heading-xl">Theming guide</h1>
+      <p class="showcase-text-muted">
+        Viking-UI is dark-first and token-driven. Customize appearance by overriding
+        <code>--viking-*</code> CSS variables — never hardcode hex in your app. Full token reference
+        lives in <a href="/tokens">Design tokens</a> and <a href={SITE.github + '/blob/main/THEME.md'} target="_blank" rel="noopener">THEME.md</a>.
+      </p>
+      <div class="demo-row">
+        <button type="button" class="theme-toggle-btn" id="theming-demo-toggle" aria-label="Preview light and dark theme">
+          Toggle theme preview
+        </button>
+      </div>
+    </header>
+
+    <section class="showcase-category" aria-labelledby="dark-first-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="dark-first-heading">Dark-first theming</h2>
+      </header>
+      <p class="showcase-text-muted">
+        Set <code>data-theme</code> on the root element. Dark is the default; light mode shifts
+        surface lightness while preserving teal/crimson accent semantics.
+      </p>
+      <CodeBlock
+        snippets={{
+          angular: `// app.component.html
+<html data-theme="dark">`,
+          astro: `---
+// Layout.astro
+---
+<html lang="en" data-theme="dark">`,
+          django: `<html lang="en" data-theme="dark">`,
+          javascript: `document.documentElement.dataset.theme = 'dark'; // or 'light'`,
+        }}
+        defaultTab="javascript"
+      />
+    </section>
+
+    <section class="showcase-category" aria-labelledby="load-css-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="load-css-heading">Minimal CSS setup</h2>
+        <p class="showcase-text-muted">Load tokens first, then components. Order matters for cascade.</p>
+      </header>
+
+      <article class="viking-card theming-setup-card">
+        <h3 class="showcase-heading showcase-heading-sm">Angular</h3>
+        <p class="showcase-text-muted">
+          Include library SCSS in <code>angular.json</code> styles or import in <code>styles.scss</code>.
+          For npm consumers, import CSS exports directly.
+        </p>
+        <pre class="code-block-panel is-active"><code>{`// styles.scss
+@use '@dataengineeringformachinelearning/viking-ui/tokens.css';
+@use '@dataengineeringformachinelearning/viking-ui/components.css';
+
+// Or compile from source in monorepo:
+@use 'projects/viking-ui/src/styles/viking-ui';`}</code></pre>
+      </article>
+
+      <article class="viking-card theming-setup-card">
+        <h3 class="showcase-heading showcase-heading-sm">Astro / static sites</h3>
+        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="/assets/design-tokens.css" />
+<link rel="stylesheet" href="/assets/viking-components.css" />
+<link rel="stylesheet" href="/assets/viking-ui.css" />
+<script type="module" src="/assets/viking-ui-elements.js"></script>`}</code></pre>
+      </article>
+
+      <article class="viking-card theming-setup-card">
+        <h3 class="showcase-heading showcase-heading-sm">Django</h3>
+        <pre class="code-block-panel is-active"><code>{`{# base.html #}
+{% load static %}
+<link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
+<link rel="stylesheet" href="{% static 'viking-components.css' %}" />
+<link rel="stylesheet" href="{% static 'viking-ui.css' %}" />`}</code></pre>
+      </article>
+    </section>
+
+    <section class="showcase-category" aria-labelledby="override-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="override-heading">Token overrides</h2>
+        <p class="showcase-text-muted">
+          Override semantic aliases on a scope — not raw palette steps. This keeps contrast ratios
+          WCAG-compliant.
+        </p>
+      </header>
+      <CodeBlock
+        snippets={{
+          angular: `:root[data-theme="dark"] {
+  --viking-accent: var(--viking-teal-500);
+  --viking-radius: 8px;
+}
+
+.brand-shell {
+  --viking-bg: var(--viking-charcoal-950);
+  --viking-border: var(--viking-border-strong);
+}`,
+          astro: `---
+// Scoped override in layout or component
+---
+<style is:global>
+  :root { --viking-accent: var(--viking-teal-500); }
+</style>`,
+          django: `/* static/css/tenant-overrides.css */
+:root[data-tenant="acme"] {
+  --viking-accent: var(--viking-teal-400);
+}`,
+          javascript: `document.documentElement.style.setProperty('--viking-accent', 'var(--viking-teal-500)');`,
+        }}
+        defaultTab="angular"
+      />
+    </section>
+
+    <section class="showcase-category" aria-labelledby="semantic-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="semantic-heading">Semantic tokens to customize</h2>
+      </header>
+      <div class="showcase-table-wrap">
+        <table class="token-table">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Customize when</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>--viking-bg</code>, <code>--viking-surface</code></td><td>Page and card backgrounds</td></tr>
+            <tr><td><code>--viking-accent</code>, <code>--viking-accent-content</code></td><td>Primary actions and links</td></tr>
+            <tr><td><code>--viking-border</code>, <code>--viking-border-subtle</code></td><td>Machined metallic edges</td></tr>
+            <tr><td><code>--viking-text</code>, <code>--viking-text-muted</code></td><td>Body copy hierarchy</td></tr>
+            <tr><td><code>--viking-radius-*</code></td><td>Corner rounding (max 16px except pills)</td></tr>
+            <tr><td><code>--viking-space-*</code></td><td>Spacing rhythm (4px grid)</td></tr>
+            <tr><td><code>--viking-series-1</code> … <code>--viking-series-8</code></td><td>Chart and data viz colors</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="showcase-category" aria-labelledby="chart-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="chart-heading">Chart series presets</h2>
+      </header>
+      <p class="showcase-text-muted">
+        Import <code>VIKING_SERIES_PRESETS</code> from the npm package for consistent telemetry colors.
+        Use <code>tone</code> props on <code>viking-chart</code> rather than inline colors.
+      </p>
+      <pre class="code-block-panel is-active"><code>{`import { VIKING_SERIES_PRESETS } from '@dataengineeringformachinelearning/viking-ui';
+
+<viking-chart kind="line" [data]="series" tone="primary" />`}</code></pre>
+    </section>
+
+    <section class="showcase-category" aria-labelledby="rules-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="rules-heading">Customization rules</h2>
+      </header>
+      <ul class="showcase-text-muted theming-rules">
+        <li>Edit palette steps in <code>_variables.scss</code> — not in app code</li>
+        <li>Never hardcode hex/rgb/hsl in components or templates</li>
+        <li>Do not load Inter from Google Fonts CDN — use bundled <code>_fonts.scss</code></li>
+        <li>Preserve <code>:focus-visible</code> rings (<code>--viking-ring</code>)</li>
+        <li>Respect <code>prefers-reduced-motion</code> for animations</li>
+        <li>After token changes: <code>npm run build:static-css</code> + <code>sync_design_system.py</code></li>
+      </ul>
+    </section>
+  </div>
+</DocLayout>
+
+<script>
+  const toggle = document.getElementById('theming-demo-toggle');
+  toggle?.addEventListener('click', () => {
+    const root = document.documentElement;
+    root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+  });
+</script>
+
+<style>
+  .theming-setup-card {
+    margin-bottom: var(--viking-space-2);
+  }
+
+  .theming-setup-card pre {
+    margin: var(--viking-space-2) 0 0;
+    padding: var(--viking-space-2);
+    background: var(--viking-charcoal-950);
+    border-radius: var(--viking-radius);
+    overflow-x: auto;
+    font-size: var(--viking-font-size-sm);
+  }
+
+  .theming-rules {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-1);
+    padding-left: var(--viking-space-3);
+  }
+</style>

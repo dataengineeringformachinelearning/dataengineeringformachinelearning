@@ -1,0 +1,121 @@
+---
+import DocLayout from '../../layouts/DocLayout.astro';
+import ComponentCard from '../../components/ComponentCard.astro';
+import ApiReference from '../../components/ApiReference.astro';
+import { ALL_COMPONENTS, SHOWCASE_CATEGORIES, findComponent } from '../../lib/component-registry';
+import { getComponentApi } from '../../lib/component-api';
+import '../../styles/showcase.scss';
+
+export const getStaticPaths = () =>
+  ALL_COMPONENTS.map((component) => ({
+    params: { slug: component.id },
+    props: { component },
+  }));
+
+const { component } = Astro.props;
+const category = SHOWCASE_CATEGORIES.find((c) => c.components.some((comp) => comp.id === component.id));
+const api = component.api ?? getComponentApi(component.id);
+const related = (component.related ?? [])
+  .map((id) => findComponent(id))
+  .filter(Boolean);
+---
+
+<DocLayout
+  title={component.name}
+  description={component.description}
+  sidebar="components"
+>
+  <div class="page-inner-wrapper component-detail">
+    <nav class="component-breadcrumb" aria-label="Breadcrumb">
+      <a href="/components">Components</a>
+      {category && (
+        <>
+          <span aria-hidden="true">/</span>
+          <a href={`/components#${category.id}`}>{category.label}</a>
+        </>
+      )}
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{component.name}</span>
+    </nav>
+
+    <header class="showcase-page-header">
+      <p class="showcase-label">{category?.label ?? 'Component'}</p>
+      <h1 class="showcase-heading showcase-heading-xl">{component.name}</h1>
+      <p class="showcase-text-muted">{component.description}</p>
+      {component.tags && (
+        <div class="demo-row">
+          {component.tags.map((tag) => (
+            <span class="showcase-badge showcase-badge-subtle">{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <ComponentCard component={component} showApi={false} hideHeader />
+
+    {api && (
+      <div class="viking-card component-api-panel">
+        <ApiReference
+          api={api}
+          selector={component.selector}
+          wcSelector={component.wcSelector}
+        />
+      </div>
+    )}
+
+    {related.length > 0 && (
+      <section class="showcase-category" aria-labelledby="related-heading">
+        <header class="showcase-category-header">
+          <h2 class="showcase-heading showcase-heading-sm" id="related-heading">Related components</h2>
+        </header>
+        <div class="demo-row">
+          {related.map((rel) => (
+            <a href={`/components/${rel!.id}`} class="viking-btn viking-btn-outline">
+              {rel!.name}
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <div class="demo-row component-detail-actions">
+      <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
+      <viking-button-wc variant="outline" href="/components">Back to gallery</viking-button-wc>
+    </div>
+  </div>
+</DocLayout>
+
+<style>
+  .component-detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-3);
+  }
+
+  .component-breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--viking-space-half);
+    font-size: var(--viking-font-size-sm);
+    color: var(--viking-text-muted);
+  }
+
+  .component-breadcrumb a {
+    color: var(--viking-accent);
+    text-decoration: none;
+  }
+
+  .component-breadcrumb a:hover {
+    text-decoration: underline;
+  }
+
+  .component-api-panel {
+    padding: var(--viking-card-padding);
+  }
+
+  .component-detail-actions {
+    padding-top: var(--viking-space-2);
+    border-top: 1px solid var(--viking-border-subtle);
+  }
+</style>

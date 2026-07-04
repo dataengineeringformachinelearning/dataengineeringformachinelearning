@@ -1,0 +1,191 @@
+---
+import type { ComponentApi } from '../lib/component-api';
+
+export interface Props {
+  api: ComponentApi;
+  selector?: string;
+  wcSelector?: string;
+}
+
+const { api, selector, wcSelector } = Astro.props;
+
+const hasInputs = api.inputs && api.inputs.length > 0;
+const hasOutputs = api.outputs && api.outputs.length > 0;
+const hasAttributes = api.attributes && api.attributes.length > 0;
+const hasEvents = api.events && api.events.length > 0;
+const hasCss = api.cssClasses && api.cssClasses.length > 0;
+---
+
+{(selector || wcSelector) && (
+  <div class="api-selectors">
+    {selector && (
+      <p class="showcase-text-muted">
+        Angular: <code>{selector}</code>
+      </p>
+    )}
+    {wcSelector && (
+      <p class="showcase-text-muted">
+        Web Component: <code>{wcSelector}</code>
+      </p>
+    )}
+  </div>
+)}
+
+{(hasInputs || hasOutputs || hasAttributes || hasEvents || hasCss) && (
+  <section class="api-reference" aria-label="Component API reference">
+    <h4 class="showcase-heading showcase-heading-sm">API reference</h4>
+
+    {hasInputs && (
+      <div class="api-table-wrap">
+        <h5 class="showcase-label">Inputs (Angular)</h5>
+        <table class="token-table api-table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Default</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {api.inputs!.map((prop) => (
+              <tr>
+                <td><code>{prop.name}</code></td>
+                <td><code>{prop.type}</code></td>
+                <td>{prop.default ? <code>{prop.default}</code> : '—'}</td>
+                <td>{prop.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+
+    {hasOutputs && (
+      <div class="api-table-wrap">
+        <h5 class="showcase-label">Outputs (Angular)</h5>
+        <table class="token-table api-table">
+          <thead>
+            <tr>
+              <th scope="col">Name</th>
+              <th scope="col">Type</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {api.outputs!.map((prop) => (
+              <tr>
+                <td><code>{prop.name}</code></td>
+                <td><code>{prop.type}</code></td>
+                <td>{prop.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+
+    {hasAttributes && (
+      <div class="api-table-wrap">
+        <h5 class="showcase-label">Attributes (Web Component)</h5>
+        <table class="token-table api-table">
+          <thead>
+            <tr>
+              <th scope="col">Attribute</th>
+              <th scope="col">Type</th>
+              <th scope="col">Default</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {api.attributes!.map((prop) => (
+              <tr>
+                <td><code>{prop.name}</code></td>
+                <td><code>{prop.type}</code></td>
+                <td>{prop.default ? <code>{prop.default}</code> : '—'}</td>
+                <td>{prop.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+
+    {hasEvents && (
+      <div class="api-table-wrap">
+        <h5 class="showcase-label">Events (Web Component)</h5>
+        <table class="token-table api-table">
+          <thead>
+            <tr>
+              <th scope="col">Event</th>
+              <th scope="col">Type</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {api.events!.map((prop) => (
+              <tr>
+                <td><code>{prop.name}</code></td>
+                <td><code>{prop.type}</code></td>
+                <td>{prop.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+
+    {hasCss && (
+      <div class="api-table-wrap">
+        <h5 class="showcase-label">CSS classes (static HTML)</h5>
+        <table class="token-table api-table">
+          <thead>
+            <tr>
+              <th scope="col">Class</th>
+              <th scope="col">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            {api.cssClasses!.map((prop) => (
+              <tr>
+                <td><code>{prop.name}</code></td>
+                <td>{prop.description}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </section>
+)}
+
+<style>
+  .api-reference {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-2);
+    margin-top: var(--viking-space-2);
+    padding-top: var(--viking-space-2);
+    border-top: 1px solid var(--viking-border-subtle);
+  }
+
+  .api-selectors {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-half);
+    margin-top: var(--viking-space-1);
+  }
+
+  .api-table-wrap {
+    overflow-x: auto;
+  }
+
+  .api-table {
+    width: 100%;
+    font-size: var(--viking-font-size-sm);
+  }
+
+  .api-table td:last-child {
+    min-width: 12rem;
+  }
+</style>

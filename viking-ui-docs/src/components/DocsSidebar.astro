@@ -7,6 +7,17 @@ export interface Props {
 }
 
 const { variant = 'docs' } = Astro.props;
+
+const DOC_LINKS = [
+  { href: '/', label: 'Overview' },
+  { href: '/components', label: 'Component gallery' },
+  { href: '/playground', label: 'Playground' },
+  { href: '/architecture', label: 'Architecture' },
+  { href: '/tokens', label: 'Design tokens' },
+  { href: '/theming', label: 'Theming' },
+  { href: '/frameworks', label: 'Framework guides' },
+  { href: '/contributing', label: 'Contributing' },
+] as const;
 ---
 
 <aside class="docs-sidebar" aria-label="Section navigation">
@@ -17,11 +28,11 @@ const { variant = 'docs' } = Astro.props;
         <nav class="docs-sidebar-nav">
           {SHOWCASE_CATEGORIES.map((cat) => (
             <div class="docs-sidebar-group">
-              <a href={`#${cat.id}`} class="docs-sidebar-group-link">{cat.label}</a>
+              <a href={`/components#${cat.id}`} class="docs-sidebar-group-link">{cat.label}</a>
               <ul class="docs-sidebar-list">
                 {cat.components.map((comp) => (
                   <li>
-                    <a href={`#${comp.id}`} class="docs-sidebar-link">{comp.name}</a>
+                    <a href={`/components/${comp.id}`} class="docs-sidebar-link">{comp.name}</a>
                   </li>
                 ))}
               </ul>
@@ -33,17 +44,16 @@ const { variant = 'docs' } = Astro.props;
       <>
         <p class="docs-sidebar-heading">Documentation</p>
         <nav class="docs-sidebar-nav">
-          <a href="/" class="docs-sidebar-link">Overview</a>
-          <a href="/components" class="docs-sidebar-link">Component gallery</a>
-          <a href="/tokens" class="docs-sidebar-link">Design tokens</a>
-          <a href="/frameworks" class="docs-sidebar-link">Framework guides</a>
-          <a href="/contributing" class="docs-sidebar-link">Contributing</a>
+          {DOC_LINKS.map((link) => (
+            <a href={link.href} class="docs-sidebar-link">{link.label}</a>
+          ))}
         </nav>
         <p class="docs-sidebar-heading">Resources</p>
         <nav class="docs-sidebar-nav">
           <a href={SITE.github} class="docs-sidebar-link" target="_blank" rel="noopener">GitHub repository</a>
-          <a href={`${SITE.marketing}/documentation`} class="docs-sidebar-link" target="_blank" rel="noopener">DEML docs</a>
-          <a href={SITE.app} class="docs-sidebar-link" target="_blank" rel="noopener">Live app</a>
+          <a href={`${SITE.github}/blob/main/CONTRIBUTING.md`} class="docs-sidebar-link" target="_blank" rel="noopener">CONTRIBUTING.md</a>
+          <a href={`${SITE.github}/blob/main/THEME.md`} class="docs-sidebar-link" target="_blank" rel="noopener">THEME.md</a>
+          <a href={SITE.app} class="docs-sidebar-link" target="_blank" rel="noopener">Live app (deml.app)</a>
         </nav>
       </>
     )}
@@ -51,15 +61,20 @@ const { variant = 'docs' } = Astro.props;
 </aside>
 
 <script>
-  const hashLinks = document.querySelectorAll('.docs-sidebar a[href^="#"]');
+  const hashLinks = document.querySelectorAll('.docs-sidebar a[href*="#"]');
   hashLinks.forEach((link) => {
     link.addEventListener('click', (e) => {
+      const href = (link as HTMLAnchorElement).getAttribute('href') ?? '';
+      const hashIndex = href.indexOf('#');
+      if (hashIndex === -1) return;
+      const path = href.slice(0, hashIndex);
+      const id = href.slice(hashIndex + 1);
+      if (path && path !== window.location.pathname) return;
       e.preventDefault();
-      const id = (link as HTMLAnchorElement).getAttribute('href')!.slice(1);
       const target = document.getElementById(id);
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        history.replaceState(null, '', `#${id}`);
+        history.replaceState(null, '', `${path || window.location.pathname}#${id}`);
       }
     });
   });

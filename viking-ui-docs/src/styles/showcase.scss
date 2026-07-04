@@ -514,3 +514,41 @@
     animation: none;
   }
 }
+
+/* Modal demo (static preview) */
+.showcase-modal-demo {
+  position: relative;
+  padding: var(--viking-space-4);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-alt);
+  overflow: hidden;
+}
+
+.showcase-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--viking-bg) 60%, transparent);
+}
+
+.showcase-modal-panel {
+  position: relative;
+  z-index: 1;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+/* Toast demo */
+.showcase-toast-demo {
+  max-width: 24rem;
+  border-left: 3px solid var(--viking-success);
+}
+
+.showcase-icon-demo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--viking-space-5);
+  height: var(--viking-space-5);
+  color: var(--viking-accent);
+  font-size: var(--viking-font-size-lg);
+}

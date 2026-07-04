@@ -1,0 +1,295 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import '../styles/showcase.scss';
+---
+
+<DocLayout
+  title="Playground"
+  description="Live interactive playground for Viking-UI button and input primitives — tweak props and copy generated code."
+>
+  <div class="page-inner-wrapper">
+    <header class="showcase-page-header">
+      <p class="showcase-label">Live playground</p>
+      <h1 class="showcase-heading showcase-heading-xl">Component playground</h1>
+      <p class="showcase-text-muted">
+        Adjust controls below to preview Viking-UI primitives in real time. Generated code updates
+        as you change options — copy snippets for Angular, Astro, Django, or Web Components.
+      </p>
+    </header>
+
+    <div class="playground-layout">
+      <aside class="playground-controls viking-card" aria-label="Playground controls">
+        <h2 class="showcase-heading showcase-heading-sm">Controls</h2>
+
+        <label class="viking-field">
+          <span class="viking-field-label" for="pg-component">Component</span>
+          <select id="pg-component" class="showcase-select">
+            <option value="button">Button</option>
+            <option value="input">Input</option>
+          </select>
+        </label>
+
+        <div id="pg-button-controls">
+          <label class="viking-field">
+            <span class="viking-field-label" for="pg-variant">Variant</span>
+            <select id="pg-variant" class="showcase-select">
+              <option value="primary">primary</option>
+              <option value="secondary">secondary</option>
+              <option value="outline">outline</option>
+              <option value="danger">danger</option>
+              <option value="ghost">ghost</option>
+              <option value="subtle">subtle</option>
+            </select>
+          </label>
+
+          <label class="viking-field">
+            <span class="viking-field-label" for="pg-size">Size</span>
+            <select id="pg-size" class="showcase-select">
+              <option value="base">base</option>
+              <option value="sm">sm</option>
+              <option value="xs">xs</option>
+            </select>
+          </label>
+
+          <label class="viking-field">
+            <span class="viking-field-label" for="pg-label">Label</span>
+            <div class="viking-input-shell">
+              <input id="pg-label" class="viking-input-native" type="text" value="Launch sequence" />
+            </div>
+          </label>
+
+          <label class="showcase-checkbox">
+            <input id="pg-disabled" type="checkbox" />
+            <span>Disabled</span>
+          </label>
+          <label class="showcase-checkbox">
+            <input id="pg-loading" type="checkbox" />
+            <span>Loading</span>
+          </label>
+          <label class="showcase-checkbox">
+            <input id="pg-full" type="checkbox" />
+            <span>Full width</span>
+          </label>
+          <label class="showcase-checkbox">
+            <input id="pg-compact" type="checkbox" />
+            <span>Compact</span>
+          </label>
+        </div>
+
+        <div id="pg-input-controls" hidden>
+          <label class="viking-field">
+            <span class="viking-field-label" for="pg-placeholder">Placeholder</span>
+            <input id="pg-placeholder" class="viking-input-native" type="text" value="Mission ID" />
+          </label>
+          <label class="showcase-checkbox">
+            <input id="pg-clearable" type="checkbox" checked />
+            <span>Clearable</span>
+          </label>
+          <label class="showcase-checkbox">
+            <input id="pg-input-disabled" type="checkbox" />
+            <span>Disabled</span>
+          </label>
+        </div>
+      </aside>
+
+      <div class="playground-main">
+        <section class="playground-preview viking-card" aria-label="Live preview">
+          <span class="showcase-label">Preview</span>
+          <div id="pg-preview" class="playground-preview-stage"></div>
+        </section>
+
+        <section class="playground-code" aria-label="Generated code">
+          <h2 class="showcase-heading showcase-heading-sm">Generated code</h2>
+          <div id="pg-code-block">
+            <CodeBlock
+              snippets={{
+                angular: `<viking-button variant="primary">Launch sequence</viking-button>`,
+                astro: `<viking-button-wc variant="primary">Launch sequence</viking-button-wc>`,
+                django: `<button type="button" class="viking-btn viking-btn-primary">Launch sequence</button>`,
+                javascript: `<viking-button-wc variant="primary">Launch sequence</viking-button-wc>`,
+              }}
+              defaultTab="angular"
+            />
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</DocLayout>
+
+<script>
+  const state = {
+    component: 'button',
+    variant: 'primary',
+    size: 'base',
+    label: 'Launch sequence',
+    disabled: false,
+    loading: false,
+    fullWidth: false,
+    compact: false,
+    placeholder: 'Mission ID',
+    clearable: true,
+    inputDisabled: false,
+  };
+
+  const preview = document.getElementById('pg-preview');
+  const componentSelect = document.getElementById('pg-component') as HTMLSelectElement;
+  const buttonControls = document.getElementById('pg-button-controls');
+  const inputControls = document.getElementById('pg-input-controls');
+
+  const readButtonState = () => {
+    state.variant = (document.getElementById('pg-variant') as HTMLSelectElement).value;
+    state.size = (document.getElementById('pg-size') as HTMLSelectElement).value;
+    state.label = (document.getElementById('pg-label') as HTMLInputElement).value;
+    state.disabled = (document.getElementById('pg-disabled') as HTMLInputElement).checked;
+    state.loading = (document.getElementById('pg-loading') as HTMLInputElement).checked;
+    state.fullWidth = (document.getElementById('pg-full') as HTMLInputElement).checked;
+    state.compact = (document.getElementById('pg-compact') as HTMLInputElement).checked;
+  };
+
+  const readInputState = () => {
+    state.placeholder = (document.getElementById('pg-placeholder') as HTMLInputElement).value;
+    state.clearable = (document.getElementById('pg-clearable') as HTMLInputElement).checked;
+    state.inputDisabled = (document.getElementById('pg-input-disabled') as HTMLInputElement).checked;
+  };
+
+  const btnAttrs = () => {
+    const attrs: string[] = [`variant="${state.variant}"`];
+    if (state.size !== 'base') attrs.push(`size="${state.size}"`);
+    if (state.disabled) attrs.push('disabled');
+    if (state.loading) attrs.push('loading');
+    if (state.fullWidth) attrs.push('full-width');
+    if (state.compact) attrs.push('compact');
+    return attrs.join(' ');
+  };
+
+  const renderPreview = () => {
+    if (!preview) return;
+    preview.innerHTML = '';
+
+    if (state.component === 'button') {
+      readButtonState();
+      const el = document.createElement('viking-button-wc');
+      el.setAttribute('variant', state.variant);
+      if (state.size !== 'base') el.setAttribute('size', state.size);
+      if (state.disabled) el.setAttribute('disabled', '');
+      if (state.loading) el.setAttribute('loading', '');
+      if (state.fullWidth) el.setAttribute('full-width', '');
+      if (state.compact) el.setAttribute('compact', '');
+      el.textContent = state.label || 'Button';
+      preview.appendChild(el);
+    } else {
+      readInputState();
+      const el = document.createElement('viking-input-wc');
+      el.setAttribute('placeholder', state.placeholder);
+      if (state.clearable) el.setAttribute('clearable', '');
+      if (state.inputDisabled) el.setAttribute('disabled', '');
+      preview.appendChild(el);
+    }
+  };
+
+  const updateCodePanels = () => {
+    const codeBlock = document.querySelector('.playground-code [data-code-block]');
+    if (!codeBlock) return;
+
+    let snippets: Record<string, string>;
+
+    if (state.component === 'button') {
+      readButtonState();
+      const attrs = btnAttrs();
+      const wcAttrs = attrs;
+      const angularAttrs = attrs.replace(/full-width/g, '[fullWidth]="true"').replace(/disabled/g, '[disabled]="true"').replace(/loading/g, '[loading]="true"').replace(/compact/g, '[compact]="true"');
+      const cssVariant = state.variant === 'outline' ? 'outline' : state.variant;
+      snippets = {
+        angular: `<viking-button variant="${state.variant}"${state.size !== 'base' ? ` size="${state.size}"` : ''}${state.disabled ? ' [disabled]="true"' : ''}${state.loading ? ' [loading]="true"' : ''}${state.fullWidth ? ' [fullWidth]="true"' : ''}${state.compact ? ' [compact]="true"' : ''}>${state.label}</viking-button>`,
+        astro: `<viking-button-wc ${wcAttrs}>${state.label}</viking-button-wc>`,
+        django: `<button type="button" class="viking-btn viking-btn-${cssVariant}${state.compact ? ' viking-btn-compact' : ''}${state.fullWidth ? ' viking-btn-full' : ''}"${state.disabled ? ' disabled' : ''}>${state.label}</button>`,
+        javascript: `<viking-button-wc ${wcAttrs}>${state.label}</viking-button-wc>`,
+      };
+    } else {
+      readInputState();
+      snippets = {
+        angular: `<viking-input placeholder="${state.placeholder}"${state.clearable ? ' [clearable]="true"' : ''}${state.inputDisabled ? ' [disabled]="true"' : ''} />`,
+        astro: `<viking-input-wc placeholder="${state.placeholder}"${state.clearable ? ' clearable' : ''}${state.inputDisabled ? ' disabled' : ''}></viking-input-wc>`,
+        django: `<div class="viking-input-shell"><input class="viking-input-native" type="text" placeholder="${state.placeholder}"${state.inputDisabled ? ' disabled' : ''} /></div>`,
+        javascript: `<viking-input-wc placeholder="${state.placeholder}"${state.clearable ? ' clearable' : ''}${state.inputDisabled ? ' disabled' : ''}></viking-input-wc>`,
+      };
+    }
+
+    const panels = codeBlock.querySelectorAll('[data-panel]');
+    panels.forEach((panel) => {
+      const id = panel.getAttribute('data-panel');
+      const code = panel.querySelector('code');
+      if (code && id && snippets[id]) {
+        code.textContent = snippets[id];
+      }
+    });
+  };
+
+  const render = () => {
+    state.component = componentSelect?.value ?? 'button';
+    buttonControls!.hidden = state.component !== 'button';
+    inputControls!.hidden = state.component !== 'input';
+    renderPreview();
+    updateCodePanels();
+  };
+
+  document.querySelectorAll('#pg-button-controls input, #pg-button-controls select').forEach((el) => {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+  document.querySelectorAll('#pg-input-controls input').forEach((el) => {
+    el.addEventListener('input', render);
+    el.addEventListener('change', render);
+  });
+  componentSelect?.addEventListener('change', render);
+
+  render();
+</script>
+
+<style>
+  .playground-layout {
+    display: grid;
+    gap: var(--viking-space-3);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 900px) {
+    .playground-layout {
+      grid-template-columns: minmax(240px, 320px) 1fr;
+    }
+  }
+
+  .playground-controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-2);
+    align-self: start;
+    position: sticky;
+    top: var(--viking-space-3);
+  }
+
+  .playground-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-3);
+  }
+
+  .playground-preview-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    padding: var(--viking-space-3);
+    margin-top: var(--viking-space-2);
+    border: 1px dashed var(--viking-border);
+    border-radius: var(--viking-radius);
+    background: var(--viking-surface-alt);
+  }
+
+  .playground-preview-stage viking-input-wc {
+    width: 100%;
+    max-width: 24rem;
+  }
+</style>

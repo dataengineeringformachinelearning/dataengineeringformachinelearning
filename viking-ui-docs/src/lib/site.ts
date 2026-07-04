@@ -13,7 +13,10 @@ export const SITE = {
 export const NAV_LINKS = [
   { href: '/', label: 'Overview' },
   { href: '/components', label: 'Components' },
+  { href: '/playground', label: 'Playground' },
+  { href: '/architecture', label: 'Architecture' },
   { href: '/tokens', label: 'Tokens' },
+  { href: '/theming', label: 'Theming' },
   { href: '/frameworks', label: 'Frameworks' },
   { href: '/contributing', label: 'Contribute' },
 ] as const;

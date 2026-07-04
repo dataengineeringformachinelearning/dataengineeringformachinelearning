@@ -16,8 +16,12 @@ import '../../styles/showcase.scss';
       <h1 class="showcase-heading showcase-heading-xl">Components</h1>
       <p class="showcase-text-muted">
         Live previews and copy-ready snippets for Angular, Astro, Django, and Web Components.
-        {COMPONENT_COUNT} documented primitives across {SHOWCASE_CATEGORIES.length} categories.
+        {COMPONENT_COUNT} documented demos — each with a dedicated detail page and API reference.
       </p>
+      <div class="demo-row">
+        <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
+        <viking-button-wc variant="outline" href="/architecture">Architecture</viking-button-wc>
+      </div>
     </header>
 
     {SHOWCASE_CATEGORIES.map((category) => (

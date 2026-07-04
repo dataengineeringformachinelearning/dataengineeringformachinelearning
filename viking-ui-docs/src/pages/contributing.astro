@@ -1,11 +1,12 @@
 ---
 import DocLayout from '../layouts/DocLayout.astro';
 import { SITE } from '../lib/site';
+import '../styles/showcase.scss';
 ---
 
 <DocLayout
   title="Contributing"
-  description="Contribute to Viking-UI — extend the kit, fix tokens, ship Web Components."
+  description="Contribute to Viking-UI — extend the kit, fix tokens, ship Web Components, and update the showcase."
 >
   <div class="page-inner-wrapper">
     <header class="showcase-page-header">
@@ -14,9 +15,11 @@ import { SITE } from '../lib/site';
       <p class="showcase-text-muted">
         Viking-UI is Apache-2.0 and lives in the DEML monorepo. New shared UI belongs in
         <code>frontend/projects/viking-ui/</code> first — extend the kit, do not fork per-page styles.
+        Full guidelines: <a href={`${SITE.github}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener">CONTRIBUTING.md</a>.
       </p>
       <div class="demo-row">
         <viking-button-wc variant="primary" href={SITE.github} target="_blank">View on GitHub</viking-button-wc>
+        <viking-button-wc variant="secondary" href="/architecture">Architecture</viking-button-wc>
         <viking-button-wc variant="outline" href="/components">Component gallery</viking-button-wc>
       </div>
     </header>
@@ -25,49 +28,60 @@ import { SITE } from '../lib/site';
       <h2 class="showcase-heading showcase-heading-sm" id="workflow-heading">Development workflow</h2>
 
       <article class="contribute-step viking-card">
-        <h3 class="showcase-heading showcase-heading-sm">Clone and install</h3>
+        <h3 class="showcase-heading showcase-heading-sm">1. Clone and install</h3>
         <p class="showcase-text-muted">
           Fork the repository, install frontend dependencies, and start the docs site locally.
         </p>
-        <pre class="code-block-panel is-active" style="margin:0;padding:var(--viking-space-2);background:var(--viking-charcoal-950);border-radius:var(--viking-radius);overflow-x:auto;"><code>git clone {SITE.github}.git
+        <pre class="code-block-panel is-active contribute-code"><code>git clone {SITE.github}.git
 cd deml/frontend && npm ci --legacy-peer-deps
+npm run build:viking-ui
 cd ../viking-ui-docs && npm ci --legacy-peer-deps
 npm run dev</code></pre>
       </article>
 
       <article class="contribute-step viking-card">
-        <h3 class="showcase-heading showcase-heading-sm">Edit tokens and components</h3>
+        <h3 class="showcase-heading showcase-heading-sm">2. Understand the architecture</h3>
         <p class="showcase-text-muted">
-          Token changes start in <code>_variables.scss</code>. Component logic lives under
-          <code>frontend/projects/viking-ui/src/lib/</code>. Web Components under
-          <code>src/web/</code>.
+          Read the <a href="/architecture">architecture guide</a> before adding components. Token changes
+          start in <code>_variables.scss</code>. Component logic lives under
+          <code>src/lib/</code>. Web Components under <code>src/web/</code>.
         </p>
       </article>
 
       <article class="contribute-step viking-card">
-        <h3 class="showcase-heading showcase-heading-sm">Run quality gates</h3>
+        <h3 class="showcase-heading showcase-heading-sm">3. Add or update a component</h3>
+        <ol class="showcase-text-muted contribute-checklist">
+          <li>Token-only SCSS in <code>src/styles/</code></li>
+          <li>Optional Web Component: <code>{'viking-{name}-wc'}</code> in <code>src/web/</code></li>
+          <li>Angular wrapper with signal <code>input()</code> / <code>output()</code></li>
+          <li>Export from <code>public-api.ts</code> + <code>viking.manifest.json</code></li>
+          <li>Showcase demo in <code>viking-ui-docs/src/lib/component-registry.ts</code></li>
+          <li>API reference in <code>component-api.ts</code> when adding new props</li>
+        </ol>
+      </article>
+
+      <article class="contribute-step viking-card">
+        <h3 class="showcase-heading showcase-heading-sm">4. Run quality gates</h3>
         <p class="showcase-text-muted">
           Pre-commit enforces theme tokens, accessibility, and lint. From repo root:
         </p>
-        <pre class="code-block-panel is-active" style="margin:0;padding:var(--viking-space-2);background:var(--viking-charcoal-950);border-radius:var(--viking-radius);overflow-x:auto;"><code>node scripts/enforce-theme.js
+        <pre class="code-block-panel is-active contribute-code"><code>node scripts/enforce-theme.js
 cd frontend && npm run test:viking-ui
+cd frontend && npm run check:viking-upstream
 uvx pre-commit run --all-files</code></pre>
       </article>
 
       <article class="contribute-step viking-card">
-        <h3 class="showcase-heading showcase-heading-sm">Update this showcase</h3>
-        <p class="showcase-text-muted">
-          Add demos to <code>src/lib/component-registry.ts</code> and verify at
-          <code>npm run dev</code> in <code>viking-ui-docs/</code>.
-        </p>
+        <h3 class="showcase-heading showcase-heading-sm">5. Sync static CSS (token changes only)</h3>
+        <pre class="code-block-panel is-active contribute-code"><code>npm run build:static-css --prefix viking-ui-docs
+python scripts/sync_design_system.py</code></pre>
       </article>
 
       <article class="contribute-step viking-card">
-        <h3 class="showcase-heading showcase-heading-sm">Submit a pull request</h3>
+        <h3 class="showcase-heading showcase-heading-sm">6. Submit a pull request</h3>
         <p class="showcase-text-muted">
-          Follow conventional commits. PRs touching tokens must run
-          <code>npm run build:static-css</code> and <code>python scripts/sync_design_system.py</code>.
-          Document governance changes in THEME.md and BOOK.md Ch.31 together.
+          Use conventional commits. Document governance changes in THEME.md and BOOK.md Ch.31 together.
+          Include screenshots for UI changes and link related issues.
         </p>
       </article>
     </section>
@@ -76,13 +90,61 @@ uvx pre-commit run --all-files</code></pre>
       <header class="showcase-category-header">
         <h2 class="showcase-heading showcase-heading-sm" id="standards-heading">Contribution standards</h2>
       </header>
-      <ul class="showcase-text-muted">
+      <ul class="showcase-text-muted contribute-checklist">
         <li>Use <code>--viking-*</code> tokens only — no hardcoded hex in components</li>
         <li>WCAG 2.1 AA: visible focus rings, 44px touch targets, no color-only status</li>
-        <li>New shared UI in <code>viking-ui</code> library first, then consume here</li>
+        <li>New shared UI in <code>viking-ui</code> library first, then consume in apps</li>
+        <li>Compose form controls through <code>viking-field</code> stacks</li>
         <li>Web Components: Shadow DOM + token styles from <code>src/web/core/</code></li>
         <li>Tests required for charts, forms, icons, and auth surfaces</li>
+        <li>Never add Material, Bootstrap, PrimeNG, or other third-party UI kits</li>
+      </ul>
+    </section>
+
+    <section class="showcase-category" aria-labelledby="showcase-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="showcase-heading">Updating this showcase</h2>
+        <p class="showcase-text-muted">
+          This Astro site (<code>viking-ui-docs/</code>) is the canonical open-source documentation.
+          When you add a component demo:
+        </p>
+      </header>
+      <ul class="showcase-text-muted contribute-checklist">
+        <li>Add entry to <code>src/lib/component-registry.ts</code> with preview HTML and 4-framework snippets</li>
+        <li>Add API props to <code>src/lib/component-api.ts</code> for documented components</li>
+        <li>Verify at <code>npm run dev</code> — check gallery, detail page, and playground if applicable</li>
+        <li>Detail pages auto-generate at <code>/components/[slug]</code> from the registry</li>
       </ul>
     </section>
   </div>
 </DocLayout>
+
+<style>
+  .contribute-steps {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-2);
+  }
+
+  .contribute-step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-1);
+  }
+
+  .contribute-code {
+    margin: 0;
+    padding: var(--viking-space-2);
+    background: var(--viking-charcoal-950);
+    border-radius: var(--viking-radius);
+    overflow-x: auto;
+    font-size: var(--viking-font-size-sm);
+  }
+
+  .contribute-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-half);
+    padding-left: var(--viking-space-3);
+  }
+</style>

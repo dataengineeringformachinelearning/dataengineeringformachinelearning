@@ -1,3 +1,5 @@
+import type { ComponentApi } from './component-api';
+import { getComponentApi } from './component-api';
 import type { FrameworkTab } from './site';
 
 export type ComponentSnippet = Record<FrameworkTab, string>;
@@ -9,6 +11,14 @@ export type ShowcaseComponent = {
   preview: string;
   snippets: ComponentSnippet;
   tags?: string[];
+  /** Angular element selector */
+  selector?: string;
+  /** Web Component tag when available */
+  wcSelector?: string;
+  /** Structured API reference — use getComponentApi(id) or override */
+  api?: ComponentApi;
+  /** Related components for cross-linking on detail pages */
+  related?: string[];
 };
 
 export type ShowcaseCategory = {
@@ -82,6 +92,10 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
 </div>`,
         snippets: btnSnippets(),
         tags: ['web-component', 'css'],
+        selector: 'viking-button',
+        wcSelector: 'viking-button-wc',
+        api: getComponentApi('button'),
+        related: ['field-stack', 'icon'],
       },
       {
         id: 'badge',
@@ -102,6 +116,8 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           django: `<span class="showcase-badge showcase-badge-success">Healthy</span>`,
           javascript: `<span class="showcase-badge">Default</span>`,
         },
+        selector: 'viking-badge',
+        api: getComponentApi('badge'),
       },
       {
         id: 'typography',
@@ -154,6 +170,30 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           javascript: `const card = document.createElement('div');
 card.className = 'viking-card';`,
         },
+        selector: 'viking-card',
+        api: getComponentApi('card'),
+        related: ['metric-card'],
+      },
+      {
+        id: 'icon',
+        name: 'Icon',
+        description: 'Zero-dependency SVG icons from the Viking registry — no font or Lucide runtime.',
+        preview: `<div class="demo-row">
+  <span class="showcase-icon-demo" aria-hidden="true">◆</span>
+  <span class="showcase-label">Use viking-icon in Angular for full registry</span>
+</div>`,
+        snippets: {
+          angular: `import { VikingIcon } from '@dataengineeringformachinelearning/viking-ui';
+
+<viking-icon name="rocket" [size]="22" />
+<viking-icon name="loader" [spin]="true" color="accent" />`,
+          astro: `{/* Import icon paths from library for static SVG, or use Angular island */}`,
+          django: `{# Static pages: inline SVG from icon registry or CSS utility #}`,
+          javascript: `// Icons ship as inline SVG via viking-icon Angular component`,
+        },
+        selector: 'viking-icon',
+        api: getComponentApi('icon'),
+        tags: ['angular'],
       },
     ],
   },
@@ -177,6 +217,10 @@ card.className = 'viking-card';`,
 </div>`,
         snippets: inputSnippets,
         tags: ['web-component', 'css'],
+        selector: 'viking-input',
+        wcSelector: 'viking-input-wc',
+        api: getComponentApi('input'),
+        related: ['field-stack'],
       },
       {
         id: 'field-stack',
@@ -208,6 +252,9 @@ card.className = 'viking-card';`,
   <viking-input-wc placeholder="acme-corp"></viking-input-wc>
 </div>`,
         },
+        selector: 'viking-field',
+        api: getComponentApi('field-stack'),
+        related: ['input', 'checkbox', 'select'],
       },
       {
         id: 'checkbox',
@@ -278,6 +325,60 @@ select.className = 'showcase-select';`,
           django: `<div class="showcase-callout showcase-callout-warning">{{ message }}</div>`,
           javascript: `el.classList.add('showcase-callout', 'showcase-callout-info');`,
         },
+        selector: 'viking-callout',
+        api: getComponentApi('callout'),
+      },
+      {
+        id: 'modal',
+        name: 'Modal',
+        description: 'Accessible dialog with focus trap, Escape dismiss, and tokenized overlay.',
+        preview: `<div class="showcase-modal-demo" role="dialog" aria-labelledby="modal-demo-title" aria-modal="true">
+  <div class="showcase-modal-backdrop" aria-hidden="true"></div>
+  <div class="showcase-modal-panel viking-card">
+    <header class="viking-card-header">
+      <h3 class="showcase-heading showcase-heading-sm" id="modal-demo-title">Confirm deploy</h3>
+    </header>
+    <p class="showcase-text-muted">Push v2.0.0 to production? This action uses the Outbox relay.</p>
+    <footer class="demo-row" style="margin-top:var(--viking-space-2)">
+      <viking-button-wc variant="primary">Deploy</viking-button-wc>
+      <viking-button-wc variant="outline">Cancel</viking-button-wc>
+    </footer>
+  </div>
+</div>`,
+        snippets: {
+          angular: `<viking-modal [(open)]="confirmOpen" title="Confirm deploy" size="md">
+  <p>Push v2.0.0 to production?</p>
+  <viking-button variant="primary" (pressed)="deploy()">Deploy</viking-button>
+</viking-modal>`,
+          astro: `{/* Modal requires Angular runtime — use viking-modal in deml.app */}`,
+          django: `{# Use confirm dialog pattern or Alpine-free native <dialog> with viking-card styling #}`,
+          javascript: `// viking-modal is Angular-only; use native <dialog> + viking-card classes on static sites`,
+        },
+        selector: 'viking-modal',
+        api: getComponentApi('modal'),
+        tags: ['angular'],
+      },
+      {
+        id: 'toast',
+        name: 'Toast',
+        description: 'Ephemeral feedback via VikingToastService — icon + tone, never color alone.',
+        preview: `<div class="showcase-toast-demo viking-card">
+  <strong class="showcase-heading showcase-heading-sm">Deployment queued</strong>
+  <p class="showcase-text-muted">Outbox relay will publish within 200ms.</p>
+</div>`,
+        snippets: {
+          angular: `import { VikingToastService } from '@dataengineeringformachinelearning/viking-ui';
+
+constructor(private readonly toast: VikingToastService) {}
+
+this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
+          astro: `{/* Toasts are Angular service-driven — use viking-callout for static feedback */}`,
+          django: `<div class="showcase-callout showcase-callout-success">{{ message }}</div>`,
+          javascript: `// Use VikingToastService in Angular apps`,
+        },
+        selector: 'viking-toaster',
+        api: getComponentApi('toast'),
+        tags: ['angular', 'service'],
       },
       {
         id: 'progress',
@@ -356,6 +457,9 @@ select.className = 'showcase-select';`,
           django: `{# Charts render server-side; use viking-chart in Angular app #}`,
           javascript: `// Full chart API available via Angular viking-chart component`,
         },
+        selector: 'viking-chart',
+        api: getComponentApi('chart'),
+        related: ['metric-card', 'chart-panel'],
       },
       {
         id: 'table',
@@ -455,6 +559,48 @@ select.className = 'showcase-select';`,
           javascript: `window.DemlWidgets?.openSearch(); // ⌘K / Ctrl+K globally`,
         },
         tags: ['shell', 'algolia', 'css'],
+        selector: 'viking-search-palette',
+      },
+      {
+        id: 'form-section',
+        name: 'Form section',
+        description: 'Grouped settings sections with title rhythm for billing and configuration pages.',
+        preview: `<section class="viking-form-section">
+  <h2 class="showcase-heading showcase-heading-sm">Billing</h2>
+  <p class="showcase-text-muted">Manage subscription and payment methods.</p>
+  <div class="viking-field">
+    <label class="viking-field-label" for="plan">Plan</label>
+    <select id="plan" class="showcase-select"><option>Pro</option></select>
+  </div>
+</section>`,
+        snippets: {
+          angular: `<viking-form-section title="Billing" description="Manage subscription">
+  <viking-field label="Plan">
+    <viking-native-select [options]="plans" />
+  </viking-field>
+</viking-form-section>`,
+          astro: `<section class="viking-form-section">...</section>`,
+          django: `<section class="viking-form-section"><h2>{{ section.title }}</h2>...</section>`,
+          javascript: `section.className = 'viking-form-section';`,
+        },
+        selector: 'viking-form-section',
+        related: ['field-stack'],
+      },
+      {
+        id: 'theme-toggle',
+        name: 'Theme toggle',
+        description: 'Light/dark mode switch respecting prefers-color-scheme and localStorage.',
+        preview: `<button type="button" class="theme-toggle-btn" aria-label="Toggle theme">
+  <span class="showcase-label">Dark / Light</span>
+</button>`,
+        snippets: {
+          angular: `<viking-theme-toggle />`,
+          astro: `<button type="button" class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle theme">...</button>`,
+          django: `<button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Toggle theme"></button>`,
+          javascript: `document.documentElement.dataset.theme = 'light'; // or 'dark'`,
+        },
+        selector: 'viking-theme-toggle',
+        tags: ['a11y'],
       },
     ],
   },
