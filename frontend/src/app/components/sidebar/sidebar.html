@@ -27,118 +27,78 @@
     </div>
 
     <div class="sidebar-scroll-container">
-      <nav class="sidebar-nav">
+      <viking-sidebar-nav>
         @if (authService.isAuthenticated()) {
-        <a
-          class="nav-item"
-          routerLink="/dashboard"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}"
-          title="Dashboard"
-        >
+        <viking-sidebar-nav-link routerLink="/dashboard" title="Dashboard">
           <viking-app-icon name="dashboard" [ariaHidden]="true" />
-          <span class="nav-text">Dashboard</span>
-        </a>
+          <span class="viking-sidebar-nav-label">Dashboard</span>
+        </viking-sidebar-nav-link>
 
-        <a
-          class="nav-item"
-          routerLink="/settings"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}"
-          title="Sites"
-        >
+        <viking-sidebar-nav-link routerLink="/settings" title="Sites">
           <viking-app-icon name="language" [ariaHidden]="true" />
-          <span class="nav-text">Sites</span>
-        </a>
+          <span class="viking-sidebar-nav-label">Sites</span>
+        </viking-sidebar-nav-link>
 
-        <a
-          class="nav-item"
-          routerLink="/account"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}"
-          title="Account"
-        >
+        <viking-sidebar-nav-link routerLink="/account" title="Account">
           <viking-app-icon name="person" [ariaHidden]="true" />
-          <span class="nav-text">Account</span>
-        </a>
+          <span class="viking-sidebar-nav-label">Account</span>
+        </viking-sidebar-nav-link>
 
-        <a
-          class="nav-item"
-          routerLink="/vulnerabilities"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}"
-          title="Threat Matrix"
-        >
+        <viking-sidebar-nav-link routerLink="/vulnerabilities" title="Threat Matrix">
           <viking-app-icon name="security" [ariaHidden]="true" />
-          <span class="nav-text">Threats</span>
-        </a>
+          <span class="viking-sidebar-nav-label">Threats</span>
+        </viking-sidebar-nav-link>
 
-        <a
-          class="nav-item"
-          routerLink="/analytics"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}"
-          title="Analytics"
-        >
+        <viking-sidebar-nav-link routerLink="/analytics" title="Analytics">
           <viking-app-icon name="monitoring" [ariaHidden]="true" />
-          <span class="nav-text">Analytics</span>
-        </a>
+          <span class="viking-sidebar-nav-label">Analytics</span>
+        </viking-sidebar-nav-link>
 
         @if (!isCollapsed() && isSettingsActive()) {
-        <div class="nav-tree-section">
-          <div
-            class="nav-tree-header sidebar-extracted-1"
-            (click)="isYourPagesExpanded.set(!isYourPagesExpanded())"
-            tabindex="0"
-            role="button"
-            [attr.aria-expanded]="isYourPagesExpanded()"
-            (keydown.enter)="isYourPagesExpanded.set(!isYourPagesExpanded())"
+        <viking-sidebar-nav-tree>
+          <viking-sidebar-nav-tree-header
+            label="Your Pages"
+            [expanded]="isYourPagesExpanded()"
+            (toggled)="isYourPagesExpanded.set(!isYourPagesExpanded())"
           >
-            <span class="tree-label">Your Pages</span>
             <viking-app-icon
+              vikingSidebarTreeArrow
               [name]="isYourPagesExpanded() ? 'expand_more' : 'chevron_right'"
-              hostClass="tree-arrow"
+              hostClass="viking-sidebar-nav-tree-arrow"
               [ariaHidden]="true"
             />
-          </div>
+          </viking-sidebar-nav-tree-header>
           @if (isYourPagesExpanded()) {
-          <div class="nav-tree-children">
+          <viking-sidebar-nav-tree-children>
             @for (page of settingsService.statusPages(); track page) {
-            <span
-              class="tree-child-item"
-              [class.active]="settingsService.selectedPage()?.id === page.id"
-              (click)="settingsService.selectPage(page)"
-              tabindex="0"
-              role="button"
-              (keydown.enter)="settingsService.selectPage(page)"
-              (keydown.space)="$event.preventDefault(); settingsService.selectPage(page)"
+            <viking-sidebar-nav-tree-item
+              [active]="settingsService.selectedPage()?.id === page.id"
+              (activated)="settingsService.selectPage(page)"
             >
               {{ page.title }}
-            </span>
+            </viking-sidebar-nav-tree-item>
             } @if (settingsService.statusPages().length === 0) {
-            <span class="tree-child-item empty-state">No pages yet.</span>
+            <viking-sidebar-nav-tree-item variant="empty">
+              No pages yet.
+            </viking-sidebar-nav-tree-item>
             }
-            <button class="tree-child-item new-page-btn" (click)="settingsService.selectPage(null)">
-              <viking-app-icon name="add" hostClass="new-page-icon" />
+            <viking-sidebar-nav-tree-item
+              variant="accent"
+              (activated)="settingsService.selectPage(null)"
+            >
+              <viking-app-icon name="add" hostClass="viking-sidebar-nav-tree-icon" />
               New Page
-            </button>
-          </div>
+            </viking-sidebar-nav-tree-item>
+          </viking-sidebar-nav-tree-children>
           }
-        </div>
+        </viking-sidebar-nav-tree>
         } } @else {
-        <a
-          class="nav-item"
-          routerLink="/explore"
-          routerLinkActive="active"
-          [routerLinkActiveOptions]="{exact: true}"
-          title="Explore"
-        >
+        <viking-sidebar-nav-link routerLink="/explore" title="Explore">
           <viking-app-icon name="explore" [ariaHidden]="true" />
-          <span class="nav-text">Explore</span>
-        </a>
-
+          <span class="viking-sidebar-nav-label">Explore</span>
+        </viking-sidebar-nav-link>
         }
-      </nav>
+      </viking-sidebar-nav>
 
       <!-- Dynamic sidebar contents (extra lists) -->
       <ng-content select="[sidebar-extra]"></ng-content>

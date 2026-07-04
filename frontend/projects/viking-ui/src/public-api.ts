@@ -116,6 +116,7 @@ export * from './lib/select/select';
 export * from './lib/separator/separator';
 export * from './lib/scroll-area/scroll-area';
 export * from './lib/sheet/sheet';
+export * from './lib/sidebar-nav/sidebar-nav';
 export * from './lib/skeleton/skeleton';
 export * from './lib/spinner/spinner';
 export * from './lib/status-metric-row/status-metric-row';

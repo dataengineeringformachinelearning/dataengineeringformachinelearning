@@ -1,22 +1,3 @@
-.wizard-shell {
-  padding: 8px 4px 4px;
-  color: var(--text-color);
-}
-
-.wizard-progress {
-  margin-bottom: 20px;
-
-  .progress-label {
-    display: block;
-    margin-top: 8px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--text-muted);
-  }
-}
-
 .wizard-step {
   min-height: 220px;
 
@@ -116,9 +97,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-top: none;
 }
 
 .wizard-actions-right {
