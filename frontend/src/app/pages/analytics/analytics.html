@@ -217,6 +217,7 @@
             [showArea]="true"
             curve="smooth"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else {
           <viking-chart-empty-state
@@ -281,6 +282,7 @@
             [categories]="topRegionsCategories()"
             label="Top Regions"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else {
           <viking-chart-empty-state
@@ -306,6 +308,7 @@
             [categories]="frequencyCategories()"
             label="Request frequency vs latency"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else if (hasFrequencyData()) {
           <viking-chart
@@ -316,6 +319,7 @@
             [showArea]="true"
             curve="smooth"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else {
           <viking-chart-empty-state
@@ -341,6 +345,7 @@
             [categories]="endpointCategories()"
             label="Request Counts per Endpoint"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else {
           <viking-chart-empty-state
@@ -377,6 +382,7 @@
             [segments]="threatSeveritySegments()"
             label="Threat Events by Severity"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else {
           <viking-chart-empty-state
@@ -403,6 +409,7 @@
             [categories]="securityAlertCategories()"
             label="Recent Security Anomalies"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else {
           <viking-chart-empty-state
@@ -429,6 +436,7 @@
             [categories]="statusCategories()"
             label="HTTP Status Distribution"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else if (hasStatusData()) {
           <viking-chart
@@ -437,6 +445,7 @@
             [categories]="statusCategories()"
             label="HTTP Status Distribution"
             [fill]="true"
+            [zoomable]="true"
           />
           } @else {
           <viking-chart-empty-state

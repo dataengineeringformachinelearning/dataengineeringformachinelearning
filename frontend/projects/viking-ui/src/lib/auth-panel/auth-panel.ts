@@ -152,6 +152,22 @@ import { VikingSeparator } from '../separator/separator';
         gap: var(--viking-space-2);
         width: 100%;
       }
+      :host ::ng-deep .viking-auth-stack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--viking-space-2);
+        width: 100%;
+      }
+      :host ::ng-deep .viking-auth-stack viking-callout {
+        width: 100%;
+      }
+      :host ::ng-deep .viking-auth-stack .login-form,
+      :host ::ng-deep .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--viking-space-2);
+        width: 100%;
+      }
       .viking-auth-social {
         display: flex;
         flex-direction: column;

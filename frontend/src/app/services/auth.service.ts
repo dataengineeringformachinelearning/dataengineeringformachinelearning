@@ -333,6 +333,7 @@ export class AuthService {
       this.currentUserId.set(null);
       this.currentUserRole.set(null);
       this.isProcessing.set(false);
+      this.syncCrossSiteAuthCache();
       return;
     }
     try {
@@ -343,12 +344,14 @@ export class AuthService {
       this.currentUserId.set(null);
       this.currentUserRole.set(null);
       this.isProcessing.set(false);
+      this.syncCrossSiteAuthCache();
     } catch (e: any) {
       console.error(e);
       this.isAuthenticated.set(false);
       this.currentUserId.set(null);
       this.currentUserRole.set(null);
       this.isProcessing.set(false);
+      this.syncCrossSiteAuthCache();
     }
   }
 

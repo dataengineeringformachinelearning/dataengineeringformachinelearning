@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  input,
+  signal,
+} from '@angular/core';
 import {
   VikingChartCurve,
   VikingChartKind,
@@ -6,6 +13,14 @@ import {
   VikingDonutSegment,
   VikingTone,
 } from '../core/types';
+import {
+  ChartZoomWindow,
+  clampChartWindow,
+  fullChartWindow,
+  panChartWindow,
+  sliceChartData,
+  zoomChartWindow,
+} from './chart-zoom';
 
 interface ChartPath {
   name: string;
@@ -191,9 +206,21 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       @if (summary()) {
         <p class="sr-only" [id]="'viking-chart-summary-' + chartId">{{ summary() }}</p>
       }
+      <div
+        class="viking-chart-viewport"
+        [class.viking-chart-zoomable]="zoomable() && !isSparkline() && kind() !== 'donut'"
+        (wheel)="onWheel($event)"
+        (dblclick)="resetZoom()"
+        (pointerdown)="onPanStart($event)"
+        (pointermove)="onPanMove($event)"
+        (pointerup)="onPanEnd()"
+        (pointerleave)="onPanEnd()"
+        (pointercancel)="onPanEnd()"
+      >
       <svg
         [attr.viewBox]="'0 0 ' + width + ' ' + height()"
-        [attr.preserveAspectRatio]="preserveAspectRatio()"
+        preserveAspectRatio="xMidYMid meet"
+        shape-rendering="geometricPrecision"
         role="img"
         [attr.aria-label]="label() || 'Chart'"
         aria-hidden="true"
@@ -326,6 +353,12 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
           }
         }
       </svg>
+      @if (zoomActive()) {
+        <button type="button" class="viking-chart-zoom-reset" (click)="resetZoom()">
+          Reset zoom
+        </button>
+      }
+      </div>
       @if (legendVisible()) {
         <figcaption class="viking-chart-legend">
           @if (kind() === 'donut') {
@@ -399,8 +432,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         justify-content: center;
         min-height: var(--viking-chart-fill-min-height, clamp(12rem, 28vw, 16rem));
         max-height: var(--viking-chart-fill-max-height, clamp(14rem, 32vw, 18rem));
-        height: auto;
-        aspect-ratio: var(--viking-chart-ratio, 3 / 1);
+        height: 100%;
         --viking-chart-axis-size: 13px;
       }
       .viking-chart-sparkline {
@@ -412,23 +444,64 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         aspect-ratio: auto;
         height: var(--viking-chart-sparkline-height, 2.5rem);
       }
+      .viking-chart-viewport {
+        position: relative;
+        width: 100%;
+        flex: 1 1 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 0;
+      }
+      .viking-chart-viewport.viking-chart-zoomable {
+        cursor: grab;
+        touch-action: none;
+      }
+      .viking-chart-viewport.viking-chart-zoomable:active {
+        cursor: grabbing;
+      }
+      .viking-chart-zoom-reset {
+        position: absolute;
+        top: var(--viking-space-half);
+        right: var(--viking-space-half);
+        z-index: 2;
+        padding: var(--viking-space-half) var(--viking-space-1);
+        font-size: var(--viking-font-size-sm);
+        font-family: var(--viking-font-family);
+        color: var(--viking-text-muted);
+        background: color-mix(in srgb, var(--viking-surface) 88%, transparent);
+        border: 1px solid var(--viking-border);
+        border-radius: var(--viking-radius-md);
+        cursor: pointer;
+      }
+      .viking-chart-zoom-reset:focus-visible {
+        outline: 2px solid var(--viking-ring);
+        outline-offset: 2px;
+      }
       svg {
         display: block;
         width: 100%;
-        height: 100%;
+        height: auto;
+        max-width: 100%;
         background: transparent;
         overflow: visible;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
       }
       .viking-chart:not(.viking-chart-fill):not(.viking-chart-sparkline) svg {
         min-height: var(--viking-chart-min-height, clamp(9.5rem, 22vw, 12rem));
         max-height: var(--viking-chart-max-height, clamp(13rem, 36vw, 17.5rem));
+        aspect-ratio: 720 / 240;
       }
       .viking-chart-fill svg {
-        flex: 0 1 auto;
         width: 100%;
         height: auto;
         min-height: 0;
-        max-height: 100%;
+        max-height: min(100%, var(--viking-chart-fill-max-height, clamp(14rem, 32vw, 18rem)));
+        aspect-ratio: 720 / 400;
+      }
+      .viking-chart-fill:not(.viking-chart-has-legend) svg {
+        aspect-ratio: 720 / 240;
       }
       .viking-chart-sparkline svg {
         min-height: 0;
@@ -553,6 +626,98 @@ export class VikingChart {
   readonly tickCount = input<number>(4);
   readonly showLegend = input<boolean | undefined>(undefined);
   readonly summary = input<string>('');
+  /** Enable wheel zoom + drag pan on line/bar charts (Flux-style interaction). */
+  readonly zoomable = input<boolean>(false);
+
+  private readonly zoomWindow = signal<ChartZoomWindow | null>(null);
+  private panStartX: number | null = null;
+  private panStartWindow: ChartZoomWindow | null = null;
+
+  constructor() {
+    effect(() => {
+      const count = this.series()[0]?.data.length ?? 0;
+      if (count === 0) {
+        this.zoomWindow.set(null);
+      }
+    });
+  }
+
+  /** Slice series/categories to the active zoom window. */
+  protected readonly dataWindow = computed(() => {
+    const count = this.series()[0]?.data.length ?? 0;
+    const zoom = this.zoomWindow();
+    if (!this.zoomable() || !zoom || this.isSparkline() || this.kind() === 'donut') {
+      return fullChartWindow(count);
+    }
+    return clampChartWindow(zoom, count);
+  });
+
+  protected readonly effectiveSeries = computed(() => {
+    const window = this.dataWindow();
+    return this.series().map(item => ({
+      ...item,
+      data: sliceChartData(item.data, window),
+    }));
+  });
+
+  protected readonly effectiveCategories = computed(() =>
+    sliceChartData(this.categories(), this.dataWindow()),
+  );
+
+  protected readonly zoomActive = computed(() => {
+    const count = this.series()[0]?.data.length ?? 0;
+    const window = this.dataWindow();
+    return this.zoomable() && count > 0 && (window.start > 0 || window.end < count);
+  });
+
+  protected resetZoom = (): void => {
+    this.zoomWindow.set(null);
+  };
+
+  protected onWheel = (event: WheelEvent): void => {
+    if (!this.zoomable() || this.isSparkline() || this.kind() === 'donut') {
+      return;
+    }
+    event.preventDefault();
+    const count = this.series()[0]?.data.length ?? 0;
+    if (count <= 3) {
+      return;
+    }
+    const current = this.zoomWindow() ?? fullChartWindow(count);
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const fraction = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
+    this.zoomWindow.set(zoomChartWindow(current, count, fraction, event.deltaY));
+  };
+
+  protected onPanStart = (event: PointerEvent): void => {
+    if (!this.zoomable() || this.isSparkline() || this.kind() === 'donut' || event.button !== 0) {
+      return;
+    }
+    const count = this.series()[0]?.data.length ?? 0;
+    if (count <= 3) {
+      return;
+    }
+    this.panStartX = event.clientX;
+    this.panStartWindow = this.zoomWindow() ?? fullChartWindow(count);
+    (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+  };
+
+  protected onPanMove = (event: PointerEvent): void => {
+    if (this.panStartX === null || !this.panStartWindow) {
+      return;
+    }
+    const count = this.series()[0]?.data.length ?? 0;
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const span = this.panStartWindow.end - this.panStartWindow.start;
+    const deltaPx = event.clientX - this.panStartX;
+    const deltaPoints = Math.round((deltaPx / rect.width) * span);
+    this.zoomWindow.set(panChartWindow(this.panStartWindow, count, deltaPoints));
+  };
+
+  protected onPanEnd = (): void => {
+    this.panStartX = null;
+    this.panStartWindow = null;
+  };
 
   protected readonly width = WIDTH;
 
@@ -637,7 +802,7 @@ export class VikingChart {
 
   protected readonly valueRange = computed(() => {
     const kind = this.kind();
-    const series = this.series();
+    const series = this.effectiveSeries();
 
     if (kind === 'stacked-bar') {
       const count = series[0]?.data.length ?? 0;
@@ -704,13 +869,13 @@ export class VikingChart {
       return [];
     }
 
-    const primary = this.series()[0];
+    const primary = this.effectiveSeries()[0];
     const count = primary?.data.length ?? 0;
     if (count === 0) {
       return [];
     }
 
-    const cats = this.categories();
+    const cats = this.effectiveCategories();
     const plotWidth = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
     const maxLabels = this.fill() ? 8 : 6;
     const labelMax = this.fill() ? LABEL_MAX_FILL : LABEL_MAX_DEFAULT;
@@ -747,7 +912,7 @@ export class VikingChart {
   });
 
   protected readonly paths = computed<ChartPath[]>(() => {
-    const all = this.series().flatMap(item => item.data);
+    const all = this.effectiveSeries().flatMap(item => item.data);
     if (all.length === 0) {
       return [];
     }
@@ -760,7 +925,7 @@ export class VikingChart {
     const plotWidth = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
     const buildPath = this.curve() === 'smooth' ? buildSmoothPath : buildLinearPath;
 
-    return this.series().map(item => {
+    return this.effectiveSeries().map(item => {
       const points = item.data.map((value, index) => {
         const x =
           this.resolvedGutter().left + (index / Math.max(1, item.data.length - 1)) * plotWidth;
@@ -774,7 +939,7 @@ export class VikingChart {
   });
 
   protected readonly linePoints = computed<ChartPoint[]>(() => {
-    const all = this.series().flatMap(item => item.data);
+    const all = this.effectiveSeries().flatMap(item => item.data);
     if (all.length === 0) {
       return [];
     }
@@ -786,7 +951,7 @@ export class VikingChart {
     const plotHeight = bottom - top;
     const plotWidth = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
 
-    return this.series().flatMap(item =>
+    return this.effectiveSeries().flatMap(item =>
       item.data.map((value, index) => {
         const x =
           this.resolvedGutter().left + (index / Math.max(1, item.data.length - 1)) * plotWidth;
@@ -808,7 +973,7 @@ export class VikingChart {
   });
 
   private readonly singleBarRects = computed<BarRect[]>(() => {
-    const primary = this.series()[0];
+    const primary = this.effectiveSeries()[0];
     if (!primary?.data.length) {
       return [];
     }
@@ -842,7 +1007,7 @@ export class VikingChart {
   });
 
   private readonly groupedBarRects = computed<BarRect[]>(() => {
-    const series = this.series();
+    const series = this.effectiveSeries();
     const count = series[0]?.data.length ?? 0;
     if (!count) {
       return [];
@@ -888,7 +1053,7 @@ export class VikingChart {
   });
 
   private readonly stackedBarRects = computed<BarRect[]>(() => {
-    const series = this.series();
+    const series = this.effectiveSeries();
     const count = series[0]?.data.length ?? 0;
     if (!count) {
       return [];
