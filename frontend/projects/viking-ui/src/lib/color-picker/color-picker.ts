@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
+import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '../../tokens/series-presets';
 
 /**
  * viking-color-picker — swatch presets + custom color input
@@ -105,23 +106,14 @@ import { VikingIcon } from '../icon/icon';
   ],
 })
 export class VikingColorPicker extends VikingControl<string> {
-  readonly value = model<string>('#0d7377');
+  readonly value = model<string>(VIKING_SERIES_DEFAULT);
   readonly label = input<string>('');
   readonly disabled = input<boolean>(false);
   /** Preset swatches — THEME.md Series color palette (premium charcoal / teal / crimson). */
-  readonly presets = input<string[]>([
-    '#0d7377',
-    '#922b3e',
-    '#2a9d8f',
-    '#c4a035',
-    '#a83344',
-    '#14a3a8',
-    '#2a2a2a',
-    '#666666',
-  ]);
+  readonly presets = input<string[]>([...VIKING_SERIES_PRESETS]);
 
   writeValue(value: string): void {
-    this.value.set(value || '#0d7377');
+    this.value.set(value || VIKING_SERIES_DEFAULT);
   }
 
   protected pick = (color: string): void => {
