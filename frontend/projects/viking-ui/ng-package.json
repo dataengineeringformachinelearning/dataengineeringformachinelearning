@@ -7,6 +7,8 @@
   "assets": [
     "./src/styles/**/*.scss",
     "./src/tokens/**/*.{json,js,ts}",
+    "./src/web/**/*.ts",
+    "./scripts/build-web-components.mjs",
     "./viking.manifest.json",
     "./README.md",
     "./LICENSE"

@@ -1,0 +1,1016 @@
+@charset "UTF-8";
+/*! Viking-UI Interactive Components — framework-agnostic CSS primitives.
+ *  Load after design-tokens.css for Astro, Django, or any HTML project.
+ *  Build: npm run build:static-css --prefix viking-ui-docs */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/inter/InterVariable.woff2") format("woff2 supports variations"), url("fonts/inter/InterVariable.woff2") format("woff2-variations");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("fonts/inter/InterVariable-Italic.woff2") format("woff2 supports variations"), url("fonts/inter/InterVariable-Italic.woff2") format("woff2-variations");
+}
+:root {
+  /* Touch targets — WCAG 2.5.5 / mobile-first minimum hit area */
+  --viking-touch-target-min: 44px;
+  --viking-touch-target-comfort: 44px;
+  /* Interactive state */
+  --viking-state-disabled-opacity: 0.48;
+  --viking-state-hover-lift: -1px;
+  --viking-state-active-scale: 0.985;
+  --viking-state-press-inset: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+  --viking-shadow-hover: var(
+    --shadow-hover,
+    0 8px 16px rgba(0, 0, 0, 0.14),
+    0 4px 8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06)
+  );
+  --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --viking-surface-recipe: var(--viking-surface) linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  --viking-transition-interactive:
+    color var(--viking-duration) var(--viking-ease-default),
+    background-color var(--viking-duration) var(--viking-ease-default),
+    border-color var(--viking-duration) var(--viking-ease-default),
+    box-shadow var(--viking-duration) var(--viking-ease-default),
+    transform var(--viking-duration-fast) var(--viking-ease-default),
+    opacity var(--viking-duration-fast) var(--viking-ease-default);
+  --viking-transition-transform: transform var(--viking-duration-fast) var(--viking-ease-default);
+}
+
+/* Shared keyframes */
+@keyframes viking-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes viking-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes viking-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes viking-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes viking-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes viking-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -80% 0;
+  }
+}
+@keyframes viking-pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.72;
+  }
+}
+@keyframes viking-shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  20%, 60% {
+    transform: translateX(-4px);
+  }
+  40%, 80% {
+    transform: translateX(4px);
+  }
+}
+@keyframes viking-tooltip-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes viking-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Shared focus-ring utilities — use on interactive hosts without duplicating tokens */
+.viking-focus-ring:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+.viking-focus-ring-inset:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: calc(var(--viking-ring-offset) * -1);
+}
+
+/* Expand visual-only controls to touch-friendly hit areas without changing layout */
+.viking-touch-target {
+  position: relative;
+  min-width: var(--viking-touch-target-min);
+  min-height: var(--viking-touch-target-min);
+}
+
+.viking-touch-target::before {
+  content: "";
+  position: absolute;
+  inset: 50%;
+  width: max(100%, var(--viking-touch-target-min));
+  height: max(100%, var(--viking-touch-target-min));
+  transform: translate(-50%, -50%);
+}
+
+@media (min-width: 768px) {
+  :root {
+    --viking-touch-target-comfort: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+.viking-btn,
+a.viking-btn,
+button.viking-btn {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-btn:focus-visible,
+a.viking-btn:focus-visible,
+button.viking-btn:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  z-index: 1;
+}
+.viking-btn:disabled, .viking-btn[aria-busy=true],
+a.viking-btn:disabled,
+a.viking-btn[aria-busy=true],
+button.viking-btn:disabled,
+button.viking-btn[aria-busy=true] {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.viking-btn[aria-busy=true] .viking-btn-label,
+a.viking-btn[aria-busy=true] .viking-btn-label,
+button.viking-btn[aria-busy=true] .viking-btn-label {
+  opacity: 0.85;
+}
+.viking-btn viking-icon,
+.viking-btn .viking-icon,
+a.viking-btn viking-icon,
+a.viking-btn .viking-icon,
+button.viking-btn viking-icon,
+button.viking-btn .viking-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.viking-btn-primary,
+a.viking-btn-primary,
+button.viking-btn-primary {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-btn-primary:focus-visible,
+a.viking-btn-primary:focus-visible,
+button.viking-btn-primary:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  z-index: 1;
+}
+.viking-btn-primary:disabled, .viking-btn-primary[aria-busy=true],
+a.viking-btn-primary:disabled,
+a.viking-btn-primary[aria-busy=true],
+button.viking-btn-primary:disabled,
+button.viking-btn-primary[aria-busy=true] {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.viking-btn-primary[aria-busy=true] .viking-btn-label,
+a.viking-btn-primary[aria-busy=true] .viking-btn-label,
+button.viking-btn-primary[aria-busy=true] .viking-btn-label {
+  opacity: 0.85;
+}
+.viking-btn-primary viking-icon,
+.viking-btn-primary .viking-icon,
+a.viking-btn-primary viking-icon,
+a.viking-btn-primary .viking-icon,
+button.viking-btn-primary viking-icon,
+button.viking-btn-primary .viking-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.viking-btn-primary,
+a.viking-btn-primary,
+button.viking-btn-primary {
+  background: var(--viking-accent);
+  color: var(--viking-accent-content);
+  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn-primary:hover:not(:disabled):not([aria-busy=true]),
+a.viking-btn-primary:hover:not(:disabled):not([aria-busy=true]),
+button.viking-btn-primary:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-accent-hover);
+  border-color: var(--viking-accent-hover);
+  color: var(--viking-accent-content);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn-primary:active:not(:disabled):not([aria-busy=true]),
+a.viking-btn-primary:active:not(:disabled):not([aria-busy=true]),
+button.viking-btn-primary:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn-secondary,
+a.viking-btn-secondary,
+button.viking-btn-secondary {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-btn-secondary:focus-visible,
+a.viking-btn-secondary:focus-visible,
+button.viking-btn-secondary:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  z-index: 1;
+}
+.viking-btn-secondary:disabled, .viking-btn-secondary[aria-busy=true],
+a.viking-btn-secondary:disabled,
+a.viking-btn-secondary[aria-busy=true],
+button.viking-btn-secondary:disabled,
+button.viking-btn-secondary[aria-busy=true] {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.viking-btn-secondary[aria-busy=true] .viking-btn-label,
+a.viking-btn-secondary[aria-busy=true] .viking-btn-label,
+button.viking-btn-secondary[aria-busy=true] .viking-btn-label {
+  opacity: 0.85;
+}
+.viking-btn-secondary viking-icon,
+.viking-btn-secondary .viking-icon,
+a.viking-btn-secondary viking-icon,
+a.viking-btn-secondary .viking-icon,
+button.viking-btn-secondary viking-icon,
+button.viking-btn-secondary .viking-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.viking-btn-secondary,
+a.viking-btn-secondary,
+button.viking-btn-secondary {
+  background: var(--viking-accent-secondary);
+  color: var(--viking-accent-secondary-content);
+  border-color: color-mix(in srgb, var(--viking-accent-secondary) 82%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn-secondary:hover:not(:disabled):not([aria-busy=true]),
+a.viking-btn-secondary:hover:not(:disabled):not([aria-busy=true]),
+button.viking-btn-secondary:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-accent-secondary-hover);
+  border-color: var(--viking-accent-secondary-hover);
+  color: var(--viking-accent-secondary-content);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn-secondary:active:not(:disabled):not([aria-busy=true]),
+a.viking-btn-secondary:active:not(:disabled):not([aria-busy=true]),
+button.viking-btn-secondary:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn-outline,
+a.viking-btn-outline,
+button.viking-btn-outline {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-btn-outline:focus-visible,
+a.viking-btn-outline:focus-visible,
+button.viking-btn-outline:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  z-index: 1;
+}
+.viking-btn-outline:disabled, .viking-btn-outline[aria-busy=true],
+a.viking-btn-outline:disabled,
+a.viking-btn-outline[aria-busy=true],
+button.viking-btn-outline:disabled,
+button.viking-btn-outline[aria-busy=true] {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.viking-btn-outline[aria-busy=true] .viking-btn-label,
+a.viking-btn-outline[aria-busy=true] .viking-btn-label,
+button.viking-btn-outline[aria-busy=true] .viking-btn-label {
+  opacity: 0.85;
+}
+.viking-btn-outline viking-icon,
+.viking-btn-outline .viking-icon,
+a.viking-btn-outline viking-icon,
+a.viking-btn-outline .viking-icon,
+button.viking-btn-outline viking-icon,
+button.viking-btn-outline .viking-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.viking-btn-outline,
+a.viking-btn-outline,
+button.viking-btn-outline {
+  background: var(--viking-surface);
+  color: var(--viking-text);
+  border-color: var(--viking-border-strong);
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn-outline:hover:not(:disabled):not([aria-busy=true]),
+a.viking-btn-outline:hover:not(:disabled):not([aria-busy=true]),
+button.viking-btn-outline:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-surface-alt);
+  border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border-strong));
+  color: var(--viking-text);
+  box-shadow: var(--viking-shadow-md);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn-outline:active:not(:disabled):not([aria-busy=true]),
+a.viking-btn-outline:active:not(:disabled):not([aria-busy=true]),
+button.viking-btn-outline:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn-danger,
+a.viking-btn-danger,
+button.viking-btn-danger {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-btn-danger:focus-visible,
+a.viking-btn-danger:focus-visible,
+button.viking-btn-danger:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  z-index: 1;
+}
+.viking-btn-danger:disabled, .viking-btn-danger[aria-busy=true],
+a.viking-btn-danger:disabled,
+a.viking-btn-danger[aria-busy=true],
+button.viking-btn-danger:disabled,
+button.viking-btn-danger[aria-busy=true] {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.viking-btn-danger[aria-busy=true] .viking-btn-label,
+a.viking-btn-danger[aria-busy=true] .viking-btn-label,
+button.viking-btn-danger[aria-busy=true] .viking-btn-label {
+  opacity: 0.85;
+}
+.viking-btn-danger viking-icon,
+.viking-btn-danger .viking-icon,
+a.viking-btn-danger viking-icon,
+a.viking-btn-danger .viking-icon,
+button.viking-btn-danger viking-icon,
+button.viking-btn-danger .viking-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.viking-btn-danger,
+a.viking-btn-danger,
+button.viking-btn-danger {
+  background: var(--viking-danger);
+  color: var(--viking-on-danger);
+  border-color: color-mix(in srgb, var(--viking-danger) 85%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn-danger:hover:not(:disabled):not([aria-busy=true]),
+a.viking-btn-danger:hover:not(:disabled):not([aria-busy=true]),
+button.viking-btn-danger:hover:not(:disabled):not([aria-busy=true]) {
+  background: color-mix(in srgb, var(--viking-danger) 88%, var(--viking-white));
+  border-color: color-mix(in srgb, var(--viking-danger) 92%, var(--viking-white));
+  color: var(--viking-on-danger);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn-danger:active:not(:disabled):not([aria-busy=true]),
+a.viking-btn-danger:active:not(:disabled):not([aria-busy=true]),
+button.viking-btn-danger:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn-ghost,
+a.viking-btn-ghost,
+button.viking-btn-ghost {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-btn-ghost:focus-visible,
+a.viking-btn-ghost:focus-visible,
+button.viking-btn-ghost:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  z-index: 1;
+}
+.viking-btn-ghost:disabled, .viking-btn-ghost[aria-busy=true],
+a.viking-btn-ghost:disabled,
+a.viking-btn-ghost[aria-busy=true],
+button.viking-btn-ghost:disabled,
+button.viking-btn-ghost[aria-busy=true] {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.viking-btn-ghost[aria-busy=true] .viking-btn-label,
+a.viking-btn-ghost[aria-busy=true] .viking-btn-label,
+button.viking-btn-ghost[aria-busy=true] .viking-btn-label {
+  opacity: 0.85;
+}
+.viking-btn-ghost viking-icon,
+.viking-btn-ghost .viking-icon,
+a.viking-btn-ghost viking-icon,
+a.viking-btn-ghost .viking-icon,
+button.viking-btn-ghost viking-icon,
+button.viking-btn-ghost .viking-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.viking-btn-ghost,
+a.viking-btn-ghost,
+button.viking-btn-ghost {
+  background: transparent;
+  color: var(--viking-text);
+  min-width: auto;
+  box-shadow: none;
+  border-color: transparent;
+}
+.viking-btn-ghost:hover:not(:disabled):not([aria-busy=true]),
+a.viking-btn-ghost:hover:not(:disabled):not([aria-busy=true]),
+button.viking-btn-ghost:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-accent-soft);
+  color: var(--viking-accent-strong);
+}
+.viking-btn-ghost:active:not(:disabled):not([aria-busy=true]),
+a.viking-btn-ghost:active:not(:disabled):not([aria-busy=true]),
+button.viking-btn-ghost:active:not(:disabled):not([aria-busy=true]) {
+  transform: scale(var(--viking-state-active-scale));
+}
+
+.viking-btn-subtle,
+a.viking-btn-subtle,
+button.viking-btn-subtle {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-btn-subtle:focus-visible,
+a.viking-btn-subtle:focus-visible,
+button.viking-btn-subtle:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  z-index: 1;
+}
+.viking-btn-subtle:disabled, .viking-btn-subtle[aria-busy=true],
+a.viking-btn-subtle:disabled,
+a.viking-btn-subtle[aria-busy=true],
+button.viking-btn-subtle:disabled,
+button.viking-btn-subtle[aria-busy=true] {
+  opacity: var(--viking-state-disabled-opacity);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.viking-btn-subtle[aria-busy=true] .viking-btn-label,
+a.viking-btn-subtle[aria-busy=true] .viking-btn-label,
+button.viking-btn-subtle[aria-busy=true] .viking-btn-label {
+  opacity: 0.85;
+}
+.viking-btn-subtle viking-icon,
+.viking-btn-subtle .viking-icon,
+a.viking-btn-subtle viking-icon,
+a.viking-btn-subtle .viking-icon,
+button.viking-btn-subtle viking-icon,
+button.viking-btn-subtle .viking-icon {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.viking-btn-subtle,
+a.viking-btn-subtle,
+button.viking-btn-subtle {
+  background: transparent;
+  color: var(--viking-text-muted);
+  border-color: var(--viking-border-subtle);
+  min-width: auto;
+  box-shadow: none;
+}
+.viking-btn-subtle:hover:not(:disabled):not([aria-busy=true]),
+a.viking-btn-subtle:hover:not(:disabled):not([aria-busy=true]),
+button.viking-btn-subtle:hover:not(:disabled):not([aria-busy=true]) {
+  color: var(--viking-text);
+  background: var(--viking-accent-soft);
+  border-color: var(--viking-border-strong);
+}
+.viking-btn-subtle:active:not(:disabled):not([aria-busy=true]),
+a.viking-btn-subtle:active:not(:disabled):not([aria-busy=true]),
+button.viking-btn-subtle:active:not(:disabled):not([aria-busy=true]) {
+  transform: scale(var(--viking-state-active-scale));
+}
+
+.viking-btn.viking-outline {
+  background: var(--viking-surface);
+  color: var(--viking-text);
+  border-color: var(--viking-border-strong);
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn.viking-outline:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-surface-alt);
+  border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border-strong));
+  color: var(--viking-text);
+  box-shadow: var(--viking-shadow-md);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn.viking-outline:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn.viking-primary {
+  background: var(--viking-accent);
+  color: var(--viking-accent-content);
+  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn.viking-primary:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-accent-hover);
+  border-color: var(--viking-accent-hover);
+  color: var(--viking-accent-content);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn.viking-primary:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn.viking-secondary {
+  background: var(--viking-accent-secondary);
+  color: var(--viking-accent-secondary-content);
+  border-color: color-mix(in srgb, var(--viking-accent-secondary) 82%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn.viking-secondary:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-accent-secondary-hover);
+  border-color: var(--viking-accent-secondary-hover);
+  color: var(--viking-accent-secondary-content);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn.viking-secondary:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn.viking-filled {
+  background: var(--viking-surface-alt);
+  color: var(--viking-text);
+  border-color: var(--viking-border);
+  box-shadow: var(--viking-shadow-xs);
+}
+.viking-btn.viking-filled:hover:not(:disabled):not([aria-busy=true]) {
+  border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border));
+  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface-alt));
+  box-shadow: var(--viking-shadow-sm);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn.viking-filled:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+}
+
+.viking-btn.viking-danger {
+  background: var(--viking-danger);
+  color: var(--viking-on-danger);
+  border-color: color-mix(in srgb, var(--viking-danger) 85%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-btn.viking-danger:hover:not(:disabled):not([aria-busy=true]) {
+  background: color-mix(in srgb, var(--viking-danger) 88%, var(--viking-white));
+  border-color: color-mix(in srgb, var(--viking-danger) 92%, var(--viking-white));
+  color: var(--viking-on-danger);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+.viking-btn.viking-danger:active:not(:disabled):not([aria-busy=true]) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn.viking-ghost {
+  background: transparent;
+  color: var(--viking-text);
+  min-width: auto;
+  box-shadow: none;
+  border-color: transparent;
+}
+.viking-btn.viking-ghost:hover:not(:disabled):not([aria-busy=true]) {
+  background: var(--viking-accent-soft);
+  color: var(--viking-accent-strong);
+}
+.viking-btn.viking-ghost:active:not(:disabled):not([aria-busy=true]) {
+  transform: scale(var(--viking-state-active-scale));
+}
+
+.viking-btn.viking-subtle {
+  background: transparent;
+  color: var(--viking-text-muted);
+  border-color: var(--viking-border-subtle);
+  min-width: auto;
+  box-shadow: none;
+}
+.viking-btn.viking-subtle:hover:not(:disabled):not([aria-busy=true]) {
+  color: var(--viking-text);
+  background: var(--viking-accent-soft);
+  border-color: var(--viking-border-strong);
+}
+.viking-btn.viking-subtle:active:not(:disabled):not([aria-busy=true]) {
+  transform: scale(var(--viking-state-active-scale));
+}
+
+.viking-btn.viking-compact {
+  min-width: 0;
+}
+
+.viking-btn.viking-full {
+  width: 100%;
+  min-width: 0;
+}
+
+.viking-btn-label {
+  display: inline-flex;
+  align-items: center;
+  line-height: inherit;
+}
+
+.viking-control {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-space-2);
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size);
+  color: var(--viking-text);
+  background: var(--viking-surface-alt);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-sm);
+  box-shadow: var(--viking-shadow-xs);
+  transition: var(--viking-transition-interactive);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.viking-control:hover:not(.viking-disabled):not(.viking-loading):not(:disabled) {
+  border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border-strong));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-control:focus-within:not(.viking-loading) {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  border-color: var(--viking-accent);
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-form-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-3);
+  width: 100%;
+  max-width: var(--viking-form-max-width);
+}
+@media (min-width: 600px) {
+  .viking-form-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 768px) {
+  .viking-form-row--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.viking-form-section-actions viking-button .viking-btn,
+.viking-modal-footer viking-button .viking-btn,
+.viking-sheet-footer viking-button .viking-btn,
+.viking-empty-state-actions viking-button .viking-btn,
+.viking-chart-empty-actions viking-button .viking-btn {
+  min-width: 0;
+}
+
+.viking-input,
+.viking-input-shell {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-space-2);
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size);
+  color: var(--viking-text);
+  background: var(--viking-surface-alt);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-sm);
+  box-shadow: var(--viking-shadow-xs);
+  transition: var(--viking-transition-interactive);
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.viking-input:hover:not(.viking-disabled):not(.viking-loading):not(:disabled),
+.viking-input-shell:hover:not(.viking-disabled):not(.viking-loading):not(:disabled) {
+  border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border-strong));
+  box-shadow: var(--viking-shadow-sm);
+}
+.viking-input:focus-within:not(.viking-loading),
+.viking-input-shell:focus-within:not(.viking-loading) {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+  border-color: var(--viking-accent);
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-input input,
+.viking-input-shell input,
+input.viking-input-native {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none !important;
+  background: transparent;
+  color: var(--viking-text);
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size);
+  padding: 0;
+}
+.viking-input input::placeholder,
+.viking-input-shell input::placeholder,
+input.viking-input-native::placeholder {
+  color: var(--viking-text-muted);
+}
+.viking-input input:disabled,
+.viking-input-shell input:disabled,
+input.viking-input-native:disabled {
+  cursor: not-allowed;
+}
+
+.viking-input-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--viking-touch-target-comfort);
+  min-height: var(--viking-touch-target-comfort);
+  border: none;
+  background: transparent;
+  color: var(--viking-text-muted);
+  cursor: pointer;
+  padding: var(--viking-space-half);
+  border-radius: var(--viking-radius-pill);
+  transition: var(--viking-transition-interactive);
+  position: relative;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.viking-input-clear:hover {
+  color: var(--viking-text);
+  background: var(--viking-accent-soft);
+}
+.viking-input-clear:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+.viking-input-clear:active {
+  transform: scale(var(--viking-state-active-scale));
+}
+
+.viking-input-kbd {
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
+  background: var(--viking-surface-alt);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-xs);
+  padding: 0 var(--viking-space-half);
+  line-height: 1.4;
+}
+
+.viking-input-icon {
+  color: var(--viking-text-muted);
+  flex-shrink: 0;
+}
+
+.viking-input-shell.viking-disabled,
+.viking-input-shell.viking-loading,
+.viking-input.viking-disabled,
+.viking-input.viking-loading {
+  opacity: var(--viking-state-disabled-opacity);
+}
+
+.viking-input-shell.viking-loading,
+.viking-input.viking-loading {
+  cursor: wait;
+}

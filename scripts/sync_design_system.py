@@ -15,8 +15,10 @@ def sync_design_system() -> None:
   subprocess.run(["npm", "run", "build:static-css"], cwd=docs_dir, check=True)
 
   dist_tokens = os.path.join(dist_dir, "design-tokens.css")
+  dist_viking_components = os.path.join(dist_dir, "viking-components.css")
   dist_components = os.path.join(dist_dir, "deml-components.css")
   dist_viking = os.path.join(dist_dir, "viking-ui.css")
+  dist_elements = os.path.join(dist_dir, "viking-ui-elements.js")
 
   prettier_config = os.path.join(root_dir, "frontend", ".prettierrc")
   subprocess.run(
@@ -28,12 +30,13 @@ def sync_design_system() -> None:
       prettier_config,
       "--write",
       dist_tokens,
+      dist_viking_components,
       dist_components,
     ],
     check=True,
   )
 
-  for path in (dist_tokens, dist_components, dist_viking):
+  for path in (dist_tokens, dist_viking_components, dist_components, dist_viking, dist_elements):
     if not os.path.isfile(path):
       print(f"Expected build output missing: {path}", file=sys.stderr)
       sys.exit(1)
@@ -43,6 +46,13 @@ def sync_design_system() -> None:
     os.path.join(root_dir, "frontend", "public", "assets", "design-tokens.css"),
     os.path.join(root_dir, "backend", "static", "design-tokens.css"),
     os.path.join(root_dir, "marketing", "public", "assets", "design-tokens.css"),
+  ]
+
+  viking_components_targets = [
+    os.path.join(root_dir, "frontend", "src", "assets", "viking-components.css"),
+    os.path.join(root_dir, "frontend", "public", "assets", "viking-components.css"),
+    os.path.join(root_dir, "backend", "static", "viking-components.css"),
+    os.path.join(root_dir, "marketing", "public", "assets", "viking-components.css"),
   ]
 
   component_targets = [
@@ -59,10 +69,19 @@ def sync_design_system() -> None:
     os.path.join(root_dir, "marketing", "public", "assets", "viking-ui.css"),
   ]
 
+  elements_targets = [
+    os.path.join(root_dir, "frontend", "src", "assets", "viking-ui-elements.js"),
+    os.path.join(root_dir, "frontend", "public", "assets", "viking-ui-elements.js"),
+    os.path.join(root_dir, "backend", "static", "viking-ui-elements.js"),
+    os.path.join(root_dir, "marketing", "public", "assets", "viking-ui-elements.js"),
+  ]
+
   for src, targets in (
     (dist_tokens, token_targets),
+    (dist_viking_components, viking_components_targets),
     (dist_components, component_targets),
     (dist_viking, viking_css_targets),
+    (dist_elements, elements_targets),
   ):
     for target in targets:
       os.makedirs(os.path.dirname(target), exist_ok=True)
@@ -75,7 +94,7 @@ def sync_design_system() -> None:
   )
 
   print("Successfully synced design system to:")
-  for target in token_targets + component_targets + viking_css_targets:
+  for target in token_targets + viking_components_targets + component_targets + viking_css_targets + elements_targets:
     print(f" - {target}")
 
   print("Building site-drakkar assets and Django partials...")

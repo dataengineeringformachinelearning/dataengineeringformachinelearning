@@ -1,116 +1,130 @@
 # @dataengineeringformachinelearning/viking-ui
 
-**Viking-UI** is DEML's premium Angular design system — dark-first engineering aesthetics with luxurious minimalism. Visual tokens are defined in the canonical **[THEME.md](../../../THEME.md)** at the repository root.
+**Viking-UI v2** is DEML's framework-agnostic design system — one visual language for Angular, Astro, Django, and any HTML surface. Tokens are the single source of truth; Web Components and CSS classes share the same `--viking-*` variables.
 
 ## Design philosophy
 
-From [THEME.md](../../../THEME.md) — composable primitives, accessible forms, and dark-first cards with a **premium restrained luxury** palette. Cursor agents must follow [.cursorrules](../../../.cursorrules).
-
-- **Precision engineering** and **high-end industrial tech**
-- **Dark-first** — deep charcoals, machined metallic edges, no decorative noise
-- **Deep teal** (`#0D7377`) primary CTA, **rich crimson** (`#922B3E`) secondary accent
-- **Charcoal surfaces** (`#111`, `#1A1A1A`, `#2A2A2A`) with metallic borders
+- **Deep navy surfaces** + **electric blue accents** — precision-engineered industrial luxury
+- **CSS custom properties** as the only palette source (`_variables.scss` → `design-tokens.css`)
+- **Composable primitives** — `viking-field` → `viking-input`, `viking-button` variants
 - **WCAG 2.1 AA** focus rings, 44px touch targets, keyboard navigation
-- **Zero arbitrary hex** — all colors resolve to `--viking-*` tokens
+- **Zero third-party UI runtimes** — native SVG icons, no Material/Bootstrap
 
-## Features
+## Package structure (v2)
 
-- **4px grid** spacing (`--viking-space-half` … `--viking-space-10`; legacy `--viking-space-1` = 8px)
-- **16px** main content / **14px** Drakkar shell typography with full type scale
-- Zero-dependency components (`viking-*` selectors, `--viking-*` tokens)
-- WCAG 2.1 AA focus rings, smooth theme transitions, axe-core tested templates
-
-## Install
-
-```bash
-npm install @dataengineeringformachinelearning/viking-ui
+```
+frontend/projects/viking-ui/
+├── src/
+│   ├── styles/                 # Canonical SCSS → compiled CSS
+│   │   ├── _variables.scss     # ★ Edit tokens here first
+│   │   ├── _buttons.scss       # .viking-btn-* base classes
+│   │   ├── _forms.scss         # .viking-control surface
+│   │   ├── _input.scss         # .viking-input-* base classes
+│   │   ├── tokens-export.scss  # → design-tokens.css
+│   │   ├── components-bundle.scss  # → viking-components.css
+│   │   └── viking-ui-bundle.scss   # → viking-ui.css (full)
+│   ├── web/                    # Framework-agnostic Web Components
+│   │   ├── core/               # Shadow styles + utilities
+│   │   ├── button/             # <viking-button-wc>
+│   │   ├── input/              # <viking-input-wc>
+│   │   └── index.ts            # registerVikingElements()
+│   ├── lib/                    # Angular thin wrappers (backward compatible)
+│   │   ├── button/             # <viking-button> → viking-button-wc
+│   │   └── input/              # <viking-input> → viking-input-wc
+│   └── tokens/                 # JSON, Tailwind preset, series presets
+├── scripts/
+│   └── build-web-components.mjs
+└── package.json                # exports: tokens.css, components.css, elements.js
 ```
 
-Peer dependencies: `@angular/core` ^22, `@angular/common` ^22, `@angular/forms` ^22.
+## Consumption modes
 
-## Usage
+| Surface | Load | Use |
+| ------- | ---- | --- |
+| **Django / static HTML** | `design-tokens.css` + `viking-components.css` | `<button class="viking-btn viking-btn-primary">` or `<div class="viking-input-shell"><input class="viking-input-native" /></div>` |
+| **Astro / marketing** | tokens + components CSS + `viking-ui-elements.js` | `<viking-button-wc variant="primary">Launch</viking-button-wc>` |
+| **Angular** | App styles + `registerVikingElements()` | `import { VikingButton, VikingInput } from '@dataengineeringformachinelearning/viking-ui'` |
 
-```typescript
-import {
-  VikingButton,
-  VikingField,
-  VikingInput,
-} from '@dataengineeringformachinelearning/viking-ui';
+### CSS-only (Django templates)
+
+```html
+<link rel="stylesheet" href="/static/design-tokens.css" />
+<link rel="stylesheet" href="/static/viking-components.css" />
+
+<button type="button" class="viking-btn viking-btn-primary">Deploy</button>
+
+<div class="viking-input-shell">
+  <input class="viking-input-native" type="email" placeholder="you@company.com" />
+</div>
 ```
 
-Load static CSS for non-Angular surfaces (marketing, Django templates):
+Set theme on `<html data-theme="dark">` (default) or `data-theme="light"`.
+
+### Web Components (Astro, vanilla JS)
 
 ```html
 <link rel="stylesheet" href="/assets/design-tokens.css" />
-<link rel="stylesheet" href="/assets/viking-ui.css" />
+<script type="module" src="/assets/viking-ui-elements.js"></script>
+
+<viking-button-wc variant="primary" type="button">Launch sequence</viking-button-wc>
+<viking-input-wc placeholder="Mission ID" name="mission" clearable></viking-input-wc>
 ```
 
-### Token files
+Or register manually:
 
-| File | Purpose |
-| ---- | ------- |
-| `src/styles/_variables.scss` | Canonical SCSS — edit tokens here |
-| `src/tokens/viking-tokens.json` | Machine-readable palette |
-| `src/tokens/tailwind.preset.js` | Tailwind `theme.extend` → CSS vars |
-| `src/tokens/series-presets.ts` | Series color constants for charts/pickers |
+```typescript
+import { registerVikingElements } from '@dataengineeringformachinelearning/viking-ui';
+registerVikingElements();
+```
 
-## Icons (Lucide)
+### Angular (thin wrappers)
 
-`viking-icon` renders themeable inline SVGs with **zero runtime dependencies**. Lucide paths are synced at build time:
-
-```bash
-npm run sync:lucide-icons   # regenerate lucide-paths.generated.ts
+```typescript
+import { VikingButton, VikingField, VikingInput } from '@dataengineeringformachinelearning/viking-ui';
 ```
 
 ```html
-<viking-icon name="search" sizePreset="md" color="accent" />
-<viking-icon name="drakkar" [size]="28" color="accent" />
+<viking-field label="Email" [required]="true">
+  <viking-input type="email" placeholder="you@company.com" />
+</viking-field>
+<viking-button variant="primary">Save</viking-button>
 ```
 
-- **size** / **sizePreset** (`sm` 16px · `md` 20px · `lg` 24px)
-- **color** — semantic tokens (`accent`, `success`, `warning`, `danger`, `muted`) or any CSS value
-- **variant** — `outline` (stroke) or `filled` (solid)
-- **Drakkar brand marks** — `drakkar`, `drakkar-compact`, `drakkar-lockup` (custom longship geometry, site shell / Viking-UI)
-- **DEML product marks** — `deml`, `deml-compact`, `deml-lockup` (optimized SVGs in `src/lib/core/brand-icons.ts`)
+## Token files
 
-Also exported as `VikingIconComponent` for consumers expecting that name.
+| Artifact | Path | Output |
+| -------- | ---- | ------ |
+| SCSS primitives | `src/styles/_variables.scss` | — |
+| Design tokens | `tokens-export.scss` | `design-tokens.css` |
+| Interactive primitives | `components-bundle.scss` | `viking-components.css` |
+| Full static bundle | `viking-ui-bundle.scss` | `viking-ui.css` |
+| Web Components | `src/web/index.ts` | `viking-ui-elements.js` |
+| JSON export | `src/tokens/viking-tokens.json` | Tooling / docs |
+| Tailwind preset | `src/tokens/tailwind.preset.js` | `theme.extend` |
 
 ## Build
 
 ```bash
-npm run build:viking-ui                                    # from frontend/
-npm run build:static-css --prefix ../viking-ui-docs          # static CSS for marketing/backend
-python3 ../../scripts/sync_design_system.py                # from repo root — fan-out CSS
-npm run start:viking-ui-docs                               # from repo root — http://localhost:4300
+# Static CSS + Web Components (from repo root)
+npm run build:static-css --prefix viking-ui-docs
+python scripts/sync_design_system.py
+
+# Angular library
+cd frontend && npm run build:viking-ui
 ```
 
-## Version bump
+## npm exports
 
-Bump `package.json` in this directory before every publish (npm will not overwrite an existing version).
-
-```bash
-cd frontend/projects/viking-ui
-npm version patch --no-git-tag-version   # or minor / major
-```
-
-| Bump  | When                                     |
-| ----- | ---------------------------------------- |
-| patch | Bug fixes, token/CSS tweaks, a11y fixes  |
-| minor | New components, additive APIs            |
-| major | Breaking input/output or removed exports |
-
-## Publish
-
-Requires membership in the npm org `dataengineeringformachinelearning` (scope `@dataengineeringformachinelearning`).
-
-```bash
-cd frontend
-npm run test:viking-ui
-npm run build:viking-ui
-cd dist/viking-ui
-npm publish --access public --otp=YOUR_CODE
+```json
+{
+  ".": "Angular + Web Component registration API",
+  "./tokens.css": "design-tokens.css",
+  "./components.css": "viking-components.css",
+  "./viking-ui.css": "Full static bundle",
+  "./elements": "viking-ui-elements.js (auto-registers custom elements)"
+}
 ```
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE) in this package (same terms as the root [Data Engineering for Machine Learning](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning) repository).
+Apache-2.0 — see [LICENSE](./LICENSE).

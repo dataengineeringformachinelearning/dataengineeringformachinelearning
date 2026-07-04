@@ -1,8 +1,17 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import { NgTemplateOutlet } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  computed,
+  input,
+  output,
+} from '@angular/core';
 import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
 import { VikingSize } from '../core/types';
+import { registerVikingElements } from '../../web/index';
+
+registerVikingElements();
 
 export type VikingButtonVariant =
   | 'outline'
@@ -14,12 +23,13 @@ export type VikingButtonVariant =
   | 'subtle';
 
 /**
- * viking-button — composable button.
+ * viking-button — thin Angular wrapper around `viking-button-wc`.
  * Variants: outline (default), primary, filled, danger, ghost, subtle.
  */
 @Component({
   selector: 'viking-button',
-  imports: [VikingIcon, NgTemplateOutlet],
+  imports: [VikingIcon],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[style.pointer-events]': "disabled() ? 'none' : null",
@@ -27,7 +37,20 @@ export type VikingButtonVariant =
     '[class.viking-compact]': 'compact()',
   },
   template: `
-    <ng-template #content>
+    <viking-button-wc
+      [attr.variant]="variant()"
+      [attr.size]="size() === 'base' ? null : size()"
+      [attr.type]="type()"
+      [attr.disabled]="disabled() || loading() ? '' : null"
+      [attr.aria-busy]="loading() ? 'true' : null"
+      [attr.href]="href()"
+      [attr.target]="target()"
+      [attr.aria-label]="label() || null"
+      [attr.square]="square() ? '' : null"
+      [attr.full-width]="fullWidth() ? '' : null"
+      [attr.compact]="compact() ? '' : null"
+      (viking-press)="onPress($event)"
+    >
       @if (loading()) {
         <viking-icon name="loader" [size]="iconSize()" [spin]="true" />
       } @else if (icon()) {
@@ -40,32 +63,7 @@ export type VikingButtonVariant =
       @if (kbd()) {
         <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
       }
-    </ng-template>
-
-    @if (href()) {
-      <a
-        class="viking-btn"
-        [class]="classes()"
-        [href]="href()"
-        [attr.target]="target()"
-        [attr.aria-label]="label() || null"
-        [attr.rel]="target() === '_blank' ? 'noopener noreferrer' : null"
-      >
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-      </a>
-    } @else {
-      <button
-        class="viking-btn"
-        [class]="classes()"
-        [type]="type()"
-        [disabled]="disabled() || loading()"
-        [attr.aria-label]="label() || null"
-        [attr.aria-busy]="loading() ? 'true' : null"
-        (click)="pressed.emit($event)"
-      >
-        <ng-container *ngTemplateOutlet="content"></ng-container>
-      </button>
-    }
+    </viking-button-wc>
   `,
   styleUrl: './button.scss',
 })
@@ -78,22 +76,21 @@ export class VikingButton {
   readonly disabled = input<boolean>(false);
   readonly loading = input<boolean>(false);
   readonly square = input<boolean>(false);
-  /** Stretch button to 100% of container width. */
   readonly fullWidth = input<boolean>(false);
-  /** Drop min-width for inline form actions (Generate Key, Verify, Cancel). */
   readonly compact = input<boolean>(false);
   readonly href = input<string | null>(null);
   readonly target = input<string | null>(null);
   readonly kbd = input<string | null>(null);
-  /** Accessible name; required for icon-only (square) buttons. */
   readonly label = input<string>('');
 
   readonly pressed = output<MouseEvent>();
 
   protected readonly iconSize = computed(() => (this.size() === 'base' ? 22 : 18));
-  protected readonly classes = computed(() => ({
-    [`viking-${this.variant()}`]: true,
-    [`viking-${this.size()}`]: this.size() !== 'base',
-    'viking-square': this.square(),
-  }));
+
+  protected onPress = (event: Event): void => {
+    const detail = (event as CustomEvent<MouseEvent>).detail;
+    if (detail) {
+      this.pressed.emit(detail);
+    }
+  };
 }

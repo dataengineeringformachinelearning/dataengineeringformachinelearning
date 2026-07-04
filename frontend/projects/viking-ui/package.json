@@ -1,14 +1,16 @@
 {
   "name": "@dataengineeringformachinelearning/viking-ui",
-  "version": "1.2.0",
-  "description": "Viking-UI: DEML premium design system for Angular. THEME.md premium palette, WCAG 2.1 AA, zero third-party UI runtime deps.",
+  "version": "2.0.0",
+  "description": "Viking-UI: framework-agnostic DEML design system — CSS tokens, Web Components, and Angular wrappers.",
   "keywords": [
     "angular",
+    "web-components",
     "ui",
     "viking-ui",
     "design-system",
     "deml",
-    "a11y"
+    "a11y",
+    "css-variables"
   ],
   "license": "Apache-2.0",
   "author": "Joe Alongi <support@dataengineeringformachinelearning.com>",
@@ -24,13 +26,46 @@
   "publishConfig": {
     "access": "public"
   },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/public-api.ts",
+      "default": "./src/public-api.ts"
+    },
+    "./tokens.css": "./dist/css/design-tokens.css",
+    "./components.css": "./dist/css/viking-components.css",
+    "./viking-ui.css": "./dist/css/viking-ui.css",
+    "./elements": "./dist/viking-ui-elements.js",
+    "./elements.js": "./dist/viking-ui-elements.js"
+  },
+  "files": [
+    "dist/css",
+    "dist/viking-ui-elements.js",
+    "src/styles",
+    "src/tokens",
+    "src/web",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:css": "npm run build:static-css --prefix ../../viking-ui-docs",
+    "build:elements": "node scripts/build-web-components.mjs"
+  },
   "peerDependencies": {
     "@angular/common": "^22.0.0",
     "@angular/core": "^22.0.0",
     "@angular/forms": "^22.0.0"
   },
+  "peerDependenciesMeta": {
+    "@angular/common": { "optional": true },
+    "@angular/core": { "optional": true },
+    "@angular/forms": { "optional": true }
+  },
   "dependencies": {
     "tslib": "^2.3.0"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "./dist/viking-ui-elements.js",
+    "./src/web/index.ts"
+  ]
 }
