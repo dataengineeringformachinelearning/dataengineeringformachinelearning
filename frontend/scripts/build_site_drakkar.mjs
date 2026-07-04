@@ -133,7 +133,7 @@ const iconSlot = (name, size = 16) =>
 const navLinkHtml = (
   link,
   className,
-) => `      <a href="${resolveBackendNavHref(link)}" class="${className}">
+) => `      <a href="${resolveBackendNavHref(link)}" class="${className}" data-nav-id="${link.id}"${link.requireAuth ? ' data-require-auth="true" hidden' : ''}>
         ${iconSlot(link.icon, 16)}
         <span>${link.label}</span>
       </a>`;

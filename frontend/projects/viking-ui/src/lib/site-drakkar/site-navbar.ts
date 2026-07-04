@@ -197,7 +197,9 @@ export class VikingSiteNavbar {
 
   protected readonly mobileMenuOpen = signal(false);
 
-  protected readonly navLinks = computed(() => visibleNavLinks(SITE_NAV_LINKS));
+  protected readonly navLinks = computed(() =>
+    visibleNavLinks(SITE_NAV_LINKS, this.isAuthenticated()),
+  );
 
   protected readonly brandHref = computed(() => resolveBrandHref(this.context(), this.urls()));
 

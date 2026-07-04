@@ -27,23 +27,23 @@
     </div>
 
     <nav class="navbar-center desktop-nav" aria-label="Main navigation">
-      <a href="{{ frontend_url }}/explore" class="nav-btn">
+      <a href="{{ frontend_url }}/explore" class="nav-btn" data-nav-id="explore">
         <span data-viking-icon="globe" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Explore</span>
       </a>
-      <a href="https://dataengineeringformachinelearning.com/documentation/" class="nav-btn">
+      <a href="https://dataengineeringformachinelearning.com/documentation/" class="nav-btn" data-nav-id="documentation">
         <span data-viking-icon="file" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Documentation</span>
       </a>
-      <a href="{{ frontend_url }}/dashboard" class="nav-btn">
+      <a href="{{ frontend_url }}/dashboard" class="nav-btn" data-nav-id="dashboard" data-require-auth="true" hidden>
         <span data-viking-icon="home" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Dashboard</span>
       </a>
-      <a href="{{ frontend_url }}/settings" class="nav-btn">
+      <a href="{{ frontend_url }}/settings" class="nav-btn" data-nav-id="sites" data-require-auth="true" hidden>
         <span data-viking-icon="building" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Sites</span>
       </a>
-      <a href="{{ frontend_url }}/account" class="nav-btn">
+      <a href="{{ frontend_url }}/account" class="nav-btn" data-nav-id="account" data-require-auth="true" hidden>
         <span data-viking-icon="user" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Account</span>
       </a>
@@ -94,23 +94,23 @@
   </div>
 
   <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
-      <a href="{{ frontend_url }}/explore" class="mobile-nav-btn">
+      <a href="{{ frontend_url }}/explore" class="mobile-nav-btn" data-nav-id="explore">
         <span data-viking-icon="globe" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Explore</span>
       </a>
-      <a href="https://dataengineeringformachinelearning.com/documentation/" class="mobile-nav-btn">
+      <a href="https://dataengineeringformachinelearning.com/documentation/" class="mobile-nav-btn" data-nav-id="documentation">
         <span data-viking-icon="file" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Documentation</span>
       </a>
-      <a href="{{ frontend_url }}/dashboard" class="mobile-nav-btn">
+      <a href="{{ frontend_url }}/dashboard" class="mobile-nav-btn" data-nav-id="dashboard" data-require-auth="true" hidden>
         <span data-viking-icon="home" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Dashboard</span>
       </a>
-      <a href="{{ frontend_url }}/settings" class="mobile-nav-btn">
+      <a href="{{ frontend_url }}/settings" class="mobile-nav-btn" data-nav-id="sites" data-require-auth="true" hidden>
         <span data-viking-icon="building" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Sites</span>
       </a>
-      <a href="{{ frontend_url }}/account" class="mobile-nav-btn">
+      <a href="{{ frontend_url }}/account" class="mobile-nav-btn" data-nav-id="account" data-require-auth="true" hidden>
         <span data-viking-icon="user" data-viking-icon-size="16" aria-hidden="true"></span>
         <span>Account</span>
       </a>
