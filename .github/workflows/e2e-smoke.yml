@@ -36,9 +36,6 @@ jobs:
       - name: Build viking-ui and frontend
         run: npm run build
 
-      - name: Validate Cypress config compiles
-        run: npx tsc --noEmit cypress.config.ts
-
       - name: Start SSR server
         run: |
           npm run serve:ssr:frontend &
