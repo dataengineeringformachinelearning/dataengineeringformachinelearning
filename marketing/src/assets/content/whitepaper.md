@@ -67,7 +67,7 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 >
 > DEML's security architecture is guided by two Lockheed Martin white papers from the Intelligence Driven Defense® program: **[A Threat-Driven Approach to Cyber Security](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Threat-Driven-Approach.pdf)** (Muckin & Fitch, 2019), which supplies IDDIL/ATC threat analysis and STRIDE-LM categorization; and **[Defendable Architectures](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Defendable-Architectures.pdf)** (Fitch & Muckin, 2019), which defines the Visibility / Manageability / Survivability characteristics below. See [BOOK.md Appendix L](BOOK.md#appendix-l-foundational-security-frameworks) for full citations and rationale.
 
-Lockheed Martin's *Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems should exhibit to support intelligence-driven defense rather than static compliance alone. The DEML platform is engineered to embody each characteristic across its operational planes.
+Lockheed Martin's _Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems should exhibit to support intelligence-driven defense rather than static compliance alone. The DEML platform is engineered to embody each characteristic across its operational planes.
 
 **Visibility** enables defenders to observe activity across the network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
 
@@ -245,14 +245,14 @@ Furthermore, we enforce strict compliance by integrating automated accessibility
 
 Enterprise teams connect existing infrastructure through six first-class integration paths. Each uses the same bearer API key, `/api/v1/ingest` for batch telemetry, and `/api/v1/predict` for low-latency inference:
 
-| Platform | Pattern | Health check |
-| -------- | ------- | ------------ |
-| **Kubernetes** | Sidecar proxy, cluster gateway | `GET /api/v1/integrations/kubernetes` |
-| **TensorFlow** | `tf.data.Dataset` streaming | `GET /api/v1/integrations/tensorflow` |
-| **PyTorch** | Custom `DataLoader`, `state_dict` models | `GET /api/v1/integrations/pytorch` |
-| **Apache Spark** | Batch + Structured Streaming sinks | `GET /api/v1/integrations/apache-spark` |
-| **Databricks** | Secret Scopes, scheduled jobs | `GET /api/v1/integrations/databricks` |
-| **AWS Redshift** | UNLOAD/COPY, Data API exports | `GET /api/v1/integrations/redshift` |
+| Platform         | Pattern                                  | Health check                            |
+| ---------------- | ---------------------------------------- | --------------------------------------- |
+| **Kubernetes**   | Sidecar proxy, cluster gateway           | `GET /api/v1/integrations/kubernetes`   |
+| **TensorFlow**   | `tf.data.Dataset` streaming              | `GET /api/v1/integrations/tensorflow`   |
+| **PyTorch**      | Custom `DataLoader`, `state_dict` models | `GET /api/v1/integrations/pytorch`      |
+| **Apache Spark** | Batch + Structured Streaming sinks       | `GET /api/v1/integrations/apache-spark` |
+| **Databricks**   | Secret Scopes, scheduled jobs            | `GET /api/v1/integrations/databricks`   |
+| **AWS Redshift** | UNLOAD/COPY, Data API exports            | `GET /api/v1/integrations/redshift`     |
 
 Guides with copy-paste examples live in [`docs/integrations/`](../docs/integrations/) and on the [Developer Portal](https://dataengineeringformachinelearning.com/documentation).
 

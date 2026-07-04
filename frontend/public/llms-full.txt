@@ -520,15 +520,17 @@ This document tells operators **how DEML runs in production**: vendors, services
 
 ## 3. Vendor & deployment map
 
-| Component                               | Host                      | Deploy trigger                                  |
-| --------------------------------------- | ------------------------- | ----------------------------------------------- |
-| Angular app (`deml.app`)                | Cloud Run `deml-frontend` | Push to `main` (watch `/frontend/**`)           |
-| Django API                              | Cloud Run `deml-backend`  | Push to `main` (watch `/backend/**`)            |
-| Postgres, Redpanda, ClickHouse, workers | Cloud Run (12+ services)  | Push to `main`                                  |
-| `ingestEvent` + Firestore rules         | Firebase / GCP            | `.github/workflows/firebase-backend-deploy.yml` |
-| Marketing site                          | Firebase Hosting          | `firebase-hosting-merge.yml`                    |
-| KMS + audit logs                        | GCP (Terraform)           | Manual / CI Terraform apply                     |
-| Model weights                           | Hugging Face Hub          | `ml_worker` + `huggingface-space.yml`           |
+Canonical production uses Google Cloud (Cloud Run services for the container fleet, Firebase for commands and projections, GCP for KMS/audit). A cost-optimized and manageable alternative deployment exists on AWS using Lightsail Container Services (for the application and worker containers), ECR for images, Fargate or Lightsail instances for Redpanda/ClickHouse, and RDS/Lightsail Database for Postgres. Both topologies use identical container images and preserve the Event Projections architecture.
+
+| Component                       | Canonical Host (GCP)      | AWS Alternative Host (Lightsail / Fargate)        | Deploy trigger                  |
+| ------------------------------- | ------------------------- | ------------------------------------------------- | ------------------------------- |
+| Angular app (`deml.app`)        | Cloud Run `deml-frontend` | Lightsail Container Service (frontend)            | Push to `main`                  |
+| Django API                      | Cloud Run `deml-backend`  | Lightsail Container Service (backend)             | Push to `main`                  |
+| Workers, daemon, scanner        | Cloud Run services        | Lightsail Container Service (multiple containers) | Push to `main`                  |
+| Postgres                        | Cloud Run / Cloud SQL     | RDS or Lightsail Database                         | Infrastructure change           |
+| Redpanda, ClickHouse            | Cloud Run (stateful)      | Fargate task or Lightsail instance + EBS          | Infrastructure + image push     |
+| `ingestEvent` + Firestore rules | Firebase / GCP            | Firebase (unchanged)                              | `.github/workflows/firebase...` |
+| Marketing site                  | Firebase Hosting          | Firebase Hosting (unchanged)                      | `firebase-hosting-merge.yml`    |
 
 **Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
 
@@ -583,23 +585,22 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 | **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                         |
 | **Maintenance**                 | Deploy in progress                       | Cloud Run rolling deploy; expect brief projection lag                        |
 
-## 7. Service matrix (Cloud Run)
+## 7. Service matrix
 
-| Service                 | Role                                                    |
-| ----------------------- | ------------------------------------------------------- |
-| `deml-frontend`         | Angular UI                                              |
-| `deml-backend`          | Django API                                              |
-| `deml-postgres`         | OLTP database                                           |
-| `deml-queue`            | Redpanda broker                                         |
-| `deml-telemetry-worker` | Projections, pingers, rollups                           |
-| `deml-relay`            | Outbox publisher                                        |
-| `deml-workers`          | Consolidated ML training, threat intel, and task runner |
+The logical services are identical across deployment targets. On the canonical Cloud Run path they map 1:1 to Cloud Run services. On the AWS alternative they are grouped: most application containers (frontend, backend, workers, daemon, scanner, sidecars) run inside a single Lightsail Container Service; Redpanda and ClickHouse run as dedicated Fargate tasks or Lightsail instances.
 
-| `deml-clickhouse` | OLAP |
-| `deml-otel-collector` | Trace pipeline |
-| `deml-dragonfly` | Cache / rate limits |
-| `deml-scanner`, `deml-cpe-guesser` | Vulnerability ledger |
-| `deml-tor-proxy` | OSINT routing |
+| Logical Service                                      | Role                                                    | AWS Grouping                                       |
+| ---------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
+| `deml-frontend`                                      | Angular UI (SSR)                                        | Lightsail Container Service                        |
+| `deml-backend`                                       | Django API                                              | Lightsail Container Service                        |
+| `deml-postgres`                                      | OLTP database                                           | RDS or Lightsail DB                                |
+| `deml-queue`                                         | Redpanda broker                                         | Dedicated Fargate / Lightsail instance             |
+| `deml-telemetry-worker`                              | Projections, pingers, rollups                           | Lightsail Container Service (or workers container) |
+| `deml-daemon`                                        | Outbox relay, pinger, cron publisher                    | Lightsail Container Service                        |
+| `deml-workers`                                       | Consolidated ML training, threat intel, and task runner | Lightsail Container Service                        |
+| `deml-clickhouse`                                    | OLAP                                                    | Dedicated Fargate / Lightsail instance             |
+| `deml-dragonfly`                                     | Cache / rate limits                                     | Sidecar or small task                              |
+| `deml-scanner`, `deml-cpe-guesser`, `deml-tor-proxy` | Vulnerability ledger & OSINT                            | Lightsail Container Service (sidecars)             |
 
 Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
 
@@ -1390,7 +1391,7 @@ For a brief summary of the platform's hypothesis, value add, architecture diagra
 
 ## Concept of Operations (CONOPS)
 
-This section is the **single operational narrative** for the DEML platform: who uses it, how it runs in production, which technologies execute each responsibility, and what operators do when things degrade. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models, Google Cloud compute, GCP security controls). Detailed checklists live in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
+This section is the **single operational narrative** for the DEML platform: who uses it, how it runs in production, which technologies execute each responsibility, and what operators do when things degrade. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models). The canonical compute target is Google Cloud (Cloud Run services), but a cost-optimized and highly manageable alternative deployment topology exists on AWS using Lightsail Container Services, ECR, Fargate (for stateful components), and RDS or Lightsail Databases. Detailed checklists live in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
 
 ### 1. Purpose & Scope
 
@@ -1529,7 +1530,7 @@ The platform uses a **User + Sites** model—one Firebase login, many `StatusPag
 
 ### 8. Deployment Topology & Service Matrix
 
-Production runs **14 Cloud Run services** (see [Chapter 22](#chapter-22-production-deployment-on-cloudrun)). Core operational paths:
+Production runs on **Google Cloud Run** as the canonical target (see [Chapter 22](#chapter-22-production-deployment-on-cloudrun)). A fully supported, lower-cost, and simpler-to-operate alternative exists using **AWS Lightsail Container Services** (for the application layer) plus targeted Fargate tasks or Lightsail instances (for Redpanda, ClickHouse, and Dragonfly) with ECR for images (see [Chapter 23: Production Deployment on AWS](#chapter-23-production-deployment-on-aws-lightsail-container-services-and-fargate)). Both topologies preserve identical container images, the Event Projections loop, Outbox reliability, symmetrical multi-tenant workers, and the Firebase command / Firestore projection paths. Core operational paths:
 
 | Service                             | Operational role                                                |
 | ----------------------------------- | --------------------------------------------------------------- |
@@ -2524,7 +2525,48 @@ In addition to standard compute, this architecture provisions persistent disk vo
 
 ---
 
-## Chapter 23: Enterprise Security (SOC 2, CMMC 2.0, and NIST SP 800-171 Rev. 3)
+## Chapter 23: Production Deployment on AWS — Lightsail Container Services and Fargate
+
+The decision to evaluate alternative hosting providers is never taken lightly in a zero-compromise engineering culture. After operating the platform on Railway with its convenient multi-service container model at approximately fifty dollars per month, it became clear that predictable costs and operational simplicity could be achieved on AWS without sacrificing the architectural invariants that define DEML: identical Docker images across environments, the Event Projections pipeline (Firebase ingestEvent and Django Outbox to Redpanda, idempotent telemetry_worker projections to Firestore), symmetrical processing loops over every Tenant including the platform Tenant0, distroless containers, and unprivileged execution. AWS offers a pragmatic middle path between the high-level PaaS experience of Railway and the full control of raw ECS or EKS. The recommended configuration uses Amazon Lightsail Container Services for the majority of the application and worker fleet, ECR as the image registry, and a minimal number of dedicated compute resources or Fargate tasks for the stateful data plane components that require persistent volumes and stable networking.
+
+Lightsail Container Services deliver the closest operational experience to the existing Railway deployment. A single Container Service can host up to ten containers within one deployment, with automatic internal service discovery and load balancing across nodes. This allows the Angular SSR frontend, the Django backend API, the consolidated deml-workers (ML + security + internal tasks), the Rust deml-daemon (outbox relay, health pinger, cron publisher), the telemetry worker paths, the vulnerability scanner, and lighter sidecars such as the CPE guesser and Tor proxy to coexist inside the same managed service boundary. Networking between these containers uses simple container names and ports, exactly as docker-compose provides locally and as Railway internal hostnames provide in production. Fixed monthly pricing (Nano at seven dollars, Micro at ten dollars, Small at fifteen dollars per node) eliminates surprise bills while still supporting horizontal scaling by increasing node count. Build and deploy can reference images stored in Amazon ECR, keeping the multi-stage Dockerfiles (distroless Node for the frontend server.mjs, Python slim with liboqs for the backend, and minimal Debian for the Rust daemon) completely unchanged.
+
+Stateful infrastructure receives special but minimal treatment. Redpanda continues to serve as the high-throughput, exactly-once event bus for frontend-events and internal-tasks topics; a single-broker deployment (matching the local compose configuration with --smp 1 and SASL) runs reliably on either a small Lightsail Linux instance or a tightly right-sized ECS Fargate task backed by EBS gp3 storage. ClickHouse for OLAP analytics and long-term telemetry follows the same pattern. Dragonfly can often run as an additional container inside one of the Lightsail services or as a tiny companion task. Because these components are the primary cost and operational differentiators, Fargate Spot pricing (up to seventy percent discount) can be applied where brief interruptions are tolerable and quick recovery via Redpanda's and ClickHouse's durability features is acceptable. Postgres transactional storage uses either Amazon RDS (db.t4g.micro or Serverless v2) or the Lightsail managed database offering for the simplest possible integration. All application containers continue to receive the same DATABASE*URL, REDPANDA_BROKERS, CLICKHOUSE*\*, and DRAGONFLY_HOST environment variables; only the concrete hostnames change.
+
+The entire lifecycle remains driven by GitHub Actions and ECR. On merge to main, workflows build each Dockerfile exactly as before, push versioned images to private ECR repositories, and then trigger deployment into the Lightsail Container Service (via the AWS CLI or Lightsail API) or update the corresponding Fargate services. Secrets are injected at runtime through AWS Secrets Manager or Lightsail environment variables, following the same discipline applied on other platforms. Cross-service URLs (the FRONTEND_URL, BACKEND_URL, MARKETING_URL trio) and Firebase configuration remain the single source of truth. Because the container contract is identical, local docker-compose, Railway, Cloud Run, and this AWS topology can be exercised with the same images. The result is a deployment that is both the cheapest practical option for the current service footprint and among the most manageable, requiring only a handful of Lightsail services and one or two persistent compute targets rather than a dozen individually configured PaaS entries.
+
+### Infrastructure & Compute Resource Allocation
+
+Lightsail and Fargate encourage aggressive right-sizing because billing is tied directly to allocated vCPU and memory. The platform's existing lean design (small control loops, Polars for batch work, native SVG rendering, and event-driven rather than polling-heavy workers) translates directly. Recommended allocations for a cost-conscious AWS deployment are:
+
+| Service / Group                    | vCPU     | RAM    | Notes / Justification                                                                  |
+| ---------------------------------- | -------- | ------ | -------------------------------------------------------------------------------------- |
+| Lightsail Container Service (apps) | 0.25–0.5 | 1 GB   | Hosts frontend SSR, backend, deml-workers, daemon, scanner and sidecars in one service |
+| Redpanda (single broker)           | 0.5      | 2 GB   | EBS-backed; matches local compose; Spot-eligible                                       |
+| ClickHouse                         | 0.5–1    | 2–4 GB | Persistent volume for OLAP data; Spot or small instance                                |
+| RDS / Lightsail DB (Postgres)      | —        | 1 GB   | db.t4g.micro or equivalent Lightsail plan                                              |
+| Dragonfly (cache)                  | 0.25     | 0.5 GB | Can share a task or run inside the main container service                              |
+
+This configuration keeps the total active footprint dramatically smaller than the theoretical Cloud Run maximum while preserving headroom for the periodic ML training and threat intel jobs.
+
+### Estimated Monthly Infrastructure Costs
+
+Using 2026 US East (N. Virginia) pricing, a realistic steady-state deployment lands well under the prior Railway spend:
+
+- Lightsail Container Service (Micro node): ~$10/mo (one node sufficient for low-to-moderate traffic; add nodes for scale).
+- Redpanda on small Fargate task or Lightsail instance (0.5 vCPU / 2 GB + EBS): $8–15/mo (Spot brings the low end).
+- ClickHouse similar: $8–15/mo.
+- RDS db.t4g.micro Postgres (or Lightsail DB): ~$12–15/mo.
+- ECR storage + data transfer + minimal EBS + Route 53: $3–6/mo.
+- **Projected total baseline**: $35–55 per month depending on utilization spikes during training windows and data volume.
+
+The largest variables are sustained vCPU during worker jobs and egress. Because the Event Projections path is already designed for bursty rather than constant high throughput, and because the deml-daemon and workers are tightly coupled to the Outbox and Redpanda topics rather than always-on polling, real costs trend toward the lower half of the range. Persistent volumes for ClickHouse and Redpanda are the only components that grow materially with usage; all other services scale horizontally inside the Lightsail Container Service at marginal additional node cost.
+
+Migration from Railway (or any Docker-based host) is straightforward: push the existing images to ECR, provision the Lightsail service and stateful targets, point the environment variables at the new internal or public endpoints, migrate Postgres via dump/restore or DMS, and replay or mirror Redpanda topics as needed. The deml-daemon outbox relay and telemetry_worker remain authoritative. All Firebase surfaces (ingestEvent callables, Firestore projections, Auth) continue unchanged. The AWS path therefore serves both as an immediate cost and operational relief and as a fully supported alternative deployment topology that honors every principle in the platform's architecture.
+
+---
+
+## Chapter 24: Enterprise Security (SOC 2, CMMC 2.0, and NIST SP 800-171 Rev. 3)
 
 As the platform matures and begins ingesting highly sensitive operational data for external organizations, the baseline security measures implemented during the initial development phases are no longer sufficient. To transition this platform toward true enterprise maturity and prepare for rigorous external audits—such as Service Organization Control 2 (SOC 2) Type II, the Cybersecurity Maturity Model Certification (CMMC) 2.0, and NIST SP 800-171 Rev. 3—I must architect an impenetrable, defense-in-depth security perimeter. This requires the implementation of strict, uncompromising cryptographic controls and an absolute adherence to the principle of least privilege across every layer of the technology stack.
 
@@ -2709,7 +2751,7 @@ I want to acknowledge the incredible open-source tools, platforms, and AI assist
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](../docs/integrations/)
 - **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
@@ -3255,6 +3297,165 @@ After any build-time variable change on `deml-frontend`, trigger a redeploy.
 - **Restart Policy**: All services are configured to restart "On Failure" with a maximum of 10 retries, ensuring automatic recovery from temporary crashes.
 - **Region**: US East (Virginia, USA)
 - **Replicas**: 1 replica per service.
+
+## Appendix E: AWS Deployment
+
+**Env templates:** `backend/.env.example`, `frontend/.env.example`, `marketing/.env.example`.
+
+This appendix is the **complete setup checklist** for deploying the DEML platform on AWS using Lightsail Container Services (application layer), ECR (images), Fargate or Lightsail instances (stateful Redpanda / ClickHouse), and RDS or Lightsail Database (Postgres). The goal is the cheapest manageable footprint that preserves every architectural contract: the same Dockerfiles, the Event Projections loop (Outbox + Redpanda + idempotent workers), symmetrical tenant processing, distroless images, and the unchanged Firebase / Firestore surfaces. Every hostname and cross-site URL remains **env-driven**.
+
+### Pre-Deploy Checklist
+
+Before provisioning resources:
+
+1. **AWS Account & IAM**: Create an IAM user or role with least-privilege access for ECR, Lightsail, ECS/Fargate, RDS, Secrets Manager, and Route 53. Prefer OIDC from GitHub Actions for CI.
+2. **ECR Repositories**: Create private repositories (e.g. `deml-frontend`, `deml-backend`, `deml-workers`, `deml-daemon`, `deml-scanner`). Enable image scanning.
+3. **Secrets**: Store in AWS Secrets Manager or Lightsail environment variables: `SECRET_KEY`, Firebase service account JSON, Stripe, Resend, threat intel keys, `HF_TOKEN`, `SENTRY_DSN`, Redpanda SASL credentials. Never commit secrets.
+4. **Cross-site URL trio** (identical to other environments):
+
+| Variable        | Production value                                | Purpose                        |
+| --------------- | ----------------------------------------------- | ------------------------------ |
+| `FRONTEND_URL`  | `https://deml.app`                              | Angular app, widgets, status   |
+| `BACKEND_URL`   | `https://backend.deml.app`                      | Django API, OAuth callbacks    |
+| `MARKETING_URL` | `https://dataengineeringformachinelearning.com` | Astro site, auth handoff, CORS |
+
+5. **CORS / CSRF**: Extend `CORS_ALLOWED_ORIGINS` and `CSRF_TRUSTED_ORIGINS` with your production domains. Use `backend/monitor/cors_utils.py` dynamic registration for customer sites.
+6. **Production guards**: `DEBUG=False`, strong `SECRET_KEY`. The backend fails fast on insecure settings via `backend/utils/env.py`.
+7. **Postgres migration**: Export from current host (`pg_dump`), import into RDS or Lightsail DB. Test connectivity from a temporary task before cutover.
+8. **Domain & DNS**: Use Route 53 (or keep existing). Lightsail can issue and attach ACM certificates for custom domains on Container Services.
+
+### Core AWS Topology
+
+- **Lightsail Container Service** (one service): Deploy the multi-container application fleet (frontend SSR, backend, workers, daemon, scanner + sidecars). Choose Micro ($10/mo) or Small ($15/mo) node size. Containers inside the service discover each other by name.
+- **Stateful data plane**: Redpanda (1-broker) and ClickHouse on either dedicated small Lightsail Linux instances (with Docker) or ECS Fargate tasks (0.5–1 vCPU, EBS volumes). Dragonfly can be a side container.
+- **Database**: Amazon RDS for PostgreSQL (db.t4g.micro recommended) **or** Lightsail Database for simplest management.
+- **Registry & CI**: ECR + GitHub Actions (build → push → deploy).
+- **Networking**: Internal discovery inside the Lightsail service; public or peered hostnames for Redpanda/ClickHouse/RDS. Use security groups and Lightsail networking features. Never expose Redpanda or ClickHouse publicly without strong auth.
+
+### GitHub Actions CI/CD Pattern (ECR + Lightsail / Fargate)
+
+```yaml
+# .github/workflows/aws-deploy.yml (example)
+name: AWS Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::ACCOUNT:role/github-actions-deploy
+          aws-region: us-east-1
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Build and push frontend
+        run: |
+          docker build -t $ECR_REGISTRY/deml-frontend:$GITHUB_SHA -f frontend/Dockerfile frontend
+          docker push $ECR_REGISTRY/deml-frontend:$GITHUB_SHA
+      # Repeat for backend, rust/deml-daemon (context ./rust), infrastructure/scanner, etc.
+      - name: Deploy to Lightsail
+        run: |
+          aws lightsail create-container-service-deployment \
+            --service-name deml-apps \
+            --containers file://deploy/lightsail-containers.json \
+            --public-endpoint '{"containerName":"frontend","containerPort":8080}'
+```
+
+Update the containers JSON (or use the Lightsail console) to reference the new image tags and set environment variables. Redeploy only affected containers when possible.
+
+### Services Overview (Lightsail Container Service)
+
+**Frontend (deml-frontend)**
+
+- Root / context: `frontend/`
+- Image: `gcr.io/distroless/nodejs22-debian12` runtime (SSR via `dist/frontend/server/server.mjs`)
+- Public endpoint on the Lightsail service.
+- Required build-time + runtime vars: `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`, all `FIREBASE_*`, `SANITY_*`, `SENTRY_DSN`.
+
+**Backend (deml-backend)**
+
+- Root: `backend/`
+- Image: distroless Python (with liboqs built in Dockerfile).
+- Start: `python start.py` (or equivalent Daphne/ASGI for production).
+- Internal port typically 8000 or 8080.
+- Full env bundle: `DATABASE_URL`, `REDPANDA_BROKERS`, `CLICKHOUSE_*`, `DRAGONFLY_HOST`, Firebase service account, threat intel keys, etc.
+
+**Workers & Daemon**
+
+- `deml-workers`: Consolidated ML + security + cron consumer (`deml_workers_start.py`).
+- `deml-daemon`: Rust binary (outbox relay primary path, pinger, cron publisher). Built from `rust/deml-daemon/Dockerfile`.
+- Telemetry worker logic can run inside the workers container or as a separate container definition in the same Lightsail deployment.
+- Pass `SCANNER_SERVICE_URL`, `CPE_GUESSER_URL`, `TOR_PROXY_URL` using the internal container hostnames.
+
+**Light sidecars** (scanner, cpe-guesser, tor-proxy) run as additional containers in the same service with `read_only`, `security_opt: no-new-privileges`, tmpfs where appropriate.
+
+### Stateful Components (Separate Targets)
+
+**Redpanda (deml-queue)**
+
+- Run the official `docker.redpanda.com/redpandadata/redpanda` image (or the infrastructure/queue variant).
+- Single broker configuration mirroring `docker-compose.yml` (internal listener, optional external SASL listener on 19092).
+- Persistent EBS / Lightsail block storage for data and logs.
+- Expose via private hostname or authenticated public endpoint only as needed for Firebase Functions.
+- Set `REDPANDA_BROKERS` and SASL variables on consumers.
+
+**ClickHouse**
+
+- Use the `infrastructure/clickhouse` Dockerfile.
+- Mount persistent volume at `/var/lib/clickhouse`.
+- Configure via `clickhouse-config.xml` and environment (`CLICKHOUSE_USER`, `CLICKHOUSE_PASSWORD`).
+- Consumers point `CLICKHOUSE_HOST` and port 8123.
+
+**Postgres**
+
+- RDS: Create instance, set `DATABASE_URL=postgres://...`.
+- Or Lightsail Database and obtain the connection string.
+- Run migrations via a one-off task or the backend start command on first deploy.
+
+**Dragonfly**
+
+- Can be a container inside the main Lightsail service or a separate minimal Fargate task / instance.
+- Set `DRAGONFLY_HOST` accordingly.
+
+### Networking & Internal DNS
+
+Inside a Lightsail Container Service, containers resolve each other by the names you assign in the deployment specification. For components outside that service:
+
+- Use the public DNS of the Lightsail instance or the Fargate service discovery / load balancer target.
+- For RDS, use the RDS endpoint.
+- Always prefer private networking where AWS makes it available (Lightsail peering or VPC).
+- Update health checks (`/api/v1/system-status/health`) and the Event Projections synthetic probe after cutover.
+
+### Migration Considerations from Railway (or Cloud Run)
+
+1. Build and push all images to ECR from the existing Dockerfiles.
+2. Provision Postgres target and restore data.
+3. Stand up Redpanda and ClickHouse with volumes; use `rpk` to recreate topics or mirror from the old cluster.
+4. Create the Lightsail Container Service deployment referencing ECR images and the full environment variable set.
+5. Point DNS / load balancer at the new public endpoint(s).
+6. Verify: platform-status Event Projections check, worker logs, outbox relay, ML inference, and a full tenant data path.
+7. Decommission old services only after stable observation period.
+
+All operational modes (normal, broker degraded with Firestore fallback, worker restart, etc.) and the symmetrical multi-tenant loops remain identical because the code paths are unchanged.
+
+### Cost Controls & Right-Sizing
+
+- Start with the smallest viable node (Micro) in Lightsail and one replica set.
+- Use Fargate Spot for Redpanda and ClickHouse where recovery semantics are acceptable.
+- Monitor with CloudWatch or existing Sentry + CES gauges.
+- Scale horizontally by adding Lightsail nodes only when CPU/memory or request latency demands it.
+- Persistent storage for ClickHouse and Redpanda is the primary growth vector; set retention policies aggressively in the workers (`db_cleanup`, ClickHouse TTL).
+
+This AWS topology delivers a production-grade, observable, secure deployment at significantly lower operational surface area than a dozen individually managed services while staying faithful to the platform's precision-engineered design.
 
 ## Appendix D: Maintenance & Automation Schedule
 

@@ -24,15 +24,17 @@ This document tells operators **how DEML runs in production**: vendors, services
 
 ## 3. Vendor & deployment map
 
-| Component                               | Host                      | Deploy trigger                                  |
-| --------------------------------------- | ------------------------- | ----------------------------------------------- |
-| Angular app (`deml.app`)                | Cloud Run `deml-frontend` | Push to `main` (watch `/frontend/**`)           |
-| Django API                              | Cloud Run `deml-backend`  | Push to `main` (watch `/backend/**`)            |
-| Postgres, Redpanda, ClickHouse, workers | Cloud Run (12+ services)  | Push to `main`                                  |
-| `ingestEvent` + Firestore rules         | Firebase / GCP            | `.github/workflows/firebase-backend-deploy.yml` |
-| Marketing site                          | Firebase Hosting          | `firebase-hosting-merge.yml`                    |
-| KMS + audit logs                        | GCP (Terraform)           | Manual / CI Terraform apply                     |
-| Model weights                           | Hugging Face Hub          | `ml_worker` + `huggingface-space.yml`           |
+Canonical production uses Google Cloud (Cloud Run services for the container fleet, Firebase for commands and projections, GCP for KMS/audit). A cost-optimized and manageable alternative deployment exists on AWS using Lightsail Container Services (for the application and worker containers), ECR for images, Fargate or Lightsail instances for Redpanda/ClickHouse, and RDS/Lightsail Database for Postgres. Both topologies use identical container images and preserve the Event Projections architecture.
+
+| Component                       | Canonical Host (GCP)      | AWS Alternative Host (Lightsail / Fargate)        | Deploy trigger                  |
+| ------------------------------- | ------------------------- | ------------------------------------------------- | ------------------------------- |
+| Angular app (`deml.app`)        | Cloud Run `deml-frontend` | Lightsail Container Service (frontend)            | Push to `main`                  |
+| Django API                      | Cloud Run `deml-backend`  | Lightsail Container Service (backend)             | Push to `main`                  |
+| Workers, daemon, scanner        | Cloud Run services        | Lightsail Container Service (multiple containers) | Push to `main`                  |
+| Postgres                        | Cloud Run / Cloud SQL     | RDS or Lightsail Database                         | Infrastructure change           |
+| Redpanda, ClickHouse            | Cloud Run (stateful)      | Fargate task or Lightsail instance + EBS          | Infrastructure + image push     |
+| `ingestEvent` + Firestore rules | Firebase / GCP            | Firebase (unchanged)                              | `.github/workflows/firebase...` |
+| Marketing site                  | Firebase Hosting          | Firebase Hosting (unchanged)                      | `firebase-hosting-merge.yml`    |
 
 **Env trio (never hardcode):** `FRONTEND_URL`, `BACKEND_URL`, `MARKETING_URL`.
 
@@ -87,23 +89,22 @@ See [WHITEPAPER §8](../WHITEPAPER.md#8-role-based--attribute-based-access-contr
 | **Auth degraded**               | 401/403 spikes                           | Check Firebase project, JWT clock skew, rules deploy                         |
 | **Maintenance**                 | Deploy in progress                       | Cloud Run rolling deploy; expect brief projection lag                        |
 
-## 7. Service matrix (Cloud Run)
+## 7. Service matrix
 
-| Service                 | Role                                                    |
-| ----------------------- | ------------------------------------------------------- |
-| `deml-frontend`         | Angular UI                                              |
-| `deml-backend`          | Django API                                              |
-| `deml-postgres`         | OLTP database                                           |
-| `deml-queue`            | Redpanda broker                                         |
-| `deml-telemetry-worker` | Projections, pingers, rollups                           |
-| `deml-relay`            | Outbox publisher                                        |
-| `deml-workers`          | Consolidated ML training, threat intel, and task runner |
+The logical services are identical across deployment targets. On the canonical Cloud Run path they map 1:1 to Cloud Run services. On the AWS alternative they are grouped: most application containers (frontend, backend, workers, daemon, scanner, sidecars) run inside a single Lightsail Container Service; Redpanda and ClickHouse run as dedicated Fargate tasks or Lightsail instances.
 
-| `deml-clickhouse` | OLAP |
-| `deml-otel-collector` | Trace pipeline |
-| `deml-dragonfly` | Cache / rate limits |
-| `deml-scanner`, `deml-cpe-guesser` | Vulnerability ledger |
-| `deml-tor-proxy` | OSINT routing |
+| Logical Service                                      | Role                                                    | AWS Grouping                                       |
+| ---------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------- |
+| `deml-frontend`                                      | Angular UI (SSR)                                        | Lightsail Container Service                        |
+| `deml-backend`                                       | Django API                                              | Lightsail Container Service                        |
+| `deml-postgres`                                      | OLTP database                                           | RDS or Lightsail DB                                |
+| `deml-queue`                                         | Redpanda broker                                         | Dedicated Fargate / Lightsail instance             |
+| `deml-telemetry-worker`                              | Projections, pingers, rollups                           | Lightsail Container Service (or workers container) |
+| `deml-daemon`                                        | Outbox relay, pinger, cron publisher                    | Lightsail Container Service                        |
+| `deml-workers`                                       | Consolidated ML training, threat intel, and task runner | Lightsail Container Service                        |
+| `deml-clickhouse`                                    | OLAP                                                    | Dedicated Fargate / Lightsail instance             |
+| `deml-dragonfly`                                     | Cache / rate limits                                     | Sidecar or small task                              |
+| `deml-scanner`, `deml-cpe-guesser`, `deml-tor-proxy` | Vulnerability ledger & OSINT                            | Lightsail Container Service (sidecars)             |
 
 Full variable checklist: [BOOK.md Appendix C](../BOOK.md#appendix-c-cloud-run-deployment).
 
