@@ -608,6 +608,14 @@ export class AuthService {
       if (!isMfaRequiredError(e)) {
         console.warn('[Auth] Google sign-in failed:', e?.code ?? 'unknown');
       }
+      if (e?.code === 'auth/multi-factor-auth-required') {
+        return {
+          success: false,
+          error: 'MFA_REQUIRED',
+          resolver: getMultiFactorResolver(this.auth, e),
+        };
+      }
+      return { success: false, error: 'Google Sign-In failed. Please try again.' };
     }
   }
 
