@@ -1,6 +1,5 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, DOCUMENT } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
-import { isPlatformBrowser } from '@angular/common';
 import { resolveRouteMeta } from '../core/page-meta';
 import { environment } from '../../environments/environment';
 
@@ -13,7 +12,7 @@ const ALGOLIA_SITE_VERIFICATION = '687B59B29612DE68'; // pragma: allowlist secre
 export class PageMetaService {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
-  private readonly platformId = inject(PLATFORM_ID);
+  private readonly document = inject(DOCUMENT);
 
   applyForUrl(url: string): void {
     const { title, description, robots, keywords, ogType } = resolveRouteMeta(url);
@@ -48,14 +47,21 @@ export class PageMetaService {
       this.meta.updateTag({ name: 'keywords', content: keywords });
     }
 
-    if (isPlatformBrowser(this.platformId)) {
-      let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
-      if (!link) {
-        link = document.createElement('link');
-        link.setAttribute('rel', 'canonical');
-        document.head.appendChild(link);
-      }
-      link.setAttribute('href', canonical);
+    this.setCanonicalLink(canonical);
+  }
+
+  private setCanonicalLink(href: string): void {
+    const head = this.document.head;
+    if (!head) {
+      return;
     }
+
+    let link = head.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (!link) {
+      link = this.document.createElement('link');
+      link.setAttribute('rel', 'canonical');
+      head.appendChild(link);
+    }
+    link.setAttribute('href', href);
   }
 }

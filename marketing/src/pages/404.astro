@@ -8,7 +8,8 @@ import VikingIcon from '../components/VikingIcon.astro';
   description="The requested DEML marketing page could not be found. Return to the homepage or explore the app."
   robots="noindex, nofollow"
 >
-  <div class="not-found-container">
+  <div class="dashboard-page-container">
+    <div class="page-inner-wrapper not-found-container">
     <VikingIcon name="error_outline" size={20} class="error-icon" />
     <h1 class="error-code">404</h1>
     <h2 class="error-title">Page Not Found</h2>
@@ -19,6 +20,7 @@ import VikingIcon from '../components/VikingIcon.astro';
       <VikingIcon name="home" size={20} />
       Return Home
     </a>
+    </div>
   </div>
 </Layout>
 
@@ -28,9 +30,9 @@ import VikingIcon from '../components/VikingIcon.astro';
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - var(--navbar-height, 64px));
   text-align: center;
-  padding: 24px;
+  padding-block: var(--viking-space-6, 48px);
   animation: fadeIn 0.5s ease-out;
 }
 

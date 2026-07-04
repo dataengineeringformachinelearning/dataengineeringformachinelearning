@@ -142,6 +142,14 @@
   --viking-chart-sparkline-height: 2.5rem;
   --viking-chart-map-min-height: 22.5rem;
 
+  /* ── Breakpoints (mobile-first) ─────────────────────────────────────────── */
+  --viking-bp-sm: 600px;
+  --viking-bp-md: 768px;
+  --viking-bp-sidebar: 901px;
+  --viking-bp-lg: 1024px;
+  --viking-bp-xl: 1440px;
+  --viking-bp-2xl: 1920px;
+
   /* ── Motion ──────────────────────────────────────────────────────────────── */
   --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
   --viking-ease-in: cubic-bezier(0.4, 0, 1, 1);

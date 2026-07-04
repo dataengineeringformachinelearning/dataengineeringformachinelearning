@@ -359,16 +359,10 @@ main.main {
 
 .dashboard-content-area {
   flex: 1;
-  padding: 16px;
+  padding: 0;
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-}
-
-@media (min-width: 768px) {
-  .dashboard-content-area {
-    padding: var(--grid-gap, 2rem);
-  }
 }
 
 .content-wrapper {

@@ -108,6 +108,46 @@ def test_create_status_page_unauthenticated(client: Client) -> None:
 
 
 @pytest.mark.django_db
+def test_update_status_page(authenticated_client: Client, test_user: User) -> None:
+  page = StatusPage.objects.create(
+    user=test_user,
+    title="Original Title",
+    slug="original-slug",
+    description="Original description",
+    is_published=False,
+  )
+  payload = {
+    "title": "Updated Title",
+    "slug": "updated-slug",
+    "description": "Updated description",
+    "is_published": True,
+  }
+  response = authenticated_client.put(
+    f"/api/v1/system-status/status_pages/{page.id}",
+    data=payload,
+    content_type="application/json",
+  )
+  assert response.status_code == 200
+  data = response.json()
+  assert data["title"] == "Updated Title"
+  assert data["slug"] == "updated-slug"
+  page.refresh_from_db()
+  assert page.is_published is True
+
+
+@pytest.mark.django_db
+def test_delete_service(authenticated_client: Client, test_user: User) -> None:
+  page = StatusPage.objects.create(user=test_user, title="My Status", slug="my-status")
+  service = MonitoredService.objects.create(
+    status_page=page, name="API Gateway", url="http://api.local"
+  )
+  response = authenticated_client.delete(f"/api/v1/system-status/services/{service.id}")
+  assert response.status_code == 200
+  assert response.json() == {"success": True}
+  assert not MonitoredService.objects.filter(id=service.id).exists()
+
+
+@pytest.mark.django_db
 def test_delete_status_page(authenticated_client: Client, test_user: User) -> None:
   page = StatusPage.objects.create(
     user=test_user, title="Custom Status Page", slug="custom-status", description="Demo"

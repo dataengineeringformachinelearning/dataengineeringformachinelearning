@@ -1,30 +1,25 @@
 <div class="status-container">
-  <!-- Glow Spheres for Homepage Unity -->
-
-  <!-- Standard Dashboard Layout (With Sidebar) -->
   <div class="dashboard-layout">
     <!-- Sidebar -->
     <app-sidebar></app-sidebar>
 
     <!-- Main Content -->
     <main class="dashboard-main">
-      <viking-page-header
-        layout="sidebar"
-        tag="System Telemetry"
-        title="System Status"
-        subtitle="Real-time status updates and historical uptime statistics."
-      >
-        @if (authService.isAuthenticated()) {
-        <div vikingPageHeaderActions>
-          <viking-button variant="filled" href="/manage" icon="settings"
-            >Manage Pages</viking-button
-          >
-        </div>
-        }
-      </viking-page-header>
-
       <div class="dashboard-content-area">
         <div class="page-inner-wrapper">
+          <viking-page-header
+            tag="System Telemetry"
+            title="System Status"
+            subtitle="Real-time status updates and historical uptime statistics."
+          >
+            @if (authService.isAuthenticated()) {
+            <div vikingPageHeaderActions>
+              <viking-button variant="filled" href="/manage" icon="settings"
+                >Manage Pages</viking-button
+              >
+            </div>
+            }
+          </viking-page-header>
           <!-- Sanity.io Announcements Feed -->
           @if (sanityService.announcements().length > 0 || sanityService.loading() ||
           sanityService.error()) {

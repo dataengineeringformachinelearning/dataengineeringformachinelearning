@@ -38,24 +38,6 @@
   overflow: visible;
 }
 
-/* Glow Spheres for Homepage Unity */
-
-.sphere-1 {
-  width: 496px;
-  height: 496px;
-  background: var(--viking-teal-600);
-  top: -150px;
-  left: -150px;
-}
-
-.sphere-2 {
-  width: 448px;
-  height: 448px;
-  background: var(--color-primary);
-  bottom: -150px;
-  right: -100px;
-}
-
 .dashboard-layout {
   position: relative;
   z-index: 1;

@@ -38,7 +38,7 @@ repos:
         name: Sync design system package to consumers
         entry: python scripts/sync_design_system.py
         language: system
-        files: ^packages/deml-design-system/
+        files: ^(packages/deml-design-system/|frontend/projects/viking-ui/src/styles/)
         pass_filenames: false
       - id: sync-site-drakkar
         name: Sync site drakkar JSON and Django partials
@@ -46,8 +46,8 @@ repos:
         language: system
         files: ^frontend/projects/viking-ui/src/lib/site-drakkar/|^frontend/scripts/build_site_drakkar\.mjs$|^frontend/src/assets/widgets/navbar\.js$
         pass_filenames: false
-      - id: semgrep
-        name: Semgrep SAST Scan
+      - id: semgrep-css
+        name: Semgrep CSS/SCSS Scan
         entry: uvx semgrep scan --error
         language: system
         files: \.(css|scss)$
@@ -71,7 +71,7 @@ repos:
         stages: [manual]
 
       # --- Pre-push security & infra scans ---
-      - id: semgrep
+      - id: semgrep-sast
         name: Semgrep SAST Scan
         entry: bash scripts/run_semgrep.sh
         language: system
