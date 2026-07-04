@@ -1,24 +1,21 @@
-// Shared layout utilities (4px grid per THEME.md, visibility toggles, typography floor).
+// Shared layout utilities (4px grid, visibility toggles, typography floor).
+// Page width shell (.page-inner-wrapper) lives in viking-ui layout-shell.scss — do not duplicate here.
 
-.page-inner-wrapper {
-  width: 100%;
-  max-width: var(--container-max-width, 1260px);
-  margin-inline: auto;
-  padding-inline: var(--space-2, 16px);
-  padding-block: var(--card-padding, var(--space-3, 24px));
+.viking-page-stack {
   display: flex;
   flex-direction: column;
   gap: var(--grid-gap, var(--space-3, 24px));
+  width: 100%;
   box-sizing: border-box;
 }
 
 .badge-dot {
   display: inline-block;
-  width: var(--grid-unit, 8px);
-  height: var(--grid-unit, 8px);
+  width: var(--grid-unit, 4px);
+  height: var(--grid-unit, 4px);
   border-radius: 50%;
   background-color: var(--color-primary);
-  margin-right: var(--grid-unit, 8px);
+  margin-right: calc(var(--grid-unit, 4px) * 2);
   flex-shrink: 0;
 }
 

@@ -72,7 +72,6 @@ const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
         <article class="publication-shell">
           {chapter.slug !== 'cover' && (
             <header class="publication-hero book-chapter-hero">
-              <div class="hero-glow" aria-hidden="true"></div>
               <div class="section-tag-row">
                 <span class="section-tag">
                   {chapter.group} · {chapter.num ? `#${chapter.num}` : chapter.shortTitle}

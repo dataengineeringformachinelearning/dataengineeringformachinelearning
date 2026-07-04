@@ -16,18 +16,6 @@
   border-bottom: 1px solid var(--border);
   overflow: hidden;
 
-  .hero-glow {
-    position: absolute;
-    inset: -30% 0 auto;
-    height: 200px;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--viking-teal-600) 14%, transparent),
-      transparent 70%
-    );
-    pointer-events: none;
-  }
-
   .hero-brand {
     position: relative;
     display: flex;

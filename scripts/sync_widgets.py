@@ -81,6 +81,8 @@ def sync_algolia_config() -> None:
   for dst_dir in targets:
     os.makedirs(dst_dir, exist_ok=True)
     dst = os.path.join(dst_dir, ALGOLIA_CONFIG)
+    if os.path.abspath(src) == os.path.abspath(dst):
+      continue
     shutil.copy2(src, dst)
     print(f"Synced {ALGOLIA_CONFIG} -> {dst_dir}")
 
