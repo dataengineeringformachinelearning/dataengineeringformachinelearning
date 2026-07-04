@@ -61,7 +61,7 @@ npm run sync:lucide-icons   # regenerate lucide-paths.generated.ts
 - **size** / **sizePreset** (`sm` 16px · `md` 20px · `lg` 24px)
 - **color** — semantic tokens (`accent`, `success`, `warning`, `danger`, `muted`) or any CSS value
 - **variant** — `outline` (stroke) or `filled` (solid)
-- **Drakkar brand marks** — `drakkar`, `drakkar-compact`, `drakkar-lockup` (Lucide ship, site shell / Viking-UI)
+- **Drakkar brand marks** — `drakkar`, `drakkar-compact`, `drakkar-lockup` (custom longship geometry, site shell / Viking-UI)
 - **DEML product marks** — `deml`, `deml-compact`, `deml-lockup` (optimized SVGs in `src/lib/core/brand-icons.ts`)
 
 Also exported as `VikingIconComponent` for consumers expecting that name.

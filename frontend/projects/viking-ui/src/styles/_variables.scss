@@ -129,16 +129,16 @@
   --viking-chart-ratio: 3 / 1;
   --viking-chart-min-height: clamp(9.5rem, 22vw, 12rem);
   --viking-chart-max-height: clamp(13rem, 36vw, 17.5rem);
-  --viking-chart-fill-min-height: clamp(16rem, 32vw, 17.5rem);
-  --viking-chart-fill-max-height: clamp(17.5rem, 40vw, 21rem);
-  --viking-chart-fill-min-height-lg: clamp(17.5rem, 36vw, 20rem);
-  --viking-chart-fill-max-height-lg: clamp(20rem, 44vw, 22rem);
+  --viking-chart-fill-min-height: clamp(18rem, 36vw, 20rem);
+  --viking-chart-fill-max-height: none;
+  --viking-chart-fill-min-height-lg: clamp(20rem, 40vw, 22rem);
+  --viking-chart-fill-max-height-lg: none;
   --viking-chart-empty-min-height: var(--viking-chart-fill-min-height);
   --viking-chart-empty-min-height-lg: var(--viking-chart-fill-min-height-lg);
-  --viking-chart-panel-min-height-md: 24rem;
-  --viking-chart-panel-min-height-lg: 28rem;
-  --viking-chart-panel-body-min-height-md: 19rem;
-  --viking-chart-panel-body-min-height-lg: 22.5rem;
+  --viking-chart-panel-min-height-md: 26rem;
+  --viking-chart-panel-min-height-lg: 30rem;
+  --viking-chart-panel-body-min-height-md: 22rem;
+  --viking-chart-panel-body-min-height-lg: 25rem;
   --viking-chart-sparkline-height: 2.5rem;
   --viking-chart-map-min-height: 22.5rem;
 

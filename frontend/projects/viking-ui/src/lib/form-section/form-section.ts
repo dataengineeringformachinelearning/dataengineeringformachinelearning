@@ -163,20 +163,21 @@ export class VikingFormPanel {}
       :host(.viking-form-section-status) .viking-form-section-body {
         @media (min-width: 601px) {
           flex-direction: row;
-          align-items: center;
+          align-items: flex-start;
           justify-content: space-between;
         }
       }
 
       :host(.viking-form-section-status) .viking-form-section-fields {
         flex-direction: row;
-        align-items: center;
+        align-items: flex-start;
         gap: var(--viking-space-1, 8px);
       }
 
       :host(.viking-form-section-status) .viking-form-section-actions {
         @media (min-width: 601px) {
-          align-items: center;
+          align-items: flex-start;
+          padding-top: 1px;
           margin-left: auto;
         }
       }
