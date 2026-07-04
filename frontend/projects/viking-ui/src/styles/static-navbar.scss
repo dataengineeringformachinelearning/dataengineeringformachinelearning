@@ -71,9 +71,7 @@
   top: 0;
   z-index: 50;
   width: 100%;
-  height: var(--viking-navbar-height, 64px);
-  container-type: inline-size;
-  container-name: viking-navbar;
+  min-height: var(--viking-navbar-height, 64px);
   background-color: var(--navbar-bg, color-mix(in srgb, var(--viking-surface, var(--card-bg)) 92%, transparent));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -83,6 +81,7 @@
   align-items: stretch;
   padding: 0 var(--viking-space-2, 16px);
   box-sizing: border-box;
+  overflow: visible;
 
   @media (min-width: 768px) {
     padding-inline: var(--viking-space-3, 24px);
@@ -451,10 +450,16 @@ button.auth-btn {
   left: 0;
   right: 0;
   width: auto;
+  max-height: calc(100dvh - var(--viking-navbar-height, var(--navbar-height, 64px)));
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   background-color: var(--viking-surface, var(--card-bg));
   box-shadow: var(--viking-shadow-md, var(--shadow-md));
   border-bottom: 1px solid var(--viking-border, var(--border));
-  padding: var(--viking-space-2, 16px) var(--viking-space-2, 16px) var(--viking-space-3, 24px);
+  padding: var(--viking-space-3, 24px);
+  padding-bottom: calc(var(--viking-space-3, 24px) + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   z-index: 49;
   gap: var(--viking-space-half, 4px);
@@ -462,6 +467,13 @@ button.auth-btn {
   viking-button {
     width: 100%;
   }
+
+  .mobile-auth-btn,
+  .auth-signout-btn {
+    flex-shrink: 0;
+    width: 100%;
+  }
+
   transform: translateY(-10px);
   opacity: 0;
   pointer-events: none;
