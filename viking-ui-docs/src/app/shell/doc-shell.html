@@ -1,7 +1,11 @@
 <div class="viking-docs-app">
   <viking-site-navbar
     context="marketing"
+    [urls]="siteUrls"
     [theme]="theme()"
+    [showSearch]="true"
+    (login)="signIn()"
+    (searchOpen)="openSearch()"
     (themeToggle)="toggleTheme()"
   />
 

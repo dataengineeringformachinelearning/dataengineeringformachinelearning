@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { VikingButton } from '../button/button';
 import { VikingIcon } from '../icon/icon';
 import { VikingThemeToggle } from '../theme-toggle/theme-toggle';
 import {
@@ -29,7 +30,7 @@ import {
   selector: 'viking-site-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [RouterLink, RouterLinkActive, VikingIcon, VikingThemeToggle],
+  imports: [RouterLink, RouterLinkActive, VikingButton, VikingIcon, VikingThemeToggle],
   styleUrl: './site-navbar.scss',
   template: `
     <header class="navbar">
@@ -85,46 +86,44 @@ import {
         <div class="navbar-right">
           @if (showSearch()) {
             <div class="navbar-search" role="search">
-              <button
-                type="button"
-                class="navbar-search-trigger"
-                aria-label="Open search"
-                title="Search (⌘K)"
-                (click)="openSearch()"
-              >
-                <viking-icon name="search" [size]="20" />
-              </button>
+              <viking-button
+                variant="outline"
+                square
+                compact
+                icon="search"
+                label="Open search (⌘K)"
+                (pressed)="openSearch()"
+              />
             </div>
           }
 
           <div class="desktop-auth">
             @if (!isAuthenticated()) {
-              <button type="button" class="auth-btn" (click)="login.emit()">
-                <viking-icon name="arrow-right" [size]="16" />
-                <span>Sign In</span>
-              </button>
+              <viking-button variant="primary" icon="arrow-right" (pressed)="login.emit()">
+                Sign In
+              </viking-button>
             } @else {
-              <a [href]="urls().app + '/dashboard'" class="auth-btn">
-                <viking-icon name="home" [size]="16" />
-                <span>Dashboard</span>
-              </a>
-              <button type="button" class="auth-signout-btn" (click)="logout.emit()">
-                Sign Out
-              </button>
+              <viking-button
+                variant="primary"
+                icon="home"
+                [href]="urls().app + '/dashboard'"
+              >
+                Dashboard
+              </viking-button>
+              <viking-button variant="ghost" (pressed)="logout.emit()">Sign Out</viking-button>
             }
           </div>
 
           <viking-theme-toggle [theme]="theme()" (toggle)="themeToggle.emit()" />
 
-          <button
-            type="button"
+          <viking-button
+            variant="outline"
+            square
             class="menu-toggle-btn"
-            aria-label="Toggle navigation menu"
-            [attr.aria-expanded]="mobileMenuOpen()"
-            (click)="toggleMobileMenu()"
-          >
-            <viking-icon [name]="mobileMenuOpen() ? 'x' : 'menu'" [size]="24" />
-          </button>
+            [icon]="mobileMenuOpen() ? 'x' : 'menu'"
+            [label]="mobileMenuOpen() ? 'Close navigation menu' : 'Toggle navigation menu'"
+            (pressed)="toggleMobileMenu()"
+          />
         </div>
       </div>
 
@@ -152,22 +151,34 @@ import {
         <div class="mobile-divider"></div>
 
         @if (!isAuthenticated()) {
-          <button type="button" class="mobile-auth-btn" (click)="login.emit(); closeMobileMenu()">
-            <viking-icon name="arrow-right" [size]="16" />
-            <span>Sign In</span>
-          </button>
+          <viking-button
+            variant="primary"
+            icon="arrow-right"
+            class="mobile-auth-btn"
+            [fullWidth]="true"
+            (pressed)="login.emit(); closeMobileMenu()"
+          >
+            Sign In
+          </viking-button>
         } @else {
-          <a [href]="urls().app + '/dashboard'" class="mobile-auth-btn" (click)="closeMobileMenu()">
-            <viking-icon name="home" [size]="16" />
-            <span>Dashboard</span>
-          </a>
-          <button
-            type="button"
-            class="mobile-auth-btn auth-signout-btn"
-            (click)="logout.emit(); closeMobileMenu()"
+          <viking-button
+            variant="primary"
+            icon="home"
+            class="mobile-auth-btn"
+            [fullWidth]="true"
+            [href]="urls().app + '/dashboard'"
+            (pressed)="closeMobileMenu()"
+          >
+            Dashboard
+          </viking-button>
+          <viking-button
+            variant="ghost"
+            class="mobile-auth-btn"
+            [fullWidth]="true"
+            (pressed)="logout.emit(); closeMobileMenu()"
           >
             Sign Out
-          </button>
+          </viking-button>
         }
       </nav>
     </header>

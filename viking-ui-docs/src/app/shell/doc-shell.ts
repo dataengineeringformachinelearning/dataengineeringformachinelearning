@@ -1,14 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  signal,
-} from "@angular/core";
+import { ChangeDetectionStrategy, Component, signal } from "@angular/core";
 import {
   Router,
   RouterLink,
   RouterLinkActive,
   RouterOutlet,
 } from "@angular/router";
+import { SITE } from "../../lib/site";
 import {
   VikingAppSidebar,
   VikingButton,
@@ -47,6 +44,12 @@ const readTheme = (): "light" | "dark" => {
 export class DocShell {
   protected readonly theme = signal<"light" | "dark">(readTheme());
 
+  protected readonly siteUrls = {
+    app: SITE.app,
+    marketing: SITE.marketing,
+    backend: "https://backend.deml.app",
+  };
+
   constructor(private readonly router: Router) {}
 
   protected readonly navSections = [
@@ -81,6 +84,17 @@ export class DocShell {
     document.documentElement.setAttribute("data-theme", next);
     document.documentElement.classList.toggle("dark", next === "dark");
     localStorage.setItem("theme", next);
+  };
+
+  protected signIn = (): void => {
+    const returnUrl = encodeURIComponent(window.location.origin);
+    window.location.href = `${SITE.app}/login?returnUrl=${returnUrl}`;
+  };
+
+  protected openSearch = (): void => {
+    const widgets = (globalThis as { DemlWidgets?: { openSearch?: () => void } })
+      .DemlWidgets;
+    widgets?.openSearch?.();
   };
 
   private focusCategory = (sectionId: string): void => {
