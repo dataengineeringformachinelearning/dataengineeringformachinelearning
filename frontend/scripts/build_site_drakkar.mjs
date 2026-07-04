@@ -199,7 +199,7 @@ ${navLinks.map(link => navLinkHtml(link, 'nav-btn')).join('\n')}
         aria-label="Toggle light and dark theme"
         id="theme-toggle-btn"
       >
-        <span id="theme-icon">${iconSlot('sun', 24)}</span>
+        ${iconSlot('sun', 24)}
       </button>
 
       <button
@@ -209,7 +209,7 @@ ${navLinks.map(link => navLinkHtml(link, 'nav-btn')).join('\n')}
         aria-expanded="false"
         id="mobile-menu-btn"
       >
-        <span id="menu-icon">${iconSlot('menu', 24)}</span>
+        ${iconSlot('menu', 24)}
       </button>
     </div>
   </div>

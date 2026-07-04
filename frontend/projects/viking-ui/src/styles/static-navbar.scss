@@ -362,6 +362,16 @@ html[data-theme='light'] {
 .navbar .theme-toggle-btn,
 .theme-toggle-btn {
   @include viking-navbar-utility-btn;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+
+  svg,
+  viking-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+  }
 
   &:hover {
     background-color: color-mix(
@@ -383,7 +393,16 @@ html[data-theme='light'] {
 
 .menu-toggle-btn {
   @include viking-navbar-utility-btn;
-  display: inline-flex !important;
+  display: inline-grid !important;
+  place-items: center;
+  padding: 0;
+
+  svg,
+  viking-icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .menu-toggle-btn[aria-expanded='true'] {

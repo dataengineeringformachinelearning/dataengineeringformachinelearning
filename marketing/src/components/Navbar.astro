@@ -1,5 +1,6 @@
 ---
 import VikingIcon from './VikingIcon.astro';
+import ThemeToggle from './ThemeToggle.astro';
 import { siteEnv } from '../lib/site-env';
 import {
   SITE_NAV_LINKS,
@@ -63,9 +64,7 @@ const brandHref = resolveBrandHref('marketing', urls);
         </button>
       </div>
 
-      <button type="button" class="theme-toggle-btn" aria-label="Toggle light and dark theme" id="theme-toggle-btn">
-        <span id="theme-icon"><VikingIcon name="sun" size={24} /></span>
-      </button>
+      <ThemeToggle />
 
       <button
         type="button"
@@ -74,7 +73,7 @@ const brandHref = resolveBrandHref('marketing', urls);
         aria-expanded="false"
         id="mobile-menu-btn"
       >
-        <span id="menu-icon"><VikingIcon name="menu" size={24} /></span>
+        <VikingIcon name="menu" size={24} />
       </button>
     </div>
   </div>

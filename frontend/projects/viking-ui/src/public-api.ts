@@ -45,6 +45,7 @@ export { VikingControl, provideVikingCva } from './lib/core/cva';
 export * from './lib/site-drakkar/site-drakkar.config';
 export * from './lib/site-drakkar/site-navbar';
 export * from './lib/site-drakkar/site-footer';
+export * from './lib/theme-toggle/theme-toggle';
 export * from './lib/app-header/app-header';
 export * from './lib/app-sidebar/app-sidebar';
 export * from './lib/accordion/accordion';

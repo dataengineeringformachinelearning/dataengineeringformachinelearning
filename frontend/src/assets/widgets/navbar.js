@@ -44,12 +44,11 @@
 
   const initThemeToggle = () => {
     const themeBtn = document.getElementById('theme-toggle-btn');
-    const themeIcon = document.getElementById('theme-icon');
-    if (!themeBtn || !themeIcon) return;
+    if (!themeBtn) return;
 
     const updateThemeIcon = () => {
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      setIcon(themeIcon, isDark ? 'sun' : 'moon', 24);
+      themeBtn.innerHTML = svgIcon(isDark ? 'sun' : 'moon', 24);
     };
 
     updateThemeIcon();
@@ -65,20 +64,19 @@
 
   const initMobileMenu = () => {
     const menuBtn = document.getElementById('mobile-menu-btn');
-    const menuIcon = document.getElementById('menu-icon');
     const mobileMenu = document.getElementById('mobile-menu');
-    if (!menuBtn || !menuIcon || !mobileMenu) return;
+    if (!menuBtn || !mobileMenu) return;
 
     menuBtn.addEventListener('click', () => {
       const isOpen = mobileMenu.classList.contains('open');
       if (isOpen) {
         mobileMenu.classList.remove('open');
         menuBtn.setAttribute('aria-expanded', 'false');
-        setIcon(menuIcon, 'menu', 24);
+        menuBtn.innerHTML = svgIcon('menu', 24);
       } else {
         mobileMenu.classList.add('open');
         menuBtn.setAttribute('aria-expanded', 'true');
-        setIcon(menuIcon, 'x', 24);
+        menuBtn.innerHTML = svgIcon('x', 24);
       }
     });
   };
