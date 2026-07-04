@@ -58,7 +58,7 @@ export class Account implements OnInit {
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  private fluxDialog = inject(VikingDialogService);
+  private vikingDialog = inject(VikingDialogService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
 
@@ -196,7 +196,7 @@ export class Account implements OnInit {
   }
 
   async cancelSubscription() {
-    const ok = await this.fluxDialog.openConfirm({
+    const ok = await this.vikingDialog.openConfirm({
       title: 'Cancel Subscription',
       message:
         'Are you sure you want to cancel your Pro subscription? It will remain active until the end of your billing cycle.',
@@ -281,7 +281,7 @@ export class Account implements OnInit {
   }
 
   async revokeApiKey(id: string) {
-    const ok = await this.fluxDialog.openConfirm({
+    const ok = await this.vikingDialog.openConfirm({
       title: 'Revoke API Key',
       message:
         'Are you sure you want to revoke this API key? Systems using it will immediately lose access.',
@@ -316,7 +316,7 @@ export class Account implements OnInit {
   }
 
   async deleteAccount() {
-    const confirmed = await this.fluxDialog.openConfirm({
+    const confirmed = await this.vikingDialog.openConfirm({
       title: 'Delete Account Permanently',
       message:
         'CRITICAL WARNING: Are you sure you want to permanently delete your account? All of your status pages, monitored services, incident reports, and telemetry data will be permanently and irreversibly destroyed.',
@@ -332,7 +332,7 @@ export class Account implements OnInit {
         const success = await this.authService.deleteAccount();
         this.isDeletingAccount.set(false);
         if (success) {
-          await this.fluxDialog.openConfirm({
+          await this.vikingDialog.openConfirm({
             title: 'Account Deleted',
             message: 'Your account and all associated data have been permanently deleted.',
             type: 'alert',
@@ -341,7 +341,7 @@ export class Account implements OnInit {
           await this.router.navigate(['/']);
           window.location.reload();
         } else {
-          await this.fluxDialog.openConfirm({
+          await this.vikingDialog.openConfirm({
             title: 'Deletion Failed',
             message: 'Failed to delete account.',
             type: 'alert',
@@ -453,7 +453,7 @@ export class Account implements OnInit {
     this.mfaError.set(null);
     this.mfaSuccess.set(null);
 
-    const ok = await this.fluxDialog.openConfirm({
+    const ok = await this.vikingDialog.openConfirm({
       title: 'Disable Multi-Factor Authentication',
       message: 'Are you sure you want to disable MFA? Your account will be less secure.',
       type: 'confirm',
@@ -508,7 +508,7 @@ export class Account implements OnInit {
   }
 
   async unlinkGoogle() {
-    const ok = await this.fluxDialog.openConfirm({
+    const ok = await this.vikingDialog.openConfirm({
       title: 'Unlink Google Account',
       message:
         'Are you sure you want to disconnect your Google account? You will no longer be able to log in using Google.',
@@ -545,7 +545,7 @@ export class Account implements OnInit {
   }
 
   async unlinkApple() {
-    const ok = await this.fluxDialog.openConfirm({
+    const ok = await this.vikingDialog.openConfirm({
       title: 'Unlink Apple ID',
       message:
         'Are you sure you want to disconnect your Apple ID? You will no longer be able to log in using Apple.',

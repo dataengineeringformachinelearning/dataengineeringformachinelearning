@@ -11,19 +11,19 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     <header class="viking-app-header">
       <div class="viking-app-header-content">
         <div class="viking-app-header-left">
-          <ng-content select="[fluxAppHeaderBrand]" />
+          <ng-content select="[vikingAppHeaderBrand]" />
         </div>
         <nav
           class="viking-app-header-center viking-app-header-desktop-nav"
           aria-label="Main navigation"
         >
-          <ng-content select="[fluxAppHeaderNav]" />
+          <ng-content select="[vikingAppHeaderNav]" />
         </nav>
         <div class="viking-app-header-right">
           <div class="viking-app-header-desktop-auth">
-            <ng-content select="[fluxAppHeaderAuth]" />
+            <ng-content select="[vikingAppHeaderAuth]" />
           </div>
-          <ng-content select="[fluxAppHeaderActions]" />
+          <ng-content select="[vikingAppHeaderActions]" />
         </div>
       </div>
       <nav
@@ -31,7 +31,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         [class.viking-open]="mobileMenuOpen()"
         [attr.aria-label]="mobileMenuLabel()"
       >
-        <ng-content select="[fluxAppHeaderMobile]" />
+        <ng-content select="[vikingAppHeaderMobile]" />
       </nav>
     </header>
   `,

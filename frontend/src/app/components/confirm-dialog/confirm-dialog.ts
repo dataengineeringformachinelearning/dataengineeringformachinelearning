@@ -39,12 +39,12 @@ export interface ConfirmDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialog {
-  private readonly fluxDialog = inject(VikingDialogService);
+  private readonly vikingDialog = inject(VikingDialogService);
 
   protected readonly inputValue = signal<string>('');
 
   protected readonly data = computed(() => {
-    const active = this.fluxDialog.active();
+    const active = this.vikingDialog.active();
     return active?.kind === 'confirm' ? (active.data as ConfirmDialogData) : null;
   });
 
@@ -81,13 +81,13 @@ export class ConfirmDialog {
 
   protected onCancel = (): void => {
     this.inputValue.set('');
-    this.fluxDialog.resolveConfirm(false);
+    this.vikingDialog.resolveConfirm(false);
   };
 
   protected onConfirm = (): void => {
     if (!this.isValid()) return;
     this.inputValue.set('');
-    this.fluxDialog.resolveConfirm(true);
+    this.vikingDialog.resolveConfirm(true);
   };
 
   protected onOpenChange = (next: boolean): void => {

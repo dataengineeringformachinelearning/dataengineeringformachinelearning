@@ -24,7 +24,7 @@ export interface SelectOption {
   template: `
     <viking-field [label]="label ?? ''">
       <viking-select
-        [options]="fluxOptions"
+        [options]="vikingOptions"
         [ngModel]="value"
         (ngModelChange)="valueChange.emit($event)"
         [disabled]="disabled"
@@ -64,7 +64,7 @@ export class UnifiedSelect {
   @Input() width: VikingSelectWidth = 'half';
   @Output() valueChange = new EventEmitter<string>();
 
-  protected get fluxOptions(): VikingSelectOption[] {
+  protected get vikingOptions(): VikingSelectOption[] {
     return this.options.map(opt => ({ label: opt.label, value: opt.value }));
   }
 }

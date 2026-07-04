@@ -2,7 +2,7 @@
   "name": "viking-ui-docs",
   "version": "1.0.0",
   "private": true,
-  "description": "Standalone Viking-UI documentation site (spartan.ng-style). Deployed separately from deml.app.",
+  "description": "Standalone Viking-UI documentation site. Deployed separately from deml.app.",
   "scripts": {
     "prebuild": "npm run build:viking-ui --prefix ../frontend",
     "start": "ng serve",

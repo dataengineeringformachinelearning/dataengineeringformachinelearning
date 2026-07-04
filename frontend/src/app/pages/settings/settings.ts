@@ -66,7 +66,7 @@ export class Settings implements OnInit {
   public authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
-  private fluxDialog = inject(VikingDialogService);
+  private vikingDialog = inject(VikingDialogService);
   private titleService = inject(Title);
   private metaService = inject(Meta);
   public settingsService = inject(SettingsService);
@@ -272,7 +272,7 @@ export class Settings implements OnInit {
           error: async err => {
             console.error('Error creating page:', err);
             this.isCreatingPage.set(false);
-            await this.fluxDialog.openConfirm({
+            await this.vikingDialog.openConfirm({
               title: 'Creation Failed',
               message: apiErrorMessage(
                 err,
@@ -288,7 +288,7 @@ export class Settings implements OnInit {
   }
 
   async deleteStatusPage(pageId: string) {
-    const ok = await this.fluxDialog.openConfirm({
+    const ok = await this.vikingDialog.openConfirm({
       title: 'Delete Status Page',
       message:
         'Are you sure you want to delete this status page? All monitored services and incidents will be removed.',
@@ -333,7 +333,7 @@ export class Settings implements OnInit {
             this.selectedPage.set(updated);
             this.loadStatusPages();
             this.isUpdatingPage.set(false);
-            await this.fluxDialog.openConfirm({
+            await this.vikingDialog.openConfirm({
               title: 'Settings Saved',
               message: 'Status page settings saved successfully.',
               type: 'alert',
@@ -343,7 +343,7 @@ export class Settings implements OnInit {
           error: async err => {
             console.error('Error updating status page:', err);
             this.isUpdatingPage.set(false);
-            await this.fluxDialog.openConfirm({
+            await this.vikingDialog.openConfirm({
               title: 'Update Failed',
               message: apiErrorMessage(
                 err,
@@ -386,7 +386,7 @@ export class Settings implements OnInit {
         s => s.url.toLowerCase() === this.newServiceUrl.toLowerCase(),
       );
       if (urlExists) {
-        await this.fluxDialog.openConfirm({
+        await this.vikingDialog.openConfirm({
           title: 'Duplicate Endpoint',
           message: 'This health check URL is already being monitored on this page.',
           type: 'alert',
@@ -409,7 +409,7 @@ export class Settings implements OnInit {
           error: async err => {
             console.error('Error adding service:', err);
             this.isAddingService.set(false);
-            await this.fluxDialog.openConfirm({
+            await this.vikingDialog.openConfirm({
               title: 'Failed to Add Service',
               message:
                 'An error occurred while adding the monitored service. Please verify the URL and try again.',

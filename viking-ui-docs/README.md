@@ -1,6 +1,6 @@
 # Viking-UI Documentation Site
 
-Standalone [spartan.ng](https://spartan.ng)-style documentation site for the `@dataengineeringformachinelearning/viking-ui` Angular component library.
+Standalone documentation site for the `@dataengineeringformachinelearning/viking-ui` Angular component library.
 
 **Live site:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/)
 

@@ -169,14 +169,18 @@ def patch_viking_package_json() -> None:
   if not pkg.exists():
     return
   text = pkg.read_text(encoding="utf-8")
-  text = text.replace(
-    '"description": "Viking-Material: DEML UI kit. Viking UI (fluxui.dev) component styles blended with Angular Material design tokens, THEME.md palette only."',
-    '"description": "Viking-UI: DEML clinical design system for Angular. Viking + Spartan-inspired patterns, THEME.md palette only."',
+  text = re.sub(
+    r'"description": "Viking-Material:[^"]+"',
+    '"description": "Viking-UI: DEML clinical design system for Angular. Composable primitives, THEME.md palette only."',
+    text,
+    count=1,
   )
   text = re.sub(r'"version": "[^"]+"', '"version": "1.0.0"', text, count=1)
-  text = text.replace(
-    '"keywords": [\n    "angular",\n    "ui",\n    "flux",\n    "material",\n    "design-system",\n    "deml"\n  ]',
+  text = re.sub(
+    r'"keywords": \[\s*"angular",\s*"ui",\s*"[^"]+",\s*"material",[^\]]+\]',
     '"keywords": [\n    "angular",\n    "ui",\n    "viking-ui",\n    "design-system",\n    "deml",\n    "a11y"\n  ]',
+    text,
+    count=1,
   )
   if '"license": "UNLICENSED"' in text:
     text = text.replace('"license": "UNLICENSED"', '"license": "Apache-2.0"')

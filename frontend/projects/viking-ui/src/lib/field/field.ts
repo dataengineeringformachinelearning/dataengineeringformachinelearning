@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { fluxUid } from '../core/uid';
+import { vikingUid } from '../core/uid';
 
 /**
  * viking-field — label / description / error wrapper for any control
@@ -99,7 +99,7 @@ export class VikingField {
   readonly error = input<string>('');
   readonly required = input<boolean>(false);
 
-  protected readonly descriptionId = fluxUid('viking-field-description');
-  protected readonly errorId = fluxUid('viking-field-error');
-  protected readonly labelId = fluxUid('viking-field-label');
+  protected readonly descriptionId = vikingUid('viking-field-description');
+  protected readonly errorId = vikingUid('viking-field-error');
+  protected readonly labelId = vikingUid('viking-field-label');
 }

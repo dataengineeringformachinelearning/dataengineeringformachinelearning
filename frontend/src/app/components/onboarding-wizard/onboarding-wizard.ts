@@ -49,14 +49,14 @@ type WizardStep = (typeof STEPS)[number];
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnboardingWizard {
-  private readonly fluxDialog = inject(VikingDialogService);
+  private readonly vikingDialog = inject(VikingDialogService);
   private monitorService = inject(MonitorService);
   private settingsService = inject(SettingsService);
   private authService = inject(AuthService);
   private onboardingService = inject(OnboardingService);
   private cdr = inject(ChangeDetectorRef);
 
-  protected readonly open = computed(() => this.fluxDialog.active()?.kind === 'onboarding');
+  protected readonly open = computed(() => this.vikingDialog.active()?.kind === 'onboarding');
 
   currentStep = signal<WizardStep>('welcome');
   isBusy = signal(false);
@@ -96,7 +96,7 @@ export class OnboardingWizard {
 
   protected onOpenChange = (next: boolean): void => {
     if (!next) {
-      this.fluxDialog.resolveOnboarding(false);
+      this.vikingDialog.resolveOnboarding(false);
     }
   };
 
@@ -118,12 +118,12 @@ export class OnboardingWizard {
 
   skip() {
     this.onboardingService.markSkipped();
-    this.fluxDialog.resolveOnboarding(false);
+    this.vikingDialog.resolveOnboarding(false);
   }
 
   finish() {
     this.onboardingService.markComplete();
-    this.fluxDialog.resolveOnboarding(true);
+    this.vikingDialog.resolveOnboarding(true);
   }
 
   createSite() {

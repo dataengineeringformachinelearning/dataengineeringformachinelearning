@@ -16,7 +16,7 @@ import { VikingIconName } from '../core/icons';
         <viking-icon [name]="icon()!" [size]="20" class="panel-icon" />
       }
       <h2 class="viking-hud-panel-title">{{ title() }}</h2>
-      <ng-content select="[fluxHudPanelBadge]" />
+      <ng-content select="[vikingHudPanelBadge]" />
     </div>
     <ng-content />
   `,

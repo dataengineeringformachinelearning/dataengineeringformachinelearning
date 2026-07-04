@@ -57,14 +57,14 @@ module.exports = defineConfig([
     },
   },
   {
-    // Viking-Material UI library uses the `flux` selector prefix.
+    // Viking-UI library uses the `viking` selector prefix for projection attributes.
     files: ['projects/viking-ui/**/*.ts'],
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
         {
           type: 'attribute',
-          prefix: 'flux',
+          prefix: 'viking',
           style: 'camelCase',
         },
       ],
@@ -72,7 +72,7 @@ module.exports = defineConfig([
         'error',
         {
           type: 'element',
-          prefix: 'flux',
+          prefix: 'viking',
           style: 'kebab-case',
         },
       ],

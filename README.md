@@ -57,7 +57,7 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
 - **SaaS Reliability & Stability**: Comprehensive automated testing, static analysis (Ruff/ESLint/Axe), and clean-code architecture ensuring production-grade robustness.
-- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, app, API, and docs — Spartan-structured composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
+- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, app, API, and docs — composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
 
 ## Design System (Viking-UI)
 
@@ -70,7 +70,7 @@ All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** 
 | [backend.deml.app](https://backend.deml.app) | `backend/static/viking-ui.css` |
 | Swagger / OpenAPI UI | Same tokens via static CSS |
 
-**Philosophy:** Precision engineering and high-end industrial tech — Spartan-structured composable primitives with a **premium restrained luxury** palette: dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. Always import `viking-*` components; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
+**Philosophy:** Precision engineering and high-end industrial tech — composable primitives with a **premium restrained luxury** palette: dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. Always import `viking-*` components; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
 
 ## Solution Architecture
 

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input, model } from '@angular/core'
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingSelectOption } from '../core/types';
 import type { VikingSelectWidth } from '../select/select';
-import { fluxUid } from '../core/uid';
+import { vikingUid } from '../core/uid';
 
 /**
  * viking-native-select — styled native &lt;select&gt;.
@@ -98,7 +98,7 @@ export class VikingNativeSelect extends VikingControl<string | number | null> {
 
   readonly value = model<string | number | null>(null);
 
-  protected readonly selectId = fluxUid('viking-native-select');
+  protected readonly selectId = vikingUid('viking-native-select');
 
   writeValue(value: string | number | null): void {
     this.value.set(value);

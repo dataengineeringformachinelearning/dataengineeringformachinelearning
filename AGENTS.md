@@ -35,7 +35,7 @@ This document captures the core coding principles, philosophies, and "how we bui
   - Mobile-first: Strict `.page-inner-wrapper` (1260px max), 4px grid (`--viking-grid-unit`). No CLS.
   - Zero-dependency UI: Native SVG for telemetry graphs (high-frequency data without bloat).
   - Distroless containers: `gcr.io/distroless/nodejs22-debian12` for Angular SSR frontend; `gcr.io/distroless/python3-debian12` for Django API.
-  - Premium aesthetic: Viking-UI design system ([THEME.md](THEME.md)) — Spartan-structured composable primitives, charcoal/teal/crimson tokens, `viking-skeleton` loaders, `.viking-font-display` (Inter caps) on CES/marketing display only. Cursor agents must follow [.cursorrules](.cursorrules).
+  - Premium aesthetic: Viking-UI design system ([THEME.md](THEME.md)) — composable primitives, charcoal/teal/crimson tokens, `viking-skeleton` loaders, `.viking-font-display` (Inter caps) on CES/marketing display only. Cursor agents must follow [.cursorrules](.cursorrules).
 - **Backend (Python/Django)**:
   - Ruff for linting/formatting (fast, zero-compromise).
   - Use `uv` (Astral) for environment and tool execution (`uvx pre-commit`).
@@ -184,12 +184,12 @@ This document defines the core roles and collaboration rules for our development
 3.  **Modern Stack**: Focus on clean, modern, and beautiful designs following the guidelines set in `THEME.md` and standard framework patterns.
 4.  **Zero-Dependency & IP Ownership**: Maximize intellectual property and system stability by building independent, highly-cohesive implementations from scratch. Strictly minimize reliance on third-party libraries, external dependencies, or heavy abstraction layers. Our code is our IP.
 
-### Viking-UI Uniformity Law (Spartan-inspired)
+### Viking-UI Uniformity Law
 
 All DEML surfaces share one design system. **[.cursorrules](.cursorrules)** is the Cursor agent entry point; **[THEME.md](THEME.md)** is the canonical token matrix; **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** documents the kit.
 
 - **Always import and use** `@dataengineeringformachinelearning/viking-ui` components (`viking-button`, `viking-field`, `viking-card`, `viking-chart`, etc.) in Angular — never Material, Bootstrap, or other third-party UI runtimes.
-- **Spartan structure, Viking palette:** composable primitives and accessible field stacks per [spartan.ng](https://spartan.ng/); colors/spacing/typography from `--viking-*` tokens only.
+- **Composable structure, Viking palette:** accessible field stacks and primitive components; colors/spacing/typography from `--viking-*` tokens only.
 - **Premium restrained luxury:** dark-first charcoals, machined metallic borders, restrained teal/crimson accents — no gradient orbs, neon glow, or decorative clutter.
 - **Extend the kit, don't fork it:** new shared UI belongs in `frontend/projects/viking-ui/` first, then consumed by deml.app and marketing surfaces via synced `viking-ui.css`.
 - **Non-Angular surfaces** (marketing Astro, Django templates, Swagger) load `design-tokens.css` + `viking-ui.css` and use `var(--viking-*)` — no inline hex palettes.
