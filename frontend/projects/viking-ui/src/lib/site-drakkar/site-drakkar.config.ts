@@ -6,7 +6,7 @@ import { VikingIconName } from '../core/icons';
  */
 
 /** Which DEML surface the Drakkar shell is rendering on (navbar + footer). */
-export type SiteDrakkarContext = 'app' | 'marketing' | 'backend';
+export type SiteDrakkarContext = 'app' | 'marketing' | 'backend' | 'docs';
 
 export interface SiteUrls {
   app: string;

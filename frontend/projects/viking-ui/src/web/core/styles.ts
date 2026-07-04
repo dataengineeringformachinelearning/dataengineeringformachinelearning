@@ -815,8 +815,8 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   justify-content: center;
   padding: 10vh var(--viking-space-2) var(--viking-space-2);
   background: var(--viking-overlay-backdrop);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: none;
   animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-out);
 }
@@ -824,7 +824,9 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
 .viking-search-palette {
   display: flex;
   flex-direction: column;
-  background: var(--viking-surface);
+  background: var(--viking-surface-glass, color-mix(in srgb, var(--viking-surface) 82%, transparent));
+  backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
   border: 1px solid var(--viking-border-strong);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-lg);

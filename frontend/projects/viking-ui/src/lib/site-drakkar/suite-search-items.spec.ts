@@ -35,4 +35,23 @@ describe('buildSuiteSearchItems', () => {
 
     expect(privacy?.keywords?.some(keyword => keyword.includes('privacy'))).toBe(true);
   });
+
+  it('includes Viking-UI docs entries for docs context', () => {
+    const items = buildSuiteSearchItems('docs', urls, {
+      docsOrigin: 'https://ui.dataengineeringformachinelearning.com',
+    });
+    const titles = items.map(item => item.title);
+
+    expect(titles).toContain('Components');
+    expect(titles).toContain('Playground');
+    expect(titles).toContain('Whitepaper');
+    expect(items.find(item => item.title === 'Components')?.href).toBe(
+      'https://ui.dataengineeringformachinelearning.com/components',
+    );
+  });
+
+  it('includes Settings shortcut for app context', () => {
+    const items = buildSuiteSearchItems('app', urls);
+    expect(items.some(item => item.title === 'Settings')).toBe(true);
+  });
 });

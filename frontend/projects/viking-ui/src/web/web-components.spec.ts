@@ -5,6 +5,7 @@ import {
   registerVikingModalWc,
   registerVikingSearchPaletteWc,
   registerVikingSelectWc,
+  registerVikingSuiteSearchPaletteWc,
 } from './index';
 
 const registerAll = (): void => {
@@ -13,6 +14,7 @@ const registerAll = (): void => {
   registerVikingSelectWc();
   registerVikingModalWc();
   registerVikingSearchPaletteWc();
+  registerVikingSuiteSearchPaletteWc();
 };
 
 describe('Viking Web Components v2', () => {
@@ -131,5 +133,27 @@ describe('Viking Web Components v2', () => {
     );
     await Promise.resolve();
     expect(palette.hasAttribute('open')).toBe(false);
+  });
+
+  it('mounts suite palette with curated items and openPalette()', async () => {
+    document.documentElement.setAttribute('data-deml-context', 'marketing');
+    const suite = document.createElement('viking-suite-search-palette-wc');
+    document.body.append(suite);
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    suite.openPalette();
+    await Promise.resolve();
+
+    const inner = suite.querySelector('viking-search-palette-wc');
+    expect(inner?.hasAttribute('open')).toBe(true);
+
+    const itemsRaw = inner?.getAttribute('items') ?? '[]';
+    const items = JSON.parse(itemsRaw) as Array<{ title: string }>;
+    const titles = items.map(item => item.title);
+    expect(titles).toContain('Documentation');
+    expect(titles).toContain('Privacy Policy');
+    expect(titles).toContain('Whitepaper');
   });
 });

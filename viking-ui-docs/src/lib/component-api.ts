@@ -257,6 +257,28 @@ export const SEARCH_PALETTE_API: ComponentApi = {
   ],
 };
 
+export const SUITE_SEARCH_PALETTE_API: ComponentApi = {
+  inputs: [
+    { name: 'context', type: 'SiteDrakkarContext', default: 'auto', description: 'Surface: app | marketing | backend | docs — auto-detected from data-deml-context or hostname when omitted.' },
+    { name: 'urls', type: 'SiteUrls', description: 'Angular wrapper — override default suite URLs.' },
+    { name: 'placeholder', type: 'string', default: "'Search documentation, dashboard, settings…'", description: 'Search input placeholder.' },
+    { name: 'bindShortcut', type: 'boolean', default: 'true', description: 'Angular wrapper — bind ⌘K / Ctrl+K globally.' },
+  ],
+  attributes: [
+    { name: 'context', type: 'string', description: 'Surface: app | marketing | backend | docs.' },
+    { name: 'app-url', type: 'string', description: 'Override deml.app origin.' },
+    { name: 'marketing-url', type: 'string', description: 'Override marketing site origin.' },
+    { name: 'backend-url', type: 'string', description: 'Override backend API origin.' },
+    { name: 'global-shortcut', type: 'boolean', default: 'true', description: 'Bind ⌘K / Ctrl+K to toggle open/close.' },
+    { name: 'placeholder', type: 'string', description: 'Search input placeholder.' },
+  ],
+  methods: [
+    { name: 'openPalette()', description: 'Programmatically open the command palette.' },
+    { name: 'closePalette()', description: 'Programmatically close the command palette.' },
+  ],
+  cssClasses: SEARCH_PALETTE_API.cssClasses,
+};
+
 export const CARD_TITLE_API: ComponentApi = {
   inputs: [
     { name: 'icon', type: 'VikingIconName', description: 'Leading icon rendered inside viking-icon-badge.' },
@@ -320,6 +342,7 @@ export const COMPONENT_API_MAP: Record<string, ComponentApi> = {
   modal: MODAL_API,
   select: SELECT_API,
   'search-palette': SEARCH_PALETTE_API,
+  'suite-search-palette': SUITE_SEARCH_PALETTE_API,
   command: COMMAND_API,
   switch: SWITCH_API,
   toast: TOAST_API,
