@@ -47,7 +47,7 @@ const jsonLdPayload = jsonLd
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-deml-context="marketing">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -176,7 +176,8 @@ const jsonLdPayload = jsonLd
 			};
 		</script>
 		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>
-		<script is:inline src="/assets/widgets/algolia-search.js" defer></script>
+		<script type="module" src="/assets/viking-ui-elements.js"></script>
+		<script is:inline src="/assets/widgets/command-palette.js" defer></script>
 
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-MH3M99CQ80"></script>
 		<script is:inline>

@@ -730,26 +730,6 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'command',
-          name: 'Command',
-          description: 'Keyboard-driven command list for power-user workflows.',
-          preview: `<div class="viking-command-static viking-card viking-card-compact">
-  <span class="viking-label">Commands</span>
-  <button type="button" class="viking-search-result">Deploy to production <span class="viking-kbd-static">D</span></button>
-  <button type="button" class="viking-search-result">Open audit log <span class="viking-kbd-static">A</span></button>
-</div>`,
-          selector: 'viking-command',
-          tags: ['angular'],
-        },
-        snippets(
-          `<viking-command [items]="commands" (select)="runCommand($event)" />`,
-          `{/* Pair with viking-search-palette-wc for static sites */}`,
-          `{# Command palette body slot in Angular #}`,
-          `// viking-command lists actions inside search palette`,
-        ),
-      ),
-      entry(
-        {
           id: 'popover',
           name: 'Popover',
           description: 'Anchored floating panel for contextual actions and filters.',

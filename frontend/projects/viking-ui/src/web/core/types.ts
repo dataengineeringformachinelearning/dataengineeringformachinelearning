@@ -4,6 +4,8 @@ export type VikingSearchPaletteItem = {
   href: string;
   snippet?: string;
   group?: string;
+  keywords?: string[];
+  action?: 'cookie-settings' | 'bug-report';
 };
 
 export type VikingWcTone =

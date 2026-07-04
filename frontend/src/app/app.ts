@@ -20,6 +20,7 @@ import { VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
 import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
+import { CommandPalette } from './components/command-palette/command-palette';
 import { SessionIdleService } from './services/session-idle.service';
 import { SessionStateService } from './services/session-state.service';
 
@@ -35,6 +36,7 @@ import { SessionStateService } from './services/session-state.service';
     VikingToaster,
     ConfirmDialog,
     OnboardingWizard,
+    CommandPalette,
   ],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,

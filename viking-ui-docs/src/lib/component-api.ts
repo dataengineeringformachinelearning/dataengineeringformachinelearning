@@ -220,14 +220,30 @@ export const SELECT_API: ComponentApi = {
 export const SEARCH_PALETTE_API: ComponentApi = {
   attributes: [
     { name: 'open', type: 'boolean', description: 'Shows the command palette overlay.' },
-    { name: 'global-shortcut', type: 'boolean', description: 'Bind ⌘K / Ctrl+K to open.' },
+    { name: 'global-shortcut', type: 'boolean', description: 'Bind ⌘K / Ctrl+K to toggle open/close.' },
     { name: 'placeholder', type: 'string', description: 'Search input placeholder.' },
-    { name: 'items', type: 'JSON', description: 'Array of { title, href, snippet?, group? }.' },
+    {
+      name: 'items',
+      type: 'JSON',
+      description: 'Array of { title, href, snippet?, group?, keywords?, action? }.',
+    },
   ],
   events: [
     { name: 'viking-close', type: 'CustomEvent<void>', description: 'Palette closed.' },
     { name: 'viking-query', type: 'CustomEvent<{ query: string }>', description: 'Search query changed.' },
     { name: 'viking-select', type: 'CustomEvent<{ item: object }>', description: 'Result activated (before navigation).' },
+  ],
+};
+
+export const COMMAND_API: ComponentApi = {
+  inputs: [
+    { name: 'items', type: 'VikingCommandItem[]', description: 'Grouped command entries with optional icon and kbd hint.' },
+    { name: 'open', type: 'boolean', default: 'false', description: 'Controls palette visibility.' },
+    { name: 'placeholder', type: 'string', default: "'Type a command or search…'", description: 'Search field placeholder.' },
+  ],
+  outputs: [
+    { name: 'openChange', type: 'boolean', description: 'Two-way binding for open state.' },
+    { name: 'executed', type: 'VikingCommandItem', description: 'Emits when a command is chosen.' },
   ],
 };
 
@@ -268,6 +284,7 @@ export const COMPONENT_API_MAP: Record<string, ComponentApi> = {
   modal: MODAL_API,
   select: SELECT_API,
   'search-palette': SEARCH_PALETTE_API,
+  command: COMMAND_API,
   switch: SWITCH_API,
   toast: TOAST_API,
   icon: ICON_API,

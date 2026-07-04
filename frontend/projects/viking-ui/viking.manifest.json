@@ -195,6 +195,9 @@
     "search-palette": {
       "exports": ["VikingSearchPalette"]
     },
+    "suite-search-palette": {
+      "exports": ["VikingSuiteSearchPalette", "buildSuiteSearchItems"]
+    },
     "select": {
       "exports": ["VikingSelect"]
     },

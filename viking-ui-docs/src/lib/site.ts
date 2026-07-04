@@ -40,4 +40,11 @@ export const DOCS_PAGE_SEARCH_ITEMS = [
   { title: 'Framework guides', href: '/frameworks', snippet: 'Angular, Astro, Django setup' },
   { title: 'Search palette', href: '/components/search-palette', snippet: '⌘K command palette primitive' },
   { title: 'Contributing', href: '/contributing', snippet: 'Extend the Viking-UI kit' },
+  { title: 'deml.app Dashboard', href: 'https://deml.app/dashboard', snippet: 'Open the authenticated app', group: 'Platform' },
+  { title: 'Documentation (marketing)', href: 'https://dataengineeringformachinelearning.com/documentation/', snippet: 'Platform documentation', group: 'Resources' },
+  { title: 'Whitepaper', href: 'https://dataengineeringformachinelearning.com/whitepaper/', snippet: 'Architecture and hypothesis', group: 'Resources' },
+  { title: 'Book', href: 'https://dataengineeringformachinelearning.com/book/', snippet: 'Full platform narrative', group: 'Resources' },
+  { title: 'Privacy Policy', href: 'https://dataengineeringformachinelearning.com/privacy/', snippet: 'Legal & compliance', group: 'Legal & Compliance' },
+  { title: 'Terms of Service', href: 'https://dataengineeringformachinelearning.com/terms/', snippet: 'Legal & compliance', group: 'Legal & Compliance' },
+  { title: 'SOC2 Compliance', href: 'https://dataengineeringformachinelearning.com/compliance/', snippet: 'Trust and compliance center', group: 'Legal & Compliance' },
 ] as const;
