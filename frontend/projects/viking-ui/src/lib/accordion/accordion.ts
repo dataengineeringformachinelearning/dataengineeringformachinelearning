@@ -101,7 +101,11 @@ export class VikingAccordion {
   ],
 })
 export class VikingAccordionItem {
-  private readonly accordion = inject(VikingAccordion, { optional: true });
+  private readonly accordion: VikingAccordion | null;
+
+  constructor() {
+    this.accordion = inject(VikingAccordion, { optional: true });
+  }
 
   readonly heading = input.required<string>();
   readonly expanded = model<boolean>(false);

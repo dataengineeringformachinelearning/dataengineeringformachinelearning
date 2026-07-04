@@ -41,20 +41,17 @@
             </a>
           </nav>
 
-          <nav
-            class="nav-tree-section"
-            aria-label="Component sections"
-          >
+          <nav class="nav-tree-section" aria-label="Component sections">
             <div class="nav-tree-header">On this page</div>
             <div class="nav-tree-children">
               @for (section of navSections; track section.id) {
-                <a
-                  class="tree-child-item"
-                  href="/components#{{ section.id }}"
-                  (click)="scrollToCategory($event, section.id)"
-                >
-                  {{ section.label }}
-                </a>
+              <a
+                class="tree-child-item"
+                href="/components#{{ section.id }}"
+                (click)="scrollToCategory($event, section.id)"
+              >
+                {{ section.label }}
+              </a>
               }
             </div>
           </nav>
@@ -76,4 +73,6 @@
       <router-outlet />
     </main>
   </div>
+
+  <app-toast-outlet />
 </div>

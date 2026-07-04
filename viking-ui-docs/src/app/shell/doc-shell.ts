@@ -16,6 +16,7 @@ import {
   VikingIcon,
   VikingSiteNavbar,
 } from "@dataengineeringformachinelearning/viking-ui";
+import { ToastOutlet } from "../toast-outlet";
 
 const readTheme = (): "light" | "dark" => {
   const saved = localStorage.getItem("theme");
@@ -38,6 +39,7 @@ const readTheme = (): "light" | "dark" => {
     VikingButton,
     VikingIcon,
     VikingSiteNavbar,
+    ToastOutlet,
   ],
   templateUrl: "./doc-shell.html",
   styleUrl: "./doc-shell.scss",

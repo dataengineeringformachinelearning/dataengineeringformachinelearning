@@ -41,7 +41,11 @@ import { VIKING_TABS, VikingTabs } from './tabs';
   ],
 })
 export class VikingTabPanel {
-  private readonly tabs = inject(VikingTabs, { optional: true });
+  private readonly tabs: VikingTabs | null;
+
+  constructor() {
+    this.tabs = inject(VikingTabs, { optional: true });
+  }
 
   readonly value = input.required<string>();
 

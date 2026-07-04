@@ -19,8 +19,13 @@ let tooltipIdCounter = 0;
   },
 })
 export class VikingTooltip implements OnDestroy {
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-  private readonly document = inject(DOCUMENT);
+  private readonly host: ElementRef<HTMLElement>;
+  private readonly document: Document;
+
+  constructor() {
+    this.host = inject<ElementRef<HTMLElement>>(ElementRef);
+    this.document = inject(DOCUMENT);
+  }
 
   readonly vikingTooltip = input.required<string>();
   readonly tooltipPosition = input<'top' | 'bottom' | 'left' | 'right'>('top');
@@ -61,8 +66,16 @@ export class VikingTooltip implements OnDestroy {
   private position = (tip: HTMLElement): void => {
     const anchor = this.host.nativeElement.getBoundingClientRect();
     const rect = tip.getBoundingClientRect();
-    const gap = parseInt(getComputedStyle(this.document.documentElement).getPropertyValue('--viking-space-1'), 10) || 8;
-    const edge = parseInt(getComputedStyle(this.document.documentElement).getPropertyValue('--viking-space-1'), 10) || 8;
+    const gap =
+      parseInt(
+        getComputedStyle(this.document.documentElement).getPropertyValue('--viking-space-1'),
+        10,
+      ) || 8;
+    const edge =
+      parseInt(
+        getComputedStyle(this.document.documentElement).getPropertyValue('--viking-space-1'),
+        10,
+      ) || 8;
 
     let left = anchor.left + anchor.width / 2 - rect.width / 2;
     let top = anchor.top - rect.height - gap;

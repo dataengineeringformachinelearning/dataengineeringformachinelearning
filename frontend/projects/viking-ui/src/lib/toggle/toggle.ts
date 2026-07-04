@@ -64,7 +64,11 @@ import { VIKING_TOGGLE_GROUP, VikingToggleGroup } from './toggle-group';
   ],
 })
 export class VikingToggle {
-  private readonly group = inject(VikingToggleGroup, { optional: true });
+  private readonly group: VikingToggleGroup | null;
+
+  constructor() {
+    this.group = inject(VikingToggleGroup, { optional: true });
+  }
 
   readonly pressed = model(false);
   readonly value = input<string>('');
