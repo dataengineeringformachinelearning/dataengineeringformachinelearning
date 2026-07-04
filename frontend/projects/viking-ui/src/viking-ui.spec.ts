@@ -181,6 +181,20 @@ describe('viking-ui', () => {
     expect(stacked.nativeElement.querySelectorAll('.viking-chart-bar').length).toBe(4);
   });
 
+  it('renders a minimum visible height for zero-value bars', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingChart);
+    fixture.componentRef.setInput('kind', 'bar');
+    fixture.componentRef.setInput('series', [{ name: 'Revenue', data: [0, 5, 0] }]);
+    fixture.componentRef.setInput('barMinHeight', 4);
+    fixture.detectChanges();
+
+    const bars = fixture.nativeElement.querySelectorAll('.viking-chart-bar');
+    expect(bars.length).toBe(3);
+    expect(Number((bars[0] as SVGRectElement).getAttribute('height'))).toBe(4);
+    expect(Number((bars[2] as SVGRectElement).getAttribute('height'))).toBe(4);
+    expect(Number((bars[1] as SVGRectElement).getAttribute('height'))).toBeGreaterThan(4);
+  });
+
   it('enforces exclusive accordion mode', async (): Promise<void> => {
     @Component({
       imports: [VikingAccordion, VikingAccordionItem],

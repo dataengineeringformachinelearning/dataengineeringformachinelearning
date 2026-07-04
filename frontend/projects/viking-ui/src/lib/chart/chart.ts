@@ -69,11 +69,13 @@ const WIDTH = 720;
 const HEIGHT_DEFAULT = 240;
 const HEIGHT_COMPACT = 200;
 const HEIGHT_FILL = 400;
-const HEIGHT_FILL_LINE = 280;
+/** 3:1 plot ratio for fill-mode line/area charts (Flux-style wide panels). */
+const HEIGHT_FILL_LINE = 240;
 const HEIGHT_SPARKLINE = 48;
 const BAR_WIDTH_MIN = 12;
 const BAR_WIDTH_MAX = 96;
 const SINGLE_BAR_WIDTH = 72;
+const BAR_MIN_VISIBLE_HEIGHT_DEFAULT = 4;
 const LABEL_MAX_DEFAULT = 10;
 const LABEL_MAX_FILL = 18;
 
@@ -82,6 +84,13 @@ const resolveBarWidth = (slotWidth: number, count: number, widthPercent: number)
     return SINGLE_BAR_WIDTH;
   }
   return Math.min(BAR_WIDTH_MAX, Math.max(BAR_WIDTH_MIN, slotWidth * (widthPercent / 100)));
+};
+
+const resolveBarHeight = (value: number, normalized: number, plotHeight: number, minVisible: number): number => {
+  if (value === 0) {
+    return minVisible;
+  }
+  return Math.max(normalized * plotHeight, 0);
 };
 
 const formatTick = (value: number): string => {
@@ -446,9 +455,15 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         stroke-linejoin: round;
         vector-effect: non-scaling-stroke;
       }
+      .viking-chart-fill .viking-chart-line {
+        stroke-width: 2.5;
+      }
       .viking-chart-area {
-        opacity: 0.28;
+        opacity: 0.32;
         stroke: none;
+      }
+      .viking-chart-fill .viking-chart-area {
+        opacity: 0.38;
       }
       .viking-chart-point {
         stroke: var(--viking-surface);
@@ -456,7 +471,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         vector-effect: non-scaling-stroke;
       }
       .viking-chart-bar {
-        opacity: 0.95;
+        opacity: 1;
       }
       .viking-chart-donut-slice {
         stroke: var(--viking-surface);
@@ -478,10 +493,13 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-2) var(--viking-space-3);
         margin-top: var(--viking-space-2);
         font-size: calc(var(--viking-font-size) * 0.9);
         color: var(--viking-text-muted);
+      }
+      .viking-chart-fill .viking-chart-legend {
+        margin-top: var(--viking-space-3);
       }
       .viking-chart-legend-item {
         display: inline-flex;
@@ -521,11 +539,12 @@ export class VikingChart {
   readonly showArea = input<boolean>(false);
   readonly compact = input<boolean>(false);
   readonly fill = input<boolean>(false);
-  readonly curve = input<VikingChartCurve>('linear');
+  readonly curve = input<VikingChartCurve>('smooth');
   readonly showPoints = input<boolean>(false);
   readonly pointRadius = input<number>(4);
-  readonly barWidth = input<number>(78);
-  readonly barRadius = input<number>(4);
+  readonly barWidth = input<number>(85);
+  readonly barRadius = input<number>(6);
+  readonly barMinHeight = input<number>(BAR_MIN_VISIBLE_HEIGHT_DEFAULT);
   readonly gutter = input<number | string | undefined>(undefined);
   readonly tickCount = input<number>(4);
   readonly showLegend = input<boolean | undefined>(undefined);
@@ -811,9 +830,11 @@ export class VikingChart {
     const slotWidth = plotWidth / primary.data.length;
     const barWidth = resolveBarWidth(slotWidth, primary.data.length, widthPercent);
 
+    const minVisible = this.barMinHeight();
+
     return primary.data.map((value, index) => {
       const normalized = (value - min) / range;
-      const height = Math.max(0, normalized * plotHeight);
+      const height = resolveBarHeight(value, normalized, plotHeight, minVisible);
       const x = this.resolvedGutter().left + index * slotWidth + (slotWidth - barWidth) / 2;
       const y = bottom - height;
       return {
@@ -851,16 +872,18 @@ export class VikingChart {
       const groupInner = groupBarWidth;
       const groupOffset = (groupWidth - groupInner) / 2;
 
+      const minVisible = this.barMinHeight();
+
       series.forEach((item, seriesIndex) => {
         const value = item.data[index] ?? 0;
         const normalized = (value - min) / range;
-        const height = Math.max(0, normalized * plotHeight);
+        const height = resolveBarHeight(value, normalized, plotHeight, minVisible);
         const x = groupStart + groupOffset + seriesIndex * barWidth;
         const y = bottom - height;
         rects.push({
           x,
           y,
-          width: barWidth - 1,
+          width: Math.max(3, barWidth - 2),
           height,
           tone: item.tone ?? 'accent',
           radiusTop: true,
