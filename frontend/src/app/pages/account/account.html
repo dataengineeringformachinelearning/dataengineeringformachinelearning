@@ -93,6 +93,16 @@
                   </div>
                 </div>
                 }
+
+                @if (mfaError() || mfaSuccess()) {
+                <div class="mfa-feedback-stack">
+                  @if (mfaError()) {
+                  <viking-callout tone="danger" heading="Unable to complete MFA">{{ mfaError() }}</viking-callout>
+                  } @if (mfaSuccess()) {
+                  <viking-callout tone="success" heading="MFA enrolled">{{ mfaSuccess() }}</viking-callout>
+                  }
+                </div>
+                }
               </div>
               }
 
@@ -109,16 +119,6 @@
               }
 
               <div id="mfa-recaptcha-container" class="mfa-recaptcha-slot"></div>
-
-              @if (mfaError() || mfaSuccess()) {
-              <div class="mfa-feedback-stack">
-                @if (mfaError()) {
-                <viking-callout tone="danger" [heading]="'Error'">{{ mfaError() }}</viking-callout>
-                } @if (mfaSuccess()) {
-                <viking-callout tone="success" [heading]="'Success'">{{ mfaSuccess() }}</viking-callout>
-                }
-              </div>
-              }
             </div>
           </div>
         </div>

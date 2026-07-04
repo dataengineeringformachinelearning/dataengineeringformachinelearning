@@ -23,6 +23,7 @@ import {
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
 import { ProVerifiedBadge } from '../../components/pro-verified-badge/pro-verified-badge';
@@ -59,6 +60,7 @@ export class IsolatedStatus implements OnInit {
   formatServiceName = formatServiceName;
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
+  loadErrorKind = signal<'network' | 'not_found' | 'forbidden' | null>(null);
   isLoading = signal<boolean>(true);
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
@@ -203,7 +205,17 @@ export class IsolatedStatus implements OnInit {
           this.cdr.markForCheck();
         },
         error: err => {
-          console.error('Error fetching page by slug:', err);
+          if (err instanceof HttpErrorResponse) {
+            if (err.status === 404) {
+              this.loadErrorKind.set('not_found');
+            } else if (err.status === 403) {
+              this.loadErrorKind.set('forbidden');
+            } else {
+              this.loadErrorKind.set('network');
+            }
+          } else {
+            this.loadErrorKind.set('network');
+          }
           this.statusPages.set([]);
           this.loadFailed.set(true);
           this.isLoading.set(false);

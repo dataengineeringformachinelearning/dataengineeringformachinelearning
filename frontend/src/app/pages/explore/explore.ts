@@ -100,8 +100,7 @@ export class Explore implements OnInit {
         this.isLoading.set(false);
         this.cdr.markForCheck();
       },
-      error: err => {
-        console.error('Error fetching pages for explore:', err);
+      error: () => {
         this.statusPages.set([]);
         this.loadFailed.set(true);
         this.isLoading.set(false);

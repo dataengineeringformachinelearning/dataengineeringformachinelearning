@@ -1,5 +1,17 @@
 @use '../settings/settings.scss';
 
+:host {
+  display: block;
+  width: 100%;
+}
+
+.panel-clean {
+  padding: var(--viking-space-2, 16px);
+  border: 1px solid var(--viking-border-subtle, var(--border));
+  border-radius: var(--viking-radius-md, 8px);
+  background: color-mix(in srgb, var(--viking-surface, var(--color-surface)) 96%, var(--viking-accent) 4%);
+}
+
 .mfa-enrollment-form {
   display: flex;
   flex-direction: column;
@@ -16,12 +28,14 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2, 16px);
+  width: 100%;
 }
 
 .mfa-phone-row {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2, 16px);
+  width: 100%;
 
   @media (min-width: 601px) {
     flex-direction: row;
@@ -38,7 +52,7 @@
 .verification-step {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: var(--viking-space-3, 24px);
   margin-top: var(--viking-space-2, 16px);
   padding-top: var(--viking-space-3, 24px);
@@ -49,23 +63,46 @@
 .mfa-verify-stack {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: var(--viking-space-2, 16px);
   width: 100%;
-  max-width: 22rem;
+  max-width: 28rem;
+  margin-inline: auto;
 }
 
 .mfa-feedback-stack {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2, 16px);
-  margin-top: var(--viking-space-3, 24px);
+  margin-top: var(--viking-space-2, 16px);
 }
 
 .mfa-recaptcha-slot {
-  margin-top: var(--viking-space-2, 16px);
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .mfa-relogin-callout {
   margin-top: var(--viking-space-2, 16px);
+}
+
+.mfa-status-enrolled {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  align-items: stretch;
+
+  @media (min-width: 601px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    viking-button {
+      align-self: auto;
+      flex-shrink: 0;
+    }
+  }
 }

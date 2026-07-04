@@ -26,6 +26,7 @@ import {
   VikingInput,
   VikingPageHeader,
   VikingTextarea,
+  VikingIcon,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
@@ -51,6 +52,7 @@ import {
     VikingInput,
     VikingPageHeader,
     VikingTextarea,
+    VikingIcon,
     VikingAppIcon,
     FormsModule,
     RouterModule,
@@ -77,6 +79,22 @@ export class Settings implements OnInit {
   get isViewer(): boolean {
     return this.authService.currentUserRole() === 'Viewer';
   }
+
+  /** True when the user may create/update/delete sites (Viewer excluded, MFA session required). */
+  get canMutateSites(): boolean {
+    return !this.isViewer && this.authService.mfaVerifiedInSession();
+  }
+
+  private readonly docsBase = `${environment.marketingUrl ?? 'https://dataengineeringformachinelearning.com'}/documentation`;
+
+  protected readonly platformIntegrations = [
+    { name: 'Kubernetes', icon: 'kubernetes', guide: this.docsBase },
+    { name: 'TensorFlow', icon: 'tensorflow', guide: this.docsBase },
+    { name: 'PyTorch', icon: 'pytorch', guide: this.docsBase },
+    { name: 'Apache Spark', icon: 'apache-spark', guide: this.docsBase },
+    { name: 'Databricks', icon: 'databricks', guide: this.docsBase },
+    { name: 'AWS Redshift', icon: 'aws-redshift', guide: this.docsBase },
+  ] as const;
 
   editTitle = '';
   editSlug = '';
@@ -304,7 +322,15 @@ export class Settings implements OnInit {
           this.selectedPage.set(null);
           this.loadStatusPages();
         },
-        error: err => console.error('Error deleting page:', err),
+        error: async err => {
+          await this.vikingDialog.openConfirm({
+            title: 'Delete Failed',
+            message: apiErrorMessage(err, 'Failed to delete status page.'),
+            type: 'alert',
+            confirmBtnText: 'OK',
+            confirmBtnColor: 'warn',
+          });
+        },
       });
     }
   }
@@ -408,16 +434,14 @@ export class Settings implements OnInit {
             this.isAddingService.set(false);
           },
           error: async err => {
-            console.error('Error adding service:', err);
-            this.isAddingService.set(false);
             await this.vikingDialog.openConfirm({
               title: 'Failed to Add Service',
-              message:
-                'An error occurred while adding the monitored service. Please verify the URL and try again.',
+              message: apiErrorMessage(err, 'Failed to add monitored service. Verify the URL and try again.'),
               type: 'alert',
               confirmBtnText: 'OK',
               confirmBtnColor: 'warn',
             });
+            this.isAddingService.set(false);
           },
         });
     }
@@ -429,7 +453,15 @@ export class Settings implements OnInit {
         const page = this.selectedPage();
         if (page) this.loadServices(page.id);
       },
-      error: err => console.error('Error deleting service:', err),
+      error: async err => {
+        await this.vikingDialog.openConfirm({
+          title: 'Delete Failed',
+          message: apiErrorMessage(err, 'Failed to delete monitored service.'),
+          type: 'alert',
+          confirmBtnText: 'OK',
+          confirmBtnColor: 'warn',
+        });
+      },
     });
   }
 
@@ -451,9 +483,15 @@ export class Settings implements OnInit {
             this.newIncidentStatus = 'Investigating';
             this.isAddingIncident.set(false);
           },
-          error: err => {
-            console.error('Error adding incident:', err);
+          error: async err => {
             this.isAddingIncident.set(false);
+            await this.vikingDialog.openConfirm({
+              title: 'Failed to Add Incident',
+              message: apiErrorMessage(err, 'Failed to create incident report.'),
+              type: 'alert',
+              confirmBtnText: 'OK',
+              confirmBtnColor: 'warn',
+            });
           },
         });
     }
@@ -465,7 +503,15 @@ export class Settings implements OnInit {
         const page = this.selectedPage();
         if (page) this.loadIncidents(page.id);
       },
-      error: err => console.error('Error deleting incident:', err),
+      error: async err => {
+        await this.vikingDialog.openConfirm({
+          title: 'Delete Failed',
+          message: apiErrorMessage(err, 'Failed to delete incident report.'),
+          type: 'alert',
+          confirmBtnText: 'OK',
+          confirmBtnColor: 'warn',
+        });
+      },
     });
   }
 
