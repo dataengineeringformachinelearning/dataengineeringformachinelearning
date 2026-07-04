@@ -3,13 +3,18 @@ import {
   closeModalDialog,
   showModalDialog,
 } from "../core/base";
-import { defineCustomElement, escapeHtml, HTMLElementBase } from "../core/dom";
+import {
+  defineCustomElement,
+  defineCustomElementAlias,
+  escapeHtml,
+  HTMLElementBase,
+} from "../core/dom";
 import { renderInlineIcon } from "../core/icons-inline";
 import { VIKING_MODAL_STYLES } from "../core/styles";
 
 /**
  * Framework-agnostic modal Web Component using native `<dialog>` semantics.
- * Tag: `viking-modal-wc`
+ * Tag: `viking-modal` (legacy aliases: `viking-modal-wc`, `viking-dialog`)
  *
  * @attr open - When present, shows the modal
  * @attr title - Dialog title for aria-label / heading
@@ -24,13 +29,15 @@ import { VIKING_MODAL_STYLES } from "../core/styles";
  * @event viking-close - Fired when the dialog closes
  *
  * @example
- * <viking-modal-wc title="Confirm deploy">
+ * <viking-modal title="Confirm deploy">
  *   <p>Push v2.0.0 to production?</p>
- *   <viking-button-wc slot="actions" variant="primary">Deploy</viking-button-wc>
- * </viking-modal-wc>
+ *   <viking-button slot="actions" variant="primary">Deploy</viking-button>
+ * </viking-modal>
  */
 export class VikingModalWc extends HTMLElementBase {
-  static readonly tag = "viking-modal-wc";
+  static readonly tag = "viking-modal";
+  static readonly legacyTag = "viking-modal-wc";
+  static readonly dialogTag = "viking-dialog";
 
   static get observedAttributes(): string[] {
     return ["open", "title", "dismissible"];
@@ -175,4 +182,6 @@ export class VikingModalWc extends HTMLElementBase {
 
 export const registerVikingModalWc = (): void => {
   defineCustomElement(VikingModalWc.tag, VikingModalWc);
+  defineCustomElementAlias(VikingModalWc.legacyTag, VikingModalWc);
+  defineCustomElementAlias(VikingModalWc.dialogTag, VikingModalWc);
 };

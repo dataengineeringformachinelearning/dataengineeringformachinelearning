@@ -40,3 +40,14 @@ export const defineCustomElement = (
   }
   customElements.define(tag, ctor);
 };
+
+/** Register an alias tag with a fresh subclass; customElements disallows reusing constructors. */
+export const defineCustomElementAlias = <T extends CustomElementConstructor>(
+  tag: string,
+  ctor: T,
+): void => {
+  if (typeof customElements === "undefined" || customElements.get(tag)) {
+    return;
+  }
+  customElements.define(tag, class extends ctor {});
+};

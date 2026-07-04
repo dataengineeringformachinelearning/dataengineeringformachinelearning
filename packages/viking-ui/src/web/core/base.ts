@@ -21,12 +21,24 @@ export const readBoolAttr = (el: HTMLElement, name: string): boolean =>
 
 /** Safely sets form value when ElementInternals is fully supported (e.g. not in jsdom). */
 export const setFormValue = (
-  internals: ElementInternals,
+  internals: ElementInternals | null,
   value: string,
 ): void => {
-  if (typeof internals.setFormValue === "function") {
+  if (internals && typeof internals.setFormValue === "function") {
     internals.setFormValue(value);
   }
+};
+
+/** Attaches ElementInternals where available without breaking older WebKit or test DOMs. */
+export const attachElementInternals = (
+  el: HTMLElement,
+): ElementInternals | null => {
+  const attachInternals = (
+    el as HTMLElement & { attachInternals?: () => ElementInternals }
+  ).attachInternals;
+  return typeof attachInternals === "function"
+    ? attachInternals.call(el)
+    : null;
 };
 
 /** Opens a native dialog when showModal is available. */

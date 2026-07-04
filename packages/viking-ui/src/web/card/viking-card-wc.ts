@@ -1,8 +1,12 @@
-import { defineCustomElement, HTMLElementBase } from "../core/dom";
+import {
+  defineCustomElement,
+  defineCustomElementAlias,
+  HTMLElementBase,
+} from "../core/dom";
 
 /**
  * Framework-agnostic Viking card Web Component (light DOM — inherits global viking-card CSS).
- * Tag: `viking-card-wc`
+ * Tag: `viking-card` (legacy alias: `viking-card-wc`)
  *
  * Uses light DOM so slotted content inherits `viking-card`, `viking-card-header`, and related
  * classes from the synced static CSS bundle.
@@ -20,7 +24,8 @@ import { defineCustomElement, HTMLElementBase } from "../core/dom";
  * </viking-card-wc>
  */
 export class VikingCardWc extends HTMLElementBase {
-  static readonly tag = "viking-card-wc";
+  static readonly tag = "viking-card";
+  static readonly legacyTag = "viking-card-wc";
 
   static get observedAttributes(): string[] {
     return ["compact", "interactive", "title"];
@@ -57,4 +62,5 @@ export class VikingCardWc extends HTMLElementBase {
 
 export const registerVikingCardWc = (): void => {
   defineCustomElement(VikingCardWc.tag, VikingCardWc);
+  defineCustomElementAlias(VikingCardWc.legacyTag, VikingCardWc);
 };

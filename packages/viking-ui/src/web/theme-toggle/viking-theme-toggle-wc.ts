@@ -83,6 +83,9 @@ export class VikingThemeToggleWc extends HTMLElementBase {
   }
 
   connectedCallback(): void {
+    if (!this.hasAttribute("role")) {
+      this.setAttribute("role", "button");
+    }
     this.render();
     this.syncIcons();
     this.button?.addEventListener("click", this.onClick);

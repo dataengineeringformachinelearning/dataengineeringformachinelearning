@@ -1,6 +1,11 @@
-import { attachShadowStyles, setFormValue } from "../core/base";
+import {
+  attachElementInternals,
+  attachShadowStyles,
+  setFormValue,
+} from "../core/base";
 import {
   defineCustomElement,
+  defineCustomElementAlias,
   escapeHtml,
   HTMLElementBase,
   vikingWcUid,
@@ -9,7 +14,7 @@ import { VIKING_SELECT_STYLES } from "../core/styles";
 
 /**
  * Framework-agnostic native select Web Component with form association.
- * Tag: `viking-select-wc`
+ * Tag: `viking-select` (legacy alias: `viking-select-wc`)
  *
  * Place `<option>` elements as light DOM children; they are mirrored into the shadow select.
  *
@@ -32,7 +37,9 @@ import { VIKING_SELECT_STYLES } from "../core/styles";
  * </viking-select-wc>
  */
 export class VikingSelectWc extends HTMLElementBase {
-  static readonly tag = "viking-select-wc";
+  static readonly formAssociated = true;
+  static readonly tag = "viking-select";
+  static readonly legacyTag = "viking-select-wc";
 
   static get observedAttributes(): string[] {
     return [
@@ -49,7 +56,7 @@ export class VikingSelectWc extends HTMLElementBase {
   }
 
   private readonly shadow: ShadowRoot;
-  private readonly internals: ElementInternals;
+  private readonly internals: ElementInternals | null;
   private selectEl: HTMLSelectElement | null = null;
   private optionObserver: MutationObserver | null = null;
   private readonly controlId = vikingWcUid("viking-select");
@@ -57,7 +64,7 @@ export class VikingSelectWc extends HTMLElementBase {
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "open" });
-    this.internals = this.attachInternals();
+    this.internals = attachElementInternals(this);
     attachShadowStyles(this.shadow, VIKING_SELECT_STYLES);
   }
 
@@ -207,4 +214,5 @@ export class VikingSelectWc extends HTMLElementBase {
 
 export const registerVikingSelectWc = (): void => {
   defineCustomElement(VikingSelectWc.tag, VikingSelectWc);
+  defineCustomElementAlias(VikingSelectWc.legacyTag, VikingSelectWc);
 };

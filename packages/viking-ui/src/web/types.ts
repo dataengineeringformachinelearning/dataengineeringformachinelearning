@@ -7,14 +7,29 @@ export type VikingWcSelectDetail = { item: VikingSearchPaletteItem };
 
 declare global {
   interface HTMLElementTagNameMap {
+    "viking-badge": import("./badge/viking-badge-wc").VikingBadgeWc;
     "viking-badge-wc": import("./badge/viking-badge-wc").VikingBadgeWc;
+    "viking-button": import("./button/viking-button-wc").VikingButtonWc;
     "viking-button-wc": import("./button/viking-button-wc").VikingButtonWc;
+    "viking-callout": import("./callout/viking-callout-wc").VikingCalloutWc;
     "viking-callout-wc": import("./callout/viking-callout-wc").VikingCalloutWc;
+    "viking-card": import("./card/viking-card-wc").VikingCardWc;
     "viking-card-wc": import("./card/viking-card-wc").VikingCardWc;
+    "viking-field": import("./field/viking-field-wc").VikingFieldWc;
+    "viking-field-wc": import("./field/viking-field-wc").VikingFieldWc;
+    "viking-input": import("./input/viking-input-wc").VikingInputWc;
     "viking-input-wc": import("./input/viking-input-wc").VikingInputWc;
+    "viking-dialog": import("./modal/viking-modal-wc").VikingModalWc;
+    "viking-modal": import("./modal/viking-modal-wc").VikingModalWc;
     "viking-modal-wc": import("./modal/viking-modal-wc").VikingModalWc;
+    "viking-command-palette": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;
+    "viking-search-palette": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;
     "viking-search-palette-wc": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;
+    "viking-select": import("./select/viking-select-wc").VikingSelectWc;
     "viking-select-wc": import("./select/viking-select-wc").VikingSelectWc;
+    "viking-suite-command-palette": import("./suite-search-palette/viking-suite-search-palette-wc").VikingSuiteSearchPaletteWc;
+    "viking-suite-search-palette": import("./suite-search-palette/viking-suite-search-palette-wc").VikingSuiteSearchPaletteWc;
+    "viking-suite-search-palette-wc": import("./suite-search-palette/viking-suite-search-palette-wc").VikingSuiteSearchPaletteWc;
     "viking-theme-toggle-wc": import("./theme-toggle/viking-theme-toggle-wc").VikingThemeToggleWc;
   }
 }

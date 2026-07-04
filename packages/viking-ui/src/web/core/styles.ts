@@ -381,6 +381,75 @@ input:disabled {
 }
 `;
 
+export const VIKING_FIELD_STYLES = `
+:host {
+  display: block;
+  font-family: var(--viking-font-family);
+  color: var(--viking-text);
+  min-width: 0;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+:host([width='full']) {
+  width: 100%;
+}
+
+:host([width='half']) {
+  width: 100%;
+  max-width: var(--viking-select-half-max-width, min(100%, 24rem));
+}
+
+.viking-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+}
+
+.viking-field-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--viking-space-2);
+}
+
+.viking-field-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-half);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-bold);
+  color: var(--viking-text);
+  line-height: var(--viking-line-height-snug);
+  cursor: pointer;
+}
+
+.viking-field-required {
+  color: var(--viking-danger-text);
+}
+
+.viking-field-control {
+  min-width: 0;
+}
+
+.viking-field-description,
+.viking-field-error {
+  margin: 0;
+  font-size: var(--viking-font-size-xs);
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.viking-field-description {
+  color: var(--viking-text-muted);
+}
+
+.viking-field-error {
+  color: var(--viking-danger-text);
+}
+`;
+
 export const VIKING_BADGE_STYLES = `
 :host {
   display: inline-flex;

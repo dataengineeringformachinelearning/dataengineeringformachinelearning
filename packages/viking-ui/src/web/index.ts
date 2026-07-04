@@ -2,6 +2,7 @@ import { registerVikingBadgeWc } from "./badge/viking-badge-wc";
 import { registerVikingButtonWc } from "./button/viking-button-wc";
 import { registerVikingCalloutWc } from "./callout/viking-callout-wc";
 import { registerVikingCardWc } from "./card/viking-card-wc";
+import { registerVikingFieldWc } from "./field/viking-field-wc";
 import { registerVikingInputWc } from "./input/viking-input-wc";
 import { registerVikingModalWc } from "./modal/viking-modal-wc";
 import { registerVikingSearchPaletteWc } from "./search-palette/viking-search-palette-wc";
@@ -19,6 +20,7 @@ export {
   registerVikingCalloutWc,
 } from "./callout/viking-callout-wc";
 export { VikingCardWc, registerVikingCardWc } from "./card/viking-card-wc";
+export { VikingFieldWc, registerVikingFieldWc } from "./field/viking-field-wc";
 export { VikingInputWc, registerVikingInputWc } from "./input/viking-input-wc";
 export { VikingModalWc, registerVikingModalWc } from "./modal/viking-modal-wc";
 export {
@@ -43,6 +45,7 @@ export type { VikingWcTone } from "./core/types";
 /** Register all Viking-UI Web Components. Safe to call multiple times. */
 export const registerVikingElements = (): void => {
   registerVikingButtonWc();
+  registerVikingFieldWc();
   registerVikingInputWc();
   registerVikingBadgeWc();
   registerVikingCalloutWc();

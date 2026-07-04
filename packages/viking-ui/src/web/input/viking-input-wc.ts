@@ -1,16 +1,28 @@
-import { attachShadowStyles, readBoolAttr, setFormValue } from "../core/base";
-import { defineCustomElement, HTMLElementBase } from "../core/dom";
+import {
+  attachElementInternals,
+  attachShadowStyles,
+  readBoolAttr,
+  setFormValue,
+} from "../core/base";
+import {
+  defineCustomElement,
+  defineCustomElementAlias,
+  escapeHtml,
+  HTMLElementBase,
+} from "../core/dom";
 import { VIKING_INPUT_STYLES } from "../core/styles";
 
 /**
  * Framework-agnostic Viking input Web Component with form association.
- * Tag: `viking-input-wc`
+ * Tag: `viking-input` (legacy alias: `viking-input-wc`)
  *
  * @example
- * <viking-input-wc placeholder="Email" name="email" type="email"></viking-input-wc>
+ * <viking-input placeholder="Email" name="email" type="email"></viking-input>
  */
 export class VikingInputWc extends HTMLElementBase {
-  static readonly tag = "viking-input-wc";
+  static readonly formAssociated = true;
+  static readonly tag = "viking-input";
+  static readonly legacyTag = "viking-input-wc";
 
   static get observedAttributes(): string[] {
     return [
@@ -22,19 +34,26 @@ export class VikingInputWc extends HTMLElementBase {
       "clearable",
       "name",
       "autocomplete",
+      "required",
+      "readonly",
+      "minlength",
+      "maxlength",
+      "pattern",
+      "error",
       "aria-label",
+      "aria-describedby",
       "bare",
     ];
   }
 
   private readonly shadow: ShadowRoot;
-  private readonly internals: ElementInternals;
+  private readonly internals: ElementInternals | null;
   private input: HTMLInputElement | null = null;
 
   constructor() {
     super();
     this.shadow = this.attachShadow({ mode: "open" });
-    this.internals = this.attachInternals();
+    this.internals = attachElementInternals(this);
     attachShadowStyles(this.shadow, VIKING_INPUT_STYLES);
   }
 
@@ -118,14 +137,35 @@ export class VikingInputWc extends HTMLElementBase {
       .filter(Boolean)
       .join(" ");
 
-    const type = this.getAttribute("type") ?? "text";
-    const placeholder = this.getAttribute("placeholder") ?? "";
-    const value = this.getAttribute("value") ?? "";
+    const type = escapeHtml(this.getAttribute("type") ?? "text");
+    const rawPlaceholder = this.getAttribute("placeholder") ?? "";
+    const placeholder = escapeHtml(rawPlaceholder);
+    const value = escapeHtml(this.getAttribute("value") ?? "");
     const label =
-      this.getAttribute("aria-label") ?? (placeholder || "Text input");
-    const autocomplete = this.getAttribute("autocomplete") ?? "";
+      this.getAttribute("aria-label") ?? (rawPlaceholder || "Text input");
+    const autocomplete = escapeHtml(this.getAttribute("autocomplete") ?? "");
+    const describedBy = escapeHtml(this.getAttribute("aria-describedby") ?? "");
+    const minLength = escapeHtml(this.getAttribute("minlength") ?? "");
+    const maxLength = escapeHtml(this.getAttribute("maxlength") ?? "");
+    const pattern = escapeHtml(this.getAttribute("pattern") ?? "");
+    const error = this.getAttribute("error") ?? "";
+    const required = readBoolAttr(this, "required");
+    const readonly = readBoolAttr(this, "readonly");
     const showClear =
       this.clearable && value.length > 0 && !this.loading && !this.bare;
+    const nativeAttrs = `
+      ${this.disabled || this.loading ? "disabled" : ""}
+      ${required ? "required" : ""}
+      ${readonly ? "readonly" : ""}
+      aria-label="${escapeHtml(label)}"
+      ${describedBy ? `aria-describedby="${describedBy}"` : ""}
+      ${this.loading ? 'aria-busy="true"' : ""}
+      ${error ? 'aria-invalid="true"' : ""}
+      ${autocomplete ? `autocomplete="${autocomplete}"` : ""}
+      ${minLength ? `minlength="${minLength}"` : ""}
+      ${maxLength ? `maxlength="${maxLength}"` : ""}
+      ${pattern ? `pattern="${pattern}"` : ""}
+    `;
 
     if (this.bare) {
       this.shadow.innerHTML = `
@@ -135,10 +175,7 @@ export class VikingInputWc extends HTMLElementBase {
           type="${type}"
           placeholder="${placeholder}"
           value="${value}"
-          ${this.disabled || this.loading ? "disabled" : ""}
-          aria-label="${label}"
-          ${this.loading ? 'aria-busy="true"' : ""}
-          ${autocomplete ? `autocomplete="${autocomplete}"` : ""}
+          ${nativeAttrs}
         />
       `;
     } else {
@@ -150,10 +187,7 @@ export class VikingInputWc extends HTMLElementBase {
             type="${type}"
             placeholder="${placeholder}"
             value="${value}"
-            ${this.disabled || this.loading ? "disabled" : ""}
-            aria-label="${label}"
-            ${this.loading ? 'aria-busy="true"' : ""}
-            ${autocomplete ? `autocomplete="${autocomplete}"` : ""}
+            ${nativeAttrs}
           />
           ${this.loading ? '<span class="viking-input-spinner" aria-hidden="true"></span>' : ""}
           ${showClear ? '<button type="button" class="viking-input-clear" aria-label="Clear input" part="clear">×</button>' : ""}
@@ -173,4 +207,5 @@ export class VikingInputWc extends HTMLElementBase {
 
 export const registerVikingInputWc = (): void => {
   defineCustomElement(VikingInputWc.tag, VikingInputWc);
+  defineCustomElementAlias(VikingInputWc.legacyTag, VikingInputWc);
 };

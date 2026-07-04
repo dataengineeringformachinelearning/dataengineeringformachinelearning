@@ -18,9 +18,12 @@ const EXPORT_OBJECT_PATTERNS = {
   LUCIDE_ICON_PATHS: /export const LUCIDE_ICON_PATHS = (\{[\s\S]*?\}) as const/,
   VIKING_BRAND_ICON_PATHS: /export const VIKING_BRAND_ICON_PATHS = (\{[\s\S]*?\}) as const/,
   VIKING_DRAKKAR_ICON_PATHS: /export const VIKING_DRAKKAR_ICON_PATHS = (\{[\s\S]*?\}) as const/,
-  VIKING_INTEGRATION_ICON_PATHS: /export const VIKING_INTEGRATION_ICON_PATHS = (\{[\s\S]*?\}) as const/,
-  VIKING_BRAND_ICON_FILLED_PATHS: /export const VIKING_BRAND_ICON_FILLED_PATHS[\s\S]*?= (\{[\s\S]*?\});/,
-  VIKING_DRAKKAR_ICON_FILLED_PATHS: /export const VIKING_DRAKKAR_ICON_FILLED_PATHS[\s\S]*?= (\{[\s\S]*?\});/,
+  VIKING_INTEGRATION_ICON_PATHS:
+    /export const VIKING_INTEGRATION_ICON_PATHS = (\{[\s\S]*?\}) as const/,
+  VIKING_BRAND_ICON_FILLED_PATHS:
+    /export const VIKING_BRAND_ICON_FILLED_PATHS[\s\S]*?= (\{[\s\S]*?\});/,
+  VIKING_DRAKKAR_ICON_FILLED_PATHS:
+    /export const VIKING_DRAKKAR_ICON_FILLED_PATHS[\s\S]*?= (\{[\s\S]*?\});/,
 };
 
 const readJsonFromTsExport = (filePath, exportName) => {
@@ -71,12 +74,12 @@ const readIntegrationIconPaths = () => {
   const content = fs.readFileSync(integrationBrandPath, 'utf8');
   const match = content.match(/const VIKING_INTEGRATION_BRAND_PATHS[^=]*=\s*(\{[\s\S]*?\n\});/);
   if (!match) {
-    throw new Error(`Could not extract VIKING_INTEGRATION_BRAND_PATHS from ${integrationBrandPath}`);
+    throw new Error(
+      `Could not extract VIKING_INTEGRATION_BRAND_PATHS from ${integrationBrandPath}`,
+    );
   }
   const paths = Function(`"use strict"; return (${match[1]});`)();
-  return Object.fromEntries(
-    Object.entries(paths).map(([name, d]) => [name, `<path d="${d}"/>`]),
-  );
+  return Object.fromEntries(Object.entries(paths).map(([name, d]) => [name, `<path d="${d}"/>`]));
 };
 
 let iconPaths = {};
@@ -167,13 +170,20 @@ const resolveAstroNavHref = (link, urls) => {
   return `${urls.marketing.replace(/\/$/, '')}${pathPart}`;
 };
 
-const navLinkAstro = (link, urls, className) => `      <a href="${resolveAstroNavHref(link, urls)}" class="${className}" data-nav-id="${link.id}"${link.requireAuth ? ' data-require-auth="true" hidden' : ''}>
+const navLinkAstro = (
+  link,
+  urls,
+  className,
+) => `      <a href="${resolveAstroNavHref(link, urls)}" class="${className}" data-nav-id="${link.id}"${link.requireAuth ? ' data-require-auth="true" hidden' : ''}>
         ${iconSlot(link.icon, 16)}
         <span>${link.label}</span>
       </a>`;
 
-const navbarRightWc = (loginHrefDesktop, loginHrefMobile) => `      <div class="navbar-search" role="search">
-        <viking-button-wc variant="outline" square compact aria-label="Open search (⌘K)" id="navbar-search-trigger">
+const navbarRightWc = (
+  loginHrefDesktop,
+  loginHrefMobile,
+) => `      <div class="navbar-search" role="search">
+        <viking-button-wc variant="outline" square compact role="button" aria-label="Open search (⌘K)" id="navbar-search-trigger">
           ${iconSlot('search', 20)}
         </viking-button-wc>
       </div>
@@ -186,14 +196,14 @@ const navbarRightWc = (loginHrefDesktop, loginHrefMobile) => `      <div class="
         <viking-button-wc variant="ghost" id="auth-signout-desktop" hidden>Sign Out</viking-button-wc>
       </div>
 
-      <viking-theme-toggle-wc aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
+      <viking-theme-toggle-wc role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
-      <viking-button-wc variant="outline" square class="menu-toggle-btn" aria-label="Toggle navigation menu" id="mobile-menu-btn">
+      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" id="mobile-menu-btn">
         ${iconSlot('menu', 24)}
       </viking-button-wc>`;
 
 const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" role="search">
-        <viking-button-wc variant="outline" square compact aria-label="Open search (⌘K)" id="navbar-search-trigger">
+        <viking-button-wc variant="outline" square compact role="button" aria-label="Open search (⌘K)" id="navbar-search-trigger">
           <span data-viking-icon="search" data-viking-icon-size="20" aria-hidden="true"></span>
         </viking-button-wc>
       </div>
@@ -206,19 +216,21 @@ const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" ro
         <viking-button-wc variant="ghost" id="auth-signout-desktop" hidden>Sign Out</viking-button-wc>
       </div>
 
-      <viking-theme-toggle-wc aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
+      <viking-theme-toggle-wc role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
-      <viking-button-wc variant="outline" square class="menu-toggle-btn" aria-label="Toggle navigation menu" id="mobile-menu-btn">
+      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" id="mobile-menu-btn">
         <span data-viking-icon="menu" data-viking-icon-size="24" aria-hidden="true"></span>
       </viking-button-wc>`;
 
-const mobileAuthWc = loginHrefMobile => `    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href="${loginHrefMobile}" id="auth-btn-mobile">
+const mobileAuthWc =
+  loginHrefMobile => `    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href="${loginHrefMobile}" id="auth-btn-mobile">
       <span id="auth-icon-mobile">${iconSlot('arrow-right', 16)}</span>
       <span id="auth-text-mobile">Sign In</span>
     </viking-button-wc>
     <viking-button-wc variant="ghost" full-width class="mobile-auth-btn" id="auth-signout-mobile" hidden>Sign Out</viking-button-wc>`;
 
-const mobileAuthWcAstro = loginHrefExpr => `    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href={${loginHrefExpr}} id="auth-btn-mobile">
+const mobileAuthWcAstro =
+  loginHrefExpr => `    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href={${loginHrefExpr}} id="auth-btn-mobile">
       <span id="auth-icon-mobile"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
       <span id="auth-text-mobile">Sign In</span>
     </viking-button-wc>

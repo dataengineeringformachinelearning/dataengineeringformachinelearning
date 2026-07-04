@@ -1,5 +1,9 @@
 import { attachShadowStyles } from "../core/base";
-import { defineCustomElement, HTMLElementBase } from "../core/dom";
+import {
+  defineCustomElement,
+  defineCustomElementAlias,
+  HTMLElementBase,
+} from "../core/dom";
 import { renderInlineIcon, TONE_ICON_NAMES } from "../core/icons-inline";
 import { VIKING_BADGE_STYLES } from "../core/styles";
 import type { VikingWcTone } from "../core/types";
@@ -17,7 +21,7 @@ const TONES = new Set<VikingWcTone>([
 
 /**
  * Framework-agnostic Viking badge Web Component.
- * Tag: `viking-badge-wc`
+ * Tag: `viking-badge` (legacy alias: `viking-badge-wc`)
  *
  * @attr tone - Semantic color: accent | secondary | success | warning | danger | info | muted
  * @attr size - Compact density: sm
@@ -28,7 +32,8 @@ const TONES = new Set<VikingWcTone>([
  * <viking-badge-wc tone="success" icon="check">Healthy</viking-badge-wc>
  */
 export class VikingBadgeWc extends HTMLElementBase {
-  static readonly tag = "viking-badge-wc";
+  static readonly tag = "viking-badge";
+  static readonly legacyTag = "viking-badge-wc";
 
   static get observedAttributes(): string[] {
     return ["tone", "size", "icon", "removable"];
@@ -107,4 +112,5 @@ export class VikingBadgeWc extends HTMLElementBase {
 
 export const registerVikingBadgeWc = (): void => {
   defineCustomElement(VikingBadgeWc.tag, VikingBadgeWc);
+  defineCustomElementAlias(VikingBadgeWc.legacyTag, VikingBadgeWc);
 };

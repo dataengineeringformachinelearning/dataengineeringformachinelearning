@@ -5,7 +5,11 @@ import {
 } from "../../lib/site-drakkar/site-drakkar.config";
 import { buildSuiteSearchItems } from "../../lib/site-drakkar/suite-search-items";
 import { readBoolAttr } from "../core/base";
-import { defineCustomElement, HTMLElementBase } from "../core/dom";
+import {
+  defineCustomElement,
+  defineCustomElementAlias,
+  HTMLElementBase,
+} from "../core/dom";
 import {
   VikingSearchPaletteWc,
   registerVikingSearchPaletteWc,
@@ -82,7 +86,9 @@ const readContext = (el: HTMLElement): SiteDrakkarContext => {
  * <viking-suite-search-palette-wc context="marketing" global-shortcut></viking-suite-search-palette-wc>
  */
 export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
-  static readonly tag = "viking-suite-search-palette-wc";
+  static readonly tag = "viking-suite-command-palette";
+  static readonly searchTag = "viking-suite-search-palette";
+  static readonly legacyTag = "viking-suite-search-palette-wc";
 
   static get observedAttributes(): string[] {
     return [
@@ -153,7 +159,7 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
     }
 
     this.paletteEl = document.createElement(
-      "viking-search-palette-wc",
+      "viking-command-palette",
     ) as VikingSearchPaletteWc;
     this.paletteEl.id = "deml-command-palette";
 
@@ -214,6 +220,14 @@ export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
 export const registerVikingSuiteSearchPaletteWc = (): void => {
   defineCustomElement(
     VikingSuiteSearchPaletteWc.tag,
+    VikingSuiteSearchPaletteWc,
+  );
+  defineCustomElementAlias(
+    VikingSuiteSearchPaletteWc.searchTag,
+    VikingSuiteSearchPaletteWc,
+  );
+  defineCustomElementAlias(
+    VikingSuiteSearchPaletteWc.legacyTag,
     VikingSuiteSearchPaletteWc,
   );
 };

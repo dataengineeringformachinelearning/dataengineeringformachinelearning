@@ -95,8 +95,17 @@ body.backend-swagger {
 .swagger-ui .info .description {
   padding: var(--viking-space-2, 16px);
   border-radius: var(--viking-radius, 8px);
-  border: 1px solid color-mix(in srgb, var(--viking-accent, var(--color-primary)) 22%, var(--border));
-  background: color-mix(in srgb, var(--viking-accent, var(--color-primary)) 6%, transparent);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--viking-accent, var(--color-primary)) 22%,
+      var(--border)
+    );
+  background: color-mix(
+    in srgb,
+    var(--viking-accent, var(--color-primary)) 6%,
+    transparent
+  );
 }
 
 .swagger-ui .info a {
@@ -196,7 +205,8 @@ body.backend-swagger {
 }
 
 .swagger-ui .btn:focus-visible {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--focus-ring-color));
+  outline: var(--viking-ring-width, 2px) solid
+    var(--viking-ring, var(--focus-ring-color));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
@@ -204,7 +214,11 @@ body.backend-swagger {
 .swagger-ui .btn.authorize.unlocked,
 .swagger-ui .btn.execute {
   background: var(--viking-accent, var(--color-primary));
-  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 82%,
+    var(--viking-black)
+  );
   color: var(--viking-accent-content, var(--viking-white-pure));
   box-shadow: var(--viking-shadow-sm);
   min-height: var(--viking-control-height, 40px);
@@ -215,7 +229,11 @@ body.backend-swagger {
 .swagger-ui .btn.authorize.unlocked:hover,
 .swagger-ui .btn.execute:hover {
   background: var(--viking-accent-hover, var(--viking-teal-500));
-  border-color: color-mix(in srgb, var(--viking-accent-hover) 82%, var(--viking-black));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent-hover) 82%,
+    var(--viking-black)
+  );
   color: var(--viking-accent-content, var(--viking-white-pure));
   box-shadow: var(--viking-shadow-md);
 }
@@ -298,7 +316,6 @@ body.backend-swagger {
   background: color-mix(in srgb, var(--viking-accent) 16%, transparent);
   color: var(--viking-accent-strong);
 }
-}
 
 .swagger-ui .opblock.opblock-put .opblock-summary-method,
 .swagger-ui .opblock.opblock-patch .opblock-summary-method {
@@ -325,7 +342,11 @@ body.backend-swagger {
 
 .swagger-ui .opblock-body,
 .swagger-ui .opblock-section {
-  background: color-mix(in srgb, var(--viking-bg, var(--bg-color)) 35%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--viking-bg, var(--bg-color)) 35%,
+    transparent
+  );
 }
 
 /* Inner operation panels — beat swagger-ui.css specificity (.opblock .opblock-section-header) */
@@ -533,7 +554,9 @@ body.backend-swagger {
   color: var(--viking-success, var(--viking-green-500));
 }
 
-.swagger-ui .response-control-media-type--accept-controller select.content-type {
+.swagger-ui
+  .response-control-media-type--accept-controller
+  select.content-type {
   border-color: var(--viking-success, var(--viking-green-500));
 }
 
@@ -544,7 +567,11 @@ body.backend-swagger {
 }
 
 .swagger-ui .btn.cancel:hover {
-  background: color-mix(in srgb, var(--viking-crimson-500, var(--color-error)) 10%, transparent) !important;
+  background: color-mix(
+    in srgb,
+    var(--viking-crimson-500, var(--color-error)) 10%,
+    transparent
+  ) !important;
   border-color: var(--viking-crimson-400, var(--color-error)) !important;
   color: var(--viking-crimson-400, var(--color-error)) !important;
 }
@@ -554,7 +581,11 @@ body.backend-swagger {
   border: 1px solid var(--viking-border, var(--border));
   border-radius: var(--viking-radius, 8px);
   color: var(--viking-text, var(--text-color)) !important;
-  font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace) !important;
+  font-family: var(
+    --viking-font-family-mono,
+    "JetBrains Mono",
+    monospace
+  ) !important;
   font-size: 0.84rem !important;
   padding: var(--viking-space-2, 16px) !important;
 }
@@ -611,7 +642,8 @@ body.backend-swagger {
 .swagger-ui textarea:focus-visible,
 .swagger-ui select:focus-visible {
   border-color: var(--viking-accent-strong, var(--viking-teal-400));
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--focus-ring-color));
+  outline: var(--viking-ring-width, 2px) solid
+    var(--viking-ring, var(--focus-ring-color));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
@@ -666,7 +698,11 @@ body.backend-swagger {
   border: 1px solid var(--viking-border, var(--border));
   border-radius: var(--viking-radius, 8px);
   color: var(--viking-text, var(--text-color)) !important;
-  font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace) !important;
+  font-family: var(
+    --viking-font-family-mono,
+    "JetBrains Mono",
+    monospace
+  ) !important;
   font-size: 0.84rem !important;
   line-height: 1.55;
   padding: var(--viking-space-2, 16px) !important;
@@ -674,7 +710,11 @@ body.backend-swagger {
 
 .swagger-ui .markdown code,
 .swagger-ui .renderedMarkdown code {
-  background: color-mix(in srgb, var(--viking-surface-alt, #1a1a1a) 70%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--viking-surface-alt, #1a1a1a) 70%,
+    transparent
+  );
   border: 1px solid var(--viking-border-subtle, var(--border));
   border-radius: 4px;
   color: var(--viking-accent-strong, var(--viking-teal-400));
@@ -820,7 +860,8 @@ body.backend-swagger {
 
 .swagger-ui .errors-wrapper {
   background: color-mix(in srgb, var(--viking-crimson-500) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--viking-crimson-500) 30%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-crimson-500) 30%, transparent);
   border-radius: var(--viking-radius, 8px);
   color: var(--viking-crimson-400);
   margin: var(--viking-space-2, 16px) 0;

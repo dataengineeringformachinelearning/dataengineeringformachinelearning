@@ -1,5 +1,10 @@
 import { attachShadowStyles } from "../core/base";
-import { defineCustomElement, escapeHtml, HTMLElementBase } from "../core/dom";
+import {
+  defineCustomElement,
+  defineCustomElementAlias,
+  escapeHtml,
+  HTMLElementBase,
+} from "../core/dom";
 import { renderInlineIcon, TONE_ICON_NAMES } from "../core/icons-inline";
 import { VIKING_CALLOUT_STYLES } from "../core/styles";
 import type { VikingWcTone } from "../core/types";
@@ -16,7 +21,7 @@ const TONES = new Set<VikingWcTone>([
 
 /**
  * Framework-agnostic Viking callout Web Component.
- * Tag: `viking-callout-wc`
+ * Tag: `viking-callout` (legacy alias: `viking-callout-wc`)
  *
  * @attr tone - Semantic tone (default: info)
  * @attr heading - Bold callout title
@@ -27,7 +32,8 @@ const TONES = new Set<VikingWcTone>([
  * <viking-callout-wc tone="warning" heading="Degraded worker">Lag exceeds 3s.</viking-callout-wc>
  */
 export class VikingCalloutWc extends HTMLElementBase {
-  static readonly tag = "viking-callout-wc";
+  static readonly tag = "viking-callout";
+  static readonly legacyTag = "viking-callout-wc";
 
   static get observedAttributes(): string[] {
     return ["tone", "heading", "icon", "dismissible", "hidden"];
@@ -95,4 +101,5 @@ export class VikingCalloutWc extends HTMLElementBase {
 
 export const registerVikingCalloutWc = (): void => {
   defineCustomElement(VikingCalloutWc.tag, VikingCalloutWc);
+  defineCustomElementAlias(VikingCalloutWc.legacyTag, VikingCalloutWc);
 };
