@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
@@ -18,12 +18,17 @@ type SessionMessage =
 @Injectable({ providedIn: 'root' })
 export class SessionStateService {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly authService = inject(AuthService);
+  private readonly injector = inject(Injector);
   private readonly sessionIdle = inject(SessionIdleService);
   private readonly router = inject(Router);
 
   private channel: BroadcastChannel | null = null;
   private authEffectRegistered = false;
+
+  /** Lazy resolve breaks AuthService ↔ SessionStateService circular DI during SSR. */
+  private get authService(): AuthService {
+    return this.injector.get(AuthService);
+  }
 
   init(): void {
     if (!isPlatformBrowser(this.platformId)) {

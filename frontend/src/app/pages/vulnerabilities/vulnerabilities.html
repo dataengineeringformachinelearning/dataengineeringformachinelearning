@@ -237,15 +237,17 @@
         <viking-hud-panel icon="shield" title="Active Incident Cases" class="soc-panel">
           <div class="soc-header-actions" vikingHudPanelBadge>
             <viking-badge tone="accent">SIEM</viking-badge>
-            <button
+            <viking-button
+              variant="outline"
+              [compact]="true"
               type="button"
-              class="soc-refresh-btn"
-              (click)="runIncidentQuery()"
+              icon="refresh"
+              [loading]="vulnService.incidentsLoading()"
               [disabled]="vulnService.incidentsLoading()"
+              (pressed)="runIncidentQuery()"
             >
-              <viking-app-icon name="refresh" [ariaHidden]="true" />
               {{ vulnService.incidentsLoading() ? 'Refreshing…' : 'Refresh' }}
-            </button>
+            </viking-button>
           </div>
 
           <div class="soc-panel-body panel-body">
@@ -307,15 +309,17 @@
         <viking-hud-panel icon="bolt" title="Response Playbooks" class="soc-panel">
           <div class="soc-header-actions" vikingHudPanelBadge>
             <viking-badge tone="accent">SOAR</viking-badge>
-            <button
+            <viking-button
+              variant="outline"
+              [compact]="true"
               type="button"
-              class="soc-refresh-btn"
-              (click)="refreshPlaybooks()"
+              icon="refresh"
+              [loading]="vulnService.playbooksLoading()"
               [disabled]="vulnService.playbooksLoading()"
+              (pressed)="refreshPlaybooks()"
             >
-              <viking-app-icon name="refresh" [ariaHidden]="true" />
               {{ vulnService.playbooksLoading() ? 'Refreshing…' : 'Refresh' }}
-            </button>
+            </viking-button>
           </div>
 
           <div class="soc-panel-body panel-body">

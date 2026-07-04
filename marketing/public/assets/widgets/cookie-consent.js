@@ -39,7 +39,7 @@
       background-color: var(--card-bg, var(--viking-charcoal-900));
       border: 1px solid var(--border, var(--viking-charcoal-700));
       border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      box-shadow: var(--viking-shadow-lg, 0 4px 24px color-mix(in srgb, var(--viking-black) 40%, transparent));
       padding: 24px;
       display: flex;
       flex-direction: column;
@@ -64,7 +64,12 @@
 
     .deml-cookie-icon {
       color: var(--color-success, var(--viking-green-500));
-      font-size: 24px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .deml-cookie-icon svg {
+      width: 24px;
+      height: 24px;
     }
 
     .deml-cookie-heading {
@@ -360,14 +365,26 @@
       <div class="deml-cookie-card" role="dialog" aria-labelledby="cookie-title" aria-describedby="cookie-desc">
         <div class="deml-cookie-header">
           <div class="deml-cookie-title-group">
-            <span class="material-icons deml-cookie-icon">cookie</span>
+            <span class="deml-cookie-icon" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                <path d="M8.5 8.5v.01"/>
+                <path d="M16 15.5v.01"/>
+                <path d="M12 12v.01"/>
+                <path d="M11 17v.01"/>
+                <path d="M7 14v.01"/>
+              </svg>
+            </span>
             <h2 id="cookie-title" class="deml-cookie-heading">Cookie Preferences</h2>
           </div>
           ${
             currentPrefs !== null
               ? `
           <button class="deml-cookie-close-btn" aria-label="Close settings" id="deml-close-btn">
-            <span class="material-icons">close</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+              <path d="M18 6 6 18"/>
+              <path d="m6 6 12 12"/>
+            </svg>
           </button>
           `
               : ''
