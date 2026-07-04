@@ -34,7 +34,7 @@
 a.auth-btn,
 button.auth-btn {
   @include viking-drakkar-btn-primary;
-  color: var(--viking-white-pure, #ffffff) !important;
+  color: var(--viking-white-pure, var(--viking-white-pure)) !important;
 
   svg,
   .material-icons,
@@ -57,7 +57,7 @@ button.mobile-auth-btn {
   width: 100%;
   min-width: 0;
   justify-content: center;
-  color: var(--viking-white-pure, #ffffff) !important;
+  color: var(--viking-white-pure, var(--viking-white-pure)) !important;
 
   svg,
   .material-icons,
@@ -69,7 +69,7 @@ button.mobile-auth-btn {
 
   &:hover,
   &:focus-visible {
-    color: var(--viking-white-pure, #ffffff) !important;
+    color: var(--viking-white-pure, var(--viking-white-pure)) !important;
   }
 }
 

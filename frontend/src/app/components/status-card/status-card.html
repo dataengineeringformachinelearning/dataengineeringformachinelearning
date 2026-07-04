@@ -1,11 +1,11 @@
-<div class="status-card-outlined" [id]="page.slug">
+<div class="viking-card status-card-outlined" [id]="page.slug">
   <div class="card-header-clean">
     <div class="header-main-info">
       <div class="card-title-row">
         <h2 class="card-title">{{ page.title }}</h2>
         <app-pro-verified-badge [show]="!!page.is_pro_verified"></app-pro-verified-badge>
       </div>
-      <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
+      <p class="viking-card card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
     </div>
 
     @if (linkHeader) {
@@ -64,7 +64,7 @@
 
     <!-- Analytics Section -->
 
-    <div class="ml-stat-panels-row status-card-extracted-1">
+    <div class="viking-card ml-stat-panels-row status-card-extracted-1">
       <div class="ml-stat-panel">
         <div class="stat-info">
           <viking-app-icon name="timer" hostClass="stat-icon" />
@@ -95,7 +95,7 @@
 
     <!-- Threat Intelligence Section -->
 
-    <div class="ml-stat-panels-row status-card-extracted-1">
+    <div class="viking-card ml-stat-panels-row status-card-extracted-1">
       <!-- Cumulative TA Section -->
       <div class="ml-stat-panel">
         <div class="stat-info">

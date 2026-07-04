@@ -1,11 +1,10 @@
 // Shared publication styles for Book and Whitepaper — single-card, structured prose.
 
 .publication-shell {
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
-  backdrop-filter: blur(16px);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--viking-radius-xl, 16px);
+  border: 1px solid var(--viking-border, var(--border));
+  background: var(--viking-surface, var(--color-surface));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
   overflow: hidden;
 }
 
@@ -469,7 +468,7 @@
     background: var(--color-primary) !important;
     color: white !important;
     font-weight: 600;
-    border-radius: 12px;
+    border-radius: var(--viking-radius-lg);
     border: none;
     padding: 8px 16px;
     cursor: pointer;

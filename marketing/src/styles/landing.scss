@@ -41,7 +41,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--card-bg);
+  background: var(--viking-surface);
   border: 1px solid var(--border);
   padding: 8px 16px;
   border-radius: 1000px;
@@ -197,7 +197,7 @@ a.cta-button {
   }
 }
 
-.primary-btn {
+.cta-primary {
   background: var(--color-primary);
   color: var(--color-on-primary);
   border: 1px solid var(--color-primary);
@@ -404,7 +404,7 @@ a.cta-button {
   }
 
   .mockup-stat {
-    background: var(--card-bg);
+    background: var(--viking-surface);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 10px 12px;
@@ -493,7 +493,7 @@ a.cta-button {
   position: relative;
   background: var(--color-surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--viking-radius-xl, 16px);
   padding: 32px 28px;
   text-align: center;
   transition:
@@ -817,7 +817,7 @@ a.cta-button {
 .visual-panel {
   background: var(--color-surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--viking-radius-xl, 16px);
   padding: 28px;
   box-shadow: var(--shadow-md);
 }
@@ -859,7 +859,7 @@ a.cta-button {
 .visual-metric {
   background: color-mix(in srgb, var(--viking-charcoal-900) 35%, var(--color-surface));
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--viking-radius-lg);
   padding: 16px;
   position: relative;
 
@@ -971,7 +971,7 @@ a.cta-button {
   .embed-code {
     background: color-mix(in srgb, var(--viking-charcoal-900) 70%, transparent);
     padding: 16px;
-    border-radius: 12px;
+    border-radius: var(--viking-radius-lg);
     border: 1px solid color-mix(in srgb, var(--viking-teal-600) 30%, transparent);
     overflow-x: auto;
 
@@ -992,7 +992,7 @@ a.cta-button {
   justify-content: center;
   background: var(--color-surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: var(--viking-radius-xl, 16px);
   padding: 32px;
   box-shadow: var(--shadow-md);
 }
@@ -1197,7 +1197,7 @@ a.cta-button {
   gap: 24px;
   align-items: flex-start;
   padding: 40px;
-  border-radius: 20px;
+  border-radius: var(--viking-radius-xl, 16px);
   background: color-mix(in srgb, var(--viking-teal-600) 8%, var(--color-surface));
   border: 1px solid color-mix(in srgb, var(--viking-teal-600) 20%, transparent);
 

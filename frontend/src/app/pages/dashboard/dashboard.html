@@ -86,7 +86,7 @@
         </div>
         }
 
-        <div class="health-card">
+        <div class="viking-card health-card">
           <div class="health-ring" [attr.data-status]="healthLabel()">
             <viking-ring-gauge [value]="healthScore()" [status]="healthLabel()" />
             <div class="health-center">
@@ -100,7 +100,7 @@
         </div>
 
         <div class="kpi-grid">
-          <div class="kpi-card" [class.alert]="threatLevel > 50">
+          <div class="viking-card kpi-card" [class.alert]="threatLevel > 50">
             <viking-app-icon name="security" />
             <span class="kpi-label">Threat Exposure</span>
             <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
@@ -117,13 +117,13 @@
               }
             </div>
           </div>
-          <div class="kpi-card" [class.alert]="openVulnCount() > 0">
+          <div class="viking-card kpi-card" [class.alert]="openVulnCount() > 0">
             <viking-app-icon name="bug_report" />
             <span class="kpi-label">Open Issues</span>
             <span class="kpi-value">{{ openVulnCount() }}</span>
             <div class="kpi-sparkline-slot" aria-hidden="true"></div>
           </div>
-          <div class="kpi-card">
+          <div class="viking-card kpi-card">
             <viking-app-icon name="speed" />
             <span class="kpi-label">Uptime</span>
             <span class="kpi-value">{{ uptimePercent | number:'1.1-1' }}%</span>
@@ -140,7 +140,7 @@
               }
             </div>
           </div>
-          <div class="kpi-card" [class.alert]="activeIncidents > 0">
+          <div class="viking-card kpi-card" [class.alert]="activeIncidents > 0">
             <viking-app-icon name="report" />
             <span class="kpi-label">Active Incidents</span>
             <span class="kpi-value">{{ activeIncidents }}</span>
@@ -148,7 +148,7 @@
           </div>
         </div>
 
-        <section class="panel-card overview-panel threats-panel">
+        <section class="viking-card panel-card overview-panel threats-panel">
           <div class="panel-header">
             <h2>Recent Threats</h2>
             <button type="button" class="link-btn" (click)="setTab('security')">View all</button>
@@ -182,7 +182,7 @@
           </div>
         </section>
 
-        <section class="panel-card overview-panel metrics-panel">
+        <section class="viking-card panel-card overview-panel metrics-panel">
           <div class="panel-header">
             <h2>Performance Snapshot</h2>
             <button type="button" class="link-btn" (click)="setTab('performance')">Details</button>
@@ -228,15 +228,15 @@
       } @if (activeTab() === 'performance') {
       <section class="detail-grid">
         <div class="detail-kpis">
-          <div class="kpi-card wide">
+          <div class="viking-card kpi-card wide">
             <span class="kpi-label">Network Stability</span>
             <span class="kpi-value">{{ stabilityLevel | number:'1.0-0' }}%</span>
           </div>
-          <div class="kpi-card wide">
+          <div class="viking-card kpi-card wide">
             <span class="kpi-label">SLA Forecast</span>
             <span class="kpi-value">{{ slaLevel | number:'1.0-0' }}%</span>
           </div>
-          <div class="kpi-card wide">
+          <div class="viking-card kpi-card wide">
             <span class="kpi-label">P99 Latency</span>
             <span class="kpi-value">{{ p99Latency | number:'1.0-0' }} ms</span>
           </div>
@@ -250,7 +250,7 @@
           </a>
         </div>
 
-        <section class="panel-card chart-panel">
+        <section class="viking-card panel-card chart-panel">
           <h2>Latency Trend (24h)</h2>
           <div class="chart-container">
             @if (hasLatencyData()) {
@@ -276,7 +276,7 @@
           </div>
         </section>
 
-        <section class="panel-card chart-panel half">
+        <section class="viking-card panel-card chart-panel half">
           <h2>Threat Severity Distribution</h2>
           <div class="chart-container short">
             @if (hasThreatDonutData()) {
@@ -298,7 +298,7 @@
           </div>
         </section>
 
-        <section class="panel-card chart-panel half">
+        <section class="viking-card panel-card chart-panel half">
           <h2>Security Anomalies (24h)</h2>
           <div class="chart-container short">
             @if (hasSecurityAlertData()) {
@@ -323,21 +323,21 @@
       } @if (activeTab() === 'security') {
       <section class="detail-grid">
         <div class="detail-kpis">
-          <div class="kpi-card wide alert">
+          <div class="viking-card kpi-card wide alert">
             <span class="kpi-label">Open Threats</span>
             <span class="kpi-value">{{ openVulnCount() }}</span>
           </div>
-          <div class="kpi-card wide critical">
+          <div class="viking-card kpi-card wide critical">
             <span class="kpi-label">Critical</span>
             <span class="kpi-value">{{ criticalVulnCount() }}</span>
           </div>
-          <div class="kpi-card wide">
+          <div class="viking-card kpi-card wide">
             <span class="kpi-label">Threat Level</span>
             <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
           </div>
         </div>
 
-        <section class="panel-card security-panel">
+        <section class="viking-card panel-card security-panel">
           <div class="panel-header">
             <div class="panel-title-group">
               <viking-app-icon name="shield" [ariaHidden]="true" hostClass="panel-title-icon" />
@@ -379,7 +379,7 @@
           }
         </section>
 
-        <section class="panel-card insight-panel detection-panel">
+        <section class="viking-card panel-card insight-panel detection-panel">
           <div class="detection-header">
             <viking-app-icon name="psychology" [ariaHidden]="true" />
             <h2>How threats are detected</h2>

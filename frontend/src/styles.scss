@@ -489,7 +489,7 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--color-primary);
-  border-radius: 96px;
+  border-radius: var(--viking-radius-pill, 999px);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-primary-container);
@@ -649,5 +649,5 @@ select option:checked {
 // Ensure chips and badges always retain their pill shape across the UI
 [class*='chip'],
 [class*='badge'] {
-  border-radius: 96px !important;
+  border-radius: var(--viking-radius-pill, 999px) !important;
 }

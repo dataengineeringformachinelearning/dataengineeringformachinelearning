@@ -9,7 +9,7 @@
   const filledIconPaths = () => window.__VIKING_ICON_FILLED_PATHS ?? {};
 
   const resolveIconColor = color => {
-    if (color === 'accent') return 'var(--viking-accent, #0d7377)';
+    if (color === 'accent') return 'var(--viking-accent, var(--viking-teal-600))';
     if (color === 'muted') return 'var(--viking-text-muted, #777777)';
     return color || '';
   };

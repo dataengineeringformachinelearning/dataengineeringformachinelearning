@@ -5,36 +5,7 @@
   margin: var(--space-2, 16px) auto;
 }
 
-/* Self-contained tokens — THEME.md premium palette only */
-:root {
-  --viking-charcoal-900: #111111;
-  --viking-charcoal-800: #1a1a1a;
-  --viking-teal-600: var(--viking-teal-600);
-  --viking-teal-400: #14a3a8;
-  --viking-gold-500: var(--viking-gold-500);
-  --viking-crimson-500: var(--viking-crimson-500);
-  --viking-green-500: var(--viking-green-500);
-  --viking-metallic-200: #aaaaaa;
-  --viking-white: var(--viking-white);
-  --viking-white-pure: var(--viking-white-pure);
-  --viking-black: var(--viking-black);
-  --base-font-size: 16px;
-  --space-1: 8px;
-  --space-2: 16px;
-  --font-family: var(--viking-font-family, 'Inter', ui-sans-serif, system-ui, sans-serif);
-  --color-primary: var(--viking-teal-600);
-  --color-success: var(--viking-green-500);
-  --color-warning: var(--viking-gold-500);
-  --color-error: var(--viking-crimson-500);
-  --card-bg: var(--viking-charcoal-900);
-  --bg-color: var(--viking-charcoal-900);
-  --border: color-mix(in srgb, var(--viking-metallic-600, #555555) 35%, transparent);
-  --text-color: var(--viking-white);
-  --text-muted: var(--viking-metallic-200);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-  --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* Requires design-tokens.css + viking-ui.css on the host page (THEME.md). */
 
 .widget-container {
   display: inline-flex;
@@ -42,7 +13,7 @@
   padding: var(--space-1) var(--space-2);
   background: var(--viking-charcoal-900);
   border: 1px solid var(--border);
-  border-radius: 10000px;
+  border-radius: var(--viking-radius-pill, 999px);
   font-family: var(--font-family);
   font-size: var(--base-font-size);
   font-weight: 500;
@@ -243,7 +214,7 @@
   padding: var(--space-1) var(--space-2);
   font-size: var(--base-font-size);
   font-weight: 600;
-  border-radius: 96px;
+  border-radius: var(--viking-radius-pill, 999px);
   cursor: pointer;
   border: none;
   font-family: inherit;
