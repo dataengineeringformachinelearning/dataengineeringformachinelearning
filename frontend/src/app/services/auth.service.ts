@@ -30,6 +30,13 @@ import {
 import { SessionApiService } from './session-api.service';
 import { SessionWsService } from './session-ws.service';
 
+/** Expected MFA challenge — not an application error. */
+const isMfaRequiredError = (error: unknown): boolean =>
+  !!error &&
+  typeof error === 'object' &&
+  'code' in error &&
+  (error as { code?: string }).code === 'auth/multi-factor-auth-required';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -262,7 +269,9 @@ export class AuthService {
       return { success: true };
     } catch (e: any) {
       this.isProcessing.set(false);
-      console.error(e);
+      if (!isMfaRequiredError(e)) {
+        console.warn('[Auth] Email login failed:', e?.code ?? 'unknown');
+      }
       if (e?.code === 'auth/multi-factor-auth-required') {
         return {
           success: false,
@@ -556,7 +565,9 @@ export class AuthService {
       return { success: true };
     } catch (e: any) {
       this.isProcessing.set(false);
-      console.error(e);
+      if (!isMfaRequiredError(e)) {
+        console.warn('[Auth] Apple sign-in failed:', e?.code ?? 'unknown');
+      }
       if (e?.code === 'auth/multi-factor-auth-required') {
         return {
           success: false,
@@ -594,15 +605,9 @@ export class AuthService {
       return { success: true };
     } catch (e: any) {
       this.isProcessing.set(false);
-      console.error(e);
-      if (e?.code === 'auth/multi-factor-auth-required') {
-        return {
-          success: false,
-          error: 'MFA_REQUIRED',
-          resolver: getMultiFactorResolver(this.auth, e),
-        };
+      if (!isMfaRequiredError(e)) {
+        console.warn('[Auth] Google sign-in failed:', e?.code ?? 'unknown');
       }
-      return { success: false, error: 'Google Sign-In failed. Please try again.' };
     }
   }
 

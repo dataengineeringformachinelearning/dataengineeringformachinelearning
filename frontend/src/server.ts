@@ -34,7 +34,7 @@ const angularApp = new AngularNodeAppEngine({
 app.use((req, res, next) => {
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-DEML-Session-Id');
 
   if (req.method === 'OPTIONS') {
     res.status(204).end();
@@ -118,7 +118,7 @@ app.use(
     setHeaders: (res, _path, _stat) => {
       res.set('Access-Control-Allow-Origin', '*');
       res.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
-      res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-DEML-Session-Id');
     },
   }),
 );
