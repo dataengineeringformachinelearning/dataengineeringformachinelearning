@@ -1,11 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   computed,
+  effect,
   input,
   model,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
 import { VikingCommandItem } from '../core/types';
@@ -31,6 +34,7 @@ import { VikingCommandItem } from '../core/types';
         <div class="viking-command-search">
           <viking-icon name="search" [size]="20" />
           <input
+            #queryInput
             type="text"
             [placeholder]="placeholder()"
             [value]="query()"
@@ -189,8 +193,20 @@ export class VikingCommand {
 
   readonly executed = output<VikingCommandItem>();
 
+  private readonly queryInput = viewChild<ElementRef<HTMLInputElement>>('queryInput');
+
   protected readonly query = signal('');
   protected readonly activeId = signal<string>('');
+
+  constructor() {
+    effect(() => {
+      if (this.open()) {
+        this.query.set('');
+        this.activeId.set(this.items()[0]?.id ?? '');
+        queueMicrotask(() => this.queryInput()?.nativeElement.focus());
+      }
+    });
+  }
 
   protected readonly filtered = computed(() => {
     const query = this.query().toLowerCase().trim();

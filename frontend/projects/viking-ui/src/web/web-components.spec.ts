@@ -91,7 +91,7 @@ describe('Viking Web Components v2', () => {
     palette.setAttribute(
       'items',
       JSON.stringify([
-        { title: 'Components', href: '/components', group: 'Docs' },
+        { title: 'Components', href: '/components', group: 'Docs', keywords: ['primitives'] },
         { title: 'Theming', href: '/theming', group: 'Docs' },
       ]),
     );
@@ -101,16 +101,35 @@ describe('Viking Web Components v2', () => {
     await Promise.resolve();
     expect(palette.shadowRoot?.querySelectorAll('.viking-search-result').length).toBe(2);
 
-    palette.search('theming');
+    palette.search('primitives');
     await Promise.resolve();
 
     const results = palette.shadowRoot?.querySelectorAll('.viking-search-result');
     expect(results?.length).toBe(1);
-    expect(results?.[0]?.textContent).toContain('Theming');
+    expect(results?.[0]?.textContent).toContain('Components');
 
     palette.shadowRoot
       ?.querySelector('input')
       ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    expect(palette.hasAttribute('open')).toBe(false);
+  });
+
+  it('toggles open state with the global shortcut handler', async () => {
+    const palette = document.createElement('viking-search-palette-wc');
+    palette.setAttribute('global-shortcut', '');
+    palette.setAttribute('items', JSON.stringify([{ title: 'Docs', href: '/docs' }]));
+    document.body.append(palette);
+
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true, cancelable: true }),
+    );
+    await Promise.resolve();
+    expect(palette.hasAttribute('open')).toBe(true);
+
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true, cancelable: true }),
+    );
+    await Promise.resolve();
     expect(palette.hasAttribute('open')).toBe(false);
   });
 });

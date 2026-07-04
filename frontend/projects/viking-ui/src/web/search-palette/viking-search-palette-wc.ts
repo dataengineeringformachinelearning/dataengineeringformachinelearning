@@ -19,18 +19,25 @@ const parseItems = (el: HTMLElement): VikingSearchPaletteItem[] => {
   }
 };
 
+const matchesQuery = (item: VikingSearchPaletteItem, query: string): boolean => {
+  const haystack = [
+    item.title,
+    item.snippet ?? '',
+    item.group ?? '',
+    item.href,
+    ...(item.keywords ?? []),
+  ]
+    .join(' ')
+    .toLowerCase();
+  return haystack.includes(query);
+};
+
 const filterItems = (items: VikingSearchPaletteItem[], query: string): VikingSearchPaletteItem[] => {
   const q = query.trim().toLowerCase();
   if (!q) {
     return items;
   }
-  return items.filter(
-    (item) =>
-      item.title.toLowerCase().includes(q) ||
-      (item.snippet?.toLowerCase().includes(q) ?? false) ||
-      (item.group?.toLowerCase().includes(q) ?? false) ||
-      item.href.toLowerCase().includes(q),
-  );
+  return items.filter(item => matchesQuery(item, q));
 };
 
 const groupItems = (
@@ -221,7 +228,11 @@ export class VikingSearchPaletteWc extends HTMLElement {
     this.globalKeyHandler = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
-        this.openPalette();
+        if (this.hasAttribute('open')) {
+          this.closePalette();
+        } else {
+          this.openPalette();
+        }
       }
     };
     document.addEventListener('keydown', this.globalKeyHandler);
@@ -263,7 +274,22 @@ export class VikingSearchPaletteWc extends HTMLElement {
       }),
     );
     this.closePalette();
-    if (item.href) {
+
+    if (item.action === 'cookie-settings') {
+      const widgets = (globalThis as { DemlWidgets?: { openCookieSettings?: () => void } }).DemlWidgets;
+      widgets?.openCookieSettings?.();
+      return;
+    }
+
+    if (item.action === 'bug-report') {
+      const widgets = (globalThis as { DemlWidgets?: { openBugReport?: () => void } }).DemlWidgets;
+      if (widgets?.openBugReport) {
+        widgets.openBugReport();
+        return;
+      }
+    }
+
+    if (item.href && item.href !== '#') {
       window.location.assign(item.href);
     }
   }

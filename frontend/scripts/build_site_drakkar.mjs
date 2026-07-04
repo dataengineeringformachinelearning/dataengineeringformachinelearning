@@ -240,12 +240,10 @@ ${navLinks.map(link => navLinkHtml(link, 'mobile-nav-btn')).join('\n')}
       Sign Out
     </button>
   </nav>
-
-  <div id="autocomplete" class="algolia-autocomplete-host" aria-hidden="true"></div>
 </header>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>
-<script src="{% static 'widgets/algolia-search.js' %}" defer></script>
-<script src="{% static 'algolia-config.js' %}" defer></script>
+<script type="module" src="{% static 'viking-ui-elements.js' %}"></script>
+<script src="{% static 'widgets/command-palette.js' %}" defer></script>
 `;
 
 const generateSiteFooterHtml = footerColumns => `{% load static %}

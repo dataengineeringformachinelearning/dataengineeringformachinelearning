@@ -170,10 +170,6 @@ import {
           </button>
         }
       </nav>
-
-      @if (showSearch()) {
-        <div id="autocomplete" class="algolia-autocomplete-host" aria-hidden="true"></div>
-      }
     </header>
   `,
 })

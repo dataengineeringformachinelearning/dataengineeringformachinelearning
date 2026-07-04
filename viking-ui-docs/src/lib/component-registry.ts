@@ -551,34 +551,86 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         id: 'search-palette',
         name: 'Search palette',
         description:
-          'Cross-suite command palette for deml.app, marketing, and backend — Algolia Experiences with Viking-UI modal styling.',
+          'Cross-suite ⌘K command palette — curated navigation to documentation, dashboard, settings, legal, and Viking-UI docs. Web Component for static surfaces; Angular suite wrapper for deml.app.',
         preview: `<div class="showcase-search-palette" role="presentation" aria-label="Search palette preview">
   <div class="showcase-search-palette-header">
     <span class="showcase-search-icon" aria-hidden="true">⌕</span>
-    <input type="search" class="showcase-search-input" placeholder="Search documentation, dashboard, API…" aria-label="Search" readonly />
+    <input type="search" class="showcase-search-input" placeholder="Search documentation, dashboard, settings…" aria-label="Search" readonly />
   </div>
   <div class="showcase-search-palette-body">
-    <a class="viking-search-result-static" href="/components"><span class="viking-search-result-title">Components</span><span class="viking-search-result-snippet">Browse all primitives</span></a>
-    <a class="viking-search-result-static" href="/tokens"><span class="viking-search-result-title">Tokens</span><span class="viking-search-result-snippet">Design token matrix</span></a>
+    <a class="viking-search-result-static" href="#"><span class="viking-search-result-title">Documentation</span><span class="viking-search-result-snippet">Platform guides and API docs</span></a>
+    <a class="viking-search-result-static" href="#"><span class="viking-search-result-title">Dashboard</span><span class="viking-search-result-snippet">Open deml.app dashboard</span></a>
+    <a class="viking-search-result-static" href="#"><span class="viking-search-result-title">Privacy Policy</span><span class="viking-search-result-snippet">Legal &amp; compliance</span></a>
   </div>
   <footer class="showcase-search-palette-footer">
-    <span class="viking-kbd-static">⌘K</span> toggle · <span class="viking-kbd-static">Esc</span> close
+    <span class="viking-kbd-static">⌘K</span> toggle · <span class="viking-kbd-static">↑↓</span> navigate · <span class="viking-kbd-static">Enter</span> open · <span class="viking-kbd-static">Esc</span> close
   </footer>
 </div>
-<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: <code>viking-search-palette-wc</code> — try ⌘K in the docs header</p>`,
+<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: try <strong>⌘K</strong> in the docs header — powered by <code>viking-search-palette-wc</code></p>`,
         snippets: {
-          angular: `<viking-search-palette [(open)]="searchOpen" [(query)]="searchQuery">
-  <!-- project custom result list -->
-</viking-search-palette>`,
-          astro: `<viking-search-palette-wc global-shortcut items='[{"title":"Components","href":"/components"}]' />`,
-          django: `{# Algolia widget or viking-search-palette-wc — see partials/site_navbar.html #}`,
-          javascript: `<viking-search-palette-wc global-shortcut></viking-search-palette-wc>
+          angular: `<viking-suite-search-palette
+  context="app"
+  [urls]="siteUrls"
+  placeholder="Search documentation, dashboard, settings…"
+/>`,
+          astro: `<script type="module" src="/assets/viking-ui-elements.js"></script>
+<viking-search-palette-wc
+  global-shortcut
+  placeholder="Search documentation, dashboard, settings…"
+  items='[{"title":"Documentation","href":"/documentation","group":"Resources"}]'
+></viking-search-palette-wc>
+<script src="/assets/widgets/command-palette.js" defer></script>`,
+          django: `{# Navbar triggers DemlWidgets.openSearch(); see widgets/command-palette.js #}`,
+          javascript: `import { buildSuiteSearchItems } from '@dataengineeringformachinelearning/viking-ui';
+
+const items = buildSuiteSearchItems('marketing', siteUrls);
+document.querySelector('viking-search-palette-wc')?.setAttribute('items', JSON.stringify(items));
 document.querySelector('viking-search-palette-wc')?.openPalette();`,
         },
-        tags: ['shell', 'web-component', 'algolia'],
+        tags: ['shell', 'web-component', 'keyboard'],
         selector: 'viking-search-palette',
         wcSelector: 'viking-search-palette-wc',
+        related: ['command', 'modal'],
         api: getComponentApi('search-palette'),
+      },
+      {
+        id: 'command',
+        name: 'Command',
+        description:
+          'Keyboard-driven command list for in-app actions. Pair with search palette for navigation or use standalone for power-user workflows.',
+        preview: `<div class="showcase-search-palette" role="presentation" aria-label="Command palette preview">
+  <div class="showcase-search-palette-header">
+    <span class="showcase-search-icon" aria-hidden="true">⌕</span>
+    <input type="search" class="showcase-search-input" placeholder="Type a command or search…" aria-label="Commands" readonly />
+  </div>
+  <div class="showcase-search-palette-body">
+    <p class="viking-label" style="margin:0 0 var(--viking-space-half)">Actions</p>
+    <button type="button" class="viking-search-result-static" style="width:100%;text-align:left;border:none;background:transparent;cursor:default">
+      <span class="viking-search-result-title">Trigger SLA model training</span>
+    </button>
+    <button type="button" class="viking-search-result-static" style="width:100%;text-align:left;border:none;background:transparent;cursor:default">
+      <span class="viking-search-result-title">Rotate encryption keys</span>
+      <span class="viking-kbd-static" style="margin-left:auto">R</span>
+    </button>
+  </div>
+  <footer class="showcase-search-palette-footer">
+    <span class="viking-kbd-static">Esc</span> close
+  </footer>
+</div>`,
+        snippets: {
+          angular: `<viking-command
+  [items]="commandItems"
+  [(open)]="commandOpen"
+  (executed)="runCommand($event)"
+/>`,
+          astro: `{# Use viking-search-palette-wc for static navigation; viking-command is Angular-only #}`,
+          django: `{# Command actions are Angular-only — use search palette widget for links #}`,
+          javascript: `// viking-command is Angular-only; use viking-search-palette-wc on static pages`,
+        },
+        tags: ['angular', 'keyboard'],
+        selector: 'viking-command',
+        related: ['search-palette'],
+        api: getComponentApi('command'),
       },
       {
         id: 'form-section',

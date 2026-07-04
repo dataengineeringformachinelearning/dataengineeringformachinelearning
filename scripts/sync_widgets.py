@@ -16,7 +16,7 @@ WIDGET_FILES = (
   "widget.js",
   "widget.css",
   "cookie-consent.js",
-  "algolia-search.js",
+  "command-palette.js",
   "navbar.js",
 )
 
@@ -46,16 +46,20 @@ def sync_widgets() -> None:
       print(f"Skip missing widget asset: {name}", file=sys.stderr)
       continue
 
-    if name == "cookie-consent.js":
-      shutil.copy2(src, os.path.join(marketing_widgets, name))
-      print(f"Synced {name} -> marketing")
-      continue
-
-    if name == "algolia-search.js":
+    if name == "command-palette.js":
       shutil.copy2(src, os.path.join(marketing_widgets, name))
       print(f"Synced {name} -> marketing")
       shutil.copy2(src, os.path.join(backend_widgets, name))
       print(f"Synced {name} -> backend")
+      frontend_public_widgets = os.path.join(root, "frontend", "public", "assets", "widgets")
+      os.makedirs(frontend_public_widgets, exist_ok=True)
+      shutil.copy2(src, os.path.join(frontend_public_widgets, name))
+      print(f"Synced {name} -> frontend/public")
+      continue
+
+    if name == "cookie-consent.js":
+      shutil.copy2(src, os.path.join(marketing_widgets, name))
+      print(f"Synced {name} -> marketing")
       continue
 
     for dst_dir in (marketing_widgets, backend_widgets):
