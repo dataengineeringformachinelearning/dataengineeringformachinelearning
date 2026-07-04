@@ -108,7 +108,7 @@ export class Account implements OnInit {
         if (!this.authService.isAuthenticated()) {
           this.router.navigate(['/login']);
         } else if (this.authService.currentUserId() !== null) {
-          this.checkMfaStatus();
+          void this.checkMfaStatus();
           this.checkLinkedProviders();
           this.loadApiKeys();
         }
@@ -378,16 +378,20 @@ export class Account implements OnInit {
     }
   }
 
-  checkMfaStatus() {
+  async checkMfaStatus() {
     const user = this.authService.auth?.currentUser;
-    if (user && typeof user.reload === 'function') {
-      try {
-        const enrolled = multiFactor(user).enrolledFactors;
-        this.mfaEnrolledFactors.set(enrolled);
-        this.isMfaEnrolled.set(enrolled.length > 0);
-      } catch (e) {
-        console.warn('MFA check skipped or failed:', e);
+    if (!user) return;
+
+    try {
+      if (typeof user.reload === 'function') {
+        await user.reload();
       }
+      const enrolled = multiFactor(user).enrolledFactors;
+      this.mfaEnrolledFactors.set(enrolled);
+      this.isMfaEnrolled.set(enrolled.length > 0);
+      this.cdr.markForCheck();
+    } catch (e) {
+      console.warn('MFA check skipped or failed:', e);
     }
   }
 
@@ -432,7 +436,7 @@ export class Account implements OnInit {
       this.mfaPhoneNumber = '';
       this.mfaVerificationCode = '';
       this.mfaVerificationId = null;
-      this.checkMfaStatus();
+      await this.checkMfaStatus();
       this.cdr.markForCheck();
     } catch (e: any) {
       console.error(e);
@@ -446,6 +450,9 @@ export class Account implements OnInit {
   }
 
   async disableMfa() {
+    this.mfaError.set(null);
+    this.mfaSuccess.set(null);
+
     const ok = await this.fluxDialog.openConfirm({
       title: 'Disable Multi-Factor Authentication',
       message: 'Are you sure you want to disable MFA? Your account will be less secure.',
@@ -459,12 +466,19 @@ export class Account implements OnInit {
       if (factors.length > 0) {
         try {
           await this.authService.unenrollMfa(factors[0]);
-          this.checkMfaStatus();
+          await this.checkMfaStatus();
           this.mfaSuccess.set('MFA has been disabled.');
           this.cdr.markForCheck();
         } catch (e: any) {
           console.error(e);
-          this.mfaError.set('Failed to disable MFA. Please try again later.');
+          const code = e?.code || '';
+          if (code.includes('requires-recent-login')) {
+            this.mfaError.set(
+              'For security reasons, please sign out and sign back in before disabling MFA.',
+            );
+          } else {
+            this.mfaError.set('Failed to disable MFA. Please try again later.');
+          }
         }
       }
     }
