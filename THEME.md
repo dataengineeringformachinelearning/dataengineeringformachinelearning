@@ -351,6 +351,8 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 | `--viking-content-readable-max-width` | 48rem                   |
 | `--viking-navbar-height`       | 64px                           |
 | `--viking-sidebar-width`       | 256px                          |
+
+**Site navbar (`static-navbar.scss`):** `.navbar-content` is capped at `--viking-container-max-width` (1260px) and centered. The bar uses `container-name: viking-navbar` for responsive nav-label compaction. Desktop nav (`.desktop-nav`) must render `display: flex` from `768px+`; search trigger and utility buttons stay vertically centered at `--viking-control-height`.
 | `--viking-control-height`      | 40px (44px on mobile)          |
 | `--viking-control-height-sm`   | 32px                           |
 | `--viking-control-height-xs`   | 24px                           |

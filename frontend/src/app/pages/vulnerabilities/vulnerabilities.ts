@@ -164,7 +164,7 @@ export class Vulnerabilities implements OnInit {
     this.metaService.updateTag({
       name: 'description',
       content:
-        'Palantir-style vulnerability ingestion, analysis, and threat prioritization dashboard.',
+        'Enterprise vulnerability ingestion, analysis, and threat prioritization dashboard.',
     });
   }
 

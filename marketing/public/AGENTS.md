@@ -140,14 +140,14 @@ This document captures the core coding principles, philosophies, and "how we bui
 
 DEML documents first-class integration paths for enterprise ML infrastructure. Each platform has a dedicated guide under `docs/integrations/` and a health-check endpoint at `/api/v1/integrations/{platform}`:
 
-| Platform     | Guide                               | Primary endpoints                   |
-| ------------ | ----------------------------------- | ----------------------------------- |
-| Kubernetes   | `docs/integrations/kubernetes.md`   | `/api/v1/predict`, `/api/v1/ingest` |
-| TensorFlow   | `docs/integrations/tensorflow.md`   | `/api/v1/ingest`, `/api/v1/predict` |
-| PyTorch      | `docs/integrations/pytorch.md`      | `/api/v1/ingest`, `/api/v1/predict` |
-| Apache Spark | `docs/integrations/apache-spark.md` | `/api/v1/ingest`                    |
-| Databricks   | `docs/integrations/databricks.md`   | `/api/v1/ingest`, `/api/v1/predict` |
-| AWS Redshift | `docs/integrations/redshift.md`     | `/api/v1/ingest`, `/api/v1/predict` |
+| Platform | Guide | Primary endpoints |
+| -------- | ----- | ----------------- |
+| Kubernetes | `docs/integrations/kubernetes.md` | `/api/v1/predict`, `/api/v1/ingest` |
+| TensorFlow | `docs/integrations/tensorflow.md` | `/api/v1/ingest`, `/api/v1/predict` |
+| PyTorch | `docs/integrations/pytorch.md` | `/api/v1/ingest`, `/api/v1/predict` |
+| Apache Spark | `docs/integrations/apache-spark.md` | `/api/v1/ingest` |
+| Databricks | `docs/integrations/databricks.md` | `/api/v1/ingest`, `/api/v1/predict` |
+| AWS Redshift | `docs/integrations/redshift.md` | `/api/v1/ingest`, `/api/v1/predict` |
 
 **Note:** [Redpanda](https://redpanda.com/) is the platform's **internal** event broker (Event Projections, outbox relay). It is not listed as a customer integration — use AWS Redshift for warehouse analytics exports instead.
 
