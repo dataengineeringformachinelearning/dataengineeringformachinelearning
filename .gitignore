@@ -67,3 +67,6 @@ override.tf.json
 _override.tf
 _override.tf.json
 .terraform.lock.hcl
+
+# Deprecated local design-system package (merged into frontend/projects/viking-ui)
+packages/deml-design-system/

@@ -141,11 +141,11 @@ services:
   # ── deml-daemon: Rust multi-task background daemon ────────────────────────
   # Phase 1: outbox relay (Postgres → Redpanda).
   # Phase 2+: telemetry consumer, health pinger, cron publisher.
-  # Build context is ./rust (workspace root); Dockerfile is inside deml-daemon/.
+  # Build context is repo root (Dockerfile COPY paths use rust/…).
   deml-daemon:
     build:
-      context: ./rust
-      dockerfile: deml-daemon/Dockerfile
+      context: .
+      dockerfile: rust/deml-daemon/Dockerfile
     environment:
       - DATABASE_URL=${DATABASE_URL:-postgres://admin:password@postgres:5432/machinelearning}
       - REDPANDA_BROKERS=${REDPANDA_BROKERS:-redpanda:9092}

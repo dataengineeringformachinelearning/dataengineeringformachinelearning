@@ -2442,7 +2442,7 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech** �
 - **Refined accent discipline** — deep teal for primary action, rich crimson for secondary emphasis and danger.
 - **WCAG 2.1 AA** — contrast, focus rings, 44px mobile touch targets, keyboard navigation.
 
-Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle synced from `frontend/projects/viking-ui/src/styles/`.
+Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle built from `frontend/projects/viking-ui/src/styles/` and synced via `scripts/sync_design_system.py`.
 
 ### Unified design governance
 
@@ -2463,7 +2463,7 @@ Changes to design governance must update `.cursorrules`, `THEME.md`, `AGENTS.md`
 
 deml.app ships a marketing-parity landing page at `/home` (hero, capability bands, pricing, Polars-style whitepaper CTA) so the authenticated app feels cohesive with [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/). Unauthenticated visitors hitting `/` are routed to `/home`; signed-in users go to `/dashboard`.
 
-Consumption follows the path of least resistance. Inside the repository, deml.app imports `@dataengineeringformachinelearning/viking-ui` as a local npm package (`file:dist/viking-ui`, built via `prebuild`) while development can still resolve the library from source through the TypeScript path alias. Production pages consume Viking-UI components directly — buttons, fields, charts, modals, toasts, and selects — rather than hosting a component gallery on deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). The project is registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, so the same source produces a publishable Angular Package Format bundle. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box. A **separate** Angular showcase app (`projects/viking-ui-showcase`) renders every component with realistic platform data for visual regression and contributor onboarding — build it with `npm run build:viking-ui-system` and deploy it independently of deml.app.
+Consumption follows the path of least resistance. Inside the repository, deml.app imports `@dataengineeringformachinelearning/viking-ui` as a local npm package (`file:dist/viking-ui`, built via `prebuild`) while development can still resolve the library from source through the TypeScript path alias. Production pages consume Viking-UI components directly — buttons, fields, charts, modals, toasts, and selects — rather than embedding a component gallery inside deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). The project is registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, so the same source produces a publishable Angular Package Format bundle. Component documentation and visual regression live in the **standalone docs site** (`viking-ui-docs/`, deployed to [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)) — build with `npm run build:viking-ui-docs` from the repo root. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, constructor parameter injection (never field-level `inject()` in library code — avoids NG0203 in cross-package bundles), and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box.
 
 Non-Angular surfaces (marketing Astro pages, Django templates) load the static CSS bundle synced from the design system:
 
@@ -2497,20 +2497,19 @@ export class Example {
 
 ### Build
 
-Run from the `frontend/` workspace:
+**Canonical SCSS** lives in `frontend/projects/viking-ui/src/styles/` (tokens, components, navbar, page shell). **Static CSS** for marketing, backend, and widgets is compiled by `viking-ui-docs/scripts/build-static-css.mjs` (full monorepo context — not inside the Railway frontend Docker image).
+
+From repo root:
 
 ```bash
-npm run test:viking-ui # Vitest component tests (AnalogJS + axe patterns)
-npm run build:viking-ui # ng-packagr bundle → dist/viking-ui
-npm run build:viking-ui-css # Static CSS for marketing/backend templates
-npm run build:viking-ui-showcase # Optional component gallery app
+npm run test:viking-ui --prefix frontend          # Vitest component tests
+npm run build:viking-ui --prefix frontend         # ng-packagr → dist/viking-ui
+npm run build:static-css --prefix viking-ui-docs  # design-tokens.css, deml-components.css, viking-ui.css
+python3 scripts/sync_design_system.py             # fan-out to marketing, backend, frontend /assets/
+npm run build:viking-ui-docs                      # docs site + prebuild static CSS
 ```
 
-Sync design tokens and `viking-ui.css` to marketing, backend, and frontend public assets:
-
-```bash
-python3 scripts/sync_design_system.py
-```
+The frontend `build:viking-ui-css` script delegates to `viking-ui-docs` for backward compatibility. Railway/Docker frontend builds compile live SCSS from `projects/viking-ui/` only — they do not require a separate `packages/` design-system package.
 
 The main Angular app rebuilds the library automatically via `prebuild` / `prestart` / `pretest` hooks.
 
