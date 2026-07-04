@@ -30,7 +30,7 @@ ENV BACKEND_URL=$BACKEND_URL \
 RUN npm run check:mobile-first
 
 # Build the application (set-env.js uses placeholders when secrets are absent)
-RUN npm run build --prod
+RUN npm run build -- --configuration production
 
 # Production stage (Secure Distroless Node.js)
 FROM gcr.io/distroless/nodejs22-debian12

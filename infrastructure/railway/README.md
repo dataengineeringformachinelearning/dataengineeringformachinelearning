@@ -7,13 +7,14 @@ Declarative Railway service configs for DEML internal infrastructure. Each subdi
 | Service               | Config                          | Internal hostname                  |
 | --------------------- | ------------------------------- | ---------------------------------- |
 | Redpanda queue        | `../queue/railway.json`         | `deml-queue.railway.internal:9092` |
+| Frontend              | `frontend/railway.json`         | Set via Railway service name       |
 | Backend API           | `backend/railway.json`          | Set via Railway service name       |
 | deml-workers          | `workers/railway.json`          | —                                  |
 | deml-telemetry-worker | `telemetry-worker/railway.json` | —                                  |
 | deml-daemon           | `daemon/railway.json`           | —                                  |
 | Scanner               | `scanner/railway.json`          | `scanner.railway.internal`         |
 
-Frontend (`deml-frontend`), ClickHouse (`deml-clickhouse`), Dragonfly, Tor proxy, CPE guesser and similar infra services use their `Dockerfile` directly (config path often points at the `infrastructure/xxx` dir or root with explicit dockerfilePath in Railway UI). Deprecated services (e.g. dtrack, otel-collector) may still exist for cleanup only.
+ClickHouse (`deml-clickhouse`), Dragonfly, Tor proxy, CPE guesser and similar infra services use their `Dockerfile` directly (config path often points at the `infrastructure/xxx` dir or root with explicit dockerfilePath in Railway UI). Deprecated services (e.g. dtrack, otel-collector) may still exist for cleanup only.
 
 See `scripts/railway_env_cleanup.py` for the full list of active `deml-*` services.
 
