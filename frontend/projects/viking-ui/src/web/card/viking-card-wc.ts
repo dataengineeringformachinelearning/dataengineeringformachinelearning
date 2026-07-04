@@ -1,3 +1,5 @@
+import { defineCustomElement } from '../core/dom';
+
 /**
  * Framework-agnostic Viking card Web Component (light DOM — inherits global viking-card CSS).
  * Tag: `viking-card-wc`
@@ -51,7 +53,5 @@ export class VikingCardWc extends HTMLElement {
 }
 
 export const registerVikingCardWc = (): void => {
-  if (!customElements.get(VikingCardWc.tag)) {
-    customElements.define(VikingCardWc.tag, VikingCardWc);
-  }
+  defineCustomElement(VikingCardWc.tag, VikingCardWc);
 };

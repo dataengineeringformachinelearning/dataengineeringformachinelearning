@@ -1,5 +1,5 @@
 import { attachShadowStyles } from '../core/base';
-import { escapeHtml } from '../core/dom';
+import { defineCustomElement, escapeHtml } from '../core/dom';
 import { renderInlineIcon, TONE_ICON_NAMES } from '../core/icons-inline';
 import { VIKING_CALLOUT_STYLES } from '../core/styles';
 import type { VikingWcTone } from '../core/types';
@@ -86,7 +86,5 @@ export class VikingCalloutWc extends HTMLElement {
 }
 
 export const registerVikingCalloutWc = (): void => {
-  if (!customElements.get(VikingCalloutWc.tag)) {
-    customElements.define(VikingCalloutWc.tag, VikingCalloutWc);
-  }
+  defineCustomElement(VikingCalloutWc.tag, VikingCalloutWc);
 };
