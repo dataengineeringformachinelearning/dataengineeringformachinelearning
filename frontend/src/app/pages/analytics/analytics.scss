@@ -7,8 +7,7 @@
 }
 
 .chart-container {
-  min-height: var(--viking-chart-panel-body-min-height-md, 19rem);
-  max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+  min-height: var(--viking-chart-panel-body-min-height-md, 22rem);
   width: 100%;
 
   viking-chart {
