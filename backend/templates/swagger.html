@@ -27,16 +27,40 @@
 {% endblock %}
 
 {% block content %}
-<main class="swagger-docs-shell" id="main-content" tabindex="-1">
-  <article class="swagger-panel">
-    <header class="swagger-panel-hero" aria-label="API documentation header">
-      <p class="swagger-eyebrow">OpenAPI · v{{ api_version }}</p>
-      <h1 class="swagger-title">{{ api_title }}</h1>
-      <p class="swagger-lead">
+<main class="page-inner-wrapper backend-swagger-shell" id="main-content" tabindex="-1">
+  <article class="viking-card backend-swagger-panel">
+    <header class="viking-page-header-static backend-swagger-hero" aria-label="API documentation header">
+      <p class="viking-label">OpenAPI · v{{ api_version }}</p>
+      <h1 class="viking-heading viking-heading-lg">{{ api_title }}</h1>
+      <p class="viking-text-muted">
         Interactive sandbox for public ingestion and inference endpoints. Authorize with your
-        bearer token using the control below.
+        bearer token using the control below, or press
+        <kbd class="viking-kbd-static">⌘K</kbd> to search the platform.
       </p>
     </header>
+
+    <div class="backend-swagger-toolbar" role="search">
+      <label class="viking-field backend-swagger-search" for="swagger-endpoint-search">
+        <span class="viking-field-label">Search endpoints</span>
+        <div class="viking-input-shell">
+          <span
+            data-viking-icon="search"
+            data-viking-icon-size="16"
+            data-viking-icon-color="muted"
+            aria-hidden="true"
+          ></span>
+          <input
+            type="search"
+            id="swagger-endpoint-search"
+            class="viking-input-native"
+            placeholder="Filter operations by path, method, or tag…"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+      </label>
+    </div>
+
     <div id="swagger-ui" aria-live="polite"></div>
   </article>
 </main>
@@ -69,5 +93,38 @@
       return req;
     },
   });
+
+  const syncSwaggerSearch = () => {
+    const vikingSearch = document.getElementById("swagger-endpoint-search");
+    const swaggerFilter = document.querySelector("#swagger-ui .filter-container input");
+    if (!vikingSearch || !swaggerFilter) {
+      return false;
+    }
+
+    const syncToSwagger = () => {
+      swaggerFilter.value = vikingSearch.value;
+      swaggerFilter.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+
+    vikingSearch.addEventListener("input", syncToSwagger);
+    swaggerFilter.addEventListener("input", () => {
+      if (vikingSearch.value !== swaggerFilter.value) {
+        vikingSearch.value = swaggerFilter.value;
+      }
+    });
+
+    const filterContainer = document.querySelector("#swagger-ui .filter-container");
+    if (filterContainer) {
+      filterContainer.setAttribute("aria-hidden", "true");
+    }
+
+    return true;
+  };
+
+  const searchPoll = window.setInterval(() => {
+    if (syncSwaggerSearch()) {
+      window.clearInterval(searchPoll);
+    }
+  }, 120);
 </script>
 {% endblock %}

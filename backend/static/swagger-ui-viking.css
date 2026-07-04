@@ -4,61 +4,44 @@
  */
 
 body.backend-swagger {
-  background: var(--bg-color);
+  background: var(--viking-bg, var(--bg-color));
 }
 
-.swagger-docs-shell {
-  width: 100%;
-  max-width: var(--viking-container-max-width, var(--container-max-width, 1260px));
-  margin: 0 auto;
-  padding: var(--viking-space-3, 24px) var(--viking-space-2, 16px)
-    var(--viking-space-6, 48px);
-  box-sizing: border-box;
+.backend-swagger-shell {
+  padding-block: var(--viking-space-3) var(--viking-space-6);
 }
 
-/* ── Single publication-style panel ─────────────────────────────────────── */
-.swagger-panel {
-  border: 1px solid var(--viking-border, var(--border));
-  border-radius: var(--viking-radius-lg, 12px);
-  background: color-mix(in srgb, var(--viking-surface, var(--card-bg)) 94%, transparent);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+/* ── VikingCard panel wrapping Swagger UI ──────────────────────────────────── */
+.backend-swagger-panel {
+  padding: 0;
   overflow: hidden;
 }
 
-.swagger-panel-hero {
-  padding: var(--viking-space-2, 16px) var(--viking-space-2, 16px) var(--viking-space-2, 16px);
-  border-bottom: 1px solid var(--viking-border, var(--border));
-  text-align: left;
-}
-
-.swagger-eyebrow {
-  margin: 0 0 var(--viking-space-1, 8px);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--viking-accent, var(--color-primary));
-}
-
-.swagger-title {
-  margin: 0 0 var(--viking-space-1, 8px);
-  font-size: clamp(1.35rem, 3vw, 1.75rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: var(--viking-text, var(--text-color));
-}
-
-.swagger-lead {
+.backend-swagger-hero {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--viking-border);
   margin: 0;
-  max-width: 52rem;
-  font-size: var(--viking-font-size, 1rem);
-  line-height: 1.6;
-  color: var(--viking-text-muted, var(--text-muted));
 }
 
-.swagger-panel #swagger-ui {
-  padding: 0 var(--viking-space-2, 16px) var(--viking-space-2, 16px);
+.backend-swagger-toolbar {
+  padding: var(--viking-space-2) var(--viking-space-3);
+  border-bottom: 1px solid var(--viking-border);
+  background: color-mix(in srgb, var(--viking-surface-alt) 40%, transparent);
+}
+
+.backend-swagger-search {
+  margin: 0;
+  max-width: none;
+}
+
+.backend-swagger-search .viking-input-shell {
+  width: 100%;
+}
+
+.backend-swagger-panel #swagger-ui {
+  padding: 0 var(--viking-space-3) var(--viking-space-3);
 }
 
 .swagger-ui .opblock .opblock-summary {
@@ -164,8 +147,17 @@ body.backend-swagger {
 
 .swagger-ui .filter-container {
   margin: 0;
-  padding: var(--viking-space-2, 16px) 0;
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  padding: 0;
+  border: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .swagger-ui .filter-container input[type="text"] {
@@ -863,12 +855,16 @@ html[data-theme="light"] .swagger-ui select {
 }
 
 @media (min-width: 641px) {
-  .swagger-panel-hero {
-    padding: var(--viking-space-3, 24px) var(--viking-space-3, 24px) var(--viking-space-2, 16px);
+  .backend-swagger-hero {
+    padding: var(--viking-space-3) var(--viking-space-3) var(--viking-space-2);
   }
 
-  .swagger-panel #swagger-ui {
-    padding: 0 var(--viking-space-3, 24px) var(--viking-space-3, 24px);
+  .backend-swagger-toolbar {
+    padding: var(--viking-space-2) var(--viking-space-3);
+  }
+
+  .backend-swagger-panel #swagger-ui {
+    padding: 0 var(--viking-space-3) var(--viking-space-3);
   }
 
   .swagger-ui .opblock .opblock-summary {
