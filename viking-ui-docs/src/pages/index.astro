@@ -6,7 +6,7 @@ import { LIBRARY_COMPONENT_COUNT } from '../lib/library-stats';
 import '../styles/showcase.scss';
 ---
 
-<DocLayout title="Viking-UI — Precision Design System" sidebar={false}>
+<DocLayout title="Viking-UI — Precision Design System" hideSubnav={false}>
   <div class="page-inner-wrapper">
     <section class="landing-hero">
       <div class="landing-hero-copy">
@@ -103,8 +103,8 @@ import '../styles/showcase.scss';
     </section>
 
     <section class="showcase-category" aria-labelledby="quickstart-heading">
-      <header class="showcase-category-header">
-        <h2 class="viking-heading viking-heading-sm" id="quickstart-heading">Quick start</h2>
+      <header class="showcase-section-header">
+        <h2 class="showcase-section-title" id="quickstart-heading">Quick start</h2>
         <p class="viking-text-muted">Install tokens, load components, compose primitives.</p>
       </header>
       <pre class="code-block-panel is-active" style="border:1px solid var(--viking-border);border-radius:var(--viking-radius-lg);background:var(--viking-charcoal-950,#0a0a0a);padding:var(--viking-space-2);margin:0;"><code># npm

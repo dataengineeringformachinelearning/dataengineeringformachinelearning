@@ -2,22 +2,25 @@
 import BaseLayout from './BaseLayout.astro';
 import SiteNavbar from '../components/SiteNavbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import DocsSidebar from '../components/DocsSidebar.astro';
+import ShowcaseSubnav from '../components/ShowcaseSubnav.astro';
 import '../styles/docs-shell.scss';
 
 export interface Props {
   title?: string;
   description?: string;
+  /** @deprecated Sidebar removed — full-width marketing layout used instead */
   sidebar?: 'components' | 'docs' | false;
+  /** Hide the horizontal sub-navigation (landing page only) */
+  hideSubnav?: boolean;
 }
 
-const { title, description, sidebar = 'docs' } = Astro.props;
+const { title, description, hideSubnav = false } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} bodyClass="docs-shell">
   <SiteNavbar slot="header" />
-  <div class="docs-layout">
-    {sidebar && <DocsSidebar variant={sidebar} />}
+  {!hideSubnav && <ShowcaseSubnav />}
+  <div class="docs-layout docs-layout-full">
     <div class="docs-main">
       <main id="main-content" class="docs-content" tabindex="-1">
         <slot />

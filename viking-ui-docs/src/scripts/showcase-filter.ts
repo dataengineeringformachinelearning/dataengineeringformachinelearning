@@ -2,8 +2,8 @@ const initShowcaseFilter = (): void => {
   const search = document.getElementById('component-search') as HTMLInputElement | null;
   const categoryFilter = document.getElementById('component-category-filter') as HTMLSelectElement | null;
   const countEl = document.getElementById('component-search-count');
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('.component-card[data-component-id]'));
-  const categories = Array.from(document.querySelectorAll<HTMLElement>('.showcase-category[data-category-id]'));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.component-showcase-card[data-component-id]'));
+  const categories = Array.from(document.querySelectorAll<HTMLElement>('.showcase-section[data-category-id]'));
 
   if (!search || cards.length === 0) return;
 
@@ -31,7 +31,7 @@ const initShowcaseFilter = (): void => {
     });
 
     categories.forEach((section) => {
-      const sectionCards = section.querySelectorAll<HTMLElement>('.component-card[data-component-id]');
+      const sectionCards = section.querySelectorAll<HTMLElement>('.component-showcase-card[data-component-id]');
       const hasVisible = Array.from(sectionCards).some((card) => !card.hidden);
       section.hidden = !hasVisible;
     });

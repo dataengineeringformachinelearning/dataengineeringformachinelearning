@@ -1,6 +1,7 @@
 ---
 import DocLayout from '../../layouts/DocLayout.astro';
 import ComponentCard from '../../components/ComponentCard.astro';
+import ShowcaseCategoryBar from '../../components/ShowcaseCategoryBar.astro';
 import ApiReference from '../../components/ApiReference.astro';
 import { ALL_COMPONENTS, SHOWCASE_CATEGORIES, findComponent } from '../../lib/component-registry';
 import { getComponentApi } from '../../lib/component-api';
@@ -23,9 +24,10 @@ const related = (component.related ?? [])
 <DocLayout
   title={component.name}
   description={component.description}
-  sidebar="components"
 >
-  <div class="page-inner-wrapper component-detail">
+  <ShowcaseCategoryBar activeCategory={category?.id} />
+
+  <div class="page-inner-wrapper showcase-page component-detail-page">
     <nav class="component-breadcrumb" aria-label="Breadcrumb">
       <a href="/components">Components</a>
       {category && (
@@ -38,12 +40,12 @@ const related = (component.related ?? [])
       <span aria-current="page">{component.name}</span>
     </nav>
 
-    <header class="viking-page-header-static">
-      <p class="viking-label">{category?.label ?? 'Component'}</p>
-      <h1 class="viking-heading viking-heading-xl">{component.name}</h1>
-      <p class="viking-text-muted">{component.description}</p>
+    <header class="showcase-detail-header">
+      <span class="section-tag">{category?.label ?? 'Component'}</span>
+      <h1 class="showcase-hero-title">{component.name}</h1>
+      <p class="showcase-hero-lead">{component.description}</p>
       {component.tags && (
-        <div class="viking-demo-row">
+        <div class="component-showcase-tags">
           {component.tags.map((tag) => (
             <span class="viking-badge viking-badge-subtle">{tag}</span>
           ))}
@@ -51,7 +53,7 @@ const related = (component.related ?? [])
       )}
     </header>
 
-    <ComponentCard component={component} showApi={false} hideHeader />
+    <ComponentCard component={component} variant="full" showApi={false} hideHeader />
 
     {api && (
       <div class="viking-card component-api-panel">
@@ -64,58 +66,24 @@ const related = (component.related ?? [])
     )}
 
     {related.length > 0 && (
-      <section class="showcase-category" aria-labelledby="related-heading">
-        <header class="showcase-category-header">
-          <h2 class="viking-heading viking-heading-sm" id="related-heading">Related components</h2>
+      <section class="showcase-section showcase-section-compact" aria-labelledby="related-heading">
+        <header class="showcase-section-header">
+          <h2 class="showcase-section-title" id="related-heading">Related components</h2>
         </header>
-        <div class="viking-demo-row">
+        <div class="showcase-related-grid">
           {related.map((rel) => (
-            <a href={`/components/${rel!.id}`} class="viking-btn viking-btn-outline">
-              {rel!.name}
+            <a href={`/components/${rel!.id}`} class="showcase-related-card viking-card">
+              <span class="viking-heading viking-heading-sm">{rel!.name}</span>
+              <span class="viking-text-muted">{rel!.description}</span>
             </a>
           ))}
         </div>
       </section>
     )}
 
-    <div class="viking-demo-row component-detail-actions">
+    <div class="showcase-detail-actions">
       <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
       <viking-button-wc variant="outline" href="/components">Back to gallery</viking-button-wc>
     </div>
   </div>
 </DocLayout>
-
-<style>
-  .component-detail {
-    display: flex;
-    flex-direction: column;
-    gap: var(--viking-space-3);
-  }
-
-  .component-breadcrumb {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--viking-space-half);
-    font-size: var(--viking-font-size-sm);
-    color: var(--viking-text-muted);
-  }
-
-  .component-breadcrumb a {
-    color: var(--viking-accent);
-    text-decoration: none;
-  }
-
-  .component-breadcrumb a:hover {
-    text-decoration: underline;
-  }
-
-  .component-api-panel {
-    padding: var(--viking-card-padding);
-  }
-
-  .component-detail-actions {
-    padding-top: var(--viking-space-2);
-    border-top: 1px solid var(--viking-border-subtle);
-  }
-</style>
