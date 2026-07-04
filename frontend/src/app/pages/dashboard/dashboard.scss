@@ -186,7 +186,7 @@
   grid-area: kpis;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: var(--viking-space-2);
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(4, 1fr);
@@ -196,51 +196,51 @@
 .kpi-card {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 16px;
-  min-height: 132px;
-  border-radius: var(--border-radius-md);
-  border: 1px solid var(--border);
-  background: linear-gradient(
-    145deg,
-    color-mix(in srgb, var(--card-bg) 92%, var(--color-primary) 8%) 0%,
-    var(--card-bg) 100%
-  );
-  box-shadow: var(--shadow-sm);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  gap: var(--viking-space-half);
+  padding: var(--viking-card-padding-compact, var(--viking-space-2));
+  min-height: var(--viking-metric-card-tall-min-height);
+  border-radius: var(--viking-radius-lg);
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow: var(--viking-shadow-sm);
+  transition: var(--viking-transition-interactive);
   position: relative;
   overflow: hidden;
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: left;
 
   &::before {
     content: '';
     position: absolute;
-    inset: 0 auto auto 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, var(--color-primary), transparent);
-    opacity: 0.6;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      transparent
+    );
+    pointer-events: none;
   }
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border));
+    border-color: var(--viking-border-strong);
+    box-shadow: var(--viking-shadow-hover);
+    transform: translateY(var(--viking-state-hover-lift, -1px));
   }
 
   viking-app-icon {
-    color: var(--color-primary);
-    margin-bottom: 4px;
+    color: var(--viking-accent);
+    margin-bottom: var(--viking-space-half);
   }
 
   &.alert {
-    border-left: 3px solid var(--color-warning);
+    border-left: 3px solid var(--viking-warning);
   }
 
   &.critical {
-    border-left: 3px solid var(--viking-crimson-500);
+    border-left: 3px solid var(--viking-danger);
   }
 
   &.wide {
@@ -265,17 +265,17 @@
 }
 
 .kpi-label {
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-muted);
+  color: var(--viking-text-muted);
 }
 
 .kpi-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  line-height: 1.1;
+  font-size: calc(var(--viking-font-size) * 1.35);
+  font-weight: var(--viking-font-weight-bold);
+  line-height: var(--viking-line-height-tight);
 }
 
 .threats-panel {
@@ -315,8 +315,8 @@
 
   .mini-chart {
     flex: 1 1 auto;
-    min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
-    max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+    min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
+    max-height: var(--viking-chart-fill-max-height, clamp(20rem, 42vw, 22rem));
     padding-top: var(--viking-space-2, 16px);
   }
 

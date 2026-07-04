@@ -79,7 +79,7 @@
   z-index: 1;
   font-size: 1.05rem;
   color: var(--text-muted);
-  max-width: 520px;
+  max-width: var(--viking-content-readable-max-width);
   margin: 0 auto 32px auto;
   line-height: 1.6;
 }
@@ -91,7 +91,7 @@
   flex-direction: column;
   gap: 24px;
   width: 100%;
-  max-width: 480px;
+  max-width: var(--viking-form-narrow-max-width);
   margin-bottom: 32px;
   text-align: left;
 }

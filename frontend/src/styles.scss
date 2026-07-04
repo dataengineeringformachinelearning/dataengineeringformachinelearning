@@ -246,15 +246,13 @@ main.main {
 
 .dashboard-content-area {
   flex: 1;
-  padding: 16px;
+  padding: var(--viking-space-3, 24px) 0 var(--viking-space-4, 32px);
   position: relative;
   z-index: 1;
   box-sizing: border-box;
-}
 
-@media (min-width: 768px) {
-  .dashboard-content-area {
-    padding: var(--grid-gap, 2rem);
+  @media (min-width: 768px) {
+    padding-top: var(--viking-space-4, 32px);
   }
 }
 
@@ -406,41 +404,6 @@ html[data-theme='light'] #global-error-toast {
 .vuln-profile-header,
 .page-content:not([style*='border']) {
   border-radius: 0 !important;
-}
-
-// ====================== HUD HEADER STYLING ======================
-.hud-header {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  padding-top: 8px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border-layout);
-  margin-bottom: 24px;
-  gap: 16px;
-}
-
-.hud-brand {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.hud-title {
-  font-family: var(--viking-font-family);
-  font-size: 1.25rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  margin: 0;
-  color: var(--text-color);
-  text-transform: uppercase;
-}
-
-.hud-subtitle {
-  font-size: 1rem;
-  color: var(--text-muted);
-  margin: 8px 0 0 0;
-  font-family: var(--viking-font-family);
 }
 
 /* Hide floating invisible reCAPTCHA badge globally */

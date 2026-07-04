@@ -94,8 +94,10 @@
   max-width: var(--viking-form-narrow-max-width);
 }
 
-.viking-form-section,
-viking-form-section {
+.viking-form-constrained .viking-form-section,
+.viking-form-constrained viking-form-section,
+.viking-form-narrow .viking-form-section,
+.viking-form-narrow viking-form-section {
   max-width: var(--viking-form-max-width);
 }
 
