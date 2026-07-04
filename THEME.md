@@ -217,7 +217,7 @@ Inter is the **primary typeface** for every DEML surface. The variable font is *
 | ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | `--viking-font-family`        | `'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif` | Body, UI chrome, headings, tables, forms, Swagger |
 | `--viking-font-family-mono`   | `ui-monospace, 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, monospace`                          | Code blocks, hex values, telemetry IDs, kbd     |
-| `.viking-font-display`        | Inherits `--viking-font-family` with caps spacing                                                          | Section tags, instrument labels, KPI badges     |
+| `.viking-font-display`        | Inter bold caps (`--viking-letter-spacing-caps`)                                                           | Section tags, instrument labels, KPI badges, CES/marketing display |
 
 **Self-hosting:**
 

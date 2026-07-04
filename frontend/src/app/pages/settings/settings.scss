@@ -12,11 +12,11 @@
   --settings-highlight: var(--color-primary-container);
   --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
   --new-page-hover-border: var(--color-primary-container);
-  --new-page-border: rgba(255, 255, 255, 0.25);
+  --new-page-border: color-mix(in srgb, var(--viking-border) 60%, transparent);
   --settings-active-gradient: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--color-surface) 25%, transparent) 0%,
-    rgba(192, 197, 193, 0.08) 100%
+    color-mix(in srgb, var(--viking-surface) 25%, transparent) 0%,
+    color-mix(in srgb, var(--viking-surface-alt) 8%, transparent) 100%
   );
 }
 
@@ -29,8 +29,8 @@
   --new-page-border: color-mix(in srgb, var(--color-surface) 15%, transparent);
   --settings-active-gradient: linear-gradient(
     135deg,
-    rgba(225, 230, 226, 0.8) 0%,
-    color-mix(in srgb, var(--color-surface) 8%, transparent) 100%
+    color-mix(in srgb, var(--viking-surface) 80%, transparent) 0%,
+    color-mix(in srgb, var(--viking-surface-alt) 8%, transparent) 100%
   );
 }
 
@@ -41,43 +41,17 @@
   gap: var(--grid-gap);
 }
 
-/* Outlined Content Card — extends viking-ui page-shell with card-header spacing */
+/* Outlined card — base shell from page-shell.scss; settings-specific rhythm only */
 .status-card-outlined {
-  position: relative;
-  background: var(--viking-surface);
-  border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
-  box-shadow: var(--viking-shadow-sm);
   padding: var(--viking-space-3, 24px);
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2, 16px);
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
-      transparent
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
 }
 
 .card-header-clean {
   padding: 0 0 var(--viking-space-2, 16px) 0;
   border-bottom: 1px solid var(--viking-border-subtle);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--viking-space-2, 16px);
-  flex-wrap: nowrap;
 
   .card-title-main {
     flex: 1 1 auto;
@@ -159,10 +133,6 @@
     font-size: 18px;
     flex-shrink: 0;
   }
-}
-
-.card-body-clean {
-  padding: var(--card-padding);
 }
 
 /* Flat section layout — one outer card, dividers between sections (no nested cards) */
@@ -794,7 +764,7 @@
 
 
 .integration-item-bordered {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid color-mix(in srgb, var(--viking-white) 5%, transparent);
   padding-bottom: 16px;
   margin-bottom: 16px;
 }
