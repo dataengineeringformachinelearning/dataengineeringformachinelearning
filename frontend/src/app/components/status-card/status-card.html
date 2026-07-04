@@ -9,19 +9,19 @@
     </div>
 
     @if (linkHeader) {
-      <a
-        [routerLink]="['/status', page.slug]"
-        class="status-badge-premium"
-        [ngClass]="getPageStatusClass()"
-      >
-        <span class="status-dot" aria-hidden="true"></span>
-        {{ getPageStatus() }}
-      </a>
+    <a
+      [routerLink]="['/status', page.slug]"
+      class="status-badge-premium"
+      [ngClass]="getPageStatusClass()"
+    >
+      <span class="status-dot" aria-hidden="true"></span>
+      {{ getPageStatus() }}
+    </a>
     } @else {
-      <div class="status-badge-premium" [ngClass]="getPageStatusClass()">
-        <span class="status-dot" aria-hidden="true"></span>
-        {{ getPageStatus() }}
-      </div>
+    <div class="status-badge-premium" [ngClass]="getPageStatusClass()">
+      <span class="status-dot" aria-hidden="true"></span>
+      {{ getPageStatus() }}
+    </div>
     }
   </div>
 
@@ -52,7 +52,7 @@
         icon="bar-chart"
         title="Total Requests"
         subtitle="Last 24h"
-        [value]="totalRequests != null ? (totalRequests | number) : 'N/A'"
+        [value]="totalRequestsValue"
       />
     </div>
 
@@ -72,16 +72,16 @@
     </div>
 
     @if (showViewButton) {
-      <div class="view-btn-container">
-        <viking-button
-          variant="primary"
-          [fullWidth]="true"
-          [href]="'/status/' + page.slug"
-          iconTrailing="arrow-right"
-        >
-          View Dedicated Page
-        </viking-button>
-      </div>
+    <div class="view-btn-container">
+      <viking-button
+        variant="primary"
+        [fullWidth]="true"
+        [href]="'/status/' + page.slug"
+        iconTrailing="arrow-right"
+      >
+        View Dedicated Page
+      </viking-button>
+    </div>
     }
   </div>
 </div>

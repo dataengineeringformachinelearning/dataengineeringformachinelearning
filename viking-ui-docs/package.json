@@ -5,6 +5,7 @@
   "description": "Standalone Viking-UI documentation site. Deployed separately from deml.app.",
   "scripts": {
     "prebuild": "npm run build:viking-ui --prefix ../frontend",
+    "prestart": "npm run build:viking-ui --prefix ../frontend",
     "start": "ng serve",
     "build": "ng build"
   },

@@ -11,7 +11,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { VikingButton, VikingStatusMetricRow } from '@dataengineeringformachinelearning/viking-ui';
-import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
 import { ThreatReportResponse } from '../../services/ml.service';
@@ -21,7 +20,7 @@ import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
 @Component({
   selector: 'app-status-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, VikingButton, VikingStatusMetricRow, VikingAppIcon, ProVerifiedBadge],
+  imports: [CommonModule, RouterModule, VikingButton, VikingStatusMetricRow, ProVerifiedBadge],
   templateUrl: './status-card.html',
   styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,6 +43,11 @@ export class StatusCard implements OnInit, OnChanges {
     suspicious_ratio: 0,
     anomaly_score: 0,
   };
+
+  get totalRequestsValue(): string | number {
+    if (this.totalRequests == null) return 'N/A';
+    return this.totalRequests.toLocaleString();
+  }
 
   private cdr = inject(ChangeDetectorRef);
 
