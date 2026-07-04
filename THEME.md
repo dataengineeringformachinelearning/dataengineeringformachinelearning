@@ -726,4 +726,27 @@ All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900
 7. Sync marketing/backend copies in CI or publish step.
 8. Run `python scripts/sync_content.py` after editing `BOOK.md`, `WHITEPAPER.md`, or `README.md`.
 
-**Version:** Viking-UI premium palette v2.1 (charcoal / teal / crimson, Spartan-structured). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+---
+
+## 14. Governance & agent alignment
+
+All contributors, LLMs, and Cursor agents must keep DEML visually unified through a single rule stack:
+
+| Layer | File | Role |
+| ----- | ---- | ---- |
+| IDE / Cursor | [.cursorrules](.cursorrules) | Mandatory Viking-UI imports, Spartan-structured composition, zero hardcoded styles |
+| Tokens & components | **THEME.md** (this file) | Canonical `--viking-*` matrix, component standards, do's/don'ts |
+| Platform invariants | [AGENTS.md](AGENTS.md) | Architecture, security, automation, Viking-UI Uniformity Law |
+| Narrative & build | [BOOK.md § Ch.31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) | Kit philosophy, consumption, publish workflow |
+
+### Unified component policy
+
+- **Angular:** always `@dataengineeringformachinelearning/viking-ui` — no Material, no third-party UI runtimes, no one-off styled controls when a `viking-*` exists.
+- **Extend the library first:** shared primitives ship in `frontend/projects/viking-ui/`; apps consume, they do not duplicate.
+- **Spartan ergonomics, Viking palette:** field stacks (`viking-field` → control), card surfaces (`viking-card`), button variants (`viking-button`) per §8 and the Spartan mapping table in §Design philosophy.
+- **Premium restrained luxury:** machined surfaces, restrained elevation, teal/crimson accent discipline — data dominates ornament.
+- **Non-Angular:** static `viking-ui.css` + semantic aliases only; run `sync_design_system.py` after token edits.
+
+When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
+
+**Version:** Viking-UI premium palette v2.2 (charcoal / teal / crimson, Spartan-structured, unified agent governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

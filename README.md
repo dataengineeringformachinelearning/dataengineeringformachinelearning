@@ -21,7 +21,7 @@ Welcome to the **Data Engineering for Machine Learning** Developer Platform. Thi
 >
 > For a brief summary of the platform's hypothesis, architecture diagrams, and algorithms, please read the **[Whitepaper (WHITEPAPER.md)](WHITEPAPER.md)**.
 >
-> For the unified visual design system (Viking-UI premium theme), see **[THEME.md](THEME.md)**.
+> For the unified visual design system (Viking-UI premium theme), see **[THEME.md](THEME.md)**. Cursor agents and contributors must also read **[.cursorrules](.cursorrules)** for mandatory Viking-UI component usage.
 
 > [!NOTE]
 > **arXiv Endorsement Request:** We are currently seeking an arXiv endorsement to formally publish the architectural whitepaper to `cs.CR` (Cryptography and Security). If you are a qualified arXiv author and find this work valuable, we would greatly appreciate your endorsement! You can endorse the author [here](https://arxiv.org/auth/endorse?x=ZISEYL) using code **ZISEYL**.
@@ -57,11 +57,11 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
 - **SaaS Reliability & Stability**: Comprehensive automated testing, static analysis (Ruff/ESLint/Axe), and clean-code architecture ensuring production-grade robustness.
-- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md)) across marketing, app, API, and docs — zero third-party UI runtimes, WCAG 2.1 AA by construction.
+- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, app, API, and docs — Spartan-structured composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
 
 ## Design System (Viking-UI)
 
-All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** — the Viking-UI premium theme:
+All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** — the Viking-UI premium theme. **[.cursorrules](.cursorrules)** enforces Viking-UI imports and token-only styling for Cursor agents.
 
 | Surface | Theme entry point |
 |---------|-------------------|
@@ -70,7 +70,7 @@ All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** 
 | [backend.deml.app](https://backend.deml.app) | `backend/static/viking-ui.css` |
 | Swagger / OpenAPI UI | Same tokens via static CSS |
 
-**Philosophy:** Precision engineering and high-end industrial tech — dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
+**Philosophy:** Precision engineering and high-end industrial tech — Spartan-structured composable primitives with a **premium restrained luxury** palette: dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. Always import `viking-*` components; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
 
 ## Solution Architecture
 
