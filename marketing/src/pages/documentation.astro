@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
+import DocsCta from '../components/DocsCta.astro';
+import DocsCtaGroup from '../components/DocsCtaGroup.astro';
 import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
 
@@ -137,16 +139,14 @@ const quickStartSteps = [
             One API key. Zero-trust authentication on every call. Stream telemetry, execute inference,
             and monitor threat posture — through the same gateway your production stack already trusts.
           </p>
-          <div class="docs-hero-actions">
-            <a href={FRONTEND_URL + '/login'} class="docs-cta primary">
-              <VikingIcon name="rocket_launch" size={20} />
-              <span>Create Free Account</span>
-            </a>
-            <a href="#quick-start" class="docs-cta secondary">
-              <VikingIcon name="play_circle" size={20} />
-              <span>Quick Start Guide</span>
-            </a>
-          </div>
+          <DocsCtaGroup>
+            <DocsCta href={FRONTEND_URL + '/login'} variant="primary" icon="rocket_launch">
+              Create Free Account
+            </DocsCta>
+            <DocsCta href="#quick-start" variant="secondary" icon="play_circle">
+              Quick Start Guide
+            </DocsCta>
+          </DocsCtaGroup>
         </header>
 
         <nav class="docs-outline no-print" aria-label="Documentation outline">
@@ -442,15 +442,6 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
 </Layout>
 
 <style lang="scss">
-.dashboard-page-container {
-  display: block;
-  width: 100%;
-  min-height: calc(100vh - 64px);
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  overflow: hidden;
-}
-
 .docs-hero {
   position: relative;
   margin: 0 auto 32px auto;
@@ -459,9 +450,10 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
   border-radius: 24px;
   border: 1px solid var(--border);
   background:
-    radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--viking-teal-600) 10%, transparent), transparent),
+    radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 10%, transparent), transparent),
     var(--color-surface);
   box-shadow: var(--shadow-sm);
+  overflow: visible;
 
   .docs-title {
     font-size: clamp(2rem, 5vw, 4rem);
@@ -479,59 +471,6 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
     max-width: 704px;
     margin: 0 auto 28px auto;
     line-height: 1.6;
-  }
-}
-
-.docs-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-  overflow: visible;
-}
-
-.docs-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--viking-space-1, 8px);
-  padding: var(--viking-space-1-5, 12px) var(--viking-space-3, 24px);
-  border-radius: var(--viking-radius-md, 10px);
-  font-weight: 600;
-  font-size: 1rem;
-  text-decoration: none !important;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-  min-height: 48px;
-  box-sizing: border-box;
-  white-space: nowrap;
-
-  .material-icons {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-
-  &.primary {
-    background: var(--viking-teal-600);
-    color: var(--white) !important;
-    border: 1px solid var(--viking-teal-600);
-
-    &:hover {
-      background: var(--viking-teal-400);
-      border-color: var(--viking-teal-400);
-    }
-  }
-
-  &.secondary {
-    background: var(--color-surface);
-    color: var(--viking-teal-600) !important;
-    border: 1px solid color-mix(in srgb, var(--viking-teal-600) 35%, var(--border));
-    box-shadow: var(--shadow-sm);
-
-    &:hover {
-      border-color: var(--viking-teal-600);
-      background: color-mix(in srgb, var(--viking-teal-600) 8%, var(--color-surface));
-    }
   }
 }
 
