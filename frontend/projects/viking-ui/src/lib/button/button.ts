@@ -26,6 +26,21 @@ export type VikingButtonVariant =
     '[class.viking-full]': 'fullWidth()',
   },
   template: `
+    <ng-template #content>
+      @if (loading()) {
+        <viking-icon name="loader" [size]="iconSize()" [spin]="true" />
+      } @else if (icon()) {
+        <viking-icon [name]="icon()!" [size]="iconSize()" />
+      }
+      <span class="viking-btn-label"><ng-content /></span>
+      @if (iconTrailing()) {
+        <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
+      }
+      @if (kbd()) {
+        <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
+      }
+    </ng-template>
+
     @if (href()) {
       <a
         class="viking-btn"
@@ -50,21 +65,6 @@ export type VikingButtonVariant =
         <ng-container *ngTemplateOutlet="content"></ng-container>
       </button>
     }
-
-    <ng-template #content>
-      @if (loading()) {
-        <viking-icon name="loader" [size]="iconSize()" [spin]="true" />
-      } @else if (icon()) {
-        <viking-icon [name]="icon()!" [size]="iconSize()" />
-      }
-      <span class="viking-btn-label"><ng-content /></span>
-      @if (iconTrailing()) {
-        <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
-      }
-      @if (kbd()) {
-        <kbd class="viking-btn-kbd">{{ kbd() }}</kbd>
-      }
-    </ng-template>
   `,
   styleUrl: './button.scss',
 })

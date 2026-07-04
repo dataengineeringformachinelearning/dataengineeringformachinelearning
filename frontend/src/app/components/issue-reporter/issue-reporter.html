@@ -21,22 +21,18 @@
   <viking-callout tone="danger" heading="Failed to report issue. Please try again." />
   }
 
-  <viking-button
-    vikingModalActions
-    variant="outline"
-    [disabled]="isSubmitting()"
-    (pressed)="toggleModal()"
-  >
-    Cancel
-  </viking-button>
-  <viking-button
-    vikingModalActions
-    variant="primary"
-    icon="send"
-    [loading]="isSubmitting()"
-    [disabled]="!issueDescription().trim()"
-    (pressed)="submitIssue()"
-  >
-    Submit
-  </viking-button>
+  <div vikingModalActions>
+    <viking-button variant="outline" [disabled]="isSubmitting()" (pressed)="toggleModal()">
+      Cancel
+    </viking-button>
+    <viking-button
+      variant="primary"
+      icon="send"
+      [loading]="isSubmitting()"
+      [disabled]="!issueDescription().trim()"
+      (pressed)="submitIssue()"
+    >
+      Submit
+    </viking-button>
+  </div>
 </viking-modal>

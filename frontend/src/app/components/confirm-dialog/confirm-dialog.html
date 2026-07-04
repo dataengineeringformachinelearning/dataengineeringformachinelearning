@@ -1,7 +1,10 @@
 @if (data(); as dialogData) {
 <viking-modal [open]="open()" [heading]="heading()" (openChange)="onOpenChange($event)">
   <div class="confirm-body">
-    <div class="title-row" style="display:flex; align-items:center; gap: var(--viking-space-2,16px);">
+    <div
+      class="title-row"
+      style="display: flex; align-items: center; gap: var(--viking-space-2, 16px)"
+    >
       <viking-icon [name]="iconName()" [size]="24" />
       <viking-text>{{ dialogData.message }}</viking-text>
     </div>
@@ -21,17 +24,18 @@
     }
   </div>
 
-  @if (dialogData.type !== 'alert') {
-  <viking-button vikingModalActions variant="outline" (pressed)="onCancel()">Cancel</viking-button>
-  }
-  <viking-button
-    vikingModalActions
-    [variant]="dialogData.confirmBtnColor === 'warn' ? 'danger' : 'primary'"
-    [disabled]="!isValid()"
-    [icon]="dialogData.type === 'alert' ? 'check-circle' : dialogData.confirmBtnColor === 'warn' ? 'trash' : 'check'"
-    (pressed)="onConfirm()"
-  >
-    {{ dialogData.confirmBtnText || (dialogData.type === 'alert' ? 'OK' : 'Confirm') }}
-  </viking-button>
+  <div vikingModalActions>
+    @if (dialogData.type !== 'alert') {
+    <viking-button variant="outline" (pressed)="onCancel()">Cancel</viking-button>
+    }
+    <viking-button
+      [variant]="dialogData.confirmBtnColor === 'warn' ? 'danger' : 'primary'"
+      [disabled]="!isValid()"
+      [icon]="dialogData.type === 'alert' ? 'check-circle' : dialogData.confirmBtnColor === 'warn' ? 'trash' : 'check'"
+      (pressed)="onConfirm()"
+    >
+      {{ dialogData.confirmBtnText || (dialogData.type === 'alert' ? 'OK' : 'Confirm') }}
+    </viking-button>
+  </div>
 </viking-modal>
 }

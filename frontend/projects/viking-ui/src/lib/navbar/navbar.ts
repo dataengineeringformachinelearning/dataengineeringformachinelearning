@@ -41,6 +41,13 @@ export class VikingNavbar {
   imports: [VikingIcon, NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    <ng-template #content>
+      @if (icon()) {
+        <viking-icon [name]="icon()!" [size]="18" />
+      }
+      <ng-content />
+    </ng-template>
+
     @if (href()) {
       <a
         class="viking-navbar-item"
@@ -55,12 +62,6 @@ export class VikingNavbar {
         <ng-container *ngTemplateOutlet="content" />
       </button>
     }
-    <ng-template #content>
-      @if (icon()) {
-        <viking-icon [name]="icon()!" [size]="18" />
-      }
-      <ng-content />
-    </ng-template>
   `,
   styles: [
     `
