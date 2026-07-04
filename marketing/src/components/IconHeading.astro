@@ -1,0 +1,20 @@
+---
+import VikingIcon from './VikingIcon.astro';
+
+export interface Props {
+  icon: string;
+  title: string;
+  headingLevel?: 'h2' | 'h3';
+  size?: 'md' | 'lg';
+}
+
+const { icon, title, headingLevel = 'h3', size = 'md' } = Astro.props;
+const HeadingTag = headingLevel;
+---
+
+<div class:list={['viking-icon-heading', size === 'lg' && 'viking-icon-heading--lg']}>
+  <span class="viking-icon-heading__icon" aria-hidden="true">
+    <VikingIcon name={icon} size={24} color="accent" />
+  </span>
+  <HeadingTag class="viking-icon-heading__title">{title}</HeadingTag>
+</div>

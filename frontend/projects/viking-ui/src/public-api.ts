@@ -67,6 +67,7 @@ export * from './lib/chart/chart-zoom';
 export * from './lib/confirm-dialog/confirm-dialog';
 export * from './lib/confirm-dialog/dialog.service';
 export * from './lib/chart-card-header/chart-card-header';
+export * from './lib/icon-heading/icon-heading';
 export * from './lib/chart-empty-state/chart-empty-state';
 export * from './lib/chart-panel/chart-panel';
 export * from './lib/checkbox/checkbox';
