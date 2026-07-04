@@ -38,14 +38,14 @@ const related = (component.related ?? [])
       <span aria-current="page">{component.name}</span>
     </nav>
 
-    <header class="showcase-page-header">
-      <p class="showcase-label">{category?.label ?? 'Component'}</p>
-      <h1 class="showcase-heading showcase-heading-xl">{component.name}</h1>
-      <p class="showcase-text-muted">{component.description}</p>
+    <header class="viking-page-header-static">
+      <p class="viking-label">{category?.label ?? 'Component'}</p>
+      <h1 class="viking-heading viking-heading-xl">{component.name}</h1>
+      <p class="viking-text-muted">{component.description}</p>
       {component.tags && (
-        <div class="demo-row">
+        <div class="viking-demo-row">
           {component.tags.map((tag) => (
-            <span class="showcase-badge showcase-badge-subtle">{tag}</span>
+            <span class="viking-badge viking-badge-subtle">{tag}</span>
           ))}
         </div>
       )}
@@ -66,9 +66,9 @@ const related = (component.related ?? [])
     {related.length > 0 && (
       <section class="showcase-category" aria-labelledby="related-heading">
         <header class="showcase-category-header">
-          <h2 class="showcase-heading showcase-heading-sm" id="related-heading">Related components</h2>
+          <h2 class="viking-heading viking-heading-sm" id="related-heading">Related components</h2>
         </header>
-        <div class="demo-row">
+        <div class="viking-demo-row">
           {related.map((rel) => (
             <a href={`/components/${rel!.id}`} class="viking-btn viking-btn-outline">
               {rel!.name}
@@ -78,7 +78,7 @@ const related = (component.related ?? [])
       </section>
     )}
 
-    <div class="demo-row component-detail-actions">
+    <div class="viking-demo-row component-detail-actions">
       <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
       <viking-button-wc variant="outline" href="/components">Back to gallery</viking-button-wc>
     </div>

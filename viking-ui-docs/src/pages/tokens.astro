@@ -8,10 +8,10 @@ import { TOKEN_GROUPS, SEMANTIC_TOKENS } from '../lib/tokens-data';
   description="Inspect Viking-UI CSS custom properties — the single source of truth for all surfaces."
 >
   <div class="page-inner-wrapper">
-    <header class="showcase-page-header">
-      <p class="showcase-label">Token inspector</p>
-      <h1 class="showcase-heading showcase-heading-xl">Design tokens</h1>
-      <p class="showcase-text-muted">
+    <header class="viking-page-header-static">
+      <p class="viking-label">Token inspector</p>
+      <h1 class="viking-heading viking-heading-xl">Design tokens</h1>
+      <p class="viking-text-muted">
         Canonical values from <code>_variables.scss</code> and <code>viking-tokens.json</code>.
         Edit tokens at the source, then run <code>npm run build:static-css</code>.
       </p>
@@ -32,8 +32,8 @@ import { TOKEN_GROUPS, SEMANTIC_TOKENS } from '../lib/tokens-data';
 
     <section class="showcase-category" aria-labelledby="semantic-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="semantic-heading">Semantic aliases</h2>
-        <p class="showcase-text-muted">Use these in components — never hardcode hex in templates.</p>
+        <h2 class="viking-heading viking-heading-sm" id="semantic-heading">Semantic aliases</h2>
+        <p class="viking-text-muted">Use these in components — never hardcode hex in templates.</p>
       </header>
       <div class="showcase-table-wrap">
         <table class="token-table">
@@ -62,7 +62,7 @@ import { TOKEN_GROUPS, SEMANTIC_TOKENS } from '../lib/tokens-data';
     {TOKEN_GROUPS.map((group) => (
       <section class="showcase-category" data-token-group id={`tokens-${group.id}`} aria-labelledby={`tokens-${group.id}-heading`}>
         <header class="showcase-category-header">
-          <h2 class="showcase-heading showcase-heading-sm" id={`tokens-${group.id}-heading`}>{group.label}</h2>
+          <h2 class="viking-heading viking-heading-sm" id={`tokens-${group.id}-heading`}>{group.label}</h2>
         </header>
         <div class="showcase-table-wrap">
           <table class="token-table">

@@ -9,10 +9,10 @@ import { SITE } from '../lib/site';
   description="Use Viking-UI in Angular, Astro, Django templates, and vanilla Web Components."
 >
   <div class="page-inner-wrapper">
-    <header class="showcase-page-header">
-      <p class="showcase-label">Integration</p>
-      <h1 class="showcase-heading showcase-heading-xl">Usage in different frameworks</h1>
-      <p class="showcase-text-muted">
+    <header class="viking-page-header-static">
+      <p class="viking-label">Integration</p>
+      <h1 class="viking-heading viking-heading-xl">Usage in different frameworks</h1>
+      <p class="viking-text-muted">
         Viking-UI v2 is framework-agnostic at the token and CSS layer. Choose the consumption mode
         that fits your stack — all paths share the same <code>--viking-*</code> variables.
       </p>
@@ -20,46 +20,46 @@ import { SITE } from '../lib/site';
 
     <div class="framework-grid">
       <article class="framework-card">
-        <h2 class="showcase-heading showcase-heading-sm">Angular</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm">Angular</h2>
+        <p class="viking-text-muted">
           Full component library with signals, OnPush, and thin Web Component wrappers. Used by
           deml.app.
         </p>
-        <ul class="showcase-text-muted">
+        <ul class="viking-text-muted">
           <li>Import from <code>{SITE.npm}</code></li>
           <li>Compose via <code>viking-field</code> stacks</li>
           <li>Charts, auth, kanban — full API</li>
         </ul>
       </article>
       <article class="framework-card">
-        <h2 class="showcase-heading showcase-heading-sm">Astro</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm">Astro</h2>
+        <p class="viking-text-muted">
           Static CSS + Web Components for documentation and marketing surfaces. This site is built
           with Astro.
         </p>
-        <ul class="showcase-text-muted">
+        <ul class="viking-text-muted">
           <li>Load synced <code>viking-ui.css</code></li>
           <li>Use <code>&lt;viking-button-wc&gt;</code> in .astro files</li>
           <li>Token-only SCSS for custom layouts</li>
         </ul>
       </article>
       <article class="framework-card">
-        <h2 class="showcase-heading showcase-heading-sm">Django / HTML</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm">Django / HTML</h2>
+        <p class="viking-text-muted">
           CSS-only primitives for Swagger, admin templates, and backend-rendered pages.
         </p>
-        <ul class="showcase-text-muted">
+        <ul class="viking-text-muted">
           <li><code>design-tokens.css</code> + <code>viking-components.css</code></li>
           <li><code>viking-btn</code>, <code>viking-input-shell</code> classes</li>
           <li>Set <code>data-theme</code> on <code>&lt;html&gt;</code></li>
         </ul>
       </article>
       <article class="framework-card">
-        <h2 class="showcase-heading showcase-heading-sm">Web Components</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm">Web Components</h2>
+        <p class="viking-text-muted">
           Framework-agnostic custom elements with Shadow DOM and token injection.
         </p>
-        <ul class="showcase-text-muted">
+        <ul class="viking-text-muted">
           <li><code>viking-ui-elements.js</code> auto-registers tags</li>
           <li><code>viking-button-wc</code>, <code>viking-input-wc</code> today</li>
           <li>More primitives shipping incrementally</li>
@@ -69,7 +69,7 @@ import { SITE } from '../lib/site';
 
     <section class="showcase-category" aria-labelledby="angular-setup">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="angular-setup">Angular setup</h2>
+        <h2 class="viking-heading viking-heading-sm" id="angular-setup">Angular setup</h2>
       </header>
       <CodeBlock
         snippets={{
@@ -97,7 +97,7 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
 
     <section class="showcase-category" aria-labelledby="astro-setup">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="astro-setup">Astro setup</h2>
+        <h2 class="viking-heading viking-heading-sm" id="astro-setup">Astro setup</h2>
       </header>
       <CodeBlock
         snippets={{
@@ -121,7 +121,7 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
 
     <section class="showcase-category" aria-labelledby="django-setup">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="django-setup">Django / static HTML</h2>
+        <h2 class="viking-heading viking-heading-sm" id="django-setup">Django / static HTML</h2>
       </header>
       <CodeBlock
         snippets={{
@@ -145,7 +145,7 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
 
     <section class="showcase-category" aria-labelledby="wc-setup">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="wc-setup">Web Components (vanilla JS)</h2>
+        <h2 class="viking-heading viking-heading-sm" id="wc-setup">Web Components (vanilla JS)</h2>
       </header>
       <CodeBlock
         snippets={{
@@ -153,15 +153,13 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
           astro: '',
           django: '',
           javascript: `<link rel="stylesheet" href="/assets/design-tokens.css" />
+<link rel="stylesheet" href="/assets/viking-components.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>
 
-<viking-button-wc variant="primary" id="launch">Launch</viking-button-wc>
-
-<script type="module">
-  document.getElementById('launch')?.addEventListener('viking-press', () => {
-    console.log('Pressed');
-  });
-</script>`,
+<viking-button-wc variant="primary">Launch</viking-button-wc>
+<viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
+<viking-badge-wc tone="success">Healthy</viking-badge-wc>
+<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>`,
         }}
         defaultTab="javascript"
       />

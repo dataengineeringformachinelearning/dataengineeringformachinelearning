@@ -10,15 +10,15 @@ import '../styles/showcase.scss';
   description="Customize Viking-UI with CSS custom properties, data-theme, and token overrides — no runtime theme engine."
 >
   <div class="page-inner-wrapper">
-    <header class="showcase-page-header">
-      <p class="showcase-label">Customization</p>
-      <h1 class="showcase-heading showcase-heading-xl">Theming guide</h1>
-      <p class="showcase-text-muted">
+    <header class="viking-page-header-static">
+      <p class="viking-label">Customization</p>
+      <h1 class="viking-heading viking-heading-xl">Theming guide</h1>
+      <p class="viking-text-muted">
         Viking-UI is dark-first and token-driven. Customize appearance by overriding
         <code>--viking-*</code> CSS variables — never hardcode hex in your app. Full token reference
         lives in <a href="/tokens">Design tokens</a> and <a href={SITE.github + '/blob/main/THEME.md'} target="_blank" rel="noopener">THEME.md</a>.
       </p>
-      <div class="demo-row">
+      <div class="viking-demo-row">
         <button type="button" class="theme-toggle-btn" id="theming-demo-toggle" aria-label="Preview light and dark theme">
           Toggle theme preview
         </button>
@@ -27,9 +27,9 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="dark-first-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="dark-first-heading">Dark-first theming</h2>
+        <h2 class="viking-heading viking-heading-sm" id="dark-first-heading">Dark-first theming</h2>
       </header>
-      <p class="showcase-text-muted">
+      <p class="viking-text-muted">
         Set <code>data-theme</code> on the root element. Dark is the default; light mode shifts
         surface lightness while preserving teal/crimson accent semantics.
       </p>
@@ -50,13 +50,13 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="load-css-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="load-css-heading">Minimal CSS setup</h2>
-        <p class="showcase-text-muted">Load tokens first, then components. Order matters for cascade.</p>
+        <h2 class="viking-heading viking-heading-sm" id="load-css-heading">Minimal CSS setup</h2>
+        <p class="viking-text-muted">Load tokens first, then components. Order matters for cascade.</p>
       </header>
 
       <article class="viking-card theming-setup-card">
-        <h3 class="showcase-heading showcase-heading-sm">Angular</h3>
-        <p class="showcase-text-muted">
+        <h3 class="viking-heading viking-heading-sm">Angular</h3>
+        <p class="viking-text-muted">
           Include library SCSS in <code>angular.json</code> styles or import in <code>styles.scss</code>.
           For npm consumers, import CSS exports directly.
         </p>
@@ -69,7 +69,7 @@ import '../styles/showcase.scss';
       </article>
 
       <article class="viking-card theming-setup-card">
-        <h3 class="showcase-heading showcase-heading-sm">Astro / static sites</h3>
+        <h3 class="viking-heading viking-heading-sm">Astro / static sites</h3>
         <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="/assets/design-tokens.css" />
 <link rel="stylesheet" href="/assets/viking-components.css" />
 <link rel="stylesheet" href="/assets/viking-ui.css" />
@@ -77,7 +77,7 @@ import '../styles/showcase.scss';
       </article>
 
       <article class="viking-card theming-setup-card">
-        <h3 class="showcase-heading showcase-heading-sm">Django</h3>
+        <h3 class="viking-heading viking-heading-sm">Django</h3>
         <pre class="code-block-panel is-active"><code>{`{# base.html #}
 {% load static %}
 <link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
@@ -88,8 +88,8 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="override-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="override-heading">Token overrides</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm" id="override-heading">Token overrides</h2>
+        <p class="viking-text-muted">
           Override semantic aliases on a scope — not raw palette steps. This keeps contrast ratios
           WCAG-compliant.
         </p>
@@ -123,7 +123,7 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="semantic-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="semantic-heading">Semantic tokens to customize</h2>
+        <h2 class="viking-heading viking-heading-sm" id="semantic-heading">Semantic tokens to customize</h2>
       </header>
       <div class="showcase-table-wrap">
         <table class="token-table">
@@ -148,9 +148,9 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="chart-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="chart-heading">Chart series presets</h2>
+        <h2 class="viking-heading viking-heading-sm" id="chart-heading">Chart series presets</h2>
       </header>
-      <p class="showcase-text-muted">
+      <p class="viking-text-muted">
         Import <code>VIKING_SERIES_PRESETS</code> from the npm package for consistent telemetry colors.
         Use <code>tone</code> props on <code>viking-chart</code> rather than inline colors.
       </p>
@@ -161,9 +161,9 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="rules-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="rules-heading">Customization rules</h2>
+        <h2 class="viking-heading viking-heading-sm" id="rules-heading">Customization rules</h2>
       </header>
-      <ul class="showcase-text-muted theming-rules">
+      <ul class="viking-text-muted theming-rules">
         <li>Edit palette steps in <code>_variables.scss</code> — not in app code</li>
         <li>Never hardcode hex/rgb/hsl in components or templates</li>
         <li>Do not load Inter from Google Fonts CDN — use bundled <code>_fonts.scss</code></li>

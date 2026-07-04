@@ -1,0 +1,496 @@
+// ============================================================================
+// Viking-UI Static Primitives — framework-agnostic CSS classes
+// Use in Astro, Django, Swagger, and static HTML alongside design tokens.
+// Angular apps should prefer viking-* components; these classes mirror their visuals.
+// ============================================================================
+
+// Typography
+.viking-heading {
+  margin: 0;
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-tight);
+  line-height: var(--viking-line-height-tight);
+  color: var(--viking-text);
+}
+
+.viking-heading-xl {
+  font-size: clamp(var(--viking-font-size-2xl), 4vw, var(--viking-font-size-4xl));
+}
+
+.viking-heading-lg {
+  font-size: var(--viking-font-size-xl);
+}
+
+.viking-heading-sm {
+  font-size: var(--viking-font-size-lg);
+}
+
+.viking-text {
+  margin: 0;
+  line-height: var(--viking-line-height-relaxed);
+  color: var(--viking-text);
+}
+
+.viking-text-muted {
+  margin: 0;
+  line-height: var(--viking-line-height-relaxed);
+  color: var(--viking-text-muted);
+  max-width: var(--viking-content-readable-max-width, 48rem);
+}
+
+.viking-label {
+  display: block;
+  font-size: var(--viking-font-size-xs);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--viking-text-muted);
+}
+
+.viking-metric {
+  display: block;
+  font-size: var(--viking-font-size-2xl);
+  font-weight: var(--viking-font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  color: var(--viking-text);
+}
+
+// Badge
+.viking-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-half);
+  padding: var(--viking-space-half) var(--viking-space-1);
+  font-size: var(--viking-font-size-xs);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  border-radius: var(--viking-radius-pill);
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface-alt);
+  color: var(--viking-text);
+  white-space: nowrap;
+}
+
+.viking-badge-accent {
+  background: var(--viking-accent);
+  border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
+  color: var(--viking-accent-content);
+}
+
+.viking-badge-success {
+  background: color-mix(in srgb, var(--viking-success) 18%, var(--viking-surface));
+  border-color: color-mix(in srgb, var(--viking-success) 40%, transparent);
+  color: var(--viking-success);
+}
+
+.viking-badge-warning {
+  background: color-mix(in srgb, var(--viking-warning) 18%, var(--viking-surface));
+  border-color: color-mix(in srgb, var(--viking-warning) 40%, transparent);
+  color: var(--viking-warning);
+}
+
+.viking-badge-danger {
+  background: color-mix(in srgb, var(--viking-danger) 18%, var(--viking-surface));
+  border-color: color-mix(in srgb, var(--viking-danger) 40%, transparent);
+  color: var(--viking-danger);
+}
+
+.viking-badge-subtle {
+  background: var(--viking-surface-alt);
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-2xs);
+}
+
+// Callout
+.viking-callout-static {
+  padding: var(--viking-space-2);
+  border-radius: var(--viking-radius);
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface-alt);
+}
+
+.viking-callout-static strong {
+  display: block;
+  margin-bottom: var(--viking-space-half);
+}
+
+.viking-callout-static p {
+  margin: 0;
+  font-size: var(--viking-font-size-sm);
+  color: var(--viking-text-muted);
+}
+
+.viking-callout-info {
+  border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border));
+  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface));
+}
+
+.viking-callout-warning {
+  border-color: color-mix(in srgb, var(--viking-warning) 35%, var(--viking-border));
+  background: color-mix(in srgb, var(--viking-warning) 8%, var(--viking-surface));
+}
+
+.viking-callout-success {
+  border-color: color-mix(in srgb, var(--viking-success) 35%, var(--viking-border));
+  background: color-mix(in srgb, var(--viking-success) 8%, var(--viking-surface));
+}
+
+.viking-callout-danger {
+  border-color: color-mix(in srgb, var(--viking-danger) 35%, var(--viking-border));
+  background: color-mix(in srgb, var(--viking-danger) 8%, var(--viking-surface));
+}
+
+// Progress
+.viking-progress {
+  width: 100%;
+  height: var(--viking-space-1);
+  border-radius: var(--viking-radius-pill);
+  background: var(--viking-surface-alt);
+  overflow: hidden;
+}
+
+.viking-progress-bar {
+  height: 100%;
+  background: var(--viking-accent);
+  border-radius: inherit;
+  transition: width var(--viking-duration) var(--viking-ease-out);
+}
+
+.viking-progress-indeterminate .viking-progress-bar {
+  width: 40%;
+  animation: viking-progress-slide 1.2s ease-in-out infinite;
+}
+
+@keyframes viking-progress-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+// Skeleton
+.viking-skeleton-row {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-2);
+}
+
+.viking-skeleton-lines {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+}
+
+.viking-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--viking-surface-alt) 25%,
+    var(--viking-surface-raised) 50%,
+    var(--viking-surface-alt) 75%
+  );
+  background-size: 200% 100%;
+  animation: viking-shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--viking-radius-sm);
+}
+
+.viking-skeleton-circle {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.viking-skeleton-line {
+  height: 0.75rem;
+}
+
+.viking-skeleton-line-short {
+  width: 60%;
+}
+
+@keyframes viking-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+// Forms (static)
+.viking-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  cursor: pointer;
+  font-size: var(--viking-font-size-sm);
+  min-height: var(--viking-touch-target-min, 44px);
+}
+
+.viking-checkbox-label input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--viking-accent);
+}
+
+.viking-select-native {
+  width: 100%;
+  min-height: var(--viking-control-height, 40px);
+  padding: 0 var(--viking-space-2);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  background: var(--viking-surface);
+  color: var(--viking-text);
+  font-family: inherit;
+  font-size: var(--viking-font-size-sm);
+}
+
+.viking-select-native:focus-visible {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset, 2px);
+}
+
+// Table
+.viking-table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.viking-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--viking-font-size-sm);
+}
+
+.viking-table th,
+.viking-table td {
+  padding: var(--viking-space-1) var(--viking-space-2);
+  text-align: left;
+  border-bottom: 1px solid var(--viking-border);
+}
+
+.viking-table th {
+  color: var(--viking-text-muted);
+  font-weight: var(--viking-font-weight-semibold);
+}
+
+// Tabs
+.viking-tabs {
+  display: inline-flex;
+  gap: var(--viking-space-half);
+  padding: var(--viking-space-half);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  background: var(--viking-surface-alt);
+}
+
+.viking-tab {
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border: none;
+  border-radius: var(--viking-radius-sm);
+  background: transparent;
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-medium);
+  cursor: pointer;
+  min-height: var(--viking-touch-target-min, 44px);
+}
+
+.viking-tab-active {
+  background: var(--viking-surface);
+  color: var(--viking-text);
+  box-shadow: var(--viking-shadow-xs);
+}
+
+.viking-tab:focus-visible {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset, 2px);
+}
+
+// Page header (static HUD)
+.viking-page-header-static {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-4);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow: var(--viking-shadow-md);
+}
+
+// Kbd
+.viking-kbd-static {
+  display: inline-block;
+  font-family: inherit;
+  font-size: calc(var(--viking-font-size) * 0.75);
+  padding: 2px 6px;
+  border-radius: calc(var(--viking-radius) / 2);
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface-alt);
+}
+
+// Divider
+.viking-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-2);
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-xs);
+}
+
+.viking-divider::before,
+.viking-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--viking-border);
+}
+
+// Demo layout helpers (showcase/docs only — safe on any surface)
+.viking-demo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-2);
+}
+
+.viking-demo-row-stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+// Breadcrumbs
+.viking-breadcrumbs-static {
+  font-size: var(--viking-font-size-sm);
+}
+
+.viking-breadcrumbs-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.viking-breadcrumbs-list li:not(:last-child)::after {
+  content: '/';
+  margin-left: var(--viking-space-1);
+  color: var(--viking-text-muted);
+}
+
+.viking-breadcrumbs-list a {
+  color: var(--viking-accent);
+  text-decoration: none;
+}
+
+.viking-breadcrumbs-list a:hover {
+  text-decoration: underline;
+}
+
+// Pagination
+.viking-pagination-static {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-2);
+}
+
+// Switch (static)
+.viking-switch-static {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  cursor: pointer;
+  font-size: var(--viking-font-size-sm);
+  min-height: var(--viking-touch-target-min, 44px);
+}
+
+.viking-switch-static input {
+  width: 2.5rem;
+  height: 1.375rem;
+  accent-color: var(--viking-accent);
+}
+
+// Kanban demo
+.viking-kanban-demo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--viking-space-2);
+}
+
+.viking-kanban-col {
+  flex: 1;
+  min-width: 10rem;
+  padding: var(--viking-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+}
+
+.viking-kanban-card {
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-sm);
+  background: var(--viking-surface-alt);
+  font-size: var(--viking-font-size-sm);
+}
+
+// Uptime bar demo
+.viking-uptime-demo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+  max-width: 20rem;
+}
+
+.viking-uptime-segments {
+  display: flex;
+  gap: 2px;
+  height: var(--viking-space-2);
+}
+
+.viking-uptime-seg {
+  flex: 1;
+  border-radius: 1px;
+  min-width: 4px;
+}
+
+.viking-uptime-up {
+  background: var(--viking-success);
+}
+
+.viking-uptime-degraded {
+  background: var(--viking-warning);
+}
+
+.viking-uptime-down {
+  background: var(--viking-danger);
+}
+
+// Sheet demo
+.viking-sheet-demo {
+  max-width: 20rem;
+  padding: var(--viking-space-2);
+}
+
+// Wizard demo
+.viking-wizard-demo {
+  max-width: 24rem;
+  padding: var(--viking-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-skeleton,
+  .viking-progress-indeterminate .viking-progress-bar {
+    animation: none;
+  }
+}
