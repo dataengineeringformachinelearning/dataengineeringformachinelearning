@@ -4,15 +4,18 @@ Declarative Railway service configs for DEML internal infrastructure. Each subdi
 
 ## Services
 
-| Service | Config | Internal hostname |
-| ------- | ------ | ----------------- |
-| Redpanda queue | `../queue/railway.json` | `deml-queue.railway.internal:9092` |
-| Backend API | `backend/railway.json` | Set via Railway service name |
-| deml-workers | `workers/railway.json` | — |
-| deml-daemon | `daemon/railway.json` | — |
-| Scanner | `scanner/railway.json` | `scanner.railway.internal` |
+| Service               | Config                          | Internal hostname                  |
+| --------------------- | ------------------------------- | ---------------------------------- |
+| Redpanda queue        | `../queue/railway.json`         | `deml-queue.railway.internal:9092` |
+| Backend API           | `backend/railway.json`          | Set via Railway service name       |
+| deml-workers          | `workers/railway.json`          | —                                  |
+| deml-telemetry-worker | `telemetry-worker/railway.json` | —                                  |
+| deml-daemon           | `daemon/railway.json`           | —                                  |
+| Scanner               | `scanner/railway.json`          | `scanner.railway.internal`         |
 
-ClickHouse and Dragonfly run on GCP / docker-compose locally — they are not deployed via Railway in this repo.
+Frontend (`deml-frontend`), ClickHouse (`deml-clickhouse`), Dragonfly, Tor proxy, CPE guesser and similar infra services use their `Dockerfile` directly (config path often points at the `infrastructure/xxx` dir or root with explicit dockerfilePath in Railway UI). Deprecated services (e.g. dtrack, otel-collector) may still exist for cleanup only.
+
+See `scripts/railway_env_cleanup.py` for the full list of active `deml-*` services.
 
 ## Deployment
 
@@ -32,13 +35,13 @@ curl -sf "$BACKEND_URL/api/v1/system-status/health"
 
 Scheduled tasks are published by `deml-daemon` cron_publisher to the `internal-tasks` Redpanda topic. The `deml-workers` container consumes and dispatches whitelisted Django management commands.
 
-| Task | Cadence | Command |
-| ---- | ------- | ------- |
-| Analytics aggregation | 1h | `aggregate_analytics` |
-| Subscription sync | 6h | `sync_subscriptions` |
-| Account reconciliation | 6h | `reconcile_accounts` |
-| Database cleanup | 24h | `db_cleanup` |
-| Model training | 7d | `train_all_models` |
-| Key rotation | 90d | `rotate_keys` |
+| Task                   | Cadence | Command               |
+| ---------------------- | ------- | --------------------- |
+| Analytics aggregation  | 1h      | `aggregate_analytics` |
+| Subscription sync      | 6h      | `sync_subscriptions`  |
+| Account reconciliation | 6h      | `reconcile_accounts`  |
+| Database cleanup       | 24h     | `db_cleanup`          |
+| Model training         | 7d      | `train_all_models`    |
+| Key rotation           | 90d     | `rotate_keys`         |
 
 Do not run both Rust `deml-daemon` outbox relay and Python `relay_start.py` against the same Redpanda cluster — pick one relay path per environment.

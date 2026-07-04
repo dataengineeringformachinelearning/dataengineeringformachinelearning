@@ -11,6 +11,13 @@ from pydantic import BaseModel
 app = FastAPI(title="Vulnerability Scanner Service")
 logger = logging.getLogger(__name__)
 
+
+@app.get("/health")
+async def health_check():
+  """Simple health endpoint for Railway / container orchestrators."""
+  return {"status": "healthy"}
+
+
 # If cpe-guesser is running as a separate container/service, we point to it here.
 # For a fully unified scanner, we might call its internal API, but we'll assume it's available.
 CPE_GUESSER_URL = os.getenv(
