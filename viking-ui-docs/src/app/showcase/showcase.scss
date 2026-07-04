@@ -186,42 +186,6 @@
   overflow: hidden;
   background: var(--viking-bg);
   width: 100%;
-
-  .navbar-content {
-    position: relative;
-  }
-
-  .desktop-nav,
-  .desktop-auth {
-    display: flex !important;
-  }
-
-  .menu-toggle-btn,
-  .mobile-menu {
-    display: none !important;
-  }
-
-  .navbar-center.desktop-nav {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  .navbar-search {
-    flex: 0 1 240px;
-    max-width: 240px;
-    margin: 0;
-  }
-
-  .algolia-autocomplete-host {
-    display: block;
-    min-width: 140px;
-  }
-
-  .navbar-search-trigger,
-  .navbar-search-mobile-btn {
-    display: none;
-  }
 }
 
 .chart-example {
