@@ -2,7 +2,7 @@
   "$schema": "./viking-tokens.schema.json",
   "meta": {
     "name": "viking-ui",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "description": "Canonical DEML design tokens — single source of truth for all properties",
     "canonicalScss": "../styles/_variables.scss",
     "documentation": "../../../THEME.md"

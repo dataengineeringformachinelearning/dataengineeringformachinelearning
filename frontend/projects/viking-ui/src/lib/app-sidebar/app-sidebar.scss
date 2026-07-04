@@ -1,30 +1,30 @@
 .viking-app-sidebar-host {
   display: contents;
 
-  /* Set up theme-driven variables following THEME.md */
-  --sidebar-accent: var(--color-primary-container);
-  --sidebar-border: var(--border-layout);
-  --sidebar-bg: rgba(18, 18, 18, 0.45);
-  --sidebar-hover-bg: rgba(255, 255, 255, 0.03);
+  /* Theme-driven sidebar — Viking tokens only (THEME.md) */
+  --sidebar-accent: var(--viking-accent-strong, var(--color-primary-container));
+  --sidebar-border: var(--viking-border, var(--border-layout));
+  --sidebar-bg: color-mix(in srgb, var(--viking-surface) 92%, transparent);
+  --sidebar-hover-bg: color-mix(in srgb, var(--viking-accent) 6%, transparent);
   --sidebar-active-bg: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--color-surface) 25%, transparent) 0%,
-    color-mix(in srgb, var(--color-surface) 4%, transparent) 100%
+    color-mix(in srgb, var(--viking-accent) 12%, transparent) 0%,
+    color-mix(in srgb, var(--viking-accent) 3%, transparent) 100%
   );
-  --sidebar-active-border: var(--color-primary-container);
+  --sidebar-active-border: var(--viking-accent, var(--color-primary));
 }
 
 html[data-theme='light'] .viking-app-sidebar-host {
-  --sidebar-accent: var(--color-primary);
-  --sidebar-border: var(--border-layout);
-  --sidebar-bg: rgba(255, 255, 255, 0.85);
-  --sidebar-hover-bg: rgba(0, 0, 0, 0.03);
+  --sidebar-accent: var(--viking-accent, var(--color-primary));
+  --sidebar-border: var(--viking-border, var(--border-layout));
+  --sidebar-bg: color-mix(in srgb, var(--viking-surface) 96%, transparent);
+  --sidebar-hover-bg: color-mix(in srgb, var(--viking-accent) 5%, transparent);
   --sidebar-active-bg: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--color-surface) 8%, transparent) 0%,
-    color-mix(in srgb, var(--color-surface) 2%, transparent) 100%
+    color-mix(in srgb, var(--viking-accent) 8%, transparent) 0%,
+    color-mix(in srgb, var(--viking-accent) 2%, transparent) 100%
   );
-  --sidebar-active-border: var(--color-primary);
+  --sidebar-active-border: var(--viking-accent, var(--color-primary));
 }
 
 .dashboard-sidebar {
@@ -34,8 +34,8 @@ html[data-theme='light'] .viking-app-sidebar-host {
   background: var(--sidebar-bg);
   border-bottom: 1px solid var(--sidebar-border);
   flex-shrink: 0;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   height: auto;
   position: sticky;
   top: var(--viking-navbar-height, var(--navbar-height, 64px));
@@ -525,13 +525,13 @@ html[data-theme='light'] .viking-app-sidebar-host {
   .search-result-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px 8px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--sidebar-border);
+    gap: var(--viking-space-1);
+    padding: var(--viking-space-1) var(--viking-space-2);
+    border-radius: var(--viking-radius);
+    background: color-mix(in srgb, var(--viking-surface-alt) 40%, transparent);
+    border: 1px solid var(--viking-border-subtle);
     cursor: pointer;
-    transition: var(--transition-smooth);
+    transition: var(--viking-transition-interactive);
 
     &:hover {
       background: var(--sidebar-hover-bg);

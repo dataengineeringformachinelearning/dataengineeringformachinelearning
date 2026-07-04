@@ -52,19 +52,21 @@ import { VikingIconName } from '../core/icons';
         display: flex;
         align-items: center;
         justify-content: center;
-        width: var(--viking-space-6);
-        height: var(--viking-space-6);
+        width: var(--viking-space-7);
+        height: var(--viking-space-7);
         border-radius: var(--viking-radius-lg);
         background: var(--viking-accent-soft);
         color: var(--viking-accent-strong);
         box-shadow: var(--viking-shadow-sm);
+        border: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
         margin-bottom: var(--viking-space-2);
       }
       .viking-empty-state-heading {
         margin: 0 0 var(--viking-space-1) 0;
         font-size: var(--viking-font-size-md);
         font-weight: var(--viking-font-weight-semibold);
-        letter-spacing: var(--viking-letter-spacing-tight);
+        letter-spacing: var(--viking-letter-spacing-caps);
+        text-transform: uppercase;
         color: var(--viking-text);
         line-height: var(--viking-line-height-tight);
       }

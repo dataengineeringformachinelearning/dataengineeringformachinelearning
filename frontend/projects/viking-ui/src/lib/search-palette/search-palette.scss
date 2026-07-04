@@ -20,9 +20,8 @@
 .viking-search-palette {
   display: flex;
   flex-direction: column;
-  background: color-mix(in srgb, var(--viking-surface) 85%, transparent);
-  backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid var(--viking-border);
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border-strong);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-lg);
   overflow: hidden;
@@ -31,7 +30,23 @@
   margin: 0 auto;
   font-family: var(--viking-font-family);
   color: var(--viking-text);
-  animation: viking-modal-in var(--viking-duration) var(--viking-ease-out);
+  animation: viking-modal-in var(--viking-duration) var(--viking-ease-default);
+  position: relative;
+}
+
+.viking-search-palette::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .viking-search-palette-header {

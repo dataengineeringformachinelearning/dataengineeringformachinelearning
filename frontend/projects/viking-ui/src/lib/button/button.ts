@@ -24,6 +24,7 @@ export type VikingButtonVariant =
   host: {
     '[style.pointer-events]': "disabled() ? 'none' : null",
     '[class.viking-full]': 'fullWidth()',
+    '[class.viking-compact]': 'compact()',
   },
   template: `
     <ng-template #content>
@@ -79,6 +80,8 @@ export class VikingButton {
   readonly square = input<boolean>(false);
   /** Stretch button to 100% of container width. */
   readonly fullWidth = input<boolean>(false);
+  /** Drop min-width for inline form actions (Generate Key, Verify, Cancel). */
+  readonly compact = input<boolean>(false);
   readonly href = input<string | null>(null);
   readonly target = input<string | null>(null);
   readonly kbd = input<string | null>(null);

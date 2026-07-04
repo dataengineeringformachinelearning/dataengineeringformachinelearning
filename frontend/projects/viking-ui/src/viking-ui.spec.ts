@@ -55,6 +55,16 @@ describe('viking-ui', () => {
     return fixture;
   };
 
+  it('renders compact buttons without min-width for form actions', async (): Promise<void> => {
+    const fixture = TestBed.createComponent(VikingButton);
+    fixture.componentRef.setInput('variant', 'primary');
+    fixture.componentRef.setInput('compact', true);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.classList.contains('viking-compact')).toBe(true);
+    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
+    expect(button.classList.contains('viking-primary')).toBe(true);
+  });
+
   it('renders button variants with accessible focus and disabled semantics', async (): Promise<void> => {
     const fixture = TestBed.createComponent(VikingButton);
     fixture.componentRef.setInput('variant', 'primary');

@@ -26,15 +26,31 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-half);
-  background-color: var(--viking-surface);
+  background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid var(--viking-border);
   padding: var(--viking-space-2);
-  border-radius: var(--viking-radius);
+  border-radius: var(--viking-radius-lg);
   min-width: 0;
   align-items: flex-start;
   box-sizing: border-box;
   box-shadow: var(--viking-shadow-sm);
-  transition: var(--viking-transition-colors);
+  transition: var(--viking-transition-interactive);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
 
   @media (min-width: 481px) {
     min-width: 160px;
@@ -81,12 +97,28 @@
 .panel-section {
   background-color: var(--viking-surface);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius);
+  border-radius: var(--viking-radius-lg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   box-shadow: var(--viking-shadow-sm);
   min-width: 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
 }
 
 .viking-table-scroll,

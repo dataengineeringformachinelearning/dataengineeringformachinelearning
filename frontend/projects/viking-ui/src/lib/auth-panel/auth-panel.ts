@@ -76,8 +76,28 @@ import { VikingSeparator } from '../separator/separator';
       .viking-auth-panel {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         width: 100%;
+        padding: var(--viking-space-3);
+        background: var(--viking-surface);
+        border: 1px solid var(--viking-border);
+        border-radius: var(--viking-radius-lg);
+        box-shadow: var(--viking-shadow-md);
+        position: relative;
+        overflow: hidden;
+      }
+      .viking-auth-panel::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
+          transparent
+        );
+        pointer-events: none;
       }
       .viking-auth-header {
         display: flex;
@@ -153,14 +173,8 @@ import { VikingSeparator } from '../separator/separator';
         gap: var(--viking-space-3);
         width: 100%;
       }
-      :host ::ng-deep [vikingAuthFooter] viking-button .viking-primary {
-        background: var(--viking-accent);
-        color: var(--viking-accent-content);
-        border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
-        font-weight: var(--viking-font-weight-semibold);
-      }
-      :host ::ng-deep [vikingAuthFooter] viking-button .viking-primary:not(:disabled):not([aria-busy='true']) {
-        box-shadow: var(--viking-shadow-sm);
+      :host ::ng-deep [vikingAuthFooter] viking-button .viking-btn {
+        min-width: 0;
       }
       :host ::ng-deep [vikingAuthLinks].viking-auth-links,
       :host ::ng-deep .viking-auth-links {

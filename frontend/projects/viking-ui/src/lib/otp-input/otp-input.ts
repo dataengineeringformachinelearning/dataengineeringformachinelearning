@@ -57,17 +57,18 @@ import { VikingControl, provideVikingCva } from '../core/cva';
         text-align: center;
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-lg);
-        font-weight: 600;
+        font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-text);
-        background: var(--viking-surface);
-        border: 1px solid var(--viking-border-strong);
-        border-radius: var(--viking-radius);
-        box-shadow: var(--viking-shadow-sm);
-        transition: var(--viking-transition);
+        background: var(--viking-surface-alt);
+        border: 1px solid var(--viking-border);
+        border-radius: var(--viking-radius-sm);
+        box-shadow: var(--viking-shadow-xs);
+        transition: var(--viking-transition-interactive);
         font-variant-numeric: tabular-nums;
       }
       .viking-otp-cell:hover:not(:disabled) {
-        border-color: var(--viking-accent-strong);
+        border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border-strong));
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-otp-cell:focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);

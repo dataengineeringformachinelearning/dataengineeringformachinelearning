@@ -60,10 +60,11 @@ import { VikingIcon } from '../icon/icon';
         box-shadow: var(--viking-shadow-lg);
         width: min(522px, calc(100vw - var(--viking-space-4)));
         animation: viking-modal-in var(--viking-duration) var(--viking-ease-default);
+        overflow: hidden;
       }
       .viking-modal::backdrop {
         background: var(--viking-overlay-backdrop);
-        backdrop-filter: blur(6px);
+        backdrop-filter: blur(8px);
         animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-default);
       }
       .viking-modal-surface {
@@ -72,6 +73,20 @@ import { VikingIcon } from '../icon/icon';
         padding: var(--viking-space-3);
         gap: var(--viking-space-2);
         font-family: var(--viking-font-family);
+        position: relative;
+      }
+      .viking-modal-surface::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
+          transparent
+        );
+        pointer-events: none;
       }
       .viking-modal-header {
         display: flex;
