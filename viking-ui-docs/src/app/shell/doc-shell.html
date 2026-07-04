@@ -1,50 +1,73 @@
-<div class="doc-shell">
-  <aside class="doc-sidebar" aria-label="Documentation navigation">
-    <a class="doc-sidebar-brand" routerLink="/">
-      <span class="doc-brand-mark" aria-hidden="true"></span>
-      <span class="doc-brand-name">Viking-UI</span>
-    </a>
+<div class="viking-docs-app">
+  <viking-site-navbar
+    context="marketing"
+    [theme]="theme()"
+    (themeToggle)="toggleTheme()"
+  />
 
-    <nav class="doc-sidebar-group">
-      <span class="doc-sidebar-label">Getting Started</span>
-      <a
-        class="doc-sidebar-link"
-        routerLink="/"
-        routerLinkActive="is-active"
-        [routerLinkActiveOptions]="{ exact: true }"
-      >
-        Introduction
-      </a>
-      <a
-        class="doc-sidebar-link"
-        routerLink="/components"
-        routerLinkActive="is-active"
-        >Components</a
-      >
-    </nav>
+  <div class="doc-shell dashboard-wrapper">
+    <viking-app-sidebar [width]="280">
+      <aside class="dashboard-sidebar doc-sidebar">
+        <a
+          class="sidebar-brand doc-sidebar-brand"
+          routerLink="/"
+          aria-label="Viking-UI home"
+        >
+          <viking-brand name="Viking-UI" />
+        </a>
 
-    <nav
-      class="doc-sidebar-group doc-sidebar-group--sections"
-      aria-label="Component sections"
-    >
-      <span class="doc-sidebar-label">On this page</span>
-      @for (section of navSections; track section.id) {
-      <a
-        class="doc-sidebar-link doc-sidebar-link--anchor"
-        href="/components#{{ section.id }}"
-        (click)="scrollToCategory($event, section.id)"
-      >
-        {{ section.label }}
-      </a>
-      }
-    </nav>
+        <div class="sidebar-scroll-container">
+          <nav class="sidebar-nav" aria-label="Documentation navigation">
+            <a
+              class="nav-item"
+              routerLink="/"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Introduction
+            </a>
+            <a
+              class="nav-item"
+              routerLink="/components"
+              routerLinkActive="active"
+            >
+              Components
+            </a>
+          </nav>
 
-    <div class="doc-sidebar-footer">
-      <a class="doc-sidebar-cta" routerLink="/components">Browse components</a>
-    </div>
-  </aside>
+          <nav
+            class="nav-tree-section"
+            aria-label="Component sections"
+          >
+            <div class="nav-tree-header">On this page</div>
+            <div class="nav-tree-children">
+              @for (section of navSections; track section.id) {
+                <a
+                  class="tree-child-item"
+                  href="/components#{{ section.id }}"
+                  (click)="scrollToCategory($event, section.id)"
+                >
+                  {{ section.label }}
+                </a>
+              }
+            </div>
+          </nav>
+        </div>
 
-  <div class="doc-main">
-    <router-outlet />
+        <footer class="sidebar-footer doc-sidebar-footer">
+          <viking-button
+            variant="primary"
+            [fullWidth]="true"
+            (pressed)="browseComponents()"
+          >
+            Browse components
+          </viking-button>
+        </footer>
+      </aside>
+    </viking-app-sidebar>
+
+    <main class="doc-main dashboard-content" id="main-content" tabindex="-1">
+      <router-outlet />
+    </main>
   </div>
 </div>

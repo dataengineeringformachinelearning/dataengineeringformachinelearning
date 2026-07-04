@@ -25,7 +25,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         flex-direction: column;
         align-items: flex-start;
         gap: var(--viking-space-half, 4px);
-        padding: var(--viking-space-3, 24px) var(--viking-space-3, 24px) var(--viking-space-2, 16px);
+        padding: var(--viking-space-2, 16px) var(--viking-space-3, 24px) var(--viking-space-1, 8px);
         width: 100%;
         box-sizing: border-box;
         flex-shrink: 0;
@@ -44,7 +44,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
       .chart-custom-value {
         color: var(--viking-text, var(--text-color));
-        font-size: var(--viking-font-size-xl, 24px);
+        font-size: var(--viking-font-size-lg, 20px);
         font-family: var(--viking-font-family);
         font-weight: var(--viking-font-weight-bold, 700);
         line-height: var(--viking-line-height-tight, 1.25);
