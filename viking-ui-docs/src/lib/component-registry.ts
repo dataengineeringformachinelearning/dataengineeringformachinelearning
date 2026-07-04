@@ -69,6 +69,7 @@ const inputSnippets: ComponentSnippet = {
 };
 
 import { EXTENDED_SHOWCASE_CATEGORIES } from './component-registry-extended';
+import { FULL_SHOWCASE_CATEGORIES } from './component-registry-full';
 import { PARITY_SHOWCASE_CATEGORIES } from './component-registry-parity';
 
 export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
@@ -654,11 +655,22 @@ document.querySelector('viking-search-palette-wc')?.openPalette();`,
   },
   ...EXTENDED_SHOWCASE_CATEGORIES,
   ...PARITY_SHOWCASE_CATEGORIES,
+  ...FULL_SHOWCASE_CATEGORIES,
 ];
 
 export const ALL_COMPONENTS = SHOWCASE_CATEGORIES.flatMap((c) => c.components);
 
 export const COMPONENT_COUNT = ALL_COMPONENTS.length;
 
+/** Search palette entries for every documented component demo. */
+export const COMPONENT_SEARCH_ITEMS = ALL_COMPONENTS.map((component) => ({
+  title: component.name,
+  href: `/components/${component.id}`,
+  snippet: component.description,
+}));
+
 export const findComponent = (id: string): ShowcaseComponent | undefined =>
   ALL_COMPONENTS.find((c) => c.id === id);
+
+export const findCategoryForComponent = (id: string): ShowcaseCategory | undefined =>
+  SHOWCASE_CATEGORIES.find((category) => category.components.some((component) => component.id === id));

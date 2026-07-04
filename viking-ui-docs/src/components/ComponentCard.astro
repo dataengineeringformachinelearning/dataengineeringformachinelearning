@@ -10,13 +10,23 @@ export interface Props {
   showApi?: boolean;
   /** Hide card header (used on detail pages where header is separate) */
   hideHeader?: boolean;
+  /** Category id for gallery filtering */
+  categoryId?: string;
 }
 
-const { component, showApi = true, hideHeader = false } = Astro.props;
+const { component, showApi = true, hideHeader = false, categoryId } = Astro.props;
 const api = component.api ?? getComponentApi(component.id);
 ---
 
-<article class="component-card" id={component.id}>
+<article
+  class="component-card"
+  id={component.id}
+  data-component-id={component.id}
+  data-component-name={component.name}
+  data-component-description={component.description}
+  data-component-tags={component.tags?.join(' ') ?? ''}
+  data-component-category={categoryId ?? ''}
+>
   {!hideHeader && (
     <header class="component-card-header">
       <div>
