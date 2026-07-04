@@ -1,12 +1,5 @@
 ---
-import VikingIcon from './VikingIcon.astro';
+/** Universal theme toggle — Web Component from viking-ui-elements.js */
 ---
 
-<button
-  type="button"
-  class="theme-toggle-btn"
-  aria-label="Toggle light and dark theme"
-  id="theme-toggle-btn"
->
-  <VikingIcon name="sun" size={24} />
-</button>
+<viking-theme-toggle-wc aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>

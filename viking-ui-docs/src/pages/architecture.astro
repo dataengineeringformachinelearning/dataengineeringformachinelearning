@@ -11,10 +11,10 @@ import '../styles/showcase.scss';
   description="How Viking-UI's universal three-layer architecture works — tokens, CSS, Web Components, and Angular."
 >
   <div class="page-inner-wrapper">
-    <header class="showcase-page-header">
-      <p class="showcase-label">Universal design system</p>
-      <h1 class="showcase-heading showcase-heading-xl">Architecture</h1>
-      <p class="showcase-text-muted">
+    <header class="viking-page-header-static">
+      <p class="viking-label">Universal design system</p>
+      <h1 class="viking-heading viking-heading-xl">Architecture</h1>
+      <p class="viking-text-muted">
         Viking-UI ships one visual language across Angular, Astro, Django, and vanilla HTML. Every
         surface reads from the same <code>--viking-*</code> token matrix — no runtime theme engine, no
         third-party UI kit dependencies.
@@ -23,8 +23,8 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="layers-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="layers-heading">Three consumption layers</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm" id="layers-heading">Three consumption layers</h2>
+        <p class="viking-text-muted">
           Pick the layer that matches your stack. All layers compile from the same SCSS source in
           <code>frontend/projects/viking-ui/src/styles/</code>.
         </p>
@@ -32,41 +32,43 @@ import '../styles/showcase.scss';
 
       <div class="architecture-layer-grid">
         <article class="viking-card architecture-layer">
-          <span class="showcase-label">Layer 1 — Tokens</span>
-          <h3 class="showcase-heading showcase-heading-sm">CSS custom properties</h3>
-          <p class="showcase-text-muted">
+          <span class="viking-label">Layer 1 — Tokens</span>
+          <h3 class="viking-heading viking-heading-sm">CSS custom properties</h3>
+          <p class="viking-text-muted">
             <code>design-tokens.css</code> exports semantic aliases:
             <code>--viking-bg</code>, <code>--viking-accent</code>, <code>--viking-space-*</code>.
             Set <code>data-theme="dark|light"</code> on <code>&lt;html&gt;</code>.
           </p>
-          <p class="showcase-text-muted">
+          <p class="viking-text-muted">
             <strong>Best for:</strong> custom layouts, marketing pages, any surface that needs colors
             and spacing without interactive primitives.
           </p>
         </article>
 
         <article class="viking-card architecture-layer">
-          <span class="showcase-label">Layer 2 — CSS classes</span>
-          <h3 class="showcase-heading showcase-heading-sm">Static primitives</h3>
-          <p class="showcase-text-muted">
+          <span class="viking-label">Layer 2 — CSS classes</span>
+          <h3 class="viking-heading viking-heading-sm">Static primitives</h3>
+          <p class="viking-text-muted">
             <code>viking-components.css</code> / <code>viking-ui.css</code> provide
             <code>.viking-btn</code>, <code>.viking-card</code>, <code>.viking-input-shell</code>, and
             form field stacks — no JavaScript required.
           </p>
-          <p class="showcase-text-muted">
+          <p class="viking-text-muted">
             <strong>Best for:</strong> Django templates, Swagger overlays, server-rendered HTML.
           </p>
         </article>
 
         <article class="viking-card architecture-layer">
-          <span class="showcase-label">Layer 3 — Components</span>
-          <h3 class="showcase-heading showcase-heading-sm">Web Components + Angular</h3>
-          <p class="showcase-text-muted">
-            Interactive elements like <code>viking-button-wc</code> use Shadow DOM with injected token
-            styles. Angular apps import thin wrappers (<code>viking-button</code>) that delegate to the
-            same Web Component — {LIBRARY_COMPONENT_COUNT}+ Angular primitives today.
+          <span class="viking-label">Layer 3 — Components</span>
+          <h3 class="viking-heading viking-heading-sm">Web Components + Angular</h3>
+          <p class="viking-text-muted">
+            Interactive elements — <code>viking-button-wc</code>, <code>viking-input-wc</code>,
+            <code>viking-badge-wc</code>, <code>viking-theme-toggle-wc</code> — use Shadow DOM with
+            injected token styles. Angular apps import thin wrappers (<code>viking-button</code>) that
+            delegate to the same Web Components where applicable — {LIBRARY_COMPONENT_COUNT}+ Angular
+            primitives today.
           </p>
-          <p class="showcase-text-muted">
+          <p class="viking-text-muted">
             <strong>Best for:</strong> deml.app, interactive forms, charts, modals, and auth flows.
           </p>
         </article>
@@ -75,7 +77,7 @@ import '../styles/showcase.scss';
 
     <section class="showcase-category" aria-labelledby="flow-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="flow-heading">Build and sync pipeline</h2>
+        <h2 class="viking-heading viking-heading-sm" id="flow-heading">Build and sync pipeline</h2>
       </header>
       <pre class="code-block-panel is-active architecture-flow" aria-label="Build pipeline diagram"><code>src/styles/_variables.scss          ← single source of truth (edit tokens here)
         │
@@ -93,8 +95,8 @@ npm run build:viking-ui                 (ng-packagr → npm package)</code></pre
 
     <section class="showcase-category" aria-labelledby="wc-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="wc-heading">Web Component pattern (v2)</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm" id="wc-heading">Web Component pattern (v2)</h2>
+        <p class="viking-text-muted">
           New interactive primitives follow a thin-wrapper architecture. Button and input demonstrate
           the pattern; more components migrate incrementally.
         </p>
@@ -102,24 +104,24 @@ npm run build:viking-ui                 (ng-packagr → npm package)</code></pre
 
       <div class="architecture-pattern">
         <div class="viking-card">
-          <h3 class="showcase-heading showcase-heading-sm">1. Token-only SCSS</h3>
-          <p class="showcase-text-muted">
+          <h3 class="viking-heading viking-heading-sm">1. Token-only SCSS</h3>
+          <p class="viking-text-muted">
             Base classes in <code>_buttons.scss</code>, <code>_input.scss</code> — shared by static
             CSS and Shadow DOM injection.
           </p>
         </div>
         <div class="architecture-arrow" aria-hidden="true">→</div>
         <div class="viking-card">
-          <h3 class="showcase-heading showcase-heading-sm">2. Web Component</h3>
-          <p class="showcase-text-muted">
+          <h3 class="viking-heading viking-heading-sm">2. Web Component</h3>
+          <p class="viking-text-muted">
             <code>{'viking-{name}-wc'}</code> in <code>src/web/</code> — Shadow DOM, observed attributes,
             custom events (<code>viking-press</code>).
           </p>
         </div>
         <div class="architecture-arrow" aria-hidden="true">→</div>
         <div class="viking-card">
-          <h3 class="showcase-heading showcase-heading-sm">3. Angular wrapper</h3>
-          <p class="showcase-text-muted">
+          <h3 class="viking-heading viking-heading-sm">3. Angular wrapper</h3>
+          <p class="viking-text-muted">
             <code>{'viking-{name}'}</code> — signal <code>input()</code> / <code>output()</code>, OnPush,
             delegates rendering to the WC.
           </p>
@@ -129,8 +131,8 @@ npm run build:viking-ui                 (ng-packagr → npm package)</code></pre
 
     <section class="showcase-category" aria-labelledby="api-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="api-heading">Consistent component API</h2>
-        <p class="showcase-text-muted">
+        <h2 class="viking-heading viking-heading-sm" id="api-heading">Consistent component API</h2>
+        <p class="viking-text-muted">
           All Angular components use signal inputs and outputs. Shared types live in
           <code>src/lib/core/types.ts</code>.
         </p>
@@ -161,26 +163,26 @@ npm run build:viking-ui                 (ng-packagr → npm package)</code></pre
 
     <section class="showcase-category" aria-labelledby="compose-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="compose-heading">Composition patterns</h2>
+        <h2 class="viking-heading viking-heading-sm" id="compose-heading">Composition patterns</h2>
       </header>
       <div class="landing-feature-grid">
         <div class="viking-card">
-          <h3 class="showcase-heading showcase-heading-sm">Form field stack</h3>
-          <p class="showcase-text-muted">
+          <h3 class="viking-heading viking-heading-sm">Form field stack</h3>
+          <p class="viking-text-muted">
             Always compose inputs through <code>viking-field</code> → control. Label, description,
             error, and required indicator are handled by the field wrapper.
           </p>
         </div>
         <div class="viking-card">
-          <h3 class="showcase-heading showcase-heading-sm">Card surfaces</h3>
-          <p class="showcase-text-muted">
+          <h3 class="viking-heading viking-heading-sm">Card surfaces</h3>
+          <p class="viking-text-muted">
             Use <code>viking-card</code>, <code>viking-metric-card</code>, or
             <code>viking-hud-panel</code> — never raw <code>&lt;div class="card"&gt;</code>.
           </p>
         </div>
         <div class="viking-card">
-          <h3 class="showcase-heading showcase-heading-sm">Settings sections</h3>
-          <p class="showcase-text-muted">
+          <h3 class="viking-heading viking-heading-sm">Settings sections</h3>
+          <p class="viking-text-muted">
             Group billing and configuration forms with <code>viking-form-section</code> for consistent
             title rhythm and spacing.
           </p>
@@ -190,9 +192,9 @@ npm run build:viking-ui                 (ng-packagr → npm package)</code></pre
 
     <section class="showcase-category" aria-labelledby="next-heading">
       <header class="showcase-category-header">
-        <h2 class="showcase-heading showcase-heading-sm" id="next-heading">Next steps</h2>
+        <h2 class="viking-heading viking-heading-sm" id="next-heading">Next steps</h2>
       </header>
-      <div class="demo-row">
+      <div class="viking-demo-row">
         <viking-button-wc variant="primary" href="/frameworks">Framework setup guides</viking-button-wc>
         <viking-button-wc variant="secondary" href="/theming">Theming guide</viking-button-wc>
         <viking-button-wc variant="outline" href="/contributing">Contributing</viking-button-wc>

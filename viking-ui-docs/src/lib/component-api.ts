@@ -117,11 +117,11 @@ export const BADGE_API: ComponentApi = {
   ],
   outputs: [{ name: 'removed', type: 'void', description: 'Emits when remove button is clicked.' }],
   cssClasses: [
-    { name: 'showcase-badge', type: 'class', description: 'Default badge styling in static CSS.' },
-    { name: 'showcase-badge-accent', type: 'class', description: 'Accent tone modifier.' },
-    { name: 'showcase-badge-success', type: 'class', description: 'Success tone modifier.' },
-    { name: 'showcase-badge-warning', type: 'class', description: 'Warning tone modifier.' },
-    { name: 'showcase-badge-danger', type: 'class', description: 'Danger tone modifier.' },
+    { name: 'viking-badge', type: 'class', description: 'Default badge styling in static CSS.' },
+    { name: 'viking-badge-accent', type: 'class', description: 'Accent tone modifier.' },
+    { name: 'viking-badge-success', type: 'class', description: 'Success tone modifier.' },
+    { name: 'viking-badge-warning', type: 'class', description: 'Warning tone modifier.' },
+    { name: 'viking-badge-danger', type: 'class', description: 'Danger tone modifier.' },
   ],
 };
 

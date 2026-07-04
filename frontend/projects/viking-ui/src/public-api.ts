@@ -43,10 +43,14 @@ export { VikingControl, provideVikingCva } from './lib/core/cva';
 
 // Framework-agnostic Web Components + registration
 export {
+  VikingBadgeWc,
   VikingButtonWc,
   VikingInputWc,
+  VikingThemeToggleWc,
+  registerVikingBadgeWc,
   registerVikingButtonWc,
   registerVikingInputWc,
+  registerVikingThemeToggleWc,
   registerVikingElements,
 } from './web/index';
 

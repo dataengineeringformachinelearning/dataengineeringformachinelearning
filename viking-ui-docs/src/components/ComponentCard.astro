@@ -20,18 +20,18 @@ const api = component.api ?? getComponentApi(component.id);
   {!hideHeader && (
     <header class="component-card-header">
       <div>
-        <h3 class="showcase-heading showcase-heading-sm">
+        <h3 class="viking-heading viking-heading-sm">
           <a href={`/components/${component.id}`} class="component-card-link">
             {component.name}
           </a>
         </h3>
-        <p class="showcase-text-muted">{component.description}</p>
+        <p class="viking-text-muted">{component.description}</p>
       </div>
       <div class="component-card-meta">
         {component.tags && (
           <div class="component-tags">
             {component.tags.map((tag) => (
-              <span class="showcase-badge showcase-badge-subtle">{tag}</span>
+              <span class="viking-badge viking-badge-subtle">{tag}</span>
             ))}
           </div>
         )}

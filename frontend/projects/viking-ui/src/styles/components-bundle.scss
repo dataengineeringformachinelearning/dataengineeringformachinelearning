@@ -3,6 +3,7 @@
  *  Build: npm run build:static-css --prefix viking-ui-docs */
 @use 'fonts';
 @use 'component-primitives';
+@use 'static-primitives';
 @use 'buttons' as *;
 @use 'forms' as *;
 @use 'input' as *;

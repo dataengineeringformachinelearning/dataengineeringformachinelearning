@@ -9,10 +9,10 @@ import '../styles/showcase.scss';
   description="Live interactive playground for Viking-UI button and input primitives — tweak props and copy generated code."
 >
   <div class="page-inner-wrapper">
-    <header class="showcase-page-header">
-      <p class="showcase-label">Live playground</p>
-      <h1 class="showcase-heading showcase-heading-xl">Component playground</h1>
-      <p class="showcase-text-muted">
+    <header class="viking-page-header-static">
+      <p class="viking-label">Live playground</p>
+      <h1 class="viking-heading viking-heading-xl">Component playground</h1>
+      <p class="viking-text-muted">
         Adjust controls below to preview Viking-UI primitives in real time. Generated code updates
         as you change options — copy snippets for Angular, Astro, Django, or Web Components.
       </p>
@@ -20,11 +20,11 @@ import '../styles/showcase.scss';
 
     <div class="playground-layout">
       <aside class="playground-controls viking-card" aria-label="Playground controls">
-        <h2 class="showcase-heading showcase-heading-sm">Controls</h2>
+        <h2 class="viking-heading viking-heading-sm">Controls</h2>
 
         <label class="viking-field">
           <span class="viking-field-label" for="pg-component">Component</span>
-          <select id="pg-component" class="showcase-select">
+          <select id="pg-component" class="viking-select-native">
             <option value="button">Button</option>
             <option value="input">Input</option>
           </select>
@@ -33,7 +33,7 @@ import '../styles/showcase.scss';
         <div id="pg-button-controls">
           <label class="viking-field">
             <span class="viking-field-label" for="pg-variant">Variant</span>
-            <select id="pg-variant" class="showcase-select">
+            <select id="pg-variant" class="viking-select-native">
               <option value="primary">primary</option>
               <option value="secondary">secondary</option>
               <option value="outline">outline</option>
@@ -45,7 +45,7 @@ import '../styles/showcase.scss';
 
           <label class="viking-field">
             <span class="viking-field-label" for="pg-size">Size</span>
-            <select id="pg-size" class="showcase-select">
+            <select id="pg-size" class="viking-select-native">
               <option value="base">base</option>
               <option value="sm">sm</option>
               <option value="xs">xs</option>
@@ -59,19 +59,19 @@ import '../styles/showcase.scss';
             </div>
           </label>
 
-          <label class="showcase-checkbox">
+          <label class="viking-checkbox-label">
             <input id="pg-disabled" type="checkbox" />
             <span>Disabled</span>
           </label>
-          <label class="showcase-checkbox">
+          <label class="viking-checkbox-label">
             <input id="pg-loading" type="checkbox" />
             <span>Loading</span>
           </label>
-          <label class="showcase-checkbox">
+          <label class="viking-checkbox-label">
             <input id="pg-full" type="checkbox" />
             <span>Full width</span>
           </label>
-          <label class="showcase-checkbox">
+          <label class="viking-checkbox-label">
             <input id="pg-compact" type="checkbox" />
             <span>Compact</span>
           </label>
@@ -82,11 +82,11 @@ import '../styles/showcase.scss';
             <span class="viking-field-label" for="pg-placeholder">Placeholder</span>
             <input id="pg-placeholder" class="viking-input-native" type="text" value="Mission ID" />
           </label>
-          <label class="showcase-checkbox">
+          <label class="viking-checkbox-label">
             <input id="pg-clearable" type="checkbox" checked />
             <span>Clearable</span>
           </label>
-          <label class="showcase-checkbox">
+          <label class="viking-checkbox-label">
             <input id="pg-input-disabled" type="checkbox" />
             <span>Disabled</span>
           </label>
@@ -95,12 +95,12 @@ import '../styles/showcase.scss';
 
       <div class="playground-main">
         <section class="playground-preview viking-card" aria-label="Live preview">
-          <span class="showcase-label">Preview</span>
+          <span class="viking-label">Preview</span>
           <div id="pg-preview" class="playground-preview-stage"></div>
         </section>
 
         <section class="playground-code" aria-label="Generated code">
-          <h2 class="showcase-heading showcase-heading-sm">Generated code</h2>
+          <h2 class="viking-heading viking-heading-sm">Generated code</h2>
           <div id="pg-code-block">
             <CodeBlock
               snippets={{

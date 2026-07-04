@@ -11,14 +11,14 @@ import '../../styles/showcase.scss';
   sidebar="components"
 >
   <div class="page-inner-wrapper viking-showcase">
-    <header class="showcase-page-header">
-      <p class="showcase-label">Component gallery</p>
-      <h1 class="showcase-heading showcase-heading-xl">Components</h1>
-      <p class="showcase-text-muted">
+    <header class="viking-page-header-static">
+      <p class="viking-label">Component gallery</p>
+      <h1 class="viking-heading viking-heading-xl">Components</h1>
+      <p class="viking-text-muted">
         Live previews and copy-ready snippets for Angular, Astro, Django, and Web Components.
         {COMPONENT_COUNT} documented demos — each with a dedicated detail page and API reference.
       </p>
-      <div class="demo-row">
+      <div class="viking-demo-row">
         <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
         <viking-button-wc variant="outline" href="/architecture">Architecture</viking-button-wc>
       </div>
@@ -27,10 +27,10 @@ import '../../styles/showcase.scss';
     {SHOWCASE_CATEGORIES.map((category) => (
       <section class="showcase-category" id={category.id} aria-labelledby={`${category.id}-heading`}>
         <header class="showcase-category-header">
-          <h2 class="showcase-heading showcase-heading-sm" id={`${category.id}-heading`}>
+          <h2 class="viking-heading viking-heading-sm" id={`${category.id}-heading`}>
             {category.label}
           </h2>
-          <p class="showcase-text-muted">{category.description}</p>
+          <p class="viking-text-muted">{category.description}</p>
         </header>
         <div class="showcase-component-list">
           {category.components.map((component) => (

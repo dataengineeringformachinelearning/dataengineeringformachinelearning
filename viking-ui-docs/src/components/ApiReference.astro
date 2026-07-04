@@ -19,12 +19,12 @@ const hasCss = api.cssClasses && api.cssClasses.length > 0;
 {(selector || wcSelector) && (
   <div class="api-selectors">
     {selector && (
-      <p class="showcase-text-muted">
+      <p class="viking-text-muted">
         Angular: <code>{selector}</code>
       </p>
     )}
     {wcSelector && (
-      <p class="showcase-text-muted">
+      <p class="viking-text-muted">
         Web Component: <code>{wcSelector}</code>
       </p>
     )}
@@ -33,11 +33,11 @@ const hasCss = api.cssClasses && api.cssClasses.length > 0;
 
 {(hasInputs || hasOutputs || hasAttributes || hasEvents || hasCss) && (
   <section class="api-reference" aria-label="Component API reference">
-    <h4 class="showcase-heading showcase-heading-sm">API reference</h4>
+    <h4 class="viking-heading viking-heading-sm">API reference</h4>
 
     {hasInputs && (
       <div class="api-table-wrap">
-        <h5 class="showcase-label">Inputs (Angular)</h5>
+        <h5 class="viking-label">Inputs (Angular)</h5>
         <table class="token-table api-table">
           <thead>
             <tr>
@@ -63,7 +63,7 @@ const hasCss = api.cssClasses && api.cssClasses.length > 0;
 
     {hasOutputs && (
       <div class="api-table-wrap">
-        <h5 class="showcase-label">Outputs (Angular)</h5>
+        <h5 class="viking-label">Outputs (Angular)</h5>
         <table class="token-table api-table">
           <thead>
             <tr>
@@ -87,7 +87,7 @@ const hasCss = api.cssClasses && api.cssClasses.length > 0;
 
     {hasAttributes && (
       <div class="api-table-wrap">
-        <h5 class="showcase-label">Attributes (Web Component)</h5>
+        <h5 class="viking-label">Attributes (Web Component)</h5>
         <table class="token-table api-table">
           <thead>
             <tr>
@@ -113,7 +113,7 @@ const hasCss = api.cssClasses && api.cssClasses.length > 0;
 
     {hasEvents && (
       <div class="api-table-wrap">
-        <h5 class="showcase-label">Events (Web Component)</h5>
+        <h5 class="viking-label">Events (Web Component)</h5>
         <table class="token-table api-table">
           <thead>
             <tr>
@@ -137,7 +137,7 @@ const hasCss = api.cssClasses && api.cssClasses.length > 0;
 
     {hasCss && (
       <div class="api-table-wrap">
-        <h5 class="showcase-label">CSS classes (static HTML)</h5>
+        <h5 class="viking-label">CSS classes (static HTML)</h5>
         <table class="token-table api-table">
           <thead>
             <tr>
