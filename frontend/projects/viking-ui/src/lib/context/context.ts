@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, signal } from '@angular/core';
 
 /**
  * viking-context — right-click context menu.
@@ -49,10 +49,10 @@ import { ChangeDetectionStrategy, Component, ElementRef, inject, signal } from '
   ],
 })
 export class VikingContext {
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-
   protected readonly open = signal(false);
   protected readonly position = signal({ x: 0, y: 0 });
+
+  constructor(private readonly host: ElementRef<HTMLElement>) {}
 
   protected onContextMenu = (event: MouseEvent): void => {
     event.preventDefault();

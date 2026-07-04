@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   effect,
-  inject,
   input,
   model,
   viewChild,
@@ -179,8 +178,7 @@ export class VikingModal {
   readonly heading = input<string>('');
   readonly dismissible = input<boolean>(true);
 
-  constructor() {
-    const host = inject<ElementRef<HTMLElement>>(ElementRef);
+  constructor(host: ElementRef<HTMLElement>) {
     effect(() => {
       const dialog = this.dialogRef().nativeElement;
       // showModal is unavailable during SSR; the dialog stays closed there.

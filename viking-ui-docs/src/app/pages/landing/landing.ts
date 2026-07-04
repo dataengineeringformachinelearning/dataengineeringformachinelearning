@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { Router } from "@angular/router";
 import { Title } from "@angular/platform-browser";
 import {
@@ -24,9 +24,10 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Landing {
-  private readonly router = inject(Router);
-
-  constructor(private readonly title: Title) {
+  constructor(
+    private readonly router: Router,
+    private readonly title: Title,
+  ) {
     this.title.setTitle("Viking-UI — Angular Component Library");
   }
 

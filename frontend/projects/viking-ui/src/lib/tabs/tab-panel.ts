@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Optional, computed, input } from '@angular/core';
 import { VIKING_TABS, VikingTabs } from './tabs';
 
 /**
@@ -41,11 +41,7 @@ import { VIKING_TABS, VikingTabs } from './tabs';
   ],
 })
 export class VikingTabPanel {
-  private readonly tabs: VikingTabs | null;
-
-  constructor() {
-    this.tabs = inject(VikingTabs, { optional: true });
-  }
+  constructor(@Optional() private readonly tabs: VikingTabs | null) {}
 
   readonly value = input.required<string>();
 

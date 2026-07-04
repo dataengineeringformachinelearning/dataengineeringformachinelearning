@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Optional, input, model } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
 import { vikingUid } from '../core/uid';
 
@@ -101,11 +101,7 @@ export class VikingAccordion {
   ],
 })
 export class VikingAccordionItem {
-  private readonly accordion: VikingAccordion | null;
-
-  constructor() {
-    this.accordion = inject(VikingAccordion, { optional: true });
-  }
+  constructor(@Optional() private readonly accordion: VikingAccordion | null) {}
 
   readonly heading = input.required<string>();
   readonly expanded = model<boolean>(false);

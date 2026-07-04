@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   computed,
-  inject,
   input,
   model,
   output,
@@ -83,8 +82,6 @@ import { VikingControl, provideVikingCva } from '../core/cva';
   ],
 })
 export class VikingOtpInput extends VikingControl<string> {
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-
   readonly length = input<number>(6);
   readonly value = model<string>('');
   readonly label = input<string>('');
@@ -92,6 +89,10 @@ export class VikingOtpInput extends VikingControl<string> {
   readonly centered = input<boolean>(false);
 
   readonly completed = output<string>();
+
+  constructor(private readonly host: ElementRef<HTMLElement>) {
+    super();
+  }
 
   protected readonly indexes = computed(() =>
     Array.from({ length: this.length() }, (_, index) => index),

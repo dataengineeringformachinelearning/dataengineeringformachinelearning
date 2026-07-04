@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   computed,
-  inject,
   input,
   model,
   signal,
@@ -189,14 +188,16 @@ export type VikingSelectWidth = 'full' | 'half';
   ],
 })
 export class VikingSelect extends VikingControl<unknown> {
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
-
   readonly options = input.required<VikingSelectOption[]>();
   readonly value = model<unknown>(null);
   readonly placeholder = input<string>('Select…');
   readonly label = input<string>('');
   readonly disabled = input<boolean>(false);
   readonly width = input<VikingSelectWidth>('half');
+
+  constructor(private readonly host: ElementRef<HTMLElement>) {
+    super();
+  }
 
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(0);
