@@ -672,13 +672,30 @@ button.auth-btn {
   .aa-DetachedContainer {
     max-width: 600px;
     width: 100%;
-    border: 1px solid var(--viking-border, var(--border));
+    border: 1px solid var(--viking-border-strong, var(--viking-border, var(--border)));
     border-radius: var(--viking-radius-lg, 12px);
     background: var(--viking-surface, var(--card-bg));
     box-shadow: var(--viking-shadow-lg, var(--shadow-md));
     overflow: hidden;
     font-family: var(--viking-font-family, inherit);
     color: var(--viking-text, var(--text-color));
+    position: relative;
+  }
+
+  .aa-Autocomplete::before,
+  .aa-DetachedContainer::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
   }
 
   .aa-Form,
@@ -712,11 +729,18 @@ button.auth-btn {
   &::after {
     content: '⌘K toggle · Esc close';
     display: block;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
     padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
+    border: 1px solid var(--viking-border, var(--border));
     border-top: 1px solid var(--viking-border, var(--border));
-    font-size: var(--viking-font-size-sm, 14px);
+    border-radius: 0 0 var(--viking-radius-lg, 12px) var(--viking-radius-lg, 12px);
+    background: var(--viking-surface, var(--card-bg));
+    font-size: calc(var(--viking-font-size, 16px) * 0.85);
     color: var(--viking-text-muted, var(--text-muted));
     text-align: center;
+    letter-spacing: 0.01em;
   }
 }
 

@@ -40,42 +40,40 @@
         </viking-callout>
         }
 
-        <div class="viking-card status-card-outlined col-span-4 col-span-md-12 platform-integrations-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
+        <viking-card class="status-card-outlined col-span-4 col-span-md-12 platform-integrations-card">
+          <viking-card-header>
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="hub" />
               Platform Integrations
-            </h2>
+            </viking-heading>
+          </viking-card-header>
+          <p class="embed-desc">
+            First-class ingestion paths for enterprise ML infrastructure. Each platform exposes
+            health-check endpoints and documented integration guides.
+          </p>
+          <div class="platform-integrations-grid">
+            @for (item of platformIntegrations; track item.icon) {
+            <a
+              class="platform-integration-tile"
+              [href]="item.guide"
+              target="_blank"
+              rel="noopener noreferrer"
+              [attr.aria-label]="item.name + ' integration guide'"
+            >
+              <viking-icon [name]="item.icon" [size]="28" variant="filled" />
+              <span class="platform-integration-name">{{ item.name }}</span>
+            </a>
+            }
           </div>
-          <div class="card-body-clean">
-            <p class="embed-desc">
-              First-class ingestion paths for enterprise ML infrastructure. Each platform exposes
-              health-check endpoints and documented integration guides.
-            </p>
-            <div class="platform-integrations-grid">
-              @for (item of platformIntegrations; track item.icon) {
-              <a
-                class="platform-integration-tile"
-                [href]="item.guide"
-                target="_blank"
-                rel="noopener noreferrer"
-                [attr.aria-label]="item.name + ' integration guide'"
-              >
-                <viking-icon [name]="item.icon" [size]="28" variant="filled" />
-                <span class="platform-integration-name">{{ item.name }}</span>
-              </a>
-              }
-            </div>
-          </div>
-        </div>
+        </viking-card>
 
-        <div class="viking-card status-card-outlined col-span-4 col-span-md-12">
-          <div class="card-header-clean">
+        <viking-card class="status-card-outlined col-span-4 col-span-md-12">
+          <viking-card-header>
             @if (selectedPage()) {
-            <h2 class="card-title-main">
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="wysiwyg" />
               {{ selectedPage()!.title }}
-            </h2>
+            </viking-heading>
             } @if (selectedPage()) {
             <viking-button
               variant="ghost"
@@ -88,14 +86,12 @@
               [disabled]="!canMutateSites"
             />
             } @if (!selectedPage()) {
-            <h2 class="card-title-main">
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="add_box" />
               Create Status Page
-            </h2>
+            </viking-heading>
             }
-          </div>
-
-          <div class="card-body-clean">
+          </viking-card-header>
             <!-- New Page Form -->
             @if (!selectedPage()) {
             <div class="form-col">
@@ -587,8 +583,7 @@
               </div>
             </div>
             }
-          </div>
-        </div>
+        </viking-card>
       </div>
     </div>
   </div>

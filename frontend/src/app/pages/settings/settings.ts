@@ -27,6 +27,9 @@ import {
   VikingPageHeader,
   VikingTextarea,
   VikingIcon,
+  VikingCard,
+  VikingCardHeader,
+  VikingHeading,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
@@ -53,6 +56,9 @@ import {
     VikingPageHeader,
     VikingTextarea,
     VikingIcon,
+    VikingCard,
+    VikingCardHeader,
+    VikingHeading,
     VikingAppIcon,
     FormsModule,
     RouterModule,
