@@ -14,12 +14,9 @@
   }
 }
 
-.showcase-page-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-1);
-  padding-bottom: var(--viking-space-3);
-  border-bottom: 1px solid var(--viking-border);
+.showcase-page-header,
+.viking-page-header {
+  margin-bottom: var(--viking-space-3);
 }
 
 .showcase-category {
