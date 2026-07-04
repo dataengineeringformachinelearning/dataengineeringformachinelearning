@@ -125,8 +125,8 @@ a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.n
     color 0.2s ease;
 }
 
-a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):hover,
-a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):focus-visible {
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):hover,
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):focus-visible {
   color: var(--link-hover-color);
   text-decoration: none;
   border-bottom-color: var(--link-hover-color); /* WCAG requirement: non-color hover indicator */

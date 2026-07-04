@@ -512,6 +512,12 @@ button.auth-btn {
   margin-top: var(--viking-space-half, 4px);
 }
 
+.mobile-menu a.mobile-auth-btn:not(.auth-signout-btn),
+.mobile-menu a.mobile-auth-btn:not(.auth-signout-btn) span,
+.mobile-menu a.mobile-auth-btn:not(.auth-signout-btn) svg {
+  color: var(--viking-white-pure, #ffffff) !important;
+}
+
 .navbar-link {
   font-size: 1rem;
   color: var(--text-muted);
