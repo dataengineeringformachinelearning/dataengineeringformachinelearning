@@ -4,27 +4,20 @@ import subprocess
 import sys
 
 
-def sync_design_system():
+def sync_design_system() -> None:
   script_dir = os.path.dirname(os.path.abspath(__file__))
   root_dir = os.path.dirname(script_dir)
-  pkg_dir = os.path.join(root_dir, "packages", "deml-design-system")
-  dist_dir = os.path.join(pkg_dir, "dist")
-
-  if not os.path.isdir(pkg_dir):
-    print(f"Design system package not found at {pkg_dir}", file=sys.stderr)
-    sys.exit(1)
-
-  print("Building @deml/design-system...")
-  subprocess.run(["npm", "run", "build"], cwd=pkg_dir, check=True)
-
+  docs_dir = os.path.join(root_dir, "viking-ui-docs")
+  dist_dir = os.path.join(docs_dir, "dist", "static-css")
   frontend_dir = os.path.join(root_dir, "frontend")
-  print("Building @dataengineeringformachinelearning/viking-ui CSS bundle...")
-  subprocess.run(["npm", "run", "build:viking-ui-css"], cwd=frontend_dir, check=True)
+
+  print("Building static Viking-UI CSS via viking-ui-docs...")
+  subprocess.run(["npm", "run", "build:static-css"], cwd=docs_dir, check=True)
 
   dist_tokens = os.path.join(dist_dir, "design-tokens.css")
   dist_components = os.path.join(dist_dir, "deml-components.css")
+  dist_viking = os.path.join(dist_dir, "viking-ui.css")
 
-  # Match pre-commit prettier formatting so sync + prettier hooks do not fight.
   prettier_config = os.path.join(root_dir, "frontend", ".prettierrc")
   subprocess.run(
     [
@@ -40,7 +33,7 @@ def sync_design_system():
     check=True,
   )
 
-  for path in (dist_tokens, dist_components):
+  for path in (dist_tokens, dist_components, dist_viking):
     if not os.path.isfile(path):
       print(f"Expected build output missing: {path}", file=sys.stderr)
       sys.exit(1)
@@ -59,7 +52,6 @@ def sync_design_system():
     os.path.join(root_dir, "marketing", "public", "assets", "deml-components.css"),
   ]
 
-  viking_css_src = os.path.join(frontend_dir, "dist", "viking-ui-css", "viking-ui.css")
   viking_css_targets = [
     os.path.join(root_dir, "frontend", "src", "assets", "viking-ui.css"),
     os.path.join(root_dir, "frontend", "public", "assets", "viking-ui.css"),
@@ -67,21 +59,14 @@ def sync_design_system():
     os.path.join(root_dir, "marketing", "public", "assets", "viking-ui.css"),
   ]
 
-  for target in token_targets:
-    os.makedirs(os.path.dirname(target), exist_ok=True)
-    shutil.copy2(dist_tokens, target)
-
-  for target in component_targets:
-    os.makedirs(os.path.dirname(target), exist_ok=True)
-    shutil.copy2(dist_components, target)
-
-  if not os.path.isfile(viking_css_src):
-    print(f"Expected viking-ui CSS missing: {viking_css_src}", file=sys.stderr)
-    sys.exit(1)
-
-  for target in viking_css_targets:
-    os.makedirs(os.path.dirname(target), exist_ok=True)
-    shutil.copy2(viking_css_src, target)
+  for src, targets in (
+    (dist_tokens, token_targets),
+    (dist_components, component_targets),
+    (dist_viking, viking_css_targets),
+  ):
+    for target in targets:
+      os.makedirs(os.path.dirname(target), exist_ok=True)
+      shutil.copy2(src, target)
 
   print("Syncing self-hosted Inter fonts...")
   subprocess.run(
@@ -89,16 +74,9 @@ def sync_design_system():
     check=True,
   )
 
-  scss_src = os.path.join(pkg_dir, "src")
-  scss_target = os.path.join(root_dir, "frontend", "src", "design-system")
-  if os.path.isdir(scss_src):
-    shutil.copytree(scss_src, scss_target, dirs_exist_ok=True)
-
   print("Successfully synced design system to:")
   for target in token_targets + component_targets + viking_css_targets:
     print(f" - {target}")
-  if os.path.isdir(scss_target):
-    print(f" - {scss_target}")
 
   print("Building site-drakkar assets and Django partials...")
   subprocess.run(["npm", "run", "build:site-drakkar"], cwd=frontend_dir, check=True)

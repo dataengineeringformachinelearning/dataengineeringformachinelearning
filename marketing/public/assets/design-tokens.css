@@ -1,7 +1,8 @@
 @charset "UTF-8";
-/*! DEML Design Tokens — compiled from Viking-UI canonical tokens. Do not edit copies; run scripts/sync_design_system.py */
-/*! DEML Design Tokens — compiled from Viking-UI (frontend/projects/viking-ui).
- *  Do not edit copies; change _variables.scss and run scripts/sync_design_system.py */
+/*! DEML Design Tokens — compiled from Viking-UI canonical tokens.
+ *  Static CSS: npm run build:static-css --prefix viking-ui-docs */
+/*! DEML Design Tokens — canonical source: frontend/projects/viking-ui/src/styles/_variables.scss
+ *  Static CSS: npm run build:static-css --prefix viking-ui-docs (or python scripts/sync_design_system.py) */
 :root {
   /* ── Charcoal surfaces ─────────────────────────────────────────────────── */
   --viking-charcoal-950: #0a0a0a;

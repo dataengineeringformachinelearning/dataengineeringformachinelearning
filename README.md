@@ -368,9 +368,8 @@ uv pip install -r requirements.txt
 
 # 3. Node workspaces (fresh installs)
 cd ../frontend && rm -rf node_modules dist .angular && npm install --legacy-peer-deps
-cd ../viking-ui-docs && rm -rf node_modules dist && npm install
+cd ../viking-ui-docs && rm -rf node_modules dist && npm install --legacy-peer-deps
 cd ../marketing && rm -rf node_modules dist && npm install
-cd ../packages/deml-design-system && rm -rf node_modules dist && npm install
 cd ../functions && rm -rf node_modules && npm install   # Firebase functions (optional)
 
 # 4. Rebuild generated assets + sync (Viking-UI, design tokens, content, widgets, icons, etc.)

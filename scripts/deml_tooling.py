@@ -113,7 +113,7 @@ def build_parser() -> argparse.ArgumentParser:
   sync = sub.add_parser("sync", help="Propagate design system, widgets, and docs")
   sync.add_argument("--all", action="store_true", help="Sync content, design-system, and widgets")
   sync.add_argument("--content", action="store_true", help="Sync BOOK.md / README / version")
-  sync.add_argument("--design-system", action="store_true", help="Sync deml-design-system + viking-ui.css")
+  sync.add_argument("--design-system", action="store_true", help="Build static CSS via viking-ui-docs and sync to all surfaces")
   sync.add_argument("--widgets", action="store_true", help="Sync navbar/widget assets")
   sync.set_defaults(func=cmd_sync, all=False, content=False, design_system=False, widgets=False)
 

@@ -8,7 +8,7 @@ on:
   pull_request:
     paths:
       - 'frontend/projects/viking-ui/**'
-      - 'packages/deml-design-system/**'
+      - 'viking-ui-docs/**'
   workflow_dispatch:
 
 permissions:
@@ -31,10 +31,11 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci --legacy-peer-deps
+      - run: npm ci --legacy-peer-deps --prefix ../viking-ui-docs
       - run: |
           npm run build:viking-ui
           npm run build:viking-ui-css
-      - run: test -f dist/viking-ui/package.json && test -f dist/viking-ui-css/viking-ui.css
+      - run: test -f dist/viking-ui/package.json && test -f ../viking-ui-docs/dist/static-css/viking-ui.css
 
   publish:
     name: Publish to npm
@@ -57,6 +58,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: Install viking-ui-docs dependencies
+        run: npm ci --legacy-peer-deps --prefix ../viking-ui-docs
 
       - name: Build Viking-UI library and CSS bundle
         run: |

@@ -25,7 +25,7 @@
 | JSON export | `frontend/projects/viking-ui/src/tokens/viking-tokens.json` | Tooling, docs, design QA |
 | Tailwind preset | `frontend/projects/viking-ui/src/tokens/tailwind.preset.js` | `theme.extend` → CSS variables |
 | TypeScript presets | `frontend/projects/viking-ui/src/tokens/series-presets.ts` | `viking-color-picker` + chart bindings |
-| Static CSS bundle | `design-tokens.css` / `viking-ui.css` | Non-Angular surfaces (sync via `scripts/sync_design_system.py`) |
+| Static CSS bundle | `design-tokens.css` / `viking-ui.css` | Non-Angular surfaces — build via `npm run build:static-css --prefix viking-ui-docs`, sync via `scripts/sync_design_system.py` |
 
 ---
 
@@ -731,7 +731,7 @@ All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900
 
 1. Edit `frontend/projects/viking-ui/src/styles/_variables.scss` for primitive token changes.
 2. Edit `_series-colors.scss` if the chart/picker palette changes; sync `viking-tokens.json` and `series-presets.ts`.
-3. Run `npm run build:viking-ui-css` (frontend) to regenerate `viking-ui.css` artifacts.
+3. Run `npm run build:static-css --prefix viking-ui-docs` to regenerate static CSS artifacts, then `python scripts/sync_design_system.py`.
 4. Run `python scripts/sync_design_system.py` to propagate `design-tokens.css`, `viking-ui.css`, and SCSS copies.
 5. Run `python scripts/sync_fonts.py` after updating Inter font files.
 6. Update this document when tokens or component standards change.

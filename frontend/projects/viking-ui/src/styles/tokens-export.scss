@@ -1,15 +1,11 @@
-// Flat CSS token bundle — primitives + semantic + legacy aliases for static surfaces.
-// Compiled to design-tokens.css via packages/deml-design-system or npm run build:viking-tokens-css
-@use 'variables';
-@use 'series-colors';
-@use 'legacy-aliases';
+/*! DEML Design Tokens — compiled from Viking-UI canonical tokens.
+ *  Static CSS: npm run build:static-css --prefix viking-ui-docs */
+@use 'tokens';
 
 body {
-  font-family: var(--viking-font-family);
-  font-size: var(--viking-font-size-base);
-  line-height: var(--viking-line-height-relaxed);
-  color: var(--viking-text);
-  background-color: var(--viking-bg);
+  font-size: var(--base-font-size);
+  color: var(--text-color);
+  background-color: var(--bg-color);
 }
 
 h1,
@@ -18,5 +14,5 @@ h3,
 h4,
 h5,
 h6 {
-  letter-spacing: var(--viking-letter-spacing-tight);
+  letter-spacing: var(--header-letter-spacing);
 }
