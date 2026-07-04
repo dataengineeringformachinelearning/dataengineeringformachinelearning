@@ -75,7 +75,7 @@ import { VikingOtpInput } from '../otp-input/otp-input';
       .viking-verification-code-label {
         display: block;
         width: 100%;
-        margin-bottom: var(--viking-space-half);
+        margin-bottom: var(--viking-space-1);
         padding: 0;
         font-size: var(--viking-font-size-sm);
         font-weight: var(--viking-font-weight-semibold);
@@ -98,7 +98,7 @@ import { VikingOtpInput } from '../otp-input/otp-input';
 
       .viking-verification-code-description,
       .viking-verification-code-error {
-        margin: var(--viking-space-half) 0 0;
+        margin: var(--viking-space-1) 0 0;
         font-size: var(--viking-font-size-sm);
         line-height: var(--viking-line-height-normal);
         text-align: center;

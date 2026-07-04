@@ -8,7 +8,7 @@ export const TWITTER_SITE = "@joealongi";
 export const AUTHOR_NAME = "Joe Alongi";
 
 export const DEFAULT_KEYWORDS =
-  "data engineering, machine learning, MLOps, telemetry, threat intelligence, multi-tenant SaaS, event projections";
+  "data engineering, machine learning, MLOps, operational intelligence, telemetry, threat intelligence, STIX, multi-tenant SaaS, event projections, SLA forecasting";
 
 export function canonicalHref(pathname: string, site: URL | string): string {
   const base = typeof site === "string" ? site : site.href;
@@ -34,7 +34,7 @@ export function webSiteJsonLd(siteUrl: string) {
     name: SITE_NAME,
     url: siteUrl,
     description:
-      "Production-grade data engineering and machine learning platform with real-time telemetry and threat intelligence.",
+      "Operational intelligence for mission-critical ML pipelines — real-time telemetry, SLA forecasting, and tenant-safe event projections.",
     author: { "@type": "Person", name: AUTHOR_NAME },
     publisher: { "@type": "Organization", name: SITE_NAME },
   };
@@ -49,7 +49,7 @@ export function softwareApplicationJsonLd(appUrl: string) {
     operatingSystem: "Web",
     url: appUrl,
     description:
-      "Multi-tenant observability and machine-learning SaaS for telemetry ingestion, status pages, and threat intelligence.",
+      "Precision-engineered observability and ML platform: ingest telemetry, forecast SLA breach, serialize threats to STIX, and project live state per tenant.",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
   };
 }

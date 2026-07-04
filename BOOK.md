@@ -2428,7 +2428,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/platform-server`: ^22.0.0
 - `@angular/router`: ^22.0.0
 - `@angular/ssr`: ^22.0.0
-- `@orama/orama`: ^3.1.18
+- `algoliasearch`: ^5.52.0
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `express`: ^5.1.0

@@ -50,6 +50,7 @@ import { VikingControl, provideVikingCva } from '../core/cva';
       :host(.viking-otp-centered) .viking-otp {
         justify-content: center;
         width: 100%;
+        gap: var(--viking-space-2);
       }
       .viking-otp-cell {
         width: var(--viking-control-height);

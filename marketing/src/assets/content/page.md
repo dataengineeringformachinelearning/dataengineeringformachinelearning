@@ -2230,6 +2230,23 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech** �
 
 Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle synced from `frontend/projects/viking-ui/src/styles/`.
 
+### Unified design governance
+
+DEML unifies UI through a layered rule stack so agents, contributors, and surfaces never drift:
+
+| Layer | Document | Purpose |
+| ----- | -------- | ------- |
+| Cursor / IDE | [.cursorrules](.cursorrules) | Mandatory `viking-*` imports, composable field stacks, zero hardcoded styles |
+| Tokens | [THEME.md](THEME.md) | Canonical `--viking-*` palette, component standards, maintenance |
+| Platform | [AGENTS.md](AGENTS.md) | Viking-UI Uniformity Law, architecture and security invariants |
+| Narrative | This chapter | Consumption patterns, build, publish, accessibility contracts |
+
+**Composable structure, Viking palette:** Viking-UI adopts composable primitive ergonomics — `viking-field` wrapping controls, variant-driven `viking-button`, dark-first `viking-card` surfaces — with **deep charcoals, machined metallic borders, and restrained teal/crimson**. The result is **premium restrained luxury**: every pixel earns its place, metrics dominate ornament, and tactile surfaces use subtle top-edge highlights instead of glass blur or neon glow.
+
+**Component law for all Angular work:** import from `@dataengineeringformachinelearning/viking-ui` only. Do not add Material, Bootstrap, or parallel button/input/chart implementations. When a primitive is missing, extend `frontend/projects/viking-ui/` first, then consume it from deml.app. Non-Angular pages use synced `design-tokens.css` and `viking-ui.css` with semantic `var(--viking-*)` aliases — never inline hex palettes.
+
+Changes to design governance must update `.cursorrules`, `THEME.md`, `AGENTS.md`, and `README.md` together, then propagate via `scripts/sync_content.py` and `scripts/sync_design_system.py`.
+
 deml.app ships a marketing-parity landing page at `/home` (hero, capability bands, pricing, Polars-style whitepaper CTA) so the authenticated app feels cohesive with [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/). Unauthenticated visitors hitting `/` are routed to `/home`; signed-in users go to `/dashboard`.
 
 Consumption follows the path of least resistance. Inside the repository, deml.app imports `@dataengineeringformachinelearning/viking-ui` as a local npm package (`file:dist/viking-ui`, built via `prebuild`) while development can still resolve the library from source through the TypeScript path alias. Production pages consume Viking-UI components directly — buttons, fields, charts, modals, toasts, and selects — rather than hosting a component gallery on deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). The project is registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, so the same source produces a publishable Angular Package Format bundle. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box. A **separate** Angular showcase app (`projects/viking-ui-showcase`) renders every component with realistic platform data for visual regression and contributor onboarding — build it with `npm run build:viking-ui-system` and deploy it independently of deml.app.
@@ -2402,7 +2419,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/platform-server`: ^22.0.0
 - `@angular/router`: ^22.0.0
 - `@angular/ssr`: ^22.0.0
-- `@orama/orama`: ^3.1.18
+- `algoliasearch`: ^5.52.0
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `express`: ^5.1.0

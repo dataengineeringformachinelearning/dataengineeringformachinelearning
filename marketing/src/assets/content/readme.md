@@ -14,14 +14,16 @@ license: apache-2.0
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
 
-Welcome to the **Data Engineering for Machine Learning** Developer Platform. This repository hosts a comprehensive ecosystem designed to seamlessly bridge the gap between complex data pipelines and high-performance machine learning models.
+Welcome to **Data Engineering for Machine Learning (DEML)** — operational intelligence for the digital battlefield. This platform unifies rigorous data engineering, predictive machine learning, and defense-in-depth security into a single multi-tenant SaaS fabric. Every command path is versioned, every projection is idempotent, and every tenant is processed through identical symmetrical pipelines.
+
+Ship telemetry at scale. Forecast SLA breach before it manifests. Serialize anomalies into STIX 2.1 for downstream SOAR consumption. The architecture is documented with thesis-level rigor; the product is engineered for production deployment today.
 
 > **Looking for the Book or Whitepaper?**
 > The philosophical, educational, and narrative deep dives into data engineering, MLOps, and the architecture of this system can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
 >
 > For a brief summary of the platform's hypothesis, architecture diagrams, and algorithms, please read the **[Whitepaper (WHITEPAPER.md)](WHITEPAPER.md)**.
 >
-> For the unified visual design system (Viking-UI premium theme), see **[THEME.md](THEME.md)**.
+> For the unified visual design system (Viking-UI premium theme), see **[THEME.md](THEME.md)**. Cursor agents and contributors must also read **[.cursorrules](.cursorrules)** for mandatory Viking-UI component usage.
 
 > [!NOTE]
 > **arXiv Endorsement Request:** We are currently seeking an arXiv endorsement to formally publish the architectural whitepaper to `cs.CR` (Cryptography and Security). If you are a qualified arXiv author and find this work valuable, we would greatly appreciate your endorsement! You can endorse the author [here](https://arxiv.org/auth/endorse?x=ZISEYL) using code **ZISEYL**.
@@ -57,11 +59,11 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 - **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
 - **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
 - **SaaS Reliability & Stability**: Comprehensive automated testing, static analysis (Ruff/ESLint/Axe), and clean-code architecture ensuring production-grade robustness.
-- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md)) across marketing, app, API, and docs — zero third-party UI runtimes, WCAG 2.1 AA by construction.
+- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, app, API, and docs — composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
 
 ## Design System (Viking-UI)
 
-All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** — the Viking-UI premium theme:
+All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** — the Viking-UI premium theme. **[.cursorrules](.cursorrules)** enforces Viking-UI imports and token-only styling for Cursor agents.
 
 | Surface | Theme entry point |
 |---------|-------------------|
@@ -70,7 +72,7 @@ All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** 
 | [backend.deml.app](https://backend.deml.app) | `backend/static/viking-ui.css` |
 | Swagger / OpenAPI UI | Same tokens via static CSS |
 
-**Philosophy:** Precision engineering and high-end industrial tech — dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
+**Philosophy:** Precision engineering and high-end industrial tech — composable primitives with a **premium restrained luxury** palette: dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. Always import `viking-*` components; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
 
 ## Solution Architecture
 
@@ -78,7 +80,7 @@ The platform implements an **Event Projections** architecture for client-driven 
 
 - **Commands** (writes): Angular Client → Firebase Cloud Functions (`ingestEvent`) → Redpanda (topic: `frontend-events`) with Firestore fallback. Django API paths use a **Transactional Outbox** pattern (events written atomically to Postgres `OutboxEvent` table before returning).
 - **Projections**: Django `telemetry_worker` consumes from Redpanda, enriches data (e.g. active endpoint counts from Postgres), and writes to Firestore (named `deml` DB). Projections are **idempotent** (using stable message keys) and support a dead-letter queue (`frontend-events-dlq`) for failed messages.
-- **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/{uid}/data/stats`).
+- **Queries** (reads): Direct real-time subscriptions to the projected Firestore state (e.g. `users/uid/data/stats`).
 - Events include a `version` field for schema governance. The `deml-relay` Cloud Run service runs the `outbox_relay` management command to publish reliably from the Outbox.
 
 ```mermaid
@@ -126,7 +128,7 @@ flowchart TB
     FCF -->|Fallback write| FS
     D -->|Consume| TW
     TW -->|Enriched write| FS
-    FS -.->|onSnapshot (users/{uid}/data/stats)| A
+    FS -.->|"onSnapshot users/uid/data/stats"| A
     A -->|REST / CORS| B
     B -->|Produces Event| D
     E -->|Consumes & Writes| H
@@ -411,9 +413,10 @@ We provide dedicated support for our users:
 
 I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power this platform's architecture:
 
-- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds for `@dataengineeringformachinelearning/viking-ui`), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/)
+- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds for `@dataengineeringformachinelearning/viking-ui`), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/), [Algolia](https://www.algolia.com/) (DocSearch / Experiences via `DemlWidgets.openSearch()` and `algolia-search.js`)
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
-- **UI patterns (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
+- **Design & UX references (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (chart sizing and composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns), [Angular Material](https://material.angular.dev/) (layout ergonomics), [Blueprint](https://blueprintjs.com/docs/) (data-dense UI patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
+- **Enterprise & product design references**: [SpaceX](https://www.spacex.com/), [Palantir](https://www.palantir.com/), [Lockheed Martin](https://www.lockheedmartin.com/), [OpenAI](https://openai.com/), [Sequoia Capital](https://sequoiacap.com/), [McKinsey & Company](https://www.mckinsey.com/) (precision prose, operational clarity, and mission-critical UX tone)
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Official Integrations** (customer-facing): [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](docs/integrations/)
