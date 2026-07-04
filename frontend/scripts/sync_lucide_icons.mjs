@@ -86,6 +86,7 @@ const LUCIDE_MAP = {
   speed: 'Gauge',
   rocket: 'Rocket',
   key: 'KeyRound',
+  'log-in': 'LogIn',
   policy: 'ShieldCheck',
   bug: 'Bug',
   play: 'Play',
