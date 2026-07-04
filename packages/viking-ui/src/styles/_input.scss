@@ -1,0 +1,106 @@
+// ============================================================================
+// Viking-UI Input System — canonical styles for viking-input + static HTML
+// Single source of truth aligned to THEME.md §8 (composable field stack)
+// ============================================================================
+
+@use 'forms' as forms;
+
+@mixin viking-input-shell {
+  @include forms.viking-control-surface;
+}
+
+@mixin viking-input-native {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none !important;
+  background: transparent;
+  color: var(--viking-text);
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size);
+  padding: 0;
+
+  &::placeholder {
+    color: var(--viking-text-muted);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@mixin viking-input-clear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--viking-touch-target-comfort);
+  min-height: var(--viking-touch-target-comfort);
+  border: none;
+  background: transparent;
+  color: var(--viking-text-muted);
+  cursor: pointer;
+  padding: var(--viking-space-half);
+  border-radius: var(--viking-radius-pill);
+  transition: var(--viking-transition-interactive);
+  position: relative;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+
+  &:hover {
+    color: var(--viking-text);
+    background: var(--viking-accent-soft);
+  }
+
+  &:focus-visible {
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
+  }
+
+  &:active {
+    transform: scale(var(--viking-state-active-scale));
+  }
+}
+
+// Static HTML / Django / Astro native inputs
+.viking-input,
+.viking-input-shell {
+  @include viking-input-shell;
+}
+
+.viking-input input,
+.viking-input-shell input,
+input.viking-input-native {
+  @include viking-input-native;
+}
+
+.viking-input-clear {
+  @include viking-input-clear-btn;
+}
+
+.viking-input-kbd {
+  font-family: var(--viking-font-family-mono);
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
+  background: var(--viking-surface-alt);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-xs);
+  padding: 0 var(--viking-space-half);
+  line-height: 1.4;
+}
+
+.viking-input-icon {
+  color: var(--viking-text-muted);
+  flex-shrink: 0;
+}
+
+.viking-input-shell.viking-disabled,
+.viking-input-shell.viking-loading,
+.viking-input.viking-disabled,
+.viking-input.viking-loading {
+  opacity: var(--viking-state-disabled-opacity);
+}
+
+.viking-input-shell.viking-loading,
+.viking-input.viking-loading {
+  cursor: wait;
+}

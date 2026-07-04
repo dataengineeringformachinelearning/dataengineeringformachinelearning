@@ -1,7 +1,16 @@
+export const HTMLElementBase: typeof HTMLElement =
+  typeof HTMLElement === "undefined"
+    ? (class {} as unknown as typeof HTMLElement)
+    : HTMLElement;
+
 export const defineVikingElement = (
   tagName: string,
   constructor: CustomElementConstructor,
 ): void => {
+  if (typeof customElements === "undefined") {
+    return;
+  }
+
   if (!customElements.get(tagName)) {
     customElements.define(tagName, constructor);
   }

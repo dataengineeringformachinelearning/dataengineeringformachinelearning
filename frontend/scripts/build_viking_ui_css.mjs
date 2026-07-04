@@ -8,7 +8,6 @@ const docsDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../v
 const result = spawnSync('npm', ['run', 'build:static-css'], {
   cwd: docsDir,
   stdio: 'inherit',
-  shell: true,
 });
 
 process.exit(result.status ?? 1);

@@ -65,13 +65,13 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 
 All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** — the Viking-UI premium theme. **[.cursorrules](.cursorrules)** enforces Viking-UI imports and token-only styling for Cursor agents.
 
-| Surface                                                                                | Theme entry point                              |
-| -------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | `/assets/viking-ui.css`                        |
-| [deml.app](https://deml.app)                                                           | `@dataengineeringformachinelearning/viking-ui` |
-| [backend.deml.app](https://backend.deml.app)                                           | `backend/static/viking-ui.css`                 |
-| [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com) | Viking-UI docs + static CSS build owner |
-| Swagger / OpenAPI UI                                                                   | Same tokens via static CSS                     |
+| Surface                                                                                      | Theme entry point                              |
+| -------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com)       | `/assets/viking-ui.css`                        |
+| [deml.app](https://deml.app)                                                                 | `@dataengineeringformachinelearning/viking-ui` |
+| [backend.deml.app](https://backend.deml.app)                                                 | `backend/static/viking-ui.css`                 |
+| [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com) | Viking-UI docs + static CSS build owner        |
+| Swagger / OpenAPI UI                                                                         | Same tokens via static CSS                     |
 
 **Design doctrine:** Precision-engineered industrial surfaces—composable primitives on a **premium restrained luxury** palette: dark charcoal foundations (`--viking-charcoal-900`), deep teal primary actions (`--viking-teal-600`), crimson secondary emphasis (`--viking-crimson-600`), machined metallic borders, and native SVG telemetry charts. Import `viking-*` components exclusively; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions. **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md) and the [live docs site](https://ui.dataengineeringformachinelearning.com/contributing).
 
@@ -377,7 +377,7 @@ cd ../functions && rm -rf node_modules && npm install   # Firebase functions (op
 cd ..
 npm run sync
 npm run build:viking-ui --prefix frontend
-npm run build:static-css --prefix viking-ui-docs   # design-tokens.css, deml-components.css, viking-ui.css
+npm run build:viking-ui:package                    # design-tokens.css, deml-components.css, viking-ui.css, Web Components
 python3 scripts/sync_design_system.py            # fan-out CSS + fonts + widgets to all surfaces
 
 # 5. (Optional) Rebuild Viking-UI docs site (includes static CSS in prebuild)

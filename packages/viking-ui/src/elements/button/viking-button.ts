@@ -1,6 +1,7 @@
 import {
   attributeValue,
   defineVikingElement,
+  HTMLElementBase,
   readBooleanAttribute,
 } from "../core/dom";
 import { attachStyles, resetStyles } from "../core/styles";
@@ -105,7 +106,7 @@ ${resetStyles}
 }
 `;
 
-export class VikingButton extends HTMLElement {
+export class VikingButton extends HTMLElementBase {
   static readonly tagName = "viking-button";
 
   static get observedAttributes(): string[] {

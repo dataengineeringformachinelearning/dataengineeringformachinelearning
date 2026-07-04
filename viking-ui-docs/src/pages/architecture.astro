@@ -26,7 +26,7 @@ import '../styles/showcase.scss';
         <h2 class="viking-heading viking-heading-sm" id="layers-heading">Three consumption layers</h2>
         <p class="viking-text-muted">
           Pick the layer that matches your stack. All layers compile from the same SCSS source in
-          <code>frontend/projects/viking-ui/src/styles/</code>.
+          <code>packages/viking-ui/src/styles/</code>.
         </p>
       </header>
 
@@ -87,7 +87,7 @@ import '../styles/showcase.scss';
 
 src/web/index.ts                      → viking-ui-elements.js (Web Components)
 
-npm run build:static-css                (viking-ui-docs/scripts/build-static-css.mjs)
+npm run build:viking-ui:package         (packages/viking-ui/scripts/build-css.mjs)
 python scripts/sync_design_system.py    → frontend, backend, marketing assets
 
 npm run build:viking-ui                 (ng-packagr → npm package)</code></pre>

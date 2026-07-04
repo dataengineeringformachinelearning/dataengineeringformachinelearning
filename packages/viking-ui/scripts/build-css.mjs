@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import {
+  copyFileSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -15,6 +16,7 @@ const packageDir = path.join(
 );
 const rootDir = path.join(packageDir, "..", "..");
 const sourceDir = path.join(packageDir, "src", "styles");
+const tokensJson = path.join(packageDir, "src", "tokens", "viking-tokens.json");
 const outDir = path.join(packageDir, "dist");
 const localSass = path.join(packageDir, "node_modules", ".bin", "sass");
 const designSystemSass = path.join(
@@ -40,13 +42,14 @@ const sassBin = existsSync(localSass)
       ? docsSass
       : "sass";
 
-const compile = (entry) => {
+const compile = (entry, style = "expanded") => {
   const outFile = path.join(outDir, `${entry}.tmp.css`);
   execFileSync(
     sassBin,
     [
-      "--style=expanded",
+      `--style=${style}`,
       "--no-source-map",
+      `--load-path=${sourceDir}`,
       path.join(sourceDir, entry),
       outFile,
     ],
@@ -62,16 +65,15 @@ const compile = (entry) => {
 
 mkdirSync(outDir, { recursive: true });
 
-const tokensCss = compile("tokens.scss");
-const componentsCss = compile("components.scss");
-const bundleCss = [
-  "/*! Viking-UI universal bundle. Source: packages/viking-ui. */",
-  tokensCss,
-  componentsCss,
-].join("\n\n");
+const tokensCss = compile("tokens-export.scss");
+const componentsCss = compile("components-bundle.scss");
+const demlComponentsCss = compile("deml-components.scss");
+const bundleCss = compile("viking-ui-bundle.scss", "compressed");
 
 writeFileSync(path.join(outDir, "design-tokens.css"), tokensCss);
 writeFileSync(path.join(outDir, "viking-components.css"), componentsCss);
+writeFileSync(path.join(outDir, "deml-components.css"), demlComponentsCss);
 writeFileSync(path.join(outDir, "viking-ui.css"), bundleCss);
+copyFileSync(tokensJson, path.join(outDir, "viking-tokens.json"));
 
 console.log(`Built Viking-UI CSS in ${outDir}`);

@@ -1,0 +1,87 @@
+// Global typography — Inter via self-hosted variable font (_fonts.scss).
+
+html {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size, 16px);
+  line-height: var(--viking-line-height-relaxed, 1.625);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body,
+.viking-ui-body {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: var(--viking-font-weight-regular, 400);
+  color: var(--viking-text);
+  background-color: var(--viking-bg);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--viking-font-family);
+  font-weight: var(--viking-font-weight-semibold, 600);
+  line-height: var(--viking-line-height-tight, 1.25);
+  letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
+}
+
+h1 {
+  font-size: var(--viking-font-size-2xl, 30px);
+  font-weight: var(--viking-font-weight-bold, 700);
+  letter-spacing: var(--viking-letter-spacing-tighter, -0.03em);
+}
+
+h2 {
+  font-size: var(--viking-font-size-xl, 24px);
+}
+
+h3 {
+  font-size: var(--viking-font-size-lg, 20px);
+}
+
+h4 {
+  font-size: var(--viking-font-size-md, 18px);
+}
+
+h5,
+h6 {
+  font-size: var(--viking-font-size, 16px);
+  font-weight: var(--viking-font-weight-medium, 500);
+}
+
+p {
+  line-height: var(--viking-line-height-relaxed, 1.625);
+}
+
+code,
+pre,
+kbd,
+samp,
+.viking-font-mono {
+  font-family: var(--viking-font-family-mono);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+.viking-font-display {
+  font-family: var(--viking-font-family);
+  font-weight: var(--viking-font-weight-bold, 700);
+  letter-spacing: var(--viking-letter-spacing-caps, 0.08em);
+  text-transform: uppercase;
+}
+
+.viking-tabular-nums {
+  font-variant-numeric: tabular-nums lining-nums;
+}

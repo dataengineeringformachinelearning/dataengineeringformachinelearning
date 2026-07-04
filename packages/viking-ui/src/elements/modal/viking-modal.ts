@@ -1,4 +1,8 @@
-import { defineVikingElement, readBooleanAttribute } from "../core/dom";
+import {
+  defineVikingElement,
+  HTMLElementBase,
+  readBooleanAttribute,
+} from "../core/dom";
 import { attachStyles, resetStyles } from "../core/styles";
 
 const styles = `
@@ -60,7 +64,7 @@ dialog::backdrop {
 }
 `;
 
-export class VikingModal extends HTMLElement {
+export class VikingModal extends HTMLElementBase {
   static readonly tagName = "viking-modal";
 
   static get observedAttributes(): string[] {

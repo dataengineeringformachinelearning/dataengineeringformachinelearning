@@ -42,7 +42,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 - **Icons:** `viking-icon` only — no Material Icons, Font Awesome, or Lucide runtime packages.
 - **Feedback:** `viking-toast` / `VikingToastService`, `viking-callout`, `viking-badge` — not browser `alert()` or ad-hoc banners.
 - **Loading:** `viking-skeleton`, `viking-loading-overlay`, `viking-progress` — not generic spinners.
-- **New shared UI** belongs in `frontend/projects/viking-ui/` first, then consumed by the app.
+- **New framework-neutral shared UI** belongs in `packages/viking-ui/` first; Angular wrappers can adapt it in `frontend/projects/viking-ui/`.
 
 ```typescript
 import {
@@ -142,8 +142,8 @@ Before merge, confirm the touched surface matches marketing benchmark quality:
 
 | Role | Path |
 | ---- | ---- |
-| **Canonical SCSS** | `frontend/projects/viking-ui/src/styles/` (tokens, components, navbar, bundle) |
-| **Static CSS build** | `viking-ui-docs/scripts/build-static-css.mjs` → `viking-ui-docs/dist/static-css/` |
+| **Canonical SCSS** | `packages/viking-ui/src/styles/` (tokens, components, navbar, bundle) |
+| **Static CSS build** | `packages/viking-ui/scripts/build-css.mjs` → `packages/viking-ui/dist/` |
 | **Fan-out to surfaces** | `python scripts/sync_design_system.py` (marketing, backend, frontend `/assets/`) |
 
 **Do not** recreate `packages/deml-design-system` or `frontend/src/design-system/` mirrors. Railway/Docker frontend builds compile live SCSS from viking-ui only — no monorepo-root paths.
@@ -156,7 +156,7 @@ Before merge, confirm the touched surface matches marketing benchmark quality:
 2. No hardcoded colors, spacing, or font sizes outside `--viking-*` tokens.
 3. Padding, gutters, and max-widths meet **Premium polish standards** — parity with marketing benchmark.
 4. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
-5. Token changes start in `frontend/projects/viking-ui/src/styles/_variables.scss`, then `npm run build:static-css --prefix viking-ui-docs` + `python scripts/sync_design_system.py`.
+5. Token changes start in `packages/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui:package` + `python scripts/sync_design_system.py`.
 6. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.31**, and **README.md** together.
 7. `npm run test:viking-ui` and app `npm test` pass for touched surfaces (charts, auth, forms, icons).
 8. `node scripts/enforce-theme.js` reports zero violations before merge.

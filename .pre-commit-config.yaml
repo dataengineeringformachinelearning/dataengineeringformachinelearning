@@ -38,7 +38,7 @@ repos:
         name: Sync design system package to consumers
         entry: python scripts/sync_design_system.py
         language: system
-        files: ^(frontend/projects/viking-ui/src/styles/|viking-ui-docs/scripts/build-static-css\.mjs)
+        files: ^(packages/viking-ui/src/styles/|packages/viking-ui/src/web/|packages/viking-ui/scripts/|frontend/projects/viking-ui/src/styles/|viking-ui-docs/scripts/build-static-css\.mjs)
         pass_filenames: false
       - id: sync-site-drakkar
         name: Sync site drakkar JSON and Django partials
@@ -112,7 +112,7 @@ repos:
     hooks:
       - id: prettier
         files: \.(js|ts|css|html|json|md|mjs)$
-        exclude: ^(frontend/(public/llms-full\.txt|public/llms\.txt)|marketing/(public/llms-full\.txt|public/llms\.txt|src/assets/content/page\.md)|(.*/)?(design-tokens|deml-components|viking-ui)\.css|marketing/public/assets/content/search-index\.json)$
+        exclude: ^(frontend/(public/llms-full\.txt|public/llms\.txt)|marketing/(public/llms-full\.txt|public/llms\.txt|src/assets/content/page\.md)|(.*/)?(design-tokens|deml-components|viking-components|viking-ui)\.css|(?:frontend/(?:src|public)/assets|marketing/public/assets|backend/static|viking-ui-docs/public/assets)/viking-ui-elements\.js|(?:frontend/(?:src|public)/assets|marketing/public/assets|backend/static|viking-ui-docs/public/assets)/widgets/.*\.js|marketing/public/assets/content/search-index\.json)$
         additional_dependencies:
           - prettier@3.8.2
 

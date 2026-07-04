@@ -9,7 +9,7 @@ const packageDir = path.join(
 );
 const rootDir = path.join(packageDir, "..", "..");
 const outDir = path.join(packageDir, "dist");
-const entry = path.join(packageDir, "src", "index.ts");
+const entry = path.join(packageDir, "src", "web", "index.ts");
 const localEsbuild = path.join(packageDir, "node_modules", ".bin", "esbuild");
 const frontendEsbuild = path.join(
   rootDir,

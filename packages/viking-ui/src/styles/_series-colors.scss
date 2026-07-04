@@ -1,0 +1,24 @@
+// ============================================================================
+// Viking-UI Series Color Tokens
+// ----------------------------------------------------------------------------
+// Fixed palette for telemetry series, chart lines, and viking-color-picker.
+// Values mirror THEME.md §8.4 — do not add off-palette swatches in product UI.
+// ============================================================================
+
+:root {
+  --viking-series-1: var(--viking-teal-600);
+  --viking-series-2: var(--viking-crimson-600);
+  --viking-series-3: var(--viking-green-500);
+  --viking-series-4: var(--viking-gold-500);
+  --viking-series-5: var(--viking-crimson-500);
+  --viking-series-6: var(--viking-blue-500);
+  --viking-series-7: var(--viking-charcoal-700);
+  --viking-series-8: var(--viking-metallic-500);
+
+  --viking-series-default: var(--viking-series-1);
+
+  /* Premium palette v2.1 — teal primary, crimson secondary, semantic + muted slots */
+  --viking-series-palette: var(--viking-series-1), var(--viking-series-2),
+    var(--viking-series-3), var(--viking-series-4), var(--viking-series-5),
+    var(--viking-series-6), var(--viking-series-7), var(--viking-series-8);
+}

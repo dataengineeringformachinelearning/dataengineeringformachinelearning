@@ -377,7 +377,7 @@ cd ../functions && rm -rf node_modules && npm install   # Firebase functions (op
 cd ..
 npm run sync
 npm run build:viking-ui --prefix frontend
-npm run build:static-css --prefix viking-ui-docs   # design-tokens.css, deml-components.css, viking-ui.css
+npm run build:viking-ui:package                    # design-tokens.css, deml-components.css, viking-ui.css, Web Components
 python3 scripts/sync_design_system.py            # fan-out CSS + fonts + widgets to all surfaces
 
 # 5. (Optional) Rebuild Viking-UI docs site (includes static CSS in prebuild)

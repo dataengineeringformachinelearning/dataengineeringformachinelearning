@@ -1,0 +1,166 @@
+// ============================================================================
+// Viking-UI Layout Enforcement — premium rhythm applied globally
+// Prevents Spartan-style drift: generous gutters, card padding, readable widths.
+// Imported by viking-ui.scss and viking-ui-bundle.scss on every DEML surface.
+// ============================================================================
+
+@mixin viking-surface-hairline {
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+// ── Page shell rhythm (deml.app, backend, dashboards) ───────────────────────
+.dashboard-page-container .page-inner-wrapper,
+.viking-app-page .page-inner-wrapper,
+.viking-dashboard-page .page-inner-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-stack-gap);
+  flex: 1;
+  padding-block: var(--viking-page-gutter-lg);
+  padding-inline: var(--viking-page-gutter-lg);
+  box-sizing: border-box;
+
+  @media (min-width: 1440px) {
+    padding-inline: var(--viking-page-gutter-xl);
+  }
+}
+
+.viking-page-stack,
+.viking-content-stack {
+  gap: var(--viking-page-stack-gap);
+}
+
+// ── Static card surface (non-Angular HTML, Django, Swagger) ─────────────────
+.viking-card {
+  display: block;
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-sm);
+  padding: var(--viking-card-padding);
+  color: var(--viking-text);
+  min-width: var(--viking-card-min-width);
+  max-width: var(--viking-card-max-width);
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+  transition: var(--viking-transition-interactive);
+
+  @include viking-surface-hairline;
+
+  &.viking-card-compact,
+  &--compact {
+    padding: var(--viking-card-padding-compact);
+  }
+
+  &.viking-card-interactive:hover {
+    border-color: var(--viking-accent-strong);
+    box-shadow: var(--viking-shadow-hover);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
+}
+
+// ── Form width constraints ──────────────────────────────────────────────────
+.viking-form-constrained,
+.viking-form-narrow,
+.viking-login-form,
+.login-shell .viking-card,
+.login-shell form {
+  width: 100%;
+  max-width: var(--viking-form-max-width);
+  margin-inline: auto;
+}
+
+.viking-form-narrow,
+.login-shell .viking-card,
+.login-shell form {
+  max-width: var(--viking-form-narrow-max-width);
+}
+
+.viking-form-constrained .viking-form-section,
+.viking-form-constrained viking-form-section,
+.viking-form-narrow .viking-form-section,
+.viking-form-narrow viking-form-section {
+  max-width: var(--viking-form-max-width);
+}
+
+.viking-readable-prose,
+.viking-section-lead,
+.viking-page-header-subtitle {
+  max-width: var(--viking-content-readable-max-width);
+}
+
+// ── Panel / HUD depth — override Spartan flat defaults ──────────────────────
+.viking-hud-panel,
+.panel-section,
+.viking-panel-card,
+.status-card-outlined,
+.panel-card {
+  min-width: var(--viking-card-min-width);
+}
+
+.viking-hud-panel-header,
+.panel-header,
+.viking-panel-card-header,
+.card-header-clean {
+  padding: var(--viking-panel-header-padding);
+}
+
+.viking-panel-card-body,
+.card-body-clean,
+.viking-hud-panel-body,
+.panel-body {
+  padding: var(--viking-panel-padding);
+}
+
+.panel-card {
+  padding: var(--viking-panel-padding);
+}
+
+// ── Metric tiles stay compact; panels get generous rhythm ─────────────────────
+.viking-metric-card,
+.metric-card {
+  padding: var(--viking-card-padding-compact);
+}
+
+// ── Page headers — generous section break ───────────────────────────────────
+.viking-page-header,
+.hud-header,
+.dashboard-topbar {
+  gap: var(--viking-space-3);
+  padding-bottom: var(--viking-space-3);
+  margin-bottom: var(--viking-page-section-gap);
+}
+
+.viking-page-header-sidebar.dashboard-topbar {
+  padding: var(--viking-space-3);
+}
+
+// ── Footer — match marketing generous padding ───────────────────────────────
+.viking-footer,
+.mega-footer {
+  padding: var(--viking-space-6) var(--viking-page-gutter-lg);
+}
+
+// ── Bento grid pairing (docs / marketing panels) ─────────────────────────────
+// When a full-width lead card spans the grid, remaining half-width tiles MUST
+// be an even count (2, 4, 6…) so 2-column layouts never orphan a single tile.
+// Mark compliant grids with data-bento-even-pairs="true" (DocsBentoGrid evenPairs).
+// Orphan safety net lives in marketing/src/styles/docs-bento.scss.

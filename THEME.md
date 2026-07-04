@@ -2,30 +2,30 @@
 
 **Single source of truth** for visual design across all DEML surfaces:
 
-| Property                                                                                      | Stack                          | Theme entry point                         |
-| --------------------------------------------------------------------------------------------- | ------------------------------ | ----------------------------------------- |
-| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com)        | Marketing (Astro)              | `/assets/viking-ui.css` + this document   |
-| [deml.app](https://deml.app)                                                                  | Angular SSR frontend           | `frontend/projects/viking-ui/src/styles/` |
-| [backend.deml.app](https://backend.deml.app)                                                  | Django API + templates         | `backend/static/viking-ui.css`            |
-| Swagger / OpenAPI UI                                                                          | Django Ninja docs              | Same tokens via static CSS                |
-| Marketing site                                                                                | `marketing/`                   | `marketing/public/assets/viking-ui.css`   |
-| Docs, Book & Whitepaper                                                                       | Synced content + Drakkar shell | THEME.md tokens in prose and components   |
-| [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/) | Viking-UI component docs       | `deml-ui` (Firebase Hosting)              |
+| Property                                                                                      | Stack                          | Theme entry point                             |
+| --------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------- |
+| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com)        | Marketing (Astro)              | `/assets/viking-ui.css` + this document       |
+| [deml.app](https://deml.app)                                                                  | Angular SSR frontend           | `packages/viking-ui/dist/` + Angular wrappers |
+| [backend.deml.app](https://backend.deml.app)                                                  | Django API + templates         | `backend/static/viking-ui.css`                |
+| Swagger / OpenAPI UI                                                                          | Django Ninja docs              | Same tokens via static CSS                    |
+| Marketing site                                                                                | `marketing/`                   | `marketing/public/assets/viking-ui.css`       |
+| Docs, Book & Whitepaper                                                                       | Synced content + Drakkar shell | THEME.md tokens in prose and components       |
+| [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/) | Viking-UI component docs       | `deml-ui` (Firebase Hosting)                  |
 
-**Canonical implementation:** `frontend/projects/viking-ui/src/styles/_variables.scss`
-**Compiled CSS:** `viking-ui.css` (copied to `frontend/`, `backend/static/`, `marketing/public/assets/`)
+**Canonical implementation:** `packages/viking-ui/`
+**Compiled CSS:** `packages/viking-ui/dist/` (`design-tokens.css`, `viking-components.css`, `viking-ui.css`, `viking-ui-elements.js`)
 
 ### Token artifacts (single source of truth)
 
-| Artifact | Path | Purpose |
-| -------- | ---- | ------- |
-| SCSS primitives | `frontend/projects/viking-ui/src/styles/_variables.scss` | All `--viking-*` values — edit here first |
-| Series palette | `frontend/projects/viking-ui/src/styles/_series-colors.scss` | Chart / picker series slots 1–8 |
-| Legacy aliases | `frontend/projects/viking-ui/src/styles/_legacy-aliases.scss` | `--color-primary`, `--space-*`, Django/marketing compat |
-| JSON export | `frontend/projects/viking-ui/src/tokens/viking-tokens.json` | Tooling, docs, design QA |
-| Tailwind preset | `frontend/projects/viking-ui/src/tokens/tailwind.preset.js` | `theme.extend` → CSS variables |
-| TypeScript presets | `frontend/projects/viking-ui/src/tokens/series-presets.ts` | `viking-color-picker` + chart bindings |
-| Static CSS bundle | `design-tokens.css` / `viking-ui.css` | Non-Angular surfaces — build via `npm run build:static-css --prefix viking-ui-docs`, sync via `scripts/sync_design_system.py` |
+| Artifact           | Path                                                                                  | Purpose                                                                                                      |
+| ------------------ | ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| SCSS primitives    | `packages/viking-ui/src/styles/_variables.scss`                                       | All `--viking-*` values — edit here first                                                                    |
+| Series palette     | `packages/viking-ui/src/styles/_series-colors.scss`                                   | Chart / picker series slots 1–8                                                                              |
+| Legacy aliases     | `packages/viking-ui/src/styles/_legacy-aliases.scss`                                  | `--color-primary`, `--space-*`, Django/marketing compat                                                      |
+| JSON export        | `packages/viking-ui/src/tokens/viking-tokens.json`                                    | Tooling, docs, design QA                                                                                     |
+| Tailwind preset    | `frontend/projects/viking-ui/src/tokens/tailwind.preset.js`                           | `theme.extend` → CSS variables                                                                               |
+| TypeScript presets | `frontend/projects/viking-ui/src/tokens/series-presets.ts`                            | `viking-color-picker` + chart bindings                                                                       |
+| Static CSS bundle  | `packages/viking-ui/dist/design-tokens.css` / `packages/viking-ui/dist/viking-ui.css` | Non-Angular surfaces — build via `npm run build:viking-ui:package`, sync via `scripts/sync_design_system.py` |
 
 ---
 
@@ -44,14 +44,14 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 
 [Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/frontend/projects/viking-ui) follows a **composable primitive** model: install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
 
-| Pattern | Viking-UI equivalent | Notes |
-| ------- | -------------------- | ----- |
-| Clean card surfaces | `viking-card`, `viking-metric-card`, `viking-hud-panel` | Machined top-edge hairline, `--viking-radius-lg`, no glass blur |
-| Form field stack | `viking-field` → control (`viking-input`, `viking-select`, …) | Label, description, error; shake on invalid |
-| Button variants | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking |
-| Dark-first shell | `data-theme="dark"` default | Light mode shifts teal/crimson lightness only — no hue inversion |
-| Accessible focus | `--viking-ring` 2px + 2px offset | Visible on keyboard; never remove for aesthetics |
-| Settings / billing forms | `viking-form-section`, grouped fields | Section titles at `--viking-font-size-lg`, 24px vertical rhythm |
+| Pattern                  | Viking-UI equivalent                                                   | Notes                                                            |
+| ------------------------ | ---------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                | Machined top-edge hairline, `--viking-radius-lg`, no glass blur  |
+| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)          | Label, description, error; shake on invalid                      |
+| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking               |
+| Dark-first shell         | `data-theme="dark"` default                                            | Light mode shifts teal/crimson lightness only — no hue inversion |
+| Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                 |
+| Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm  |
 
 **Palette discipline:** **deep charcoals, metallic borders, and restrained teal/crimson** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
 
@@ -192,16 +192,16 @@ Parent apps may still expose these; Viking-UI maps them in `viking-ui.scss`:
 
 Programmatic series colors map to fixed tokens — use these instead of raw hex in chart code.
 
-| Slot | Token | HEX | Role |
-| ---- | ----- | --- | ---- |
-| 1 | `--viking-series-1` | `#0D7377` | Primary / default |
-| 2 | `--viking-series-2` | `#922B3E` | Secondary comparison |
-| 3 | `--viking-series-3` | `#2A9D8F` | Success / stable |
-| 4 | `--viking-series-4` | `#C4A035` | Warning / threshold |
-| 5 | `--viking-series-5` | `#A83344` | Critical / anomaly |
-| 6 | `--viking-series-6` | `#14A3A8` | Info / auxiliary |
-| 7 | `--viking-series-7` | `#2A2A2A` | Baseline / muted |
-| 8 | `--viking-series-8` | `#666666` | Disabled / archived |
+| Slot | Token               | HEX       | Role                 |
+| ---- | ------------------- | --------- | -------------------- |
+| 1    | `--viking-series-1` | `#0D7377` | Primary / default    |
+| 2    | `--viking-series-2` | `#922B3E` | Secondary comparison |
+| 3    | `--viking-series-3` | `#2A9D8F` | Success / stable     |
+| 4    | `--viking-series-4` | `#C4A035` | Warning / threshold  |
+| 5    | `--viking-series-5` | `#A83344` | Critical / anomaly   |
+| 6    | `--viking-series-6` | `#14A3A8` | Info / auxiliary     |
+| 7    | `--viking-series-7` | `#2A2A2A` | Baseline / muted     |
+| 8    | `--viking-series-8` | `#666666` | Disabled / archived  |
 
 Default selection: `--viking-series-default` → `--viking-series-1`.
 
@@ -213,38 +213,44 @@ Inter is the **primary typeface** for every DEML surface. The variable font is *
 
 ### 2.1 Font families
 
-| Token                         | Stack                                                                                                      | Usage                                           |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
-| `--viking-font-family`        | `'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif` | Body, UI chrome, headings, tables, forms, Swagger |
-| `--viking-font-family-mono`   | `ui-monospace, 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, monospace`                          | Code blocks, hex values, telemetry IDs, kbd     |
-| `.viking-font-display`        | Inter bold caps (`--viking-letter-spacing-caps`)                                                           | Section tags, instrument labels, KPI badges, CES/marketing display |
+| Token                       | Stack                                                                                                       | Usage                                                              |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
+| `--viking-font-family`      | `'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif` | Body, UI chrome, headings, tables, forms, Swagger                  |
+| `--viking-font-family-mono` | `ui-monospace, 'JetBrains Mono', 'SF Mono', 'Cascadia Code', Consolas, monospace`                           | Code blocks, hex values, telemetry IDs, kbd                        |
+| `.viking-font-display`      | Inter bold caps (`--viking-letter-spacing-caps`)                                                            | Section tags, instrument labels, KPI badges, CES/marketing display |
 
 **Self-hosting:**
 
-| Asset                         | Canonical source                                              | Deployed paths                                                                 |
-| ----------------------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------ |
-| `InterVariable.woff2`         | `frontend/projects/viking-ui/assets/fonts/inter/`             | `*/assets/fonts/inter/` (frontend, marketing), `backend/static/fonts/inter/`   |
-| `InterVariable-Italic.woff2`  | Same                                                          | Same                                                                           |
-| `@font-face` declarations     | `frontend/projects/viking-ui/src/styles/_fonts.scss`          | Compiled into `viking-ui.css` on every surface                                 |
+| Asset                        | Canonical source                                  | Deployed paths                                                               |
+| ---------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------- |
+| `InterVariable.woff2`        | `frontend/projects/viking-ui/assets/fonts/inter/` | `*/assets/fonts/inter/` (frontend, marketing), `backend/static/fonts/inter/` |
+| `InterVariable-Italic.woff2` | Same                                              | Same                                                                         |
+| `@font-face` declarations    | `packages/viking-ui/src/styles/_fonts.scss`       | Compiled into `viking-ui.css` on every surface                               |
 
 Sync fonts after changes: `python scripts/sync_fonts.py` (also runs inside `scripts/sync_design_system.py`).
 
 **Preload** (optional, recommended on login/marketing shells):
 
 ```html
-<link rel="preload" href="/assets/fonts/inter/InterVariable.woff2" as="font" type="font/woff2" crossorigin />
+<link
+  rel="preload"
+  href="/assets/fonts/inter/InterVariable.woff2"
+  as="font"
+  type="font/woff2"
+  crossorigin
+/>
 ```
 
 ### 2.2 Weights & optical sizing
 
 Inter variable font supports **100–900** continuously. Use tokenized weights — do not load discrete font files.
 
-| Token                           | Value | Typical use                                      |
-| ------------------------------- | ----- | ------------------------------------------------ |
-| `--viking-font-weight-regular`  | 400   | Body copy, descriptions, chart axis labels       |
-| `--viking-font-weight-medium`   | 500   | Nav items, table headers, inline links           |
-| `--viking-font-weight-semibold` | 600   | Section headings (h2–h4), card titles, buttons   |
-| `--viking-font-weight-bold`     | 700   | Page titles (h1), KPI values, emphasis metrics   |
+| Token                           | Value | Typical use                                    |
+| ------------------------------- | ----- | ---------------------------------------------- |
+| `--viking-font-weight-regular`  | 400   | Body copy, descriptions, chart axis labels     |
+| `--viking-font-weight-medium`   | 500   | Nav items, table headers, inline links         |
+| `--viking-font-weight-semibold` | 600   | Section headings (h2–h4), card titles, buttons |
+| `--viking-font-weight-bold`     | 700   | Page titles (h1), KPI values, emphasis metrics |
 
 Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics and KPIs add `.viking-tabular-nums` (`font-variant-numeric: tabular-nums lining-nums`).
 
@@ -265,33 +271,33 @@ Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics
 
 ### 2.4 Line height by element
 
-| Element / context        | Token / value                         | Notes                                      |
-| ------------------------ | ------------------------------------- | ------------------------------------------ |
-| Body (`p`, prose)        | `--viking-line-height-relaxed` (1.625) | Default for long-form readability          |
-| UI controls, nav, tables | `--viking-line-height-normal` (1.5)   | Compact chrome                             |
-| Headings h1–h3           | `--viking-line-height-tight` (1.25)   | Pair with negative letter-spacing          |
-| Buttons, badges, chips   | `--viking-line-height-snug` (1.375)   | Single-line controls                       |
-| Chart axis labels        | `--viking-line-height-tight` (1.25)   | At `--viking-chart-axis-size` (12px min)   |
-| Code blocks              | `--viking-line-height-relaxed` (1.625)| Use `--viking-font-family-mono`            |
+| Element / context        | Token / value                          | Notes                                    |
+| ------------------------ | -------------------------------------- | ---------------------------------------- |
+| Body (`p`, prose)        | `--viking-line-height-relaxed` (1.625) | Default for long-form readability        |
+| UI controls, nav, tables | `--viking-line-height-normal` (1.5)    | Compact chrome                           |
+| Headings h1–h3           | `--viking-line-height-tight` (1.25)    | Pair with negative letter-spacing        |
+| Buttons, badges, chips   | `--viking-line-height-snug` (1.375)    | Single-line controls                     |
+| Chart axis labels        | `--viking-line-height-tight` (1.25)    | At `--viking-chart-axis-size` (12px min) |
+| Code blocks              | `--viking-line-height-relaxed` (1.625) | Use `--viking-font-family-mono`          |
 
-| Token                           | Value |
-| ------------------------------- | ----- |
-| `--viking-line-height-tight`    | 1.25  |
-| `--viking-line-height-snug`     | 1.375 |
-| `--viking-line-height-normal`   | 1.5   |
-| `--viking-line-height-relaxed`  | 1.625 |
-| `--viking-line-height-loose`    | 1.75  |
+| Token                          | Value |
+| ------------------------------ | ----- |
+| `--viking-line-height-tight`   | 1.25  |
+| `--viking-line-height-snug`    | 1.375 |
+| `--viking-line-height-normal`  | 1.5   |
+| `--viking-line-height-relaxed` | 1.625 |
+| `--viking-line-height-loose`   | 1.75  |
 
 ### 2.5 Letter spacing
 
-| Token                              | Value     | Usage                                      |
-| ---------------------------------- | --------- | ------------------------------------------ |
-| `--viking-letter-spacing-tighter`  | -0.03em   | h1, hero display                           |
-| `--viking-letter-spacing-tight`    | -0.02em   | h2–h6, card titles                         |
-| `--viking-letter-spacing-normal`   | 0         | Body copy                                  |
-| `--viking-letter-spacing-wide`     | 0.025em   | Subtle label emphasis                      |
-| `--viking-letter-spacing-wider`    | 0.05em    | h3 uppercase treatment                     |
-| `--viking-letter-spacing-caps`     | 0.08em    | `.viking-font-display` only — never body   |
+| Token                             | Value   | Usage                                    |
+| --------------------------------- | ------- | ---------------------------------------- |
+| `--viking-letter-spacing-tighter` | -0.03em | h1, hero display                         |
+| `--viking-letter-spacing-tight`   | -0.02em | h2–h6, card titles                       |
+| `--viking-letter-spacing-normal`  | 0       | Body copy                                |
+| `--viking-letter-spacing-wide`    | 0.025em | Subtle label emphasis                    |
+| `--viking-letter-spacing-wider`   | 0.05em  | h3 uppercase treatment                   |
+| `--viking-letter-spacing-caps`    | 0.08em  | `.viking-font-display` only — never body |
 
 ### 2.6 Rules
 
@@ -336,27 +342,27 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 
 **Layout constants:**
 
-| Token                          | Value                          |
-| ------------------------------ | ------------------------------ |
-| `--viking-container-max-width` | 1260px (`.page-inner-wrapper`) |
-| `--viking-page-gutter`         | `--viking-space-2` (mobile)    |
-| `--viking-page-gutter-lg`      | `--viking-space-3` (tablet+)   |
-| `--viking-page-stack-gap`      | `--viking-space-3`             |
-| `--viking-page-section-gap`    | `--viking-space-4`             |
-| `--viking-card-padding`        | `--viking-space-3` (default)   |
-| `--viking-card-padding-compact`| `--viking-space-2` (metrics)   |
-| `--viking-panel-padding`       | `--viking-space-3`             |
-| `--viking-form-max-width`      | 42rem                          |
-| `--viking-form-narrow-max-width` | 28rem                        |
-| `--viking-content-readable-max-width` | 48rem                   |
-| `--viking-navbar-height`       | 64px                           |
-| `--viking-sidebar-width`       | 256px                          |
+| Token                                 | Value                          |
+| ------------------------------------- | ------------------------------ |
+| `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`) |
+| `--viking-page-gutter`                | `--viking-space-2` (mobile)    |
+| `--viking-page-gutter-lg`             | `--viking-space-3` (tablet+)   |
+| `--viking-page-stack-gap`             | `--viking-space-3`             |
+| `--viking-page-section-gap`           | `--viking-space-4`             |
+| `--viking-card-padding`               | `--viking-space-3` (default)   |
+| `--viking-card-padding-compact`       | `--viking-space-2` (metrics)   |
+| `--viking-panel-padding`              | `--viking-space-3`             |
+| `--viking-form-max-width`             | 42rem                          |
+| `--viking-form-narrow-max-width`      | 28rem                          |
+| `--viking-content-readable-max-width` | 48rem                          |
+| `--viking-navbar-height`              | 64px                           |
+| `--viking-sidebar-width`              | 256px                          |
 
 **Site navbar (`static-navbar.scss`):** `.navbar-content` is capped at `--viking-container-max-width` (1260px) and centered. The bar uses `container-name: viking-navbar` for responsive nav-label compaction. Desktop nav (`.desktop-nav`) must render `display: flex` from `768px+`; search trigger and utility buttons stay vertically centered at `--viking-control-height`.
-| `--viking-control-height`      | 40px (44px on mobile)          |
-| `--viking-control-height-sm`   | 32px                           |
-| `--viking-control-height-xs`   | 24px                           |
-| `--viking-btn-min-width`       | 120px                          |
+| `--viking-control-height` | 40px (44px on mobile) |
+| `--viking-control-height-sm` | 32px |
+| `--viking-control-height-xs` | 24px |
+| `--viking-btn-min-width` | 120px |
 
 **Mobile-first:** default styles target small screens; scale up with `@media (min-width: 768px)`.
 
@@ -528,8 +534,14 @@ Each preset maps to a `--viking-series-N` token (§1.9). Import shared values fr
 ```typescript
 // frontend/projects/viking-ui/src/tokens/series-presets.ts
 export const VIKING_SERIES_PRESETS = [
-  '#0d7377', '#922b3e', '#2a9d8f', '#c4a035',
-  '#a83344', '#14a3a8', '#2a2a2a', '#666666',
+  "#0d7377",
+  "#922b3e",
+  "#2a9d8f",
+  "#c4a035",
+  "#a83344",
+  "#14a3a8",
+  "#2a2a2a",
+  "#666666",
 ] as const;
 export const VIKING_SERIES_DEFAULT = VIKING_SERIES_PRESETS[0];
 ```
@@ -588,26 +600,34 @@ Compose every input through **`viking-field`** — the label wraps the control f
 
 ```html
 <viking-form-section title="Billing address">
-  <viking-field label="Name on card" description="As printed on the card" [required]="true">
+  <viking-field
+    label="Name on card"
+    description="As printed on the card"
+    [required]="true"
+  >
     <viking-input autocomplete="cc-name" />
   </viking-field>
   <viking-field label="Card number" [error]="cardError()">
     <viking-input inputmode="numeric" />
   </viking-field>
   <div class="viking-form-row">
-    <viking-field label="CVV"><viking-input inputmode="numeric" /></viking-field>
-    <viking-field label="Expiry"><viking-input placeholder="MM / YY" /></viking-field>
+    <viking-field label="CVV"
+      ><viking-input inputmode="numeric"
+    /></viking-field>
+    <viking-field label="Expiry"
+      ><viking-input placeholder="MM / YY"
+    /></viking-field>
   </div>
 </viking-form-section>
 ```
 
-| Element | Token usage |
-| ------- | ----------- |
-| Label | `--viking-font-size-sm`, `--viking-font-weight-semibold`, `--viking-letter-spacing-wide` |
-| Description | `--viking-text-muted`, `--viking-font-size-sm` |
-| Error | `--viking-danger-text`, shake via `viking-shake` keyframe |
+| Element         | Token usage                                                                                              |
+| --------------- | -------------------------------------------------------------------------------------------------------- |
+| Label           | `--viking-font-size-sm`, `--viking-font-weight-semibold`, `--viking-letter-spacing-wide`                 |
+| Description     | `--viking-text-muted`, `--viking-font-size-sm`                                                           |
+| Error           | `--viking-danger-text`, shake via `viking-shake` keyframe                                                |
 | Control surface | `--viking-surface-alt` bg, `--viking-border`, `--viking-radius-sm`, min-height `--viking-control-height` |
-| Focus | `--viking-ring` outline on `:focus-visible` |
+| Focus           | `--viking-ring` outline on `:focus-visible`                                                              |
 
 ---
 
@@ -677,8 +697,10 @@ Load token CSS first, then extend Tailwind with the Viking preset:
 ```javascript
 // tailwind.config.js
 module.exports = {
-  presets: [require('./frontend/projects/viking-ui/src/tokens/tailwind.preset.js')],
-  content: ['./src/**/*.{html,ts}'],
+  presets: [
+    require("./frontend/projects/viking-ui/src/tokens/tailwind.preset.js"),
+  ],
+  content: ["./src/**/*.{html,ts}"],
 };
 ```
 
@@ -731,9 +753,9 @@ All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900
 
 ## 13. Maintenance
 
-1. Edit `frontend/projects/viking-ui/src/styles/_variables.scss` for primitive token changes.
+1. Edit `packages/viking-ui/src/styles/_variables.scss` for primitive token changes.
 2. Edit `_series-colors.scss` if the chart/picker palette changes; sync `viking-tokens.json` and `series-presets.ts`.
-3. Run `npm run build:static-css --prefix viking-ui-docs` to regenerate static CSS artifacts, then `python scripts/sync_design_system.py`.
+3. Run `npm run build:viking-ui:package` to regenerate static CSS artifacts, then `python scripts/sync_design_system.py`.
 4. Run `python scripts/sync_design_system.py` to propagate `design-tokens.css`, `viking-ui.css`, and SCSS copies.
 5. Run `python scripts/sync_fonts.py` after updating Inter font files.
 6. Update this document when tokens or component standards change.
@@ -746,12 +768,12 @@ All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900
 
 All contributors, LLMs, and Cursor agents must keep DEML visually unified through a single rule stack:
 
-| Layer | File | Role |
-| ----- | ---- | ---- |
-| IDE / Cursor | [.cursorrules](.cursorrules) | Mandatory Viking-UI imports, composable composition, zero hardcoded styles |
-| Tokens & components | **THEME.md** (this file) | Canonical `--viking-*` matrix, component standards, do's/don'ts |
-| Platform invariants | [AGENTS.md](AGENTS.md) | Architecture, security, automation, Viking-UI Uniformity Law |
-| Narrative & build | [BOOK.md § Ch.31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) | Kit philosophy, consumption, publish workflow |
+| Layer               | File                                                                        | Role                                                                       |
+| ------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| IDE / Cursor        | [.cursorrules](.cursorrules)                                                | Mandatory Viking-UI imports, composable composition, zero hardcoded styles |
+| Tokens & components | **THEME.md** (this file)                                                    | Canonical `--viking-*` matrix, component standards, do's/don'ts            |
+| Platform invariants | [AGENTS.md](AGENTS.md)                                                      | Architecture, security, automation, Viking-UI Uniformity Law               |
+| Narrative & build   | [BOOK.md § Ch.31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) | Kit philosophy, consumption, publish workflow                              |
 
 ### Unified component policy
 

@@ -5,6 +5,11 @@
   "license": "Apache-2.0",
   "type": "module",
   "private": true,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "style": "./dist/viking-ui.css",
+  "browser": "./dist/viking-ui-elements.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning.git",
@@ -20,9 +25,25 @@
       "import": "./dist/index.js"
     },
     "./elements.js": "./dist/viking-ui-elements.js",
+    "./web-components": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./web-components.js": "./dist/viking-ui-elements.js",
+    "./css": "./dist/viking-ui.css",
+    "./css/viking-ui.css": "./dist/viking-ui.css",
+    "./css/design-tokens.css": "./dist/design-tokens.css",
+    "./css/viking-components.css": "./dist/viking-components.css",
+    "./css/deml-components.css": "./dist/deml-components.css",
+    "./design-tokens.css": "./dist/design-tokens.css",
     "./tokens.css": "./dist/design-tokens.css",
+    "./tokens": "./dist/viking-tokens.json",
+    "./tokens.json": "./dist/viking-tokens.json",
+    "./viking-tokens.json": "./dist/viking-tokens.json",
     "./components.css": "./dist/viking-components.css",
-    "./viking-ui.css": "./dist/viking-ui.css"
+    "./deml-components.css": "./dist/deml-components.css",
+    "./viking-ui.css": "./dist/viking-ui.css",
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
@@ -34,11 +55,15 @@
     "build": "npm run clean && npm run build:css && npm run build:elements",
     "build:css": "node scripts/build-css.mjs",
     "build:elements": "node scripts/build-elements.mjs",
+    "pack:check": "npm pack --dry-run",
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },
   "sideEffects": [
     "./dist/viking-ui-elements.js",
     "./dist/viking-ui.css",
+    "./dist/design-tokens.css",
+    "./dist/viking-components.css",
+    "./dist/deml-components.css",
     "./src/index.ts"
   ],
   "devDependencies": {

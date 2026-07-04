@@ -1,0 +1,204 @@
+// Viking-inspired visual patterns (clean, accessible, composable controls)
+// Implemented using ONLY tokens from THEME.md / viking-ui.css.
+// No Tailwind. 4px grid. 16px main / 14px UI font floors. Premium engineering aesthetic.
+//
+// Button variants live in viking-ui _buttons.scss — do not duplicate here.
+
+@use 'sass:color';
+
+// Button group (fused borders like Viking button.group)
+.viking-button-group {
+  display: inline-flex;
+  border-radius: var(--viking-radius, var(--border-radius-md, 8px));
+  overflow: hidden;
+  border: 1px solid var(--viking-border, var(--border));
+
+  > .viking-btn,
+  > button,
+  > a {
+    border-radius: 0;
+    border-right: 1px solid var(--viking-border, var(--border));
+    margin: 0;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &:hover:not(:disabled) {
+      z-index: 1;
+    }
+  }
+}
+
+// ============================================
+// Viking-like Input / Field Groups
+// Prefix, suffix, adjacent controls with fused borders.
+// ============================================
+
+.viking-field {
+  display: block;
+  width: 100%;
+}
+
+.viking-field-label {
+  display: block;
+  font-size: max(16px, var(--base-font-size));
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: var(--space-1);
+}
+
+.viking-field-description {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+.viking-input-group {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+
+  input,
+  select,
+  button,
+  .viking-btn {
+    border-radius: 0;
+  }
+
+  > :first-child {
+    border-top-left-radius: var(--border-radius-md);
+    border-bottom-left-radius: var(--border-radius-md);
+  }
+
+  > :last-child {
+    border-top-right-radius: var(--border-radius-md);
+    border-bottom-right-radius: var(--border-radius-md);
+  }
+
+  > * + * {
+    margin-left: -1px; // fuse borders
+  }
+}
+
+.viking-input-prefix,
+.viking-input-suffix {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-2);
+  background-color: var(--color-surface-variant);
+  color: var(--text-muted);
+  font-size: max(16px, var(--base-font-size));
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.viking-input-affix-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-2);
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+
+  &:hover:not(:disabled) {
+    color: var(--text-color);
+    background-color: color-mix(in srgb, var(--hover-color) 12%, transparent);
+  }
+}
+
+// Standalone clean input base (native inputs)
+.viking-input {
+  width: 100%;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-1) var(--space-2);
+  font-size: max(16px, var(--base-font-size));
+  font-family: var(--viking-font-family);
+  line-height: 1.4;
+  min-height: 44px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &::placeholder {
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
+  &:hover {
+    border-color: var(--color-primary-container);
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+    border-color: var(--color-primary-container);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary-container) 35%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// ============================================
+// Select / Dropdown Viking-like polish (used by unified-select too)
+// ============================================
+
+.viking-select-trigger {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-md);
+  padding: var(--space-1) var(--space-2);
+  font-size: max(16px, var(--base-font-size));
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-primary-container);
+  }
+
+  &:focus-visible {
+    outline: var(--focus-ring-width) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
+  }
+}
+
+.viking-select-dropdown {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-md);
+  max-height: 15rem;
+  overflow-y: auto;
+}
+
+.viking-select-option {
+  padding: var(--space-1) var(--space-2);
+  color: var(--text-color);
+  cursor: pointer;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--hover-color) 18%, transparent);
+  }
+
+  &.selected,
+  &[aria-selected='true'] {
+    background-color: var(--color-primary-container);
+    color: var(--color-on-primary-container);
+    font-weight: 600;
+  }
+}

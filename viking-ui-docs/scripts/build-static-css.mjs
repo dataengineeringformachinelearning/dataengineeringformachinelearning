@@ -1,61 +1,44 @@
 /**
- * Builds static Viking-UI CSS artifacts for marketing, backend, and widgets.
- * Canonical build owner: viking-ui-docs (full monorepo context).
- * Run via: npm run build:static-css (also invoked by scripts/sync_design_system.py).
+ * Mirrors the canonical Viking-UI package artifacts into the docs site.
+ * Source of truth: packages/viking-ui.
  */
-import { execSync } from 'node:child_process';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { execFileSync } from "node:child_process";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
-const docsDir = path.join(dirname, '..');
-const rootDir = path.join(docsDir, '..');
-const stylesDir = path.join(rootDir, 'frontend', 'projects', 'viking-ui', 'src', 'styles');
-const outDir = path.join(docsDir, 'dist', 'static-css');
-const publicAssetsDir = path.join(docsDir, 'public', 'assets');
+const docsDir = path.join(dirname, "..");
+const rootDir = path.join(docsDir, "..");
+const packageDir = path.join(rootDir, "packages", "viking-ui");
+const packageDistDir = path.join(packageDir, "dist");
+const outDir = path.join(docsDir, "dist", "static-css");
+const publicAssetsDir = path.join(docsDir, "public", "assets");
 
-const loadPath = stylesDir;
-const sassBase = `npx sass --no-source-map --load-path="${loadPath}"`;
-
-const builds = [
-  {
-    entry: path.join(stylesDir, 'tokens-export.scss'),
-    out: path.join(outDir, 'design-tokens.css'),
-    style: 'expanded',
-  },
-  {
-    entry: path.join(stylesDir, 'components-bundle.scss'),
-    out: path.join(outDir, 'viking-components.css'),
-    style: 'expanded',
-  },
-  {
-    entry: path.join(stylesDir, 'deml-components.scss'),
-    out: path.join(outDir, 'deml-components.css'),
-    style: 'expanded',
-  },
-  {
-    entry: path.join(stylesDir, 'viking-ui-bundle.scss'),
-    out: path.join(outDir, 'viking-ui.css'),
-    style: 'compressed',
-  },
+const artifacts = [
+  "design-tokens.css",
+  "viking-components.css",
+  "deml-components.css",
+  "viking-ui.css",
+  "viking-ui-elements.js",
+  "viking-tokens.json",
 ];
+
+execFileSync("npm", ["run", "build"], {
+  cwd: packageDir,
+  stdio: "inherit",
+});
 
 fs.mkdirSync(outDir, { recursive: true });
 fs.mkdirSync(publicAssetsDir, { recursive: true });
 
-for (const { entry, out, style } of builds) {
-  execSync(`${sassBase} --style=${style} "${entry}" "${out}"`, {
-    cwd: docsDir,
-    stdio: 'inherit',
-  });
-  console.log(`Wrote ${out}`);
-}
+for (const name of artifacts) {
+  const source = path.join(packageDistDir, name);
+  if (!fs.existsSync(source)) {
+    throw new Error(`Expected Viking-UI package artifact missing: ${source}`);
+  }
 
-for (const name of ['design-tokens.css', 'viking-components.css', 'deml-components.css', 'viking-ui.css']) {
-  fs.copyFileSync(path.join(outDir, name), path.join(publicAssetsDir, name));
+  fs.copyFileSync(source, path.join(outDir, name));
+  fs.copyFileSync(source, path.join(publicAssetsDir, name));
+  console.log(`Mirrored ${name}`);
 }
-
-// Web Components bundle
-const wcScript = path.join(rootDir, 'frontend', 'projects', 'viking-ui', 'scripts', 'build-web-components.mjs');
-execSync(`node "${wcScript}"`, { cwd: docsDir, stdio: 'inherit' });

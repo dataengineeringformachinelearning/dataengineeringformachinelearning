@@ -1,4 +1,4 @@
-import { defineVikingElement } from "../core/dom";
+import { defineVikingElement, HTMLElementBase } from "../core/dom";
 import { attachStyles, resetStyles } from "../core/styles";
 
 const styles = `
@@ -33,7 +33,7 @@ ${resetStyles}
 }
 `;
 
-export class VikingCard extends HTMLElement {
+export class VikingCard extends HTMLElementBase {
   static readonly tagName = "viking-card";
 
   private readonly shadowRootRef: ShadowRoot;

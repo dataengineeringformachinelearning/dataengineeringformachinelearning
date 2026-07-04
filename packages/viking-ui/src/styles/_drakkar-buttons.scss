@@ -1,0 +1,85 @@
+// Shared Drakkar shell CTA styles — mirrors viking-button variants for static navbar / marketing HTML.
+@use 'buttons' as btn;
+
+@mixin viking-drakkar-btn-base {
+  @include btn.viking-btn-base;
+  text-transform: uppercase;
+}
+
+@mixin viking-drakkar-btn-primary {
+  @include viking-drakkar-btn-base;
+  @include btn.viking-btn-primary;
+
+  svg,
+  .material-icons {
+    flex-shrink: 0;
+    transition: transform var(--viking-duration-fast, 150ms) var(--viking-ease-default, ease);
+  }
+
+  &:hover svg {
+    transform: translateX(2px);
+  }
+}
+
+@mixin viking-drakkar-btn-outline {
+  @include viking-drakkar-btn-base;
+  @include btn.viking-btn-outline;
+
+  &:hover svg {
+    transform: none;
+  }
+}
+
+.auth-btn,
+a.auth-btn,
+button.auth-btn {
+  @include viking-drakkar-btn-primary;
+  color: var(--viking-white-pure, var(--viking-white-pure)) !important;
+
+  svg,
+  .material-icons,
+  [data-viking-icon],
+  viking-icon,
+  span {
+    color: inherit !important;
+  }
+}
+
+.auth-btn.auth-btn-outline,
+a.auth-btn.auth-btn-outline {
+  @include viking-drakkar-btn-outline;
+}
+
+.mobile-auth-btn,
+a.mobile-auth-btn,
+button.mobile-auth-btn {
+  @include viking-drakkar-btn-primary;
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+  color: var(--viking-white-pure, var(--viking-white-pure)) !important;
+
+  svg,
+  .material-icons,
+  [data-viking-icon],
+  viking-icon,
+  span {
+    color: inherit !important;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--viking-white-pure, var(--viking-white-pure)) !important;
+  }
+}
+
+.mobile-auth-btn.auth-signout-btn,
+a.mobile-auth-btn.auth-signout-btn,
+button.mobile-auth-btn.auth-signout-btn {
+  color: var(--viking-text-muted) !important;
+}
+
+.mobile-auth-btn.auth-btn-outline,
+a.mobile-auth-btn.auth-btn-outline {
+  @include viking-drakkar-btn-outline;
+}

@@ -1,0 +1,10 @@
+/*! DEML Shared Components — canonical source: frontend/projects/viking-ui/src/styles/components/
+ *  Static CSS: npm run build:static-css --prefix viking-ui-docs */
+@use 'components/a11y';
+@use 'components/badges';
+@use 'components/icon-inline';
+@use 'components/icon-heading';
+@use 'components/layout';
+@use 'components/utilities';
+@use 'components/extracted-utilities';
+@use 'components/viking-inspired';

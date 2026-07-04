@@ -1,0 +1,301 @@
+// ============================================================================
+// Viking-UI Button System — canonical styles for viking-button + static HTML
+// Single source of truth aligned to THEME.md §8.1 (composable primitives)
+// ============================================================================
+
+@mixin viking-btn-base {
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-ui);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-wide);
+  line-height: var(--viking-line-height-snug);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  min-height: var(--viking-control-height);
+  padding: 0 var(--viking-control-padding-x);
+  border-radius: var(--viking-radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+  width: auto;
+  min-width: var(--viking-btn-min-width, 120px);
+  white-space: nowrap;
+  position: relative;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
+    z-index: 1;
+  }
+
+  &:disabled,
+  &[aria-busy='true'] {
+    opacity: var(--viking-state-disabled-opacity);
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  &[aria-busy='true'] .viking-btn-label {
+    opacity: 0.85;
+  }
+
+  viking-icon,
+  .viking-icon {
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+}
+
+@mixin viking-btn-outline {
+  background: var(--viking-surface);
+  color: var(--viking-text);
+  border-color: var(--viking-border-strong);
+  box-shadow: var(--viking-shadow-sm);
+
+  &:hover:not(:disabled):not([aria-busy='true']) {
+    background: var(--viking-surface-alt);
+    border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border-strong));
+    color: var(--viking-text);
+    box-shadow: var(--viking-shadow-md);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
+
+  &:active:not(:disabled):not([aria-busy='true']) {
+    transform: translateY(0) scale(var(--viking-state-active-scale));
+    box-shadow: var(--viking-shadow-sm);
+  }
+}
+
+@mixin viking-btn-primary {
+  background: var(--viking-accent);
+  color: var(--viking-accent-content);
+  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+
+  &:hover:not(:disabled):not([aria-busy='true']) {
+    background: var(--viking-accent-hover);
+    border-color: var(--viking-accent-hover);
+    color: var(--viking-accent-content);
+    box-shadow: var(--viking-shadow-hover);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
+
+  &:active:not(:disabled):not([aria-busy='true']) {
+    transform: translateY(0) scale(var(--viking-state-active-scale));
+    box-shadow: var(--viking-shadow-sm);
+  }
+}
+
+@mixin viking-btn-secondary {
+  background: var(--viking-accent-secondary);
+  color: var(--viking-accent-secondary-content);
+  border-color: color-mix(in srgb, var(--viking-accent-secondary) 82%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+
+  &:hover:not(:disabled):not([aria-busy='true']) {
+    background: var(--viking-accent-secondary-hover);
+    border-color: var(--viking-accent-secondary-hover);
+    color: var(--viking-accent-secondary-content);
+    box-shadow: var(--viking-shadow-hover);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
+
+  &:active:not(:disabled):not([aria-busy='true']) {
+    transform: translateY(0) scale(var(--viking-state-active-scale));
+    box-shadow: var(--viking-shadow-sm);
+  }
+}
+
+@mixin viking-btn-filled {
+  background: var(--viking-surface-alt);
+  color: var(--viking-text);
+  border-color: var(--viking-border);
+  box-shadow: var(--viking-shadow-xs);
+
+  &:hover:not(:disabled):not([aria-busy='true']) {
+    border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border));
+    background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface-alt));
+    box-shadow: var(--viking-shadow-sm);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
+
+  &:active:not(:disabled):not([aria-busy='true']) {
+    transform: translateY(0) scale(var(--viking-state-active-scale));
+  }
+}
+
+@mixin viking-btn-danger {
+  background: var(--viking-danger);
+  color: var(--viking-on-danger);
+  border-color: color-mix(in srgb, var(--viking-danger) 85%, var(--viking-black));
+  box-shadow: var(--viking-shadow-sm);
+
+  &:hover:not(:disabled):not([aria-busy='true']) {
+    background: color-mix(in srgb, var(--viking-danger) 88%, var(--viking-white));
+    border-color: color-mix(in srgb, var(--viking-danger) 92%, var(--viking-white));
+    color: var(--viking-on-danger);
+    box-shadow: var(--viking-shadow-hover);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
+
+  &:active:not(:disabled):not([aria-busy='true']) {
+    transform: translateY(0) scale(var(--viking-state-active-scale));
+    box-shadow: var(--viking-shadow-sm);
+  }
+}
+
+@mixin viking-btn-ghost {
+  background: transparent;
+  color: var(--viking-text);
+  min-width: auto;
+  box-shadow: none;
+  border-color: transparent;
+
+  &:hover:not(:disabled):not([aria-busy='true']) {
+    background: var(--viking-accent-soft);
+    color: var(--viking-accent-strong);
+  }
+
+  &:active:not(:disabled):not([aria-busy='true']) {
+    transform: scale(var(--viking-state-active-scale));
+  }
+}
+
+@mixin viking-btn-subtle {
+  background: transparent;
+  color: var(--viking-text-muted);
+  border-color: var(--viking-border-subtle);
+  min-width: auto;
+  box-shadow: none;
+
+  &:hover:not(:disabled):not([aria-busy='true']) {
+    color: var(--viking-text);
+    background: var(--viking-accent-soft);
+    border-color: var(--viking-border-strong);
+  }
+
+  &:active:not(:disabled):not([aria-busy='true']) {
+    transform: scale(var(--viking-state-active-scale));
+  }
+}
+
+@mixin viking-btn-size-sm {
+  min-height: var(--viking-control-height-sm);
+  padding: 0 var(--viking-space-2);
+  font-size: var(--viking-font-size-xs);
+  min-width: auto;
+}
+
+@mixin viking-btn-size-xs {
+  min-height: var(--viking-control-height-xs);
+  padding: 0 var(--viking-space-1);
+  font-size: var(--viking-font-size-xs);
+  min-width: auto;
+}
+
+@mixin viking-btn-compact {
+  min-width: 0;
+}
+
+@mixin viking-btn-full {
+  width: 100%;
+  min-width: 0;
+}
+
+// Static HTML / marketing native buttons (legacy class names preserved)
+.viking-btn,
+a.viking-btn,
+button.viking-btn {
+  @include viking-btn-base;
+}
+
+.viking-btn-primary,
+a.viking-btn-primary,
+button.viking-btn-primary {
+  @include viking-btn-base;
+  @include viking-btn-primary;
+}
+
+.viking-btn-secondary,
+a.viking-btn-secondary,
+button.viking-btn-secondary {
+  @include viking-btn-base;
+  @include viking-btn-secondary;
+}
+
+.viking-btn-outline,
+a.viking-btn-outline,
+button.viking-btn-outline {
+  @include viking-btn-base;
+  @include viking-btn-outline;
+}
+
+.viking-btn-danger,
+a.viking-btn-danger,
+button.viking-btn-danger {
+  @include viking-btn-base;
+  @include viking-btn-danger;
+}
+
+.viking-btn-ghost,
+a.viking-btn-ghost,
+button.viking-btn-ghost {
+  @include viking-btn-base;
+  @include viking-btn-ghost;
+}
+
+.viking-btn-subtle,
+a.viking-btn-subtle,
+button.viking-btn-subtle {
+  @include viking-btn-base;
+  @include viking-btn-subtle;
+}
+
+// Component variant class aliases (global fallback when styles bleed outside encapsulation)
+.viking-btn.viking-outline {
+  @include viking-btn-outline;
+}
+
+.viking-btn.viking-primary {
+  @include viking-btn-primary;
+}
+
+.viking-btn.viking-secondary {
+  @include viking-btn-secondary;
+}
+
+.viking-btn.viking-filled {
+  @include viking-btn-filled;
+}
+
+.viking-btn.viking-danger {
+  @include viking-btn-danger;
+}
+
+.viking-btn.viking-ghost {
+  @include viking-btn-ghost;
+}
+
+.viking-btn.viking-subtle {
+  @include viking-btn-subtle;
+}
+
+.viking-btn.viking-compact {
+  @include viking-btn-compact;
+}
+
+.viking-btn.viking-full {
+  @include viking-btn-full;
+}
+
+.viking-btn-label {
+  display: inline-flex;
+  align-items: center;
+  line-height: inherit;
+}

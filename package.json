@@ -2,6 +2,15 @@
   "name": "deml-platform",
   "private": true,
   "description": "DEML monorepo workspace scripts",
+  "packageManager": "npm@11.6.0",
+  "workspaces": [
+    "packages/*",
+    "frontend",
+    "marketing",
+    "viking-ui-docs",
+    "functions",
+    "infrastructure/studio"
+  ],
   "engines": {
     "node": ">=22.12.0"
   },
@@ -21,7 +30,9 @@
     "quality:full": "python scripts/deml_tooling.py quality --ci",
     "quality:push": "python scripts/deml_tooling.py quality --full",
     "build:viking-ui": "npm run build:viking-ui --prefix frontend",
-    "build:viking-ui:universal": "npm run build --prefix packages/viking-ui",
+    "build:viking-ui:package": "npm run build --workspace @dataengineeringformachinelearning/viking-ui",
+    "build:viking-ui:universal": "npm run build:viking-ui:package",
+    "pack:viking-ui": "npm run pack:check --workspace @dataengineeringformachinelearning/viking-ui",
     "build:viking-ui-docs": "npm run build --prefix viking-ui-docs",
     "start:viking-ui-docs": "npm run start --prefix viking-ui-docs",
     "start": "npm run start:viking-ui-docs",
