@@ -41,8 +41,9 @@
 .viking-form-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
   width: 100%;
+  max-width: var(--viking-form-max-width);
 
   @media (min-width: 600px) {
     grid-template-columns: repeat(2, minmax(0, 1fr));

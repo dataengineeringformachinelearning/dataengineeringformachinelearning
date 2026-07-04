@@ -28,7 +28,7 @@
   gap: var(--viking-space-half);
   background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid var(--viking-border);
-  padding: var(--viking-space-2);
+  padding: var(--viking-card-padding-compact, var(--viking-space-2));
   border-radius: var(--viking-radius-lg);
   min-width: 0;
   min-height: var(--viking-metric-card-min-height, 5.5rem);
@@ -49,7 +49,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
       transparent
     );
     pointer-events: none;
@@ -116,7 +116,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
       transparent
     );
     pointer-events: none;
@@ -137,7 +137,7 @@
   display: flex;
   align-items: center;
   gap: var(--viking-space-1);
-  padding: var(--viking-space-2);
+  padding: var(--viking-panel-header-padding, var(--viking-space-3));
   background-color: color-mix(in srgb, var(--viking-bg) 2%, transparent);
   border-bottom: 1px solid var(--viking-border);
 }
@@ -169,7 +169,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
       transparent
     );
     pointer-events: none;
@@ -179,7 +179,7 @@
 
 .viking-panel-card-header,
 .card-header-clean {
-  padding: var(--viking-space-2);
+  padding: var(--viking-panel-header-padding, var(--viking-space-3));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -189,7 +189,7 @@
 
 .viking-panel-card-body,
 .card-body-clean {
-  padding: var(--viking-space-2);
+  padding: var(--viking-panel-padding, var(--viking-space-3));
 }
 
 .viking-page-header,
@@ -199,14 +199,14 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: var(--viking-space-2);
-  padding-bottom: var(--viking-space-2);
-  margin-bottom: var(--viking-space-2);
+  gap: var(--viking-space-3);
+  padding-bottom: var(--viking-space-3);
+  margin-bottom: var(--viking-page-section-gap, var(--viking-space-4));
   border-bottom: 1px solid var(--viking-border);
 }
 
 .viking-page-header-sidebar.dashboard-topbar {
-  padding: var(--viking-space-2);
+  padding: var(--viking-panel-padding, var(--viking-space-3));
   background-color: var(--viking-surface);
   border-bottom: 1px solid var(--viking-border-subtle);
   box-shadow: var(--viking-shadow-xs);
@@ -418,7 +418,7 @@
 
 .panel-card {
   position: relative;
-  padding: var(--viking-space-2);
+  padding: var(--viking-panel-padding, var(--viking-space-3));
   border-radius: var(--viking-radius-lg);
   border: 1px solid var(--viking-border);
   background-color: var(--viking-surface);
@@ -433,7 +433,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
       transparent
     );
     pointer-events: none;

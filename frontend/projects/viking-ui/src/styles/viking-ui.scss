@@ -6,6 +6,7 @@
 @use 'forms';
 @use 'buttons';
 @use 'layout-rhythm';
+@use 'layout-enforcement';
 @use 'page-shell';
 @use 'layout-shell';
 
@@ -22,13 +23,13 @@
   --viking-accent: var(--color-primary, var(--viking-teal-600, var(--viking-teal-600)));
   --viking-accent-hover: var(--viking-teal-500, #109094);
   --viking-accent-content: var(--color-on-primary, var(--viking-white-pure, var(--viking-white-pure)));
-  --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 14%, transparent);
+  --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 18%, transparent);
   --viking-accent-strong: var(--color-primary-container, var(--viking-teal-400, var(--viking-teal-400)));
 
   --viking-accent-secondary: var(--accent-color, var(--viking-crimson-600, var(--viking-crimson-600)));
   --viking-accent-secondary-hover: var(--viking-crimson-500, var(--viking-crimson-500));
   --viking-accent-secondary-content: var(--viking-white-pure, var(--viking-white-pure));
-  --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-accent-secondary) 12%, transparent);
+  --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-accent-secondary) 16%, transparent);
 
   /* Surfaces */
   --viking-bg: var(--bg-color, var(--viking-charcoal-900, #111111));
@@ -43,10 +44,10 @@
   --viking-text-subtle: var(--viking-metallic-300, #999999);
   --viking-text-inverted: var(--color-on-primary, var(--viking-charcoal-900, #111111));
 
-  /* Borders / focus */
-  --viking-border: var(--border, color-mix(in srgb, var(--viking-metallic-600, #555555) 35%, transparent));
-  --viking-border-strong: var(--border-layout, color-mix(in srgb, var(--viking-metallic-400, #777777) 55%, transparent));
-  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600, #555555) 18%, transparent);
+  /* Borders / focus — fallbacks match _variables.scss premium v2.1 depths */
+  --viking-border: var(--border, color-mix(in srgb, var(--viking-metallic-600, #555555) 48%, transparent));
+  --viking-border-strong: var(--border-layout, color-mix(in srgb, var(--viking-metallic-400, #777777) 68%, transparent));
+  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600, #555555) 28%, transparent);
   --viking-ring: var(--focus-ring-color, var(--viking-teal-400, var(--viking-teal-400)));
   --viking-ring-width: var(--focus-ring-width, 2px);
   --viking-ring-offset: var(--focus-ring-offset, 2px);

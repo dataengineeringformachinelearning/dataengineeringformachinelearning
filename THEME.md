@@ -339,6 +339,16 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 | Token                          | Value                          |
 | ------------------------------ | ------------------------------ |
 | `--viking-container-max-width` | 1260px (`.page-inner-wrapper`) |
+| `--viking-page-gutter`         | `--viking-space-2` (mobile)    |
+| `--viking-page-gutter-lg`      | `--viking-space-3` (tablet+)   |
+| `--viking-page-stack-gap`      | `--viking-space-3`             |
+| `--viking-page-section-gap`    | `--viking-space-4`             |
+| `--viking-card-padding`        | `--viking-space-3` (default)   |
+| `--viking-card-padding-compact`| `--viking-space-2` (metrics)   |
+| `--viking-panel-padding`       | `--viking-space-3`             |
+| `--viking-form-max-width`      | 42rem                          |
+| `--viking-form-narrow-max-width` | 28rem                        |
+| `--viking-content-readable-max-width` | 48rem                   |
 | `--viking-navbar-height`       | 64px                           |
 | `--viking-sidebar-width`       | 256px                          |
 | `--viking-control-height`      | 40px (44px on mobile)          |
