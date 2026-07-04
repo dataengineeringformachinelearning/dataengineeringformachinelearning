@@ -366,6 +366,17 @@ html[data-theme='light'] {
   display: inline-grid;
   place-items: center;
   padding: 0;
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent, var(--viking-teal-600)) 32%,
+    var(--viking-border-strong, var(--border))
+  );
+  background: color-mix(
+    in srgb,
+    var(--viking-accent, var(--viking-teal-600)) 8%,
+    var(--viking-surface, var(--card-bg))
+  );
+  color: var(--viking-accent-strong, var(--viking-teal-400));
 
   svg,
   viking-icon {
@@ -375,12 +386,18 @@ html[data-theme='light'] {
   }
 
   &:hover {
+    border-color: var(--viking-accent-strong, var(--viking-teal-400));
     background-color: color-mix(
       in srgb,
-      var(--viking-accent, var(--viking-teal-600)) 8%,
+      var(--viking-accent, var(--viking-teal-600)) 14%,
       var(--viking-surface, var(--card-bg))
     );
     color: var(--viking-accent-strong, var(--viking-teal-400));
+    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  }
+
+  &:active {
+    transform: scale(var(--viking-state-active-scale, 0.98));
   }
 }
 

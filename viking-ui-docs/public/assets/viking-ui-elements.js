@@ -1151,10 +1151,10 @@ input:disabled {
   height: var(--viking-control-height, 40px);
   min-width: var(--viking-control-height, 40px);
   padding: 0;
-  border: 1px solid var(--viking-border-strong, var(--viking-border));
+  border: 1px solid color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 32%, var(--viking-border-strong, var(--viking-border)));
   border-radius: var(--viking-radius);
-  background: var(--viking-surface);
-  color: var(--viking-text);
+  background: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 8%, var(--viking-surface));
+  color: var(--viking-accent-strong, var(--viking-teal-400));
   box-shadow: var(--viking-shadow-sm);
   cursor: pointer;
   transition: var(--viking-transition-interactive);
@@ -1163,7 +1163,7 @@ input:disabled {
 
 .theme-toggle-btn:hover {
   border-color: var(--viking-accent-strong, var(--viking-teal-400));
-  background: var(--viking-surface-alt);
+  background: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 14%, var(--viking-surface-alt));
   color: var(--viking-accent-strong, var(--viking-teal-400));
   box-shadow: var(--viking-shadow-md);
 }

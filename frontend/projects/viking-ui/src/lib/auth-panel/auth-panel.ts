@@ -126,19 +126,19 @@ import { VikingSeparator } from '../separator/separator';
       }
       .viking-auth-tag::before {
         content: '';
-        width: 8px;
-        height: 8px;
+        width: var(--viking-space-1);
+        height: var(--viking-space-1);
         border-radius: 50%;
         background: var(--viking-accent);
         flex-shrink: 0;
       }
       .viking-auth-title {
         margin: 0;
-        font-size: clamp(1.5rem, 4vw, 2rem);
+        font-size: var(--viking-font-size-xl);
         font-weight: 700;
         letter-spacing: var(--header-letter-spacing, -0.02em);
         color: var(--viking-text);
-        line-height: 1.2;
+        line-height: var(--viking-line-height-tight);
       }
       .viking-auth-subtitle {
         margin: 0;
@@ -171,7 +171,7 @@ import { VikingSeparator } from '../separator/separator';
       .viking-auth-social {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-2);
         width: 100%;
       }
       .viking-auth-footer {
@@ -196,7 +196,7 @@ import { VikingSeparator } from '../separator/separator';
       :host ::ng-deep .viking-auth-links {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-2);
         width: 100%;
       }
       :host ::ng-deep viking-field {

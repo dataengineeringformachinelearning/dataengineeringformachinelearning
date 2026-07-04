@@ -152,18 +152,18 @@ app-page {
 }
 
 main.main {
-  padding: 16px;
+  padding: var(--viking-space-2);
 }
 
 @media (min-width: 481px) {
   main.main {
-    padding: 64px 24px;
+    padding: var(--viking-space-8) var(--viking-space-3);
   }
 }
 
 @media (min-width: 768px) {
   main.main {
-    padding: 88px 32px;
+    padding: var(--viking-space-9) var(--viking-space-4);
   }
 }
 
@@ -538,10 +538,6 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
 }
 
 /* Machined surfaces + status pulse live in viking-ui.css (_layout-rhythm.scss) */
-
-.viking-button.viking-button--primary:hover {
-  border-bottom: 2px solid var(--viking-gold-500);
-}
 
 /* ====================== SHARED DASHBOARD SHELL (marketing pages) ====================== */
 .dashboard-page-container {

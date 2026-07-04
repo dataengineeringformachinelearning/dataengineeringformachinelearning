@@ -576,12 +576,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--viking-space-5);
-  height: var(--viking-space-5);
-  border-radius: var(--viking-radius);
-  border: 1px solid var(--viking-border);
+  width: var(--viking-icon-badge-size, var(--viking-space-6));
+  height: var(--viking-icon-badge-size, var(--viking-space-6));
+  padding: var(--viking-icon-badge-padding, var(--viking-space-half));
+  box-sizing: border-box;
+  border-radius: var(--viking-radius-lg);
+  border: none;
   background: var(--viking-accent-soft);
-  color: var(--viking-accent);
+  color: var(--viking-accent-strong);
+  box-shadow: var(--viking-shadow-sm);
   font-size: var(--viking-font-size-sm);
 }
 
