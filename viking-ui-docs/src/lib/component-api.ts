@@ -218,6 +218,17 @@ export const SELECT_API: ComponentApi = {
 };
 
 export const SEARCH_PALETTE_API: ComponentApi = {
+  inputs: [
+    { name: 'open', type: 'boolean', default: 'false', description: 'Two-way model — shows the command palette overlay.' },
+    { name: 'query', type: 'string', default: "''", description: 'Two-way model — current search query.' },
+    { name: 'placeholder', type: 'string', default: "'Search...'", description: 'Search input placeholder.' },
+    { name: 'context', type: 'SiteDrakkarContext', default: "'app'", description: 'Suite wrapper only — app | marketing | backend | docs.' },
+    { name: 'urls', type: 'SiteUrls', description: 'Suite wrapper only — override default suite URLs for buildSuiteSearchItems().' },
+    { name: 'bindShortcut', type: 'boolean', default: 'true', description: 'Suite wrapper only — bind ⌘K / Ctrl+K globally.' },
+  ],
+  outputs: [
+    { name: 'paletteKeydown', type: 'KeyboardEvent', description: 'Angular primitive — keyboard events from the results body (arrow/Enter navigation).' },
+  ],
   attributes: [
     { name: 'open', type: 'boolean', description: 'Shows the command palette overlay.' },
     { name: 'global-shortcut', type: 'boolean', description: 'Bind ⌘K / Ctrl+K to toggle open/close.' },
@@ -232,6 +243,30 @@ export const SEARCH_PALETTE_API: ComponentApi = {
     { name: 'viking-close', type: 'CustomEvent<void>', description: 'Palette closed.' },
     { name: 'viking-query', type: 'CustomEvent<{ query: string }>', description: 'Search query changed.' },
     { name: 'viking-select', type: 'CustomEvent<{ item: object }>', description: 'Result activated (before navigation).' },
+  ],
+  cssClasses: [
+    { name: 'viking-search-palette', type: 'class', description: 'Modal panel shell — machined border + inset hairline.' },
+    { name: 'viking-search-palette-header', type: 'class', description: 'Search input row with focus accent underline.' },
+    { name: 'viking-search-palette-body', type: 'class', description: 'Scrollable results region.' },
+    { name: 'viking-search-palette-footer', type: 'class', description: 'Keyboard shortcut hints row.' },
+    { name: 'viking-search-result', type: 'class', description: 'Selectable result row; add .is-selected for active state.' },
+    { name: 'viking-search-result-title', type: 'class', description: 'Primary result label.' },
+    { name: 'viking-search-result-snippet', type: 'class', description: 'Secondary muted description.' },
+    { name: 'viking-search-group-label', type: 'class', description: 'Uppercase group heading above result clusters.' },
+    { name: 'viking-search-empty', type: 'class', description: 'Empty / no-results state container.' },
+  ],
+};
+
+export const CARD_TITLE_API: ComponentApi = {
+  inputs: [
+    { name: 'icon', type: 'VikingIconName', description: 'Leading icon rendered inside viking-icon-badge.' },
+    { name: 'tone', type: 'VikingIconBadgeTone', default: "'default'", description: 'Badge tone: default | success | warning | danger | info.' },
+    { name: 'level', type: '1 | 2 | 3 | 4', default: '2', description: 'Heading aria-level for viking-heading.' },
+    { name: 'size', type: "'sm' | 'base' | 'lg' | 'xl'", default: "'xl'", description: 'Heading size preset.' },
+    { name: 'iconSize', type: 'number', default: '20', description: 'Icon badge pixel size.' },
+  ],
+  cssClasses: [
+    { name: 'viking-card-title', type: 'class', description: 'Flex row with icon badge + heading — use inside viking-card-header.' },
   ],
 };
 
@@ -278,6 +313,7 @@ export const COMPONENT_API_MAP: Record<string, ComponentApi> = {
   input: INPUT_API,
   badge: BADGE_API,
   card: CARD_API,
+  'card-title': CARD_TITLE_API,
   'field-stack': FIELD_API,
   callout: CALLOUT_API,
   chart: CHART_API,

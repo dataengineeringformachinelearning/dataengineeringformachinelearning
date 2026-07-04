@@ -161,7 +161,7 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         snippets: {
           angular: `<viking-card>
   <viking-card-header>
-    <viking-heading size="lg" [level]="3">Event throughput</viking-heading>
+    <viking-card-title icon="bar-chart">Event throughput</viking-card-title>
   </viking-card-header>
   <viking-text variant="muted">8.2K events/sec</viking-text>
 </viking-card>`,
@@ -181,7 +181,39 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         wcSelector: 'viking-card-wc',
         tags: ['web-component', 'css'],
         api: getComponentApi('card'),
-        related: ['metric-card'],
+        related: ['metric-card', 'card-title'],
+      },
+      {
+        id: 'card-title',
+        name: 'Card title',
+        description:
+          'Icon badge + heading row for viking-card-header — premium section titles on settings, account, and dashboard cards.',
+        preview: `<div class="viking-card" style="padding:var(--viking-card-padding)">
+  <div class="viking-card-header" style="display:flex;align-items:center;gap:var(--viking-space-2);padding-bottom:var(--viking-space-2);margin-bottom:var(--viking-space-2);border-bottom:1px solid var(--viking-border-subtle)">
+    <span class="viking-icon-badge-static" aria-hidden="true">◆</span>
+    <strong class="viking-heading viking-heading-xl" style="margin:0">Multi-Factor Authentication</strong>
+  </div>
+  <p class="viking-text-muted">Secure your account with SMS verification.</p>
+</div>`,
+        snippets: {
+          angular: `<viking-card-header>
+  <viking-card-title icon="shield">Multi-Factor Authentication</viking-card-title>
+</viking-card-header>
+<viking-card-title icon="alert-triangle" tone="danger">Danger Zone</viking-card-title>`,
+          astro: `<div class="viking-card-header">
+  <span class="viking-icon-badge-static" aria-hidden="true">◆</span>
+  <h2 class="viking-heading viking-heading-xl">Section title</h2>
+</div>`,
+          django: `<div class="viking-card-header">
+  <span class="viking-icon-badge-static" aria-hidden="true">◆</span>
+  <h2 class="viking-heading viking-heading-xl">{{ section.title }}</h2>
+</div>`,
+          javascript: `// Use viking-card-title in Angular; static surfaces compose icon-badge-static + heading`,
+        },
+        selector: 'viking-card-title',
+        tags: ['angular', 'shell'],
+        api: getComponentApi('card-title'),
+        related: ['card', 'icon-badge'],
       },
       {
         id: 'icon',
@@ -590,7 +622,7 @@ document.querySelector('viking-search-palette-wc')?.openPalette();`,
         tags: ['shell', 'web-component', 'keyboard'],
         selector: 'viking-search-palette',
         wcSelector: 'viking-search-palette-wc',
-        related: ['command', 'modal'],
+        related: ['command', 'modal', 'card-title'],
         api: getComponentApi('search-palette'),
       },
       {

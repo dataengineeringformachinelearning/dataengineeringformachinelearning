@@ -88,6 +88,7 @@ export * from './lib/button/button-group';
 export * from './lib/calendar/calendar';
 export * from './lib/callout/callout';
 export * from './lib/card/card';
+export * from './lib/card/card-title';
 export * from './lib/carousel/carousel';
 export * from './lib/chart/chart';
 export * from './lib/chart/chart-zoom';

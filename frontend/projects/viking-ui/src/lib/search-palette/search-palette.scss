@@ -111,7 +111,8 @@
 .viking-search-palette-footer {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-2);
+  justify-content: center;
+  gap: var(--viking-space-1);
   padding: var(--viking-space-1) var(--viking-space-2);
   border-top: 1px solid var(--viking-border);
   font-size: calc(var(--viking-font-size) * 0.85);
@@ -157,6 +158,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+::ng-deep .viking-search-result.is-selected,
 ::ng-deep .viking-search-result.viking-selected,
 ::ng-deep .viking-search-result:hover {
   background: color-mix(in srgb, var(--viking-accent) 5%, transparent);
@@ -176,6 +178,7 @@
   color: var(--viking-text-muted);
 }
 
+::ng-deep .viking-search-result.is-selected .viking-search-result-icon,
 ::ng-deep .viking-search-result.viking-selected .viking-search-result-icon,
 ::ng-deep .viking-search-result:hover .viking-search-result-icon {
   color: var(--viking-accent);
@@ -233,11 +236,14 @@
   padding: var(--viking-space-1);
 }
 
+::ng-deep .viking-search-group-label,
 ::ng-deep .viking-search-suggestions-heading {
-  font-size: var(--viking-font-size);
-  font-weight: 700;
+  margin: var(--viking-space-1) 0 var(--viking-space-half);
+  padding: 0 var(--viking-space-1);
+  font-size: var(--viking-font-size-2xs, var(--viking-font-size-xs));
+  font-weight: var(--viking-font-weight-semibold, 600);
+  letter-spacing: var(--viking-letter-spacing-caps);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
   color: var(--viking-text-muted);
 }
 

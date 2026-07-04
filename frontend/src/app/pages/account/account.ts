@@ -24,7 +24,7 @@ import {
   VikingVerificationCodeField,
   VikingCard,
   VikingCardHeader,
-  VikingHeading,
+  VikingCardTitle,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { FormsModule } from '@angular/forms';
@@ -58,7 +58,7 @@ import {
     VikingVerificationCodeField,
     VikingCard,
     VikingCardHeader,
-    VikingHeading,
+    VikingCardTitle,
     VikingAppIcon,
     FormsModule,
     RouterModule,

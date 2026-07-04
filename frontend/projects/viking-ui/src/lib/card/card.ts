@@ -129,6 +129,11 @@ export class VikingCard {
         display: inline-flex;
         align-items: center;
       }
+
+      :host ::ng-deep viking-card-title {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
     `,
   ],
 })

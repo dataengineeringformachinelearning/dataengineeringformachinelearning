@@ -42,10 +42,7 @@
 
         <viking-card class="status-card-outlined col-span-4 col-span-md-12 platform-integrations-card">
           <viking-card-header>
-            <viking-heading [level]="2" size="xl" class="card-section-title">
-              <viking-app-icon name="hub" />
-              Platform Integrations
-            </viking-heading>
+            <viking-card-title icon="globe">Platform Integrations</viking-card-title>
           </viking-card-header>
           <p class="embed-desc">
             First-class ingestion paths for enterprise ML infrastructure. Each platform exposes
@@ -70,10 +67,7 @@
         <viking-card class="status-card-outlined col-span-4 col-span-md-12">
           <viking-card-header>
             @if (selectedPage()) {
-            <viking-heading [level]="2" size="xl" class="card-section-title">
-              <viking-app-icon name="wysiwyg" />
-              {{ selectedPage()!.title }}
-            </viking-heading>
+            <viking-card-title icon="pencil">{{ selectedPage()!.title }}</viking-card-title>
             } @if (selectedPage()) {
             <viking-button
               variant="ghost"
@@ -86,10 +80,7 @@
               [disabled]="!canMutateSites"
             />
             } @if (!selectedPage()) {
-            <viking-heading [level]="2" size="xl" class="card-section-title">
-              <viking-app-icon name="add_box" />
-              Create Status Page
-            </viking-heading>
+            <viking-card-title icon="plus">Create Status Page</viking-card-title>
             }
           </viking-card-header>
             <!-- New Page Form -->
