@@ -43,21 +43,27 @@ const pageTitle = title === SITE.title ? title : `${title} · ${SITE.name}`;
 
     <style is:inline>
       :root {
-        --viking-teal-700: #0a5c5f;
-        --viking-teal-600: #0d7377;
-        --viking-teal-400: #14a3a8;
+        --viking-electric-700: #0a4fd4;
+        --viking-electric-600: #1565f0;
+        --viking-electric-500: #2176ff;
+        --viking-electric-400: #4d94ff;
+        --viking-teal-700: var(--viking-electric-700);
+        --viking-teal-600: var(--viking-electric-600);
+        --viking-teal-500: var(--viking-electric-500);
+        --viking-teal-400: var(--viking-electric-400);
         --viking-crimson-500: #a83344;
-        --viking-charcoal-900: #111111;
+        --viking-navy-900: #0a1024;
+        --viking-charcoal-900: var(--viking-navy-900);
         --viking-white: #f5f5f5;
         --viking-white-pure: #ffffff;
       }
       html[data-theme='dark'] {
-        --color-primary: var(--viking-teal-600);
+        --color-primary: var(--viking-electric-500);
         --bg-color: var(--viking-charcoal-900);
         --text-color: var(--viking-white);
       }
       html[data-theme='light'] {
-        --color-primary: var(--viking-teal-700);
+        --color-primary: var(--viking-electric-600);
         --bg-color: var(--viking-white-pure);
         --text-color: var(--viking-charcoal-900);
       }

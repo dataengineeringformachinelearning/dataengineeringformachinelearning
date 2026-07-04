@@ -204,15 +204,20 @@ body.backend-swagger {
 .swagger-ui .btn.authorize.unlocked,
 .swagger-ui .btn.execute {
   background: var(--viking-accent, var(--color-primary));
-  border-color: transparent;
+  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
   color: var(--viking-accent-content, var(--viking-white-pure));
+  box-shadow: var(--viking-shadow-sm);
+  min-height: var(--viking-control-height, 40px);
+  border-radius: var(--viking-radius, 8px);
 }
 
 .swagger-ui .btn.authorize:hover,
 .swagger-ui .btn.authorize.unlocked:hover,
 .swagger-ui .btn.execute:hover {
   background: var(--viking-accent-hover, var(--viking-teal-500));
+  border-color: color-mix(in srgb, var(--viking-accent-hover) 82%, var(--viking-black));
   color: var(--viking-accent-content, var(--viking-white-pure));
+  box-shadow: var(--viking-shadow-md);
 }
 
 /* ── Tag groups ──────────────────────────────────────────────────────────── */
@@ -285,13 +290,14 @@ body.backend-swagger {
 }
 
 .swagger-ui .opblock.opblock-get .opblock-summary-method {
-  background: color-mix(in srgb, var(--viking-teal-600) 16%, transparent);
-  color: var(--viking-teal-400);
+  background: color-mix(in srgb, var(--viking-accent) 16%, transparent);
+  color: var(--viking-accent-strong);
 }
 
 .swagger-ui .opblock.opblock-post .opblock-summary-method {
-  background: color-mix(in srgb, var(--viking-green-500) 16%, transparent);
-  color: var(--viking-green-500);
+  background: color-mix(in srgb, var(--viking-accent) 16%, transparent);
+  color: var(--viking-accent-strong);
+}
 }
 
 .swagger-ui .opblock.opblock-put .opblock-summary-method,

@@ -93,14 +93,12 @@ body {
 }
 
 .backend-feature-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: calc(var(--viking-space-5) + var(--viking-space-1));
-  height: calc(var(--viking-space-5) + var(--viking-space-1));
-  border-radius: var(--viking-radius-md);
-  background: var(--viking-accent-soft);
-  color: var(--viking-accent-strong);
+  /* Extends .viking-icon-badge-static — page-specific sizing only */
+  width: var(--viking-space-6);
+  height: var(--viking-space-6);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-sm);
+  border: none;
 }
 
 /* ── 404 page ──────────────────────────────────────────────────────────────── */

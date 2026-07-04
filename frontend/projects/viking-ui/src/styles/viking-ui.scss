@@ -13,15 +13,15 @@
 // ============================================================================
 // Viking-UI design tokens
 // ----------------------------------------------------------------------------
-// Premium engineering aesthetic — dark-first charcoals, metallic accents,
-// deep teal primary + crimson secondary. Maps to parent DEML tokens when
+// Premium engineering aesthetic — dark-first navy surfaces, metallic accents,
+// electric blue primary + crimson secondary. Maps to parent DEML tokens when
 // present for Angular app compatibility; falls back to _variables.scss.
 // ============================================================================
 
 :root {
-  /* Accent — deep teal primary, crimson secondary */
+  /* Accent — electric blue primary, crimson secondary */
   --viking-accent: var(--color-primary, var(--viking-teal-600, var(--viking-teal-600)));
-  --viking-accent-hover: var(--viking-teal-500, #109094);
+  --viking-accent-hover: var(--viking-teal-500, var(--viking-electric-500));
   --viking-accent-content: var(--color-on-primary, var(--viking-white-pure, var(--viking-white-pure)));
   --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 18%, transparent);
   --viking-accent-strong: var(--color-primary-container, var(--viking-teal-400, var(--viking-teal-400)));
