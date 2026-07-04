@@ -197,13 +197,13 @@ const MATERIAL_CLASS_REPLACEMENTS = [
   [/\bmdc-button\b/g, 'viking-button'],
 ];
 
-/** Legacy generic button class → Viking button modifiers. */
+/** Legacy generic button class → Viking button modifiers (skip already-prefixed viking-btn-*). */
 const LEGACY_BUTTON_CLASS_REPLACEMENTS = [
-  [/\bbtn-primary\b/g, 'viking-btn-primary'],
-  [/\bbtn-secondary\b/g, 'viking-btn-secondary'],
-  [/\bbtn-danger\b/g, 'viking-btn-danger'],
-  [/\bbtn-outline\b/g, 'viking-btn-outline'],
-  [/\bbtn-ghost\b/g, 'viking-btn-ghost'],
+  [/(?<!viking-)btn-primary\b/g, 'viking-btn-primary'],
+  [/(?<!viking-)btn-secondary\b/g, 'viking-btn-secondary'],
+  [/(?<!viking-)btn-danger\b/g, 'viking-btn-danger'],
+  [/(?<!viking-)btn-outline\b/g, 'viking-btn-outline'],
+  [/(?<!viking-)btn-ghost\b/g, 'viking-btn-ghost'],
 ];
 
 /** Meta tag brand standardization (THEME.md + marketing Layout.astro). */
@@ -947,7 +947,7 @@ const scanButtons = (content, filePath) => {
   if (!/\.(html|astro|htm)$/i.test(filePath)) {
     return;
   }
-  const legacyButton = /\b(btn-primary|btn-secondary|btn-danger)\b/g;
+  const legacyButton = /(?<!viking-)(btn-primary|btn-secondary|btn-danger)\b/g;
   let match;
   while ((match = legacyButton.exec(content)) !== null) {
     addFinding(
@@ -1025,20 +1025,28 @@ const validateThemeMd = () => {
     WORKSPACE_ROOT,
     'frontend/projects/viking-ui/src/styles/_variables.scss',
   );
+  const seriesColorsPath = path.join(
+    WORKSPACE_ROOT,
+    'frontend/projects/viking-ui/src/styles/_series-colors.scss',
+  );
   if (!fs.existsSync(themePath) || !fs.existsSync(variablesPath)) {
     addFinding('theme-md', themePath, 'THEME.md or _variables.scss missing');
     return;
   }
   const theme = fs.readFileSync(themePath, 'utf8');
   const variables = fs.readFileSync(variablesPath, 'utf8');
+  const seriesColors = fs.existsSync(seriesColorsPath)
+    ? fs.readFileSync(seriesColorsPath, 'utf8')
+    : '';
+  const tokenSources = `${variables}\n${seriesColors}`;
   const tokenPattern = /--viking-[a-z0-9-]+/g;
   const themeTokens = new Set(theme.match(tokenPattern) || []);
   for (const token of themeTokens) {
-    if (!variables.includes(token)) {
+    if (!tokenSources.includes(token)) {
       addFinding(
         'theme-md',
         variablesPath,
-        `Token ${token} documented in THEME.md but missing from _variables.scss`,
+        `Token ${token} documented in THEME.md but missing from _variables.scss / _series-colors.scss`,
       );
     }
   }

@@ -271,7 +271,7 @@ This platform was substantially authored with assistance from the following inte
 - **Google Antigravity** — Gemini 3.1 Pro, Gemini 3.5 Flash, Claude Opus, Claude Sonnet
 - **Grok Build** (Beta)
 - **Cursor** — Grok 4.3, Grok Build 0.1 (xAI)
-- **Design system**: `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (Viking-UI premium palette v2 — charcoal / teal / crimson); typography via [Inter](https://rsms.me/inter/), [Orbitron](https://fonts.google.com/specimen/Orbitron), and [Michroma](https://fonts.google.com/specimen/Michroma) (CES instrumentation and marketing display only)
+- **Design system**: `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (Viking-UI premium palette v2 — charcoal / teal / crimson); typography via self-hosted [Inter](https://rsms.me/inter/) with `.viking-font-display` caps for CES instrumentation and marketing display only
 
 ## 14. References
 

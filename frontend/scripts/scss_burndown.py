@@ -124,17 +124,182 @@ def strip_unused_settings_blocks(content: str) -> str:
   return content
 
 
+def strip_vulnerabilities_loader_dup(content: str) -> str:
+  """Remove loader/spinner blocks now in viking-ui page-shell.scss."""
+  for selector in (".loader-state {", ".spinner {"):
+    while selector in content:
+      idx = content.find(selector)
+      depth = 0
+      i = idx
+      while i < len(content):
+        if content[i] == "{":
+          depth += 1
+        elif content[i] == "}":
+          depth -= 1
+          if depth == 0:
+            # Drop trailing @keyframes spin if immediately after spinner block
+            tail = content[i + 1 :]
+            if selector == ".spinner {" and "@keyframes spin" in tail[:200]:
+              kf_start = content.find("@keyframes spin", i + 1)
+              kf_end = content.find("}", kf_start) + 1
+              content = content[:idx] + content[kf_end:]
+            else:
+              content = content[:idx] + content[i + 1 :]
+            break
+        i += 1
+      else:
+        break
+  return content
+
+
+def tokenize_rgba_burndown(content: str) -> str:
+  """Replace common rgba washes with Viking token color-mix."""
+  replacements = (
+    ("rgba(0, 0, 0, 0.15)", "color-mix(in srgb, var(--viking-black) 15%, transparent)"),
+    ("rgba(255, 255, 255, 0.01)", "color-mix(in srgb, var(--viking-white) 1%, transparent)"),
+    ("rgba(255, 255, 255, 0.02)", "color-mix(in srgb, var(--viking-white) 2%, transparent)"),
+    ("rgba(255, 255, 255, 0.05)", "color-mix(in srgb, var(--viking-white) 5%, transparent)"),
+    ("rgba(255, 255, 255, 0.08)", "color-mix(in srgb, var(--viking-white) 8%, transparent)"),
+    ("rgba(255, 255, 255, 0.1)", "color-mix(in srgb, var(--viking-white) 10%, transparent)"),
+    ("rgba(255, 255, 255, 0.15)", "color-mix(in srgb, var(--viking-white) 15%, transparent)"),
+    ("rgba(255, 255, 255, 0.25)", "color-mix(in srgb, var(--viking-white) 25%, transparent)"),
+    ("rgba(255, 255, 255, 0.3)", "color-mix(in srgb, var(--viking-white) 30%, transparent)"),
+    ("rgba(192, 197, 193, 0.08)", "color-mix(in srgb, var(--viking-surface-alt) 8%, transparent)"),
+    ("rgba(225, 230, 226, 0.8)", "color-mix(in srgb, var(--viking-surface) 80%, transparent)"),
+    ("border-radius: 999px", "border-radius: var(--viking-radius-pill, 999px)"),
+    ("border-radius: 8px", "border-radius: var(--viking-radius, 8px)"),
+  )
+  for old, new in replacements:
+    content = content.replace(old, new)
+  return content
+
+
+def strip_settings_shell_dup(content: str) -> str:
+  """Collapse duplicate status-card shell — base lives in page-shell.scss."""
+  old_shell = """/* Outlined Content Card — extends viking-ui page-shell with card-header spacing */
+.status-card-outlined {
+  position: relative;
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-sm);
+  padding: var(--viking-space-3, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+      transparent
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+}
+
+.card-header-clean {
+  padding: 0 0 var(--viking-space-2, 16px) 0;
+  border-bottom: 1px solid var(--viking-border-subtle);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--viking-space-2, 16px);
+  flex-wrap: nowrap;
+
+  .card-title-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .delete-page-btn {
+    align-self: center;
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+}
+
+.card-body-clean {
+  padding: 0;
+}
+
+"""
+  new_shell = """/* Outlined card — shell from page-shell.scss; settings-specific rhythm only */
+.status-card-outlined {
+  padding: var(--viking-space-3, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+}
+
+.card-header-clean {
+  padding: 0 0 var(--viking-space-2, 16px) 0;
+  border-bottom: 1px solid var(--viking-border-subtle);
+
+  .card-title-main {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .delete-page-btn {
+    align-self: center;
+    margin-left: 0;
+    flex-shrink: 0;
+  }
+}
+
+.card-body-clean {
+  padding: 0;
+}
+
+"""
+  if old_shell in content:
+    content = content.replace(old_shell, new_shell)
+  # Drop duplicate second card-body-clean padding block
+  content = content.replace(
+    ".card-body-clean {\n  padding: var(--card-padding);\n}\n\n",
+    "",
+  )
+  return content
+
+
 def main() -> None:
   vuln = PAGES / "vulnerabilities" / "vulnerabilities.scss"
   settings = PAGES / "settings" / "settings.scss"
+  dashboard = PAGES / "dashboard" / "dashboard.scss"
   status = PAGES / "status" / "status.scss"
 
   vuln.write_text(
-    strip_vulnerabilities_shell(strip_mat_icon(vuln.read_text())),
+    tokenize_rgba_burndown(
+      strip_vulnerabilities_loader_dup(
+        strip_vulnerabilities_shell(strip_mat_icon(vuln.read_text()))
+      )
+    ),
     encoding="utf-8",
   )
   settings.write_text(
-    strip_unused_settings_blocks(strip_settings_orphans(strip_mat_icon(settings.read_text()))),
+    tokenize_rgba_burndown(
+      strip_settings_shell_dup(
+        strip_unused_settings_blocks(strip_settings_orphans(strip_mat_icon(settings.read_text())))
+      )
+    ),
+    encoding="utf-8",
+  )
+  dashboard.write_text(
+    tokenize_rgba_burndown(strip_mat_icon(dashboard.read_text())),
     encoding="utf-8",
   )
   status.write_text(
@@ -143,7 +308,7 @@ def main() -> None:
   )
 
   print("SCSS burndown complete:")
-  for path in (vuln, settings, status):
+  for path in (vuln, settings, dashboard, status):
     lines = path.read_text().count("\n") + 1
     print(f"  {path.relative_to(ROOT)} — {lines} lines")
 

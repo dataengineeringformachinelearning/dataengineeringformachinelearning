@@ -35,7 +35,7 @@ This document captures the core coding principles, philosophies, and "how we bui
   - Mobile-first: Strict `.page-inner-wrapper` (1260px max), 4px grid (`--viking-grid-unit`). No CLS.
   - Zero-dependency UI: Native SVG for telemetry graphs (high-frequency data without bloat).
   - Distroless containers: `gcr.io/distroless/nodejs22-debian12` for Angular SSR frontend; `gcr.io/distroless/python3-debian12` for Django API.
-  - Premium aesthetic: Viking-UI design system ([THEME.md](THEME.md)) — charcoal/teal/crimson tokens, `viking-skeleton` loaders, Orbitron/Michroma on CES/marketing display only.
+  - Premium aesthetic: Viking-UI design system ([THEME.md](THEME.md)) — charcoal/teal/crimson tokens, `viking-skeleton` loaders, `.viking-font-display` (Inter caps) on CES/marketing display only.
 - **Backend (Python/Django)**:
   - Ruff for linting/formatting (fast, zero-compromise).
   - Use `uv` (Astral) for environment and tool execution (`uvx pre-commit`).
