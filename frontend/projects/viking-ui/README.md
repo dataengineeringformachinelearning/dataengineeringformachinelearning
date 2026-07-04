@@ -78,9 +78,10 @@ Also exported as `VikingIconComponent` for consumers expecting that name.
 ## Build
 
 ```bash
-npm run build:viking-ui
-npm run build:viking-ui-css
-npm run start:viking-ui-docs   # from repo root — http://localhost:4300
+npm run build:viking-ui                                    # from frontend/
+npm run build:static-css --prefix ../viking-ui-docs          # static CSS for marketing/backend
+python3 ../../scripts/sync_design_system.py                # from repo root — fan-out CSS
+npm run start:viking-ui-docs                               # from repo root — http://localhost:4300
 ```
 
 ## Version bump
