@@ -2,6 +2,7 @@
 import DocLayout from '../layouts/DocLayout.astro';
 import { SITE } from '../lib/site';
 import { COMPONENT_COUNT } from '../lib/component-registry';
+import { LIBRARY_COMPONENT_COUNT } from '../lib/library-stats';
 import '../styles/showcase.scss';
 ---
 
@@ -11,7 +12,7 @@ import '../styles/showcase.scss';
       <div class="landing-hero-copy">
         <div class="landing-hero-badge">
           <span class="landing-hero-badge-dot" aria-hidden="true"></span>
-          <span>Universal design system · v2</span>
+          <span>Universal design system · v2 · Apache-2.0</span>
         </div>
         <h1 class="showcase-heading showcase-heading-xl">
           Stop fighting your component library.
@@ -23,15 +24,20 @@ import '../styles/showcase.scss';
         </p>
         <div class="landing-hero-actions">
           <viking-button-wc variant="primary" href="/components">Browse components</viking-button-wc>
-          <viking-button-wc variant="secondary" href="/tokens">Inspect tokens</viking-button-wc>
+          <viking-button-wc variant="secondary" href="/playground">Live playground</viking-button-wc>
+          <viking-button-wc variant="outline" href="/architecture">Architecture</viking-button-wc>
         </div>
         <p class="showcase-text-muted">
-          Published as <code>{SITE.npm}</code> — Apache-2.0 open source.
+          Published as <code>{SITE.npm}</code> — see <a href="/contributing">contributing guide</a>.
         </p>
         <div class="landing-stats" aria-label="Library stats">
           <div class="landing-stat">
-            <span class="showcase-label">Components</span>
-            <strong class="showcase-metric">{COMPONENT_COUNT}+</strong>
+            <span class="showcase-label">Library primitives</span>
+            <strong class="showcase-metric">{LIBRARY_COMPONENT_COUNT}</strong>
+          </div>
+          <div class="landing-stat">
+            <span class="showcase-label">Documented demos</span>
+            <strong class="showcase-metric">{COMPONENT_COUNT}</strong>
           </div>
           <div class="landing-stat">
             <span class="showcase-label">Frameworks</span>
@@ -70,6 +76,7 @@ import '../styles/showcase.scss';
             One token matrix powers CSS classes, Web Components, and Angular thin wrappers.
             Ship the same visual language everywhere.
           </p>
+          <a href="/architecture" class="component-detail-link">Read architecture →</a>
         </div>
         <div class="viking-card">
           <h3 class="showcase-heading showcase-heading-sm">Zero UI runtime deps</h3>
@@ -79,11 +86,12 @@ import '../styles/showcase.scss';
           </p>
         </div>
         <div class="viking-card">
-          <h3 class="showcase-heading showcase-heading-sm">THEME.md tokens</h3>
+          <h3 class="showcase-heading showcase-heading-sm">Open for contributions</h3>
           <p class="showcase-text-muted">
-            Charcoal, teal, and crimson semantic palette with machined metallic borders — premium
-            restrained luxury.
+            Extend the kit in <code>frontend/projects/viking-ui/</code>. Quality gates enforce tokens,
+            a11y, and tests automatically.
           </p>
+          <a href="/contributing" class="component-detail-link">Contributing guide →</a>
         </div>
       </div>
     </section>
@@ -97,11 +105,28 @@ import '../styles/showcase.scss';
 npm install {SITE.npm}
 
 # Static CSS (Astro / Django)
-link design-tokens.css + viking-components.css + viking-ui-elements.js</code></pre>
+link design-tokens.css + viking-components.css + viking-ui-elements.js
+
+# Angular
+import &#123; VikingButton, VikingField, VikingInput &#125; from '{SITE.npm}';</code></pre>
       <p class="showcase-text-muted">
-        See <a href="/frameworks">framework guides</a> for Angular, Astro, Django, and Web
-        Component integration paths.
+        See <a href="/frameworks">framework guides</a> and <a href="/theming">theming guide</a> for
+        complete setup paths.
       </p>
     </section>
   </div>
 </DocLayout>
+
+<style>
+  .component-detail-link {
+    display: inline-block;
+    margin-top: var(--viking-space-1);
+    font-size: var(--viking-font-size-sm);
+    color: var(--viking-accent);
+    text-decoration: none;
+  }
+
+  .component-detail-link:hover {
+    text-decoration: underline;
+  }
+</style>

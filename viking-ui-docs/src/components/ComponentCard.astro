@@ -1,32 +1,85 @@
 ---
 import CodeBlock from './CodeBlock.astro';
+import ApiReference from './ApiReference.astro';
+import { getComponentApi } from '../lib/component-api';
 import type { ShowcaseComponent } from '../lib/component-registry';
 
 export interface Props {
   component: ShowcaseComponent;
+  /** Show inline API reference table */
+  showApi?: boolean;
+  /** Hide card header (used on detail pages where header is separate) */
+  hideHeader?: boolean;
 }
 
-const { component } = Astro.props;
+const { component, showApi = true, hideHeader = false } = Astro.props;
+const api = component.api ?? getComponentApi(component.id);
 ---
 
 <article class="component-card" id={component.id}>
-  <header class="component-card-header">
-    <div>
-      <h3 class="showcase-heading showcase-heading-sm">{component.name}</h3>
-      <p class="showcase-text-muted">{component.description}</p>
-    </div>
-    {component.tags && (
-      <div class="component-tags">
-        {component.tags.map((tag) => (
-          <span class="showcase-badge showcase-badge-subtle">{tag}</span>
-        ))}
+  {!hideHeader && (
+    <header class="component-card-header">
+      <div>
+        <h3 class="showcase-heading showcase-heading-sm">
+          <a href={`/components/${component.id}`} class="component-card-link">
+            {component.name}
+          </a>
+        </h3>
+        <p class="showcase-text-muted">{component.description}</p>
       </div>
-    )}
-  </header>
+      <div class="component-card-meta">
+        {component.tags && (
+          <div class="component-tags">
+            {component.tags.map((tag) => (
+              <span class="showcase-badge showcase-badge-subtle">{tag}</span>
+            ))}
+          </div>
+        )}
+        <a href={`/components/${component.id}`} class="component-detail-link">View docs →</a>
+      </div>
+    </header>
+  )}
 
   <div class="component-preview" aria-label={`${component.name} preview`}>
     <Fragment set:html={component.preview} />
   </div>
 
   <CodeBlock snippets={component.snippets} />
+
+  {showApi && api && (
+    <ApiReference
+      api={api}
+      selector={component.selector}
+      wcSelector={component.wcSelector}
+    />
+  )}
 </article>
+
+<style>
+  .component-card-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .component-card-link:hover {
+    color: var(--viking-accent);
+  }
+
+  .component-card-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--viking-space-1);
+  }
+
+  .component-detail-link {
+    font-size: var(--viking-font-size-sm);
+    color: var(--viking-accent);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .component-detail-link:hover {
+    text-decoration: underline;
+  }
+</style>

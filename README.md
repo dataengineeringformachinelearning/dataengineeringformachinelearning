@@ -73,7 +73,7 @@ All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** 
 | [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com) | Viking-UI docs + static CSS build owner |
 | Swagger / OpenAPI UI                                                                   | Same tokens via static CSS                     |
 
-**Design doctrine:** Precision-engineered industrial surfaces—composable primitives on a **premium restrained luxury** palette: dark charcoal foundations (`--viking-charcoal-900`), deep teal primary actions (`--viking-teal-600`), crimson secondary emphasis (`--viking-crimson-600`), machined metallic borders, and native SVG telemetry charts. Import `viking-*` components exclusively; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
+**Design doctrine:** Precision-engineered industrial surfaces—composable primitives on a **premium restrained luxury** palette: dark charcoal foundations (`--viking-charcoal-900`), deep teal primary actions (`--viking-teal-600`), crimson secondary emphasis (`--viking-crimson-600`), machined metallic borders, and native SVG telemetry charts. Import `viking-*` components exclusively; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions. **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md) and the [live docs site](https://ui.dataengineeringformachinelearning.com/contributing).
 
 ## Solution Architecture
 
