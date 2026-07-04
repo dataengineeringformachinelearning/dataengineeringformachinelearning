@@ -1,0 +1,107 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import { SITE } from '../lib/site';
+import { COMPONENT_COUNT } from '../lib/component-registry';
+import '../styles/showcase.scss';
+---
+
+<DocLayout title="Viking-UI — Precision Design System" sidebar={false}>
+  <div class="page-inner-wrapper">
+    <section class="landing-hero">
+      <div class="landing-hero-copy">
+        <div class="landing-hero-badge">
+          <span class="landing-hero-badge-dot" aria-hidden="true"></span>
+          <span>Universal design system · v2</span>
+        </div>
+        <h1 class="showcase-heading showcase-heading-xl">
+          Stop fighting your component library.
+        </h1>
+        <p class="showcase-text-muted">
+          Viking-UI delivers precision-engineered primitives for Angular, Astro, Django, and plain
+          Web Components. Token-driven styling, WCAG 2.1 AA by construction, zero third-party UI
+          runtime dependencies.
+        </p>
+        <div class="landing-hero-actions">
+          <viking-button-wc variant="primary" href="/components">Browse components</viking-button-wc>
+          <viking-button-wc variant="secondary" href="/tokens">Inspect tokens</viking-button-wc>
+        </div>
+        <p class="showcase-text-muted">
+          Published as <code>{SITE.npm}</code> — Apache-2.0 open source.
+        </p>
+        <div class="landing-stats" aria-label="Library stats">
+          <div class="landing-stat">
+            <span class="showcase-label">Components</span>
+            <strong class="showcase-metric">{COMPONENT_COUNT}+</strong>
+          </div>
+          <div class="landing-stat">
+            <span class="showcase-label">Frameworks</span>
+            <strong class="showcase-metric">4</strong>
+          </div>
+          <div class="landing-stat">
+            <span class="showcase-label">Accessibility</span>
+            <strong class="showcase-metric">AA</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="landing-preview-panel" aria-label="Live component preview">
+        <span class="showcase-label">Live preview</span>
+        <div class="demo-row">
+          <viking-button-wc variant="primary">Deploy</viking-button-wc>
+          <viking-button-wc variant="outline">Cancel</viking-button-wc>
+        </div>
+        <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
+        <div class="viking-card viking-card-compact">
+          <span class="showcase-label">Event throughput</span>
+          <strong class="showcase-metric">8.2K/s</strong>
+          <span class="showcase-badge showcase-badge-success">Healthy</span>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="features-heading">
+      <h2 class="showcase-heading showcase-heading-sm" id="features-heading">
+        Built for precision engineering
+      </h2>
+      <div class="landing-feature-grid">
+        <div class="viking-card">
+          <h3 class="showcase-heading showcase-heading-sm">Framework-agnostic</h3>
+          <p class="showcase-text-muted">
+            One token matrix powers CSS classes, Web Components, and Angular thin wrappers.
+            Ship the same visual language everywhere.
+          </p>
+        </div>
+        <div class="viking-card">
+          <h3 class="showcase-heading showcase-heading-sm">Zero UI runtime deps</h3>
+          <p class="showcase-text-muted">
+            Native SVG charts, inline icon registry, platform dialog elements. No Material, no CDK
+            bloat.
+          </p>
+        </div>
+        <div class="viking-card">
+          <h3 class="showcase-heading showcase-heading-sm">THEME.md tokens</h3>
+          <p class="showcase-text-muted">
+            Charcoal, teal, and crimson semantic palette with machined metallic borders — premium
+            restrained luxury.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase-category" aria-labelledby="quickstart-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="quickstart-heading">Quick start</h2>
+        <p class="showcase-text-muted">Install tokens, load components, compose primitives.</p>
+      </header>
+      <pre class="code-block-panel is-active" style="border:1px solid var(--viking-border);border-radius:var(--viking-radius-lg);background:var(--viking-charcoal-950,#0a0a0a);padding:var(--viking-space-2);margin:0;"><code># npm
+npm install {SITE.npm}
+
+# Static CSS (Astro / Django)
+link design-tokens.css + viking-components.css + viking-ui-elements.js</code></pre>
+      <p class="showcase-text-muted">
+        See <a href="/frameworks">framework guides</a> for Angular, Astro, Django, and Web
+        Component integration paths.
+      </p>
+    </section>
+  </div>
+</DocLayout>

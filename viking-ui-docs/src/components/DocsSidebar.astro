@@ -1,0 +1,66 @@
+---
+import { SITE } from '../lib/site';
+import { SHOWCASE_CATEGORIES } from '../lib/component-registry';
+
+export interface Props {
+  variant?: 'components' | 'docs';
+}
+
+const { variant = 'docs' } = Astro.props;
+---
+
+<aside class="docs-sidebar" aria-label="Section navigation">
+  <div class="docs-sidebar-inner">
+    {variant === 'components' ? (
+      <>
+        <p class="docs-sidebar-heading">Components</p>
+        <nav class="docs-sidebar-nav">
+          {SHOWCASE_CATEGORIES.map((cat) => (
+            <div class="docs-sidebar-group">
+              <a href={`#${cat.id}`} class="docs-sidebar-group-link">{cat.label}</a>
+              <ul class="docs-sidebar-list">
+                {cat.components.map((comp) => (
+                  <li>
+                    <a href={`#${comp.id}`} class="docs-sidebar-link">{comp.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
+      </>
+    ) : (
+      <>
+        <p class="docs-sidebar-heading">Documentation</p>
+        <nav class="docs-sidebar-nav">
+          <a href="/" class="docs-sidebar-link">Overview</a>
+          <a href="/components" class="docs-sidebar-link">Component gallery</a>
+          <a href="/tokens" class="docs-sidebar-link">Design tokens</a>
+          <a href="/frameworks" class="docs-sidebar-link">Framework guides</a>
+          <a href="/contributing" class="docs-sidebar-link">Contributing</a>
+        </nav>
+        <p class="docs-sidebar-heading">Resources</p>
+        <nav class="docs-sidebar-nav">
+          <a href={SITE.github} class="docs-sidebar-link" target="_blank" rel="noopener">GitHub repository</a>
+          <a href={`${SITE.marketing}/documentation`} class="docs-sidebar-link" target="_blank" rel="noopener">DEML docs</a>
+          <a href={SITE.app} class="docs-sidebar-link" target="_blank" rel="noopener">Live app</a>
+        </nav>
+      </>
+    )}
+  </div>
+</aside>
+
+<script>
+  const hashLinks = document.querySelectorAll('.docs-sidebar a[href^="#"]');
+  hashLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = (link as HTMLAnchorElement).getAttribute('href')!.slice(1);
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', `#${id}`);
+      }
+    });
+  });
+</script>

@@ -1,34 +1,27 @@
 {
   "name": "viking-ui-docs",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "private": true,
-  "description": "Viking-UI documentation site and static CSS build owner for the DEML design system.",
+  "type": "module",
+  "description": "Viking-UI documentation showcase (Astro) and static CSS build owner for the DEML design system.",
   "scripts": {
-    "prebuild": "npm run build:viking-ui --prefix ../frontend && npm run build:static-css",
-    "prestart": "npm run build:viking-ui --prefix ../frontend",
+    "prebuild": "npm run build:static-css",
+    "predev": "npm run build:static-css",
     "build:static-css": "node scripts/build-static-css.mjs",
-    "start": "ng serve",
-    "build": "ng build"
+    "dev": "astro dev --port 4300",
+    "start": "astro dev --port 4300",
+    "build": "astro build",
+    "preview": "astro preview --port 4300"
   },
   "engines": {
-    "node": ">=24.15.0"
+    "node": ">=22.12.0"
   },
   "dependencies": {
-    "@angular/common": "22.0.4",
-    "@angular/compiler": "22.0.4",
-    "@angular/core": "22.0.4",
-    "@angular/forms": "22.0.4",
-    "@angular/platform-browser": "22.0.4",
-    "@angular/router": "22.0.4",
-    "@dataengineeringformachinelearning/viking-ui": "file:../frontend/dist/viking-ui",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "^0.16.2"
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.0.3"
   },
   "devDependencies": {
-    "@angular/build": "22.0.4",
-    "@angular/cli": "22.0.4",
-    "@angular/compiler-cli": "22.0.4",
+    "esbuild": "^0.25.0",
     "sass": "^1.89.2",
     "typescript": "~6.0.3"
   }

@@ -1,0 +1,32 @@
+---
+import CodeBlock from './CodeBlock.astro';
+import type { ShowcaseComponent } from '../lib/component-registry';
+
+export interface Props {
+  component: ShowcaseComponent;
+}
+
+const { component } = Astro.props;
+---
+
+<article class="component-card" id={component.id}>
+  <header class="component-card-header">
+    <div>
+      <h3 class="showcase-heading showcase-heading-sm">{component.name}</h3>
+      <p class="showcase-text-muted">{component.description}</p>
+    </div>
+    {component.tags && (
+      <div class="component-tags">
+        {component.tags.map((tag) => (
+          <span class="showcase-badge showcase-badge-subtle">{tag}</span>
+        ))}
+      </div>
+    )}
+  </header>
+
+  <div class="component-preview" aria-label={`${component.name} preview`}>
+    <Fragment set:html={component.preview} />
+  </div>
+
+  <CodeBlock snippets={component.snippets} />
+</article>

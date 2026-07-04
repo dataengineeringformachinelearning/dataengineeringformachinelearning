@@ -1,0 +1,33 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import DocsSidebar from '../components/DocsSidebar.astro';
+import '../styles/docs-shell.scss';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  sidebar?: 'components' | 'docs' | false;
+}
+
+const { title, description, sidebar = 'docs' } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} bodyClass="docs-shell">
+  <SiteHeader slot="header" />
+  <div class="docs-layout">
+    {sidebar && <DocsSidebar variant={sidebar} />}
+    <div class="docs-main">
+      <main id="main-content" class="docs-content" tabindex="-1">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import '../scripts/theme';
+  import '../scripts/copy-button';
+</script>
