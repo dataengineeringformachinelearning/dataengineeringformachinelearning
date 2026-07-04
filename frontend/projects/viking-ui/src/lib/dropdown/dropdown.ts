@@ -163,7 +163,11 @@ export class VikingDropdown {
   ],
 })
 export class VikingMenuItem {
-  private readonly dropdown = inject(VikingDropdown, { optional: true });
+  private readonly dropdown: VikingDropdown | null;
+
+  constructor() {
+    this.dropdown = inject(VikingDropdown, { optional: true });
+  }
 
   readonly icon = input<VikingIconName | null>(null);
   readonly kbd = input<string | null>(null);
