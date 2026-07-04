@@ -1,5 +1,6 @@
 ---
 import VikingIcon from './VikingIcon.astro';
+import { isIntegrationBrandIcon } from '../../../frontend/projects/viking-ui/src/lib/core/integration-brand-icons.ts';
 
 export interface Props {
   icon: string;
@@ -10,11 +11,15 @@ export interface Props {
 
 const { icon, title, headingLevel = 'h3', size = 'md' } = Astro.props;
 const HeadingTag = headingLevel;
+const isProductBrand = isIntegrationBrandIcon(icon);
 ---
 
 <div class:list={['viking-icon-heading', size === 'lg' && 'viking-icon-heading--lg']}>
-  <span class="viking-icon-heading__icon" aria-hidden="true">
-    <VikingIcon name={icon} size={24} color="accent" />
+  <span
+    class:list={['viking-icon-heading__icon', isProductBrand && 'viking-icon-heading__icon--brand']}
+    aria-hidden="true"
+  >
+    <VikingIcon name={icon} size={24} color={isProductBrand ? 'inherit' : 'accent'} />
   </span>
   <HeadingTag class="viking-icon-heading__title">{title}</HeadingTag>
 </div>

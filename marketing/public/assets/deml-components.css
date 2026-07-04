@@ -288,6 +288,10 @@ viking-icon,
   height: var(--viking-icon-size-lg, 24px);
 }
 
+.viking-icon-heading__icon--brand {
+  color: inherit;
+}
+
 .viking-icon-heading__title {
   margin: 0;
   font-family: var(--viking-font-family);

@@ -52,6 +52,7 @@ const siteDrakkar = {
 const iconsContent = fs.readFileSync(iconsPath, 'utf8');
 const lucidePath = path.join(vikingUiDir, 'core', 'lucide-paths.generated.ts');
 const brandPath = path.join(vikingUiDir, 'core', 'brand-icons.ts');
+const integrationBrandPath = path.join(vikingUiDir, 'core', 'integration-brand-icons.ts');
 
 const readObjectExport = (filePath, exportName) => {
   const pattern = EXPORT_OBJECT_PATTERNS[exportName];
@@ -66,6 +67,18 @@ const readObjectExport = (filePath, exportName) => {
   return Function(`"use strict"; return (${match[1]});`)();
 };
 
+const readIntegrationIconPaths = () => {
+  const content = fs.readFileSync(integrationBrandPath, 'utf8');
+  const match = content.match(/const VIKING_INTEGRATION_BRAND_PATHS[^=]*=\s*(\{[\s\S]*?\n\});/);
+  if (!match) {
+    throw new Error(`Could not extract VIKING_INTEGRATION_BRAND_PATHS from ${integrationBrandPath}`);
+  }
+  const paths = Function(`"use strict"; return (${match[1]});`)();
+  return Object.fromEntries(
+    Object.entries(paths).map(([name, d]) => [name, `<path d="${d}"/>`]),
+  );
+};
+
 let iconPaths = {};
 let iconFilledPaths = {};
 try {
@@ -73,7 +86,7 @@ try {
     ...readObjectExport(lucidePath, 'LUCIDE_ICON_PATHS'),
     ...readObjectExport(brandPath, 'VIKING_BRAND_ICON_PATHS'),
     ...readObjectExport(brandPath, 'VIKING_DRAKKAR_ICON_PATHS'),
-    ...readObjectExport(brandPath, 'VIKING_INTEGRATION_ICON_PATHS'),
+    ...readIntegrationIconPaths(),
   };
   iconFilledPaths = {
     ...readObjectExport(brandPath, 'VIKING_BRAND_ICON_FILLED_PATHS'),
