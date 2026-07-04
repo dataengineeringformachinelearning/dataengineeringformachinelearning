@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  inject,
   signal,
 } from "@angular/core";
 import {
@@ -46,9 +45,9 @@ const readTheme = (): "light" | "dark" => {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocShell {
-  private readonly router = inject(Router);
-
   protected readonly theme = signal<"light" | "dark">(readTheme());
+
+  constructor(private readonly router: Router) {}
 
   protected readonly navSections = [
     { id: "cat-foundations", label: "Foundations" },

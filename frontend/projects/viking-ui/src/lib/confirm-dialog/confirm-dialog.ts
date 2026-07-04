@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { VikingButton } from '../button/button';
 import { VikingField } from '../field/field';
@@ -76,7 +76,7 @@ import { VikingConfirmDialogData, VikingDialogService } from './dialog.service';
   ],
 })
 export class VikingConfirmDialog {
-  private readonly vikingDialog = inject(VikingDialogService);
+  constructor(private readonly vikingDialog: VikingDialogService) {}
 
   protected readonly inputValue = signal<string>('');
 
