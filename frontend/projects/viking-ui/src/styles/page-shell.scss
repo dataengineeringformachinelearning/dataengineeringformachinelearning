@@ -326,8 +326,6 @@
 
   &.is-secure {
     .empty-icon,
-    .viking-icon,
-    viking-icon,
     viking-app-icon {
       background: color-mix(in srgb, var(--viking-success) 14%, transparent);
       color: var(--viking-success);
@@ -335,8 +333,6 @@
   }
 
   .empty-icon,
-  .viking-icon,
-  viking-icon,
   viking-app-icon {
     display: flex;
     align-items: center;

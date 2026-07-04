@@ -20,6 +20,7 @@ import { VikingToaster } from '@dataengineeringformachinelearning/viking-ui';
 import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
+import { SessionIdleService } from './services/session-idle.service';
 
 @Component({
   selector: 'app-root',
@@ -44,6 +45,7 @@ export class App implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private pageMeta = inject(PageMetaService);
+  private sessionIdle = inject(SessionIdleService);
 
   isStandaloneStatusPage = signal(false);
   isDashboardPage = signal(false);
@@ -88,7 +90,11 @@ export class App implements OnInit {
       });
 
     if (isPlatformBrowser(this.platformId) && !this.isAuthStatusPage()) {
-      this.authService.checkAuth();
+      this.authService.checkAuth().then(() => {
+        if (this.authService.isAuthenticated()) {
+          this.sessionIdle.start();
+        }
+      });
       this.checkResetToken();
       this.registerServiceWorker();
     }

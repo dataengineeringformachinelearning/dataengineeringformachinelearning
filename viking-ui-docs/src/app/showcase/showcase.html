@@ -217,6 +217,26 @@
           </div>
         </viking-auth-panel>
       </section>
+
+      <section class="demo demo-wide" id="demo-verification-code">
+        <viking-heading size="lg" [level]="2">Verification Code Template</viking-heading>
+        <viking-text variant="muted">
+          Centered MFA enrollment layout — label, OTP cells, and primary action with vertical rhythm.
+        </viking-text>
+        <div class="verification-code-showcase">
+          <p class="verification-code-showcase-step">
+            Step 2: Enter the 6-digit verification code sent to your phone
+          </p>
+          <viking-verification-code-field
+            label="Verification Code"
+            description="Enter the SMS code from your enrolled device."
+            [required]="true"
+          />
+          <div class="verification-code-showcase-actions">
+            <viking-button variant="primary">Verify & Enroll</viking-button>
+          </div>
+        </div>
+      </section>
     </div>
   </section>
 

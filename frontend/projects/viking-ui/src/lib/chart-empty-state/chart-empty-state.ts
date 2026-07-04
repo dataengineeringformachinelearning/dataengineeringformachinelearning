@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { VikingIcon } from '../icon/icon';
+import { VikingIconBadge } from '../icon-badge/icon-badge';
 import { VikingIconName } from '../core/icons';
 
 export type VikingChartEmptyTone = 'default' | 'secure';
@@ -11,7 +11,7 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
  */
 @Component({
   selector: 'viking-chart-empty-state',
-  imports: [VikingIcon],
+  imports: [VikingIconBadge],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     role: 'status',
@@ -23,9 +23,7 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
     '[class.viking-chart-empty-inline]': "layout() === 'inline'",
   },
   template: `
-    <div class="viking-chart-empty-icon" aria-hidden="true">
-      <viking-icon [name]="icon()" [size]="28" />
-    </div>
+    <viking-icon-badge [icon]="icon()" [tone]="tone() === 'secure' ? 'success' : 'default'" />
     <h3 class="empty-title">{{ title() }}</h3>
     <p class="empty-subtitle">{{ description() }}</p>
     <div class="viking-chart-empty-actions">
@@ -47,13 +45,27 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
         background: var(--viking-surface-alt);
         border: 1px dashed var(--viking-border-strong);
         box-shadow: var(--viking-shadow-inner);
-        gap: 0;
+        gap: var(--viking-space-2);
         animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
       }
 
       :host(.viking-chart-empty-fill) {
         flex: 1 1 auto;
         min-height: var(--viking-chart-empty-min-height, var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem)));
+      }
+
+      viking-icon-badge {
+        margin-bottom: var(--viking-space-2);
+      }
+
+      .empty-title {
+        margin: 0 0 var(--viking-space-1) 0;
+        font-size: var(--viking-font-size-md);
+        font-weight: var(--viking-font-weight-semibold);
+        letter-spacing: var(--viking-letter-spacing-caps);
+        text-transform: uppercase;
+        color: var(--viking-text);
+        line-height: var(--viking-line-height-tight);
       }
 
       :host(.viking-chart-empty-overlay) {
@@ -80,32 +92,9 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
         padding: var(--viking-space-4) var(--viking-space-2);
       }
 
-      :host(.is-secure) .viking-chart-empty-icon {
+      :host(.is-secure) .viking-icon-badge {
         background: color-mix(in srgb, var(--viking-success) 14%, transparent);
         color: var(--viking-success);
-      }
-
-      .viking-chart-empty-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: var(--viking-space-6);
-        height: var(--viking-space-6);
-        border-radius: var(--viking-radius-lg);
-        background: var(--viking-accent-soft);
-        color: var(--viking-accent-strong);
-        box-shadow: var(--viking-shadow-sm);
-        margin-bottom: var(--viking-space-2);
-      }
-
-      .empty-title {
-        margin: 0 0 var(--viking-space-1) 0;
-        font-size: var(--viking-font-size-md);
-        font-weight: var(--viking-font-weight-semibold);
-        letter-spacing: var(--viking-letter-spacing-caps);
-        text-transform: uppercase;
-        color: var(--viking-text);
-        line-height: var(--viking-line-height-tight);
       }
 
       .empty-subtitle {

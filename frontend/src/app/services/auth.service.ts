@@ -36,6 +36,10 @@ export class AuthService {
   public currentUserRole = signal<string | null>(null);
   public isInitialized = signal<boolean>(false);
   public isProcessing = signal<boolean>(true);
+  /** Firebase user has enrolled MFA factors (account setting). */
+  public mfaEnrolled = signal<boolean>(false);
+  /** Current ID token includes MFA verification (`amr` contains `mfa`). */
+  public mfaVerifiedInSession = signal<boolean>(false);
   private http = inject(HttpClient);
   public auth: any;
 
@@ -108,16 +112,21 @@ export class AuthService {
                 this.currentUserId.set(null);
                 this.currentUserRole.set(null);
               }
+              await this.refreshMfaState();
             } catch (e: any) {
               console.error('Failed to sync auth with backend', e);
               this.isAuthenticated.set(false);
               this.currentUserId.set(null);
               this.currentUserRole.set(null);
+              this.mfaEnrolled.set(false);
+              this.mfaVerifiedInSession.set(false);
             }
           } else {
             this.isAuthenticated.set(false);
             this.currentUserId.set(null);
             this.currentUserRole.set(null);
+            this.mfaEnrolled.set(false);
+            this.mfaVerifiedInSession.set(false);
           }
           this.isInitialized.set(true);
           this.isProcessing.set(false);
@@ -430,6 +439,28 @@ export class AuthService {
     }
   }
 
+  async refreshMfaState(forceToken = false): Promise<void> {
+    const user = this.auth?.currentUser as FirebaseUser | null | undefined;
+    if (!user) {
+      this.mfaEnrolled.set(false);
+      this.mfaVerifiedInSession.set(false);
+      return;
+    }
+    try {
+      if (typeof user.reload === 'function') {
+        await user.reload();
+      }
+      this.mfaEnrolled.set(multiFactor(user).enrolledFactors.length > 0);
+      const tokenResult = await user.getIdTokenResult(forceToken);
+      const amr = tokenResult.claims['amr'];
+      this.mfaVerifiedInSession.set(Array.isArray(amr) && amr.includes('mfa'));
+    } catch (e) {
+      console.warn('MFA state refresh skipped:', e);
+      this.mfaEnrolled.set(false);
+      this.mfaVerifiedInSession.set(false);
+    }
+  }
+
   async sendMfaEnrollmentCode(phoneNumber: string, recaptchaVerifier: any): Promise<string> {
     if (!this.auth?.currentUser) throw new Error('No user is currently logged in.');
     const session = await multiFactor(this.auth.currentUser).getSession();
@@ -443,6 +474,7 @@ export class AuthService {
     const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
     const assertion = PhoneMultiFactorGenerator.assertion(cred);
     await multiFactor(this.auth.currentUser).enroll(assertion, 'SMS Phone MFA');
+    await this.refreshMfaState(true);
   }
 
   async unenrollMfa(factorInfo: any): Promise<void> {

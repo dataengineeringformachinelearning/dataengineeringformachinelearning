@@ -29,6 +29,12 @@ import { Router, RouterModule } from '@angular/router';
 import { VikingDialogService } from '../../services/viking-dialog.service';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
 import { environment } from '../../../environments/environment';
+import {
+  mapFirebasePhoneError,
+  normalizePhoneE164,
+  phoneFormatHint,
+  phoneValidationError,
+} from '../../core/utils/phone.utils';
 
 @Component({
   selector: 'app-account',
@@ -101,6 +107,9 @@ export class Account implements OnInit {
   subscriptionCancelAtPeriodEnd = signal<boolean>(false);
   billingSuccess = signal<string | null>(null);
   billingError = signal<string | null>(null);
+
+  protected readonly phoneHint =
+    'International E.164 format: country code + number (e.g. +14155552671).';
 
   constructor() {
     effect(() => {
@@ -389,6 +398,7 @@ export class Account implements OnInit {
       const enrolled = multiFactor(user).enrolledFactors;
       this.mfaEnrolledFactors.set(enrolled);
       this.isMfaEnrolled.set(enrolled.length > 0);
+      await this.authService.refreshMfaState();
       this.cdr.markForCheck();
     } catch (e) {
       console.warn('MFA check skipped or failed:', e);
@@ -398,10 +408,12 @@ export class Account implements OnInit {
   async sendMfaCode() {
     this.mfaError.set(null);
     this.mfaSuccess.set(null);
-    if (!this.mfaPhoneNumber) {
-      this.mfaError.set('Phone number is required.');
+    const validationError = phoneValidationError(this.mfaPhoneNumber);
+    if (validationError) {
+      this.mfaError.set(validationError);
       return;
     }
+    this.mfaPhoneNumber = normalizePhoneE164(this.mfaPhoneNumber);
     this.initMfaRecaptcha();
     this.isSendingMfaCode.set(true);
     try {
@@ -409,13 +421,11 @@ export class Account implements OnInit {
         this.mfaPhoneNumber,
         this.mfaRecaptchaVerifier,
       );
-      this.mfaSuccess.set('Verification code sent! Please check your messages.');
+      this.mfaSuccess.set('Verification code sent! Check your messages.');
       this.cdr.markForCheck();
     } catch (e: any) {
       console.error(e);
-      this.mfaError.set(
-        'Failed to send verification code. Please check the phone number and try again.',
-      );
+      this.mfaError.set(mapFirebasePhoneError(e?.code));
     } finally {
       this.isSendingMfaCode.set(false);
       this.cdr.markForCheck();
@@ -432,7 +442,9 @@ export class Account implements OnInit {
     this.isVerifyingMfaCode.set(true);
     try {
       await this.authService.confirmMfaEnrollment(this.mfaVerificationId, this.mfaVerificationCode);
-      this.mfaSuccess.set('Multi-Factor Authentication enrolled successfully!');
+      this.mfaSuccess.set(
+        'Multi-Factor Authentication enrolled. Sign out and sign back in so your session includes MFA verification before saving sites.',
+      );
       this.mfaPhoneNumber = '';
       this.mfaVerificationCode = '';
       this.mfaVerificationId = null;

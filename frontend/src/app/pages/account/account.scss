@@ -1,1 +1,71 @@
 @use '../settings/settings.scss';
+
+.mfa-enrollment-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3, 24px);
+}
+
+.mfa-step-title {
+  margin: 0;
+  font-size: var(--viking-font-size, 16px);
+  color: var(--viking-text-muted, var(--text-muted));
+}
+
+.mfa-phone-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+}
+
+.mfa-phone-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+
+  @media (min-width: 601px) {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--viking-space-2, 16px);
+
+    .mfa-input-full {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+.verification-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--viking-space-3, 24px);
+  margin-top: var(--viking-space-2, 16px);
+  padding-top: var(--viking-space-3, 24px);
+  border-top: 1px solid var(--viking-border-subtle, var(--border));
+  width: 100%;
+}
+
+.mfa-verify-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--viking-space-2, 16px);
+  width: 100%;
+  max-width: 22rem;
+}
+
+.mfa-feedback-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-3, 24px);
+}
+
+.mfa-recaptcha-slot {
+  margin-top: var(--viking-space-2, 16px);
+}
+
+.mfa-relogin-callout {
+  margin-top: var(--viking-space-2, 16px);
+}
