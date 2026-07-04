@@ -180,7 +180,7 @@
   display: none;
   flex-direction: column;
   position: absolute;
-  top: 64px;
+  top: var(--viking-navbar-height, 64px);
   left: 0;
   right: 0;
   background-color: var(--viking-surface);

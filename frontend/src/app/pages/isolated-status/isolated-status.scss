@@ -453,41 +453,48 @@
 
   .threat-metrics-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-    margin-top: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(var(--viking-metric-card-min-width), 1fr));
+    gap: var(--viking-space-2);
+    margin-top: var(--viking-space-2);
   }
 
   .threat-metric-card {
-    background: rgba(255, 255, 255, 0.01);
-    padding: 8px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    box-shadow: var(--shadow-sm);
-    transition:
-      border-color 0.2s ease,
-      box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: var(--viking-space-half);
+    min-height: var(--viking-metric-card-min-height);
+    padding: var(--viking-card-padding-compact);
+    border-radius: var(--viking-radius-lg);
+    border: 1px solid var(--viking-border);
+    background: var(--viking-surface-recipe, var(--viking-surface));
+    box-shadow: var(--viking-shadow-sm);
+    transition: var(--viking-transition-interactive);
 
     &:hover {
-      border-color: var(--status-accent);
-      box-shadow: var(--shadow-hover);
+      border-color: var(--viking-border-strong);
+      box-shadow: var(--viking-shadow-hover);
+      transform: translateY(var(--viking-state-hover-lift, -1px));
     }
   }
 
   .threat-metric-label {
-    font-size: 1rem;
-    color: var(--text-muted);
-    font-weight: 500;
+    font-size: var(--viking-font-size-ui);
+    color: var(--viking-text-muted);
+    font-weight: var(--viking-font-weight-semibold);
     display: block;
     text-transform: uppercase;
     letter-spacing: 0.05em;
   }
 
   .threat-metric-value {
-    font-size: 1.1rem;
-    color: var(--text-color);
+    font-size: calc(var(--viking-font-size) * 1.15);
+    color: var(--viking-text);
+    font-weight: var(--viking-font-weight-bold);
     display: block;
-    margin-top: 8px;
+    line-height: var(--viking-line-height-tight);
   }
 }
 

@@ -16,9 +16,9 @@
 
 .login-shell {
   width: 100%;
-  max-width: 480px;
+  max-width: var(--viking-form-narrow-max-width);
   margin: 0 auto;
-  padding-inline: var(--space-2, 16px);
+  padding-inline: var(--viking-page-gutter, var(--viking-space-2));
 }
 
 .login-form {
