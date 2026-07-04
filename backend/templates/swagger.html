@@ -121,10 +121,14 @@
     return true;
   };
 
+
+  let attempts = 0;
+  const maxAttempts = 50; // 6 seconds max
   const searchPoll = window.setInterval(() => {
-    if (syncSwaggerSearch()) {
+    if (syncSwaggerSearch() || ++attempts >= maxAttempts) {
       window.clearInterval(searchPoll);
     }
   }, 120);
+
 </script>
 {% endblock %}
