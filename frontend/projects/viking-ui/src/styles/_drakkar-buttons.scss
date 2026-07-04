@@ -41,11 +41,26 @@ a.auth-btn.auth-btn-outline {
 }
 
 .mobile-auth-btn,
-a.mobile-auth-btn {
+a.mobile-auth-btn,
+button.mobile-auth-btn {
   @include viking-drakkar-btn-primary;
   width: 100%;
   min-width: 0;
   justify-content: center;
+  color: var(--viking-accent-content) !important;
+
+  svg,
+  .material-icons,
+  [data-viking-icon],
+  viking-icon {
+    color: inherit !important;
+  }
+}
+
+.mobile-auth-btn.auth-signout-btn,
+a.mobile-auth-btn.auth-signout-btn,
+button.mobile-auth-btn.auth-signout-btn {
+  color: var(--viking-text-muted) !important;
 }
 
 .mobile-auth-btn.auth-btn-outline,

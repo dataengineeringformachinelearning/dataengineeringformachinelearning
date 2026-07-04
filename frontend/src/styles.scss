@@ -126,7 +126,7 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn):not(
+a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
     .viking-btn
   ) {
   color: var(--link-color);

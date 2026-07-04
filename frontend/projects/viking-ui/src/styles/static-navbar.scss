@@ -1,6 +1,71 @@
 // Shared navbar + theme toggle (frontend Angular, marketing Astro, backend Django).
 @use 'drakkar-buttons' as *;
 
+@mixin viking-navbar-search-shell-focus {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
+  outline-offset: var(--viking-ring-offset, 2px);
+}
+
+@mixin viking-navbar-utility-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--viking-control-height, 40px);
+  height: var(--viking-control-height, 40px);
+  min-width: var(--viking-control-height, 40px);
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  background: var(--viking-surface, var(--card-bg));
+  color: var(--viking-text, var(--text-color));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  cursor: pointer;
+  transition: var(--viking-transition-interactive, all 0.25s ease);
+
+  &:hover {
+    border-color: var(--viking-accent-strong, var(--viking-teal-400));
+    background: var(--viking-surface-alt, var(--viking-charcoal-700));
+    color: var(--viking-text, var(--text-color));
+    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  }
+
+  &:focus-visible {
+    @include viking-navbar-search-shell-focus;
+  }
+}
+
+@mixin viking-navbar-search-shell {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+  min-height: var(--viking-control-height, 40px);
+  padding: 0 var(--viking-space-2, 16px);
+  background: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  transition: var(--viking-transition-interactive, border-color 0.25s ease, box-shadow 0.25s ease);
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-teal-400)) 55%, var(--viking-border-strong, var(--border)));
+    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  }
+}
+
+@mixin viking-navbar-search-panel {
+  margin: 0;
+  padding: var(--viking-space-1, 8px);
+  background: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  max-height: 288px;
+  overflow: auto;
+  font-family: var(--viking-font-family, inherit);
+}
+
 .navbar {
   position: sticky;
   top: 0;
@@ -243,10 +308,15 @@ html[data-theme='light'] {
   --nav-link-color: color-mix(in srgb, var(--viking-charcoal-900) 88%, var(--white));
 
   .nav-btn,
-  .mobile-nav-btn,
-  .menu-toggle-btn,
-  .theme-toggle-btn {
+  .mobile-nav-btn {
     color: var(--nav-link-color) !important;
+  }
+
+  .menu-toggle-btn,
+  .theme-toggle-btn,
+  .navbar-search-trigger,
+  .navbar-search-mobile-btn {
+    color: var(--viking-text, var(--text-color)) !important;
   }
 
   .nav-btn:hover,
@@ -270,26 +340,12 @@ html[data-theme='light'] {
 
 .navbar .theme-toggle-btn,
 .theme-toggle-btn {
-  position: static;
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-  border-radius: 50%;
-  width: var(--viking-control-height, 40px);
-  height: var(--viking-control-height, 40px);
-  min-width: var(--viking-control-height, 40px);
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: none;
-  flex-shrink: 0;
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease,
-    background-color 0.2s ease;
+  @include viking-navbar-utility-btn;
+
+  &:hover {
+    transform: rotate(15deg);
+    background-color: color-mix(in srgb, var(--viking-teal-600) 5%, var(--viking-surface, var(--card-bg)));
+  }
 }
 
 .navbar .theme-toggle-btn .material-icons,
@@ -300,36 +356,16 @@ html[data-theme='light'] {
   height: 24px;
 }
 
-.navbar .theme-toggle-btn:hover,
-.theme-toggle-btn:hover {
-  color: var(--text-color);
-  transform: rotate(15deg);
-  background-color: color-mix(in srgb, var(--viking-teal-600) 5%, transparent);
-  box-shadow: none;
-}
-
-.navbar .theme-toggle-btn:focus-visible,
-.theme-toggle-btn:focus-visible {
-  outline: 2px solid var(--color-primary-container);
-  outline-offset: 3px;
-}
-
 .menu-toggle-btn {
+  @include viking-navbar-utility-btn;
   display: inline-flex !important;
-  color: var(--text-muted) !important;
-  transition: color 0.2s;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
 }
 
-.menu-toggle-btn:hover {
-  color: var(--text-color) !important;
+.menu-toggle-btn[aria-expanded='true'] {
+  border-color: var(--viking-accent, var(--viking-teal-600));
+  color: var(--viking-accent-strong, var(--viking-teal-400));
+  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-teal-600) 12%, transparent));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
 .divider {
@@ -404,10 +440,10 @@ button.auth-btn {
   background-color: var(--viking-surface, var(--card-bg));
   box-shadow: var(--viking-shadow-md, var(--shadow-md));
   border-bottom: 1px solid var(--viking-border, var(--border));
-  padding: var(--viking-space-3, 24px);
+  padding: var(--viking-space-2, 16px) var(--viking-space-2, 16px) var(--viking-space-3, 24px);
   box-sizing: border-box;
   z-index: 49;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-half, 4px);
 
   viking-button {
     width: 100%;
@@ -430,9 +466,12 @@ button.auth-btn {
 .mobile-nav-btn {
   width: 100% !important;
   justify-content: flex-start !important;
-  font-size: var(--viking-font-size, 16px) !important;
+  font-size: var(--viking-font-size-sm, 14px) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
   color: var(--viking-text-muted, var(--text-muted)) !important;
-  min-height: var(--viking-control-height, 40px) !important;
+  min-height: 44px !important;
   border-radius: var(--viking-radius, 8px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
   display: inline-flex !important;
@@ -465,7 +504,12 @@ button.auth-btn {
 .mobile-divider {
   height: 1px;
   background-color: var(--viking-border, var(--border));
-  margin: var(--viking-space-1, 8px) 0;
+  margin: var(--viking-space-2, 16px) 0 var(--viking-space-1, 8px);
+  flex-shrink: 0;
+}
+
+.mobile-menu .mobile-auth-btn {
+  margin-top: var(--viking-space-half, 4px);
 }
 
 .navbar-link {
@@ -509,40 +553,6 @@ button.auth-btn {
 }
 
 // Algolia Experiences autocomplete — aligned with viking-autocomplete + search-palette.
-@mixin viking-navbar-search-shell {
-  display: flex;
-  align-items: center;
-  gap: var(--viking-space-1, 8px);
-  min-height: var(--viking-control-height, 40px);
-  padding: 0 var(--viking-space-2, 16px);
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
-  border-radius: var(--viking-radius, 8px);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  transition: var(--viking-transition-interactive, border-color 0.25s ease, box-shadow 0.25s ease);
-
-  &:hover {
-    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-teal-400)) 55%, var(--viking-border-strong, var(--border)));
-    box-shadow: var(--viking-shadow-md, var(--shadow-md));
-  }
-}
-
-@mixin viking-navbar-search-shell-focus {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
-  outline-offset: var(--viking-ring-offset, 2px);
-}
-
-@mixin viking-navbar-search-panel {
-  margin: 0;
-  padding: var(--viking-space-1, 8px);
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
-  border-radius: var(--viking-radius, 8px);
-  box-shadow: var(--viking-shadow-md, var(--shadow-md));
-  max-height: 288px;
-  overflow: auto;
-  font-family: var(--viking-font-family, inherit);
-}
 
 .navbar-search {
   display: flex;
@@ -636,28 +646,7 @@ button.auth-btn {
 
 .navbar-search-trigger,
 .navbar-search-mobile-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--viking-control-height, 40px);
-  height: var(--viking-control-height, 40px);
-  border: 1px solid var(--viking-border-strong, var(--border));
-  border-radius: var(--viking-radius, 8px);
-  background: var(--viking-surface, var(--card-bg));
-  color: var(--viking-text, var(--text-color));
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  cursor: pointer;
-  transition: var(--viking-transition-interactive, all 0.25s ease);
-
-  &:hover {
-    border-color: var(--viking-accent-strong, var(--viking-teal-400));
-    background: var(--viking-surface-alt, var(--viking-charcoal-700));
-    box-shadow: var(--viking-shadow-md, var(--shadow-md));
-  }
-
-  &:focus-visible {
-    @include viking-navbar-search-shell-focus;
-  }
+  @include viking-navbar-utility-btn;
 }
 
 .algolia-autocomplete-host .aa-Autocomplete,
@@ -928,6 +917,22 @@ button.auth-btn {
   border: 0 !important;
   box-shadow: none !important;
   max-height: 50vh !important;
+}
+
+@media (max-width: 767px) {
+  .navbar-content {
+    gap: var(--viking-space-1, 8px);
+  }
+
+  .navbar-left {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .navbar-right {
+    flex: 0 0 auto;
+    gap: var(--viking-space-1, 8px);
+  }
 }
 
 @media (min-width: 768px) {
