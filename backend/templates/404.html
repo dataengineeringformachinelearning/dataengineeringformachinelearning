@@ -19,30 +19,25 @@
 {% block analytics %}{% endblock %}
 
 {% block content %}
-<main class="main" id="main-content" tabindex="-1">
-  <div class="content">
-    <article class="viking-card backend-card">
-      <img
-        class="logo"
-        src="{% static 'data-engineering-for-machine-learning.svg' %}"
-        alt="DEML APP Brand Icon"
-      />
-      <h1 class="title">404 - Not Found</h1>
-      <h2 class="subtitle">
-        The requested resource was not found on this server.
-      </h2>
+<main class="page-inner-wrapper main" id="main-content" tabindex="-1">
+  <article class="viking-card backend-error-card">
+    <img
+      class="backend-error-logo"
+      src="{% static 'data-engineering-for-machine-learning.svg' %}"
+      alt="DEML brand icon"
+    />
+    <h1 class="viking-heading viking-heading-xl">404 — Not Found</h1>
+    <p class="viking-text-muted">
+      The requested resource was not found on this server. The page or endpoint you are
+      looking for does not exist.
+    </p>
 
-      <p>
-        It looks like you took a wrong turn. The page or endpoint you are looking
-        for does not exist.
-      </p>
-
-      <div class="cta-group">
-        <a href="/" class="viking-btn viking-btn-primary cta-button cta-primary">
-          <span>Return to Home</span>
-        </a>
-      </div>
-    </article>
-  </div>
+    <div class="viking-cta-row">
+      <a href="/" class="viking-btn viking-btn-primary">
+        <span data-viking-icon="home" data-viking-icon-size="16" aria-hidden="true"></span>
+        <span>Return to Home</span>
+      </a>
+    </div>
+  </article>
 </main>
 {% endblock %}

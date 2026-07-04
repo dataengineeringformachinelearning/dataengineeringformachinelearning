@@ -15,110 +15,88 @@
 {% block meta_keywords %}DEML backend API, Django REST, multi-tenant telemetry, SLA predictions, OpenAPI{% endblock %}
 
 {% block content %}
-<main class="main viking-page-shell" id="main-content" tabindex="-1">
-  <section class="hero-section viking-section viking-section--hero">
-    <div class="hero-badge">
-      <span class="badge-dot"></span>
-      <span class="badge-text">BACKEND OPERATIONAL</span>
+<main class="page-inner-wrapper backend-landing-shell" id="main-content" tabindex="-1">
+  <header class="viking-page-header-static backend-hero" aria-labelledby="backend-hero-title">
+    <span class="viking-badge viking-badge-success backend-status-badge">
+      <span class="backend-status-dot" aria-hidden="true"></span>
+      Backend operational
+    </span>
+
+    <h1 class="viking-heading viking-heading-xl" id="backend-hero-title">
+      Data Engineering<br />for Machine Learning
+    </h1>
+    <p class="viking-text-muted backend-hero-lead">
+      Core REST API &amp; services orchestrator. This system manages user accounts,
+      coordinates model training schedules, and computes SLA predictions.
+    </p>
+
+    <div class="viking-cta-row backend-hero-cta">
+      <a href="/api/v1/docs" class="viking-btn viking-btn-primary" id="explore-docs-btn">
+        <span data-viking-icon="terminal" data-viking-icon-size="16" aria-hidden="true"></span>
+        <span>Swagger Docs</span>
+      </a>
+      <a href="{{ frontend_url }}/explore" class="viking-btn viking-btn-subtle">
+        <span data-viking-icon="globe" data-viking-icon-size="16" aria-hidden="true"></span>
+        <span>Explore App</span>
+      </a>
     </div>
+  </header>
 
-    <div class="hero-content">
-      <h1 class="title">Data Engineering<br />for Machine Learning</h1>
-      <p class="subtitle">
-        Core REST API & Services orchestrator. This system manages user
-        accounts, coordinates model training schedules, and computes SLA
-        predictions.
-      </p>
+  <section class="backend-feature-grid" aria-labelledby="backend-features-heading">
+    <h2 class="viking-label" id="backend-features-heading">Platform capabilities</h2>
 
-      <div class="cta-group">
-        <a
-          href="/api/v1/docs"
-          class="viking-btn viking-btn-primary cta-button cta-primary"
-          id="explore-docs-btn"
-        >
-          <span>Swagger Docs</span>
-        </a>
-        <a href="{{ frontend_url }}/explore" class="viking-btn viking-btn-subtle cta-button secondary-btn">
-          <span>Explore App</span>
-        </a>
-      </div>
+    <div class="backend-feature-cards">
+      <viking-card-wc interactive title="Django REST API">
+        <div class="backend-feature-card-body">
+          <span
+            class="backend-feature-icon"
+            data-viking-icon="server"
+            data-viking-icon-color="accent"
+            data-viking-icon-size="24"
+            aria-hidden="true"
+          ></span>
+          <h3 class="viking-heading viking-heading-sm">Django REST API</h3>
+          <p class="viking-text-muted">
+            Secure, type-safe, and high-performance API endpoints generated
+            dynamically using the Django Ninja framework.
+          </p>
+        </div>
+      </viking-card-wc>
+
+      <viking-card-wc interactive title="Interactive Swagger">
+        <div class="backend-feature-card-body">
+          <span
+            class="backend-feature-icon"
+            data-viking-icon="terminal"
+            data-viking-icon-color="accent"
+            data-viking-icon-size="24"
+            aria-hidden="true"
+          ></span>
+          <h3 class="viking-heading viking-heading-sm">Interactive Swagger</h3>
+          <p class="viking-text-muted">
+            Fully interactive OpenAPI specification interface under /api/v1/docs for
+            sandboxed query testing.
+          </p>
+        </div>
+      </viking-card-wc>
+
+      <viking-card-wc interactive title="Multi-Tenant Engine">
+        <div class="backend-feature-card-body">
+          <span
+            class="backend-feature-icon"
+            data-viking-icon="globe"
+            data-viking-icon-color="accent"
+            data-viking-icon-size="24"
+            aria-hidden="true"
+          ></span>
+          <h3 class="viking-heading viking-heading-sm">Multi-Tenant Engine</h3>
+          <p class="viking-text-muted">
+            Robust data partitioning and tenant-scoped connection guards providing
+            isolated telemetry pipelines.
+          </p>
+        </div>
+      </viking-card-wc>
     </div>
-  </section>
-
-  <section
-    class="bento-features-grid viking-section-inner"
-    aria-label="Key features"
-  >
-    <article class="viking-card feature-card">
-      <svg
-        class="feature-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        width="32"
-        height="32"
-        aria-hidden="true"
-      >
-        <path d="M4 4v16h16M8 16v-5M12 16V8M16 16v-3" />
-      </svg>
-      <h2 class="feature-title">Django REST API</h2>
-      <p class="feature-desc">
-        Secure, type-safe, and high-performance API endpoints generated
-        dynamically using the Django Ninja framework.
-      </p>
-    </article>
-
-    <article class="viking-card feature-card">
-      <svg
-        class="feature-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        width="32"
-        height="32"
-        aria-hidden="true"
-      >
-        <path d="m5 7 5 5-5 5M12 17h7" />
-      </svg>
-      <h2 class="feature-title">Interactive Swagger</h2>
-      <p class="feature-desc">
-        Fully interactive OpenAPI specification interface under /api/v1/docs for
-        sandboxed query testing.
-      </p>
-    </article>
-
-    <article class="viking-card feature-card">
-      <svg
-        class="feature-icon"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.8"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        width="32"
-        height="32"
-        aria-hidden="true"
-      >
-        <circle cx="12" cy="12" r="9" />
-        <path d="M3 12h18" />
-        <ellipse cx="12" cy="12" rx="4" ry="9" />
-      </svg>
-      <h2 class="feature-title">Multi-Tenant Engine</h2>
-      <p class="feature-desc">
-        Robust data partitioning and tenant-scoped connection guards providing
-        isolated telemetry pipelines.
-      </p>
-    </article>
   </section>
 </main>
 {% endblock %}
