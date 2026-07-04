@@ -17,12 +17,14 @@ export { VikingModalWc, registerVikingModalWc } from './modal/viking-modal-wc';
 export {
   VikingSearchPaletteWc,
   registerVikingSearchPaletteWc,
+  type VikingSearchPaletteItem,
 } from './search-palette/viking-search-palette-wc';
 export { VikingSelectWc, registerVikingSelectWc } from './select/viking-select-wc';
 export {
   VikingThemeToggleWc,
   registerVikingThemeToggleWc,
 } from './theme-toggle/viking-theme-toggle-wc';
+export type { VikingWcTone } from './core/types';
 
 /** Register all Viking-UI Web Components. Safe to call multiple times. */
 export const registerVikingElements = (): void => {

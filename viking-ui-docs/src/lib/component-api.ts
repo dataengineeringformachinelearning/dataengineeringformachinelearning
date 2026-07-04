@@ -116,6 +116,13 @@ export const BADGE_API: ComponentApi = {
     { name: 'removable', type: 'boolean', default: 'false', description: 'Shows remove button; emits removed.' },
   ],
   outputs: [{ name: 'removed', type: 'void', description: 'Emits when remove button is clicked.' }],
+  attributes: [
+    { name: 'tone', type: 'accent | secondary | success | warning | danger | info | muted', description: 'Semantic tone on Web Component.' },
+    { name: 'size', type: 'sm', description: 'Compact badge density.' },
+    { name: 'icon', type: 'string', description: 'Viking icon registry name.' },
+    { name: 'removable', type: 'boolean', description: 'Boolean attribute.' },
+  ],
+  events: [{ name: 'viking-removed', type: 'CustomEvent<void>', description: 'Fired when remove is clicked.' }],
   cssClasses: [
     { name: 'viking-badge', type: 'class', description: 'Default badge styling in static CSS.' },
     { name: 'viking-badge-accent', type: 'class', description: 'Accent tone modifier.' },
@@ -129,6 +136,11 @@ export const CARD_API: ComponentApi = {
   inputs: [
     { name: 'compact', type: 'boolean', default: 'false', description: 'Reduced padding via viking-card-compact.' },
     { name: 'interactive', type: 'boolean', default: 'false', description: 'Hover lift for clickable cards.' },
+  ],
+  attributes: [
+    { name: 'compact', type: 'boolean', description: 'Applies viking-card-compact on light DOM host.' },
+    { name: 'interactive', type: 'boolean', description: 'Hover lift modifier.' },
+    { name: 'title', type: 'string', description: 'Accessible region label when set.' },
   ],
   cssClasses: [
     { name: 'viking-card', type: 'class', description: 'Machined surface panel with inset hairline.' },
@@ -144,6 +156,13 @@ export const CALLOUT_API: ComponentApi = {
     { name: 'icon', type: 'VikingIconName', description: 'Leading icon — required for a11y when tone conveys status.' },
     { name: 'title', type: 'string', description: 'Bold callout heading.' },
   ],
+  attributes: [
+    { name: 'tone', type: 'VikingTone', default: 'info', description: 'Semantic tone.' },
+    { name: 'heading', type: 'string', description: 'Bold callout title (Web Component).' },
+    { name: 'icon', type: 'string', description: 'Override icon from Viking registry.' },
+    { name: 'dismissible', type: 'boolean', description: 'Shows dismiss control.' },
+  ],
+  events: [{ name: 'viking-close', type: 'CustomEvent<void>', description: 'Fired when callout is dismissed.' }],
   cssClasses: [
     { name: 'showcase-callout', type: 'class', description: 'Base callout container.' },
     { name: 'showcase-callout-info', type: 'class', description: 'Informational tone.' },
@@ -171,6 +190,44 @@ export const MODAL_API: ComponentApi = {
   outputs: [
     { name: 'openChange', type: 'boolean', description: 'Two-way binding for open state.' },
     { name: 'closed', type: 'void', description: 'Emits after close animation.' },
+  ],
+  attributes: [
+    { name: 'open', type: 'boolean', description: 'Shows the native dialog.' },
+    { name: 'title', type: 'string', description: 'Dialog title / aria-label.' },
+    { name: 'dismissible', type: 'boolean', default: 'true', description: 'Escape + backdrop dismiss.' },
+  ],
+  events: [{ name: 'viking-close', type: 'CustomEvent<void>', description: 'Fired when dialog closes.' }],
+};
+
+export const SELECT_API: ComponentApi = {
+  attributes: [
+    { name: 'label', type: 'string', description: 'Visible field label.' },
+    { name: 'name', type: 'string', description: 'Form field name (ElementInternals).' },
+    { name: 'value', type: 'string', description: 'Selected option value.' },
+    { name: 'placeholder', type: 'string', description: 'Placeholder option when empty.' },
+    { name: 'description', type: 'string', description: 'Helper text below control.' },
+    { name: 'error', type: 'string', description: 'Validation message; sets aria-invalid.' },
+    { name: 'width', type: 'full | half', default: 'half', description: 'Field width preset.' },
+    { name: 'disabled', type: 'boolean', description: 'Disables the control.' },
+    { name: 'required', type: 'boolean', description: 'Required field.' },
+  ],
+  events: [{ name: 'viking-change', type: 'CustomEvent<{ value: string }>', description: 'Fired when selection changes.' }],
+  cssClasses: [
+    { name: 'viking-select-native', type: 'class', description: 'Static HTML native select styling.' },
+  ],
+};
+
+export const SEARCH_PALETTE_API: ComponentApi = {
+  attributes: [
+    { name: 'open', type: 'boolean', description: 'Shows the command palette overlay.' },
+    { name: 'global-shortcut', type: 'boolean', description: 'Bind ⌘K / Ctrl+K to open.' },
+    { name: 'placeholder', type: 'string', description: 'Search input placeholder.' },
+    { name: 'items', type: 'JSON', description: 'Array of { title, href, snippet?, group? }.' },
+  ],
+  events: [
+    { name: 'viking-close', type: 'CustomEvent<void>', description: 'Palette closed.' },
+    { name: 'viking-query', type: 'CustomEvent<{ query: string }>', description: 'Search query changed.' },
+    { name: 'viking-select', type: 'CustomEvent<{ item: object }>', description: 'Result activated (before navigation).' },
   ],
 };
 
@@ -209,6 +266,8 @@ export const COMPONENT_API_MAP: Record<string, ComponentApi> = {
   callout: CALLOUT_API,
   chart: CHART_API,
   modal: MODAL_API,
+  select: SELECT_API,
+  'search-palette': SEARCH_PALETTE_API,
   switch: SWITCH_API,
   toast: TOAST_API,
   icon: ICON_API,

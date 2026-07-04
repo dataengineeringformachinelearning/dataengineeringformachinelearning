@@ -1,64 +1,36 @@
 import { attachShadowStyles } from '../core/base';
+import { renderInlineIcon, TONE_ICON_NAMES } from '../core/icons-inline';
+import { VIKING_BADGE_STYLES } from '../core/styles';
+import type { VikingWcTone } from '../core/types';
 
-const TONES = new Set(['accent', 'success', 'warning', 'danger', 'subtle']);
-
-const VIKING_BADGE_STYLES = `
-:host {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-half) var(--viking-space-1);
-  font-family: var(--viking-font-family);
-  font-size: var(--viking-font-size-xs);
-  font-weight: var(--viking-font-weight-semibold);
-  letter-spacing: var(--viking-letter-spacing-wide);
-  border-radius: var(--viking-radius-pill);
-  border: 1px solid var(--viking-border);
-  background: var(--viking-surface-alt);
-  color: var(--viking-text);
-  white-space: nowrap;
-}
-
-:host([tone='accent']) {
-  background: var(--viking-accent);
-  border-color: color-mix(in srgb, var(--viking-accent) 80%, var(--viking-black));
-  color: var(--viking-accent-content);
-}
-
-:host([tone='success']) {
-  background: color-mix(in srgb, var(--viking-success) 18%, var(--viking-surface));
-  border-color: color-mix(in srgb, var(--viking-success) 40%, transparent);
-  color: var(--viking-success);
-}
-
-:host([tone='warning']) {
-  background: color-mix(in srgb, var(--viking-warning) 18%, var(--viking-surface));
-  border-color: color-mix(in srgb, var(--viking-warning) 40%, transparent);
-  color: var(--viking-warning);
-}
-
-:host([tone='danger']) {
-  background: color-mix(in srgb, var(--viking-danger) 18%, var(--viking-surface));
-  border-color: color-mix(in srgb, var(--viking-danger) 40%, transparent);
-  color: var(--viking-danger);
-}
-
-:host([tone='subtle']) {
-  background: var(--viking-surface-alt);
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-2xs);
-}
-`;
+const TONES = new Set<VikingWcTone>([
+  'accent',
+  'secondary',
+  'success',
+  'warning',
+  'danger',
+  'info',
+  'muted',
+  'subtle',
+]);
 
 /**
  * Framework-agnostic Viking badge Web Component.
  * Tag: `viking-badge-wc`
+ *
+ * @attr tone - Semantic color: accent | secondary | success | warning | danger | info | muted
+ * @attr size - Compact density: sm
+ * @attr icon - Viking icon registry name (pairs with label for a11y)
+ * @attr removable - Shows remove control; dispatches `viking-removed`
+ *
+ * @example
+ * <viking-badge-wc tone="success" icon="check">Healthy</viking-badge-wc>
  */
 export class VikingBadgeWc extends HTMLElement {
   static readonly tag = 'viking-badge-wc';
 
   static get observedAttributes(): string[] {
-    return ['tone'];
+    return ['tone', 'size', 'icon', 'removable'];
   }
 
   private readonly shadow: ShadowRoot;
@@ -79,18 +51,47 @@ export class VikingBadgeWc extends HTMLElement {
     }
   }
 
-  private get tone(): string {
-    const value = this.getAttribute('tone') ?? '';
-    return TONES.has(value) ? value : '';
+  private get tone(): VikingWcTone | null {
+    const value = (this.getAttribute('tone') ?? '') as VikingWcTone;
+    return TONES.has(value) ? value : null;
   }
 
+  private get size(): 'sm' | null {
+    return this.getAttribute('size') === 'sm' ? 'sm' : null;
+  }
+
+  private get removable(): boolean {
+    return this.hasAttribute('removable') && this.getAttribute('removable') !== 'false';
+  }
+
+  private readonly onRemove = (): void => {
+    this.dispatchEvent(new CustomEvent('viking-removed', { bubbles: true, composed: true }));
+  };
+
   private render(): void {
-    if (this.tone) {
-      this.setAttribute('tone', this.tone);
+    const tone = this.tone;
+    if (tone) {
+      this.setAttribute('tone', tone);
     } else {
       this.removeAttribute('tone');
     }
-    this.shadow.innerHTML = `<span part="label"><slot></slot></span>`;
+
+    if (this.size) {
+      this.setAttribute('size', this.size);
+    } else {
+      this.removeAttribute('size');
+    }
+
+    const iconName = this.getAttribute('icon') ?? (tone ? TONE_ICON_NAMES[tone] : null);
+    const iconMarkup = iconName ? renderInlineIcon(iconName, 16) : '';
+
+    this.shadow.innerHTML = `
+      ${iconMarkup}
+      <span part="label"><slot></slot></span>
+      ${this.removable ? `<button type="button" class="viking-badge-remove" part="remove" aria-label="Remove">${renderInlineIcon('x', 14)}</button>` : ''}
+    `;
+
+    this.shadow.querySelector('.viking-badge-remove')?.addEventListener('click', this.onRemove);
   }
 }
 

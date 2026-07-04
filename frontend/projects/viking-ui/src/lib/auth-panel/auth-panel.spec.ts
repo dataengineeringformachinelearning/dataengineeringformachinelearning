@@ -70,11 +70,15 @@ describe('viking-auth-panel', () => {
   it('emits googleSignIn and appleSignIn from social buttons', async () => {
     const fixture = await render();
     const buttons = fixture.nativeElement.querySelectorAll(
-      '.viking-auth-social viking-button button',
-    ) as NodeListOf<HTMLButtonElement>;
+      '.viking-auth-social viking-button viking-button-wc',
+    ) as NodeListOf<HTMLElement>;
     expect(buttons.length).toBe(2);
-    buttons[0].click();
-    buttons[1].click();
+    buttons[0].dispatchEvent(
+      new CustomEvent('viking-press', { bubbles: true, composed: true, detail: new MouseEvent('click') }),
+    );
+    buttons[1].dispatchEvent(
+      new CustomEvent('viking-press', { bubbles: true, composed: true, detail: new MouseEvent('click') }),
+    );
     fixture.detectChanges();
     expect(fixture.componentInstance.googleCalled).toBe(true);
     expect(fixture.componentInstance.appleCalled).toBe(true);
@@ -103,10 +107,10 @@ describe('viking-auth-panel', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const buttons = fixture.nativeElement.querySelectorAll(
-      '.viking-auth-social viking-button button',
-    ) as NodeListOf<HTMLButtonElement>;
-    expect(buttons[0].disabled).toBe(true);
-    expect(buttons[1].disabled).toBe(true);
+      '.viking-auth-social viking-button viking-button-wc',
+    ) as NodeListOf<HTMLElement>;
+    expect(buttons[0].shadowRoot?.querySelector('button')?.disabled).toBe(true);
+    expect(buttons[1].shadowRoot?.querySelector('button')?.disabled).toBe(true);
     expect(buttons[0].getAttribute('aria-busy')).toBe('true');
   });
 });

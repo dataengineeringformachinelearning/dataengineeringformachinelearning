@@ -45,13 +45,25 @@ export { VikingControl, provideVikingCva } from './lib/core/cva';
 export {
   VikingBadgeWc,
   VikingButtonWc,
+  VikingCalloutWc,
+  VikingCardWc,
   VikingInputWc,
+  VikingModalWc,
+  VikingSearchPaletteWc,
+  VikingSelectWc,
   VikingThemeToggleWc,
   registerVikingBadgeWc,
   registerVikingButtonWc,
+  registerVikingCalloutWc,
+  registerVikingCardWc,
   registerVikingInputWc,
+  registerVikingModalWc,
+  registerVikingSearchPaletteWc,
+  registerVikingSelectWc,
   registerVikingThemeToggleWc,
   registerVikingElements,
+  type VikingSearchPaletteItem,
+  type VikingWcTone,
 } from './web/index';
 
 // Components (alphabetical)

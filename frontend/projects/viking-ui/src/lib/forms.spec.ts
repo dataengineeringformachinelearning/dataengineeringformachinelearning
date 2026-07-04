@@ -46,7 +46,7 @@ describe('viking forms', () => {
     const label = fixture.nativeElement.querySelector('.viking-field-label');
     expect(label?.textContent).toContain('Email');
     expect(label?.querySelector('.viking-field-required')).toBeTruthy();
-    expect(fixture.nativeElement.querySelector('input')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('viking-input-wc')).toBeTruthy();
   });
 
   it('shows error alert and invalid host class', async () => {
@@ -62,7 +62,8 @@ describe('viking forms', () => {
 
   it('binds input value via ngModel (ControlValueAccessor)', async () => {
     const fixture = await render(FieldInputHost);
-    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    const wc = fixture.nativeElement.querySelector('viking-input-wc') as HTMLElement;
+    const input = wc.shadowRoot?.querySelector('input') as HTMLInputElement;
     input.value = 'ops@deml.app';
     input.dispatchEvent(new Event('input'));
     fixture.detectChanges();

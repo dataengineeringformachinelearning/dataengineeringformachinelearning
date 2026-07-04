@@ -1,239 +1,72 @@
-import { attachShadowStyles, readBoolAttr } from '../core/base';
+import { attachShadowStyles, readBoolAttr, closeModalDialog, showModalDialog } from '../core/base';
+import { escapeHtml, modKeyLabel } from '../core/dom';
+import { renderInlineIcon } from '../core/icons-inline';
+import { VIKING_SEARCH_PALETTE_STYLES } from '../core/styles';
+import type { VikingSearchPaletteItem } from '../core/types';
 
-const VIKING_SEARCH_PALETTE_STYLES = `
-:host {
-  display: contents;
-}
+export type { VikingSearchPaletteItem };
 
-.viking-search-palette-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: var(--viking-z-overlay, 10001);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 10vh var(--viking-space-2) var(--viking-space-2);
-  background: var(--viking-overlay-backdrop, rgba(0, 0, 0, 0.55));
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border: none;
-  animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-out);
-}
-
-.viking-search-palette {
-  display: flex;
-  flex-direction: column;
-  background: var(--viking-surface);
-  border: 1px solid var(--viking-border-strong);
-  border-radius: var(--viking-radius-lg);
-  box-shadow: var(--viking-shadow-lg);
-  overflow: hidden;
-  max-width: 600px;
-  width: 100%;
-  margin: 0 auto;
-  font-family: var(--viking-font-family);
-  color: var(--viking-text);
-  animation: viking-modal-in var(--viking-duration) var(--viking-ease-default);
-  position: relative;
-}
-
-.viking-search-palette::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
-    transparent
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-.viking-search-palette-header {
-  display: flex;
-  align-items: center;
-  padding: var(--viking-space-2);
-  border-bottom: 1px solid var(--viking-border);
-  gap: var(--viking-space-1);
-  background: color-mix(in srgb, var(--viking-bg) 20%, transparent);
-}
-
-.viking-search-palette-header:focus-within {
-  border-bottom-color: var(--viking-accent);
-  box-shadow: inset 0 -2px 0 var(--viking-accent-soft);
-}
-
-.viking-search-palette-icon {
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-lg);
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-.viking-search-palette-input {
-  flex: 1;
-  background: none;
-  border: none;
-  outline: none;
-  font-size: calc(var(--viking-font-size) * 1.05);
-  color: var(--viking-text);
-  font-family: inherit;
-  min-width: 0;
-}
-
-.viking-search-palette-input::placeholder {
-  color: var(--viking-text-muted);
-}
-
-.viking-search-palette-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--viking-touch-target-comfort, 44px);
-  min-height: var(--viking-touch-target-comfort, 44px);
-  border: none;
-  background: transparent;
-  color: var(--viking-text-muted);
-  cursor: pointer;
-  padding: var(--viking-space-half);
-  border-radius: var(--viking-radius);
-  font-size: var(--viking-font-size-lg);
-  line-height: 1;
-}
-
-.viking-search-palette-close:hover {
-  color: var(--viking-text);
-  background: var(--viking-accent-soft);
-}
-
-.viking-search-palette-close:focus-visible {
-  outline: var(--viking-ring-width) solid var(--viking-ring);
-  outline-offset: var(--viking-ring-offset);
-}
-
-.viking-search-palette-body {
-  max-height: 50vh;
-  overflow-y: auto;
-  padding: var(--viking-space-2);
-}
-
-.viking-search-palette-footer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--viking-space-1);
-  padding: var(--viking-space-1) var(--viking-space-2);
-  border-top: 1px solid var(--viking-border);
-  font-size: calc(var(--viking-font-size) * 0.85);
-  color: var(--viking-text-muted);
-}
-
-.viking-kbd {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 1.5rem;
-  padding: 2px 6px;
-  font-family: inherit;
-  font-size: calc(var(--viking-font-size) * 0.75);
-  border-radius: calc(var(--viking-radius) / 2);
-  border: 1px solid var(--viking-border);
-  background: var(--viking-surface-alt);
-}
-
-.viking-search-results {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-1);
-}
-
-.viking-search-result {
-  display: flex;
-  align-items: center;
-  min-height: var(--viking-control-height-sm, 36px);
-  padding: var(--viking-space-1) var(--viking-space-2);
-  border-radius: var(--viking-radius);
-  background: color-mix(in srgb, var(--viking-surface) 2%, transparent);
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: var(--viking-transition-interactive);
-  gap: var(--viking-space-1);
-  text-decoration: none;
-  color: inherit;
-}
-
-.viking-search-result:hover,
-.viking-search-result.is-selected {
-  background: color-mix(in srgb, var(--viking-accent) 5%, transparent);
-  border-color: color-mix(in srgb, var(--viking-accent) 30%, transparent);
-  box-shadow: var(--viking-shadow-sm);
-}
-
-.viking-search-result:focus-visible {
-  outline: var(--viking-ring-width) solid var(--viking-ring);
-  outline-offset: var(--viking-ring-offset);
-}
-
-.viking-search-result-title {
-  font-size: var(--viking-font-size-sm);
-  font-weight: var(--viking-font-weight-semibold);
-  color: var(--viking-text);
-}
-
-.viking-search-result-snippet {
-  font-size: var(--viking-font-size-xs);
-  color: var(--viking-text-muted);
-}
-
-.viking-search-empty {
-  padding: var(--viking-space-3);
-  text-align: center;
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-sm);
-}
-
-@keyframes viking-backdrop-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes viking-modal-in {
-  from {
-    opacity: 0;
-    transform: translateY(var(--viking-space-1)) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-`;
-
-const modKey = (): string =>
-  typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
-
-type SearchItem = { title: string; href: string; snippet?: string };
-
-const parseItems = (el: HTMLElement): SearchItem[] => {
+const parseItems = (el: HTMLElement): VikingSearchPaletteItem[] => {
   const raw = el.getAttribute('items');
-  if (!raw) return [];
+  if (!raw) {
+    return [];
+  }
   try {
-    const parsed = JSON.parse(raw) as SearchItem[];
+    const parsed = JSON.parse(raw) as VikingSearchPaletteItem[];
     return Array.isArray(parsed) ? parsed : [];
   } catch {
     return [];
   }
 };
 
+const filterItems = (items: VikingSearchPaletteItem[], query: string): VikingSearchPaletteItem[] => {
+  const q = query.trim().toLowerCase();
+  if (!q) {
+    return items;
+  }
+  return items.filter(
+    (item) =>
+      item.title.toLowerCase().includes(q) ||
+      (item.snippet?.toLowerCase().includes(q) ?? false) ||
+      (item.group?.toLowerCase().includes(q) ?? false) ||
+      item.href.toLowerCase().includes(q),
+  );
+};
+
+const groupItems = (
+  items: VikingSearchPaletteItem[],
+): Array<{ group: string | null; items: VikingSearchPaletteItem[] }> => {
+  const groups = new Map<string | null, VikingSearchPaletteItem[]>();
+  items.forEach((item) => {
+    const key = item.group ?? null;
+    const bucket = groups.get(key) ?? [];
+    bucket.push(item);
+    groups.set(key, bucket);
+  });
+  return Array.from(groups.entries()).map(([group, grouped]) => ({ group, items: grouped }));
+};
+
 /**
  * Framework-agnostic command palette / search overlay Web Component.
  * Tag: `viking-search-palette-wc`
  *
+ * @attr open - When present, shows the palette
+ * @attr global-shortcut - Bind ⌘K / Ctrl+K to open
+ * @attr placeholder - Search input placeholder
+ * @attr items - JSON array of `{ title, href, snippet?, group? }`
+ *
+ * @method openPalette() - Programmatically open
+ * @method closePalette() - Programmatically close
+ *
+ * @event viking-close - Palette closed
+ * @event viking-query - `{ detail: { query: string } }` on input
+ * @event viking-select - `{ detail: { item } }` when a result is activated
+ *
  * @example
- * <viking-search-palette-wc global-shortcut items='[{"title":"Components","href":"/components"}]'></viking-search-palette-wc>
+ * <viking-search-palette-wc
+ *   global-shortcut
+ *   items='[{"title":"Components","href":"/components","group":"Docs"}]'
+ * ></viking-search-palette-wc>
  */
 export class VikingSearchPaletteWc extends HTMLElement {
   static readonly tag = 'viking-search-palette-wc';
@@ -248,6 +81,8 @@ export class VikingSearchPaletteWc extends HTMLElement {
   private resultsEl: HTMLDivElement | null = null;
   private globalKeyHandler: ((event: KeyboardEvent) => void) | null = null;
   private query = '';
+  private activeIndex = 0;
+  private flatResults: VikingSearchPaletteItem[] = [];
 
   constructor() {
     super();
@@ -262,42 +97,72 @@ export class VikingSearchPaletteWc extends HTMLElement {
     this.dialogEl?.addEventListener('close', this.onClose);
     this.dialogEl?.addEventListener('click', this.onBackdropClick);
     this.inputEl?.addEventListener('input', this.onInput);
+    this.inputEl?.addEventListener('keydown', this.onInputKeydown);
   }
 
   disconnectedCallback(): void {
     this.dialogEl?.removeEventListener('close', this.onClose);
     this.dialogEl?.removeEventListener('click', this.onBackdropClick);
     this.inputEl?.removeEventListener('input', this.onInput);
+    this.inputEl?.removeEventListener('keydown', this.onInputKeydown);
     this.unbindGlobalShortcut();
   }
 
   attributeChangedCallback(name: string): void {
-    if (!this.isConnected) return;
+    if (!this.isConnected) {
+      return;
+    }
     if (name === 'open') {
       this.syncOpen();
     }
     if (name === 'items' || name === 'placeholder') {
-      this.renderResults();
+      if (name === 'placeholder' && this.inputEl) {
+        const placeholder = this.getAttribute('placeholder') ?? 'Search documentation, dashboard, API…';
+        this.inputEl.placeholder = placeholder;
+        this.inputEl.setAttribute('aria-label', placeholder);
+      } else {
+        this.renderResults();
+      }
     }
   }
 
+  /** Opens the command palette. */
   openPalette(): void {
     this.setAttribute('open', '');
     this.syncOpen();
   }
 
+  /** Closes the command palette. */
   closePalette(): void {
     this.removeAttribute('open');
-    this.dialogEl?.close();
+    closeModalDialog(this.dialogEl);
+  }
+
+  /** Sets the query string and re-renders filtered results. */
+  search(query: string): void {
+    this.query = query;
+    if (this.inputEl) {
+      this.inputEl.value = query;
+    }
+    this.activeIndex = 0;
+    this.renderResults();
+    this.dispatchEvent(
+      new CustomEvent('viking-query', {
+        bubbles: true,
+        composed: true,
+        detail: { query: this.query },
+      }),
+    );
   }
 
   private readonly onClose = (): void => {
     this.removeAttribute('open');
     this.query = '';
-    if (this.inputEl) this.inputEl.value = '';
-    this.dispatchEvent(
-      new CustomEvent('viking-close', { bubbles: true, composed: true }),
-    );
+    this.activeIndex = 0;
+    if (this.inputEl) {
+      this.inputEl.value = '';
+    }
+    this.dispatchEvent(new CustomEvent('viking-close', { bubbles: true, composed: true }));
   };
 
   private readonly onBackdropClick = (event: MouseEvent): void => {
@@ -307,7 +172,8 @@ export class VikingSearchPaletteWc extends HTMLElement {
   };
 
   private readonly onInput = (event: Event): void => {
-    this.query = (event.target as HTMLInputElement).value;
+    this.query = (event.target as HTMLInputElement).value ?? this.inputEl?.value ?? '';
+    this.activeIndex = 0;
     this.renderResults();
     this.dispatchEvent(
       new CustomEvent('viking-query', {
@@ -318,8 +184,40 @@ export class VikingSearchPaletteWc extends HTMLElement {
     );
   };
 
+  private readonly onInputKeydown = (event: KeyboardEvent): void => {
+    if (this.flatResults.length === 0) {
+      return;
+    }
+
+    if (event.key === 'ArrowDown') {
+      event.preventDefault();
+      this.activeIndex = Math.min(this.flatResults.length - 1, this.activeIndex + 1);
+      this.renderResults();
+      this.scrollActiveIntoView();
+      return;
+    }
+
+    if (event.key === 'ArrowUp') {
+      event.preventDefault();
+      this.activeIndex = Math.max(0, this.activeIndex - 1);
+      this.renderResults();
+      this.scrollActiveIntoView();
+      return;
+    }
+
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const item = this.flatResults[this.activeIndex];
+      if (item) {
+        this.activateItem(item);
+      }
+    }
+  };
+
   private bindGlobalShortcut(): void {
-    if (!readBoolAttr(this, 'global-shortcut')) return;
+    if (!readBoolAttr(this, 'global-shortcut')) {
+      return;
+    }
     this.globalKeyHandler = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
@@ -337,74 +235,149 @@ export class VikingSearchPaletteWc extends HTMLElement {
   }
 
   private syncOpen(): void {
-    if (!this.dialogEl) return;
+    if (!this.dialogEl) {
+      return;
+    }
     const shouldOpen = this.hasAttribute('open');
     if (shouldOpen && !this.dialogEl.open) {
-      this.dialogEl.showModal();
+      showModalDialog(this.dialogEl);
+      this.activeIndex = 0;
       this.renderResults();
       queueMicrotask(() => this.inputEl?.focus());
     } else if (!shouldOpen && this.dialogEl.open) {
-      this.dialogEl.close();
+      closeModalDialog(this.dialogEl);
+    }
+  }
+
+  private scrollActiveIntoView(): void {
+    const active = this.resultsEl?.querySelector('.viking-search-result.is-selected');
+    active?.scrollIntoView({ block: 'nearest' });
+  }
+
+  private activateItem(item: VikingSearchPaletteItem): void {
+    this.dispatchEvent(
+      new CustomEvent('viking-select', {
+        bubbles: true,
+        composed: true,
+        detail: { item },
+      }),
+    );
+    this.closePalette();
+    if (item.href) {
+      window.location.assign(item.href);
     }
   }
 
   private renderResults(): void {
-    if (!this.resultsEl) return;
-    const items = parseItems(this);
-    const q = this.query.trim().toLowerCase();
-    const filtered = q
-      ? items.filter(
-          (item) =>
-            item.title.toLowerCase().includes(q) ||
-            (item.snippet?.toLowerCase().includes(q) ?? false),
-        )
-      : items;
-
-    if (filtered.length === 0) {
-      this.resultsEl.innerHTML = `<p class="viking-search-empty">${q ? 'No results found' : 'Start typing to search…'}</p>`;
+    if (!this.resultsEl) {
       return;
     }
 
-    this.resultsEl.innerHTML = `<div class="viking-search-results" role="listbox">${filtered
-      .map(
-        (item) => `
-        <a class="viking-search-result" role="option" href="${item.href}" part="result">
-          <div>
-            <div class="viking-search-result-title">${item.title}</div>
-            ${item.snippet ? `<div class="viking-search-result-snippet">${item.snippet}</div>` : ''}
-          </div>
-        </a>`,
-      )
-      .join('')}</div>`;
+    const items = parseItems(this);
+    const q = this.query.trim().toLowerCase();
+    const filtered = filterItems(items, q);
+    this.flatResults = filtered;
+
+    if (filtered.length === 0) {
+      const q = this.query.trim();
+      this.resultsEl.innerHTML = `<p class="viking-search-empty" role="status">${q ? 'No results found' : 'Start typing to search…'}</p>`;
+      this.inputEl?.removeAttribute('aria-activedescendant');
+      return;
+    }
+
+    if (this.activeIndex >= filtered.length) {
+      this.activeIndex = filtered.length - 1;
+    }
+
+    let resultIndex = 0;
+    const grouped = groupItems(filtered);
+
+    const markup = grouped
+      .map(({ group, items: groupItemsList }) => {
+        const groupLabel = group
+          ? `<p class="viking-search-group-label" role="presentation">${escapeHtml(group)}</p>`
+          : '';
+        const rows = groupItemsList
+          .map((item) => {
+            const id = `viking-search-result-${resultIndex}`;
+            const selected = resultIndex === this.activeIndex;
+            resultIndex += 1;
+            return `
+              <a
+                id="${id}"
+                class="viking-search-result${selected ? ' is-selected' : ''}"
+                role="option"
+                aria-selected="${selected}"
+                href="${escapeHtml(item.href)}"
+                part="result"
+                data-index="${resultIndex - 1}"
+              >
+                <div>
+                  <div class="viking-search-result-title">${escapeHtml(item.title)}</div>
+                  ${item.snippet ? `<div class="viking-search-result-snippet">${escapeHtml(item.snippet)}</div>` : ''}
+                </div>
+              </a>`;
+          })
+          .join('');
+        return `${groupLabel}${rows}`;
+      })
+      .join('');
+
+    this.resultsEl.innerHTML = `<div class="viking-search-results" role="listbox">${markup}</div>`;
+
+    const activeId = `viking-search-result-${this.activeIndex}`;
+    this.inputEl?.setAttribute('aria-activedescendant', activeId);
+    this.inputEl?.setAttribute('role', 'combobox');
+    this.inputEl?.setAttribute('aria-expanded', 'true');
+    this.inputEl?.setAttribute('aria-controls', 'viking-search-results-list');
+
+    this.resultsEl.querySelectorAll('.viking-search-result').forEach((node) => {
+      node.addEventListener('click', (event) => {
+        event.preventDefault();
+        const index = Number((node as HTMLElement).dataset.index ?? 0);
+        const item = this.flatResults[index];
+        if (item) {
+          this.activateItem(item);
+        }
+      });
+      node.addEventListener('mouseenter', () => {
+        const index = Number((node as HTMLElement).dataset.index ?? 0);
+        this.activeIndex = index;
+        this.renderResults();
+      });
+    });
   }
 
   private render(): void {
     const placeholder =
       this.getAttribute('placeholder') ?? 'Search documentation, dashboard, API…';
-    const mod = modKey();
+    const mod = modKeyLabel();
 
     this.shadow.innerHTML = `
       <dialog class="viking-search-palette-backdrop" aria-label="Search">
         <div class="viking-search-palette" part="panel" role="dialog" aria-modal="true">
           <div class="viking-search-palette-header" part="header">
-            <span class="viking-search-palette-icon" aria-hidden="true">⌕</span>
+            <span class="viking-search-palette-icon" aria-hidden="true">${renderInlineIcon('search', 24)}</span>
             <input
               type="search"
               class="viking-search-palette-input"
               part="input"
-              placeholder="${placeholder}"
-              aria-label="${placeholder}"
+              placeholder="${escapeHtml(placeholder)}"
+              aria-label="${escapeHtml(placeholder)}"
+              aria-autocomplete="list"
               autocomplete="off"
               spellcheck="false"
             />
-            <button type="button" class="viking-search-palette-close" part="close" aria-label="Close search">✕</button>
+            <button type="button" class="viking-search-palette-close" part="close" aria-label="Close search">${renderInlineIcon('x', 20)}</button>
           </div>
           <div class="viking-search-palette-body" part="body">
             <slot></slot>
-            <div class="viking-search-results-host"></div>
+            <div class="viking-search-results-host" id="viking-search-results-list"></div>
           </div>
           <footer class="viking-search-palette-footer" part="footer">
             <span class="viking-kbd">${mod}</span><span class="viking-kbd">K</span> toggle ·
+            <span class="viking-kbd">↑</span><span class="viking-kbd">↓</span> navigate ·
+            <span class="viking-kbd">Enter</span> open ·
             <span class="viking-kbd">Esc</span> close
           </footer>
         </div>
@@ -415,11 +388,11 @@ export class VikingSearchPaletteWc extends HTMLElement {
     this.inputEl = this.shadow.querySelector('input');
     this.resultsEl = this.shadow.querySelector('.viking-search-results-host');
 
-    const closeBtn = this.shadow.querySelector('.viking-search-palette-close');
-    closeBtn?.addEventListener('click', () => this.closePalette());
+    this.shadow.querySelector('.viking-search-palette-close')?.addEventListener('click', () => this.closePalette());
 
     this.dialogEl?.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
+        event.preventDefault();
         this.closePalette();
       }
     });

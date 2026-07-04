@@ -1,121 +1,36 @@
 import { attachShadowStyles } from '../core/base';
+import { escapeHtml } from '../core/dom';
+import { renderInlineIcon, TONE_ICON_NAMES } from '../core/icons-inline';
+import { VIKING_CALLOUT_STYLES } from '../core/styles';
+import type { VikingWcTone } from '../core/types';
 
-const TONES = new Set(['accent', 'info', 'success', 'warning', 'danger', 'secondary']);
-
-const VIKING_CALLOUT_STYLES = `
-:host {
-  display: block;
-  font-family: var(--viking-font-family);
-}
-
-.viking-callout {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--viking-space-2);
-  padding: var(--viking-space-2);
-  border-radius: var(--viking-radius-lg);
-  border: 1px solid var(--viking-border);
-  border-left-width: 3px;
-  background: var(--viking-surface-alt);
-  color: var(--viking-text);
-  font-size: var(--viking-font-size-sm);
-  box-shadow: var(--viking-shadow-sm);
-}
-
-.viking-callout-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-lg);
-  line-height: 1;
-}
-
-.viking-callout-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.viking-callout-heading {
-  margin: 0 0 var(--viking-space-half);
-  font-weight: var(--viking-font-weight-semibold);
-  color: var(--viking-text);
-}
-
-.viking-callout-text {
-  margin: 0;
-  color: var(--viking-text-muted);
-  line-height: var(--viking-line-height-relaxed);
-}
-
-.viking-callout-info {
-  border-color: color-mix(in srgb, var(--viking-info) 45%, transparent);
-  border-left-color: var(--viking-info);
-  background: color-mix(in srgb, var(--viking-info) 8%, var(--viking-surface));
-}
-
-.viking-callout-info .viking-callout-icon {
-  color: var(--viking-info);
-}
-
-.viking-callout-accent {
-  border-color: var(--viking-accent);
-  border-left-color: var(--viking-accent);
-  background: var(--viking-accent-soft);
-}
-
-.viking-callout-accent .viking-callout-icon {
-  color: var(--viking-accent);
-}
-
-.viking-callout-success {
-  border-color: color-mix(in srgb, var(--viking-success) 45%, transparent);
-  border-left-color: var(--viking-success);
-  background: color-mix(in srgb, var(--viking-success) 8%, var(--viking-surface));
-}
-
-.viking-callout-success .viking-callout-icon {
-  color: var(--viking-success);
-}
-
-.viking-callout-warning {
-  border-color: color-mix(in srgb, var(--viking-warning) 45%, transparent);
-  border-left-color: var(--viking-warning);
-  background: color-mix(in srgb, var(--viking-warning) 8%, var(--viking-surface));
-}
-
-.viking-callout-warning .viking-callout-icon {
-  color: var(--viking-warning);
-}
-
-.viking-callout-danger {
-  border-color: color-mix(in srgb, var(--viking-danger) 45%, transparent);
-  border-left-color: var(--viking-danger);
-  background: color-mix(in srgb, var(--viking-danger) 8%, var(--viking-surface));
-}
-
-.viking-callout-danger .viking-callout-icon {
-  color: var(--viking-danger);
-}
-`;
-
-const TONE_ICONS: Record<string, string> = {
-  accent: '◆',
-  info: 'ℹ',
-  success: '✓',
-  warning: '⚠',
-  danger: '✕',
-  secondary: '◆',
-};
+const TONES = new Set<VikingWcTone>([
+  'accent',
+  'secondary',
+  'success',
+  'warning',
+  'danger',
+  'info',
+  'muted',
+]);
 
 /**
  * Framework-agnostic Viking callout Web Component.
  * Tag: `viking-callout-wc`
+ *
+ * @attr tone - Semantic tone (default: info)
+ * @attr heading - Bold callout title
+ * @attr icon - Override leading icon from the Viking registry
+ * @attr dismissible - Shows dismiss control; dispatches `viking-close`
+ *
+ * @example
+ * <viking-callout-wc tone="warning" heading="Degraded worker">Lag exceeds 3s.</viking-callout-wc>
  */
 export class VikingCalloutWc extends HTMLElement {
   static readonly tag = 'viking-callout-wc';
 
   static get observedAttributes(): string[] {
-    return ['tone', 'heading'];
+    return ['tone', 'heading', 'icon', 'dismissible', 'hidden'];
   }
 
   private readonly shadow: ShadowRoot;
@@ -136,23 +51,37 @@ export class VikingCalloutWc extends HTMLElement {
     }
   }
 
-  private get tone(): string {
-    const value = this.getAttribute('tone') ?? 'info';
+  private get tone(): VikingWcTone {
+    const value = (this.getAttribute('tone') ?? 'info') as VikingWcTone;
     return TONES.has(value) ? value : 'info';
   }
 
+  private get dismissible(): boolean {
+    return this.hasAttribute('dismissible') && this.getAttribute('dismissible') !== 'false';
+  }
+
+  private readonly onDismiss = (): void => {
+    this.setAttribute('hidden', '');
+    this.dispatchEvent(new CustomEvent('viking-close', { bubbles: true, composed: true }));
+  };
+
   private render(): void {
     const heading = this.getAttribute('heading') ?? '';
-    const icon = TONE_ICONS[this.tone] ?? TONE_ICONS.info;
+    const iconName = this.getAttribute('icon') ?? TONE_ICON_NAMES[this.tone] ?? 'info';
+    const iconMarkup = renderInlineIcon(iconName, 22, 'viking-callout-icon');
+
     this.shadow.innerHTML = `
       <div class="viking-callout viking-callout-${this.tone}" role="note" part="surface">
-        <span class="viking-callout-icon" aria-hidden="true" part="icon">${icon}</span>
+        <span part="icon">${iconMarkup}</span>
         <div class="viking-callout-body" part="body">
-          ${heading ? `<p class="viking-callout-heading" part="heading">${heading}</p>` : ''}
+          ${heading ? `<p class="viking-callout-heading" part="heading">${escapeHtml(heading)}</p>` : ''}
           <div class="viking-callout-text" part="text"><slot></slot></div>
         </div>
+        ${this.dismissible ? `<button type="button" class="viking-callout-close" part="close" aria-label="Dismiss">${renderInlineIcon('x', 18)}</button>` : ''}
       </div>
     `;
+
+    this.shadow.querySelector('.viking-callout-close')?.addEventListener('click', this.onDismiss);
   }
 }
 
