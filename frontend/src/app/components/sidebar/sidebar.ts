@@ -10,7 +10,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
-import { VikingAppSidebar } from '@dataengineeringformachinelearning/viking-ui';
+import {
+  VikingAppSidebar,
+  VikingSidebarNav,
+  VikingSidebarNavLink,
+  VikingSidebarNavTree,
+  VikingSidebarNavTreeChildren,
+  VikingSidebarNavTreeHeader,
+  VikingSidebarNavTreeItem,
+} from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { DemlBrandLogo } from '../deml-brand-logo/deml-brand-logo';
 import { SettingsService } from '../../services/settings.service';
@@ -21,7 +29,19 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterModule, VikingAppSidebar, VikingAppIcon, DemlBrandLogo],
+  imports: [
+    CommonModule,
+    RouterModule,
+    VikingAppSidebar,
+    VikingSidebarNav,
+    VikingSidebarNavLink,
+    VikingSidebarNavTree,
+    VikingSidebarNavTreeChildren,
+    VikingSidebarNavTreeHeader,
+    VikingSidebarNavTreeItem,
+    VikingAppIcon,
+    DemlBrandLogo,
+  ],
   templateUrl: './sidebar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

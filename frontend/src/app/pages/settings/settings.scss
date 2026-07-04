@@ -378,10 +378,28 @@
   justify-content: center;
 }
 
-/* Copy button — layout only in code blocks */
-.copy-btn {
-  flex-shrink: 0;
-  margin: 0;
+.code-block-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-1, 8px);
+
+  .code-block-outlined {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  > viking-button {
+    flex-shrink: 0;
+    margin: 0;
+    width: 100%;
+
+    @media (min-width: 601px) {
+      width: auto;
+      align-self: flex-start;
+    }
+  }
 }
 
 .embed-desc {
@@ -399,28 +417,6 @@
   color: var(--text-color);
   flex: 1;
   margin: 0;
-}
-
-.code-block-container {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: var(--viking-space-2, 16px);
-  margin-top: var(--viking-space-1, 8px);
-
-  .code-block-outlined {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .copy-btn {
-    width: 100%;
-
-    @media (min-width: 601px) {
-      width: auto;
-      align-self: flex-start;
-    }
-  }
 }
 
 .form-col {

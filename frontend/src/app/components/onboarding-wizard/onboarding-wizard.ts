@@ -16,7 +16,8 @@ import {
   VikingField,
   VikingInput,
   VikingModal,
-  VikingProgress,
+  VikingWizard,
+  type VikingWizardStep,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 import { MonitorService, StatusPageData } from '../../services/monitor.service';
@@ -41,7 +42,7 @@ type WizardStep = (typeof STEPS)[number];
     VikingCheckbox,
     VikingField,
     VikingInput,
-    VikingProgress,
+    VikingWizard,
     VikingAppIcon,
   ],
   templateUrl: './onboarding-wizard.html',
@@ -73,9 +74,15 @@ export class OnboardingWizard {
 
   readonly steps = STEPS;
 
-  stepIndex = () => STEPS.indexOf(this.currentStep());
+  readonly wizardSteps: VikingWizardStep[] = [
+    { id: 'welcome', label: 'Welcome' },
+    { id: 'site', label: 'Name your site' },
+    { id: 'endpoint', label: 'Add a health check' },
+    { id: 'publish', label: 'Go live' },
+    { id: 'done', label: 'Complete' },
+  ];
 
-  progressPercent = () => ((this.stepIndex() + 1) / STEPS.length) * 100;
+  stepIndex = () => STEPS.indexOf(this.currentStep());
 
   constructor() {
     afterNextRender(() => {

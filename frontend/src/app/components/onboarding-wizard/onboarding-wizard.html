@@ -5,12 +5,7 @@
   [dismissible]="false"
   (openChange)="onOpenChange($event)"
 >
-  <div class="wizard-shell" role="document" aria-labelledby="onboarding-title">
-    <div class="wizard-progress">
-      <viking-progress [value]="progressPercent()" label="Setup progress" />
-      <span class="progress-label">Step {{ stepIndex() + 1 }} of {{ steps.length }}</span>
-    </div>
-
+  <viking-wizard [steps]="wizardSteps" [step]="currentStep()">
     @switch (currentStep()) { @case ('welcome') {
     <div class="wizard-step">
       <viking-app-icon name="rocket_launch" hostClass="wizard-icon" [ariaHidden]="true" />
@@ -94,7 +89,7 @@
     <viking-callout tone="danger" [heading]="errorMessage()!" />
     }
 
-    <div class="wizard-actions">
+    <div vikingWizardActions class="wizard-actions">
       @if (currentStep() !== 'welcome' && currentStep() !== 'done') {
       <viking-button variant="ghost" type="button" (pressed)="goBack()" [disabled]="isBusy()"
         >Back</viking-button
@@ -151,6 +146,6 @@
         }
       </div>
     </div>
-  </div>
+  </viking-wizard>
 </viking-modal>
 }
