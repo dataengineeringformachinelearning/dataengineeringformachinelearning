@@ -26,13 +26,12 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install requirements
-COPY backend/requirements.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code for collectstatic
-# Note: supports Railway (build context = repo root, dockerfilePath=backend/Dockerfile)
-# and docker-compose (context=./backend)
-COPY backend/ .
+# Railway sets root directory to backend/; docker-compose uses context: ./backend
+COPY . .
 # Inline env for collectstatic only — never persist DATABASE_URL into the runtime image.
 RUN DATABASE_URL=sqlite:////tmp/collectstatic.db \
     SECRET_KEY=collectstatic-build-only \

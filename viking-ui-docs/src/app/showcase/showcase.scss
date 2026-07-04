@@ -1,6 +1,6 @@
 .viking-showcase {
   width: 100%;
-  max-width: 72rem;
+  max-width: var(--viking-container-max-width, 1260px);
   margin: 0 auto;
   padding: var(--viking-space-3);
   display: flex;
