@@ -1,12 +1,11 @@
 <div class="viking-showcase">
-  <header class="showcase-page-header">
-    <viking-breadcrumbs [items]="breadcrumbs" />
-    <viking-heading size="lg" [level]="1">Components</viking-heading>
-    <viking-text variant="muted">
-      Interactive previews for every Viking-UI primitive. Copy patterns directly
-      into your Angular app.
-    </viking-text>
-  </header>
+  <viking-page-header
+    title="Components"
+    subtitle="Interactive previews for every Viking-UI primitive. Copy patterns directly into your Angular app."
+    layout="hud"
+  >
+    <viking-breadcrumbs vikingPageHeaderExtra [items]="breadcrumbs" />
+  </viking-page-header>
 
   <section
     class="showcase-category"

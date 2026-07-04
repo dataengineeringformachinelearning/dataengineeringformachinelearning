@@ -1,20 +1,52 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+} from "@angular/core";
 import {
   Router,
   RouterLink,
   RouterLinkActive,
   RouterOutlet,
 } from "@angular/router";
-/** Persistent doc-site chrome — sidebar navigation like spartan.ng. */
+import {
+  VikingAppSidebar,
+  VikingBrand,
+  VikingButton,
+  VikingSiteNavbar,
+} from "@dataengineeringformachinelearning/viking-ui";
+
+const readTheme = (): "light" | "dark" => {
+  const saved = localStorage.getItem("theme");
+  if (saved === "light" || saved === "dark") {
+    return saved;
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+};
+
+/** Persistent doc-site chrome — Drakkar navbar + dashboard sidebar shell. */
 @Component({
   selector: "app-doc-shell",
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    VikingAppSidebar,
+    VikingBrand,
+    VikingButton,
+    VikingSiteNavbar,
+  ],
   templateUrl: "./doc-shell.html",
   styleUrl: "./doc-shell.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DocShell {
   private readonly router = inject(Router);
+
+  protected readonly theme = signal<"light" | "dark">(readTheme());
 
   protected readonly navSections = [
     { id: "cat-foundations", label: "Foundations" },
@@ -29,6 +61,10 @@ export class DocShell {
     { id: "cat-drakkar", label: "Drakkar Shell" },
   ] as const;
 
+  protected browseComponents = (): void => {
+    void this.router.navigate(["/components"]);
+  };
+
   protected scrollToCategory = (event: Event, sectionId: string): void => {
     event.preventDefault();
     void this.router
@@ -36,6 +72,14 @@ export class DocShell {
       .then(() => {
         requestAnimationFrame(() => this.focusCategory(sectionId));
       });
+  };
+
+  protected toggleTheme = (): void => {
+    const next = this.theme() === "light" ? "dark" : "light";
+    this.theme.set(next);
+    document.documentElement.setAttribute("data-theme", next);
+    document.documentElement.classList.toggle("dark", next === "dark");
+    localStorage.setItem("theme", next);
   };
 
   private focusCategory = (sectionId: string): void => {
