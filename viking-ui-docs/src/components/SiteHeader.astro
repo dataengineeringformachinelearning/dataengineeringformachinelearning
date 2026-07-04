@@ -1,6 +1,7 @@
 ---
-import { SITE, NAV_LINKS } from '../lib/site';
+import { SITE, NAV_LINKS, DOCS_SEARCH_ITEMS } from '../lib/site';
 const currentPath = Astro.url.pathname;
+const searchItemsJson = JSON.stringify(DOCS_SEARCH_ITEMS);
 ---
 
 <header class="docs-header">
@@ -27,6 +28,16 @@ const currentPath = Astro.url.pathname;
     </nav>
 
     <div class="docs-header-actions">
+      <button
+        type="button"
+        class="docs-search-trigger viking-btn viking-btn-outline viking-btn-compact"
+        id="docs-search-trigger"
+        aria-label="Search documentation (⌘K)"
+      >
+        <span class="docs-search-trigger-icon" aria-hidden="true">⌕</span>
+        <span class="docs-search-trigger-label">Search</span>
+        <span class="docs-search-trigger-kbd" aria-hidden="true"><span class="viking-kbd-static">⌘K</span></span>
+      </button>
       <a
         href={SITE.github}
         class="docs-github-link"
@@ -43,3 +54,67 @@ const currentPath = Astro.url.pathname;
     </div>
   </div>
 </header>
+
+<viking-search-palette-wc
+  id="docs-search-palette"
+  global-shortcut
+  placeholder="Search Viking-UI documentation…"
+  items={searchItemsJson}
+></viking-search-palette-wc>
+
+<script>
+  const initDocsSearch = (): void => {
+    const palette = document.getElementById('docs-search-palette');
+    const trigger = document.getElementById('docs-search-trigger');
+    if (!palette || trigger?.hasAttribute('data-search-bound')) return;
+    trigger?.setAttribute('data-search-bound', 'true');
+    trigger?.addEventListener('click', () => palette.setAttribute('open', ''));
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDocsSearch);
+  } else {
+    initDocsSearch();
+  }
+</script>
+
+<style>
+  .docs-search-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--viking-space-1);
+    min-width: 0;
+  }
+
+  .docs-search-trigger-icon {
+    color: var(--viking-text-muted);
+    font-size: var(--viking-font-size-lg);
+    line-height: 1;
+  }
+
+  .docs-search-trigger-label {
+    font-size: var(--viking-font-size-sm);
+  }
+
+  .docs-search-trigger-kbd {
+    display: none;
+  }
+
+  @media (min-width: 960px) {
+    .docs-search-trigger {
+      min-width: 12rem;
+      justify-content: flex-start;
+    }
+
+    .docs-search-trigger-kbd {
+      display: inline-flex;
+      margin-left: auto;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .docs-search-trigger-label {
+      display: none;
+    }
+  }
+</style>

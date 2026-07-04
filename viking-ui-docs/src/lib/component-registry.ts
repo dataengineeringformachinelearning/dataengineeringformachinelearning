@@ -69,6 +69,7 @@ const inputSnippets: ComponentSnippet = {
 };
 
 import { EXTENDED_SHOWCASE_CATEGORIES } from './component-registry-extended';
+import { PARITY_SHOWCASE_CATEGORIES } from './component-registry-parity';
 
 export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   {
@@ -146,16 +147,16 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         id: 'card',
         name: 'Card',
         description: 'Machined surface panels with inset hairline highlights.',
-        preview: `<div class="viking-card">
+        preview: `<viking-card-wc>
   <div class="viking-card-header">
     <h3 class="viking-heading viking-heading-sm">Event throughput</h3>
   </div>
   <p class="viking-text-muted">8.2K events/sec across symmetrical tenant pipelines.</p>
-</div>
-<div class="viking-card viking-card-compact">
+</viking-card-wc>
+<viking-card-wc compact>
   <span class="viking-label">Compact metric</span>
   <strong class="viking-metric">99.97%</strong>
-</div>`,
+</viking-card-wc>`,
         snippets: {
           angular: `<viking-card>
   <viking-card-header>
@@ -163,18 +164,21 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   </viking-card-header>
   <viking-text variant="muted">8.2K events/sec</viking-text>
 </viking-card>`,
-          astro: `<div class="viking-card">
+          astro: `<viking-card-wc>
   <h3 class="viking-heading viking-heading-sm">Event throughput</h3>
   <p class="viking-text-muted">8.2K events/sec</p>
-</div>`,
+</viking-card-wc>`,
           django: `<div class="viking-card">
   <h3 class="viking-heading viking-heading-sm">{{ metric.title }}</h3>
   <p class="viking-text-muted">{{ metric.detail }}</p>
 </div>`,
-          javascript: `const card = document.createElement('div');
-card.className = 'viking-card';`,
+          javascript: `<viking-card-wc compact>
+  <strong class="viking-metric">99.97%</strong>
+</viking-card-wc>`,
         },
         selector: 'viking-card',
+        wcSelector: 'viking-card-wc',
+        tags: ['web-component', 'css'],
         api: getComponentApi('card'),
         related: ['metric-card'],
       },
@@ -283,25 +287,24 @@ card.className = 'viking-card';`,
         id: 'select',
         name: 'Select',
         description: 'Native and custom select patterns for retention and filters.',
-        preview: `<div class="viking-field">
-  <label class="viking-field-label" for="retention">Retention window</label>
-  <select id="retention" class="viking-select-native">
-    <option value="">Select retention</option>
-    <option value="7d">7 days</option>
-    <option value="30d">30 days</option>
-    <option value="90d">90 days</option>
-  </select>
-</div>`,
+        preview: `<viking-select-wc label="Retention window">
+  <option value="">Select retention</option>
+  <option value="7d">7 days</option>
+  <option value="30d" selected>30 days</option>
+  <option value="90d">90 days</option>
+</viking-select-wc>`,
         snippets: {
           angular: `<viking-native-select
   label="Retention window"
   [options]="retentionOptions"
 />`,
-          astro: `<select class="viking-select-native"><option>30 days</option></select>`,
+          astro: `<viking-select-wc label="Retention window"><option>30 days</option></viking-select-wc>`,
           django: `<select class="viking-select-native" name="retention">{% for o in options %}<option>{{ o.label }}</option>{% endfor %}</select>`,
-          javascript: `const select = document.createElement('select');
-select.className = 'viking-select-native';`,
+          javascript: `<viking-select-wc label="Retention"><option value="30d">30 days</option></viking-select-wc>`,
         },
+        selector: 'viking-native-select',
+        wcSelector: 'viking-select-wc',
+        tags: ['web-component', 'css'],
       },
     ],
   },
@@ -314,53 +317,58 @@ select.className = 'viking-select-native';`,
         id: 'callout',
         name: 'Callout',
         description: 'Contextual alerts with icon + label — not color alone.',
-        preview: `<div class="viking-callout-static viking-callout-info">
-  <strong>Event projections</strong>
-  <p>Commands commit to the transactional Outbox before Redpanda publish.</p>
-</div>
-<div class="viking-callout-static viking-callout-warning">
-  <strong>Degraded worker</strong>
-  <p>telemetry_worker lag exceeds 3s on partition 3.</p>
-</div>`,
+        preview: `<viking-callout-wc tone="info" heading="Event projections">
+  Commands commit to the transactional Outbox before Redpanda publish.
+</viking-callout-wc>
+<viking-callout-wc tone="warning" heading="Degraded worker">
+  telemetry_worker lag exceeds 3s on partition 3.
+</viking-callout-wc>`,
         snippets: {
           angular: `<viking-callout tone="info" icon="info">Event projections active</viking-callout>
 <viking-callout tone="warning" icon="alert-triangle">Worker degraded</viking-callout>`,
-          astro: `<div class="viking-callout-static viking-callout-info">Event projections active</div>`,
+          astro: `<viking-callout-wc tone="info" heading="Event projections">Commands commit to Outbox.</viking-callout-wc>`,
           django: `<div class="viking-callout-static viking-callout-warning">{{ message }}</div>`,
-          javascript: `el.classList.add('viking-callout-static', 'viking-callout-info');`,
+          javascript: `<viking-callout-wc tone="success" heading="Deployed">Outbox relay published.</viking-callout-wc>`,
         },
         selector: 'viking-callout',
+        wcSelector: 'viking-callout-wc',
+        tags: ['web-component', 'css'],
         api: getComponentApi('callout'),
       },
       {
         id: 'modal',
         name: 'Modal',
         description: 'Accessible dialog with focus trap, Escape dismiss, and tokenized overlay.',
-        preview: `<div class="showcase-modal-demo" role="dialog" aria-labelledby="modal-demo-title" aria-modal="true">
-  <div class="showcase-modal-backdrop" aria-hidden="true"></div>
+        preview: `<div class="showcase-modal-demo" aria-hidden="true">
+  <div class="showcase-modal-backdrop"></div>
   <div class="showcase-modal-panel viking-card">
     <header class="viking-card-header">
-      <h3 class="viking-heading viking-heading-sm" id="modal-demo-title">Confirm deploy</h3>
+      <h3 class="viking-heading viking-heading-sm">Confirm deploy</h3>
     </header>
-    <p class="viking-text-muted">Push v2.0.0 to production? This action uses the Outbox relay.</p>
-    <footer class="viking-demo-row" style="margin-top:var(--viking-space-2)">
+    <p class="viking-text-muted">Push v2.0.0 to production? Uses the Outbox relay.</p>
+    <footer class="viking-demo-row">
       <viking-button-wc variant="primary">Deploy</viking-button-wc>
       <viking-button-wc variant="outline">Cancel</viking-button-wc>
     </footer>
   </div>
-</div>`,
+</div>
+<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: <code>viking-modal-wc</code> with native dialog + focus trap</p>`,
         snippets: {
           angular: `<viking-modal [(open)]="confirmOpen" title="Confirm deploy" size="md">
   <p>Push v2.0.0 to production?</p>
   <viking-button variant="primary" (pressed)="deploy()">Deploy</viking-button>
 </viking-modal>`,
-          astro: `{/* Modal requires Angular runtime — use viking-modal in deml.app */}`,
-          django: `{# Use confirm dialog pattern or Alpine-free native <dialog> with viking-card styling #}`,
-          javascript: `// viking-modal is Angular-only; use native <dialog> + viking-card classes on static sites`,
+          astro: `<viking-modal-wc title="Confirm deploy">
+  <p>Push v2.0.0 to production?</p>
+  <viking-button-wc slot="actions" variant="primary">Deploy</viking-button-wc>
+</viking-modal-wc>`,
+          django: `{# Use viking-modal-wc or native dialog with viking-card styling #}`,
+          javascript: `document.querySelector('viking-modal-wc')?.setAttribute('open', '');`,
         },
         selector: 'viking-modal',
+        wcSelector: 'viking-modal-wc',
         api: getComponentApi('modal'),
-        tags: ['angular'],
+        tags: ['web-component', 'angular'],
       },
       {
         id: 'toast',
@@ -542,28 +550,32 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         name: 'Search palette',
         description:
           'Cross-suite command palette for deml.app, marketing, and backend — Algolia Experiences with Viking-UI modal styling.',
-        preview: `<div class="showcase-search-palette" role="dialog" aria-label="Search demo">
+        preview: `<div class="showcase-search-palette" role="presentation" aria-label="Search palette preview">
   <div class="showcase-search-palette-header">
     <span class="showcase-search-icon" aria-hidden="true">⌕</span>
-    <input type="search" class="showcase-search-input" placeholder="Search documentation, dashboard, API…" aria-label="Search" />
+    <input type="search" class="showcase-search-input" placeholder="Search documentation, dashboard, API…" aria-label="Search" readonly />
   </div>
   <div class="showcase-search-palette-body">
-    <p class="viking-text-muted">Results indexed across deml.app · dataengineeringformachinelearning.com · backend.deml.app</p>
+    <a class="viking-search-result-static" href="/components"><span class="viking-search-result-title">Components</span><span class="viking-search-result-snippet">Browse all primitives</span></a>
+    <a class="viking-search-result-static" href="/tokens"><span class="viking-search-result-title">Tokens</span><span class="viking-search-result-snippet">Design token matrix</span></a>
   </div>
   <footer class="showcase-search-palette-footer">
     <span class="viking-kbd-static">⌘K</span> toggle · <span class="viking-kbd-static">Esc</span> close
   </footer>
-</div>`,
+</div>
+<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: <code>viking-search-palette-wc</code> — try ⌘K in the docs header</p>`,
         snippets: {
           angular: `<viking-search-palette [(open)]="searchOpen" [(query)]="searchQuery">
   <!-- project custom result list -->
 </viking-search-palette>`,
-          astro: `{# Algolia widget: /assets/widgets/algolia-search.js + #autocomplete host #}`,
-          django: `{# Same Algolia widget as marketing — see partials/site_navbar.html #}`,
-          javascript: `window.DemlWidgets?.openSearch(); // ⌘K / Ctrl+K globally`,
+          astro: `<viking-search-palette-wc global-shortcut items='[{"title":"Components","href":"/components"}]' />`,
+          django: `{# Algolia widget or viking-search-palette-wc — see partials/site_navbar.html #}`,
+          javascript: `<viking-search-palette-wc global-shortcut></viking-search-palette-wc>
+document.querySelector('viking-search-palette-wc')?.openPalette();`,
         },
-        tags: ['shell', 'algolia', 'css'],
+        tags: ['shell', 'web-component', 'algolia'],
         selector: 'viking-search-palette',
+        wcSelector: 'viking-search-palette-wc',
       },
       {
         id: 'form-section',
@@ -641,6 +653,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
     ],
   },
   ...EXTENDED_SHOWCASE_CATEGORIES,
+  ...PARITY_SHOWCASE_CATEGORIES,
 ];
 
 export const ALL_COMPONENTS = SHOWCASE_CATEGORIES.flatMap((c) => c.components);
