@@ -4,7 +4,7 @@
 
 ## Design philosophy
 
-From [THEME.md](../../../THEME.md):
+From [THEME.md](../../../THEME.md) — structured like [spartan.ng](https://spartan.ng/) (composable primitives, accessible forms, dark-first cards) with a **luxurious industrial** palette:
 
 - **Precision engineering** and **high-end industrial tech**
 - **Dark-first** — deep charcoals, machined metallic edges, no decorative noise
@@ -44,6 +44,15 @@ Load static CSS for non-Angular surfaces (marketing, Django templates):
 <link rel="stylesheet" href="/assets/design-tokens.css" />
 <link rel="stylesheet" href="/assets/viking-ui.css" />
 ```
+
+### Token files
+
+| File | Purpose |
+| ---- | ------- |
+| `src/styles/_variables.scss` | Canonical SCSS — edit tokens here |
+| `src/tokens/viking-tokens.json` | Machine-readable palette |
+| `src/tokens/tailwind.preset.js` | Tailwind `theme.extend` → CSS vars |
+| `src/tokens/series-presets.ts` | Series color constants for charts/pickers |
 
 ## Icons (Lucide)
 

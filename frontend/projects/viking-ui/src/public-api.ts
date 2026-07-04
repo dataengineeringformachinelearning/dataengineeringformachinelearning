@@ -28,6 +28,11 @@ export {
   VIKING_DRAKKAR_ICON_NAMES_LIST,
 } from './lib/core/brand-icons';
 export type { VikingBrandIconName, VikingDrakkarIconName } from './lib/core/brand-icons';
+export {
+  VIKING_SERIES_PRESETS,
+  VIKING_SERIES_DEFAULT,
+  type VikingSeriesPreset,
+} from './tokens/series-presets';
 export type {
   VikingIconName,
   VikingIconSizePreset,

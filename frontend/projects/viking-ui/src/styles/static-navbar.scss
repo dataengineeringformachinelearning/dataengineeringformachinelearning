@@ -976,25 +976,24 @@ button.auth-btn {
     pointer-events: none;
   }
 
-    .desktop-auth {
-      display: flex;
-    }
+  .desktop-auth {
+    display: flex;
+  }
 
-    .menu-toggle-btn {
-      display: none !important;
-    }
+  .menu-toggle-btn {
+    display: none !important;
+  }
 
-    .mobile-menu:not(.open) {
-      display: none !important;
-    }
+  .mobile-menu:not(.open) {
+    display: none !important;
+  }
 
-    .navbar-right {
-      gap: var(--viking-space-2, 16px);
-    }
+  .navbar-right {
+    gap: var(--viking-space-2, 16px);
+  }
 
-    .desktop-nav {
-      gap: var(--viking-space-1, 8px);
-    }
+  .desktop-nav {
+    gap: var(--viking-space-1, 8px);
   }
 }
 

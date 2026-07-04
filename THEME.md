@@ -15,6 +15,18 @@
 **Canonical implementation:** `frontend/projects/viking-ui/src/styles/_variables.scss`
 **Compiled CSS:** `viking-ui.css` (copied to `frontend/`, `backend/static/`, `marketing/public/assets/`)
 
+### Token artifacts (single source of truth)
+
+| Artifact | Path | Purpose |
+| -------- | ---- | ------- |
+| SCSS primitives | `frontend/projects/viking-ui/src/styles/_variables.scss` | All `--viking-*` values — edit here first |
+| Series palette | `frontend/projects/viking-ui/src/styles/_series-colors.scss` | Chart / picker series slots 1–8 |
+| Legacy aliases | `frontend/projects/viking-ui/src/styles/_legacy-aliases.scss` | `--color-primary`, `--space-*`, Django/marketing compat |
+| JSON export | `frontend/projects/viking-ui/src/tokens/viking-tokens.json` | Tooling, docs, design QA |
+| Tailwind preset | `frontend/projects/viking-ui/src/tokens/tailwind.preset.js` | `theme.extend` → CSS variables |
+| TypeScript presets | `frontend/projects/viking-ui/src/tokens/series-presets.ts` | `viking-color-picker` + chart bindings |
+| Static CSS bundle | `design-tokens.css` / `viking-ui.css` | Non-Angular surfaces (sync via `scripts/sync_design_system.py`) |
+
 ---
 
 ## Design philosophy
@@ -27,6 +39,21 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 - **Refined accent discipline** — deep teal for primary action, rich crimson for secondary emphasis and danger; no neon gradients or ambient glow orbs on base surfaces.
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
 - **Zero arbitrary hex** — all colors resolve to tokens below. Emojis are prohibited except 🇺🇸 on specific badges.
+
+### Spartan.ng reference (structure, not palette)
+
+[Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/frontend/projects/viking-ui) follows the **composable primitive** model popularized by [spartan.ng](https://spartan.ng/): install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
+
+| Spartan pattern | Viking-UI equivalent | Notes |
+| --------------- | -------------------- | ----- |
+| Clean card surfaces | `viking-card`, `viking-metric-card`, `viking-hud-panel` | Machined top-edge hairline, `--viking-radius-lg`, no glass blur |
+| Form field stack | `viking-field` → control (`viking-input`, `viking-select`, …) | Label, description, error; shake on invalid |
+| Button variants | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking |
+| Dark-first shell | `data-theme="dark"` default | Light mode shifts teal/crimson lightness only — no hue inversion |
+| Accessible focus | `--viking-ring` 2px + 2px offset | Visible on keyboard; never remove for aesthetics |
+| Settings / billing forms | `viking-form-section`, grouped fields | Section titles at `--viking-font-size-lg`, 24px vertical rhythm |
+
+**Where Viking-UI diverges (intentionally):** Spartan’s default zinc/neutral palette is replaced by **deep charcoals, metallic borders, and restrained teal/crimson** — more luxurious and industrial, less startup-neutral. Spartan’s copy-paste Tailwind classes become **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
 
 ---
 
@@ -161,6 +188,23 @@ Parent apps may still expose these; Viking-UI maps them in `viking-ui.scss`:
 | `--base-font-size` | `16px` floor               |
 | `--ui-font-size`   | `14px` Drakkar shell floor |
 
+### 1.9 Series color slots (charts & pickers)
+
+Programmatic series colors map to fixed tokens — use these instead of raw hex in chart code.
+
+| Slot | Token | HEX | Role |
+| ---- | ----- | --- | ---- |
+| 1 | `--viking-series-1` | `#0D7377` | Primary / default |
+| 2 | `--viking-series-2` | `#922B3E` | Secondary comparison |
+| 3 | `--viking-series-3` | `#2A9D8F` | Success / stable |
+| 4 | `--viking-series-4` | `#C4A035` | Warning / threshold |
+| 5 | `--viking-series-5` | `#A83344` | Critical / anomaly |
+| 6 | `--viking-series-6` | `#14A3A8` | Info / auxiliary |
+| 7 | `--viking-series-7` | `#2A2A2A` | Baseline / muted |
+| 8 | `--viking-series-8` | `#666666` | Disabled / archived |
+
+Default selection: `--viking-series-default` → `--viking-series-1`.
+
 ---
 
 ## 2. Typography
@@ -263,7 +307,15 @@ Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics
 
 ## 3. Spacing (4px base grid)
 
-All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`.
+All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Think **Porsche instrument-panel precision**: consistent rhythm, no arbitrary 13px or 27px gaps, no “close enough” padding.
+
+**Rules:**
+
+- Outer page gutters: `--viking-space-2` (mobile) → `--viking-space-3` (tablet+).
+- Card interior padding: `--viking-space-3` default; `--viking-space-2` for compact metric tiles.
+- Form field vertical stack: `--viking-space-3` between sections, `--viking-space-half` between label and control.
+- Button groups / inline chips: `--viking-space-1` gap.
+- Section breaks (page shell): `--viking-space-4` minimum.
 
 | Token                 | Value | Multiples |
 | --------------------- | ----- | --------- |
@@ -316,7 +368,7 @@ Premium feel: 6–12px for interactive surfaces; pills for tags only.
 
 ## 5. Shadows & elevation
 
-Soft, directional shadows with a **machined top edge** (inset highlight). No diffuse colored glows on standard UI.
+Soft, directional shadows with a **machined top edge** (inset highlight). No diffuse colored glows on standard UI. Elevation communicates hierarchy — cards lift 1px on hover max (`--viking-state-hover-lift`), never “float” 8px+ on static dashboards.
 
 | Token                   | Recipe                                                           |
 | ----------------------- | ---------------------------------------------------------------- |
@@ -332,6 +384,8 @@ Light mode uses lower-contrast shadows (charcoal at 6–10% alpha).
 ---
 
 ## 6. Motion & transitions
+
+Porsche-like **mechanical** motion: fast enough to feel responsive, slow enough to read state changes. Default 250ms; never bounce or elastic easing on data surfaces.
 
 | Token                             | Value                                               |
 | --------------------------------- | --------------------------------------------------- |
@@ -440,6 +494,8 @@ If `data-theme` is omitted, `prefers-color-scheme` selects the palette.
 
 The **Series color** control assigns colors to telemetry series, chart lines, and dashboard accents. Presets are fixed to the premium palette below — **do not add off-palette swatches**.
 
+Each preset maps to a `--viking-series-N` token (§1.9). Import shared values from `series-presets.ts` or `viking-tokens.json` — never duplicate hex arrays in app code.
+
 #### Preset swatches (default order)
 
 | #   | HEX       | Token / role            | Use                                |
@@ -458,12 +514,19 @@ The **Series color** control assigns colors to telemetry series, chart lines, an
 **Implementation reference:**
 
 ```typescript
-// frontend/projects/viking-ui/src/lib/color-picker/color-picker.ts
-readonly presets = input<string[]>([
+// frontend/projects/viking-ui/src/tokens/series-presets.ts
+export const VIKING_SERIES_PRESETS = [
   '#0d7377', '#922b3e', '#2a9d8f', '#c4a035',
   '#a83344', '#14a3a8', '#2a2a2a', '#666666',
-]);
-readonly value = model<string>('#0d7377');
+] as const;
+export const VIKING_SERIES_DEFAULT = VIKING_SERIES_PRESETS[0];
+```
+
+```typescript
+// frontend/projects/viking-ui/src/lib/color-picker/color-picker.ts
+import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '../../tokens/series-presets';
+readonly presets = input<string[]>([...VIKING_SERIES_PRESETS]);
+readonly value = model<string>(VIKING_SERIES_DEFAULT);
 ```
 
 **Showcase usage:**
@@ -506,6 +569,33 @@ Tones: `accent` | `success` | `warning` | `danger` | `muted` — each resolves t
 ### 8.7 Skeleton loaders
 
 Shimmer uses `--viking-charcoal-700` → `--viking-charcoal-600` (dark) or `#EFEFEF` → `#F7F7F7` (light). No arbitrary animation colors.
+
+### 8.8 Forms (Spartan-style field stack)
+
+Compose every input through **`viking-field`** — the label wraps the control for implicit association (WCAG-friendly, spartan-like ergonomics).
+
+```html
+<viking-form-section title="Billing address">
+  <viking-field label="Name on card" description="As printed on the card" [required]="true">
+    <viking-input autocomplete="cc-name" />
+  </viking-field>
+  <viking-field label="Card number" [error]="cardError()">
+    <viking-input inputmode="numeric" />
+  </viking-field>
+  <div class="viking-form-row">
+    <viking-field label="CVV"><viking-input inputmode="numeric" /></viking-field>
+    <viking-field label="Expiry"><viking-input placeholder="MM / YY" /></viking-field>
+  </div>
+</viking-form-section>
+```
+
+| Element | Token usage |
+| ------- | ----------- |
+| Label | `--viking-font-size-sm`, `--viking-font-weight-semibold`, `--viking-letter-spacing-wide` |
+| Description | `--viking-text-muted`, `--viking-font-size-sm` |
+| Error | `--viking-danger-text`, shake via `viking-shake` keyframe |
+| Control surface | `--viking-surface-alt` bg, `--viking-border`, `--viking-radius-sm`, min-height `--viking-control-height` |
+| Focus | `--viking-ring` outline on `:focus-visible` |
 
 ---
 
@@ -568,6 +658,24 @@ series = [
 ];
 ```
 
+### 10.5 Tailwind CSS
+
+Load token CSS first, then extend Tailwind with the Viking preset:
+
+```javascript
+// tailwind.config.js
+module.exports = {
+  presets: [require('./frontend/projects/viking-ui/src/tokens/tailwind.preset.js')],
+  content: ['./src/**/*.{html,ts}'],
+};
+```
+
+```html
+<link rel="stylesheet" href="/assets/design-tokens.css" />
+```
+
+Utility examples: `bg-viking-surface`, `text-viking-text-muted`, `rounded-viking-lg`, `shadow-viking-sm`, `p-viking-3`, `text-viking-series-1`.
+
 ---
 
 ## 11. Do's and don'ts
@@ -609,11 +717,13 @@ All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900
 
 ## 13. Maintenance
 
-1. Edit `frontend/projects/viking-ui/src/styles/_variables.scss` for token changes.
-2. Run `npm run build:viking-ui-css` to regenerate `viking-ui.css` artifacts.
-3. Run `python scripts/sync_fonts.py` after updating Inter font files.
-3. Update this document and `viking-color-picker` presets if the series palette changes.
-4. Sync marketing/backend copies of `viking-ui.css` in CI or publish step.
-5. Run `python scripts/sync_content.py` after editing `BOOK.md`, `WHITEPAPER.md`, or `README.md`.
+1. Edit `frontend/projects/viking-ui/src/styles/_variables.scss` for primitive token changes.
+2. Edit `_series-colors.scss` if the chart/picker palette changes; sync `viking-tokens.json` and `series-presets.ts`.
+3. Run `npm run build:viking-ui-css` (frontend) to regenerate `viking-ui.css` artifacts.
+4. Run `python scripts/sync_design_system.py` to propagate `design-tokens.css`, `viking-ui.css`, and SCSS copies.
+5. Run `python scripts/sync_fonts.py` after updating Inter font files.
+6. Update this document when tokens or component standards change.
+7. Sync marketing/backend copies in CI or publish step.
+8. Run `python scripts/sync_content.py` after editing `BOOK.md`, `WHITEPAPER.md`, or `README.md`.
 
-**Version:** Viking-UI premium palette v2 (charcoal / teal / crimson). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+**Version:** Viking-UI premium palette v2.1 (charcoal / teal / crimson, Spartan-structured). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
