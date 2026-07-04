@@ -6,14 +6,36 @@
   color: var(--color-on-background);
 }
 
+/* Triage grid — side-by-side panels with consistent spacing */
+.triage-grid {
+  margin-bottom: var(--grid-gap);
+  align-items: stretch;
+}
+
+.queue-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 360px;
+
+  @media (min-width: 768px) {
+    min-height: 420px;
+  }
+}
+
 /* Filters */
 .filter-bar {
   padding: 16px;
   border-bottom: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   background-color: rgba(0, 0, 0, 0.15);
+
+  @media (min-width: 600px) {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 16px;
+  }
 }
 
 .filter-group {
@@ -56,17 +78,13 @@
 
 /* Queue List */
 .queue-list {
-  flex: 1;
+  flex: 1 1 auto;
   overflow-y: auto;
-  padding: 8px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  min-height: 240px;
-
-  viking-chart-empty-state {
-    flex: 1 1 auto;
-  }
+  gap: 12px;
+  min-height: 0;
 }
 
 .queue-item {
@@ -440,19 +458,28 @@
 .detail-panel {
   display: flex;
   flex-direction: column;
-  min-height: 480px;
+  min-height: 360px;
+
+  @media (min-width: 768px) {
+    min-height: 420px;
+  }
+}
+
+.panel-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .no-selection-body {
   flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  min-height: var(--viking-chart-map-min-height, 22.5rem);
-  padding: 24px;
-
-  viking-chart-empty-state {
-    flex: 1 1 auto;
-  }
+  align-items: stretch;
+  justify-content: center;
+  min-height: 0;
+  padding: 16px;
 }
 
 .loader-state {
@@ -597,11 +624,8 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  min-height: 280px;
-
-  viking-chart-empty-state {
-    flex: 1 1 auto;
-  }
+  gap: 12px;
+  min-height: 200px;
 }
 
 .soc-card-list {

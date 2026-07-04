@@ -41,7 +41,7 @@
       </viking-metric-row>
 
       <!-- Dashboard Panel Grid -->
-      <div class="dashboard-grid">
+      <div class="grid-layout triage-grid">
         <!-- Left Triage Queue Panel -->
         <viking-hud-panel
           class="queue-panel col-span-4 col-span-md-4"
@@ -81,7 +81,7 @@
             </div>
             } @else if (filteredVulnerabilities().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="compact"
               tone="secure"
               icon="check-circle"
               title="System Secure"
@@ -253,7 +253,7 @@
           @          } @else {
           <div class="panel-body no-selection-body">
             <viking-chart-empty-state
-              layout="fill"
+              layout="compact"
               icon="search"
               title="Awaiting Threat Selection"
               description="Select an item from the ingestion queue to map risk matrices, analyze diagnostic payload data, and execute remediation protocols."
@@ -294,7 +294,7 @@
             </div>
             } @else if (activeIncidents().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="compact"
               tone="secure"
               icon="check-circle"
               title="All Clear"
@@ -370,7 +370,7 @@
             </div>
             } @else if (playbooks().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="compact"
               icon="file"
               title="No Playbooks Yet"
               description="Default response playbooks seed automatically when threats are detected."
