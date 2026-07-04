@@ -1,0 +1,80 @@
+---
+import type { FrameworkTab } from '../lib/site';
+import { FRAMEWORK_TABS } from '../lib/site';
+
+export interface Props {
+  snippets: Record<FrameworkTab, string>;
+  defaultTab?: FrameworkTab;
+}
+
+const { snippets, defaultTab = 'angular' } = Astro.props;
+const uid = `code-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="code-block" data-code-block={uid}>
+  <div class="code-block-tabs" role="tablist" aria-label="Framework code examples">
+    {FRAMEWORK_TABS.map((tab) => (
+      <button
+        type="button"
+        class:list={['code-block-tab', { 'is-active': tab.id === defaultTab }]}
+        role="tab"
+        aria-selected={tab.id === defaultTab}
+        data-tab={tab.id}
+      >
+        {tab.label}
+      </button>
+    ))}
+    <button type="button" class="code-block-copy" data-copy-btn aria-label="Copy code to clipboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+      <span class="code-block-copy-label">Copy</span>
+    </button>
+  </div>
+  {FRAMEWORK_TABS.map((tab) => (
+    <pre
+      class:list={['code-block-panel', { 'is-active': tab.id === defaultTab }]}
+      role="tabpanel"
+      data-panel={tab.id}
+      hidden={tab.id !== defaultTab}
+    ><code>{snippets[tab.id]}</code></pre>
+  ))}
+</div>
+
+<script define:vars={{ uid }}>
+  const root = document.querySelector(`[data-code-block="${uid}"]`);
+  if (!root) throw new Error('Code block root missing');
+
+  const tabs = root.querySelectorAll('[data-tab]');
+  const panels = root.querySelectorAll('[data-panel]');
+  const copyBtn = root.querySelector('[data-copy-btn]');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const id = tab.getAttribute('data-tab');
+      tabs.forEach((t) => {
+        const active = t.getAttribute('data-tab') === id;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', String(active));
+      });
+      panels.forEach((p) => {
+        const active = p.getAttribute('data-panel') === id;
+        p.classList.toggle('is-active', active);
+        p.hidden = !active;
+      });
+    });
+  });
+
+  copyBtn?.addEventListener('click', async () => {
+    const active = root.querySelector('[data-panel].is-active code');
+    if (!active) return;
+    try {
+      await navigator.clipboard.writeText(active.textContent ?? '');
+      const label = copyBtn.querySelector('.code-block-copy-label');
+      if (label) {
+        label.textContent = 'Copied!';
+        setTimeout(() => { label.textContent = 'Copy'; }, 2000);
+      }
+    } catch {
+      /* clipboard blocked */
+    }
+  });
+</script>

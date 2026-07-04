@@ -1,0 +1,88 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import { SITE } from '../lib/site';
+---
+
+<DocLayout
+  title="Contributing"
+  description="Contribute to Viking-UI — extend the kit, fix tokens, ship Web Components."
+>
+  <div class="page-inner-wrapper">
+    <header class="showcase-page-header">
+      <p class="showcase-label">Open source</p>
+      <h1 class="showcase-heading showcase-heading-xl">Contributing</h1>
+      <p class="showcase-text-muted">
+        Viking-UI is Apache-2.0 and lives in the DEML monorepo. New shared UI belongs in
+        <code>frontend/projects/viking-ui/</code> first — extend the kit, do not fork per-page styles.
+      </p>
+      <div class="demo-row">
+        <viking-button-wc variant="primary" href={SITE.github} target="_blank">View on GitHub</viking-button-wc>
+        <viking-button-wc variant="outline" href="/components">Component gallery</viking-button-wc>
+      </div>
+    </header>
+
+    <section class="contribute-steps" aria-labelledby="workflow-heading">
+      <h2 class="showcase-heading showcase-heading-sm" id="workflow-heading">Development workflow</h2>
+
+      <article class="contribute-step viking-card">
+        <h3 class="showcase-heading showcase-heading-sm">Clone and install</h3>
+        <p class="showcase-text-muted">
+          Fork the repository, install frontend dependencies, and start the docs site locally.
+        </p>
+        <pre class="code-block-panel is-active" style="margin:0;padding:var(--viking-space-2);background:var(--viking-charcoal-950);border-radius:var(--viking-radius);overflow-x:auto;"><code>git clone {SITE.github}.git
+cd deml/frontend && npm ci --legacy-peer-deps
+cd ../viking-ui-docs && npm ci --legacy-peer-deps
+npm run dev</code></pre>
+      </article>
+
+      <article class="contribute-step viking-card">
+        <h3 class="showcase-heading showcase-heading-sm">Edit tokens and components</h3>
+        <p class="showcase-text-muted">
+          Token changes start in <code>_variables.scss</code>. Component logic lives under
+          <code>frontend/projects/viking-ui/src/lib/</code>. Web Components under
+          <code>src/web/</code>.
+        </p>
+      </article>
+
+      <article class="contribute-step viking-card">
+        <h3 class="showcase-heading showcase-heading-sm">Run quality gates</h3>
+        <p class="showcase-text-muted">
+          Pre-commit enforces theme tokens, accessibility, and lint. From repo root:
+        </p>
+        <pre class="code-block-panel is-active" style="margin:0;padding:var(--viking-space-2);background:var(--viking-charcoal-950);border-radius:var(--viking-radius);overflow-x:auto;"><code>node scripts/enforce-theme.js
+cd frontend && npm run test:viking-ui
+uvx pre-commit run --all-files</code></pre>
+      </article>
+
+      <article class="contribute-step viking-card">
+        <h3 class="showcase-heading showcase-heading-sm">Update this showcase</h3>
+        <p class="showcase-text-muted">
+          Add demos to <code>src/lib/component-registry.ts</code> and verify at
+          <code>npm run dev</code> in <code>viking-ui-docs/</code>.
+        </p>
+      </article>
+
+      <article class="contribute-step viking-card">
+        <h3 class="showcase-heading showcase-heading-sm">Submit a pull request</h3>
+        <p class="showcase-text-muted">
+          Follow conventional commits. PRs touching tokens must run
+          <code>npm run build:static-css</code> and <code>python scripts/sync_design_system.py</code>.
+          Document governance changes in THEME.md and BOOK.md Ch.31 together.
+        </p>
+      </article>
+    </section>
+
+    <section class="showcase-category" aria-labelledby="standards-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="standards-heading">Contribution standards</h2>
+      </header>
+      <ul class="showcase-text-muted">
+        <li>Use <code>--viking-*</code> tokens only — no hardcoded hex in components</li>
+        <li>WCAG 2.1 AA: visible focus rings, 44px touch targets, no color-only status</li>
+        <li>New shared UI in <code>viking-ui</code> library first, then consume here</li>
+        <li>Web Components: Shadow DOM + token styles from <code>src/web/core/</code></li>
+        <li>Tests required for charts, forms, icons, and auth surfaces</li>
+      </ul>
+    </section>
+  </div>
+</DocLayout>

@@ -28,19 +28,11 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-          cache-dependency-path: |
-            frontend/package-lock.json
-            viking-ui-docs/package-lock.json
+          cache-dependency-path: viking-ui-docs/package-lock.json
 
-      - name: Install frontend dependencies
-        run: npm ci --legacy-peer-deps --prefix frontend
-
-      - name: Build Viking-UI library
-        run: npm run build:viking-ui --prefix frontend
-
-      - name: Install and build Viking-UI docs site
+      - name: Install and build Viking-UI docs site (Astro + static CSS)
         run: |
-          npm ci --legacy-peer-deps --prefix viking-ui-docs
+          npm ci --prefix viking-ui-docs
           npm run build --prefix viking-ui-docs
 
       - name: Authenticate to Google Cloud / Firebase

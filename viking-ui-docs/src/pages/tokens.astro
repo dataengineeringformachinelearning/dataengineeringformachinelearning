@@ -1,0 +1,112 @@
+---
+import DocLayout from '../layouts/DocLayout.astro';
+import { TOKEN_GROUPS, SEMANTIC_TOKENS } from '../lib/tokens-data';
+---
+
+<DocLayout
+  title="Design Tokens"
+  description="Inspect Viking-UI CSS custom properties — the single source of truth for all surfaces."
+>
+  <div class="page-inner-wrapper">
+    <header class="showcase-page-header">
+      <p class="showcase-label">Token inspector</p>
+      <h1 class="showcase-heading showcase-heading-xl">Design tokens</h1>
+      <p class="showcase-text-muted">
+        Canonical values from <code>_variables.scss</code> and <code>viking-tokens.json</code>.
+        Edit tokens at the source, then run <code>npm run build:static-css</code>.
+      </p>
+    </header>
+
+    <label class="viking-field token-inspector-search" for="token-search">
+      <span class="viking-field-label">Filter tokens</span>
+      <div class="viking-input-shell">
+        <input
+          id="token-search"
+          class="viking-input-native"
+          type="search"
+          placeholder="Search --viking-accent, spacing, teal…"
+          autocomplete="off"
+        />
+      </div>
+    </label>
+
+    <section class="showcase-category" aria-labelledby="semantic-heading">
+      <header class="showcase-category-header">
+        <h2 class="showcase-heading showcase-heading-sm" id="semantic-heading">Semantic aliases</h2>
+        <p class="showcase-text-muted">Use these in components — never hardcode hex in templates.</p>
+      </header>
+      <div class="showcase-table-wrap">
+        <table class="token-table">
+          <thead>
+            <tr>
+              <th scope="col">Token</th>
+              <th scope="col">Role</th>
+              <th scope="col">Copy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SEMANTIC_TOKENS.map((token) => (
+              <tr data-token-row data-token-name={token.name}>
+                <td><code>{token.name}</code></td>
+                <td>{token.role}</td>
+                <td>
+                  <button type="button" class="token-copy-btn" data-copy-token={token.name}>Copy</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    {TOKEN_GROUPS.map((group) => (
+      <section class="showcase-category" data-token-group id={`tokens-${group.id}`} aria-labelledby={`tokens-${group.id}-heading`}>
+        <header class="showcase-category-header">
+          <h2 class="showcase-heading showcase-heading-sm" id={`tokens-${group.id}-heading`}>{group.label}</h2>
+        </header>
+        <div class="showcase-table-wrap">
+          <table class="token-table">
+            <thead>
+              <tr>
+                {group.id === 'color' || group.id === 'series' ? (
+                  <>
+                    <th scope="col">Swatch</th>
+                    <th scope="col">Token</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Copy</th>
+                  </>
+                ) : (
+                  <>
+                    <th scope="col">Token</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Copy</th>
+                  </>
+                )}
+              </tr>
+            </thead>
+            <tbody>
+              {group.tokens.map((token) => (
+                <tr data-token-row data-token-name={token.name}>
+                  {(group.id === 'color' || group.id === 'series') && (
+                    <td>
+                      <span class="token-swatch" style={`background: ${token.value}`} aria-hidden="true"></span>
+                    </td>
+                  )}
+                  <td><code>{token.name}</code></td>
+                  <td>{token.value}</td>
+                  <td>
+                    <button type="button" class="token-copy-btn" data-copy-token={token.name}>Copy</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))}
+  </div>
+</DocLayout>
+
+<script>
+  import '../scripts/token-inspector';
+</script>

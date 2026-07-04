@@ -15,7 +15,12 @@ const outDir = path.join(docsDir, 'dist', 'static-css');
 const entry = path.join(pkgDir, 'src', 'web', 'index.ts');
 const outFile = path.join(outDir, 'viking-ui-elements.js');
 
-const esbuildBin = path.join(rootDir, 'frontend', 'node_modules', '.bin', 'esbuild');
+const esbuildCandidates = [
+  path.join(rootDir, 'frontend', 'node_modules', '.bin', 'esbuild'),
+  path.join(docsDir, 'node_modules', '.bin', 'esbuild'),
+];
+const esbuildBin =
+  esbuildCandidates.find((candidate) => fs.existsSync(candidate)) ?? 'esbuild';
 
 fs.mkdirSync(outDir, { recursive: true });
 

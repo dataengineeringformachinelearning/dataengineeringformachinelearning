@@ -58,14 +58,10 @@
     },
     {
       "target": "deml-ui",
-      "public": "viking-ui-docs/dist/browser",
+      "public": "viking-ui-docs/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
       "headers": [
         {
           "source": "**",

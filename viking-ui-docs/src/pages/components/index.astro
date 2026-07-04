@@ -1,0 +1,47 @@
+---
+import DocLayout from '../../layouts/DocLayout.astro';
+import ComponentCard from '../../components/ComponentCard.astro';
+import { SHOWCASE_CATEGORIES, COMPONENT_COUNT } from '../../lib/component-registry';
+import '../../styles/showcase.scss';
+---
+
+<DocLayout
+  title="Components"
+  description="Interactive gallery of Viking-UI primitives with multi-framework code snippets."
+  sidebar="components"
+>
+  <div class="page-inner-wrapper viking-showcase">
+    <header class="showcase-page-header">
+      <p class="showcase-label">Component gallery</p>
+      <h1 class="showcase-heading showcase-heading-xl">Components</h1>
+      <p class="showcase-text-muted">
+        Live previews and copy-ready snippets for Angular, Astro, Django, and Web Components.
+        {COMPONENT_COUNT} documented primitives across {SHOWCASE_CATEGORIES.length} categories.
+      </p>
+    </header>
+
+    {SHOWCASE_CATEGORIES.map((category) => (
+      <section class="showcase-category" id={category.id} aria-labelledby={`${category.id}-heading`}>
+        <header class="showcase-category-header">
+          <h2 class="showcase-heading showcase-heading-sm" id={`${category.id}-heading`}>
+            {category.label}
+          </h2>
+          <p class="showcase-text-muted">{category.description}</p>
+        </header>
+        <div class="showcase-component-list">
+          {category.components.map((component) => (
+            <ComponentCard component={component} />
+          ))}
+        </div>
+      </section>
+    ))}
+  </div>
+</DocLayout>
+
+<style>
+  .viking-showcase {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-2);
+  }
+</style>
