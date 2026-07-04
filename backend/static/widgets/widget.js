@@ -332,37 +332,24 @@
             justify-content: center;
             width: 100%;
             margin: 18px auto;
-            /* Prevent FOUC: start invisible, fade in once .deml-ready is applied */
             opacity: 0;
             transition: opacity 0.15s ease;
-            --viking-charcoal-900: #111111;
-            --viking-teal-600: #0d7377;
-            --viking-teal-400: #14a3a8;
-            --viking-gold-500: #c4a035;
-            --viking-crimson-500: #a83344;
-            --viking-green-500: #2a9d8f;
-            --viking-blue-500: #14a3a8;
-            --viking-metallic-300: #999999;
-            --viking-metallic-500: #666666;
-            --viking-metallic-200: #aaaaaa;
-            --viking-white: #f5f5f5;
-            --viking-white-pure: #ffffff;
-            --viking-black: #000000;
-            --color-primary: var(--viking-teal-600);
-            --color-success: var(--viking-green-500);
-            --color-warning: var(--viking-gold-500);
-            --color-error: var(--viking-crimson-500);
-            --card-bg: var(--viking-charcoal-900);
-            --bg-color: var(--viking-charcoal-900);
-            --border: color-mix(in srgb, var(--viking-metallic-600, #555555) 35%, transparent);
-            --text-color: var(--viking-white);
-            --text-muted: var(--viking-metallic-200);
-            --space-1: 9px;
-            --space-2: 18px;
-            --base-font-size: 18px;
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            /* Inherit Viking tokens from host page (design-tokens.css); no duplicated hex matrix. */
+            --color-primary: var(--viking-accent, var(--viking-teal-600));
+            --color-success: var(--viking-success, var(--viking-green-500));
+            --color-warning: var(--viking-warning, var(--viking-gold-500));
+            --color-error: var(--viking-danger, var(--viking-crimson-500));
+            --card-bg: var(--viking-surface, var(--viking-charcoal-900));
+            --bg-color: var(--viking-bg, var(--viking-charcoal-900));
+            --border: var(--viking-border);
+            --text-color: var(--viking-text);
+            --text-muted: var(--viking-text-muted);
+            --space-1: var(--viking-space-1, 8px);
+            --space-2: var(--viking-space-2, 16px);
+            --base-font-size: var(--viking-font-size-base, 16px);
+            --shadow-sm: var(--viking-shadow-sm);
+            --shadow-md: var(--viking-shadow-md);
+            --transition-smooth: var(--viking-transition-interactive, all 0.2s ease);
           }
           :host(.deml-ready) {
             opacity: 1;

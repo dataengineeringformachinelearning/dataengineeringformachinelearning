@@ -1,4 +1,4 @@
-import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { Injectable, Injector, PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
@@ -17,9 +17,14 @@ const SESSION_CHANNEL = 'deml-session';
 @Injectable({ providedIn: 'root' })
 export class SessionIdleService {
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly authService = inject(AuthService);
+  private readonly injector = inject(Injector);
   private readonly dialog = inject(VikingDialogService);
   private readonly router = inject(Router);
+
+  /** Lazy resolve breaks AuthService ↔ session services circular DI during SSR. */
+  private get authService(): AuthService {
+    return this.injector.get(AuthService);
+  }
 
   private warnTimer: ReturnType<typeof setTimeout> | undefined;
   private logoutTimer: ReturnType<typeof setTimeout> | undefined;
