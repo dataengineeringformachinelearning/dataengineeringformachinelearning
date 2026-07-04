@@ -1,5 +1,5 @@
 import { attachShadowStyles, closeModalDialog, showModalDialog } from '../core/base';
-import { escapeHtml } from '../core/dom';
+import { defineCustomElement, escapeHtml } from '../core/dom';
 import { renderInlineIcon } from '../core/icons-inline';
 import { VIKING_MODAL_STYLES } from '../core/styles';
 
@@ -164,7 +164,5 @@ export class VikingModalWc extends HTMLElement {
 }
 
 export const registerVikingModalWc = (): void => {
-  if (!customElements.get(VikingModalWc.tag)) {
-    customElements.define(VikingModalWc.tag, VikingModalWc);
-  }
+  defineCustomElement(VikingModalWc.tag, VikingModalWc);
 };

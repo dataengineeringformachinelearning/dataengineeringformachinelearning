@@ -1,4 +1,5 @@
 import { attachShadowStyles, readBoolAttr, setFormValue } from '../core/base';
+import { defineCustomElement } from '../core/dom';
 import { VIKING_INPUT_STYLES } from '../core/styles';
 
 /**
@@ -167,7 +168,5 @@ export class VikingInputWc extends HTMLElement {
 }
 
 export const registerVikingInputWc = (): void => {
-  if (!customElements.get(VikingInputWc.tag)) {
-    customElements.define(VikingInputWc.tag, VikingInputWc);
-  }
+  defineCustomElement(VikingInputWc.tag, VikingInputWc);
 };

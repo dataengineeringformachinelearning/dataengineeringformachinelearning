@@ -1,4 +1,5 @@
 import { attachShadowStyles, readBoolAttr } from '../core/base';
+import { defineCustomElement } from '../core/dom';
 import { VIKING_BUTTON_STYLES } from '../core/styles';
 
 const VARIANTS = new Set([
@@ -136,7 +137,5 @@ export class VikingButtonWc extends HTMLElement {
 }
 
 export const registerVikingButtonWc = (): void => {
-  if (!customElements.get(VikingButtonWc.tag)) {
-    customElements.define(VikingButtonWc.tag, VikingButtonWc);
-  }
+  defineCustomElement(VikingButtonWc.tag, VikingButtonWc);
 };

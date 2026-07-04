@@ -1,5 +1,5 @@
 import { attachShadowStyles, setFormValue } from '../core/base';
-import { escapeHtml, vikingWcUid } from '../core/dom';
+import { defineCustomElement, escapeHtml, vikingWcUid } from '../core/dom';
 import { VIKING_SELECT_STYLES } from '../core/styles';
 
 /**
@@ -190,7 +190,5 @@ export class VikingSelectWc extends HTMLElement {
 }
 
 export const registerVikingSelectWc = (): void => {
-  if (!customElements.get(VikingSelectWc.tag)) {
-    customElements.define(VikingSelectWc.tag, VikingSelectWc);
-  }
+  defineCustomElement(VikingSelectWc.tag, VikingSelectWc);
 };

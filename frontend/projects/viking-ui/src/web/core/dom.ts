@@ -14,3 +14,14 @@ export const escapeHtml = (value: string): string =>
 /** Platform modifier label for keyboard shortcut hints. */
 export const modKeyLabel = (): string =>
   typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
+
+/** Register a custom element when the runtime supports it (skip during SSR/prerender). */
+export const defineCustomElement = (
+  tag: string,
+  ctor: CustomElementConstructor,
+): void => {
+  if (typeof customElements === 'undefined' || customElements.get(tag)) {
+    return;
+  }
+  customElements.define(tag, ctor);
+};

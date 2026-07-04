@@ -1,4 +1,5 @@
 import { attachShadowStyles } from '../core/base';
+import { defineCustomElement } from '../core/dom';
 import { renderInlineIcon, TONE_ICON_NAMES } from '../core/icons-inline';
 import { VIKING_BADGE_STYLES } from '../core/styles';
 import type { VikingWcTone } from '../core/types';
@@ -96,7 +97,5 @@ export class VikingBadgeWc extends HTMLElement {
 }
 
 export const registerVikingBadgeWc = (): void => {
-  if (!customElements.get(VikingBadgeWc.tag)) {
-    customElements.define(VikingBadgeWc.tag, VikingBadgeWc);
-  }
+  defineCustomElement(VikingBadgeWc.tag, VikingBadgeWc);
 };

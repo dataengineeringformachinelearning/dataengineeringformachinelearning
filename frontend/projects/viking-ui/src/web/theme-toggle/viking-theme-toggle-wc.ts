@@ -1,4 +1,5 @@
 import { attachShadowStyles } from '../core/base';
+import { defineCustomElement } from '../core/dom';
 
 const VIKING_THEME_TOGGLE_STYLES = `
 :host {
@@ -128,7 +129,5 @@ export class VikingThemeToggleWc extends HTMLElement {
 }
 
 export const registerVikingThemeToggleWc = (): void => {
-  if (!customElements.get(VikingThemeToggleWc.tag)) {
-    customElements.define(VikingThemeToggleWc.tag, VikingThemeToggleWc);
-  }
+  defineCustomElement(VikingThemeToggleWc.tag, VikingThemeToggleWc);
 };

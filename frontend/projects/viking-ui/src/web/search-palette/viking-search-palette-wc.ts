@@ -1,5 +1,5 @@
 import { attachShadowStyles, readBoolAttr, closeModalDialog, showModalDialog } from '../core/base';
-import { escapeHtml, modKeyLabel } from '../core/dom';
+import { defineCustomElement, escapeHtml, modKeyLabel } from '../core/dom';
 import { renderInlineIcon } from '../core/icons-inline';
 import { VIKING_SEARCH_PALETTE_STYLES } from '../core/styles';
 import type { VikingSearchPaletteItem } from '../core/types';
@@ -360,14 +360,14 @@ export class VikingSearchPaletteWc extends HTMLElement {
     this.resultsEl.querySelectorAll('.viking-search-result').forEach((node) => {
       node.addEventListener('click', (event) => {
         event.preventDefault();
-        const index = Number((node as HTMLElement).dataset.index ?? 0);
+        const index = Number((node as HTMLElement).dataset['index'] ?? 0);
         const item = this.flatResults[index];
         if (item) {
           this.activateItem(item);
         }
       });
       node.addEventListener('mouseenter', () => {
-        const index = Number((node as HTMLElement).dataset.index ?? 0);
+        const index = Number((node as HTMLElement).dataset['index'] ?? 0);
         this.activeIndex = index;
         this.renderResults();
       });
@@ -426,7 +426,5 @@ export class VikingSearchPaletteWc extends HTMLElement {
 }
 
 export const registerVikingSearchPaletteWc = (): void => {
-  if (!customElements.get(VikingSearchPaletteWc.tag)) {
-    customElements.define(VikingSearchPaletteWc.tag, VikingSearchPaletteWc);
-  }
+  defineCustomElement(VikingSearchPaletteWc.tag, VikingSearchPaletteWc);
 };
