@@ -199,7 +199,7 @@
       }
 
       <div class="dashboard-grid dashboard-grid-single">
-        <viking-chart-panel size="large">
+        <viking-chart-panel>
           <viking-chart-card-header
             title="System Latency (Last 24h)"
             [hasData]="hasLatencyData()"
@@ -239,7 +239,7 @@
       </div>
 
       <!-- Full Width Origin Map -->
-      <div class="dashboard-grid dashboard-grid-single">
+      <div class="dashboard-grid dashboard-grid-map">
         <viking-chart-panel size="medium" body="origin-map">
           <viking-chart-card-header
             title="Geographic Origins"

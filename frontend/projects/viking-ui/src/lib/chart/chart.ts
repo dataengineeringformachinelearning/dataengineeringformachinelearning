@@ -68,10 +68,14 @@ const TONE_VARS: Record<VikingTone, string> = {
 const WIDTH = 720;
 const HEIGHT_DEFAULT = 240;
 const HEIGHT_COMPACT = 200;
+const HEIGHT_FILL = 400;
+const HEIGHT_FILL_LINE = 280;
 const HEIGHT_SPARKLINE = 48;
-const BAR_WIDTH_MIN = 8;
-const BAR_WIDTH_MAX = 52;
-const SINGLE_BAR_WIDTH = 36;
+const BAR_WIDTH_MIN = 12;
+const BAR_WIDTH_MAX = 96;
+const SINGLE_BAR_WIDTH = 72;
+const LABEL_MAX_DEFAULT = 10;
+const LABEL_MAX_FILL = 18;
 
 const resolveBarWidth = (slotWidth: number, count: number, widthPercent: number): number => {
   if (count <= 1) {
@@ -181,7 +185,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       <svg
         [attr.viewBox]="'0 0 ' + width + ' ' + height()"
-        preserveAspectRatio="xMidYMid meet"
+        [attr.preserveAspectRatio]="preserveAspectRatio()"
         role="img"
         [attr.aria-label]="label() || 'Chart'"
         aria-hidden="true"
@@ -353,8 +357,7 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         display: flex;
         flex-direction: column;
         flex: 1 1 auto;
-        min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
-        max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+        min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
         height: 100%;
       }
       :host(.viking-chart-sparkline-host) {
@@ -384,10 +387,10 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
-        min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
-        max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+        min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
         height: 100%;
         aspect-ratio: auto;
+        --viking-chart-axis-size: 13px;
       }
       .viking-chart-sparkline {
         width: 5rem;
@@ -411,8 +414,8 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
       }
       .viking-chart-fill svg {
         flex: 1 1 auto;
-        min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
-        max-height: var(--viking-chart-fill-max-height, clamp(17.5rem, 40vw, 21rem));
+        min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
+        height: 100%;
       }
       .viking-chart-sparkline svg {
         min-height: 0;
@@ -468,6 +471,9 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         font-weight: 700;
         font-family: var(--viking-font-family);
       }
+      .viking-chart-fill .viking-chart-donut-total {
+        font-size: max(16px, min(24px, 5cqw));
+      }
       .viking-chart-legend {
         display: flex;
         flex-wrap: wrap;
@@ -518,7 +524,7 @@ export class VikingChart {
   readonly curve = input<VikingChartCurve>('linear');
   readonly showPoints = input<boolean>(false);
   readonly pointRadius = input<number>(4);
-  readonly barWidth = input<number>(62);
+  readonly barWidth = input<number>(78);
   readonly barRadius = input<number>(4);
   readonly gutter = input<number | string | undefined>(undefined);
   readonly tickCount = input<number>(4);
@@ -529,9 +535,15 @@ export class VikingChart {
 
   protected readonly isSparkline = computed(() => this.kind() === 'sparkline');
 
-  protected readonly resolvedGutter = computed(() =>
-    parseGutter(this.gutter(), this.isSparkline()),
-  );
+  protected readonly resolvedGutter = computed(() => {
+    if (this.gutter() !== undefined && this.gutter() !== null) {
+      return parseGutter(this.gutter(), this.isSparkline());
+    }
+    if (this.fill() && !this.isSparkline()) {
+      return { top: 8, right: 8, bottom: 28, left: 36 };
+    }
+    return parseGutter(undefined, this.isSparkline());
+  });
 
   protected readonly legendVisible = computed(() => {
     const explicit = this.showLegend();
@@ -555,7 +567,29 @@ export class VikingChart {
     if (this.isSparkline()) {
       return HEIGHT_SPARKLINE;
     }
+    if (this.fill()) {
+      if (this.kind() === 'donut') {
+        return WIDTH;
+      }
+      if (this.isLineKind()) {
+        return HEIGHT_FILL_LINE;
+      }
+      return HEIGHT_FILL;
+    }
     return this.compact() ? HEIGHT_COMPACT : HEIGHT_DEFAULT;
+  });
+
+  protected readonly preserveAspectRatio = computed(() => {
+    if (!this.fill() || this.isSparkline()) {
+      return 'xMidYMid meet';
+    }
+    if (this.kind() === 'donut') {
+      return 'xMidYMid meet';
+    }
+    if (this.isLineKind()) {
+      return 'xMidYMid slice';
+    }
+    return 'none';
   });
 
   protected readonly plotBottom = computed(() => this.height() - this.resolvedGutter().bottom);
@@ -572,6 +606,11 @@ export class VikingChart {
   protected readonly isBarKind = computed(() => {
     const kind = this.kind();
     return kind === 'bar' || kind === 'grouped-bar' || kind === 'stacked-bar';
+  });
+
+  protected readonly isLineKind = computed(() => {
+    const kind = this.kind();
+    return kind === 'line' || kind === 'area';
   });
 
   protected readonly renderArea = computed(
@@ -661,7 +700,8 @@ export class VikingChart {
 
     const cats = this.categories();
     const plotWidth = WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
-    const maxLabels = 6;
+    const maxLabels = this.fill() ? 8 : 6;
+    const labelMax = this.fill() ? LABEL_MAX_FILL : LABEL_MAX_DEFAULT;
     const step = Math.max(1, Math.ceil(count / maxLabels));
     const labels: AxisLabel[] = [];
 
@@ -669,14 +709,14 @@ export class VikingChart {
       const x =
         this.resolvedGutter().left +
         (count === 1 ? plotWidth / 2 : (index / Math.max(1, count - 1)) * plotWidth);
-      const text = cats[index] ? truncateLabel(cats[index]) : `${index + 1}`;
+      const text = cats[index] ? truncateLabel(cats[index], labelMax) : `${index + 1}`;
       labels.push({ x, y: this.height(), text, anchor: 'middle' });
     }
 
     if ((count - 1) % step !== 0 && count > 1) {
       const last = count - 1;
       const x = this.resolvedGutter().left + (last / Math.max(1, count - 1)) * plotWidth;
-      const text = cats[last] ? truncateLabel(cats[last]) : `${last + 1}`;
+      const text = cats[last] ? truncateLabel(cats[last], labelMax) : `${last + 1}`;
       if (!labels.some(item => item.text === text)) {
         labels.push({ x, y: this.height(), text, anchor: 'middle' });
       }
