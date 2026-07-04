@@ -39,7 +39,7 @@
       background-color: var(--card-bg, var(--viking-charcoal-900));
       border: 1px solid var(--border, var(--viking-charcoal-700));
       border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+      box-shadow: var(--viking-shadow-lg, 0 4px 24px color-mix(in srgb, var(--viking-black) 40%, transparent));
       padding: 24px;
       display: flex;
       flex-direction: column;

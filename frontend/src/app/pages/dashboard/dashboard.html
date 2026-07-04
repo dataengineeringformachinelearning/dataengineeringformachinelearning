@@ -129,7 +129,9 @@
         <section class="viking-card panel-card overview-panel threats-panel">
           <div class="panel-header">
             <h2>Recent Threats</h2>
-            <button type="button" class="link-btn" (click)="setTab('security')">View all</button>
+            <viking-button variant="ghost" [compact]="true" type="button" (pressed)="setTab('security')">
+              View all
+            </viking-button>
           </div>
           <div class="panel-body">
             @if (vulnService.isLoading()) {
@@ -163,7 +165,9 @@
         <section class="viking-card panel-card overview-panel metrics-panel">
           <div class="panel-header">
             <h2>Performance Snapshot</h2>
-            <button type="button" class="link-btn" (click)="setTab('performance')">Details</button>
+            <viking-button variant="ghost" [compact]="true" type="button" (pressed)="setTab('performance')">
+              Details
+            </viking-button>
           </div>
           <div class="snapshot-stats">
             <div class="snapshot-stat">
@@ -214,11 +218,14 @@
         </viking-metric-row>
 
         <div class="detail-actions">
-          <a class="action-btn" routerLink="/analytics">
-            <viking-app-icon name="insights" [ariaHidden]="true" />
-            <span>Full analytics view</span>
-            <viking-app-icon name="arrow_forward" [ariaHidden]="true" hostClass="action-arrow" />
-          </a>
+          <viking-button
+            variant="outline"
+            href="/analytics"
+            icon="insights"
+            iconTrailing="arrow-right"
+          >
+            Full analytics view
+          </viking-button>
         </div>
 
         <section class="viking-card panel-card chart-panel">
@@ -308,11 +315,15 @@
               <viking-app-icon name="shield" [ariaHidden]="true" hostClass="panel-title-icon" />
               <h2>Threat Queue</h2>
             </div>
-            <a class="action-btn compact" routerLink="/vulnerabilities">
-              <viking-app-icon name="troubleshoot" [ariaHidden]="true" />
-              <span>Advanced triage</span>
-              <viking-app-icon name="arrow_forward" [ariaHidden]="true" hostClass="action-arrow" />
-            </a>
+            <viking-button
+              variant="outline"
+              [compact]="true"
+              href="/vulnerabilities"
+              icon="bug"
+              iconTrailing="arrow-right"
+            >
+              Advanced triage
+            </viking-button>
           </div>
           @if (vulnService.isLoading()) {
           <div class="panel-loading"><span class="spinner"></span> Ingesting threat feed...</div>

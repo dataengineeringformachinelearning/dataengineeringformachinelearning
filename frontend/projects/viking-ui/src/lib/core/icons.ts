@@ -113,6 +113,8 @@ export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
   data_object: 'aws-redshift',
   memory: 'tensorflow',
   psychology: 'pytorch',
+  dns: 'server',
+  login: 'log-in',
 };
 
 /** Icons always rendered with fill (play triangle, dot grids). */
