@@ -16,7 +16,7 @@ export interface VikingWizardStep {
   host: { class: 'viking-wizard' },
   template: `
     <viking-progress [value]="progressPercent()" />
-    <p class="viking-wizard-step-label">{{ activeStep()?.label }}</p>
+    <p class="viking-wizard-step-label">{{ activeStep().label }}</p>
     <div class="viking-wizard-body">
       <ng-content />
     </div>
@@ -60,8 +60,10 @@ export class VikingWizard {
   readonly steps = input<VikingWizardStep[]>([]);
   readonly step = input<string>('');
 
-  protected readonly activeStep = computed(() =>
-    this.steps().find(item => item.id === this.step()) ?? this.steps()[0],
+  protected readonly activeStep = computed(
+    () =>
+      this.steps().find(item => item.id === this.step()) ??
+      this.steps()[0] ?? { id: '', label: '' },
   );
 
   protected readonly progressPercent = computed(() => {

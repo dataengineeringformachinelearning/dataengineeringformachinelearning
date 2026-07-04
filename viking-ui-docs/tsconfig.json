@@ -11,7 +11,17 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve"
+    "module": "preserve",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@dataengineeringformachinelearning/viking-ui": [
+        "../frontend/projects/viking-ui/src/public-api.ts"
+      ],
+      "@dataengineeringformachinelearning/viking-ui/*": [
+        "../frontend/projects/viking-ui/src/*"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

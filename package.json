@@ -23,6 +23,7 @@
     "build:viking-ui": "npm run build:viking-ui --prefix frontend",
     "build:viking-ui-docs": "npm run build --prefix viking-ui-docs",
     "start:viking-ui-docs": "npm run start --prefix viking-ui-docs",
+    "start": "npm run start:viking-ui-docs",
     "deploy:viking-ui-docs": "npm run build:viking-ui-docs && npx --yes firebase-tools@latest deploy --only hosting:deml-ui --project deml-ui",
     "install-hooks": "python scripts/deml_tooling.py install-hooks && uvx pre-commit install --hook-type pre-commit --hook-type pre-push"
   }
