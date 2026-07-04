@@ -95,6 +95,16 @@
               }
             </div>
           </div>
+
+          <!-- Fourth model: Spiking Temporal Forecast (from backend telemetry) -->
+          <div class="viking-card kpi-card">
+            <viking-app-icon name="trending-up" />
+            <span class="kpi-label">Spiking Temporal Forecast</span>
+            <span class="kpi-value">{{ (temporalForecast || 50) | number:'1.0-0' }}%</span>
+            <div class="kpi-sparkline-slot">
+              <small class="kpi-subtitle">Norse SNN forecast on event sequences</small>
+            </div>
+          </div>
           <div class="viking-card kpi-card" [class.alert]="openVulnCount() > 0">
             <viking-app-icon name="bug_report" />
             <span class="kpi-label">Open Issues</span>

@@ -6,7 +6,7 @@ from monitor.models import StatusPage
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
-from ml.ml_services import train_tenant_sla
+from ml.ml_services import train_tenant_sla, train_spiking_temporal_forecaster
 from ml.models import ThreatReport, TrainingRun
 
 router = Router()
@@ -268,6 +268,13 @@ def get_threat_report_stix(request: Any, status_page_id: str | None = None) -> A
         report = train_threat_model(user, is_platform=is_platform)
       except Exception:
         report = None
+
+  # Trigger fourth model training opportunistically (non-blocking in API context; prefer worker)
+  try:
+    user, is_platform = _scope_from_status_page(status_page) if status_page else (None, True)
+    train_spiking_temporal_forecaster(user, is_platform=is_platform)
+  except Exception:
+    pass  # training is best-effort in API; main training via worker/command
 
   import uuid
 

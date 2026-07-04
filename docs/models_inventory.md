@@ -33,6 +33,18 @@ This document tracks the machine learning models used across the platform, outli
   - Saved locally as `ces_model.pt`.
   - Pushed securely to your Hugging Face Repository (`HF_REPO_ID`) as `ces_models/platform_ces_model.pt`.
 
+## 4. Spiking Temporal Forecaster (`SpikingTemporalForecaster`)
+
+- **Purpose**: Forecasts temporal patterns and future anomalies in telemetry/event streams using Spiking Neural Networks (SNNs). Ideal for processing time-series sequences from Redpanda events, latency spikes, and error bursts over time windows. Outputs a forecast score (0.0-1.0) for upcoming issues.
+- **Data Scope**: **Tenant-Specific + Platform**. Processes sequences of features (e.g., latency, errors over seq_len timesteps) from endpoints and analytics.
+- **Architecture**: PyTorch + optional Norse SNN (LIFCell layers for spiking dynamics) or MLP fallback. Handles sequential input for native temporal modeling.
+- **Teacher Model**: `meta-llama/Meta-Llama-3-8B-Instruct` (via Hugging Face Inference API) or Gemini 2.5 Flash.
+- **Knowledge Distillation Strategy**: Prompt the Teacher with temporal sequences of telemetry (recent error rates, response time variations over windows) and ask for the probability of a future spike/anomaly. Use the score to supervise the SNN on sequence data. This teaches the model precise timing and event-driven patterns better than static MLPs.
+- **Deployment**:
+  - Saved locally as `spiking_temporal_forecaster.pt` (or platform variant).
+  - Pushed securely to your Hugging Face Repository (`HF_REPO_ID`) as `temporal_models/{hashed}_spiking_temporal_forecaster.pt`.
+  - Optional: Requires `norse` package (falls back to simple MLP if not installed).
+
 ---
 
-_Note: All Knowledge Distillation API calls happen during the offline training workers (e.g. `ml_worker`), not during live inference. Live inference uses the fast, lightweight PyTorch models._
+_Note: All Knowledge Distillation API calls happen during the offline training workers (e.g. `ml_worker`), not during live inference. Live inference uses the fast, lightweight PyTorch models. The Spiking model is the fourth core model, focused on temporal/event data (see AGENTS.md for future-proofing and Norse integration from related projects)._

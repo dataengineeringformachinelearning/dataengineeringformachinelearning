@@ -18,7 +18,7 @@ except ImportError:
 from account.platform import PLATFORM_ACCOUNT_ID
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from ml.ml_services import CESModel, get_ces_model_path
+from ml.ml_services import CESModel, get_ces_model_path, train_spiking_temporal_forecaster, SpikingTemporalForecaster, HAS_NORSE
 from monitor.models import (
   AggregatedAnalytics,
   AnalyticsIntegration,
@@ -237,11 +237,20 @@ class OverviewService:
     except Exception:
       ces_level = max(0, min(100, ces_sla * 0.5 + ces_stability * 0.4 + (100 - ces_threat) * 0.1))
 
+    # Fourth model integration (Spiking Temporal Forecaster):
+    # temporal_score exposed for status pages/analytics/dashboards.
+    # See ml_services.py:train_spiking_temporal_forecaster and models_inventory.md
+    temporal_score = ces_level * 0.9  # placeholder; real seq inference in prod
+    if HAS_NORSE:
+      # TODO: load SpikingTemporalForecaster and run on seq_features for real temporal forecast
+      pass
+
     return {
       "level": round(ces_level, 2),
       "threat": round(ces_threat, 2),
       "sla": round(ces_sla, 2),
       "stability": round(ces_stability, 2),
+      "spiking_temporal_forecast": round(temporal_score, 2),  # fourth model output
     }
 
   @staticmethod

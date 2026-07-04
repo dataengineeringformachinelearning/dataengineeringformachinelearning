@@ -9,9 +9,17 @@ logger = logging.getLogger(__name__)
 try:
   import torch
   import torch.nn as nn
+  try:
+    import norse.torch as norse
+    HAS_NORSE = True
+  except ImportError:
+    norse = None  # type: ignore
+    HAS_NORSE = False
 except ImportError:
   torch = None  # type: ignore
   nn = None  # type: ignore
+  norse = None  # type: ignore
+  HAS_NORSE = False
 
 from django.conf import settings
 from monitor.models import Endpoints
@@ -233,6 +241,59 @@ class CESModel(nn.Module):
     x = torch.relu(self.fc1(x))
     x = self.sigmoid(self.fc2(x))
     return x * 100.0
+
+
+# Fourth model: Spiking Temporal Forecaster using Norse (optional)
+# For temporal/event-driven data processing with Spiking Neural Networks.
+# Falls back gracefully if norse not installed.
+if HAS_NORSE:
+  class SpikingTemporalForecaster(nn.Module):
+    """Spiking Neural Network model for forecasting temporal patterns in telemetry.
+
+    Uses LIF spiking neurons to process sequences of features (e.g., latency, error rates over time).
+    Better suited for event streams and spiking-like telemetry than standard MLPs.
+
+    Input: (batch, time_steps, features) or similar; outputs forecast score 0-1 or 0-100.
+    """
+    FEATURE_DIM: Final[int] = 6  # Align with threat features for now; can expand for sequences
+
+    def __init__(self, in_features: int = FEATURE_DIM, hidden_size: int = 32):
+      super().__init__()
+      self.lif1 = norse.LIFCell(norse.LIFParameters(tau_mem_inv=100.0))
+      self.linear = nn.Linear(in_features, hidden_size)
+      self.lif2 = norse.LIFCell(norse.LIFParameters(tau_mem_inv=100.0))
+      self.readout = nn.Linear(hidden_size, 1)
+      self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+      # Expect x: (batch, seq_len, features) or (seq_len, batch, features)
+      if x.dim() == 2:
+        x = x.unsqueeze(0)  # Add seq dim if single step
+      # Process sequence
+      s1 = None
+      s2 = None
+      for t in range(x.size(1)):  # seq dim
+        z = x[:, t, :]
+        z = self.linear(z)
+        z, s1 = self.lif1(z, s1)
+        z, s2 = self.lif2(z, s2)
+      out = self.readout(s2.v if s2 else z)
+      return self.sigmoid(out)
+else:
+  class SpikingTemporalForecaster(nn.Module):
+    """Fallback to simple MLP if Norse not available."""
+    FEATURE_DIM: Final[int] = 6
+
+    def __init__(self, in_features: int = FEATURE_DIM):
+      super().__init__()
+      self.fc1 = nn.Linear(in_features, 16)
+      self.fc2 = nn.Linear(16, 1)
+      self.sigmoid = nn.Sigmoid()
+
+    def forward(self, x):
+      x = torch.relu(self.fc1(x))
+      x = self.sigmoid(self.fc2(x))
+      return x
 
 
 def train_tenant_sla(user: Any = None, *, is_platform: bool = False) -> TrainingRun | None:
@@ -700,3 +761,138 @@ def train_ces_model() -> dict:
       logger.error("Failed to push CES model to Hugging Face: %s", e)
 
   return {"status": "CES model trained and published successfully"}
+
+
+# Fourth model: Spiking Temporal Forecaster
+# Uses Norse SNN for temporal data processing on event/telemetry sequences.
+# This is the new fourth model, focused on forecasting temporal patterns
+# (e.g., upcoming latency spikes or anomaly sequences from Redpanda streams).
+def train_spiking_temporal_forecaster(user: Any = None, *, is_platform: bool = False) -> TrainingRun | None:
+  """Train a Spiking NN (Norse) or fallback MLP for temporal forecasting.
+
+  Uses sequences of telemetry features to predict future scores (e.g., next SLA or threat level).
+  Leverages teacher model for labels on temporal patterns.
+  """
+  if not HAS_NORSE and torch is None:
+    logger.warning("Norse and/or torch not available; skipping spiking temporal model")
+    return None
+
+  import numpy as np
+  import random
+  import torch.optim as optim
+
+  if is_platform:
+    endpoints = Endpoints.objects.filter(is_platform=True, user__isnull=True)
+  else:
+    endpoints = Endpoints.objects.filter(user=user, is_platform=False)
+
+  if not endpoints.exists():
+    return None
+
+  # Prepare temporal sequences (simplified: create fake sequences from recent endpoints)
+  # In production, use AggregatedAnalytics over time windows or event sequences from projections.
+  seq_len = 8  # temporal steps
+  x_data = []
+  y_data = []
+
+  for ep in list(endpoints)[:100]:
+    base_status = float(ep.status_code) / 100.0
+    base_resp = ep.response_time.total_seconds()
+    base_active = 1.0 if ep.is_active else 0.0
+
+    # Create a sequence with some temporal variation (simulating spikes)
+    seq = []
+    for t in range(seq_len):
+      status = max(0.0, min(1.0, base_status + random.uniform(-0.1, 0.1) * (t / seq_len)))
+      resp = max(0.0, base_resp + random.uniform(-0.5, 0.5))
+      active = base_active
+      seq.append([status, resp, active, 0.0, 0.0, 0.0])  # pad to FEATURE_DIM
+
+    x_data.append(seq)
+
+    # Teacher label for "future" forecast (e.g., will there be a spike?)
+    prompt = (
+      f"Temporal sequence for endpoint: recent error rates { [s[0] for s in seq[-3:]] }, "
+      f"response times varying. Predict probability (0.0-1.0) of anomaly/spike in next window."
+    )
+    target = query_teacher_model(prompt)
+    y_data.append([target])
+
+  if not x_data:
+    return None
+
+  X_np = np.array(x_data, dtype=np.float32)  # (n_samples, seq_len, features)
+  Y_np = np.array(y_data, dtype=np.float32)
+
+  if HAS_NORSE:
+    model = SpikingTemporalForecaster()
+  else:
+    model = SpikingTemporalForecaster()  # fallback
+
+  criterion = nn.MSELoss()
+  optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+  X_tensor = torch.tensor(X_np, dtype=torch.float32)
+  Y_tensor = torch.tensor(Y_np, dtype=torch.float32)
+
+  # Simple training loop (for sequences, reshape or handle in forward)
+  for _epoch in range(30):
+    optimizer.zero_grad()
+    # For simplicity, use last timestep or mean over seq for training target
+    # In real SNN, forward handles full sequence
+    outputs = model(X_tensor)  # may need adjustment for batch/seq
+    loss = criterion(outputs, Y_tensor)
+    loss.backward()
+    optimizer.step()
+
+  # Save
+  model_path = get_platform_model_path().replace("threat_model", "spiking_temporal_forecaster")
+  if is_platform:
+    model_path = model_path.replace("platform", "platform")
+  torch.save(model.state_dict(), model_path)
+
+  # HF push (simplified, similar to others)
+  hf_token = os.environ.get("HF_TOKEN")
+  hf_repo = os.environ.get("HF_REPO_ID")
+  if hf_token and hf_repo:
+    try:
+      from huggingface_hub import HfApi
+      import hashlib
+      import tempfile
+
+      identifier = "platform" if is_platform else getattr(user, "username", "default")
+      safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
+      model_name = f"{safe_identifier}_spiking_temporal_forecaster.pt"
+      with tempfile.NamedTemporaryFile(suffix=".pt", delete=False) as tmp:
+        torch.save(model.state_dict(), tmp.name)
+        tmp_path = tmp.name
+      try:
+        api = HfApi(token=hf_token)
+        api.upload_file(
+          path_or_fileobj=tmp_path,
+          path_in_repo=f"temporal_models/{model_name}",
+          repo_id=hf_repo,
+          repo_type="model",
+        )
+      finally:
+        os.unlink(tmp_path)
+    except Exception as e:
+      logger.error("Failed to push Spiking Temporal model to HF: %s", e)
+
+  avg_pred = float(outputs.mean().item()) * 100.0 if outputs is not None else 50.0
+  run = TrainingRun.objects.create(
+    user=None if is_platform else user,
+    is_platform=is_platform,
+    average_sla=avg_pred,  # reuse field or extend later
+    loss=float(loss.item()) if 'loss' in locals() else 0.0,
+  )
+
+  # Invalidate caches
+  from django.core.cache import cache as _cache
+  _cache.delete("ml:latest_run:platform")
+  if not is_platform and user:
+    from monitor.models import StatusPage as _SP
+    for _page in _SP.objects.filter(user=user):
+      _cache.delete(f"ml:latest_run:{_page.id}")
+
+  return run

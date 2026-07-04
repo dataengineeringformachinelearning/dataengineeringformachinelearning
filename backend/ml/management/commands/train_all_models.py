@@ -1,14 +1,15 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from ml.ml_services import train_tenant_sla, train_threat_model
+from ml.ml_services import train_tenant_sla, train_threat_model, train_spiking_temporal_forecaster
 
 User = get_user_model()
 
 
 class Command(BaseCommand):
   help = (
-    "Retrains SLA, Threat, and CES forecast models for all accounts. "
-    "Data retention is handled by security_worker via db_cleanup."
+    "Retrains SLA, Threat, CES, and Spiking Temporal Forecaster models for all accounts. "
+    "Data retention is handled by security_worker via db_cleanup. "
+    "Spiking model uses Norse if available for temporal data."
   )
 
   def handle(self, *args, **options):
@@ -68,4 +69,30 @@ class Command(BaseCommand):
     except Exception as e:
       self.stderr.write(self.style.ERROR(f"  - CES model training failed: {e}"))
 
-    self.stdout.write(self.style.SUCCESS("All models trained successfully."))
+    self.stdout.write("Training Spiking Temporal Forecaster (fourth model)...")
+    try:
+      run = train_spiking_temporal_forecaster(None, is_platform=True)
+      if run:
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"  - Platform Spiking Temporal Forecaster trained: score = {run.average_sla:.2f}%"
+          )
+        )
+      else:
+        self.stdout.write("  - Spiking training skipped (no data or Norse unavailable)")
+    except Exception as e:
+      self.stderr.write(self.style.ERROR(f"  - Spiking Temporal model training failed: {e}"))
+
+    for user in User.objects.filter(profile__isnull=False).select_related("profile"):
+      try:
+        run = train_spiking_temporal_forecaster(user, is_platform=False)
+        if run:
+          self.stdout.write(
+            self.style.SUCCESS(
+              f"  - Spiking Temporal Forecaster for '{user.username}': {run.average_sla:.2f}%"
+            )
+          )
+      except Exception as e:
+        self.stderr.write(self.style.ERROR(f"  - Spiking training for user failed: {e}"))
+
+    self.stdout.write(self.style.SUCCESS("All models (including fourth Spiking Temporal) trained successfully."))

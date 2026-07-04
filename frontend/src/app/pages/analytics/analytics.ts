@@ -95,6 +95,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
   public threatLevel = 0;
   public slaLevel = 0;
   public stabilityLevel = 0;
+  public temporalForecast = 50;
 
   latencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Latency (ms)', []));
   frequencySeries = signal<VikingChartSeries[]>(toVikingLineSeries('Requests', [], 'muted'));
@@ -218,6 +219,7 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
           this.threatLevel = ces?.threat || 0;
           this.slaLevel = ces?.sla || 0;
           this.stabilityLevel = ces?.stability || 0;
+          this.temporalForecast = response.data?.spiking_temporal_forecast || ces?.spiking_temporal_forecast || 50;
 
           this.p99Latency = user_metrics?.p99_latency_ms || 0;
           this.uptimePercent = user_metrics?.uptime_percent || 0;

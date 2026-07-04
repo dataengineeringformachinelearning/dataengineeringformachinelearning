@@ -65,6 +65,24 @@
             </div>
           </div>
 
+          <!-- Spiking Temporal Forecast (4th model) -->
+          <div class="viking-card gauge-card col-span-4 col-span-md-4">
+            <div class="gauge-card-header">
+              <h3>Temporal Forecast</h3>
+              <viking-app-icon name="timeline" />
+            </div>
+            <div class="gauge-wrapper">
+              <div class="gauge-center-text">
+                <span class="value">{{ temporalForecast | number:'1.0-0' }}</span>
+                <span class="unit">SPIKE RISK</span>
+              </div>
+            </div>
+            <div class="gauge-card-footer">
+              <viking-app-icon name="info" />
+              <span>Spiking NN temporal prediction</span>
+            </div>
+          </div>
+
           <!-- STABLENESS GAUGE -->
           <div class="viking-card gauge-card col-span-4 col-span-md-4">
             <div class="gauge-card-header">

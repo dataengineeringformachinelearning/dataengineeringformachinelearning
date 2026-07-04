@@ -85,7 +85,7 @@ class Command(BaseCommand):
   @sync_to_async
   def train_all(self):
     from django.db import close_old_connections
-    from ml.ml_services import train_threat_model
+    from ml.ml_services import train_threat_model, train_spiking_temporal_forecaster
 
     close_old_connections()
     try:
@@ -108,6 +108,14 @@ class Command(BaseCommand):
                 f"Trained threat forecast model for '{user.username}' (Score: {report.anomaly_score * 100:.1f}%)"
               )
             )
+
+          spiking_run = train_spiking_temporal_forecaster(user, is_platform=False)
+          if spiking_run:
+            self.stdout.write(
+              self.style.SUCCESS(
+                f"Trained Spiking Temporal Forecaster (4th model) for '{user.username}'"
+              )
+            )
         except Exception as e:
           self.stderr.write(self.style.ERROR(f"Failed to train user '{user.username}': {e}"))
 
@@ -123,6 +131,9 @@ class Command(BaseCommand):
             f"Trained platform threat model (Score: {report.anomaly_score * 100:.1f}%)"
           )
         )
+      spiking_platform = train_spiking_temporal_forecaster(None, is_platform=True)
+      if spiking_platform:
+        self.stdout.write(self.style.SUCCESS("Trained platform Spiking Temporal Forecaster (4th)"))
     finally:
       close_old_connections()
 
