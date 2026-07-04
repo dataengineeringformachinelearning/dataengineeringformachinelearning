@@ -100,7 +100,7 @@
           <div class="viking-card kpi-card">
             <viking-app-icon name="trending-up" />
             <span class="kpi-label">Spiking Temporal Forecast</span>
-            <span class="kpi-value">{{ (temporalForecast || 50) | number:'1.0-0' }}%</span>
+            <span class="kpi-value">{{ (temporalForecast() || 50) | number:'1.0-0' }}%</span>
             <div class="kpi-sparkline-slot">
               <small class="kpi-subtitle">Norse SNN forecast on event sequences</small>
             </div>

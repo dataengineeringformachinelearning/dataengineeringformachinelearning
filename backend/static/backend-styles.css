@@ -55,7 +55,8 @@ main.main {
 }
 
 .backend-card {
-  background: var(--viking-surface, var(--color-surface));
+  position: relative;
+  background: var(--viking-surface-recipe, var(--viking-surface, var(--color-surface)));
   border: 1px solid var(--viking-border, var(--border));
   border-radius: var(--viking-radius-lg, 12px);
   padding: var(--viking-space-4, 32px) var(--viking-space-3, 24px);
@@ -64,6 +65,21 @@ main.main {
   width: 100%;
   box-sizing: border-box;
   transition: var(--viking-transition-interactive, transform 0.25s, box-shadow 0.25s, border-color 0.25s);
+  overflow: hidden;
+}
+
+.backend-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+    transparent
+  );
+  pointer-events: none;
 }
 
 .backend-card:hover {
@@ -487,13 +503,13 @@ footer {
 .hero-section {
   width: 100%;
   max-width: 896px;
-  margin: 0 auto var(--viking-space-4, 32px) auto;
+  margin: 0 auto var(--viking-space-5, 40px) auto;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--viking-space-3, 24px);
-  padding: var(--viking-space-3, 24px) 0;
+  gap: var(--viking-space-4, 32px);
+  padding: var(--viking-space-4, 32px) 0 var(--viking-space-3, 24px);
 }
 
 .hero-badge {
@@ -534,16 +550,32 @@ footer {
 }
 
 .feature-card {
-  background: var(--viking-surface, var(--color-surface));
+  position: relative;
+  background: var(--viking-surface-recipe, var(--viking-surface, var(--color-surface)));
   border: 1px solid var(--viking-border, var(--border));
   border-radius: var(--viking-radius-lg, 12px);
-  padding: var(--viking-space-3, 24px);
+  padding: var(--viking-space-4, 32px) var(--viking-space-3, 24px);
   text-align: left;
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1-5, 12px);
+  gap: var(--viking-space-2, 16px);
   transition: var(--viking-transition-interactive);
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+    transparent
+  );
+  pointer-events: none;
 }
 
 .feature-card:hover {
@@ -553,10 +585,13 @@ footer {
 }
 
 .feature-icon {
-  color: var(--color-primary);
+  color: var(--viking-accent-strong, var(--color-primary));
   font-size: 32px;
   width: 32px;
   height: 32px;
+  padding: var(--viking-space-1, 8px);
+  border-radius: var(--viking-radius-md, 8px);
+  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-teal-600) 12%, transparent));
 }
 
 .feature-title {

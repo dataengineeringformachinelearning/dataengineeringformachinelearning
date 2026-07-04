@@ -8,9 +8,9 @@
   color: var(--text-color);
 
   --status-accent: var(--color-primary-container);
-  --status-badge-bg: rgba(192, 197, 193, 0.1);
+  --status-badge-bg: color-mix(in srgb, var(--viking-teal-600) 10%, transparent);
   --status-badge-text: var(--color-primary-container);
-  --status-badge-border: rgba(192, 197, 193, 0.3);
+  --status-badge-border: color-mix(in srgb, var(--viking-teal-600) 30%, transparent);
   --timeline-warning: var(--color-warning);
 }
 
@@ -22,7 +22,7 @@
   --timeline-warning: var(--color-warning);
 
   .timeline-bar-outlined.bar-nodata {
-    background-color: rgba(0, 0, 0, 0.08) !important;
+    background-color: color-mix(in srgb, var(--viking-charcoal-900) 8%, transparent) !important;
   }
 }
 
@@ -225,7 +225,7 @@
     width: 48px;
     height: 48px;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.02);
+    background: color-mix(in srgb, var(--viking-surface) 98%, var(--viking-accent) 2%);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -274,15 +274,15 @@
   }
 
   &.predictive {
-    border-color: rgba(var(--color-primary-container), 0.2);
+    border-color: color-mix(in srgb, var(--viking-accent) 20%, var(--viking-border));
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.01) 0%,
-      rgba(var(--color-primary-container), 0.02) 100%
+      color-mix(in srgb, var(--viking-surface) 99%, transparent) 0%,
+      color-mix(in srgb, var(--viking-accent) 2%, var(--viking-surface)) 100%
     );
 
     .sla-icon-box {
-      border-color: rgba(var(--color-primary-container), 0.3);
+      border-color: color-mix(in srgb, var(--viking-accent) 30%, var(--viking-border));
       mat-icon {
         color: var(--status-accent);
       }
@@ -330,11 +330,11 @@
     padding: 16px 16px;
     border-radius: 8px;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.01);
+    background: var(--viking-surface-recipe, var(--viking-surface));
     transition: background-color 0.2s;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.03);
+      background: color-mix(in srgb, var(--viking-surface) 97%, var(--viking-accent) 3%);
     }
 
     @media (min-width: 601px) {
@@ -570,7 +570,7 @@
     }
 
     &.bar-nodata {
-      background-color: rgba(255, 255, 255, 0.15);
+      background-color: color-mix(in srgb, var(--viking-white) 15%, transparent);
     }
   }
 
@@ -626,7 +626,7 @@
     padding: 16px 24px 16px 32px;
     border-radius: 8px;
     border: 1px solid var(--border);
-    background: rgba(255, 255, 255, 0.01);
+    background: var(--viking-surface-recipe, var(--viking-surface));
     overflow: hidden;
 
     &::before {
@@ -783,39 +783,13 @@
   margin-bottom: 32px;
   padding: 24px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid var(--border);
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
   position: relative;
   overflow: hidden;
 }
 
-.section-title-premium {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.2rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--text-color);
-  margin-top: 0;
-  margin-bottom: 16px;
-
-  mat-icon {
-    color: var(--status-accent);
-    font-size: 22px;
-    width: 24px;
-    height: 24px;
-  }
-}
-
-.section-description-premium {
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--text-muted);
-  margin-top: -0.75rem;
-  margin-bottom: 24px;
-}
 
 .announcements-loader {
   display: flex;
@@ -828,7 +802,7 @@
   .btn-spinner {
     width: 16px;
     height: 16px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--viking-border);
     border-top: 2px solid var(--status-accent);
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -867,11 +841,11 @@
 
 .announcement-card-premium {
   position: relative;
-  padding: 16px 16px 16px 24px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.02);
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: var(--viking-space-2) var(--viking-space-2) var(--viking-space-2) var(--viking-space-3);
+  border-radius: var(--viking-radius-md);
+  border: 1px solid var(--viking-border);
+  background: color-mix(in srgb, var(--viking-surface) 98%, var(--viking-accent) 2%);
+  transition: var(--viking-transition-interactive);
   overflow: hidden;
 
   &::before {
@@ -907,7 +881,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.03);
+    background: color-mix(in srgb, var(--viking-surface) 97%, var(--viking-accent) 3%);
     box-shadow: var(--shadow-sm);
   }
 }

@@ -5,7 +5,7 @@
 .scope-filters {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: var(--viking-space-2);
   width: 100%;
 
   @media (min-width: 768px) {
@@ -58,11 +58,12 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 20px 24px;
-  border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--color-primary) 8%, var(--color-surface));
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  border-radius: var(--viking-radius-lg);
+  border: 1px solid var(--viking-border);
+  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface));
+  box-shadow: var(--viking-shadow-sm);
 }
 
 .setup-banner-content {
