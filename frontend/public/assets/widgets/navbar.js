@@ -147,6 +147,13 @@
       }
     };
 
+    const setAuthNavLinksVisible = visible => {
+      document.querySelectorAll('[data-require-auth="true"]').forEach(el => {
+        el.hidden = !visible;
+        el.style.display = visible ? '' : 'none';
+      });
+    };
+
     const updateAuthUIFromStatus = status => {
       const isLoggedIn = status?.isAuthenticated === true;
       const desktopBtn = document.getElementById('auth-btn-desktop');
@@ -168,6 +175,7 @@
           if (mobileText) mobileText.textContent = 'Dashboard';
         }
         setSignOutVisible(true);
+        setAuthNavLinksVisible(true);
       } else {
         clearAuthStorage();
         if (desktopBtn) {
@@ -181,6 +189,7 @@
           if (mobileText) mobileText.textContent = 'Sign In';
         }
         setSignOutVisible(false);
+        setAuthNavLinksVisible(false);
       }
     };
 
@@ -289,6 +298,7 @@
     };
 
     bindSignOutButtons();
+    setAuthNavLinksVisible(false);
     void checkAuthHandoff();
     checkAuthViaIframe();
   };

@@ -251,8 +251,11 @@ export const resolveBrandHref = (context: SiteDrakkarContext, urls: SiteUrls): s
   return urls.marketing;
 };
 
-/** All navbar links are shown on every surface for a consistent cross-app experience. */
-export const visibleNavLinks = (links: readonly SiteNavLink[]): SiteNavLink[] => [...links];
+/** Navbar links; auth-gated entries appear only when the session is active. */
+export const visibleNavLinks = (
+  links: readonly SiteNavLink[],
+  isAuthenticated = false,
+): SiteNavLink[] => links.filter(link => !link.requireAuth || isAuthenticated);
 
 export const isAppRouterPath = (href: string): boolean =>
   !isAbsoluteUrl(href) && href.startsWith('/');
