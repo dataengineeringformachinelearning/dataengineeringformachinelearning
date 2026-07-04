@@ -92,6 +92,7 @@ export class Login implements OnInit, OnDestroy {
 
   successMessage = signal<string | null>(null);
   error = signal<string | null>(null);
+  sessionExpired = signal<boolean>(false);
 
   loginForm: FormGroup = this.fb.group({
     username: ['', Validators.required],
@@ -145,6 +146,9 @@ export class Login implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
+      if (params['reason'] === 'timeout') {
+        this.sessionExpired.set(true);
+      }
       const mode = params['mode'];
       if (mode === 'reset') {
         this.isResetMode.set(true);

@@ -227,20 +227,11 @@
       </section>
       } @if (activeTab() === 'performance') {
       <section class="detail-grid">
-        <div class="detail-kpis">
-          <div class="viking-card kpi-card wide">
-            <span class="kpi-label">Network Stability</span>
-            <span class="kpi-value">{{ stabilityLevel | number:'1.0-0' }}%</span>
-          </div>
-          <div class="viking-card kpi-card wide">
-            <span class="kpi-label">SLA Forecast</span>
-            <span class="kpi-value">{{ slaLevel | number:'1.0-0' }}%</span>
-          </div>
-          <div class="viking-card kpi-card wide">
-            <span class="kpi-label">P99 Latency</span>
-            <span class="kpi-value">{{ p99Latency | number:'1.0-0' }} ms</span>
-          </div>
-        </div>
+        <viking-metric-row class="detail-kpis">
+          <viking-metric-card label="Network Stability" [value]="(stabilityLevel | number:'1.0-0') + '%'" />
+          <viking-metric-card label="SLA Forecast" [value]="(slaLevel | number:'1.0-0') + '%'" />
+          <viking-metric-card label="P99 Latency" [value]="(p99Latency | number:'1.0-0') + ' ms'" />
+        </viking-metric-row>
 
         <div class="detail-actions">
           <a class="action-btn" routerLink="/analytics">
@@ -260,6 +251,7 @@
               label="Latency Trend (24h)"
               [showArea]="true"
               [fill]="true"
+              [zoomable]="true"
             />
             } @else {
             <viking-chart-empty-state
@@ -322,20 +314,11 @@
       </section>
       } @if (activeTab() === 'security') {
       <section class="detail-grid">
-        <div class="detail-kpis">
-          <div class="viking-card kpi-card wide alert">
-            <span class="kpi-label">Open Threats</span>
-            <span class="kpi-value">{{ openVulnCount() }}</span>
-          </div>
-          <div class="viking-card kpi-card wide critical">
-            <span class="kpi-label">Critical</span>
-            <span class="kpi-value">{{ criticalVulnCount() }}</span>
-          </div>
-          <div class="viking-card kpi-card wide">
-            <span class="kpi-label">Threat Level</span>
-            <span class="kpi-value">{{ threatLevel | number:'1.0-0' }}%</span>
-          </div>
-        </div>
+        <viking-metric-row class="detail-kpis">
+          <viking-metric-card label="Open Threats" variant="warning" [value]="openVulnCount()" />
+          <viking-metric-card label="Critical" variant="critical" [value]="criticalVulnCount()" />
+          <viking-metric-card label="Threat Level" [value]="(threatLevel | number:'1.0-0') + '%'" />
+        </viking-metric-row>
 
         <section class="viking-card panel-card security-panel">
           <div class="panel-header">

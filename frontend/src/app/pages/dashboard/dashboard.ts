@@ -22,6 +22,8 @@ import {
   VikingRingGauge,
   VikingChartEmptyState,
   VikingPageHeader,
+  VikingMetricRow,
+  VikingMetricCard,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
@@ -60,6 +62,8 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     VikingAppIcon,
     VikingChartEmptyState,
     VikingPageHeader,
+    VikingMetricRow,
+    VikingMetricCard,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

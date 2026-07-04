@@ -672,11 +672,29 @@ button.auth-btn {
     max-height: 50vh;
     padding: var(--viking-space-2, 16px);
   }
+
+  &::after {
+    content: '⌘K toggle · Esc close';
+    display: block;
+    padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
+    border-top: 1px solid var(--viking-border, var(--border));
+    font-size: var(--viking-font-size-sm, 14px);
+    color: var(--viking-text-muted, var(--text-muted));
+    text-align: center;
+  }
 }
 
 .navbar-search-trigger,
 .navbar-search-mobile-btn {
   @include viking-navbar-utility-btn;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--viking-control-height, 40px);
+  height: var(--viking-control-height, 40px);
+  padding: 0;
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .algolia-autocomplete-host .aa-Autocomplete,

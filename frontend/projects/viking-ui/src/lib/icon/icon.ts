@@ -40,6 +40,11 @@ import {
     '[class.viking-icon-sm]': 'sizePreset() === "sm"',
     '[class.viking-icon-md]': 'sizePreset() === "md"',
     '[class.viking-icon-lg]': 'sizePreset() === "lg" || (!sizePreset() && !size())',
+    '[class.viking-icon-backdrop]': 'backdrop()',
+    '[class.viking-icon-backdrop-success]': "backdrop() && backdropTone() === 'success'",
+    '[class.viking-icon-backdrop-warning]': "backdrop() && backdropTone() === 'warning'",
+    '[class.viking-icon-backdrop-danger]': "backdrop() && backdropTone() === 'danger'",
+    '[class.viking-icon-backdrop-info]': "backdrop() && backdropTone() === 'info'",
     '[style.color]': 'resolvedColor()',
     'aria-hidden': 'true',
   },
@@ -139,6 +144,34 @@ import {
         animation: viking-icon-rotate 0.9s linear infinite;
       }
 
+      :host(.viking-icon-backdrop) {
+        padding: var(--viking-icon-backdrop-padding, var(--viking-space-half));
+        border-radius: var(--viking-radius-lg);
+        background: var(--viking-accent-soft);
+        color: var(--viking-accent-strong);
+        box-shadow: var(--viking-shadow-sm);
+      }
+
+      :host(.viking-icon-backdrop-success) {
+        background: color-mix(in srgb, var(--viking-success) 14%, transparent);
+        color: var(--viking-success);
+      }
+
+      :host(.viking-icon-backdrop-warning) {
+        background: color-mix(in srgb, var(--viking-warning) 14%, transparent);
+        color: var(--viking-warning);
+      }
+
+      :host(.viking-icon-backdrop-danger) {
+        background: color-mix(in srgb, var(--viking-danger) 14%, transparent);
+        color: var(--viking-danger);
+      }
+
+      :host(.viking-icon-backdrop-info) {
+        background: color-mix(in srgb, var(--viking-info) 14%, transparent);
+        color: var(--viking-info);
+      }
+
       @keyframes viking-icon-rotate {
         to {
           transform: rotate(360deg);
@@ -157,6 +190,9 @@ export class VikingIcon {
   readonly variant = input<VikingIconVariant>('outline');
   /** Semantic token (accent, success, …) or any CSS color value. */
   readonly color = input<VikingIconColorToken | string | undefined>(undefined);
+  /** Renders icon inside a padded tokenized backdrop (matches viking-icon-badge). */
+  readonly backdrop = input<boolean>(false);
+  readonly backdropTone = input<'default' | 'success' | 'warning' | 'danger' | 'info'>('default');
   readonly spin = input<boolean>(false);
 
   protected readonly resolvedName = computed(() => resolveVikingIcon(this.name()));

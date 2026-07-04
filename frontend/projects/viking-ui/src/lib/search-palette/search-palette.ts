@@ -9,14 +9,15 @@ import {
   viewChild,
 } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
+import { VikingKbd } from '../kbd/kbd';
 
 /**
- * viking-search-palette — command-palette style search overlay.
- * Project custom result lists into the body slot.
+ * viking-search-palette — command-palette style search overlay (Product Hunt / Algolia inspired).
+ * Project custom result lists into the body slot; ⌘K / Ctrl+K wired by host app static widget.
  */
 @Component({
   selector: 'viking-search-palette',
-  imports: [VikingIcon],
+  imports: [VikingIcon, VikingKbd],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { '(keydown.escape)': 'close()' },
   template: `
@@ -65,6 +66,10 @@ import { VikingIcon } from '../icon/icon';
           </div>
           <footer class="viking-search-palette-footer">
             <ng-content select="[vikingSearchPaletteFooter]" />
+            <span class="viking-search-palette-shortcut">
+              <viking-kbd>{{ modKey() }}</viking-kbd><viking-kbd>K</viking-kbd> toggle ·
+              <viking-kbd>Esc</viking-kbd> close
+            </span>
           </footer>
         </div>
       </div>
@@ -95,4 +100,8 @@ export class VikingSearchPalette {
   protected close(): void {
     this.open.set(false);
   }
+
+  /** Platform modifier label for footer shortcut hint. */
+  protected modKey = (): string =>
+    typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform) ? '⌘' : 'Ctrl';
 }

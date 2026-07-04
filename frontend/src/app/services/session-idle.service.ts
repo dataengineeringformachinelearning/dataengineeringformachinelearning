@@ -8,6 +8,7 @@ import { VikingDialogService } from './viking-dialog.service';
 const SESSION_IDLE_MS = 10 * 60 * 1000;
 /** Warn one minute before expiry. */
 const SESSION_WARN_MS = SESSION_IDLE_MS - 60 * 1000;
+const SESSION_CHANNEL = 'deml-session';
 
 /**
  * Tracks user activity and prompts before idle sign-out.
@@ -92,13 +93,22 @@ export class SessionIdleService {
     this.warningOpen = false;
     if (stay) {
       this.resetTimers();
+      this.postSessionMessage({ type: 'extend' });
       return;
     }
     await this.expireSession();
   }
 
+  private postSessionMessage(message: { type: 'logout' | 'extend'; reason?: string }): void {
+    if (typeof BroadcastChannel === 'undefined') {
+      return;
+    }
+    new BroadcastChannel(SESSION_CHANNEL).postMessage(message);
+  }
+
   private async expireSession(): Promise<void> {
     this.stop();
+    this.postSessionMessage({ type: 'logout', reason: 'timeout' });
     await this.authService.logout();
     void this.router.navigate(['/login'], { queryParams: { reason: 'timeout' } });
   }

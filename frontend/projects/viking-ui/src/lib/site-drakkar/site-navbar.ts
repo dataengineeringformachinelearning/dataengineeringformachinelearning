@@ -193,6 +193,7 @@ export class VikingSiteNavbar {
   readonly login = output<void>();
   readonly logout = output<void>();
   readonly themeToggle = output<void>();
+  readonly searchOpen = output<void>();
 
   protected readonly mobileMenuOpen = signal(false);
 
@@ -221,6 +222,7 @@ export class VikingSiteNavbar {
   }
 
   protected openSearch(): void {
+    this.searchOpen.emit();
     const widgets = (globalThis as { DemlWidgets?: { openSearch?: () => void } }).DemlWidgets;
     widgets?.openSearch?.();
   }

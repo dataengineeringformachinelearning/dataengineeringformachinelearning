@@ -62,6 +62,7 @@ export * from './lib/callout/callout';
 export * from './lib/card/card';
 export * from './lib/carousel/carousel';
 export * from './lib/chart/chart';
+export * from './lib/chart/chart-zoom';
 export * from './lib/chart-card-header/chart-card-header';
 export * from './lib/chart-empty-state/chart-empty-state';
 export * from './lib/chart-panel/chart-panel';

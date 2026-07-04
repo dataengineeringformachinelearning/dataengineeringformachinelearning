@@ -10,106 +10,106 @@
         (googleSignIn)="signInWithGoogle()"
         (appleSignIn)="signInWithApple()"
       >
-        @if (successMessage()) {
-        <viking-callout tone="success" [heading]="successMessage()!" />
-        } @if (mfaRequired() && !successMessage()) {
-        <viking-callout tone="accent">
-          Two-factor authentication is required. An SMS verification code has been sent to your
-          registered phone number.
-        </viking-callout>
-        } @if (!successMessage() || isResetMode()) {
-        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-          @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
-          <viking-field [label]="isRegisterMode() ? 'Username' : 'Email Address'" [required]="true">
-            <viking-input
-              [type]="isRegisterMode() ? 'text' : 'email'"
-              formControlName="username"
-              [placeholder]="isRegisterMode() ? '' : 'email@example.com'"
-              [icon]="isRegisterMode() ? 'user' : 'mail'"
-            />
-          </viking-field>
-          } @if (isRegisterMode() || isForgotMode()) {
-          <viking-field label="Email Address" [required]="isForgotMode()">
-            <viking-input
-              type="email"
-              formControlName="email"
-              placeholder="email@example.com"
-              icon="mail"
-            />
-          </viking-field>
-          } @if (!isForgotMode() && !isPhoneMode() && !mfaRequired()) {
-          <viking-field [label]="isResetMode() ? 'New Password' : 'Password'" [required]="true">
-            <viking-input type="password" formControlName="password" icon="lock" />
-          </viking-field>
-          } @if (isPhoneMode() && !codeSent() && !mfaRequired()) {
-          <viking-field label="Phone Number" [required]="true">
-            <viking-input
-              type="tel"
-              formControlName="phone"
-              placeholder="+11234567890"
-              icon="phone"
-            />
-          </viking-field>
-          } @if (codeSent()) {
-          <viking-verification-code-field
-            label="Verification Code"
-            [required]="true"
-            formControlName="verificationCode"
-          />
-          } @if (error()) {
-          <viking-callout tone="danger" [heading]="error()!" />
+        <div class="viking-auth-stack">
+          @if (sessionExpired()) {
+            <viking-callout tone="warning" heading="Session expired due to inactivity. Please sign in again." />
           }
-        </form>
-        } @if (!successMessage() || isResetMode()) {
-        <div vikingAuthLinks class="viking-auth-links">
-          @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
-          <viking-button
-            variant="outline"
-            type="button"
-            [fullWidth]="true"
-            (pressed)="toggleMode()"
-          >
-            {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account? Sign
-            Up" }}
-          </viking-button>
-          } @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() &&
-          !mfaRequired()) {
-          <viking-button
-            variant="outline"
-            type="button"
-            [fullWidth]="true"
-            (pressed)="switchToPhone()"
-          >
-            Sign In with Phone Number
-          </viking-button>
-          <viking-button
-            variant="outline"
-            type="button"
-            [fullWidth]="true"
-            (pressed)="switchToForgot()"
-          >
-            Forgot password?
-          </viking-button>
-          } @if (isPhoneMode() && !codeSent()) {
-          <viking-button
-            variant="outline"
-            type="button"
-            [fullWidth]="true"
-            (pressed)="switchToLogin()"
-          >
-            Sign In with Email
-          </viking-button>
-          } @if (isForgotMode() || isResetMode() || (isPhoneMode() && codeSent())) {
-          <viking-button
-            variant="outline"
-            type="button"
-            [fullWidth]="true"
-            (pressed)="switchToLogin()"
-          >
-            Back to Sign In
-          </viking-button>
+          @if (successMessage()) {
+            <viking-callout tone="success" [heading]="successMessage()!" />
+          }
+          @if (mfaRequired() && !successMessage()) {
+            <viking-callout tone="accent">
+              Two-factor authentication is required. An SMS verification code has been sent to your
+              registered phone number.
+            </viking-callout>
+          }
+          @if (!successMessage() || isResetMode()) {
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+              @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
+                <viking-field [label]="isRegisterMode() ? 'Username' : 'Email Address'" [required]="true">
+                  <viking-input
+                    [type]="isRegisterMode() ? 'text' : 'email'"
+                    formControlName="username"
+                    [placeholder]="isRegisterMode() ? '' : 'email@example.com'"
+                    [icon]="isRegisterMode() ? 'user' : 'mail'"
+                  />
+                </viking-field>
+              }
+              @if (isRegisterMode() || isForgotMode()) {
+                <viking-field label="Email Address" [required]="isForgotMode()">
+                  <viking-input
+                    type="email"
+                    formControlName="email"
+                    placeholder="email@example.com"
+                    icon="mail"
+                  />
+                </viking-field>
+              }
+              @if (!isForgotMode() && !isPhoneMode() && !mfaRequired()) {
+                <viking-field [label]="isResetMode() ? 'New Password' : 'Password'" [required]="true">
+                  <viking-input type="password" formControlName="password" icon="lock" />
+                </viking-field>
+              }
+              @if (isPhoneMode() && !codeSent() && !mfaRequired()) {
+                <viking-field
+                  label="Phone Number"
+                  description="Include country code, e.g. +11234567890"
+                  [required]="true"
+                >
+                  <viking-input
+                    type="tel"
+                    formControlName="phone"
+                    placeholder="+11234567890"
+                    icon="phone"
+                  />
+                </viking-field>
+              }
+              @if (codeSent() || mfaRequired()) {
+                <viking-verification-code-field
+                  [label]="mfaRequired() ? 'SMS Code' : 'Verification Code'"
+                  description="Enter the 6-digit code we sent to your phone."
+                  [required]="true"
+                  formControlName="verificationCode"
+                />
+              }
+              @if (error()) {
+                <viking-callout tone="danger" [heading]="error()!" />
+              }
+            </form>
           }
         </div>
+
+        @if (!successMessage() || isResetMode()) {
+          <div vikingAuthLinks class="viking-auth-links">
+            @if (!isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
+              <viking-button
+                variant="outline"
+                type="button"
+                [fullWidth]="true"
+                (pressed)="toggleMode()"
+              >
+                {{ isRegisterMode() ? 'Already have an account? Sign In' : "Don't have an account? Sign Up" }}
+              </viking-button>
+            }
+            @if (!isRegisterMode() && !isForgotMode() && !isResetMode() && !isPhoneMode() && !mfaRequired()) {
+              <viking-button variant="outline" type="button" [fullWidth]="true" (pressed)="switchToPhone()">
+                Sign In with Phone Number
+              </viking-button>
+              <viking-button variant="outline" type="button" [fullWidth]="true" (pressed)="switchToForgot()">
+                Forgot password?
+              </viking-button>
+            }
+            @if (isPhoneMode() && !codeSent()) {
+              <viking-button variant="outline" type="button" [fullWidth]="true" (pressed)="switchToLogin()">
+                Sign In with Email
+              </viking-button>
+            }
+            @if (isForgotMode() || isResetMode() || (isPhoneMode() && codeSent())) {
+              <viking-button variant="outline" type="button" [fullWidth]="true" (pressed)="switchToLogin()">
+                Back to Sign In
+              </viking-button>
+            }
+          </div>
         }
 
         <div vikingAuthFooter>

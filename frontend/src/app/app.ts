@@ -21,6 +21,7 @@ import { DemlBrandLogo } from './components/deml-brand-logo/deml-brand-logo';
 import { ConfirmDialog } from './components/confirm-dialog/confirm-dialog';
 import { OnboardingWizard } from './components/onboarding-wizard/onboarding-wizard';
 import { SessionIdleService } from './services/session-idle.service';
+import { SessionStateService } from './services/session-state.service';
 
 @Component({
   selector: 'app-root',
@@ -46,6 +47,7 @@ export class App implements OnInit {
   private router = inject(Router);
   private pageMeta = inject(PageMetaService);
   private sessionIdle = inject(SessionIdleService);
+  private sessionState = inject(SessionStateService);
 
   isStandaloneStatusPage = signal(false);
   isDashboardPage = signal(false);
@@ -90,6 +92,7 @@ export class App implements OnInit {
       });
 
     if (isPlatformBrowser(this.platformId) && !this.isAuthStatusPage()) {
+      this.sessionState.init();
       this.authService.checkAuth().then(() => {
         if (this.authService.isAuthenticated()) {
           this.sessionIdle.start();

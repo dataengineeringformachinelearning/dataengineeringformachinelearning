@@ -31,7 +31,10 @@
   padding: var(--viking-space-2);
   border-radius: var(--viking-radius-lg);
   min-width: 0;
-  align-items: flex-start;
+  min-height: var(--viking-metric-card-min-height, 5.5rem);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   box-sizing: border-box;
   box-shadow: var(--viking-shadow-sm);
   transition: var(--viking-transition-interactive);
