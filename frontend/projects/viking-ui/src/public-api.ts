@@ -41,6 +41,15 @@ export type {
 } from './lib/core/icons';
 export { VikingControl, provideVikingCva } from './lib/core/cva';
 
+// Framework-agnostic Web Components + registration
+export {
+  VikingButtonWc,
+  VikingInputWc,
+  registerVikingButtonWc,
+  registerVikingInputWc,
+  registerVikingElements,
+} from './web/index';
+
 // Components (alphabetical)
 export * from './lib/site-drakkar/site-drakkar.config';
 export * from './lib/site-drakkar/site-navbar';

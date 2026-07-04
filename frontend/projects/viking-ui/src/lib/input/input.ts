@@ -1,140 +1,73 @@
-import { ChangeDetectionStrategy, Component, input, model, output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  CUSTOM_ELEMENTS_SCHEMA,
+  input,
+  model,
+  output,
+} from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
 import { VikingIconName } from '../core/icons';
 import { VikingSpinner } from '../spinner/spinner';
+import { registerVikingElements } from '../../web/index';
+import type { VikingInputWc } from '../../web/input/viking-input-wc';
+
+registerVikingElements();
 
 /**
- * viking-input — text input with icons, kbd hint and clearable state
- *. ControlValueAccessor-compatible.
+ * viking-input — thin Angular wrapper around `viking-input-wc`.
+ * ControlValueAccessor-compatible.
  */
 @Component({
   selector: 'viking-input',
   imports: [VikingIcon, VikingSpinner],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   providers: [provideVikingCva(VikingInput)],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div
-      class="viking-control viking-input-shell"
-      [class.viking-disabled]="isDisabled()"
-      [class.viking-loading]="loading()"
+    <viking-input-wc
+      [attr.type]="type()"
+      [attr.placeholder]="placeholder()"
+      [attr.value]="value()"
+      [attr.disabled]="isDisabled() ? '' : null"
+      [attr.loading]="loading() ? '' : null"
+      [attr.clearable]="clearable() ? '' : null"
+      [attr.autocomplete]="autocomplete() || null"
+      [attr.aria-label]="label() || placeholder() || 'Text input'"
+      (input)="onWcInput($event)"
+      (blur)="onTouched()"
+      (viking-cleared)="clear()"
     >
       @if (icon()) {
-        <viking-icon class="viking-input-icon" [name]="icon()!" [size]="20" />
+        <viking-icon slot="leading" class="viking-input-icon" [name]="icon()!" [size]="20" />
       }
-      <input
-        [type]="type()"
-        [placeholder]="placeholder()"
-        [value]="value()"
-        [disabled]="isDisabled() || loading()"
-        [attr.aria-label]="label() || placeholder() || 'Text input'"
-        [attr.aria-busy]="loading() ? 'true' : null"
-        [attr.autocomplete]="autocomplete() || null"
-        (input)="onInput($event)"
-        (blur)="onTouched()"
-      />
       @if (loading()) {
-        <viking-spinner [size]="16" label="Loading input" />
-      } @else if (clearable() && value()) {
-        <button type="button" class="viking-input-clear" aria-label="Clear input" (click)="clear()">
-          <viking-icon name="x" [size]="16" />
-        </button>
+        <viking-spinner slot="trailing" [size]="16" label="Loading input" />
+      } @else if (iconTrailing()) {
+        <viking-icon slot="trailing" class="viking-input-icon" [name]="iconTrailing()!" [size]="20" />
       }
       @if (kbd()) {
-        <kbd class="viking-input-kbd">{{ kbd() }}</kbd>
+        <kbd slot="trailing" class="viking-input-kbd">{{ kbd() }}</kbd>
       }
-      @if (iconTrailing()) {
-        <viking-icon class="viking-input-icon" [name]="iconTrailing()!" [size]="20" />
-      }
-    </div>
+    </viking-input-wc>
   `,
   styles: [
     `
       :host {
         display: block;
       }
-      .viking-input-shell {
-        display: flex;
-        align-items: center;
-        gap: var(--viking-space-1);
-        min-height: var(--viking-control-height);
-        padding: 0 var(--viking-space-2);
-        background: var(--viking-surface-alt);
-        border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius-sm);
-        box-shadow: var(--viking-shadow-xs);
-        transition: var(--viking-transition-interactive);
-      }
-      .viking-input-shell:hover:not(.viking-disabled):not(.viking-loading) {
-        border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border-strong));
-        box-shadow: var(--viking-shadow-sm);
-      }
-      .viking-input-shell:focus-within:not(.viking-loading) {
-        outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: var(--viking-ring-offset);
-        border-color: var(--viking-accent);
-        box-shadow: var(--viking-shadow-sm);
-      }
-      .viking-disabled,
-      .viking-loading {
-        opacity: var(--viking-state-disabled-opacity);
-      }
-      .viking-loading {
-        cursor: wait;
-      }
-      input {
-        flex: 1;
-        min-width: 0;
-        border: none;
-        outline: none !important;
-        background: transparent;
-        color: var(--viking-text);
-        font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size);
-        padding: 0;
-      }
-      input::placeholder {
-        color: var(--viking-text-muted);
-      }
       .viking-input-icon {
         color: var(--viking-text-muted);
       }
-      .viking-input-clear {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: var(--viking-touch-target-comfort);
-        min-height: var(--viking-touch-target-comfort);
-        border: none;
-        background: transparent;
-        color: var(--viking-text-muted);
-        cursor: pointer;
-        padding: var(--viking-space-half);
-        border-radius: var(--viking-radius-pill);
-        transition: var(--viking-transition-interactive);
-        position: relative;
-        flex-shrink: 0;
-        -webkit-tap-highlight-color: transparent;
-      }
-      .viking-input-clear:hover {
-        color: var(--viking-text);
-        background: var(--viking-accent-soft);
-      }
-      .viking-input-clear:focus-visible {
-        outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: var(--viking-ring-offset);
-      }
-      .viking-input-clear:active {
-        transform: scale(var(--viking-state-active-scale));
-      }
       .viking-input-kbd {
-        font-family: var(--viking-font-family);
-        font-size: var(--viking-font-size);
+        font-family: var(--viking-font-family-mono);
+        font-size: var(--viking-font-size-xs);
         color: var(--viking-text-muted);
         background: var(--viking-surface-alt);
         border: 1px solid var(--viking-border);
-        border-radius: calc(var(--viking-radius) / 2);
-        padding: 0 var(--viking-space-1);
+        border-radius: var(--viking-radius-xs);
+        padding: 0 var(--viking-space-half);
         line-height: 1.4;
       }
     `,
@@ -161,8 +94,9 @@ export class VikingInput extends VikingControl<string> {
     this.value.set(value ?? '');
   }
 
-  protected onInput = (event: Event): void => {
-    const next = (event.target as HTMLInputElement).value;
+  protected onWcInput = (event: Event): void => {
+    const wc = event.currentTarget as VikingInputWc | null;
+    const next = wc?.value ?? this.value();
     this.value.set(next);
     this.onChange(next);
   };

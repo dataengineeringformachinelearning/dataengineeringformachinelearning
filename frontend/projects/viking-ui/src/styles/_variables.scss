@@ -1,19 +1,34 @@
 // ============================================================================
 // Viking-UI Premium Foundation Tokens
 // ----------------------------------------------------------------------------
-// Dark-first engineering aesthetic: deep charcoals, metallic accents,
-// refined teal (primary) + crimson (secondary) CTAs. 4px spacing grid.
+// Dark-first precision aesthetic: deep navy surfaces, electric blue accents,
+// refined crimson secondary. 4px spacing grid.
 // All --viking-* semantic tokens in viking-ui.scss map from these values.
 // ============================================================================
 
 :root {
-  /* ── Charcoal surfaces ─────────────────────────────────────────────────── */
-  --viking-charcoal-950: #0a0a0a;
-  --viking-charcoal-900: #111111;
-  --viking-charcoal-800: #1a1a1a;
-  --viking-charcoal-700: #2a2a2a;
-  --viking-charcoal-600: #333333;
-  --viking-charcoal-500: #444444;
+  /* ── Deep navy surfaces (Lockheed × SpaceX precision aesthetic) ──────── */
+  --viking-navy-950: #030818;
+  --viking-navy-900: #0a1024;
+  --viking-navy-800: #101b33;
+  --viking-navy-700: #162544;
+  --viking-navy-600: #1e3054;
+  --viking-navy-500: #284068;
+
+  /* ── Electric blue accents (primary CTA, focus, links) ───────────────── */
+  --viking-electric-700: #0a4fd4;
+  --viking-electric-600: #1565f0;
+  --viking-electric-500: #2176ff;
+  --viking-electric-400: #4d94ff;
+  --viking-electric-300: #7ab0ff;
+
+  /* ── Charcoal surfaces (legacy alias — maps to navy in semantic tokens) ─ */
+  --viking-charcoal-950: var(--viking-navy-950);
+  --viking-charcoal-900: var(--viking-navy-900);
+  --viking-charcoal-800: var(--viking-navy-800);
+  --viking-charcoal-700: var(--viking-navy-700);
+  --viking-charcoal-600: var(--viking-navy-600);
+  --viking-charcoal-500: var(--viking-navy-500);
 
   /* ── Metallic accents (borders, dividers, subtle depth) ────────────────── */
   --viking-metallic-600: #555555;
@@ -23,12 +38,12 @@
   --viking-metallic-200: #aaaaaa;
   --viking-metallic-100: #bbbbbb;
 
-  /* ── Primary accent — deep teal (CTAs, focus, links) ───────────────────── */
-  --viking-teal-700: #0a5c5f;
-  --viking-teal-600: #0d7377;
-  --viking-teal-500: #109094;
-  --viking-teal-400: #14a3a8;
-  --viking-teal-300: #2db8bd;
+  /* ── Primary accent — electric blue (CTAs, focus, links) ───────────────── */
+  --viking-teal-700: var(--viking-electric-700);
+  --viking-teal-600: var(--viking-electric-600);
+  --viking-teal-500: var(--viking-electric-500);
+  --viking-teal-400: var(--viking-electric-400);
+  --viking-teal-300: var(--viking-electric-300);
 
   /* ── Secondary accent — rich crimson (emphasis, destructive) ───────────── */
   --viking-crimson-700: #7a2231;
@@ -39,8 +54,8 @@
   /* ── Status (refined for premium palette) ──────────────────────────────── */
   --viking-green-500: #2a9d8f;
   --viking-gold-500: #c4a035;
-  /* Info / chart series 6 — same hue family as focus ring (not Bootstrap blue) */
-  --viking-blue-500: var(--viking-teal-400);
+  /* Info / chart series 6 — electric blue family */
+  --viking-blue-500: var(--viking-electric-400);
 
   /* ── Neutrals ──────────────────────────────────────────────────────────── */
   --viking-white: #f5f5f5;
@@ -251,11 +266,11 @@ html[data-theme='dark'] {
   --viking-border-strong: color-mix(in srgb, var(--viking-metallic-400) 68%, transparent);
   --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 28%, transparent);
 
-  --viking-accent: var(--viking-teal-600);
-  --viking-accent-hover: var(--viking-teal-500);
+  --viking-accent: var(--viking-electric-500);
+  --viking-accent-hover: var(--viking-electric-400);
   --viking-accent-content: var(--viking-white-pure);
-  --viking-accent-soft: color-mix(in srgb, var(--viking-teal-600) 18%, transparent);
-  --viking-accent-strong: var(--viking-teal-400);
+  --viking-accent-soft: color-mix(in srgb, var(--viking-electric-500) 18%, transparent);
+  --viking-accent-strong: var(--viking-electric-300);
 
   --viking-accent-secondary: var(--viking-crimson-600);
   --viking-accent-secondary-hover: var(--viking-crimson-500);
@@ -269,7 +284,7 @@ html[data-theme='dark'] {
   --viking-danger-text: var(--viking-crimson-400);
   --viking-on-danger: var(--viking-white-pure);
 
-  --viking-ring: var(--viking-teal-400);
+  --viking-ring: var(--viking-electric-400);
   --viking-ring-width: 2px;
   --viking-ring-offset: 2px;
 
@@ -302,11 +317,11 @@ html[data-theme='light'] {
   --viking-border-strong: color-mix(in srgb, var(--viking-metallic-600) 48%, transparent);
   --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 22%, transparent);
 
-  --viking-accent: var(--viking-teal-700);
-  --viking-accent-hover: var(--viking-teal-600);
+  --viking-accent: var(--viking-electric-600);
+  --viking-accent-hover: var(--viking-electric-500);
   --viking-accent-content: var(--viking-white-pure);
-  --viking-accent-soft: color-mix(in srgb, var(--viking-teal-700) 14%, transparent);
-  --viking-accent-strong: var(--viking-teal-500);
+  --viking-accent-soft: color-mix(in srgb, var(--viking-electric-600) 14%, transparent);
+  --viking-accent-strong: var(--viking-electric-400);
 
   --viking-accent-secondary: var(--viking-crimson-700);
   --viking-accent-secondary-hover: var(--viking-crimson-600);
@@ -316,7 +331,7 @@ html[data-theme='light'] {
   --viking-danger-text: var(--viking-crimson-700);
   --viking-on-danger: var(--viking-white-pure);
 
-  --viking-ring: var(--viking-teal-600);
+  --viking-ring: var(--viking-electric-500);
 
   --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-900) 45%, transparent);
 
@@ -342,15 +357,15 @@ html[data-theme='light'] {
     --viking-border: color-mix(in srgb, var(--viking-metallic-600) 22%, transparent);
     --viking-border-strong: color-mix(in srgb, var(--viking-metallic-600) 38%, transparent);
     --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 12%, transparent);
-    --viking-accent: var(--viking-teal-700);
-    --viking-accent-hover: var(--viking-teal-600);
-    --viking-accent-soft: color-mix(in srgb, var(--viking-teal-700) 10%, transparent);
-    --viking-accent-strong: var(--viking-teal-500);
+    --viking-accent: var(--viking-electric-600);
+    --viking-accent-hover: var(--viking-electric-500);
+    --viking-accent-soft: color-mix(in srgb, var(--viking-electric-600) 10%, transparent);
+    --viking-accent-strong: var(--viking-electric-400);
     --viking-accent-secondary: var(--viking-crimson-700);
     --viking-accent-secondary-hover: var(--viking-crimson-600);
     --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-crimson-700) 8%, transparent);
     --viking-danger-text: var(--viking-crimson-700);
-    --viking-ring: var(--viking-teal-600);
+    --viking-ring: var(--viking-electric-500);
     --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-900) 45%, transparent);
     --viking-shadow-sm: 0 1px 2px rgba(17, 17, 17, 0.06), 0 1px 3px rgba(17, 17, 17, 0.08);
     --viking-shadow-md: 0 2px 4px rgba(17, 17, 17, 0.06), 0 4px 8px rgba(17, 17, 17, 0.08);

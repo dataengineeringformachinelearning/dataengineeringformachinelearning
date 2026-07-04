@@ -209,6 +209,12 @@
 }
 
 // Static HTML / marketing native buttons (legacy class names preserved)
+.viking-btn,
+a.viking-btn,
+button.viking-btn {
+  @include viking-btn-base;
+}
+
 .viking-btn-primary,
 a.viking-btn-primary,
 button.viking-btn-primary {

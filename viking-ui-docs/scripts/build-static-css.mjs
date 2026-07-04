@@ -25,6 +25,11 @@ const builds = [
     style: 'expanded',
   },
   {
+    entry: path.join(stylesDir, 'components-bundle.scss'),
+    out: path.join(outDir, 'viking-components.css'),
+    style: 'expanded',
+  },
+  {
     entry: path.join(stylesDir, 'deml-components.scss'),
     out: path.join(outDir, 'deml-components.css'),
     style: 'expanded',
@@ -47,6 +52,10 @@ for (const { entry, out, style } of builds) {
   console.log(`Wrote ${out}`);
 }
 
-for (const name of ['design-tokens.css', 'deml-components.css', 'viking-ui.css']) {
+for (const name of ['design-tokens.css', 'viking-components.css', 'deml-components.css', 'viking-ui.css']) {
   fs.copyFileSync(path.join(outDir, name), path.join(publicAssetsDir, name));
 }
+
+// Web Components bundle
+const wcScript = path.join(rootDir, 'frontend', 'projects', 'viking-ui', 'scripts', 'build-web-components.mjs');
+execSync(`node "${wcScript}"`, { cwd: docsDir, stdio: 'inherit' });
