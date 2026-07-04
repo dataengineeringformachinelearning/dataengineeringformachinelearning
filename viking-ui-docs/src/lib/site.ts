@@ -29,3 +29,18 @@ export const FRAMEWORK_TABS: { id: FrameworkTab; label: string }[] = [
   { id: 'django', label: 'Django / HTML' },
   { id: 'javascript', label: 'Web Components' },
 ];
+
+/** Docs site search palette index — consumed by viking-search-palette-wc items attribute. */
+export const DOCS_SEARCH_ITEMS = [
+  { title: 'Components', href: '/components', snippet: 'Browse all documented primitives' },
+  { title: 'Playground', href: '/playground', snippet: 'Live Web Component sandbox' },
+  { title: 'Architecture', href: '/architecture', snippet: 'CSS + WC + Angular layers' },
+  { title: 'Design tokens', href: '/tokens', snippet: 'Canonical --viking-* matrix' },
+  { title: 'Theming', href: '/theming', snippet: 'Light/dark mode and sync pipeline' },
+  { title: 'Framework guides', href: '/frameworks', snippet: 'Angular, Astro, Django setup' },
+  { title: 'Search palette', href: '/components/search-palette', snippet: '⌘K command palette primitive' },
+  { title: 'Button', href: '/components/button', snippet: 'Primary actions and variants' },
+  { title: 'Card', href: '/components/card', snippet: 'Machined surface panels' },
+  { title: 'Modal', href: '/components/modal', snippet: 'Accessible dialog overlay' },
+  { title: 'Contributing', href: '/contributing', snippet: 'Extend the Viking-UI kit' },
+] as const;
