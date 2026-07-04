@@ -92,15 +92,62 @@ import {
 
 ---
 
+## Premium polish standards (locked)
+
+Every surface must match the **marketing site polish bar** — use it as the visual benchmark before shipping UI.
+
+**Visual benchmark:** [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/) (`marketing/src/pages/index.astro`, `marketing/src/styles/landing.scss`). Match its breathing room, section hierarchy, machined card surfaces, and restrained teal/crimson accents. If deml.app, backend, docs, or showcase feels flatter or tighter than marketing, it is not done.
+
+### Tokens only — spacing, color, wrappers
+
+| Concern | Required tokens / wrappers | Never |
+| ------- | ------------------------ | ----- |
+| **Spacing** | `--viking-space-*`, `--viking-page-gutter` / `--viking-page-gutter-lg`, `--viking-page-stack-gap`, `--viking-page-section-gap`, `--viking-card-padding`, `--viking-panel-padding` | Raw `px` gaps (`12px`, `20px`, `32px`) unless mapped 1:1 to a token |
+| **Colors** | `--viking-bg`, `--viking-surface`, `--viking-surface-recipe`, `--viking-text*`, `--viking-accent*`, `--viking-border` / `-subtle` / `-strong`, `--viking-success` / `-warning` / `-danger` | Hex, `rgb()`, `rgba()`, washed opacity stacks, legacy `--color-*` without `--viking-*` fallback |
+| **Shell wrappers** | `.page-inner-wrapper`, `viking-page-header`, `viking-card` (+ `viking-card-header` / `-footer` when structured), `viking-metric-card`, `viking-hud-panel`, `viking-form-section` | Raw `<div class="card">`, hand-rolled panel shells, duplicate per-page card SCSS |
+| **Typography rhythm** | `--viking-font-size-*`, `--viking-line-height-*`, `--viking-letter-spacing-*` | Ad-hoc `font-size: 1.1rem` without a token alias |
+
+### Minimum padding, margins, and max-widths
+
+Enforce these floors on every page — no Spartan drift, no cramped KPI rows:
+
+- **Page shell:** content lives in `.page-inner-wrapper` capped at `--viking-container-max-width` (1260px) with `--viking-page-gutter` (mobile) → `--viking-page-gutter-lg` (tablet+).
+- **Section rhythm:** `--viking-page-section-gap` or `--viking-space-7` between major blocks; `--viking-space-3` between related subsections; use `.metrics-overview-header` + `.section-title-premium` patterns from `page-shell.scss`.
+- **Card interiors:** minimum `--viking-card-padding` (`--viking-space-3`); compact metrics use `--viking-card-padding-compact` (`--viking-space-2`) — never below `--viking-space-2`.
+- **Form stacks:** `viking-field` gaps and `viking-form-section` spacing at `--viking-space-2` minimum; billing/settings sections at `--viking-font-size-lg` titles with `--viking-space-3` vertical rhythm.
+- **Readable copy width:** long prose/subtitles cap at `--viking-content-readable-max-width` (~48rem).
+- **Touch targets:** interactive controls ≥ 44px height on mobile (`--viking-control-height` / `--viking-space-5` minimum).
+- **Responsive grids:** use tokenized gaps (`--grid-gap`, `--viking-space-2`–`--viking-space-3`); collapse single-column on mobile before squeezing padding.
+
+### Component wrapper law (Angular + static)
+
+- Wrap every content block in a **`viking-*` primitive** before adding page-specific SCSS.
+- Prefer **`--viking-surface-recipe`** + machined top hairline (`page-shell.scss` / `viking-card`) over flat `--viking-surface` fills.
+- Charts, empty states, and loaders: `viking-chart-panel`, `viking-chart-empty-state`, `viking-skeleton` — not bespoke div shells.
+- **DI in library components:** use constructor parameter injection — never field-level `inject()` in `@dataengineeringformachinelearning/viking-ui` (causes NG0203 in cross-package production bundles).
+
+### Polish parity checklist (compare to marketing)
+
+Before merge, confirm the touched surface matches marketing benchmark quality:
+
+1. Generous vertical rhythm between hero → sections → cards (no edge-to-edge text blocks).
+2. Metallic borders visible but restrained (`--viking-border`, not faint `rgba()` washes).
+3. Accent color used sparingly — teal primary, crimson secondary; no neon or gradient orbs.
+4. Hierarchy reads in one glance: page header → section title → metric/card → detail.
+5. `node scripts/enforce-theme.js` and `node scripts/check_mobile_first.js` pass with zero violations.
+
+---
+
 ## Pre-ship UI checklist
 
 1. All interactive UI uses `viking-*` components (or tokenized static markup on non-Angular surfaces).
 2. No hardcoded colors, spacing, or font sizes outside `--viking-*` tokens.
-3. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
-4. Token changes start in `frontend/projects/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui-css` + `python scripts/sync_design_system.py`.
-5. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.31**, and **README.md** together.
-6. `npm run test:viking-ui` and app `npm test` pass for touched surfaces (charts, auth, forms, icons).
-7. `node scripts/enforce-theme.js` reports zero violations before merge.
+3. Padding, gutters, and max-widths meet **Premium polish standards** — parity with marketing benchmark.
+4. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
+5. Token changes start in `frontend/projects/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui-css` + `python scripts/sync_design_system.py`.
+6. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.31**, and **README.md** together.
+7. `npm run test:viking-ui` and app `npm test` pass for touched surfaces (charts, auth, forms, icons).
+8. `node scripts/enforce-theme.js` reports zero violations before merge.
 
 ---
 
