@@ -22,16 +22,21 @@
           administrative modifications to status pages, monitored endpoints, incident reports, or
           integrations.
         </viking-callout>
-        } @else {
+        } @else if (!authService.mfaVerifiedInSession()) {
         <viking-callout
           class="col-span-4 col-span-md-12"
-          tone="info"
-          heading="MFA required to save"
+          [tone]="authService.mfaEnrolled() ? 'warning' : 'info'"
+          [heading]="authService.mfaEnrolled() ? 'MFA session required' : 'MFA required to save'"
           icon="shield"
         >
+          @if (authService.mfaEnrolled()) {
+          MFA is enrolled, but this session was not verified with SMS.
+          <strong>Sign out and sign back in</strong> to complete MFA verification before saving sites.
+          } @else {
           Creating or updating sites requires <strong>multi-factor authentication</strong>. Enroll
           SMS MFA on your <a routerLink="/account" class="inline-status-link">Account</a> page,
           then sign out and sign back in so your session includes MFA verification.
+          }
         </viking-callout>
         }
 

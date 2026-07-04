@@ -82,6 +82,7 @@ import { VikingOtpInput } from '../otp-input/otp-input';
         color: var(--viking-text);
         letter-spacing: var(--viking-letter-spacing-wide);
         line-height: var(--viking-line-height-tight);
+        text-align: center;
       }
 
       .viking-verification-code-required {

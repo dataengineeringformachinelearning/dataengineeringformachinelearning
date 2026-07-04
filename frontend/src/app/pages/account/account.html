@@ -39,29 +39,34 @@
               } @else {
               <div class="mfa-enrollment-form panel-clean">
                 <p class="mfa-step-title">
-                  <strong
-                    >Step 1: Enter your phone number (international format e.g.
-                    +11234567890)</strong
-                  >
+                  <strong>Step 1: Enter your phone number</strong>
                 </p>
-                <div class="mfa-inline-form">
-                  <viking-field label="Phone Number" class="mfa-input-full">
-                    <viking-input
-                      [(ngModel)]="mfaPhoneNumber"
-                      placeholder="+11234567890"
-                      [disabled]="mfaVerificationId !== null"
-                    />
-                  </viking-field>
-                  <viking-button
-                    variant="primary"
-                    type="button"
-                    [compact]="true"
-                    (pressed)="sendMfaCode()"
-                    [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
-                    [loading]="isSendingMfaCode()"
-                  >
-                    Send SMS Code
-                  </viking-button>
+                <div class="mfa-phone-block">
+                  <div class="mfa-phone-row">
+                    <viking-field
+                      label="Phone Number"
+                      class="mfa-input-full"
+                      [description]="phoneHint"
+                    >
+                      <viking-input
+                        [(ngModel)]="mfaPhoneNumber"
+                        type="tel"
+                        placeholder="+14155552671"
+                        icon="phone"
+                        [disabled]="mfaVerificationId !== null"
+                      />
+                    </viking-field>
+                    <viking-button
+                      variant="primary"
+                      type="button"
+                      [compact]="true"
+                      (pressed)="sendMfaCode()"
+                      [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
+                      [loading]="isSendingMfaCode()"
+                    >
+                      Send SMS Code
+                    </viking-button>
+                  </div>
                 </div>
 
                 @if (mfaVerificationId) {
@@ -69,7 +74,7 @@
                   <p class="mfa-step-title">
                     <strong>Step 2: Enter the 6-digit verification code sent to your phone</strong>
                   </p>
-                  <div class="mfa-inline-form">
+                  <div class="mfa-verify-stack">
                     <viking-verification-code-field
                       label="Verification Code"
                       [required]="true"
@@ -79,7 +84,6 @@
                     <viking-button
                       variant="primary"
                       type="button"
-                      [compact]="true"
                       (pressed)="verifyMfaCode()"
                       [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
                       [loading]="isVerifyingMfaCode()"
@@ -92,13 +96,28 @@
               </div>
               }
 
-              <!-- Hidden Recaptcha Container -->
-              <div id="mfa-recaptcha-container"></div>
+              @if (isMfaEnrolled() && !authService.mfaVerifiedInSession()) {
+              <viking-callout
+                class="mfa-relogin-callout"
+                tone="warning"
+                heading="Re-authentication required"
+                icon="shield"
+              >
+                MFA is enrolled on your account. Sign out and sign back in with SMS verification
+                before updating sites or status pages.
+              </viking-callout>
+              }
 
-              @if (mfaError()) {
-              <viking-callout tone="danger" [heading]="'Error'">{{ mfaError() }}</viking-callout>
-              } @if (mfaSuccess()) {
-              <viking-callout tone="success" [heading]="'Success'">{{ mfaSuccess() }}</viking-callout>
+              <div id="mfa-recaptcha-container" class="mfa-recaptcha-slot"></div>
+
+              @if (mfaError() || mfaSuccess()) {
+              <div class="mfa-feedback-stack">
+                @if (mfaError()) {
+                <viking-callout tone="danger" [heading]="'Error'">{{ mfaError() }}</viking-callout>
+                } @if (mfaSuccess()) {
+                <viking-callout tone="success" [heading]="'Success'">{{ mfaSuccess() }}</viking-callout>
+                }
+              </div>
               }
             </div>
           </div>

@@ -401,6 +401,7 @@ export class Login implements OnInit, OnDestroy {
       const cred = PhoneAuthProvider.credential(verifyId, code);
       const assertion = PhoneMultiFactorGenerator.assertion(cred);
       await this.resolver.resolveSignIn(assertion);
+      await this.authService.refreshMfaState(true);
       this.handleSuccess();
     } catch (e: any) {
       console.error(e);

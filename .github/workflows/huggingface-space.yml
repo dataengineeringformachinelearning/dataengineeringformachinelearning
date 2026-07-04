@@ -37,6 +37,10 @@ jobs:
             echo "*.mp4 filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
             echo "*.jpg filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
             echo "*.jpeg filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
+            echo "*.woff2 filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
+
+            # HF Spaces rejects untracked binary font blobs — omit from deploy bundle.
+            find backend/static/fonts -name '*.woff2' -delete 2>/dev/null || true
 
             git add .gitattributes
             git add .

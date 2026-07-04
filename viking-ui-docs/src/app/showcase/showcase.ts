@@ -135,6 +135,7 @@ import {
     VikingNavbar,
     VikingNavbarItem,
     VikingOtpInput,
+    VikingPageHeader,
     VikingVerificationCodeField,
     VikingPagination,
     VikingPillbox,

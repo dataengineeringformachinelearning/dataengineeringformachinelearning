@@ -395,9 +395,12 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         flex: 1 1 auto;
         display: flex;
         flex-direction: column;
-        min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
-        height: 100%;
-        aspect-ratio: auto;
+        align-items: stretch;
+        justify-content: center;
+        min-height: var(--viking-chart-fill-min-height, clamp(12rem, 28vw, 16rem));
+        max-height: var(--viking-chart-fill-max-height, clamp(14rem, 32vw, 18rem));
+        height: auto;
+        aspect-ratio: var(--viking-chart-ratio, 3 / 1);
         --viking-chart-axis-size: 13px;
       }
       .viking-chart-sparkline {
@@ -421,9 +424,11 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         max-height: var(--viking-chart-max-height, clamp(13rem, 36vw, 17.5rem));
       }
       .viking-chart-fill svg {
-        flex: 1 1 auto;
-        min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
-        height: 100%;
+        flex: 0 1 auto;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        max-height: 100%;
       }
       .viking-chart-sparkline svg {
         min-height: 0;
@@ -597,18 +602,7 @@ export class VikingChart {
     return this.compact() ? HEIGHT_COMPACT : HEIGHT_DEFAULT;
   });
 
-  protected readonly preserveAspectRatio = computed(() => {
-    if (!this.fill() || this.isSparkline()) {
-      return 'xMidYMid meet';
-    }
-    if (this.kind() === 'donut') {
-      return 'xMidYMid meet';
-    }
-    if (this.isLineKind()) {
-      return 'xMidYMid slice';
-    }
-    return 'none';
-  });
+  protected readonly preserveAspectRatio = computed(() => 'xMidYMid meet');
 
   protected readonly plotBottom = computed(() => this.height() - this.resolvedGutter().bottom);
   protected readonly plotTop = computed(() => this.resolvedGutter().top);

@@ -82,6 +82,7 @@ export * from './lib/file-upload/file-upload';
 export * from './lib/gauge-arc/gauge-arc';
 export * from './lib/hud-panel/hud-panel';
 export * from './lib/icon/icon';
+export * from './lib/icon-badge/icon-badge';
 export { VikingIconComponent } from './lib/icon/icon';
 export * from './lib/icon-text/icon-text';
 export * from './lib/input/input';

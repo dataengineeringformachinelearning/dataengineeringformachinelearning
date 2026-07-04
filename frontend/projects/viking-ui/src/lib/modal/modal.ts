@@ -152,7 +152,7 @@ import { VikingIcon } from '../icon/icon';
       /* Projected action wrappers keep buttons in a single slot — spread gap inside */
       :host ::ng-deep .viking-modal-footer [vikingModalActions] {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: flex-end;
         align-items: center;
         gap: var(--viking-space-2);

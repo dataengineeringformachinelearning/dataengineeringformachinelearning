@@ -91,7 +91,7 @@ def google_callback(request, code: str, state: str):
     user = get_object_or_404(User, id=unsign_oauth_state(state))
   except (signing.BadSignature, signing.SignatureExpired, ValueError, TypeError):
     frontend_url = getattr(settings, "FRONTEND_URL", "") or ""
-    return redirect(f"{frontend_url}/manage?integration=google&status=failed")
+    return redirect(f"{frontend_url}/settings?integration=google&status=failed")
 
   client_id = getattr(settings, "GOOGLE_OAUTH_CLIENT_ID", "mock-client-id")
   client_secret = getattr(settings, "GOOGLE_OAUTH_CLIENT_SECRET", "mock-client-secret")
@@ -129,11 +129,11 @@ def google_callback(request, code: str, state: str):
           "active": True,
         },
       )
-      return redirect(f"{frontend_url}/manage?integration=google&status=success")
+      return redirect(f"{frontend_url}/settings?integration=google&status=success")
   except Exception as e:
     logger.error("OAuth exchange failed: %s", e)
 
-  return redirect(f"{frontend_url}/manage?integration=google&status=failed")
+  return redirect(f"{frontend_url}/settings?integration=google&status=failed")
 
 
 @router.post("/clarity", response=IntegrationOut)

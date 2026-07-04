@@ -108,6 +108,8 @@ export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
   cookie: 'cookie',
   search_off: 'search-off',
   person_add: 'user',
+  storage: 'folder',
+  data_object: 'folder',
 };
 
 /** Icons always rendered with fill (play triangle, dot grids). */

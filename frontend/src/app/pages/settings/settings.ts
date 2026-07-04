@@ -131,6 +131,7 @@ export class Settings implements OnInit {
         if (!this.authService.isAuthenticated()) {
           this.router.navigate(['/']);
         } else if (this.authService.currentUserId() !== null) {
+          void this.authService.refreshMfaState();
           this.loadStatusPages();
         }
       }

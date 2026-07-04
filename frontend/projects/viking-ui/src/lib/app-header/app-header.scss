@@ -1,5 +1,3 @@
-@use '../../styles/drakkar-buttons' as *;
-
 :host {
   display: block;
   width: 100%;
@@ -167,12 +165,11 @@
 }
 
 ::ng-deep .viking-app-header-auth-btn {
-  @include viking-drakkar-btn-primary;
   min-width: auto;
 }
 
 ::ng-deep .viking-app-header-auth-btn.viking-app-header-auth-btn-outline {
-  @include viking-drakkar-btn-outline;
+  /* Global drakkar button styles from viking-ui.css */
 }
 
 ::ng-deep .viking-app-header-auth-btn:hover {
