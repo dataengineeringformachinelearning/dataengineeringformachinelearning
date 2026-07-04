@@ -4,7 +4,7 @@
   "private": true,
   "description": "Canonical DEML design tokens and shared component styles",
   "scripts": {
-    "build": "sass src/tokens-export.scss dist/design-tokens.css --style=expanded --no-source-map && sass src/deml-components.scss dist/deml-components.css --style=expanded --no-source-map"
+    "build": "sass src/tokens-export.scss dist/design-tokens.css --style=expanded --no-source-map --load-path=../../frontend/projects/viking-ui/src/styles && sass src/deml-components.scss dist/deml-components.css --style=expanded --no-source-map --load-path=../../frontend/projects/viking-ui/src/styles"
   },
   "devDependencies": {
     "sass": "^1.89.2"
