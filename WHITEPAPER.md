@@ -14,7 +14,7 @@
 
 The operational tempo of modern SaaS infrastructure has outpaced traditional observability. Status dashboards and SLA trackers remain predominantly reactive—recording failure only after user impact materializes. In adversarial network environments, that posture is tactically untenable.
 
-This paper presents DEML: a next-generation observability and intelligence pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep-learning stack with two active prediction modules—Service Level Agreement (SLA) forecasting and Threat Anomaly (TA) analytics. The architecture embodies *Defendable Architectures* principles—Visibility, Manageability, and Survivability—across every operational plane.
+This paper presents DEML: a next-generation observability and intelligence pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep-learning stack with two active prediction modules—Service Level Agreement (SLA) forecasting and Threat Anomaly (TA) analytics. The architecture embodies _Defendable Architectures_ principles—Visibility, Manageability, and Survivability—across every operational plane.
 
 As operational proof, the platform dogfoods its own infrastructure continuously. The public **`platform-status`** sentinel (`user=null`, `is_platform=True`) functions as a living Apex Sandbox and Public Witness—streaming real-time telemetry and threat analysis to anonymous observers without requiring a separate organizational login.
 
@@ -32,15 +32,15 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ### 2.2 Operational environment
 
-| Plane | Technology | Role |
+| Plane                 | Technology                               | Role                                                           |
 | --------------------- | ---------------------------------------- | -------------------------------------------------------------- |
-| Compute & persistence | Google Cloud Run (14 services) | Django API, workers, Postgres, Redpanda, ClickHouse, caches |
-| Client gateway | Firebase Cloud Functions (`ingestEvent`) | Authenticated command ingress to Redpanda (Firestore fallback) |
-| Identity | Firebase Auth | JWT perimeter; MFA on mutations |
-| Read models | Firestore (`deml` DB) | `users/{uid}/data/stats` projections |
-| Marketing | Firebase Hosting | Astro landing and documentation site |
-| Security controls | GCP (KMS, immutable audit logs) | Envelope encryption, tamper-evident logging |
-| Artifacts | Hugging Face Hub | Namespaced PyTorch `state_dict` weights |
+| Compute & persistence | Google Cloud Run (14 services)           | Django API, workers, Postgres, Redpanda, ClickHouse, caches    |
+| Client gateway        | Firebase Cloud Functions (`ingestEvent`) | Authenticated command ingress to Redpanda (Firestore fallback) |
+| Identity              | Firebase Auth                            | JWT perimeter; MFA on mutations                                |
+| Read models           | Firestore (`deml` DB)                    | `users/{uid}/data/stats` projections                           |
+| Marketing             | Firebase Hosting                         | Astro landing and documentation site                           |
+| Security controls     | GCP (KMS, immutable audit logs)          | Envelope encryption, tamper-evident logging                    |
+| Artifacts             | Hugging Face Hub                         | Namespaced PyTorch `state_dict` weights                        |
 
 ### 2.3 Actors & workflows
 
@@ -51,12 +51,12 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ### 2.4 Operational modes
 
-| Mode | Trigger | Behavior |
+| Mode              | Trigger                         | Behavior                                                                        |
 | ----------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| Normal | All services healthy | Commands → Redpanda → worker → Firestore; outbox relay every 5s |
-| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers |
-| Degraded (worker) | Consumer failure | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts |
-| Maintenance | `main` merge | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions |
+| Normal            | All services healthy            | Commands → Redpanda → worker → Firestore; outbox relay every 5s                 |
+| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers       |
+| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts |
+| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions           |
 
 ### 2.5 Maintenance cadence (summary)
 
@@ -69,7 +69,7 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 >
 > DEML's security architecture is guided by two white papers: **A Threat-Driven Approach to Cyber Security** (Muckin & Fitch, 2019), which supplies IDDIL/ATC threat analysis and STRIDE-LM categorization; and **Defendable Architectures** (Fitch & Muckin, 2019), which defines the Visibility / Manageability / Survivability characteristics below. See [BOOK.md Appendix L](BOOK.md#appendix-l-foundational-security-frameworks) for full citations and rationale.
 
-*Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems must exhibit to support intelligence-driven defense rather than static compliance alone. DEML is engineered to embody each characteristic across its operational planes.
+_Defendable Architectures_ framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems must exhibit to support intelligence-driven defense rather than static compliance alone. DEML is engineered to embody each characteristic across its operational planes.
 
 **Visibility** enables defenders to observe activity across network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
 
@@ -192,11 +192,11 @@ Access control is implemented as defense-in-depth: **RBAC** (what a logged-in us
 
 Each `UserProfile` carries exactly one role: `Viewer`, `Operator`, or `Security Admin`. Roles apply to the **single login** behind that profile—not to nested org members.
 
-| Role | Typical capability |
+| Role             | Typical capability                                                                                                                 |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `Viewer` | Read dashboards, status pages, and analytics; Settings UI is read-only. |
-| `Operator` | Create/update/delete owned status pages (API-enforced); manage services, incidents, and integrations when UI controls are enabled. |
-| `Security Admin` | Same write surface as Operator; reserved for platform administration (`admin@…` bootstrap). |
+| `Viewer`         | Read dashboards, status pages, and analytics; Settings UI is read-only.                                                            |
+| `Operator`       | Create/update/delete owned status pages (API-enforced); manage services, incidents, and integrations when UI controls are enabled. |
+| `Security Admin` | Same write surface as Operator; reserved for platform administration (`admin@…` bootstrap).                                        |
 
 **API enforcement:** Status page lifecycle endpoints (`POST`/`PUT`/`DELETE` `/status_pages`) use `@role_required(["Operator", "Security Admin"])`. Viewers receive `403 Forbidden`. New Firebase users are provisioned as `Operator` on first login; `Viewer` is assigned when an account is deliberately restricted.
 
@@ -215,13 +215,13 @@ Programmatic ingestion (`/api/v1/ingest`, `/api/v1/predict`) resolves scope via 
 
 ### Access decision matrix (status pages & public stats)
 
-| Action | Anonymous (logged out) | Logged-in owner | Logged-in non-owner |
+| Action                                   | Anonymous (logged out)         | Logged-in owner                              | Logged-in non-owner                                              |
 | ---------------------------------------- | ------------------------------ | -------------------------------------------- | ---------------------------------------------------------------- |
-| List / explore status pages | Published + `platform-status` | Published + own + `platform-status` | Published + `platform-status` only |
-| View services / incidents / uptime stats | Published or `platform-status` | Also own **unpublished** pages | Published or `platform-status`; **403** on others' private pages |
-| Create / update / delete status page | `401` | `Operator`/`Security Admin` + MFA + owner | `403` or `404` |
-| Add / remove services or incidents | `401` | Owner + MFA (Settings blocks `Viewer` in UI) | `404` not owner |
-| Mutate `platform-status` | N/A (read-only) | **Forbidden** | **Forbidden** |
+| List / explore status pages              | Published + `platform-status`  | Published + own + `platform-status`          | Published + `platform-status` only                               |
+| View services / incidents / uptime stats | Published or `platform-status` | Also own **unpublished** pages               | Published or `platform-status`; **403** on others' private pages |
+| Create / update / delete status page     | `401`                          | `Operator`/`Security Admin` + MFA + owner    | `403` or `404`                                                   |
+| Add / remove services or incidents       | `401`                          | Owner + MFA (Settings blocks `Viewer` in UI) | `404` not owner                                                  |
+| Mutate `platform-status`                 | N/A (read-only)                | **Forbidden**                                | **Forbidden**                                                    |
 
 Private-by-default: until `is_published` is set, only the owning login (and the API with a valid owner session) can read operational stats—anonymous visitors hitting `/status/:slug` or the stats API receive `403`/`404`.
 
@@ -247,14 +247,14 @@ Strict compliance is enforced by integrating automated accessibility scanners (A
 
 Enterprise teams connect existing infrastructure through six first-class integration paths. Each uses the same bearer API key, `/api/v1/ingest` for batch telemetry, and `/api/v1/predict` for low-latency inference:
 
-| Platform | Pattern | Health check |
-| -------- | ------- | ------------ |
-| **Kubernetes** | Sidecar proxy, cluster gateway | `GET /api/v1/integrations/kubernetes` |
-| **TensorFlow** | `tf.data.Dataset` streaming | `GET /api/v1/integrations/tensorflow` |
-| **PyTorch** | Custom `DataLoader`, `state_dict` models | `GET /api/v1/integrations/pytorch` |
-| **Apache Spark** | Batch + Structured Streaming sinks | `GET /api/v1/integrations/apache-spark` |
-| **Databricks** | Secret Scopes, scheduled jobs | `GET /api/v1/integrations/databricks` |
-| **AWS Redshift** | UNLOAD/COPY, Data API exports | `GET /api/v1/integrations/redshift` |
+| Platform         | Pattern                                  | Health check                            |
+| ---------------- | ---------------------------------------- | --------------------------------------- |
+| **Kubernetes**   | Sidecar proxy, cluster gateway           | `GET /api/v1/integrations/kubernetes`   |
+| **TensorFlow**   | `tf.data.Dataset` streaming              | `GET /api/v1/integrations/tensorflow`   |
+| **PyTorch**      | Custom `DataLoader`, `state_dict` models | `GET /api/v1/integrations/pytorch`      |
+| **Apache Spark** | Batch + Structured Streaming sinks       | `GET /api/v1/integrations/apache-spark` |
+| **Databricks**   | Secret Scopes, scheduled jobs            | `GET /api/v1/integrations/databricks`   |
+| **AWS Redshift** | UNLOAD/COPY, Data API exports            | `GET /api/v1/integrations/redshift`     |
 
 Guides with copy-paste examples live in [`docs/integrations/`](../docs/integrations/) and on the [Developer Portal](https://dataengineeringformachinelearning.com/documentation).
 
@@ -275,8 +275,8 @@ This architecture rests on open-source foundations, enterprise design references
 - **Visual Studio Code + Cline** — Grok Code Fast 1 (xAI)
 - **Windsurf** — Grok Code Fast 1 (xAI)
 - **Google Antigravity** — Gemini 3.1 Pro, Gemini 3.5 Flash, Claude Opus, Claude Sonnet
-- **Grok Build** (Beta)
-- **Cursor** — Grok 4.3, Grok Build 0.1 (xAI)
+- **[Grok Build Beta](https://x.ai/news/grok-build-cli)**
+- **[Cursor](https://cursor.com/)** — [Grok 4.3](https://docs.x.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
 
 ## 14. References
 
@@ -299,8 +299,8 @@ This architecture rests on open-source foundations, enterprise design references
 17. Mend.io. (2026). _Mend: Application Security Testing_.
 18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
 19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
-20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation. 
-21. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation. 
+20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation.
+21. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation.
 
 ## 15. DevSecOps and Platform Standardization Audit
 
@@ -314,14 +314,14 @@ Long-term SaaS reliability is sustained through an uncompromising CI/CD and pre-
 
 The July 2026 daily platform audit codified several evolutionary steps critical for enterprise compliance reviews:
 
-| Milestone | Engineering outcome | Compliance relevance |
-| --------- | ------------------- | -------------------- |
-| Unified dashboard shell | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status` | Consistent operator UX; reduced misconfiguration during incidents |
-| Root mobile-first gate | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first` | Process integrity — layout regressions fail before deploy |
-| Viking-UI CSS consolidation | Static bundle owned by `viking-ui-docs`; Railway frontend compiles live SCSS only | Supply-chain minimization; smaller attack surface in CI |
-| Retention centralization | `backend/utils/retention.py` constants drive `db_cleanup` | SOC 2 confidentiality; CMMC data minimization |
-| CES anonymization contract | ClickHouse aggregates only; no PII in CES engine | Safe cross-tenant statistical contribution without identity leakage |
-| Live Developer Portal | `/documentation` section documents Railway matrix, schedulers, distroless strategy | Auditor-readable operational truth synchronized with BOOK Ch.32 |
+| Milestone                   | Engineering outcome                                                                                                    | Compliance relevance                                                |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Unified dashboard shell     | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status`                        | Consistent operator UX; reduced misconfiguration during incidents   |
+| Root mobile-first gate      | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first` | Process integrity — layout regressions fail before deploy           |
+| Viking-UI CSS consolidation | Static bundle owned by `viking-ui-docs`; Railway frontend compiles live SCSS only                                      | Supply-chain minimization; smaller attack surface in CI             |
+| Retention centralization    | `backend/utils/retention.py` constants drive `db_cleanup`                                                              | SOC 2 confidentiality; CMMC data minimization                       |
+| CES anonymization contract  | ClickHouse aggregates only; no PII in CES engine                                                                       | Safe cross-tenant statistical contribution without identity leakage |
+| Live Developer Portal       | `/documentation` section documents Railway matrix, schedulers, distroless strategy                                     | Auditor-readable operational truth synchronized with BOOK Ch.32     |
 
 These milestones do not replace formal certification—they produce traceable evidence that Visibility, Manageability, and Survivability controls described in Section 3 remain operable under daily engineering velocity.
 

@@ -32,7 +32,10 @@ const matchesQuery = (item: VikingSearchPaletteItem, query: string): boolean => 
   return haystack.includes(query);
 };
 
-const filterItems = (items: VikingSearchPaletteItem[], query: string): VikingSearchPaletteItem[] => {
+const filterItems = (
+  items: VikingSearchPaletteItem[],
+  query: string,
+): VikingSearchPaletteItem[] => {
   const q = query.trim().toLowerCase();
   if (!q) {
     return items;
@@ -44,7 +47,7 @@ const groupItems = (
   items: VikingSearchPaletteItem[],
 ): Array<{ group: string | null; items: VikingSearchPaletteItem[] }> => {
   const groups = new Map<string | null, VikingSearchPaletteItem[]>();
-  items.forEach((item) => {
+  items.forEach(item => {
     const key = item.group ?? null;
     const bucket = groups.get(key) ?? [];
     bucket.push(item);
@@ -124,7 +127,8 @@ export class VikingSearchPaletteWc extends HTMLElement {
     }
     if (name === 'items' || name === 'placeholder') {
       if (name === 'placeholder' && this.inputEl) {
-        const placeholder = this.getAttribute('placeholder') ?? 'Search documentation, dashboard, API…';
+        const placeholder =
+          this.getAttribute('placeholder') ?? 'Search documentation, dashboard, API…';
         this.inputEl.placeholder = placeholder;
         this.inputEl.setAttribute('aria-label', placeholder);
       } else {
@@ -251,12 +255,16 @@ export class VikingSearchPaletteWc extends HTMLElement {
     }
     const shouldOpen = this.hasAttribute('open');
     if (shouldOpen && !this.dialogEl.open) {
+      this.dialogEl.removeAttribute('aria-hidden');
       showModalDialog(this.dialogEl);
       this.activeIndex = 0;
       this.renderResults();
       queueMicrotask(() => this.inputEl?.focus());
     } else if (!shouldOpen && this.dialogEl.open) {
       closeModalDialog(this.dialogEl);
+      this.dialogEl.setAttribute('aria-hidden', 'true');
+    } else if (!shouldOpen) {
+      this.dialogEl.setAttribute('aria-hidden', 'true');
     }
   }
 
@@ -276,7 +284,8 @@ export class VikingSearchPaletteWc extends HTMLElement {
     this.closePalette();
 
     if (item.action === 'cookie-settings') {
-      const widgets = (globalThis as { DemlWidgets?: { openCookieSettings?: () => void } }).DemlWidgets;
+      const widgets = (globalThis as { DemlWidgets?: { openCookieSettings?: () => void } })
+        .DemlWidgets;
       widgets?.openCookieSettings?.();
       return;
     }
@@ -324,7 +333,7 @@ export class VikingSearchPaletteWc extends HTMLElement {
           ? `<p class="viking-search-group-label" role="presentation">${escapeHtml(group)}</p>`
           : '';
         const rows = groupItemsList
-          .map((item) => {
+          .map(item => {
             const id = `viking-search-result-${resultIndex}`;
             const selected = resultIndex === this.activeIndex;
             resultIndex += 1;
@@ -357,8 +366,8 @@ export class VikingSearchPaletteWc extends HTMLElement {
     this.inputEl?.setAttribute('aria-expanded', 'true');
     this.inputEl?.setAttribute('aria-controls', 'viking-search-results-list');
 
-    this.resultsEl.querySelectorAll('.viking-search-result').forEach((node) => {
-      node.addEventListener('click', (event) => {
+    this.resultsEl.querySelectorAll('.viking-search-result').forEach(node => {
+      node.addEventListener('click', event => {
         event.preventDefault();
         const index = Number((node as HTMLElement).dataset['index'] ?? 0);
         const item = this.flatResults[index];
@@ -375,12 +384,11 @@ export class VikingSearchPaletteWc extends HTMLElement {
   }
 
   private render(): void {
-    const placeholder =
-      this.getAttribute('placeholder') ?? 'Search documentation, dashboard, API…';
+    const placeholder = this.getAttribute('placeholder') ?? 'Search documentation, dashboard, API…';
     const mod = modKeyLabel();
 
     this.shadow.innerHTML = `
-      <dialog class="viking-search-palette-backdrop" aria-label="Search">
+      <dialog class="viking-search-palette-backdrop" aria-label="Search" aria-hidden="true">
         <div class="viking-search-palette" part="panel" role="dialog" aria-modal="true">
           <div class="viking-search-palette-header" part="header">
             <span class="viking-search-palette-icon" aria-hidden="true">${renderInlineIcon('search', 24)}</span>
@@ -414,9 +422,11 @@ export class VikingSearchPaletteWc extends HTMLElement {
     this.inputEl = this.shadow.querySelector('input');
     this.resultsEl = this.shadow.querySelector('.viking-search-results-host');
 
-    this.shadow.querySelector('.viking-search-palette-close')?.addEventListener('click', () => this.closePalette());
+    this.shadow
+      .querySelector('.viking-search-palette-close')
+      ?.addEventListener('click', () => this.closePalette());
 
-    this.dialogEl?.addEventListener('keydown', (event) => {
+    this.dialogEl?.addEventListener('keydown', event => {
       if (event.key === 'Escape') {
         event.preventDefault();
         this.closePalette();

@@ -3,45 +3,39 @@
  * Trigger: navbar search button or ⌘K / Ctrl+K.
  */
 (() => {
-  const PALETTE_ID = 'deml-command-palette';
+  const PALETTE_ID = "deml-suite-command-palette";
 
-  const ensureElements = (): void => {
-    if (customElements.get('viking-suite-search-palette-wc')) {
+  const ensureElements = () => {
+    if (customElements.get("viking-suite-search-palette-wc")) {
       return;
     }
     window.VikingUI?.registerVikingElements?.();
   };
 
-  const ensurePalette = (): HTMLElement & {
-    openPalette?: () => void;
-    closePalette?: () => void;
-  } => {
+  const ensurePalette = () => {
     ensureElements();
 
-    let palette = document.getElementById(PALETTE_ID) as HTMLElement & {
-      openPalette?: () => void;
-      closePalette?: () => void;
-    };
+    let palette = document.getElementById(PALETTE_ID);
 
     if (!palette) {
-      palette = document.createElement('viking-suite-search-palette-wc') as HTMLElement & {
-        openPalette?: () => void;
-        closePalette?: () => void;
-      };
+      palette = document.createElement("viking-suite-search-palette-wc");
       palette.id = PALETTE_ID;
-      palette.setAttribute('global-shortcut', '');
-      palette.setAttribute('placeholder', 'Search documentation, dashboard, settings…');
+      palette.setAttribute("global-shortcut", "");
+      palette.setAttribute(
+        "placeholder",
+        "Search documentation, dashboard, settings…",
+      );
       document.body.append(palette);
     }
 
     return palette;
   };
 
-  const openSearch = (): void => {
+  const openSearch = () => {
     ensurePalette().openPalette?.();
   };
 
-  const closeSearch = (): void => {
+  const closeSearch = () => {
     document.getElementById(PALETTE_ID)?.closePalette?.();
   };
 
@@ -49,11 +43,15 @@
   window.DemlWidgets.openSearch = openSearch;
   window.DemlWidgets.closeSearch = closeSearch;
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      ensurePalette();
-    });
-  } else {
-    ensurePalette();
-  }
+  document.addEventListener("keydown", (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      openSearch();
+      return;
+    }
+
+    if (event.key === "Escape") {
+      closeSearch();
+    }
+  });
 })();

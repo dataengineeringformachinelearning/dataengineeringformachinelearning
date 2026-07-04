@@ -71,15 +71,16 @@ export class VikingBadgeWc extends HTMLElement {
 
   private render(): void {
     const tone = this.tone;
-    if (tone) {
+    if (tone && this.getAttribute('tone') !== tone) {
       this.setAttribute('tone', tone);
-    } else {
+    } else if (!tone && this.hasAttribute('tone')) {
       this.removeAttribute('tone');
     }
 
-    if (this.size) {
-      this.setAttribute('size', this.size);
-    } else {
+    const size = this.size;
+    if (size && this.getAttribute('size') !== size) {
+      this.setAttribute('size', size);
+    } else if (!size && this.hasAttribute('size')) {
       this.removeAttribute('size');
     }
 

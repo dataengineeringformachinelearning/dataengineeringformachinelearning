@@ -1392,8 +1392,8 @@ The DEML platform stands on open-source foundations, enterprise design reference
  - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
  - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
  - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
- - [Grok Build](https://x.ai/) (Beta)
- - [Cursor](https://cursor.com/) — Grok 4.3, Grok Build 0.1 (xAI)
+ - [Grok Build Beta](https://x.ai/news/grok-build-cli)
+ - [Cursor](https://cursor.com/) — [Grok 4.3](https://docs.x.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
 
 ---
 
@@ -2770,8 +2770,8 @@ DEML adopts two white papers as guiding references for its threat-driven securit
 
 **Formal citations.**
 
-1. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation. 
-2. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation. 
+1. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation.
+2. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation.
 
 > [!NOTE]
 > **Grok Build Beta** annotations in source (e.g. footer comments, this appendix) mark maintenance performed during automated end-of-day pipelines. Re-run `./scripts/deml-cleanup.sh` before each session and consult [Appendix D](#appendix-d-maintenance--automation-schedule) for scheduled worker cadence.

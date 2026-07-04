@@ -73,7 +73,7 @@ All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** 
 | [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com) | Viking-UI docs + static CSS build owner |
 | Swagger / OpenAPI UI                                                                   | Same tokens via static CSS                     |
 
-**Design doctrine:** Precision-engineered industrial surfaces—composable primitives on a **premium restrained luxury** palette: dark charcoal foundations (`--viking-charcoal-900`), deep teal primary actions (`--viking-teal-600`), crimson secondary emphasis (`--viking-crimson-600`), machined metallic borders, and native SVG telemetry charts. Import `viking-*` components exclusively; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
+**Design doctrine:** Precision-engineered industrial surfaces—composable primitives on a **premium restrained luxury** palette: dark charcoal foundations (`--viking-charcoal-900`), deep teal primary actions (`--viking-teal-600`), crimson secondary emphasis (`--viking-crimson-600`), machined metallic borders, and native SVG telemetry charts. Import `viking-*` components exclusively; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions. **Contributing:** [CONTRIBUTING.md](CONTRIBUTING.md) and the [live docs site](https://ui.dataengineeringformachinelearning.com/contributing).
 
 ## Solution Architecture
 
@@ -469,8 +469,8 @@ The DEML platform stands on open-source foundations, enterprise design reference
   - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
   - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
   - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Gemini 3.5 (High)](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
-  - [Grok Build](https://x.ai/) (Beta)
-  - [Cursor](https://cursor.com/) — Grok 4.3, Grok Build 0.1 (xAI)
+  - [Grok Build Beta](https://x.ai/news/grok-build-cli)
+  - [Cursor](https://cursor.com/) — [Grok 4.3](https://docs.x.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
 
 ---
 

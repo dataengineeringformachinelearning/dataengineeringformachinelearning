@@ -88,8 +88,8 @@ import {
             <div class="navbar-search" role="search">
               <viking-button
                 variant="outline"
-                square
-                compact
+                [square]="true"
+                [compact]="true"
                 icon="search"
                 label="Open search (⌘K)"
                 (pressed)="openSearch()"
@@ -103,11 +103,7 @@ import {
                 Sign In
               </viking-button>
             } @else {
-              <viking-button
-                variant="primary"
-                icon="home"
-                [href]="urls().app + '/dashboard'"
-              >
+              <viking-button variant="primary" icon="home" [href]="urls().app + '/dashboard'">
                 Dashboard
               </viking-button>
               <viking-button variant="ghost" (pressed)="logout.emit()">Sign Out</viking-button>
@@ -118,7 +114,7 @@ import {
 
           <viking-button
             variant="outline"
-            square
+            [square]="true"
             class="menu-toggle-btn"
             [icon]="mobileMenuOpen() ? 'x' : 'menu'"
             [label]="mobileMenuOpen() ? 'Close navigation menu' : 'Toggle navigation menu'"

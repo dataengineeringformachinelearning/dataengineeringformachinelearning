@@ -23,6 +23,10 @@ export const VIKING_BUTTON_STYLES = `
   min-width: 0;
 }
 
+:host([square]) {
+  flex: 0 0 auto;
+}
+
 .viking-btn {
   font-family: inherit;
   font-size: var(--viking-font-size-ui, var(--viking-font-size-sm));
@@ -78,23 +82,53 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-square {
+  display: inline-grid;
+  place-items: center;
   width: var(--viking-control-height);
   min-width: var(--viking-control-height);
+  max-width: var(--viking-control-height);
+  height: var(--viking-control-height);
+  min-height: var(--viking-control-height);
   padding: 0;
+  line-height: 1;
 }
 
 .viking-btn-square.viking-btn-sm {
   width: var(--viking-control-height-sm);
   min-width: var(--viking-control-height-sm);
+  max-width: var(--viking-control-height-sm);
+  height: var(--viking-control-height-sm);
+  min-height: var(--viking-control-height-sm);
 }
 
 .viking-btn-square.viking-btn-xs {
   width: var(--viking-control-height-xs);
   min-width: var(--viking-control-height-xs);
+  max-width: var(--viking-control-height-xs);
+  height: var(--viking-control-height-xs);
+  min-height: var(--viking-control-height-xs);
+}
+
+.viking-btn-square .viking-btn-label {
+  display: inline-grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  line-height: 1;
 }
 
 .viking-btn-square ::slotted(*) {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  line-height: 1;
+}
+
+.viking-btn-square ::slotted(svg),
+.viking-btn-square ::slotted([data-viking-icon]) {
+  width: var(--viking-icon-size-md, 20px);
+  height: var(--viking-icon-size-md, 20px);
 }
 
 .viking-btn-outline {
@@ -821,6 +855,11 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-out);
 }
 
+.viking-search-palette-backdrop:not([open]) {
+  display: none !important;
+  pointer-events: none;
+}
+
 .viking-search-palette {
   display: flex;
   flex-direction: column;
@@ -832,7 +871,7 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   box-shadow: var(--viking-shadow-lg);
   overflow: hidden;
   max-width: 600px;
-  width: 100%;
+  width: min(100%, 600px);
   margin: 0 auto;
   font-family: var(--viking-font-family);
   color: var(--viking-text);
