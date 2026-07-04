@@ -35,7 +35,7 @@ This document captures the core coding principles, philosophies, and "how we bui
   - Mobile-first: Strict `.page-inner-wrapper` (1260px max), 4px grid (`--viking-grid-unit`). No CLS.
   - Zero-dependency UI: Native SVG for telemetry graphs (high-frequency data without bloat).
   - Distroless containers: `gcr.io/distroless/nodejs22-debian12` for Angular SSR frontend; `gcr.io/distroless/python3-debian12` for Django API.
-  - Premium aesthetic: Viking-UI design system ([THEME.md](THEME.md)) — charcoal/teal/crimson tokens, `viking-skeleton` loaders, `.viking-font-display` (Inter caps) on CES/marketing display only.
+  - Premium aesthetic: Viking-UI design system ([THEME.md](THEME.md)) — Spartan-structured composable primitives, charcoal/teal/crimson tokens, `viking-skeleton` loaders, `.viking-font-display` (Inter caps) on CES/marketing display only. Cursor agents must follow [.cursorrules](.cursorrules).
 - **Backend (Python/Django)**:
   - Ruff for linting/formatting (fast, zero-compromise).
   - Use `uv` (Astral) for environment and tool execution (`uvx pre-commit`).
@@ -131,6 +131,7 @@ This document captures the core coding principles, philosophies, and "how we bui
 - `scripts/run_axe.js`: A11y enforcement.
 - `scripts/sync_content.py`: Doc sync (critical for agents/LLMs).
 - `scripts/dump_openapi.py`: Regenerate `frontend/openapi.json` from Django Ninja schema.
+- `.cursorrules`: Cursor agent UI/component rules (Viking-UI + THEME.md enforcement).
 - `scripts/deml-cleanup.sh`: Maintenance.
 - Pre-commit config, ruff, eslint, prettier.
 - uv, tsx, Docker (unprivileged).
@@ -183,14 +184,24 @@ This document defines the core roles and collaboration rules for our development
 3.  **Modern Stack**: Focus on clean, modern, and beautiful designs following the guidelines set in `THEME.md` and standard framework patterns.
 4.  **Zero-Dependency & IP Ownership**: Maximize intellectual property and system stability by building independent, highly-cohesive implementations from scratch. Strictly minimize reliance on third-party libraries, external dependencies, or heavy abstraction layers. Our code is our IP.
 
+### Viking-UI Uniformity Law (Spartan-inspired)
+
+All DEML surfaces share one design system. **[.cursorrules](.cursorrules)** is the Cursor agent entry point; **[THEME.md](THEME.md)** is the canonical token matrix; **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** documents the kit.
+
+- **Always import and use** `@dataengineeringformachinelearning/viking-ui` components (`viking-button`, `viking-field`, `viking-card`, `viking-chart`, etc.) in Angular — never Material, Bootstrap, or other third-party UI runtimes.
+- **Spartan structure, Viking palette:** composable primitives and accessible field stacks per [spartan.ng](https://spartan.ng/); colors/spacing/typography from `--viking-*` tokens only.
+- **Premium restrained luxury:** dark-first charcoals, machined metallic borders, restrained teal/crimson accents — no gradient orbs, neon glow, or decorative clutter.
+- **Extend the kit, don't fork it:** new shared UI belongs in `frontend/projects/viking-ui/` first, then consumed by deml.app and marketing surfaces via synced `viking-ui.css`.
+- **Non-Angular surfaces** (marketing Astro, Django templates, Swagger) load `design-tokens.css` + `viking-ui.css` and use `var(--viking-*)` — no inline hex palettes.
+
 ### Critical Code Styling & Theming Law
 
-- Before creating, editing, or refactoring ANY HTML template, CSS/SCSS file, Tailwind class configuration, or Ant Design component theme token, you MUST read and explicitly conform to the definitions found in the root `THEME.md` file.
+- Before creating, editing, or refactoring ANY HTML template, CSS/SCSS file, Tailwind class configuration, or Viking-UI component styles, you MUST read and explicitly conform to the definitions found in the root `THEME.md` file and [.cursorrules](.cursorrules).
 - **Never** generate hardcoded color palettes or introduce random hex strings (e.g., `#000` or `#fff` or arbitrary blues/teals) that deviate from the design matrix in `THEME.md`.
-- All visual components generated in the browser walkthroughs must match the specific Material Theme token assignments and semantic/data visualization color maps specified in `THEME.md`.
+- All visual components must use Viking-UI primitives and THEME.md semantic/data visualization token maps — not ad-hoc styled `<div>`/`<button>` replacements.
 - Keep the theme consistent, usable, 508 compliant, and visually distinct:
   - **Contrast Ratios**: Every text element must meet or exceed WCAG 2.1 AA standards (minimum 4.5:1 contrast ratio for normal text, 3:1 for large text).
-  - **Keyboard Navigation**: All interactive elements must be accessible via keyboard and have visible, high-contrast focus indicators (`:focus-visible`).
+  - **Keyboard Navigation**: All interactive elements must be accessible via keyboard and have visible, high-contrast focus indicators (`:focus-visible` via `--viking-ring`).
   - **Screen Reader Support**: Use semantic HTML5 elements and provide descriptive `aria-label` or `aria-labelledby` attributes for controls, especially icon-only buttons.
   - **Visual Distinction**: Ensure interactive controls look clearly actionable (e.g., distinct hover and active states) and never rely solely on color to convey information or status.
 

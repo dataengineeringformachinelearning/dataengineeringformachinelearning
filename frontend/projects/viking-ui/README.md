@@ -4,7 +4,7 @@
 
 ## Design philosophy
 
-From [THEME.md](../../../THEME.md) — structured like [spartan.ng](https://spartan.ng/) (composable primitives, accessible forms, dark-first cards) with a **luxurious industrial** palette:
+From [THEME.md](../../../THEME.md) — structured like [spartan.ng](https://spartan.ng/) (composable primitives, accessible forms, dark-first cards) with a **premium restrained luxury** palette. Cursor agents must follow [.cursorrules](../../../.cursorrules).
 
 - **Precision engineering** and **high-end industrial tech**
 - **Dark-first** — deep charcoals, machined metallic edges, no decorative noise

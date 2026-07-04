@@ -1,0 +1,113 @@
+# DEML — Cursor Agent Rules (Viking-UI / Spartan Quality)
+
+You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must feel like **precision-engineered industrial luxury**: restrained, dark-first, token-driven, and WCAG 2.1 AA by construction.
+
+## Rule hierarchy (read in order)
+
+1. **This file** (`.cursorrules`) — mandatory UI/component behavior for Cursor agents
+2. **[THEME.md](THEME.md)** — canonical token matrix, Spartan-structured component standards
+3. **[AGENTS.md](AGENTS.md)** — platform architecture, security, automation invariants
+4. **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** — Viking-UI kit narrative, build, publish
+
+Before editing HTML, CSS/SCSS, Tailwind config, or Angular templates: **read THEME.md** for the surfaces you touch.
+
+---
+
+## Spartan-inspired quality (structure, not palette)
+
+Viking-UI follows the **composable primitive** model from [spartan.ng](https://spartan.ng/): install behavior in Angular, style from tokens, customize without a monolithic theme runtime.
+
+| Spartan pattern | Viking-UI equivalent | You must |
+| --------------- | -------------------- | -------- |
+| Card surfaces | `viking-card`, `viking-metric-card`, `viking-hud-panel` | Use these — never raw `<div class="card">` |
+| Form field stack | `viking-field` → control (`viking-input`, `viking-select`, …) | Compose every input through `viking-field` |
+| Button variants | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Never hand-roll button styles |
+| Dark-first shell | `data-theme="dark"` default | Preserve dark-first; light mode shifts lightness only |
+| Accessible focus | `--viking-ring` 2px + 2px offset | Never remove `:focus-visible` for aesthetics |
+| Settings / billing forms | `viking-form-section` + grouped `viking-field` | Section rhythm: `--viking-space-3` / `--viking-font-size-lg` |
+
+**Intentional divergence from Spartan:** zinc/neutral palettes are replaced by **deep charcoals, machined metallic borders, restrained teal/crimson** — premium restrained luxury, not startup-neutral.
+
+---
+
+## Viking-UI component law (non-negotiable)
+
+### Angular (`deml.app`, `viking-ui`, `viking-ui-showcase`)
+
+- **Always** import and use components from `@dataengineeringformachinelearning/viking-ui`.
+- **Never** add Angular Material, ng-zorro, PrimeNG, Bootstrap, shadcn runtimes, or other third-party UI kits.
+- **Never** create one-off styled buttons, inputs, modals, toasts, tables, or charts when a `viking-*` component exists.
+- **Prefer** shell primitives: `viking-app-header`, `viking-app-sidebar`, `viking-page-header`, `viking-footer`, `viking-site-navbar`, `viking-site-footer`.
+- **Charts:** `viking-chart` (native SVG) only — no ApexCharts, Chart.js, D3 wrappers, or canvas libs.
+- **Icons:** `viking-icon` only — no Material Icons, Font Awesome, or Lucide runtime packages.
+- **Feedback:** `viking-toast` / `VikingToastService`, `viking-callout`, `viking-badge` — not browser `alert()` or ad-hoc banners.
+- **Loading:** `viking-skeleton`, `viking-loading-overlay`, `viking-progress` — not generic spinners.
+- **New shared UI** belongs in `frontend/projects/viking-ui/` first, then consumed by the app.
+
+```typescript
+import {
+  VikingButton,
+  VikingCard,
+  VikingField,
+  VikingInput,
+} from '@dataengineeringformachinelearning/viking-ui';
+```
+
+### Non-Angular (marketing Astro, Django templates, Swagger)
+
+- Load synced CSS: `design-tokens.css` + `viking-ui.css` (from `scripts/sync_design_system.py`).
+- Use semantic HTML + `var(--viking-*)` tokens and documented utility classes — no inline hex, no one-off palettes.
+- Mirror Spartan ergonomics with tokenized form markup; do not embed React/Vue widget runtimes.
+
+---
+
+## THEME.md token law (zero hardcoded styles)
+
+### Always use tokens
+
+- **Colors:** `--viking-*` semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`, `--viking-text-muted`, …)
+- **Spacing:** `--viking-space-*` on the 4px grid (`--viking-grid-unit`)
+- **Typography:** `--viking-font-family`, `--viking-font-size-*`, `--viking-font-weight-*`, `--viking-letter-spacing-*`
+- **Radius:** `--viking-radius-*` (max 16px except pills)
+- **Shadows:** `--viking-shadow-*` with machined top-edge highlights
+- **Motion:** `--viking-duration-*`, `--viking-ease-*`, respect `prefers-reduced-motion`
+- **Charts:** `--viking-series-1` … `--viking-series-8` or `tone` props — import `VIKING_SERIES_PRESETS` from `series-presets.ts`
+
+### Never
+
+- Hardcode hex/rgb/hsl (`#2176FF`, `#fff`, `rgb(17,17,17)`) in components, templates, or inline styles
+- Load Inter from Google Fonts CDN — use self-hosted `_fonts.scss`
+- Add gradient orbs, mesh backgrounds, neon glow, or glass blur on base layouts
+- Use emojis in product UI (exception: 🇺🇸 on approved badges only)
+- Use `.viking-font-display` on body copy — CES/marketing display labels only
+- Exceed `--viking-container-max-width` (1260px) without `.page-inner-wrapper` intent
+- Register customer domains in static CSS/CORS — database-driven per AGENTS.md
+
+### Layout & aesthetic
+
+- **Premium restrained luxury:** data and metrics dominate; ornament is minimal.
+- **Tactile surfaces:** subtle inset top-edge highlights, crisp `--viking-border`, 1px hover lift max.
+- **Mobile-first:** 44px touch targets, `--viking-space-2` gutters scaling to `--viking-space-3`.
+- **Status:** never color alone — pair tone with `viking-icon`, label, or pattern.
+
+---
+
+## Pre-ship UI checklist
+
+1. All interactive UI uses `viking-*` components (or tokenized static markup on non-Angular surfaces).
+2. No hardcoded colors, spacing, or font sizes outside `--viking-*` tokens.
+3. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
+4. Token changes start in `frontend/projects/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui-css` + `python scripts/sync_design_system.py`.
+5. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.31**, and **README.md** together.
+
+---
+
+## Platform invariants (from AGENTS.md — do not break)
+
+- Event Projections: Outbox, idempotency, versioned events
+- Symmetrical multi-tenant workers: `Tenant.objects.all()` — no hardcoded Tenant0 exceptions
+- UUID PKs everywhere; no pickle for ML models
+- Dynamic CORS via database registration
+- Run `uvx pre-commit run --all-files` before committing
+
+When architectural UI patterns change, update **BOOK.md** first, then sync via `scripts/sync_content.py`.
