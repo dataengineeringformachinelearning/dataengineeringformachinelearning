@@ -1,0 +1,47 @@
+// Icon + title row — bento cards, integration tiles, docs panels.
+// Icons and headings share one flex cross-axis so cap-height aligns (WCAG 2.1 AA).
+
+.viking-icon-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-2, 16px);
+  min-width: 0;
+}
+
+.viking-icon-heading__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--viking-icon-size-lg, 24px);
+  height: var(--viking-icon-size-lg, 24px);
+  line-height: 0;
+  color: var(--viking-accent);
+
+  svg,
+  viking-icon,
+  viking-app-icon {
+    display: block;
+    width: var(--viking-icon-size-lg, 24px);
+    height: var(--viking-icon-size-lg, 24px);
+  }
+}
+
+.viking-icon-heading__icon--brand {
+  color: inherit;
+}
+
+.viking-icon-heading__title {
+  margin: 0;
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size-lg, 20px);
+  font-weight: var(--viking-font-weight-bold, 700);
+  letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
+  line-height: var(--viking-line-height-tight, 1.25);
+  color: var(--viking-text, var(--text-color));
+  text-transform: uppercase;
+}
+
+.viking-icon-heading--lg .viking-icon-heading__title {
+  font-size: var(--viking-font-size-xl, 24px);
+}

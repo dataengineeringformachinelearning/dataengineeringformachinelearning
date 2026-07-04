@@ -1,6 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
+import DocsCta from '../components/DocsCta.astro';
+import DocsCtaGroup from '../components/DocsCtaGroup.astro';
+import DocsBentoCard from '../components/DocsBentoCard.astro';
+import DocsBentoGrid from '../components/DocsBentoGrid.astro';
+import IconHeading from '../components/IconHeading.astro';
+import '../styles/docs-bento.scss';
 import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
 
@@ -115,6 +121,41 @@ const quickStartSteps = [
     href: FRONTEND_URL + '/dashboard',
   },
 ];
+
+const platformOpsCards = [
+  {
+    icon: 'shield',
+    title: 'Distroless Attack Surface',
+    description:
+      'Multi-stage builds compile in Alpine or slim Bookworm, then copy only runtime artifacts into distroless bases. No shell, no package manager, nonroot UID — production containers cannot spawn interactive backdoors even after a boundary breach.',
+  },
+  {
+    icon: 'schedule',
+    title: 'Scheduler Cadence',
+    descriptionHtml: `<strong>outbox_relay</strong> every 5s · <strong>security_worker</strong> hourly IoC fetch + daily <code>db_cleanup</code> · <strong>ml_worker</strong> daily retrain · Stripe <code>sync_subscriptions</code> daily · DEK rotation at 30 days.`,
+  },
+  {
+    icon: 'delete_sweep',
+    title: '30-Day Data Retention',
+    descriptionHtml: `Raw telemetry, audit logs, and cookie consent records purge after <strong>30 days</strong> via <code>backend/utils/retention.py</code>. Published outbox rows retain 30 days; DLQ candidates purge after 7. OLAP traces TTL in ClickHouse — Postgres stays lean.`,
+  },
+  {
+    icon: 'lock',
+    title: 'Tenant Isolation',
+    descriptionHtml: `UUID primary keys everywhere. Django ORM queries filter by authenticated tenant context. API keys hash with SHA-256 at rest. Workers iterate <code>Tenant.objects.all()</code> — no hardcoded platform exceptions. Cross-tenant reads fail closed.`,
+  },
+  {
+    icon: 'insights',
+    title: 'CES Anonymized Aggregation',
+    description:
+      'Countermeasure Effectiveness Standard (CES) consumes only aggregated latency, incident, and uptime vectors from ClickHouse. Individual identities and raw tenant payloads never enter the CES engine — only safe mathematical outputs contribute to Threat, SLA, and Stableness gauges.',
+  },
+  {
+    icon: 'hub',
+    title: 'Event Projections Loop',
+    descriptionHtml: `Firebase commands land in Django with a transactional <strong>Outbox</strong>, relay to Redpanda, and idempotent <code>telemetry_worker</code> projections into Firestore. Failed events route to DLQ for replay — no fire-and-forget writes on the critical path.`,
+  },
+];
 ---
 
 <Layout
@@ -127,6 +168,7 @@ const quickStartSteps = [
   <div class="dashboard-page-container">
     <div class="dashboard-content-area">
       <div class="page-inner-wrapper">
+        <div class="docs-page-stack">
         <header class="docs-hero">
           <div class="u-style-58adc5">
             <span class="badge-dot pulse-dot" aria-hidden="true"></span>
@@ -137,16 +179,14 @@ const quickStartSteps = [
             One API key. Zero-trust authentication on every call. Stream telemetry, execute inference,
             and monitor threat posture — through the same gateway your production stack already trusts.
           </p>
-          <div class="docs-hero-actions">
-            <a href={FRONTEND_URL + '/login'} class="docs-cta primary">
-              <VikingIcon name="rocket_launch" size={20} />
-              <span>Create Free Account</span>
-            </a>
-            <a href="#quick-start" class="docs-cta secondary">
-              <VikingIcon name="play_circle" size={20} />
-              <span>Quick Start Guide</span>
-            </a>
-          </div>
+          <DocsCtaGroup>
+            <DocsCta href={FRONTEND_URL + '/login'} variant="primary" icon="rocket_launch">
+              Create Free Account
+            </DocsCta>
+            <DocsCta href="#quick-start" variant="secondary" icon="play_circle">
+              Quick Start Guide
+            </DocsCta>
+          </DocsCtaGroup>
         </header>
 
         <nav class="docs-outline no-print" aria-label="Documentation outline">
@@ -204,12 +244,8 @@ const quickStartSteps = [
           </div>
         </aside>
 
-        <div class="docs-bento-grid">
-          <div class="viking-card docs-bento-card docs-bento-full">
-            <div class="bento-header">
-              <VikingIcon name="vpn_key" size={20} />
-              <h2>Authentication & Access</h2>
-            </div>
+        <DocsBentoGrid evenPairs>
+          <DocsBentoCard icon="vpn_key" title="Authentication & Access" fullWidth>
             <p class="u-style-7f7d6d">
               Secure access to our high-throughput pipelines requires an API key. Register an account,
               generate a secure token in your user profile, and pass it in the Authorization header.
@@ -218,13 +254,9 @@ const quickStartSteps = [
               <div class="code-header">HTTP Header</div>
               <pre><code>Authorization: Bearer YOUR_API_KEY</code></pre>
             </div>
-          </div>
+          </DocsBentoCard>
 
-          <div class="viking-card docs-bento-card" id="data-ingestion">
-            <div class="bento-header">
-              <VikingIcon name="input" size={20} />
-              <h2>Data Ingestion</h2>
-            </div>
+          <DocsBentoCard icon="input" title="Data Ingestion" id="data-ingestion">
             <p class="u-style-efd290">
               High-throughput endpoint optimized for receiving batched or streaming data from
               distributed pipelines like Apache Spark or Databricks.
@@ -240,13 +272,9 @@ const quickStartSteps = [
   -H "Content-Type: application/json" \
   -d '&#123; "batch_id": "123", "records": [&#123;"feature1": 1.0&#125;] &#125;'</code></pre>
             </div>
-          </div>
+          </DocsBentoCard>
 
-          <div class="viking-card docs-bento-card">
-            <div class="bento-header">
-              <VikingIcon name="model_training" size={20} />
-              <h2>Real-time Inference</h2>
-            </div>
+          <DocsBentoCard icon="model_training" title="Real-time Inference">
             <p class="u-style-efd290">
               Low-latency endpoint for model inference, ideal for Kubernetes sidecars or deep learning
               services calling models directly.
@@ -262,13 +290,9 @@ const quickStartSteps = [
   -H "Content-Type: application/json" \
   -d '&#123; "model_version": "v2", "inputs": [0.5, 0.2] &#125;'</code></pre>
             </div>
-          </div>
+          </DocsBentoCard>
 
-          <div class="viking-card docs-bento-card">
-            <div class="bento-header">
-              <VikingIcon name="shield" size={20} />
-              <h2>Threat Monitoring</h2>
-            </div>
+          <DocsBentoCard icon="shield" title="Threat Monitoring">
             <p class="u-style-efd290">
               Send SIEM or EDR alerts through the same gateway. DEML correlates severity, IP
               indicators, and tenant context before surfacing actionable cases.
@@ -284,13 +308,9 @@ const quickStartSteps = [
   -H "Content-Type: application/json" \
   -d '&#123; "title": "Suspicious login", "severity": "High" &#125;'</code></pre>
             </div>
-          </div>
+          </DocsBentoCard>
 
-          <div class="viking-card docs-bento-card">
-            <div class="bento-header">
-              <VikingIcon name="security" size={20} />
-              <h2>Enterprise Security</h2>
-            </div>
+          <DocsBentoCard icon="security" title="Enterprise Security">
             <p class="u-style-efd290">
               All tenant data is cryptographically isolated using strict multi-tenancy rules and
               enforced via our strict 30-day data retention policy.
@@ -298,8 +318,8 @@ const quickStartSteps = [
               under your Settings panel. For ultimate security, keys are displayed only once upon
               creation and are immediately hashed in the database using SHA-256.
             </p>
-          </div>
-        </div>
+          </DocsBentoCard>
+        </DocsBentoGrid>
 
         <section class="docs-operations-section" id="platform-operations" aria-labelledby="platform-operations-title">
           <header class="integrations-header">
@@ -312,12 +332,8 @@ const quickStartSteps = [
             </p>
           </header>
 
-          <div class="docs-bento-grid">
-            <div class="viking-card docs-bento-card docs-bento-full">
-              <div class="bento-header">
-                <VikingIcon name="cloud" size={20} />
-                <h3>Railway Service Matrix</h3>
-              </div>
+          <DocsBentoGrid evenPairs>
+            <DocsBentoCard icon="cloud" title="Railway Service Matrix" fullWidth headingLevel="h3">
               <p class="u-style-7f7d6d">
                 Each deployable unit carries an <code>infrastructure/railway/*/railway.json</code> manifest.
                 Frontend SSR, Django API, telemetry worker, scanner, and daemon images build from repo-root
@@ -330,69 +346,18 @@ backend/      → gcr.io/distroless/python3-debian12 (Django, port 8000)
 workers/      → telemetry_worker, security_worker, outbox_relay
 scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
               </div>
-            </div>
+            </DocsBentoCard>
 
-            <div class="viking-card docs-bento-card">
-              <div class="bento-header">
-                <VikingIcon name="shield" size={20} />
-                <h3>Distroless Attack Surface</h3>
-              </div>
-              <p class="u-style-efd290">
-                Multi-stage builds compile in Alpine or slim Bookworm, then copy only runtime artifacts into
-                distroless bases. No shell, no package manager, nonroot UID — production containers cannot
-                spawn interactive backdoors even after a boundary breach.
-              </p>
-            </div>
-
-            <div class="viking-card docs-bento-card">
-              <div class="bento-header">
-                <VikingIcon name="schedule" size={20} />
-                <h3>Scheduler Cadence</h3>
-              </div>
-              <p class="u-style-efd290">
-                <strong>outbox_relay</strong> every 5s · <strong>security_worker</strong> hourly IoC fetch +
-                daily <code>db_cleanup</code> · <strong>ml_worker</strong> daily retrain · Stripe
-                <code>sync_subscriptions</code> daily · DEK rotation at 30 days.
-              </p>
-            </div>
-
-            <div class="viking-card docs-bento-card">
-              <div class="bento-header">
-                <VikingIcon name="delete_sweep" size={20} />
-                <h3>30-Day Data Retention</h3>
-              </div>
-              <p class="u-style-efd290">
-                Raw telemetry, audit logs, and cookie consent records purge after <strong>30 days</strong>
-                via <code>backend/utils/retention.py</code>. Published outbox rows retain 30 days; DLQ
-                candidates purge after 7. OLAP traces TTL in ClickHouse — Postgres stays lean.
-              </p>
-            </div>
-
-            <div class="viking-card docs-bento-card">
-              <div class="bento-header">
-                <VikingIcon name="lock" size={20} />
-                <h3>Tenant Isolation</h3>
-              </div>
-              <p class="u-style-efd290">
-                UUID primary keys everywhere. Django ORM queries filter by authenticated tenant context.
-                API keys hash with SHA-256 at rest. Workers iterate <code>Tenant.objects.all()</code> —
-                no hardcoded platform exceptions. Cross-tenant reads fail closed.
-              </p>
-            </div>
-
-            <div class="viking-card docs-bento-card">
-              <div class="bento-header">
-                <VikingIcon name="insights" size={20} />
-                <h3>CES Anonymized Aggregation</h3>
-              </div>
-              <p class="u-style-efd290">
-                Countermeasure Effectiveness Standard (CES) consumes only aggregated latency, incident,
-                and uptime vectors from ClickHouse. Individual identities and raw tenant payloads never
-                enter the CES engine — only safe mathematical outputs contribute to Threat, SLA, and
-                Stableness gauges.
-              </p>
-            </div>
-          </div>
+            {platformOpsCards.map(card => (
+              <DocsBentoCard icon={card.icon} title={card.title} headingLevel="h3">
+                {card.descriptionHtml ? (
+                  <p class="u-style-efd290" set:html={card.descriptionHtml} />
+                ) : (
+                  <p class="u-style-efd290">{card.description}</p>
+                )}
+              </DocsBentoCard>
+            ))}
+          </DocsBentoGrid>
         </section>
 
         <section class="integrations-section" aria-labelledby="integrations-title">
@@ -408,10 +373,7 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
           <div class="integration-cards">
             {integrationPlatforms.map(platform => (
               <article class="viking-card integration-card">
-                <div class="integration-card-header">
-                  <VikingIcon name={platform.icon} size={20} />
-                  <h3>{platform.name}</h3>
-                </div>
+                <IconHeading icon={platform.icon} title={platform.name} headingLevel="h3" />
                 <p>{platform.summary}</p>
                 <div class="code-block-premium compact">
                   <div class="code-header">{platform.exampleLabel}</div>
@@ -436,32 +398,39 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
             </div>
           </div>
         </section>
+        </div>
       </div>
     </div>
   </div>
 </Layout>
 
 <style lang="scss">
-.dashboard-page-container {
-  display: block;
+.docs-page-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-section-gap, var(--viking-space-3, 24px));
   width: 100%;
-  min-height: calc(100vh - 64px);
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  overflow: hidden;
+
+  > * {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    margin-bottom: 0;
+    box-sizing: border-box;
+  }
 }
 
 .docs-hero {
   position: relative;
-  margin: 0 auto 32px auto;
   text-align: center;
   padding: 48px 24px 40px;
   border-radius: 24px;
   border: 1px solid var(--border);
   background:
-    radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--viking-teal-600) 10%, transparent), transparent),
+    radial-gradient(ellipse 70% 60% at 50% 0%, color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 10%, transparent), transparent),
     var(--color-surface);
   box-shadow: var(--shadow-sm);
+  overflow: visible;
 
   .docs-title {
     font-size: clamp(2rem, 5vw, 4rem);
@@ -479,59 +448,6 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
     max-width: 704px;
     margin: 0 auto 28px auto;
     line-height: 1.6;
-  }
-}
-
-.docs-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  justify-content: center;
-  overflow: visible;
-}
-
-.docs-cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--viking-space-1, 8px);
-  padding: var(--viking-space-1-5, 12px) var(--viking-space-3, 24px);
-  border-radius: var(--viking-radius-md, 10px);
-  font-weight: 600;
-  font-size: 1rem;
-  text-decoration: none !important;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-  min-height: 48px;
-  box-sizing: border-box;
-  white-space: nowrap;
-
-  .material-icons {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-
-  &.primary {
-    background: var(--viking-teal-600);
-    color: var(--white) !important;
-    border: 1px solid var(--viking-teal-600);
-
-    &:hover {
-      background: var(--viking-teal-400);
-      border-color: var(--viking-teal-400);
-    }
-  }
-
-  &.secondary {
-    background: var(--color-surface);
-    color: var(--viking-teal-600) !important;
-    border: 1px solid color-mix(in srgb, var(--viking-teal-600) 35%, var(--border));
-    box-shadow: var(--shadow-sm);
-
-    &:hover {
-      border-color: var(--viking-teal-600);
-      background: color-mix(in srgb, var(--viking-teal-600) 8%, var(--color-surface));
-    }
   }
 }
 
@@ -554,8 +470,7 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
   flex-wrap: wrap;
   justify-content: center;
   gap: 10px;
-  max-width: var(--container-max-width, 1260px);
-  margin: 0 auto 32px auto;
+  width: 100%;
   padding: 14px 18px;
   border-radius: 16px;
   border: 1px solid var(--border);
@@ -587,8 +502,7 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
 }
 
 .docs-quick-start {
-  max-width: var(--container-max-width, 1260px);
-  margin: 0 auto 40px auto;
+  width: 100%;
 }
 
 .docs-quick-start-steps {
@@ -663,8 +577,6 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  max-width: var(--container-max-width, 1260px);
-  margin: 0 auto 24px auto;
   padding: 24px 28px;
   border-radius: 16px;
   background: color-mix(in srgb, var(--viking-crimson-600) 6%, var(--color-surface));
@@ -697,8 +609,6 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
   display: flex;
   align-items: flex-start;
   gap: 20px;
-  max-width: var(--container-max-width, 1260px);
-  margin: 0 auto 40px auto;
   padding: 24px 28px;
   border-radius: 16px;
   background: color-mix(in srgb, var(--viking-teal-600) 8%, var(--color-surface));
@@ -739,82 +649,15 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
   border: 0;
 }
 
-.docs-bento-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  max-width: var(--container-max-width, 1260px);
-  margin: 0 auto 56px auto;
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(12, 1fr);
-  }
-}
-
-.docs-bento-card {
-  grid-column: span 1;
-  background: var(--color-surface);
-  border: 1px solid var(--border);
-  border-radius: 24px;
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
-  position: relative;
-  min-height: 100%;
-
-  @media (min-width: 768px) {
-    grid-column: span 6;
-  }
-
-  &:hover {
-    transform: translateY(-4px);
-    border-color: var(--viking-teal-600);
-    box-shadow: var(--shadow-hover);
-  }
-
-  .bento-header {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-
-    .material-icons {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: var(--viking-teal-600);
-      flex-shrink: 0;
-    }
-
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin: 0;
-      color: var(--text-color);
-      letter-spacing: -0.02em;
-    }
-  }
-}
-
-.docs-bento-full {
-  @media (min-width: 768px) {
-    grid-column: span 12;
-  }
-}
-
 .docs-operations-section,
 .integrations-section {
-  max-width: var(--container-max-width, 1260px);
-  margin: 0 auto 56px auto;
+  width: 100%;
   padding-top: 32px;
   border-top: 1px solid var(--border);
 }
 
 .integrations-section {
-  margin-bottom: 72px;
+  padding-bottom: var(--viking-space-3, 24px);
 }
 
 .integrations-header {
@@ -872,6 +715,10 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
   gap: 16px;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 
+  .viking-icon-heading {
+    margin-bottom: var(--viking-space-half, 4px);
+  }
+
   &:hover {
     border-color: var(--viking-teal-600);
     box-shadow: var(--shadow-hover);
@@ -886,25 +733,6 @@ scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
 
   code {
     font-size: 0.9rem;
-  }
-}
-
-.integration-card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  .material-icons {
-    color: var(--viking-teal-600);
-    font-size: 28px;
-  }
-
-  h3 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
   }
 }
 

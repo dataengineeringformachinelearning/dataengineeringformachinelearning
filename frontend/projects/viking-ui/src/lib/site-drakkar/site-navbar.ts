@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { VikingIcon } from '../icon/icon';
+import { VikingThemeToggle } from '../theme-toggle/theme-toggle';
 import {
   DEFAULT_SITE_URLS,
   isAppRouterPath,
@@ -28,7 +29,7 @@ import {
   selector: 'viking-site-navbar',
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  imports: [RouterLink, RouterLinkActive, VikingIcon],
+  imports: [RouterLink, RouterLinkActive, VikingIcon, VikingThemeToggle],
   styleUrl: './site-navbar.scss',
   template: `
     <header class="navbar">
@@ -113,14 +114,7 @@ import {
             }
           </div>
 
-          <button
-            type="button"
-            class="theme-toggle-btn"
-            aria-label="Toggle light and dark theme"
-            (click)="themeToggle.emit()"
-          >
-            <viking-icon [name]="themeIcon()" [size]="24" />
-          </button>
+          <viking-theme-toggle [theme]="theme()" (toggle)="themeToggle.emit()" />
 
           <button
             type="button"
@@ -202,8 +196,6 @@ export class VikingSiteNavbar {
   );
 
   protected readonly brandHref = computed(() => resolveBrandHref(this.context(), this.urls()));
-
-  protected readonly themeIcon = computed(() => (this.theme() === 'light' ? 'moon' : 'sun'));
 
   protected resolveHref = (link: (typeof SITE_NAV_LINKS)[number]): string =>
     resolveNavHref(link, this.context(), this.urls());

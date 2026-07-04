@@ -1,0 +1,67 @@
+// Documentation bento grids — platform ops, API reference panels.
+// Pair with DocsBentoGrid evenPairs when a full-width lead card precedes half-width tiles.
+
+.docs-bento-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-3, 24px);
+  width: 100%;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(12, 1fr);
+  }
+}
+
+.docs-bento-card {
+  grid-column: span 1;
+  background: var(--color-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--viking-radius-xl, 24px);
+  padding: var(--viking-space-4, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3, 24px);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--viking-duration-normal, 0.3s) ease,
+    border-color var(--viking-duration-normal, 0.3s) ease,
+    box-shadow var(--viking-duration-normal, 0.3s) ease;
+  overflow: hidden;
+  position: relative;
+  min-height: 100%;
+
+  @media (min-width: 768px) {
+    grid-column: span 6;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: var(--viking-accent, var(--viking-teal-600));
+    box-shadow: var(--shadow-hover);
+  }
+
+  .viking-icon-heading {
+    flex-shrink: 0;
+  }
+}
+
+.docs-bento-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2, 16px);
+  min-width: 0;
+}
+
+.docs-bento-full {
+  @media (min-width: 768px) {
+    grid-column: span 12;
+  }
+}
+
+// Design rule: full-width lead + even half-width count (2, 4, 6…).
+// Safety net — if authors slip an odd half count, expand the orphan to full width.
+@media (min-width: 768px) {
+  .docs-bento-grid[data-bento-even-pairs='true']
+    .docs-bento-card:not(.docs-bento-full):last-child:nth-child(even) {
+    grid-column: span 12;
+  }
+}

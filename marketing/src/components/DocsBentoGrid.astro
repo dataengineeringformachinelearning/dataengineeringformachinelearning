@@ -1,0 +1,16 @@
+---
+/**
+ * Bento grid for documentation panels.
+ * Design rule: when using a full-width lead card, remaining half-width cards
+ * MUST be an even count (2, 4, 6, …) so 2-column layouts never orphan a tile.
+ */
+export interface Props {
+  evenPairs?: boolean;
+}
+
+const { evenPairs = false } = Astro.props;
+---
+
+<div class="docs-bento-grid" data-bento-even-pairs={evenPairs ? 'true' : undefined}>
+  <slot />
+</div>

@@ -43,9 +43,15 @@ viking-icon,
 }
 
 .theme-toggle-btn viking-app-icon,
-.menu-toggle-btn viking-app-icon {
+.theme-toggle-btn viking-icon,
+.menu-toggle-btn viking-app-icon,
+.menu-toggle-btn viking-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
   height: 24px;
+  line-height: 0;
 }
 
 .section-title-premium viking-app-icon {

@@ -123,101 +123,7 @@
   }
 }
 
-// Hero/pricing CTAs — Viking UI patterns mapped to THEME.md tokens.
-// Cursor - Grok 4.3 (2026-06-30): tightened icon–label gap; flex parity vs grid stretch.
-.cta-group {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  gap: var(--space-2, 16px);
-  align-items: stretch;
-  width: 100%;
-
-  @media (min-width: 600px) {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: center;
-    width: auto;
-    align-self: flex-start;
-  }
-}
-
-a.cta-button {
-  padding: var(--space-2, 16px) var(--space-3, 24px);
-  border-radius: var(--border-radius-md, 8px);
-  font-size: max(16px, var(--base-font-size, 16px));
-  font-weight: 600;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  transition: var(--transition-smooth, all 0.25s ease);
-  width: 100%;
-  flex: 1 1 auto;
-  min-width: 0;
-  box-sizing: border-box;
-  min-height: 44px;
-  letter-spacing: 0.01em;
-
-  @media (min-width: 600px) {
-    width: auto;
-    flex: 0 0 auto;
-    min-width: var(--btn-min-width, 120px);
-  }
-
-  // Inner flex row: icon + label tightly paired.
-  .cta-content {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    line-height: 1;
-  }
-
-  .cta-icon,
-  svg.cta-icon {
-    flex: 0 0 auto;
-    width: 20px;
-    height: 20px;
-    line-height: 1;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    // Neutralise ligature-font baseline shift (affects 'monitoring').
-    vertical-align: middle;
-  }
-
-  .cta-label {
-    white-space: normal;
-    line-height: 1.25;
-
-    @media (min-width: 480px) {
-      white-space: nowrap;
-    }
-  }
-}
-
-.cta-primary {
-  background: var(--color-primary);
-  color: var(--color-on-primary);
-  border: 1px solid var(--color-primary);
-
-  &:hover {
-    background: var(--color-primary-container);
-    color: var(--color-on-primary-container);
-  }
-}
-
-.secondary-btn {
-  background: transparent;
-  color: var(--text-color);
-  border: 1px solid var(--border);
-
-  &:hover {
-    border-color: var(--viking-accent);
-    background: color-mix(in srgb, var(--viking-accent) 8%, transparent);
-  }
-}
+// Hero/pricing CTAs — see ../styles/cta.scss (shared with docs portal).
 
 /* Mock dashboard in hero */
 .hero-mockup {
@@ -712,6 +618,9 @@ a.cta-button {
   svg {
     width: 22px;
     height: 22px;
+  }
+
+  svg:not(.viking-icon-integration-brand) {
     color: var(--viking-accent);
   }
 

@@ -10,14 +10,20 @@ import {
   VIKING_DRAKKAR_ICON_FILLED_PATHS,
   VIKING_DRAKKAR_ICON_PATHS,
   VIKING_DRAKKAR_ICON_NAMES_LIST,
-  VIKING_INTEGRATION_ICON_PATHS,
 } from './brand-icons';
+import {
+  VIKING_INTEGRATION_ICON_PATHS,
+  VIKING_INTEGRATION_ICON_NAMES_LIST,
+} from './integration-brand-icons';
 
 export {
   VIKING_DRAKKAR_ICON_NAMES_LIST,
   VIKING_BRAND_ICON_NAMES_LIST,
-  VIKING_INTEGRATION_ICON_NAMES_LIST,
 } from './brand-icons';
+export {
+  VIKING_INTEGRATION_ICON_NAMES_LIST,
+  type VikingIntegrationIconName,
+} from './integration-brand-icons';
 
 export type VikingIconName = keyof typeof VIKING_ICON_PATHS;
 

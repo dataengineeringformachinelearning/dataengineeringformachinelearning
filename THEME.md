@@ -698,6 +698,8 @@ Utility examples: `bg-viking-surface`, `text-viking-text-muted`, `rounded-viking
 - Keep layouts on the 4px grid; max content width 1260px.
 - Use negative letter-spacing on headings for a precision instrument feel.
 - Prefer `viking-chart` native SVG for all data visualization.
+- Use `viking-icon-heading` / `IconHeading.astro` for icon + title rows in bento cards and integration tiles — never hand-roll `.bento-header` flex rows.
+- Bento grids with a full-width lead card: remaining half-width tiles **must** be an even count (2, 4, 6…) — use `DocsBentoGrid evenPairs` on marketing docs.
 - Test with `node scripts/run_axe.js` before shipping UI changes.
 - Load Inter from `_fonts.scss` (self-hosted variable woff2) on every surface — never from Google Fonts CDN.
 
