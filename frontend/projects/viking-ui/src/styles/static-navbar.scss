@@ -72,9 +72,7 @@
   z-index: 50;
   width: 100%;
   min-height: var(--viking-navbar-height, 64px);
-  background-color: var(--navbar-bg, color-mix(in srgb, var(--viking-surface, var(--card-bg)) 92%, transparent));
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: var(--navbar-bg, var(--viking-surface));
   border-bottom: 1px solid var(--border-layout, var(--viking-border));
   display: flex;
   flex-direction: column;
@@ -640,9 +638,7 @@ button.auth-btn {
     width: 100%;
     border: 1px solid var(--viking-border, var(--border));
     border-radius: var(--viking-radius-lg, 12px);
-    background: color-mix(in srgb, var(--viking-surface, var(--card-bg)) 85%, transparent);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    background: var(--viking-surface, var(--card-bg));
     box-shadow: var(--viking-shadow-lg, var(--shadow-md));
     overflow: hidden;
     font-family: var(--viking-font-family, inherit);
@@ -930,9 +926,7 @@ button.auth-btn {
   font-family: var(--viking-font-family, inherit);
   border: 1px solid var(--viking-border, var(--border)) !important;
   border-radius: var(--viking-radius-lg, 12px) !important;
-  background: color-mix(in srgb, var(--viking-surface, var(--card-bg)) 92%, transparent) !important;
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background: var(--viking-surface, var(--card-bg)) !important;
   box-shadow: var(--viking-shadow-lg, var(--shadow-md)) !important;
 }
 

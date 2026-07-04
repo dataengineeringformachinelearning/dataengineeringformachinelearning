@@ -28,6 +28,10 @@
   pointer-events: none;
 }
 
+.doc-sidebar .nav-tree-section {
+  display: none;
+}
+
 .doc-sidebar-footer {
   padding: var(--viking-space-2, 16px);
 }
@@ -37,8 +41,8 @@
   color: var(--viking-text, var(--text-color));
 }
 
-@media (max-width: 900px) {
+@media (min-width: 901px) {
   .doc-sidebar .nav-tree-section {
-    display: none;
+    display: block;
   }
 }

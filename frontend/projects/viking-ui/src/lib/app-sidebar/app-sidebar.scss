@@ -4,7 +4,7 @@
   /* Theme-driven sidebar — Viking tokens only (THEME.md) */
   --sidebar-accent: var(--viking-accent-strong, var(--color-primary-container));
   --sidebar-border: var(--viking-border, var(--border-layout));
-  --sidebar-bg: color-mix(in srgb, var(--viking-surface) 92%, transparent);
+  --sidebar-bg: var(--viking-surface);
   --sidebar-hover-bg: color-mix(in srgb, var(--viking-accent) 6%, transparent);
   --sidebar-active-bg: linear-gradient(
     90deg,
@@ -17,7 +17,7 @@
 html[data-theme='light'] .viking-app-sidebar-host {
   --sidebar-accent: var(--viking-accent, var(--color-primary));
   --sidebar-border: var(--viking-border, var(--border-layout));
-  --sidebar-bg: color-mix(in srgb, var(--viking-surface) 96%, transparent);
+  --sidebar-bg: var(--viking-surface);
   --sidebar-hover-bg: color-mix(in srgb, var(--viking-accent) 5%, transparent);
   --sidebar-active-bg: linear-gradient(
     90deg,
@@ -34,8 +34,6 @@ html[data-theme='light'] .viking-app-sidebar-host {
   background: var(--sidebar-bg);
   border-bottom: 1px solid var(--sidebar-border);
   flex-shrink: 0;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   height: auto;
   position: sticky;
   top: var(--viking-navbar-height, var(--navbar-height, 64px));
