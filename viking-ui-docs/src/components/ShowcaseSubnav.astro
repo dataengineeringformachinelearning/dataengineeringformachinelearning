@@ -1,0 +1,31 @@
+---
+import { NAV_LINKS } from '../lib/site';
+
+export interface Props {
+  /** Highlight a nav item by path prefix */
+  activePath?: string;
+}
+
+const { activePath = Astro.url.pathname } = Astro.props;
+
+const isActive = (href: string): boolean => {
+  if (href === '/') return activePath === '/';
+  return activePath === href || activePath.startsWith(`${href}/`);
+};
+---
+
+<nav class="showcase-subnav" aria-label="Showcase navigation">
+  <div class="showcase-subnav-inner page-inner-wrapper">
+    <div class="showcase-subnav-scroll">
+      {NAV_LINKS.map((link) => (
+        <a
+          href={link.href}
+          class:list={['showcase-subnav-link', { 'is-active': isActive(link.href) }]}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</nav>

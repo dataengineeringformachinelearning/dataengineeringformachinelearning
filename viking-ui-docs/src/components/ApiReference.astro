@@ -16,176 +16,116 @@ const hasEvents = api.events && api.events.length > 0;
 const hasCss = api.cssClasses && api.cssClasses.length > 0;
 ---
 
-{(selector || wcSelector) && (
-  <div class="api-selectors">
-    {selector && (
-      <p class="viking-text-muted">
-        Angular: <code>{selector}</code>
-      </p>
-    )}
-    {wcSelector && (
-      <p class="viking-text-muted">
-        Web Component: <code>{wcSelector}</code>
-      </p>
-    )}
-  </div>
-)}
-
-{(hasInputs || hasOutputs || hasAttributes || hasEvents || hasCss) && (
-  <section class="api-reference" aria-label="Component API reference">
+<section class="api-reference" aria-label="Component API reference">
+  <header class="api-reference-header">
     <h4 class="viking-heading viking-heading-sm">API reference</h4>
-
-    {hasInputs && (
-      <div class="api-table-wrap">
-        <h5 class="viking-label">Inputs (Angular)</h5>
-        <table class="token-table api-table">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Type</th>
-              <th scope="col">Default</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {api.inputs!.map((prop) => (
-              <tr>
-                <td><code>{prop.name}</code></td>
-                <td><code>{prop.type}</code></td>
-                <td>{prop.default ? <code>{prop.default}</code> : '—'}</td>
-                <td>{prop.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    {(selector || wcSelector) && (
+      <div class="api-selectors">
+        {selector && (
+          <span class="api-selector-chip">
+            Angular <code>{selector}</code>
+          </span>
+        )}
+        {wcSelector && (
+          <span class="api-selector-chip">
+            WC <code>{wcSelector}</code>
+          </span>
+        )}
       </div>
     )}
+  </header>
 
-    {hasOutputs && (
-      <div class="api-table-wrap">
-        <h5 class="viking-label">Outputs (Angular)</h5>
-        <table class="token-table api-table">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Type</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {api.outputs!.map((prop) => (
-              <tr>
-                <td><code>{prop.name}</code></td>
-                <td><code>{prop.type}</code></td>
-                <td>{prop.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  {hasInputs && (
+    <div class="api-prop-group">
+      <h5 class="viking-label api-prop-group-label">Inputs (Angular)</h5>
+      <div class="api-prop-grid">
+        {api.inputs!.map((prop) => (
+          <div class="api-prop-card viking-card viking-card-compact">
+            <div class="api-prop-name">
+              <code>{prop.name}</code>
+              <span class="api-prop-type">{prop.type}</span>
+            </div>
+            {prop.default && (
+              <p class="api-prop-default">
+                Default: <code>{prop.default}</code>
+              </p>
+            )}
+            <p class="viking-text-muted api-prop-desc">{prop.description}</p>
+          </div>
+        ))}
       </div>
-    )}
+    </div>
+  )}
 
-    {hasAttributes && (
-      <div class="api-table-wrap">
-        <h5 class="viking-label">Attributes (Web Component)</h5>
-        <table class="token-table api-table">
-          <thead>
-            <tr>
-              <th scope="col">Attribute</th>
-              <th scope="col">Type</th>
-              <th scope="col">Default</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {api.attributes!.map((prop) => (
-              <tr>
-                <td><code>{prop.name}</code></td>
-                <td><code>{prop.type}</code></td>
-                <td>{prop.default ? <code>{prop.default}</code> : '—'}</td>
-                <td>{prop.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  {hasOutputs && (
+    <div class="api-prop-group">
+      <h5 class="viking-label api-prop-group-label">Outputs (Angular)</h5>
+      <div class="api-prop-grid">
+        {api.outputs!.map((prop) => (
+          <div class="api-prop-card viking-card viking-card-compact">
+            <div class="api-prop-name">
+              <code>{prop.name}</code>
+              <span class="api-prop-type">{prop.type}</span>
+            </div>
+            <p class="viking-text-muted api-prop-desc">{prop.description}</p>
+          </div>
+        ))}
       </div>
-    )}
+    </div>
+  )}
 
-    {hasEvents && (
-      <div class="api-table-wrap">
-        <h5 class="viking-label">Events (Web Component)</h5>
-        <table class="token-table api-table">
-          <thead>
-            <tr>
-              <th scope="col">Event</th>
-              <th scope="col">Type</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {api.events!.map((prop) => (
-              <tr>
-                <td><code>{prop.name}</code></td>
-                <td><code>{prop.type}</code></td>
-                <td>{prop.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  {hasAttributes && (
+    <div class="api-prop-group">
+      <h5 class="viking-label api-prop-group-label">Attributes (Web Component)</h5>
+      <div class="api-prop-grid">
+        {api.attributes!.map((prop) => (
+          <div class="api-prop-card viking-card viking-card-compact">
+            <div class="api-prop-name">
+              <code>{prop.name}</code>
+              <span class="api-prop-type">{prop.type}</span>
+            </div>
+            {prop.default && (
+              <p class="api-prop-default">
+                Default: <code>{prop.default}</code>
+              </p>
+            )}
+            <p class="viking-text-muted api-prop-desc">{prop.description}</p>
+          </div>
+        ))}
       </div>
-    )}
+    </div>
+  )}
 
-    {hasCss && (
-      <div class="api-table-wrap">
-        <h5 class="viking-label">CSS classes (static HTML)</h5>
-        <table class="token-table api-table">
-          <thead>
-            <tr>
-              <th scope="col">Class</th>
-              <th scope="col">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {api.cssClasses!.map((prop) => (
-              <tr>
-                <td><code>{prop.name}</code></td>
-                <td>{prop.description}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  {hasEvents && (
+    <div class="api-prop-group">
+      <h5 class="viking-label api-prop-group-label">Events (Web Component)</h5>
+      <div class="api-prop-grid">
+        {api.events!.map((prop) => (
+          <div class="api-prop-card viking-card viking-card-compact">
+            <div class="api-prop-name">
+              <code>{prop.name}</code>
+              <span class="api-prop-type">{prop.type}</span>
+            </div>
+            <p class="viking-text-muted api-prop-desc">{prop.description}</p>
+          </div>
+        ))}
       </div>
-    )}
-  </section>
-)}
+    </div>
+  )}
 
-<style>
-  .api-reference {
-    display: flex;
-    flex-direction: column;
-    gap: var(--viking-space-2);
-    margin-top: var(--viking-space-2);
-    padding-top: var(--viking-space-2);
-    border-top: 1px solid var(--viking-border-subtle);
-  }
-
-  .api-selectors {
-    display: flex;
-    flex-direction: column;
-    gap: var(--viking-space-half);
-    margin-top: var(--viking-space-1);
-  }
-
-  .api-table-wrap {
-    overflow-x: auto;
-  }
-
-  .api-table {
-    width: 100%;
-    font-size: var(--viking-font-size-sm);
-  }
-
-  .api-table td:last-child {
-    min-width: 12rem;
-  }
-</style>
+  {hasCss && (
+    <div class="api-prop-group">
+      <h5 class="viking-label api-prop-group-label">CSS classes (static HTML)</h5>
+      <div class="api-prop-grid">
+        {api.cssClasses!.map((prop) => (
+          <div class="api-prop-card viking-card viking-card-compact">
+            <div class="api-prop-name">
+              <code>{prop.name}</code>
+            </div>
+            <p class="viking-text-muted api-prop-desc">{prop.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</section>

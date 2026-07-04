@@ -1,0 +1,54 @@
+---
+import { SHOWCASE_CATEGORIES } from '../lib/component-registry';
+
+export interface Props {
+  /** Optional category id to highlight */
+  activeCategory?: string;
+}
+
+const { activeCategory } = Astro.props;
+---
+
+<div class="showcase-category-bar" aria-label="Component categories">
+  <div class="showcase-category-bar-inner page-inner-wrapper">
+    <div class="showcase-category-bar-scroll">
+      <a
+        href="/components"
+        class:list={['showcase-category-chip', { 'is-active': !activeCategory }]}
+      >
+        All
+      </a>
+      {SHOWCASE_CATEGORIES.map((category) => (
+        <a
+          href={`/components#${category.id}`}
+          class:list={[
+            'showcase-category-chip',
+            { 'is-active': activeCategory === category.id },
+          ]}
+        >
+          {category.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</div>
+
+<script>
+  const hashLinks = document.querySelectorAll('.showcase-category-chip[href*="#"]');
+  hashLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const href = (link as HTMLAnchorElement).getAttribute('href') ?? '';
+      const hashIndex = href.indexOf('#');
+      if (hashIndex === -1) return;
+      const path = href.slice(0, hashIndex);
+      const id = href.slice(hashIndex + 1);
+      if (path && path !== window.location.pathname) return;
+      e.preventDefault();
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.replaceState(null, '', `${path || window.location.pathname}#${id}`);
+      }
+    });
+  });
+</script>
