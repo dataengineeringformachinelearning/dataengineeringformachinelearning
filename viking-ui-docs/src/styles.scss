@@ -2,29 +2,8 @@
   $font-base-path: '/assets/fonts/inter'
 );
 @use '../../frontend/projects/viking-ui/src/styles/typography';
-@use '../../packages/deml-design-system/src/tokens' as *;
+@use '../../frontend/projects/viking-ui/src/styles/tokens' as *;
 @use '../../frontend/projects/viking-ui/src/styles/viking-ui' as *;
 @use '../../frontend/projects/viking-ui/src/styles/static-navbar' as *;
 @use '../../frontend/projects/viking-ui/src/lib/footer/footer' as *;
 @use '../../frontend/projects/viking-ui/src/lib/whitepaper-cta/whitepaper-cta' as *;
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  min-height: 100%;
-  font-family: var(--viking-font-family);
-  font-size: var(--viking-font-size, 16px);
-  background: var(--viking-bg, var(--viking-charcoal-900));
-  color: var(--viking-text, var(--viking-white));
-}
-
-html[data-theme='light'] body {
-  background: var(--viking-bg, var(--viking-white-pure));
-  color: var(--viking-text, var(--viking-charcoal-900));
-}

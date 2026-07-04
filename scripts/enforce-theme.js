@@ -49,7 +49,7 @@ const SCAN_ROOTS = [
   'marketing/public/assets/widgets',
   'backend/templates',
   'backend/static',
-  'packages/deml-design-system/src',
+  'frontend/projects/viking-ui/src/styles/components',
 ];
 
 /** @type {readonly string[]} */

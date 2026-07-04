@@ -14,6 +14,7 @@ FONT_TARGETS = (
   "frontend/public/assets/fonts/inter",
   "backend/static/fonts/inter",
   "marketing/public/assets/fonts/inter",
+  "viking-ui-docs/public/assets/fonts/inter",
 )
 
 

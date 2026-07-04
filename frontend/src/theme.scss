@@ -1,4 +1,4 @@
-@use 'tokens' as *;
+@use '../projects/viking-ui/src/styles/tokens' as *;
 
 body {
   font-size: var(--base-font-size);

@@ -38,7 +38,7 @@ repos:
         name: Sync design system package to consumers
         entry: python scripts/sync_design_system.py
         language: system
-        files: ^(packages/deml-design-system/|frontend/projects/viking-ui/src/styles/)
+        files: ^(frontend/projects/viking-ui/src/styles/|viking-ui-docs/scripts/build-static-css\.mjs)
         pass_filenames: false
       - id: sync-site-drakkar
         name: Sync site drakkar JSON and Django partials

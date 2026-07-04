@@ -8,13 +8,14 @@ Standalone documentation site for the `@dataengineeringformachinelearning/viking
 
 ## Architecture
 
-| Path                           | Purpose                                                   |
-| ------------------------------ | --------------------------------------------------------- |
-| `viking-ui-docs/`              | Doc site (this folder) — landing + component browser      |
-| `frontend/projects/viking-ui/` | Publishable library source (consumed by deml.app and npm) |
-| `packages/deml-design-system/` | Shared THEME.md tokens                                    |
+| Path | Purpose |
+| ---- | ------- |
+| `viking-ui-docs/` | Doc site + **static CSS build owner** (`design-tokens.css`, `deml-components.css`, `viking-ui.css`) |
+| `frontend/projects/viking-ui/` | Canonical library + SCSS source (tokens, components, navbar, page shell) |
 
-The main DEML app imports Viking-UI via `file:dist/viking-ui`. This docs site resolves the library from `../frontend/projects/viking-ui/src/public-api.ts` via TypeScript path mapping (single Angular compilation graph — avoids duplicate `@angular/core` DI failures).
+Static CSS for marketing, backend, and widgets is built here via `npm run build:static-css`, then fan-copied by `python scripts/sync_design_system.py`.
+
+The main DEML app imports Viking-UI via `file:dist/viking-ui`. This docs site resolves the library from `../frontend/dist/viking-ui` after `npm run build:viking-ui`.
 
 ## Development
 
@@ -26,12 +27,21 @@ npm run start:viking-ui-docs
 npm run start
 ```
 
-## Build
+## Build static CSS (marketing / backend / widgets)
+
+```bash
+npm run build:static-css          # from viking-ui-docs/
+python scripts/sync_design_system.py   # from repo root — copies to all surfaces
+```
+
+Output: `viking-ui-docs/dist/static-css/` and `viking-ui-docs/public/assets/`.
+
+## Build docs site
 
 ```bash
 npm run build:viking-ui-docs   # from repo root
 # or
-npm run build                  # from viking-ui-docs/
+npm run build                  # from viking-ui-docs/ (runs build:static-css in prebuild)
 ```
 
 Output: `viking-ui-docs/dist/browser/` (static SPA).
@@ -39,8 +49,6 @@ Output: `viking-ui-docs/dist/browser/` (static SPA).
 ## Deploy
 
 Merges to `main` that touch `viking-ui-docs/` or the library trigger `.github/workflows/firebase-viking-ui-docs-deploy.yml`.
-
-**CI secret (required once):** add repository secret `FIREBASE_SERVICE_ACCOUNT_DEML_UI` with the full JSON for `firebase-adminsdk-fbsvc@deml-ui.iam.gserviceaccount.com`. Never commit service account keys to the repo.
 
 Manual deploy:
 
@@ -50,15 +58,13 @@ npm run build --prefix viking-ui-docs
 firebase deploy --only hosting:deml-ui --project deml-ui
 ```
 
-**Production URL:** `https://ui.dataengineeringformachinelearning.com/` (custom domain on Firebase site `deml-ui`).
-
 ## Routes
 
-| Route         | Page                                              |
-| ------------- | ------------------------------------------------- |
-| `/`           | Introduction landing                              |
+| Route | Page |
+| ----- | ---- |
+| `/` | Introduction landing |
 | `/components` | Full-width component browser with section anchors |
 
 ## Publish library to npm
 
-The library itself is published separately — see `frontend/projects/viking-ui/README.md` and the `publish-viking-ui.yml` workflow.
+See `frontend/projects/viking-ui/README.md` and the `publish-viking-ui.yml` workflow.

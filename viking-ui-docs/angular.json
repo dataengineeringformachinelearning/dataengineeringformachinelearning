@@ -17,6 +17,9 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": ["../frontend/projects/viking-ui/src/styles"]
+            },
             "assets": [
               {
                 "glob": "favicon.svg",

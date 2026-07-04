@@ -18,7 +18,7 @@
     "serve:ssr:frontend": "node dist/frontend/server/server.mjs",
     "lint": "ng lint",
     "build:viking-ui": "node scripts/sync_lucide_icons.mjs && ng build viking-ui",
-    "build:viking-ui-css": "node scripts/build_viking_ui_css.mjs",
+    "build:viking-ui-css": "npm run build:static-css --prefix ../viking-ui-docs",
     "sync:lucide-icons": "node scripts/sync_lucide_icons.mjs",
     "build:site-drakkar": "node scripts/build_site_drakkar.mjs",
     "build:viking-ui-system": "npm run build:viking-ui && npm run build:viking-ui-docs --prefix ../viking-ui-docs",
