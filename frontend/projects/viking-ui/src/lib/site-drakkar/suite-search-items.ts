@@ -118,6 +118,62 @@ const resolveExtraHref = (
   }
 };
 
+/** Viking-UI docs site entries (ui.dataengineeringformachinelearning.com). */
+const DOCS_SEARCH_EXTRAS: readonly SuiteSearchItem[] = [
+  {
+    title: 'Components',
+    href: '/components',
+    snippet: 'Browse all documented primitives',
+    group: 'Viking-UI',
+    keywords: ['components', 'showcase', 'registry'],
+  },
+  {
+    title: 'Playground',
+    href: '/playground',
+    snippet: 'Live Web Component sandbox',
+    group: 'Viking-UI',
+    keywords: ['playground', 'sandbox', 'demo'],
+  },
+  {
+    title: 'Architecture',
+    href: '/architecture',
+    snippet: 'CSS + WC + Angular layers',
+    group: 'Viking-UI',
+    keywords: ['architecture', 'layers', 'web component'],
+  },
+  {
+    title: 'Design tokens',
+    href: '/tokens',
+    snippet: 'Canonical --viking-* token matrix',
+    group: 'Viking-UI',
+    keywords: ['tokens', 'theme', 'css', 'variables'],
+  },
+  {
+    title: 'Theming',
+    href: '/theming',
+    snippet: 'Light/dark mode and sync pipeline',
+    group: 'Viking-UI',
+    keywords: ['theming', 'dark', 'light', 'mode'],
+  },
+  {
+    title: 'Framework guides',
+    href: '/frameworks',
+    snippet: 'Angular, Astro, Django setup',
+    group: 'Viking-UI',
+    keywords: ['frameworks', 'angular', 'astro', 'django'],
+  },
+  {
+    title: 'Contributing',
+    href: '/contributing',
+    snippet: 'Extend the Viking-UI kit',
+    group: 'Viking-UI',
+    keywords: ['contributing', 'extend', 'primitives'],
+  },
+];
+
+const resolveDocsHref = (href: string, docsOrigin: string): string =>
+  href.startsWith('http') ? href : `${docsOrigin.replace(/\/$/, '')}${href.startsWith('/') ? href : `/${href}`}`;
+
 /**
  * Builds curated command-palette links for deml.app, marketing, backend, and docs.
  * Used by the static widget and Angular `viking-suite-search-palette`.
@@ -125,20 +181,30 @@ const resolveExtraHref = (
 export const buildSuiteSearchItems = (
   context: SiteDrakkarContext,
   urls: SiteUrls,
+  options?: { docsOrigin?: string },
 ): SuiteSearchItem[] => {
+  const paletteContext = context === 'docs' ? 'marketing' : context;
+
   const items: SuiteSearchItem[] = [
-    ...SITE_NAV_LINKS.map(link => navItem(link, context, urls)),
+    ...SITE_NAV_LINKS.map(link => navItem(link, paletteContext, urls)),
     ...SITE_FOOTER_COLUMNS.flatMap(column =>
-      column.links.map(link => footerItem(link, column.title, context, urls)),
+      column.links.map(link => footerItem(link, column.title, paletteContext, urls)),
     ),
     ...SUITE_SEARCH_EXTRAS.map(extra => ({
       ...extra,
-      href: resolveExtraHref(extra, context, urls),
+      href: resolveExtraHref(extra, paletteContext, urls),
     })),
   ];
 
   if (context === 'app') {
     items.push(
+      {
+        title: 'Settings',
+        href: '/settings',
+        snippet: 'Workspace domains, billing, and security',
+        group: 'Platform',
+        keywords: ['settings', 'sites', 'workspace', 'configuration'],
+      },
       {
         title: 'Billing & subscription',
         href: '/settings/billing',
@@ -153,6 +219,16 @@ export const buildSuiteSearchItems = (
         group: 'Platform',
         keywords: ['security', 'keys', 'auth', 'rbac'],
       },
+    );
+  }
+
+  if (context === 'docs') {
+    const docsOrigin = options?.docsOrigin ?? 'https://ui.dataengineeringformachinelearning.com';
+    items.push(
+      ...DOCS_SEARCH_EXTRAS.map(extra => ({
+        ...extra,
+        href: resolveDocsHref(extra.href, docsOrigin),
+      })),
     );
   }
 

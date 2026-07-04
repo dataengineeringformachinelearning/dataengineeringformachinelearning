@@ -580,11 +580,61 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         },
       },
       {
+        id: 'suite-search-palette',
+        name: 'Suite search palette',
+        description:
+          'Unified ⌘K command palette for the full DEML suite — marketing, docs, deml.app, and backend. Dark glassmorphism overlay with curated links to Explore, Documentation, Whitepaper, Book, Privacy, Terms, Compliance, Dashboard, Settings, Account, and Viking-UI docs. Drop in `viking-suite-search-palette-wc` or load `command-palette.js` on static surfaces.',
+        preview: `<div class="showcase-search-palette showcase-search-palette-glass" role="presentation" aria-label="Suite command palette preview">
+  <div class="showcase-search-palette-header">
+    <span class="showcase-search-icon" aria-hidden="true">⌕</span>
+    <input type="search" class="showcase-search-input" placeholder="Search documentation, dashboard, settings…" aria-label="Search" readonly />
+  </div>
+  <div class="showcase-search-palette-body">
+    <p class="viking-search-group-label-static">Platform</p>
+    <a class="viking-search-result-static is-selected" href="#"><span class="viking-search-result-title">Explore</span><span class="viking-search-result-snippet">Open Explore</span></a>
+    <a class="viking-search-result-static" href="#"><span class="viking-search-result-title">Dashboard</span><span class="viking-search-result-snippet">Open Dashboard</span></a>
+    <a class="viking-search-result-static" href="#"><span class="viking-search-result-title">Settings</span><span class="viking-search-result-snippet">Workspace domains, billing, and security</span></a>
+    <p class="viking-search-group-label-static">Legal &amp; Compliance</p>
+    <a class="viking-search-result-static" href="#"><span class="viking-search-result-title">Privacy Policy</span><span class="viking-search-result-snippet">Open Privacy Policy</span></a>
+  </div>
+  <footer class="showcase-search-palette-footer">
+    <span class="viking-kbd-static">⌘K</span> toggle · <span class="viking-kbd-static">↑↓</span> navigate · <span class="viking-kbd-static">Enter</span> open · <span class="viking-kbd-static">Esc</span> close
+  </footer>
+</div>
+<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: press <strong>⌘K</strong> anywhere in this site — powered by <code>viking-suite-search-palette-wc</code></p>`,
+        snippets: {
+          angular: `<viking-suite-search-palette
+  context="app"
+  [urls]="siteUrls"
+  placeholder="Search documentation, dashboard, settings…"
+/>`,
+          astro: `<script type="module" src="/assets/viking-ui-elements.js"></script>
+<viking-suite-search-palette-wc global-shortcut></viking-suite-search-palette-wc>
+<script src="/assets/widgets/command-palette.js" defer></script>`,
+          django: `{# Navbar triggers DemlWidgets.openSearch(); mounts viking-suite-search-palette-wc #}
+<script src="/static/assets/viking-ui-elements.js" type="module"></script>
+<script src="/static/widgets/command-palette.js" defer></script>`,
+          javascript: `// Auto-mounted by command-palette.js on every surface:
+window.DemlWidgets.openSearch();
+
+// Or mount manually:
+const palette = document.createElement('viking-suite-search-palette-wc');
+palette.setAttribute('context', 'marketing');
+palette.setAttribute('global-shortcut', '');
+document.body.append(palette);`,
+        },
+        tags: ['shell', 'web-component', 'keyboard', 'navigation'],
+        selector: 'viking-suite-search-palette',
+        wcSelector: 'viking-suite-search-palette-wc',
+        related: ['search-palette', 'command', 'modal'],
+        api: getComponentApi('suite-search-palette'),
+      },
+      {
         id: 'search-palette',
         name: 'Search palette',
         description:
-          'Cross-suite ⌘K command palette — curated navigation to documentation, dashboard, settings, legal, and Viking-UI docs. Web Component for static surfaces; Angular suite wrapper for deml.app.',
-        preview: `<div class="showcase-search-palette" role="presentation" aria-label="Search palette preview">
+          'Low-level command-palette shell — glassmorphism overlay, search input, grouped results slot, and keyboard hints. Prefer `viking-suite-search-palette` for curated suite navigation.',
+        preview: `<div class="showcase-search-palette showcase-search-palette-glass" role="presentation" aria-label="Search palette preview">
   <div class="showcase-search-palette-header">
     <span class="showcase-search-icon" aria-hidden="true">⌕</span>
     <input type="search" class="showcase-search-input" placeholder="Search documentation, dashboard, settings…" aria-label="Search" readonly />
@@ -597,32 +647,29 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
   <footer class="showcase-search-palette-footer">
     <span class="viking-kbd-static">⌘K</span> toggle · <span class="viking-kbd-static">↑↓</span> navigate · <span class="viking-kbd-static">Enter</span> open · <span class="viking-kbd-static">Esc</span> close
   </footer>
-</div>
-<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: try <strong>⌘K</strong> in the docs header — powered by <code>viking-search-palette-wc</code></p>`,
+</div>`,
         snippets: {
-          angular: `<viking-suite-search-palette
-  context="app"
-  [urls]="siteUrls"
-  placeholder="Search documentation, dashboard, settings…"
-/>`,
-          astro: `<script type="module" src="/assets/viking-ui-elements.js"></script>
-<viking-search-palette-wc
+          angular: `<viking-search-palette [(open)]="searchOpen" [(query)]="searchQuery">
+  <div class="viking-search-results" role="listbox">
+    @for (item of filteredItems(); track item.href) {
+      <button type="button" class="viking-search-result" (click)="go(item)">
+        <span class="viking-search-result-title">{{ item.title }}</span>
+      </button>
+    }
+  </div>
+</viking-search-palette>`,
+          astro: `<viking-search-palette-wc
   global-shortcut
-  placeholder="Search documentation, dashboard, settings…"
+  placeholder="Search…"
   items='[{"title":"Documentation","href":"/documentation","group":"Resources"}]'
-></viking-search-palette-wc>
-<script src="/assets/widgets/command-palette.js" defer></script>`,
-          django: `{# Navbar triggers DemlWidgets.openSearch(); see widgets/command-palette.js #}`,
-          javascript: `import { buildSuiteSearchItems } from '@dataengineeringformachinelearning/viking-ui';
-
-const items = buildSuiteSearchItems('marketing', siteUrls);
-document.querySelector('viking-search-palette-wc')?.setAttribute('items', JSON.stringify(items));
-document.querySelector('viking-search-palette-wc')?.openPalette();`,
+></viking-search-palette-wc>`,
+          django: `{# Prefer viking-suite-search-palette-wc for curated links #}`,
+          javascript: `document.querySelector('viking-search-palette-wc')?.openPalette();`,
         },
         tags: ['shell', 'web-component', 'keyboard'],
         selector: 'viking-search-palette',
         wcSelector: 'viking-search-palette-wc',
-        related: ['command', 'modal', 'card-title'],
+        related: ['suite-search-palette', 'command', 'modal'],
         api: getComponentApi('search-palette'),
       },
       {

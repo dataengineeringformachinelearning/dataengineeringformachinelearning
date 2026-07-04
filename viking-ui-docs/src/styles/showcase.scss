@@ -54,6 +54,22 @@
   overflow: hidden;
 }
 
+.showcase-search-palette-glass {
+  background: var(--viking-surface-glass, color-mix(in srgb, var(--viking-surface) 82%, transparent));
+  backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
+  -webkit-backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
+}
+
+.viking-search-group-label-static {
+  margin: var(--viking-space-1) 0 var(--viking-space-half);
+  padding: 0 var(--viking-space-1);
+  font-size: var(--viking-font-size-2xs, var(--viking-font-size-xs));
+  font-weight: var(--viking-font-weight-semibold, 600);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--viking-text-muted);
+}
+
 .showcase-search-palette-header {
   display: flex;
   align-items: center;
