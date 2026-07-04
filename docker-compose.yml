@@ -57,8 +57,7 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
     ports:
       - "8000:8000"
     volumes:
@@ -88,8 +87,7 @@ services:
 
   telemetry_worker:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
     volumes:
       - ./backend:/app
     environment:
@@ -117,8 +115,7 @@ services:
   #   - internal-tasks Redpanda consumer (async, cron triggers from deml-daemon)
   deml-workers:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend
     volumes:
       - ./backend:/app
     environment:

@@ -78,7 +78,7 @@ const privacyJsonLd = webPageJsonLd(
 
             <div class="cookie-action-box">
               <p>You can adjust, enable, or revoke your cookie choices at any time.</p>
-              <button class="viking-button viking-button--primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
+              <button type="button" class="viking-btn viking-btn-primary" id="privacy-open-cookie-settings" onclick="if(window.DemlWidgets) window.DemlWidgets.openCookieSettings()">
                 Manage Cookie Preferences
               </button>
             </div>
@@ -127,9 +127,12 @@ const privacyJsonLd = webPageJsonLd(
                   <textarea id="gdpr-details" rows="3" placeholder="Provide details to assist us in fulfilling your request..." class="form-input"></textarea>
                 </div>
 
-                <button type="submit" class="viking-button viking-button--secondary" id="privacy-submit-gdpr-request">
+                <button type="submit" class="viking-btn viking-btn-secondary" id="privacy-submit-gdpr-request">
                   Submit Compliance Request
                 </button>
+                <p class="gdpr-success-callout" id="gdpr-success-callout" role="status" hidden>
+                  Compliance request submitted successfully. You will receive an email confirmation shortly.
+                </p>
               </form>
             </div>
           </section>
@@ -394,23 +397,14 @@ const privacyJsonLd = webPageJsonLd(
   }
 }
 
-.viking-button {
-  background-color: var(--color-primary);
-  color: var(--viking-white-pure);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: opacity 0.2s;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &.viking-button--secondary {
-    background-color: var(--color-success);
-  }
+.gdpr-success-callout {
+  margin: var(--viking-space-2, 16px) 0 0;
+  padding: var(--viking-space-2, 16px);
+  border-radius: var(--viking-radius-lg, 12px);
+  border: 1px solid color-mix(in srgb, var(--viking-success, var(--color-success)) 35%, transparent);
+  background: color-mix(in srgb, var(--viking-success, var(--color-success)) 12%, transparent);
+  color: var(--viking-text, var(--text-color));
+  font-size: var(--viking-font-size-sm, 0.875rem);
 }
 
 @media (min-width: 768px) {
@@ -422,10 +416,13 @@ const privacyJsonLd = webPageJsonLd(
 <script>
   document.addEventListener('DOMContentLoaded', () => {
     const gdprForm = document.getElementById('gdpr-form');
+    const successCallout = document.getElementById('gdpr-success-callout');
     if (gdprForm) {
       gdprForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        alert('Compliance request submitted successfully. You will receive an email confirmation shortly.');
+        if (successCallout) {
+          successCallout.hidden = false;
+        }
         gdprForm.reset();
       });
     }
