@@ -30,6 +30,8 @@ import { VikingDialogService } from '../../services/viking-dialog.service';
 import { RecaptchaVerifier, multiFactor } from 'firebase/auth';
 import { environment } from '../../../environments/environment';
 import {
+  logFirebaseAuthError,
+  mapFirebaseMfaError,
   mapFirebasePhoneError,
   normalizePhoneE164,
   phoneFormatHint,
@@ -108,8 +110,7 @@ export class Account implements OnInit {
   billingSuccess = signal<string | null>(null);
   billingError = signal<string | null>(null);
 
-  protected readonly phoneHint =
-    'International E.164 format: country code + number (e.g. +14155552671).';
+  protected readonly phoneHint = phoneFormatHint;
 
   constructor() {
     effect(() => {
@@ -383,7 +384,7 @@ export class Account implements OnInit {
         callback: () => undefined,
       });
     } catch (e) {
-      console.error('MFA Recaptcha init error', e);
+      logFirebaseAuthError('MFA reCAPTCHA init', e);
     }
   }
 
@@ -423,9 +424,11 @@ export class Account implements OnInit {
       );
       this.mfaSuccess.set('Verification code sent! Check your messages.');
       this.cdr.markForCheck();
-    } catch (e: any) {
-      console.error(e);
-      this.mfaError.set(mapFirebasePhoneError(e?.code));
+    } catch (e: unknown) {
+      logFirebaseAuthError('MFA enrollment SMS', e);
+      const code =
+        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+      this.mfaError.set(mapFirebasePhoneError(code));
     } finally {
       this.isSendingMfaCode.set(false);
       this.cdr.markForCheck();
@@ -450,11 +453,11 @@ export class Account implements OnInit {
       this.mfaVerificationId = null;
       await this.checkMfaStatus();
       this.cdr.markForCheck();
-    } catch (e: any) {
-      console.error(e);
-      this.mfaError.set(
-        'MFA enrollment failed. The verification code may be incorrect or expired.',
-      );
+    } catch (e: unknown) {
+      logFirebaseAuthError('MFA enrollment verify', e);
+      const code =
+        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+      this.mfaError.set(mapFirebaseMfaError(code));
     } finally {
       this.isVerifyingMfaCode.set(false);
       this.cdr.markForCheck();
@@ -481,9 +484,10 @@ export class Account implements OnInit {
           await this.checkMfaStatus();
           this.mfaSuccess.set('MFA has been disabled.');
           this.cdr.markForCheck();
-        } catch (e: any) {
-          console.error(e);
-          const code = e?.code || '';
+        } catch (e: unknown) {
+          logFirebaseAuthError('MFA disable', e);
+          const code =
+            e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : '';
           if (code.includes('requires-recent-login')) {
             this.mfaError.set(
               'For security reasons, please sign out and sign back in before disabling MFA.',

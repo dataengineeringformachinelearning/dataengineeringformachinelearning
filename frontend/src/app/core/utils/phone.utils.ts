@@ -55,3 +55,26 @@ export const mapFirebasePhoneError = (code: string | undefined): string => {
   }
   return 'Failed to send verification code. Check the number and try again.';
 };
+
+export const mapFirebaseMfaError = (code: string | undefined): string => {
+  if (code === 'auth/invalid-verification-code') {
+    return 'The verification code is incorrect or expired. Request a new code and try again.';
+  }
+  if (code === 'auth/code-expired') {
+    return 'The verification code expired. Request a new code and try again.';
+  }
+  if (code === 'auth/session-expired') {
+    return 'Your sign-in session expired. Sign in again to continue MFA verification.';
+  }
+  return mapFirebasePhoneError(code);
+};
+
+/** Log Firebase auth errors without dumping full error objects to the console. */
+export const logFirebaseAuthError = (context: string, error: unknown): void => {
+  const code =
+    error && typeof error === 'object' && 'code' in error
+      ? String((error as { code?: string }).code)
+      : 'unknown';
+  console.warn(`[Auth] ${context}: ${code}`);
+};
+

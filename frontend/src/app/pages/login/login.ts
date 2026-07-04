@@ -24,6 +24,14 @@ import {
 
 import { AuthService } from '../../services/auth.service';
 import {
+  logFirebaseAuthError,
+  mapFirebaseMfaError,
+  mapFirebasePhoneError,
+  normalizePhoneE164,
+  phoneFormatHint,
+  phoneValidationError,
+} from '../../core/utils/phone.utils';
+import {
   RecaptchaVerifier,
   signInWithPhoneNumber,
   PhoneAuthProvider,
@@ -252,7 +260,7 @@ export class Login implements OnInit, OnDestroy {
 
     this.loginForm
       .get('phone')
-      ?.setValidators([Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]);
+      ?.setValidators([Validators.required]);
     this.loginForm.get('phone')?.updateValueAndValidity();
   }
 
@@ -297,7 +305,7 @@ export class Login implements OnInit, OnDestroy {
         callback: () => undefined,
       });
     } catch (e) {
-      console.error('Recaptcha init error', e);
+      logFirebaseAuthError('Login reCAPTCHA init', e);
     }
   }
 
@@ -324,26 +332,29 @@ export class Login implements OnInit, OnDestroy {
   async sendVerificationCode() {
     this.error.set(null);
     const phoneNum = this.loginForm.value.phone;
-    if (!phoneNum) {
-      this.error.set('Phone number is required.');
+    const validationError = phoneValidationError(phoneNum ?? '');
+    if (validationError) {
+      this.error.set(validationError);
       return;
     }
+    const normalizedPhone = normalizePhoneE164(phoneNum);
+    this.loginForm.patchValue({ phone: normalizedPhone });
     this.initRecaptcha();
     this.isLoading.set(true);
     try {
       this.confirmationResult = await signInWithPhoneNumber(
         this.authService.auth,
-        phoneNum,
+        normalizedPhone,
         this.recaptchaVerifier,
       );
       this.codeSent.set(true);
       this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
       this.loginForm.get('verificationCode')?.updateValueAndValidity();
-    } catch (e: any) {
-      console.error(e);
-      this.error.set(
-        'Failed to send verification code. Make sure you input international format (e.g. +11234567890).',
-      );
+    } catch (e: unknown) {
+      logFirebaseAuthError('Phone OTP send', e);
+      const code =
+        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+      this.error.set(mapFirebasePhoneError(code));
     } finally {
       this.isLoading.set(false);
     }
@@ -360,9 +371,11 @@ export class Login implements OnInit, OnDestroy {
     try {
       await this.confirmationResult.confirm(code);
       this.handleSuccess();
-    } catch (e: any) {
-      console.error(e);
-      this.error.set('Invalid verification code.');
+    } catch (e: unknown) {
+      logFirebaseAuthError('Phone OTP verify', e);
+      const codeErr =
+        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+      this.error.set(mapFirebaseMfaError(codeErr));
     } finally {
       this.isLoading.set(false);
     }
@@ -386,9 +399,11 @@ export class Login implements OnInit, OnDestroy {
       this.codeSent.set(true);
       this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
       this.loginForm.get('verificationCode')?.updateValueAndValidity();
-    } catch (e: any) {
-      console.error(e);
-      this.error.set('Failed to send MFA code. Please try again.');
+    } catch (e: unknown) {
+      logFirebaseAuthError('MFA SMS send', e);
+      const code =
+        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+      this.error.set(mapFirebasePhoneError(code));
     }
   }
 
@@ -406,10 +421,13 @@ export class Login implements OnInit, OnDestroy {
       const assertion = PhoneMultiFactorGenerator.assertion(cred);
       await this.resolver.resolveSignIn(assertion);
       await this.authService.refreshMfaState(true);
-      this.handleSuccess();
-    } catch (e: any) {
-      console.error(e);
-      this.error.set('MFA verification failed. Please try again.');
+      this.successMessage.set('Two-factor verification complete. Redirecting…');
+      setTimeout(() => this.handleSuccess(), 600);
+    } catch (e: unknown) {
+      logFirebaseAuthError('MFA verify', e);
+      const codeErr =
+        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+      this.error.set(mapFirebaseMfaError(codeErr));
     } finally {
       this.isLoading.set(false);
     }
@@ -482,8 +500,8 @@ export class Login implements OnInit, OnDestroy {
           this.error.set(result.error || 'Authentication failed.');
         }
       }
-    } catch (e: any) {
-      console.error(e);
+    } catch (e: unknown) {
+      logFirebaseAuthError('Login submit', e);
       this.error.set(
         'An error occurred during submission. Please check your credentials and try again.',
       );
@@ -505,8 +523,8 @@ export class Login implements OnInit, OnDestroy {
       } else {
         this.error.set(result.error || 'Apple Sign-In failed.');
       }
-    } catch (e: any) {
-      console.error(e);
+    } catch (e: unknown) {
+      logFirebaseAuthError('Apple sign-in', e);
       this.error.set('An error occurred during Apple Sign-In. Please try again later.');
     } finally {
       this.isLoading.set(false);
@@ -526,8 +544,8 @@ export class Login implements OnInit, OnDestroy {
       } else {
         this.error.set(result.error || 'Google Sign-In failed.');
       }
-    } catch (e: any) {
-      console.error(e);
+    } catch (e: unknown) {
+      logFirebaseAuthError('Google sign-in', e);
       this.error.set('An error occurred during Google Sign-In. Please try again later.');
     } finally {
       this.isLoading.set(false);

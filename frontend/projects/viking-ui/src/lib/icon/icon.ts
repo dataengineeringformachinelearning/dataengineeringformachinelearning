@@ -14,6 +14,11 @@ import {
   VikingIconVariant,
   VIKING_DRAKKAR_ICON_NAMES_LIST,
 } from '../core/icons';
+import {
+  isIntegrationBrandIcon,
+  VIKING_INTEGRATION_BRAND_SVGS,
+  type VikingIntegrationBrandName,
+} from '../core/integration-brand-icons';
 
 /**
  * viking-icon — themeable inline SVG icon (Lucide-sourced registry + DEML brand marks).
@@ -88,6 +93,17 @@ import {
         <path
           d="M16.365 12.14c.02 2.53 2.21 3.38 2.23 3.39-.02.07-.35 1.21-1.16 2.4-.7 1.02-1.43 2.03-2.58 2.05-1.13.02-1.49-.67-2.78-.67-1.29 0-1.69.65-2.75.69-1.11.04-1.95-1.12-2.66-2.13-1.44-2.08-2.54-5.87-1.07-8.43.73-1.27 2.04-2.08 3.46-2.1 1.08-.02 2.1.72 2.78.72.67 0 2.14-.89 3.61-.76.61.03 2.33.25 3.44 1.88-.09.06-2.05 1.2-2.03 3.55M13.75 3.64c.59-.71 1-1.7.89-2.68-.86.03-1.9.57-2.52 1.28-.55.63-1.03 1.65-.9 2.62.95.07 1.92-.49 2.53-1.22"
         />
+      </svg>
+    } @else if (isIntegrationBrand()) {
+      <svg
+        class="viking-icon-svg viking-icon-brand viking-icon-integration-brand"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        [style.width.px]="resolvedSize()"
+        [style.height.px]="resolvedSize()"
+        aria-hidden="true"
+      >
+        <g [innerHTML]="integrationBrandSvg()"></g>
       </svg>
     } @else {
       <svg
@@ -207,7 +223,7 @@ export class VikingIcon {
 
   protected readonly isFilled = computed(() => {
     const name = this.resolvedName();
-    if (name === 'google' || name === 'apple') {
+    if (name === 'google' || name === 'apple' || isIntegrationBrandIcon(name)) {
       return false;
     }
     if (this.variant() === 'filled') {
@@ -219,6 +235,15 @@ export class VikingIcon {
   protected readonly isDrakkarBrand = computed(() =>
     (VIKING_DRAKKAR_ICON_NAMES_LIST as readonly string[]).includes(this.resolvedName()),
   );
+
+  protected readonly isIntegrationBrand = computed(() =>
+    isIntegrationBrandIcon(this.resolvedName()),
+  );
+
+  protected readonly integrationBrandSvg = computed<SafeHtml>(() => {
+    const name = this.resolvedName() as VikingIntegrationBrandName;
+    return this.sanitizer.bypassSecurityTrustHtml(VIKING_INTEGRATION_BRAND_SVGS[name] ?? '');
+  });
 
   protected readonly paths = computed<SafeHtml>(() => {
     const name = this.resolvedName();

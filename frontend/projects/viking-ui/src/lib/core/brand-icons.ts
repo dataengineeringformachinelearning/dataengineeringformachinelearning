@@ -57,26 +57,26 @@ export const VIKING_BRAND_ICON_NAMES_LIST = Object.keys(
   VIKING_BRAND_ICON_PATHS,
 ) as VikingBrandIconName[];
 
-/** Platform integration marks — stylized brand geometry (24×24, stroke). */
+/** Platform integration marks — recognizable brand geometry (24×24). */
 export const VIKING_INTEGRATION_ICON_PATHS = {
   /** Kubernetes ship-wheel topology. */
   kubernetes:
-    '<circle cx="12" cy="12" r="2.5"/><path d="M12 4v2M12 18v2M4 12h2M18 12h2M6.3 6.3l1.4 1.4M16.3 16.3l1.4 1.4M17.7 6.3l-1.4 1.4M7.7 16.3l-1.4 1.4M12 7.5l-2.2 3.8h4.4L12 7.5z"/>',
+    '<path d="M12 3.2 13.4 8h4.9l-4 2.9 1.5 4.9L12 13.4 8.2 15.8l1.5-4.9-4-2.9h4.9L12 3.2z"/><circle cx="12" cy="12" r="2.1"/>',
   /** TensorFlow node graph (three-link tensor). */
   tensorflow:
-    '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="9" y="14" width="6" height="6" rx="1"/><path d="M7 7h5M13 7h4M12 10v4"/>',
+    '<rect x="3.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.2"/><rect x="8.5" y="13.5" width="7" height="7" rx="1.2"/><path d="M7 7h4v2H9v4H7V7zm10 0h-2v6h-2v2h4V7z"/>',
   /** PyTorch flame mark. */
   pytorch:
-    '<path d="M12 3c-2 3-4 5-4 8a4 4 0 0 0 8 0c0-3-2-5-4-8z"/><path d="M12 11v4"/><path d="M10 19h4"/>',
+    '<path d="M12 4.5c-1.8 2.6-3.5 4.4-3.5 6.8a3.5 3.5 0 0 0 7 0c0-2.4-1.7-4.2-3.5-6.8z"/><ellipse cx="12" cy="16.5" rx="2.2" ry="3.2"/><circle cx="10.8" cy="10.2" r="1"/>',
   /** Apache Spark star burst. */
   'apache-spark':
-    '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/><circle cx="12" cy="12" r="2.5"/>',
+    '<path d="M12 2.5v3.8M12 17.7v3.8M2.5 12h3.8M17.7 12h3.8M5.4 5.4l2.7 2.7M15.9 15.9l2.7 2.7M18.6 5.4l-2.7 2.7M8.1 15.9l-2.7 2.7"/><polygon points="12,8 15.5,14 8.5,14"/>',
   /** Databricks brick stack. */
   databricks:
-    '<rect x="5" y="5" width="14" height="4" rx="1"/><rect x="5" y="10" width="14" height="4" rx="1"/><rect x="5" y="15" width="14" height="4" rx="1"/><path d="M8 7h8M8 12h8M8 17h8"/>',
+    '<rect x="4" y="5" width="16" height="3.5" rx="0.8"/><rect x="4" y="10.25" width="16" height="3.5" rx="0.8"/><rect x="4" y="15.5" width="16" height="3.5" rx="0.8"/><path d="M8 6.75h8M8 12h8M8 17.25h8"/>',
   /** AWS Redshift warehouse cylinder. */
   'aws-redshift':
-    '<ellipse cx="12" cy="7" rx="7" ry="2.5"/><path d="M5 7v10c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V7"/><path d="M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>',
+    '<ellipse cx="12" cy="7" rx="7.5" ry="2.8"/><path d="M4.5 7v9.5c0 1.6 3.4 2.8 7.5 2.8s7.5-1.2 7.5-2.8V7"/><ellipse cx="12" cy="12" rx="7.5" ry="2.8"/><path d="M15.5 11.5 12 14l-3.5-2.5 1-1.3L12 11.4l2.5-1.7 1 1.8z"/>',
 } as const;
 
 export type VikingIntegrationIconName = keyof typeof VIKING_INTEGRATION_ICON_PATHS;

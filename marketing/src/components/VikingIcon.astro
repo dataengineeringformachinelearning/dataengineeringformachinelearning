@@ -6,6 +6,11 @@ import {
   resolveVikingIcon,
   vikingIconViewBox,
 } from '../../../frontend/projects/viking-ui/src/lib/core/icons.ts';
+import {
+  isIntegrationBrandIcon,
+  VIKING_INTEGRATION_BRAND_SVGS,
+  type VikingIntegrationBrandName,
+} from '../../../frontend/projects/viking-ui/src/lib/core/integration-brand-icons.ts';
 
 export interface Props {
   name: string;
@@ -18,8 +23,10 @@ export interface Props {
 const { name, size = 16, class: className = '', variant = 'outline', color = 'inherit' } =
   Astro.props;
 const resolved = resolveVikingIcon(name);
+const isBrandIntegration = isIntegrationBrandIcon(resolved);
 const isFilled =
-  variant === 'filled' || (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(resolved);
+  !isBrandIntegration &&
+  (variant === 'filled' || (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(resolved));
 const paths =
   isFilled && VIKING_ICON_FILLED_PATHS[resolved]
     ? VIKING_ICON_FILLED_PATHS[resolved]
@@ -29,22 +36,37 @@ const colorStyle =
   color === 'accent'
     ? 'color: var(--viking-accent, var(--viking-teal-600))'
     : color === 'muted'
-      ? 'color: var(--viking-text-muted, #777777)'
+      ? 'color: var(--viking-text-muted, var(--text-muted))'
       : undefined;
+const brandSvg = isBrandIntegration
+  ? VIKING_INTEGRATION_BRAND_SVGS[resolved as VikingIntegrationBrandName]
+  : null;
 ---
 
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox={viewBox}
-  fill={isFilled ? 'currentColor' : 'none'}
-  stroke={isFilled ? 'none' : 'currentColor'}
-  stroke-width={isFilled ? undefined : '1.8'}
-  stroke-linecap={isFilled ? undefined : 'round'}
-  stroke-linejoin={isFilled ? undefined : 'round'}
-  width={size}
-  height={size}
-  class={className}
-  style={colorStyle}
-  aria-hidden="true"
-  set:html={paths}
-/>
+{isBrandIntegration ? (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    class={`viking-icon-integration-brand ${className}`.trim()}
+    aria-hidden="true"
+    set:html={brandSvg ?? ''}
+  />
+) : (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox={viewBox}
+    fill={isFilled ? 'currentColor' : 'none'}
+    stroke={isFilled ? 'none' : 'currentColor'}
+    stroke-width={isFilled ? undefined : '1.8'}
+    stroke-linecap={isFilled ? undefined : 'round'}
+    stroke-linejoin={isFilled ? undefined : 'round'}
+    width={size}
+    height={size}
+    class={className}
+    style={colorStyle}
+    aria-hidden="true"
+    set:html={paths}
+  />
+)}

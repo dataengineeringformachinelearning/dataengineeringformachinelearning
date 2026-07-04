@@ -382,7 +382,24 @@
       <!-- Error/Offline State Fallback -->
       @if (loadFailed()) {
       <div class="status-error-state" role="alert">
-        <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />
+        <viking-app-icon
+          [name]="loadErrorKind() === 'forbidden' ? 'lock' : loadErrorKind() === 'not_found' ? 'search' : 'cloud_off'"
+          hostClass="error-state-icon"
+          [ariaHidden]="true"
+        />
+        @if (loadErrorKind() === 'not_found') {
+        <h2 class="error-title">Status Page Not Found</h2>
+        <p class="error-subtitle">
+          This page does not exist or is not published. Check the URL or sign in if you own this
+          page.
+        </p>
+        } @else if (loadErrorKind() === 'forbidden') {
+        <h2 class="error-title">Private Status Page</h2>
+        <p class="error-subtitle">
+          This status page is not public. Sign in with an authorized account to view it.
+        </p>
+        <viking-button variant="primary" href="/login" icon="login">Sign In</viking-button>
+        } @else {
         <h2 class="error-title">Unable to Connect</h2>
         <p class="error-subtitle">
           We couldn't reach the status service. Verify the backend is running, then retry.
@@ -398,6 +415,7 @@
         >
           Retry Connection
         </viking-button>
+        }
       </div>
       }
     </div>
