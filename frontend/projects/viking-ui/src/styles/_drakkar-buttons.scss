@@ -31,8 +31,18 @@
 }
 
 .auth-btn,
-a.auth-btn {
+a.auth-btn,
+button.auth-btn {
   @include viking-drakkar-btn-primary;
+  color: var(--viking-white-pure, #ffffff) !important;
+
+  svg,
+  .material-icons,
+  [data-viking-icon],
+  viking-icon,
+  span {
+    color: inherit !important;
+  }
 }
 
 .auth-btn.auth-btn-outline,
@@ -47,13 +57,19 @@ button.mobile-auth-btn {
   width: 100%;
   min-width: 0;
   justify-content: center;
-  color: var(--viking-accent-content) !important;
+  color: var(--viking-white-pure, #ffffff) !important;
 
   svg,
   .material-icons,
   [data-viking-icon],
-  viking-icon {
+  viking-icon,
+  span {
     color: inherit !important;
+  }
+
+  &:hover,
+  &:focus-visible {
+    color: var(--viking-white-pure, #ffffff) !important;
   }
 }
 

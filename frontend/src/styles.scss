@@ -140,8 +140,12 @@ a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-
     color 0.2s ease;
 }
 
-a:not(.cta-button):not(.nav-item):hover,
-a:not(.cta-button):not(.nav-item):focus-visible {
+a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
+    .viking-btn
+  ):hover,
+a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
+    .viking-btn
+  ):focus-visible {
   color: var(--link-hover-color);
   text-decoration: none;
   border-bottom-color: var(--link-hover-color); /* WCAG requirement: non-color hover indicator */
