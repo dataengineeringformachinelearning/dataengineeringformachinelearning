@@ -1,0 +1,25 @@
+---
+import IconHeading from './IconHeading.astro';
+
+export interface Props {
+  icon: string;
+  title: string;
+  fullWidth?: boolean;
+  id?: string;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { icon, title, fullWidth = false, id, headingLevel = 'h2' } = Astro.props;
+---
+
+<div class:list={['viking-card', 'docs-bento-card', fullWidth && 'docs-bento-full']} id={id}>
+  <IconHeading
+    icon={icon}
+    title={title}
+    headingLevel={headingLevel}
+    size={fullWidth ? 'lg' : 'md'}
+  />
+  <div class="docs-bento-card__body">
+    <slot />
+  </div>
+</div>

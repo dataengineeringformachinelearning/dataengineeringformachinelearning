@@ -120,4 +120,11 @@
 
 .viking-whitepaper-btn {
   margin-top: var(--viking-space-1);
+  color: var(--viking-accent-content);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--viking-accent-content);
+    border-bottom-color: transparent;
+  }
 }
