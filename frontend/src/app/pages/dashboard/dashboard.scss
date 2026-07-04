@@ -19,73 +19,6 @@
   }
 }
 
-.tab-bar {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 8px;
-  margin-bottom: 28px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-
-  @media (min-width: 600px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.tab-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  width: 100%;
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-md);
-  background: var(--viking-surface);
-  color: var(--text-muted);
-  font-weight: 600;
-  font-size: var(--base-font-size);
-  cursor: pointer;
-  transition: var(--transition-smooth);
-  white-space: normal;
-  text-align: center;
-  box-sizing: border-box;
-
-  @media (min-width: 600px) {
-    white-space: nowrap;
-  }
-
-  viking-app-icon {
-    flex: 0 0 auto;
-    margin: 0;
-  }
-
-  &:hover {
-    color: var(--text-color);
-    border-color: color-mix(in srgb, var(--color-primary) 40%, var(--border));
-  }
-
-  &.active {
-    color: var(--color-on-primary-container);
-    border-color: var(--color-primary);
-    background: var(--color-primary-container);
-    box-shadow: var(--shadow-sm);
-  }
-}
-
-// Inner flex wrapper for icon + label + optional badge.
-// Without this the unstyled <span> causes icon baseline gaps.
-.tab-btn-content {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  line-height: 1;
-}
-
-.tab-badge {
-  min-width: 20px;
-}
 
 .overview-grid,
 .detail-grid {
@@ -168,10 +101,16 @@
   flex-direction: column;
   align-items: center;
   padding: 24px;
-  border-radius: var(--border-radius-lg);
-  border: 1px solid var(--border);
+  border-radius: var(--viking-radius-lg);
+  border: 1px solid var(--viking-border);
   background: var(--viking-surface);
+  box-shadow: var(--viking-shadow-sm);
   text-align: center;
+  transition: box-shadow 0.2s ease;
+}
+
+.health-card:hover {
+  box-shadow: var(--viking-shadow-md);
 }
 
 .health-ring {

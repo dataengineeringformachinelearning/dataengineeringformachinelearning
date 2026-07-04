@@ -226,10 +226,16 @@ main.main {
   padding: 16px;
   margin: 0 auto;
   box-sizing: border-box;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-sm);
+  background-color: var(--viking-surface);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.page-content:hover {
+  box-shadow: var(--viking-shadow-md);
+  border-color: var(--viking-border-strong);
 }
 
 @media (min-width: 768px) {
@@ -496,6 +502,35 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
 }
 
 /* Machined surfaces + status pulse live in viking-ui _layout-rhythm.scss (.viking-surface-panel, .telemetry-pulse) */
+
+/* Ensure all .viking-card instances (used across dashboard pages) have premium depth */
+.viking-card {
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.viking-card:hover {
+  box-shadow: var(--viking-shadow-md);
+  border-color: var(--viking-border-strong);
+}
+
+/* Depth for newly migrated status metric rows (from #186 Viking-UI consolidation) */
+.viking-status-metric-row {
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  box-shadow: var(--viking-shadow-sm);
+  padding: var(--viking-space-2);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.viking-status-metric-row:hover {
+  box-shadow: var(--viking-shadow-md);
+  border-color: var(--viking-border-strong);
+}
 
 /* ====================== RESPONSIVE GRID SYSTEM ====================== */
 .grid-layout {

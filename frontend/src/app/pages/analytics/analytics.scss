@@ -51,20 +51,20 @@
 }
 
 .gauge-card {
-  background-color: var(--card-bg);
-  border-radius: var(--border-radius-md);
-  border: 1px solid var(--border);
-  padding: var(--card-padding);
+  background-color: var(--viking-surface);
+  border-radius: var(--viking-radius-lg);
+  border: 1px solid var(--viking-border);
+  padding: var(--viking-space-3);
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  box-shadow: var(--shadow-sm);
-  transition: var(--transition-smooth);
+  box-shadow: var(--viking-shadow-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 
   &:hover {
-    box-shadow: var(--shadow-hover);
-    border-color: color-mix(in srgb, var(--viking-accent, var(--color-primary)) 35%, var(--border));
+    box-shadow: var(--viking-shadow-md);
+    border-color: var(--viking-border-strong);
   }
 
   .gauge-card-header {
