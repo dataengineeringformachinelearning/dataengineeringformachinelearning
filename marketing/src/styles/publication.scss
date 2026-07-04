@@ -23,6 +23,24 @@
     margin-bottom: 16px;
   }
 
+  .section-tag-row {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .hero-title,
+  .hero-subtitle,
+  .hero-meta {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-meta {
+    max-width: 640px;
+  }
+
   .hero-brand-icon {
     filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--viking-teal-600) 25%, transparent));
   }
@@ -213,12 +231,14 @@
 
   :global(:not(pre) > code) {
     background: color-mix(in srgb, var(--color-dark-grey-btn-bg) 70%, transparent);
-    padding: 1px 5px;
+    padding: 0.1em 0.35em;
     border-radius: 4px;
-    font-size: 0.84em;
+    font-size: 0.875em;
+    line-height: inherit;
     color: var(--text-color);
     border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
-    white-space: nowrap;
+    white-space: normal;
+    vertical-align: baseline;
   }
 
   :global(table) {
@@ -252,6 +272,9 @@
 
 // Book sidebar chapter index
 .pub-sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1, 8px);
   margin-bottom: 16px;
 
   .pub-sidebar-group-title {
@@ -260,7 +283,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-muted);
-    margin: 0 0 6px 8px;
+    margin: 0 0 2px 8px;
     opacity: 0.75;
   }
 }
@@ -269,13 +292,14 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
-  padding: 7px 12px;
+  padding: 8px 12px;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
   border: 1px solid transparent;
   text-decoration: none;
   color: inherit;
+  margin: 0;
 
   &:hover {
     background-color: var(--hover-color);
