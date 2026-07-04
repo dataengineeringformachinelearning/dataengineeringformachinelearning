@@ -65,12 +65,12 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 
 All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** — the Viking-UI premium theme. **[.cursorrules](.cursorrules)** enforces Viking-UI imports and token-only styling for Cursor agents.
 
-| Surface | Theme entry point |
-|---------|-------------------|
-| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | `/assets/viking-ui.css` |
-| [deml.app](https://deml.app) | `@dataengineeringformachinelearning/viking-ui` |
-| [backend.deml.app](https://backend.deml.app) | `backend/static/viking-ui.css` |
-| Swagger / OpenAPI UI | Same tokens via static CSS |
+| Surface                                                                                | Theme entry point                              |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com) | `/assets/viking-ui.css`                        |
+| [deml.app](https://deml.app)                                                           | `@dataengineeringformachinelearning/viking-ui` |
+| [backend.deml.app](https://backend.deml.app)                                           | `backend/static/viking-ui.css`                 |
+| Swagger / OpenAPI UI                                                                   | Same tokens via static CSS                     |
 
 **Philosophy:** Precision engineering and high-end industrial tech — composable primitives with a **premium restrained luxury** palette: dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. Always import `viking-*` components; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
 
@@ -347,6 +347,45 @@ For custom integrations or direct programmatic access, generate a dedicated API 
 ```http
 Authorization: Bearer YOUR_API_KEY
 ```
+
+---
+
+## Local Development: Clean Up & Rebuild Environments
+
+To reset **all** local environments with the latest dependencies (recommended after pulls, refactors, or dependency updates):
+
+```bash
+# 1. Purge all caches, __pycache__, dists, .angular, node_modules bloat, etc.
+npm run hygiene:cache
+bash scripts/deml-cleanup.sh
+
+# 2. Backend (Python + uv)
+cd backend
+rm -rf .venv
+uv venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+
+# 3. Node workspaces (fresh installs)
+cd ../frontend && rm -rf node_modules dist .angular && npm install --legacy-peer-deps
+cd ../viking-ui-docs && rm -rf node_modules dist && npm install
+cd ../marketing && rm -rf node_modules dist && npm install
+cd ../packages/deml-design-system && rm -rf node_modules dist && npm install
+cd ../functions && rm -rf node_modules && npm install   # Firebase functions (optional)
+
+# 4. Rebuild generated assets + sync (Viking-UI, design tokens, content, widgets, icons, etc.)
+cd ..
+npm run sync
+npm run build:viking-ui --prefix frontend
+# (frontend prebuild also triggers viking-ui + sitemap)
+
+# 5. (Optional) Rebuild viking-ui docs bundle
+npm run build:viking-ui-docs
+```
+
+See [BOOK.md](BOOK.md) (Chapter on fresh install + starting services) for full run commands (`docker compose up`, backend workers, `npm start`, etc.), .env setup, and migrations.
+
+This sequence ensures clean, up-to-date venvs + node_modules + all synced/generated files (from `scripts/` + prebuild hooks).
 
 ---
 
