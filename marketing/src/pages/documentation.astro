@@ -84,6 +84,7 @@ for features, labels in loader: ...`,
 const docsOutline = [
   { id: 'quick-start', label: 'Quick Start', icon: 'rocket_launch' },
   { id: 'data-ingestion', label: 'Data Ingestion', icon: 'input' },
+  { id: 'platform-operations', label: 'Platform Ops', icon: 'settings_suggest' },
   { id: 'integrations-title', label: 'Integrations', icon: 'hub' },
   { id: 'health-checks', label: 'Health Checks', icon: 'monitor_heart' },
 ];
@@ -299,6 +300,100 @@ const quickStartSteps = [
             </p>
           </div>
         </div>
+
+        <section class="docs-operations-section" id="platform-operations" aria-labelledby="platform-operations-title">
+          <header class="integrations-header">
+            <span class="section-tag">PRODUCTION OPERATIONS</span>
+            <h2 id="platform-operations-title">Railway, Distroless Runtimes & Compliance Cadence</h2>
+            <p>
+              DEML ships as Docker services on Railway with Google Distroless production images,
+              symmetrical multi-tenant workers, and automated retention — the same controls audited
+              for SOC 2 Type II and CMMC 2.0 evidence collection.
+            </p>
+          </header>
+
+          <div class="docs-bento-grid">
+            <div class="viking-card docs-bento-card docs-bento-full">
+              <div class="bento-header">
+                <VikingIcon name="cloud" size={20} />
+                <h3>Railway Service Matrix</h3>
+              </div>
+              <p class="u-style-7f7d6d">
+                Each deployable unit carries an <code>infrastructure/railway/*/railway.json</code> manifest.
+                Frontend SSR, Django API, telemetry worker, scanner, and daemon images build from repo-root
+                Dockerfiles with health checks on <code>/api/v1/system-status/health</code> for the API plane.
+              </p>
+              <div class="code-block-premium">
+                <div class="code-header">Core services</div>
+                <pre><code>{`frontend/     → gcr.io/distroless/nodejs22-debian12 (SSR, port 4000)
+backend/      → gcr.io/distroless/python3-debian12 (Django, port 8000)
+workers/      → telemetry_worker, security_worker, outbox_relay
+scanner/      → async asset inventory + OSV/CPE pipeline`}</code></pre>
+              </div>
+            </div>
+
+            <div class="viking-card docs-bento-card">
+              <div class="bento-header">
+                <VikingIcon name="shield" size={20} />
+                <h3>Distroless Attack Surface</h3>
+              </div>
+              <p class="u-style-efd290">
+                Multi-stage builds compile in Alpine or slim Bookworm, then copy only runtime artifacts into
+                distroless bases. No shell, no package manager, nonroot UID — production containers cannot
+                spawn interactive backdoors even after a boundary breach.
+              </p>
+            </div>
+
+            <div class="viking-card docs-bento-card">
+              <div class="bento-header">
+                <VikingIcon name="schedule" size={20} />
+                <h3>Scheduler Cadence</h3>
+              </div>
+              <p class="u-style-efd290">
+                <strong>outbox_relay</strong> every 5s · <strong>security_worker</strong> hourly IoC fetch +
+                daily <code>db_cleanup</code> · <strong>ml_worker</strong> daily retrain · Stripe
+                <code>sync_subscriptions</code> daily · DEK rotation at 30 days.
+              </p>
+            </div>
+
+            <div class="viking-card docs-bento-card">
+              <div class="bento-header">
+                <VikingIcon name="delete_sweep" size={20} />
+                <h3>30-Day Data Retention</h3>
+              </div>
+              <p class="u-style-efd290">
+                Raw telemetry, audit logs, and cookie consent records purge after <strong>30 days</strong>
+                via <code>backend/utils/retention.py</code>. Published outbox rows retain 30 days; DLQ
+                candidates purge after 7. OLAP traces TTL in ClickHouse — Postgres stays lean.
+              </p>
+            </div>
+
+            <div class="viking-card docs-bento-card">
+              <div class="bento-header">
+                <VikingIcon name="lock" size={20} />
+                <h3>Tenant Isolation</h3>
+              </div>
+              <p class="u-style-efd290">
+                UUID primary keys everywhere. Django ORM queries filter by authenticated tenant context.
+                API keys hash with SHA-256 at rest. Workers iterate <code>Tenant.objects.all()</code> —
+                no hardcoded platform exceptions. Cross-tenant reads fail closed.
+              </p>
+            </div>
+
+            <div class="viking-card docs-bento-card">
+              <div class="bento-header">
+                <VikingIcon name="insights" size={20} />
+                <h3>CES Anonymized Aggregation</h3>
+              </div>
+              <p class="u-style-efd290">
+                Countermeasure Effectiveness Standard (CES) consumes only aggregated latency, incident,
+                and uptime vectors from ClickHouse. Individual identities and raw tenant payloads never
+                enter the CES engine — only safe mathematical outputs contribute to Threat, SLA, and
+                Stableness gauges.
+              </p>
+            </div>
+          </div>
+        </section>
 
         <section class="integrations-section" aria-labelledby="integrations-title">
           <header class="integrations-header">
@@ -710,11 +805,16 @@ const quickStartSteps = [
   }
 }
 
+.docs-operations-section,
 .integrations-section {
   max-width: var(--container-max-width, 1260px);
-  margin: 0 auto 72px auto;
+  margin: 0 auto 56px auto;
   padding-top: 32px;
   border-top: 1px solid var(--border);
+}
+
+.integrations-section {
+  margin-bottom: 72px;
 }
 
 .integrations-header {

@@ -104,13 +104,34 @@
   flex-direction: column;
   min-width: 0;
   width: 100%;
+  min-height: 0;
+
+  .dashboard-page-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  .dashboard-content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .page-inner-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 /* Unified Page Template System */
 .dashboard-page-container {
   position: relative;
   width: 100%;
-  min-height: 100%; /* Changed from calc(100vh - 64px) so it fills the flex container */
+  min-height: calc(100vh - var(--navbar-height, 64px));
   overflow: visible;
   background-color: var(--bg-color);
   color: var(--text-color);

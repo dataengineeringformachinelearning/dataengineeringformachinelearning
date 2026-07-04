@@ -310,6 +310,21 @@ Application-level Zeek-equivalent middleware with zero-latency cached domain map
 
 Long-term SaaS reliability is sustained through an uncompromising CI/CD and pre-commit stabilization pipeline. The Python backend is continuously formatted and linted via `ruff`; the frontend adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including telemetry ingestion endpoints, background threat-modeling workers, and billing integration—is fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. Core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations aligned with the production cluster.
 
+### 15.1 July 2026 Operational Milestones
+
+The July 2026 daily platform audit codified several evolutionary steps critical for enterprise compliance reviews:
+
+| Milestone | Engineering outcome | Compliance relevance |
+| --------- | ------------------- | -------------------- |
+| Unified dashboard shell | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status` | Consistent operator UX; reduced misconfiguration during incidents |
+| Root mobile-first gate | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first` | Process integrity — layout regressions fail before deploy |
+| Viking-UI CSS consolidation | Static bundle owned by `viking-ui-docs`; Railway frontend compiles live SCSS only | Supply-chain minimization; smaller attack surface in CI |
+| Retention centralization | `backend/utils/retention.py` constants drive `db_cleanup` | SOC 2 confidentiality; CMMC data minimization |
+| CES anonymization contract | ClickHouse aggregates only; no PII in CES engine | Safe cross-tenant statistical contribution without identity leakage |
+| Live Developer Portal | `/documentation` section documents Railway matrix, schedulers, distroless strategy | Auditor-readable operational truth synchronized with BOOK Ch.32 |
+
+These milestones do not replace formal certification—they produce traceable evidence that Visibility, Manageability, and Survivability controls described in Section 3 remain operable under daily engineering velocity.
+
 ## 16. License
 
 This work is licensed under a [Creative Commons Attribution 4.0 International License (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).

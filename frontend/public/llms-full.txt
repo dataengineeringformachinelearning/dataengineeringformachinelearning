@@ -3917,6 +3917,42 @@ Peer dependencies: `@angular/core`, `@angular/common`, and `@angular/forms` ^22.
 
 The library carries a machine-readable manifest (`viking.manifest.json`) that maps each component to its Angular exports and the date of the last audit. The `npm run check:viking-upstream` script diffs manifest coverage and exits non-zero when the catalog drifts — surfacing gaps in CI the same way a failing contract test would. Accessibility is treated as a WCAG 2.1 AA / Section 508 contract: visible `:focus-visible` rings on every interactive element, full keyboard navigation for listboxes, menus and the command palette, `role`/`aria-*` semantics throughout, and `prefers-reduced-motion` handling on animated pieces such as skeletons and progress bars. The suite is verified by dedicated [Vitest](https://vitest.dev/) component tests (`npm run test:viking-ui`) that compile real templates through the [AnalogJS](https://analogjs.org/) Angular plugin, plus `ng lint` accessibility rules over the library's inline templates.
 
+## Chapter 32: Daily Platform Operations Audit
+
+Operating a high-throughput event platform is not a one-time architecture exercise — it is a recurring discipline. Every production day, I run a structured audit across layout cohesion, accessibility, container security, tenant isolation, scheduler health, and documentation fidelity. The objective is not checkbox compliance; it is to catch drift before it becomes an incident or an audit finding. This chapter documents the operational playbook I execute on DEML and the invariants it enforces.
+
+### Responsiveness, layout harmony, and viewport height
+
+Mobile-first is non-negotiable. Every stylesheet defaults to single-column layouts and scales up with `@media (min-width: …)` — never the reverse. The enforcement script `node scripts/check_mobile_first.js` scans Angular, Viking-UI, marketing, and Django static surfaces for forbidden desktop-first `max-width` breakpoints and fails CI when violations appear. Dashboard pages share one shell: `.dashboard-page-container` → `.dashboard-content-area` → `.page-inner-wrapper` at `--viking-container-max-width` (1260px). The public `/status` route uses the same container classes so navigation between Command Center, Analytics, Settings, and System Status produces zero horizontal layout shift. Full viewport height is managed intentionally: `.dashboard-wrapper` and `.dashboard-page-container` chain `min-height: calc(100vh - var(--navbar-height))` with flex children that grow (`flex: 1`) so sidebars and main content initialize to full height without cropping scroll regions.
+
+### Framework cohesion and light/dark modes
+
+Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the same compiled `design-tokens.css` and `viking-ui.css` bundle synced from `frontend/projects/viking-ui/src/styles/` via `scripts/sync_design_system.py`. Static CSS is built by `viking-ui-docs/scripts/build-static-css.mjs` — outside the Railway frontend Docker context — while production Angular images compile live SCSS with `includePaths` pointed at the canonical token directory. Light mode shifts lightness only; semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`) preserve WCAG 2.1 AA contrast in both themes. `node scripts/enforce-theme.js` blocks hardcoded hex drift before merge.
+
+### Accessibility and Section 508
+
+Keyboard navigation, visible `:focus-visible` rings (`--viking-ring`), semantic headings, explicit image alts, and `aria-*` on dynamic widgets are enforced mechanically. `node scripts/run_axe.js` targets marketing HTML and Astro output for WCAG 2.1 AA violations. Viking-UI form stacks compose through `viking-field` so labels, errors, and required states remain screen-reader coherent. Status alone is insufficient — automated gates run on every pre-commit pass.
+
+### Railway deployment and distroless runtimes
+
+Production services deploy on Railway using per-service manifests under `infrastructure/railway/`. The Angular SSR frontend builds with `node:24-alpine`, then copies artifacts into `gcr.io/distroless/nodejs22-debian12`. The Django API compiles dependencies and `collectstatic` in `python:3.11-slim-bookworm`, then runs from `gcr.io/distroless/python3-debian12` as UID `nonroot`. No shell, no package manager, no opportunistic `curl` inside the runtime — the attack surface is the binary and its shared libraries, nothing else. Health checks hit `/api/v1/system-status/health` on the API service; workers restart on failure with bounded retries.
+
+### Database ingestion, retention, and scheduler efficiency
+
+Telemetry enters through `/api/v1/ingest`, Firebase `ingestEvent`, and OpenTelemetry collectors. Commands land in Postgres via transactional Outbox; `outbox_relay` publishes every five seconds. `telemetry_worker` projects idempotently into Firestore and enrichment tables. Retention constants live in `backend/utils/retention.py`: raw telemetry and audit logs purge at **30 days**; published outbox rows at 30 days; DLQ candidates at 7 days; DEK rotation triggers at 30 days. `security_worker` runs hourly threat-intel fetch, daily `db_cleanup`, Stripe `sync_subscriptions`, and OSINT passes. `ml_worker` retrains SLA and threat models daily on anonymized aggregates. Email dispatches route through Resend with queued outbox semantics — no fire-and-forget sends from request threads.
+
+### Multi-tenant security and regulatory alignment
+
+Every ORM query that touches tenant-owned rows filters by authenticated tenant UUID or explicit `account_id` from API key resolution. Background workers iterate `Tenant.objects.all()` symmetrically — Tenant0 is bootstrapped as `is_platform_tenant=True`, not hardcoded as a string FK. Field-level AES-256-GCM with GCP KMS envelope rotation protects integration secrets. Immutable Cloud Logging satisfies SIEM non-repudiation for SOC 2 CC7 and CMMC AU controls. CES aggregation is the sole exception to strict per-tenant siloing: ClickHouse rollups feed Threat, SLA, and Stableness gauges with mathematically anonymized outputs — no raw user identifiers cross into the CES engine.
+
+### Code quality and test synchronization
+
+Before any merge, I run `uvx pre-commit run --all-files`, `npm run test:viking-ui`, backend pytest on touched modules, and rebuild static CSS when tokens change. Dead dependencies are pruned from `package.json` and `requirements.txt` when enforcement proves them unused. Tests mirror security boundaries: mocked tenant contexts in API tests, idempotency keys in event contract tests, and Vitest coverage on chart math, auth signals, and icon resolution in Viking-UI.
+
+### Documentation as operational truth
+
+When infrastructure or compliance posture changes, I update BOOK.md first, sync WHITEPAPER.md milestones, refresh the live `/documentation` Developer Portal on the marketing site, and run `python3 scripts/sync_content.py` so deml.app routes and search indexes stay aligned. Documentation is not marketing copy — it is the contract operators and auditors read when production behavior must be verified under stress.
+
 ## Appendix H: Background Schedulers & Asynchronous Workflows
 
 The DEML Platform orchestrates several asynchronous background workers. These workers run continuously to process Redpanda events, trigger periodic machine learning pipelines, and enforce strict DevSecOps compliance. See **Appendix D** for the consolidated schedule table.
@@ -4087,6 +4123,7 @@ Canonical record of end-of-day workspace sync, hardening, and polish passes. Eac
 | 2026-06-30 | **Cursor - Grok 4.3 (Session 3)** | Multi-pass hardening: removed dead `up.railway.app` hostname detection from `environment.ts` + `environment.development.ts` (app fully migrated to `deml.app`); sanitized `main.ts` Sentry DSN comment (removed "Railway" deployment-provider branding); replaced hardcoded `/tmp/sla_model.pt` in `ml/ml_services.py` with `tempfile.NamedTemporaryFile` + `os.unlink` teardown (S108 fix, prevents temp file leakage); replaced hardcoded `/tmp/gcp-service-account.json` in `config/settings.py` with `tempfile.mkstemp` (S108 fix, OS-secure path allocation); added `# noqa: S104` on intentional container `0.0.0.0` bind in `start.py` (Daphne Cloud Run entrypoint false positive suppression); `scripts/sync_content.py` re-ran → search-index 72 sections synced; **94 pytest** green across all modules post-fix; TypeScript `npx tsc --noEmit` clean; Ruff S-rules audit documented (false positives annotated). |
 | 2026-07-02 | **Cursor Agent (818d)** | PASS 0–5: cache purge (`deml-cleanup.sh`); **95 pytest + 27 vitest** green; deml.app `/home` landing (marketing parity: hero, capability bands, pricing); Polars-style compact `app-whitepaper-cta` (animated bar grid + sparkline); legacy Angular Material SCSS removed (`material-overrides`, `material-tokens`, dead `mat-*` rules); root guard routes unauthenticated users to `/home`; explore page whitepaper CTA; Distroless Docker audit confirmed (backend, frontend, scanner). |
 | 2026-07-02 | **Cursor Agent (c5bc)** | PASS 0–5: **95 pytest + 27 vitest** green; `pretest` + vitest alias for `@deml/viking-ui`; CI `build:viking-ui` step; removed stale `up.railway.app` from `set-env.js`, `firebase.json`, `nginx.conf`; domain-pure marketing `sitemap.xml` (no cross-domain app routes); wired `/telemetry/` landing; `llms.txt` AGENTS/MCP settings; auth-status `hidden` attr (no inline styles); Appendix D `ci-tests.yml` entry. |
+| 2026-07-04 | **Cursor Agent (ce2d)** | Daily platform audit (Tracks 1–8): unified `/status` page shell with `.dashboard-page-container` + full-height flex chain; root `scripts/check_mobile_first.js` wrapper; Developer Portal `/documentation` Platform Ops section (Railway, distroless, retention, schedulers, CES); BOOK Ch.32 + WHITEPAPER §15.1; theme/mobile-first enforcement green. |
 
 ## Appendix L: Foundational Security Frameworks
 
@@ -4419,6 +4456,21 @@ A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompro
 Application-level Zeek-equivalent middleware with zero-latency cached domain mappings enables real-time passive telemetry ingestion. Native OSINT and Dark Web scanners serialize threat findings directly into `ThreatIntelligence` database records instead of static logs. Post-Quantum Cryptography (PQC) integration enforces strict Forward Secrecy: the KEM architecture caches ephemeral secret keys for exactly 5 minutes using UUIDs and destroys them immediately upon decapsulation—neutralizing "Store Now, Decrypt Later" attacks at the ingestion gateway.
 
 Long-term SaaS reliability is sustained through an uncompromising CI/CD and pre-commit stabilization pipeline. The Python backend is continuously formatted and linted via `ruff`; the frontend adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including telemetry ingestion endpoints, background threat-modeling workers, and billing integration—is fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. Core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations aligned with the production cluster.
+
+### 15.1 July 2026 Operational Milestones
+
+The July 2026 daily platform audit codified several evolutionary steps critical for enterprise compliance reviews:
+
+| Milestone | Engineering outcome | Compliance relevance |
+| --------- | ------------------- | -------------------- |
+| Unified dashboard shell | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status` | Consistent operator UX; reduced misconfiguration during incidents |
+| Root mobile-first gate | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first` | Process integrity — layout regressions fail before deploy |
+| Viking-UI CSS consolidation | Static bundle owned by `viking-ui-docs`; Railway frontend compiles live SCSS only | Supply-chain minimization; smaller attack surface in CI |
+| Retention centralization | `backend/utils/retention.py` constants drive `db_cleanup` | SOC 2 confidentiality; CMMC data minimization |
+| CES anonymization contract | ClickHouse aggregates only; no PII in CES engine | Safe cross-tenant statistical contribution without identity leakage |
+| Live Developer Portal | `/documentation` section documents Railway matrix, schedulers, distroless strategy | Auditor-readable operational truth synchronized with BOOK Ch.32 |
+
+These milestones do not replace formal certification—they produce traceable evidence that Visibility, Manageability, and Survivability controls described in Section 3 remain operable under daily engineering velocity.
 
 ## 16. License
 
