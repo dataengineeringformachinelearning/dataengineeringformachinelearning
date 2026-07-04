@@ -2,7 +2,7 @@
 @use 'drakkar-buttons' as *;
 
 @mixin viking-navbar-search-shell-focus {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-ring));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
@@ -25,7 +25,7 @@
   transition: var(--viking-transition-interactive, all 0.25s ease);
 
   &:hover {
-    border-color: var(--viking-accent-strong, var(--viking-teal-400));
+    border-color: var(--viking-accent-strong, var(--viking-ring));
     background: var(--viking-surface-alt, var(--viking-charcoal-700));
     color: var(--viking-text, var(--text-color));
     box-shadow: var(--viking-shadow-md, var(--shadow-md));
@@ -49,7 +49,7 @@
   transition: var(--viking-transition-interactive, border-color 0.25s ease, box-shadow 0.25s ease);
 
   &:hover {
-    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-teal-400)) 55%, var(--viking-border-strong, var(--border)));
+    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-ring)) 55%, var(--viking-border-strong, var(--border)));
     box-shadow: var(--viking-shadow-md, var(--shadow-md));
   }
 }
@@ -118,7 +118,7 @@
   width: 36px;
   height: 36px;
   line-height: 1;
-  color: var(--color-primary, var(--viking-teal-600));
+  color: var(--color-primary, var(--viking-accent));
   overflow: visible;
   flex-shrink: 0;
   display: inline-flex;
@@ -128,7 +128,7 @@
 
 .navbar-brand .navbar-logo,
 .navbar-brand viking-icon.navbar-logo {
-  color: var(--color-primary, var(--viking-teal-600)) !important;
+  color: var(--color-primary, var(--viking-accent)) !important;
 }
 
 // Angular mat-icon defaults to overflow:hidden — clips ligature glyphs at tight sizes.
@@ -313,7 +313,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--viking-teal-600) 80%, transparent),
+    color-mix(in srgb, var(--viking-accent) 80%, transparent),
     transparent
   );
   opacity: 0;
@@ -326,7 +326,7 @@
 
 .nav-btn:hover {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--viking-teal-600) 10%, transparent) !important;
+  background-color: color-mix(in srgb, var(--viking-accent) 10%, transparent) !important;
   transform: translateY(-1px);
 }
 
@@ -352,16 +352,16 @@ html[data-theme='light'] {
 
   .nav-btn:hover,
   .mobile-nav-btn:hover {
-    background-color: color-mix(in srgb, var(--viking-teal-600) 10%, transparent) !important;
+    background-color: color-mix(in srgb, var(--viking-accent) 10%, transparent) !important;
   }
 }
 
 .nav-btn.active {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--viking-teal-600) 14%, transparent) !important;
+  background-color: color-mix(in srgb, var(--viking-accent) 14%, transparent) !important;
   box-shadow:
-    inset 0 -2px 0 0 var(--viking-teal-600),
-    0 0 12px color-mix(in srgb, var(--viking-teal-600) 18%, transparent) !important;
+    inset 0 -2px 0 0 var(--viking-accent),
+    0 0 12px color-mix(in srgb, var(--viking-accent) 18%, transparent) !important;
 }
 
 .nav-btn.active::before {
@@ -377,15 +377,15 @@ html[data-theme='light'] {
   padding: 0;
   border-color: color-mix(
     in srgb,
-    var(--viking-accent, var(--viking-teal-600)) 32%,
+    var(--viking-accent, var(--viking-accent)) 32%,
     var(--viking-border-strong, var(--border))
   );
   background: color-mix(
     in srgb,
-    var(--viking-accent, var(--viking-teal-600)) 8%,
+    var(--viking-accent, var(--viking-accent)) 8%,
     var(--viking-surface, var(--card-bg))
   );
-  color: var(--viking-accent-strong, var(--viking-teal-400));
+  color: var(--viking-accent-strong, var(--viking-ring));
 
   svg,
   viking-icon {
@@ -395,13 +395,13 @@ html[data-theme='light'] {
   }
 
   &:hover {
-    border-color: var(--viking-accent-strong, var(--viking-teal-400));
+    border-color: var(--viking-accent-strong, var(--viking-ring));
     background-color: color-mix(
       in srgb,
-      var(--viking-accent, var(--viking-teal-600)) 14%,
+      var(--viking-accent, var(--viking-accent)) 14%,
       var(--viking-surface, var(--card-bg))
     );
-    color: var(--viking-accent-strong, var(--viking-teal-400));
+    color: var(--viking-accent-strong, var(--viking-ring));
     box-shadow: var(--viking-shadow-md, var(--shadow-md));
   }
 
@@ -461,9 +461,9 @@ viking-button-wc.menu-toggle-btn [data-viking-icon] {
 }
 
 .menu-toggle-btn[aria-expanded='true'] {
-  border-color: var(--viking-accent, var(--viking-teal-600));
-  color: var(--viking-accent-strong, var(--viking-teal-400));
-  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-teal-600) 12%, transparent));
+  border-color: var(--viking-accent, var(--viking-accent));
+  color: var(--viking-accent-strong, var(--viking-ring));
+  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent));
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
@@ -608,13 +608,13 @@ button.auth-btn {
 
 .mobile-nav-btn:hover {
   color: var(--viking-text, var(--text-color)) !important;
-  background-color: var(--viking-accent-soft, color-mix(in srgb, var(--viking-teal-600) 8%, transparent)) !important;
+  background-color: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 8%, transparent)) !important;
 }
 
 .mobile-nav-btn.active {
   color: var(--viking-text, var(--text-color)) !important;
-  background-color: var(--viking-accent-soft, color-mix(in srgb, var(--viking-teal-600) 12%, transparent)) !important;
-  box-shadow: inset 0 0 0 1px var(--viking-accent-strong, var(--viking-teal-400)) !important;
+  background-color: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent)) !important;
+  box-shadow: inset 0 0 0 1px var(--viking-accent-strong, var(--viking-ring)) !important;
 }
 
 .mobile-divider {
@@ -649,7 +649,7 @@ button.auth-btn {
 }
 
 .glowing-icon-sm {
-  color: var(--color-primary, var(--primary-text-color, var(--viking-teal-600))) !important;
+  color: var(--color-primary, var(--primary-text-color, var(--viking-accent))) !important;
   transition: all 0.3s ease;
 }
 
@@ -769,7 +769,7 @@ button.auth-btn {
     background: color-mix(in srgb, var(--viking-bg, var(--bg-color)) 20%, transparent);
 
     &:focus-within {
-      border-bottom-color: var(--viking-accent, var(--viking-teal-600)) !important;
+      border-bottom-color: var(--viking-accent, var(--viking-accent)) !important;
       box-shadow: inset 0 -2px 0 var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent)) !important;
       outline: none;
     }
@@ -851,7 +851,7 @@ button.auth-btn {
   justify-content: center;
   flex-shrink: 0;
   align-self: center;
-  color: var(--viking-accent-strong, var(--viking-teal-400));
+  color: var(--viking-accent-strong, var(--viking-ring));
   border: 0 !important;
   box-shadow: none !important;
   background: transparent !important;
@@ -875,7 +875,7 @@ button.auth-btn {
   height: 20px !important;
   max-width: 20px !important;
   max-height: 20px !important;
-  color: var(--viking-accent-strong, var(--viking-teal-400)) !important;
+  color: var(--viking-accent-strong, var(--viking-ring)) !important;
   fill: currentColor !important;
   stroke: currentColor !important;
 }
@@ -994,7 +994,7 @@ button.auth-btn {
   border-radius: var(--viking-radius, 8px);
   background: var(--viking-surface-alt, var(--viking-charcoal-700)) !important;
   box-shadow: none !important;
-  color: var(--viking-accent-strong, var(--viking-teal-400));
+  color: var(--viking-accent-strong, var(--viking-ring));
   overflow: hidden;
 
   img,
@@ -1007,7 +1007,7 @@ button.auth-btn {
 
 .algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemIcon,
 .algolia-autocomplete-host .aa-Item:hover .aa-ItemIcon {
-  color: var(--viking-accent, var(--viking-teal-600));
+  color: var(--viking-accent, var(--viking-accent));
 }
 
 .algolia-autocomplete-host .aa-ItemContentBody {
@@ -1040,8 +1040,8 @@ button.auth-btn {
 .algolia-autocomplete-host mark,
 .algolia-autocomplete-host .aa-ItemContentTitle mark,
 .algolia-autocomplete-host .aa-ItemContentDescription mark {
-  background: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 20%, transparent);
-  color: var(--viking-accent, var(--viking-teal-600));
+  background: color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 20%, transparent);
+  color: var(--viking-accent, var(--viking-accent));
   border-radius: 0;
   padding: 0;
   font-weight: 600;

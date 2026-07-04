@@ -3,18 +3,46 @@
   "meta": {
     "name": "viking-ui",
     "version": "2.1.0",
-    "description": "Canonical DEML design tokens — single source of truth for all properties",
+    "description": "Canonical DEML design tokens — single source of truth for primitives, semantic aliases, and component foundations",
     "canonicalScss": "../styles/_variables.scss",
     "documentation": "../../../THEME.md"
   },
   "color": {
+    "navy": {
+      "1000": "#01030a",
+      "950": "#030818",
+      "900": "#0a1024",
+      "800": "#101b33",
+      "700": "#162544",
+      "600": "#1e3054",
+      "500": "#284068",
+      "400": "#39547f",
+      "300": "#58719e",
+      "200": "#8fa2c2",
+      "100": "#d7e0ef"
+    },
     "charcoal": {
-      "950": "#0a0a0a",
-      "900": "#111111",
-      "800": "#1a1a1a",
-      "700": "#2a2a2a",
-      "600": "#333333",
-      "500": "#444444"
+      "950": "{color.navy.950}",
+      "900": "{color.navy.900}",
+      "800": "{color.navy.800}",
+      "700": "{color.navy.700}",
+      "600": "{color.navy.600}",
+      "500": "{color.navy.500}",
+      "400": "{color.navy.400}",
+      "300": "{color.navy.300}",
+      "200": "{color.navy.200}",
+      "100": "{color.navy.100}"
+    },
+    "electric": {
+      "900": "#04225f",
+      "800": "#073a99",
+      "700": "#0a4fd4",
+      "600": "#1565f0",
+      "500": "#2176ff",
+      "400": "#4d94ff",
+      "300": "#7ab0ff",
+      "200": "#b6d3ff",
+      "100": "#e7f1ff"
     },
     "metallic": {
       "600": "#555555",
@@ -22,31 +50,46 @@
       "400": "#777777",
       "300": "#999999",
       "200": "#aaaaaa",
-      "100": "#bbbbbb"
+      "100": "#bbbbbb",
+      "050": "#e6e8ec"
     },
     "teal": {
-      "700": "#0a5c5f",
-      "600": "#0d7377",
-      "500": "#109094",
-      "400": "#14a3a8",
-      "300": "#2db8bd"
+      "700": "{color.electric.700}",
+      "600": "{color.electric.600}",
+      "500": "{color.electric.500}",
+      "400": "{color.electric.400}",
+      "300": "{color.electric.300}"
     },
     "crimson": {
       "700": "#7a2231",
       "600": "#922b3e",
       "500": "#a83344",
-      "400": "#c44355"
+      "400": "#c44355",
+      "300": "#dc6b78",
+      "100": "#fde8ec"
     },
+    "cyan": { "600": "#168aad", "500": "#1fa2c9", "400": "#47bee0" },
+    "violet": { "600": "#6f5bd7", "500": "#8674f0" },
+    "amber": { "600": "#a77912", "500": "#d69e2e" },
     "green": { "500": "#2a9d8f" },
     "gold": { "500": "#c4a035" },
-    "blue": { "500": "#14a3a8" },
+    "blue": { "500": "{color.electric.400}" },
+    "red": { "500": "{color.crimson.500}" },
+    "ink": {
+      "1000": "#000000",
+      "950": "#050609",
+      "900": "#0c0f14",
+      "800": "#151a22",
+      "700": "#202735"
+    },
+    "slate": { "100": "#f4f7fb", "050": "#fbfcfe" },
     "white": "#f5f5f5",
     "whitePure": "#ffffff",
     "black": "#000000"
   },
   "series": {
     "1": {
-      "hex": "#0d7377",
+      "hex": "#2176ff",
       "token": "--viking-series-1",
       "role": "Primary series, default selection"
     },
@@ -71,12 +114,12 @@
       "role": "Critical / anomaly series"
     },
     "6": {
-      "hex": "#14a3a8",
+      "hex": "#4d94ff",
       "token": "--viking-series-6",
       "role": "Info / auxiliary series"
     },
     "7": {
-      "hex": "#2a2a2a",
+      "hex": "#162544",
       "token": "--viking-series-7",
       "role": "Baseline / muted series"
     },
@@ -85,30 +128,56 @@
       "token": "--viking-series-8",
       "role": "Disabled / archived series"
     },
-    "default": "#0d7377"
+    "default": "#2176ff"
   },
   "semantic": {
     "dark": {
-      "bg": "charcoal.900",
-      "surface": "charcoal.800",
-      "surfaceAlt": "charcoal.700",
-      "surfaceRaised": "charcoal.600",
+      "bg": "navy.900",
+      "bgSubtle": "ink.950",
+      "surface": "navy.800",
+      "surfaceAlt": "navy.700",
+      "surfaceInset": "navy.950",
+      "surfaceRaised": "navy.600",
+      "surfaceOverlay": "ink.800",
       "text": "white",
       "textMuted": "metallic.200",
-      "accent": "teal.600",
+      "textSubtle": "metallic.300",
+      "textDisabled": "metallic.400",
+      "textLink": "electric.300",
+      "accent": "electric.500",
+      "accentHover": "electric.400",
+      "accentActive": "electric.700",
+      "accentSoft": "color-mix(in srgb, #2176ff 18%, transparent)",
       "accentSecondary": "crimson.600",
-      "ring": "teal.400"
+      "success": "green.500",
+      "warning": "gold.500",
+      "danger": "crimson.500",
+      "info": "blue.500",
+      "ring": "electric.400"
     },
     "light": {
-      "bg": "whitePure",
+      "bg": "slate.050",
+      "bgSubtle": "slate.100",
       "surface": "whitePure",
-      "surfaceAlt": "#f7f7f7",
-      "surfaceRaised": "#efefef",
-      "text": "charcoal.900",
+      "surfaceAlt": "slate.100",
+      "surfaceInset": "metallic.050",
+      "surfaceRaised": "whitePure",
+      "surfaceOverlay": "whitePure",
+      "text": "navy.900",
       "textMuted": "metallic.500",
-      "accent": "teal.700",
+      "textSubtle": "metallic.400",
+      "textDisabled": "metallic.300",
+      "textLink": "electric.700",
+      "accent": "electric.600",
+      "accentHover": "electric.500",
+      "accentActive": "electric.700",
+      "accentSoft": "color-mix(in srgb, #1565f0 14%, transparent)",
       "accentSecondary": "crimson.700",
-      "ring": "teal.600"
+      "success": "green.500",
+      "warning": "gold.500",
+      "danger": "crimson.500",
+      "info": "blue.500",
+      "ring": "electric.500"
     }
   },
   "typography": {
@@ -126,13 +195,16 @@
       "xl": "24px",
       "2xl": "30px",
       "3xl": "36px",
-      "4xl": "48px"
+      "4xl": "48px",
+      "5xl": "60px",
+      "6xl": "72px"
     },
     "fontWeight": {
       "regular": 400,
       "medium": 500,
       "semibold": 600,
-      "bold": 700
+      "bold": 700,
+      "extrabold": 800
     },
     "lineHeight": {
       "tight": 1.25,
@@ -152,20 +224,30 @@
   },
   "spacing": {
     "gridUnit": "4px",
+    "spaceUnit": "8px",
     "0": "0",
     "px": "1px",
     "half": "4px",
+    "0.5": "4px",
     "1": "8px",
     "1.5": "12px",
     "2": "16px",
+    "2.5": "20px",
     "3": "24px",
     "4": "32px",
     "5": "40px",
     "6": "48px",
     "7": "56px",
     "8": "64px",
+    "8.5": "72px",
     "9": "80px",
-    "10": "96px"
+    "10": "96px",
+    "11": "112px",
+    "12": "128px",
+    "14": "160px",
+    "16": "192px",
+    "20": "256px",
+    "24": "320px"
   },
   "radius": {
     "xs": "4px",
@@ -174,7 +256,9 @@
     "md": "10px",
     "lg": "12px",
     "xl": "16px",
-    "pill": "999px"
+    "2xl": "24px",
+    "pill": "999px",
+    "full": "999px"
   },
   "shadow": {
     "xs": "0 1px 2px rgba(0, 0, 0, 0.2)",
@@ -182,18 +266,23 @@
     "md": "0 2px 4px rgba(0,0,0,0.16), 0 4px 8px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.05)",
     "lg": "0 4px 8px rgba(0,0,0,0.14), 0 12px 24px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
     "inner": "inset 0 1px 2px rgba(0, 0, 0, 0.14)",
-    "hover": "0 8px 16px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.06)"
+    "hover": "0 8px 16px rgba(0,0,0,0.14), 0 4px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.06)",
+    "focus": "0 0 0 var(--viking-ring-offset) var(--viking-bg), 0 0 0 calc(var(--viking-ring-offset) + var(--viking-ring-width)) var(--viking-ring)",
+    "surfaceHighlight": "inset 0 1px 0 rgba(255,255,255,0.06)"
   },
   "motion": {
     "ease": {
       "default": "cubic-bezier(0.4, 0, 0.2, 1)",
       "in": "cubic-bezier(0.4, 0, 1, 1)",
-      "out": "cubic-bezier(0, 0, 0.2, 1)"
+      "out": "cubic-bezier(0, 0, 0.2, 1)",
+      "emphasized": "cubic-bezier(0.2, 0, 0, 1)"
     },
     "duration": {
+      "instant": "75ms",
       "fast": "150ms",
       "DEFAULT": "250ms",
-      "slow": "350ms"
+      "slow": "350ms",
+      "slower": "500ms"
     },
     "state": {
       "hoverLift": "-1px",

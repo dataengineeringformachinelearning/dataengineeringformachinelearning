@@ -6,7 +6,7 @@
 // ============================================================================
 
 :root {
-  --viking-series-1: var(--viking-teal-600);
+  --viking-series-1: var(--viking-electric-500);
   --viking-series-2: var(--viking-crimson-600);
   --viking-series-3: var(--viking-green-500);
   --viking-series-4: var(--viking-gold-500);
@@ -17,7 +17,7 @@
 
   --viking-series-default: var(--viking-series-1);
 
-  /* Premium palette v2.1 — teal primary, crimson secondary, semantic + muted slots */
+  /* Premium palette v3 — electric primary, crimson secondary, semantic + muted slots */
   --viking-series-palette: var(--viking-series-1), var(--viking-series-2),
     var(--viking-series-3), var(--viking-series-4), var(--viking-series-5),
     var(--viking-series-6), var(--viking-series-7), var(--viking-series-8);

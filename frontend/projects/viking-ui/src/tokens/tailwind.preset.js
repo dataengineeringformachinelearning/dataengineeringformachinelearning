@@ -54,12 +54,23 @@ module.exports = {
             200: 'var(--viking-metallic-200)',
             100: 'var(--viking-metallic-100)',
           },
+          electric: {
+            900: 'var(--viking-electric-900)',
+            800: 'var(--viking-electric-800)',
+            700: 'var(--viking-electric-700)',
+            600: 'var(--viking-electric-600)',
+            500: 'var(--viking-electric-500)',
+            400: 'var(--viking-electric-400)',
+            300: 'var(--viking-electric-300)',
+            200: 'var(--viking-electric-200)',
+            100: 'var(--viking-electric-100)',
+          },
           teal: {
-            700: 'var(--viking-teal-700)',
-            600: 'var(--viking-teal-600)',
-            500: 'var(--viking-teal-500)',
-            400: 'var(--viking-teal-400)',
-            300: 'var(--viking-teal-300)',
+            700: 'var(--viking-electric-700)',
+            600: 'var(--viking-electric-600)',
+            500: 'var(--viking-electric-500)',
+            400: 'var(--viking-electric-400)',
+            300: 'var(--viking-electric-300)',
           },
           crimson: {
             700: 'var(--viking-crimson-700)',
@@ -85,16 +96,43 @@ module.exports = {
         mono: ['var(--viking-font-family-mono)'],
       },
       fontSize: {
-        'viking-2xs': ['var(--viking-font-size-2xs)', { lineHeight: 'var(--viking-line-height-tight)' }],
-        'viking-xs': ['var(--viking-font-size-xs)', { lineHeight: 'var(--viking-line-height-tight)' }],
-        'viking-sm': ['var(--viking-font-size-sm)', { lineHeight: 'var(--viking-line-height-normal)' }],
+        'viking-2xs': [
+          'var(--viking-font-size-2xs)',
+          { lineHeight: 'var(--viking-line-height-tight)' },
+        ],
+        'viking-xs': [
+          'var(--viking-font-size-xs)',
+          { lineHeight: 'var(--viking-line-height-tight)' },
+        ],
+        'viking-sm': [
+          'var(--viking-font-size-sm)',
+          { lineHeight: 'var(--viking-line-height-normal)' },
+        ],
         viking: ['var(--viking-font-size)', { lineHeight: 'var(--viking-line-height-relaxed)' }],
-        'viking-md': ['var(--viking-font-size-md)', { lineHeight: 'var(--viking-line-height-relaxed)' }],
-        'viking-lg': ['var(--viking-font-size-lg)', { lineHeight: 'var(--viking-line-height-tight)' }],
-        'viking-xl': ['var(--viking-font-size-xl)', { lineHeight: 'var(--viking-line-height-tight)' }],
-        'viking-2xl': ['var(--viking-font-size-2xl)', { lineHeight: 'var(--viking-line-height-tight)' }],
-        'viking-3xl': ['var(--viking-font-size-3xl)', { lineHeight: 'var(--viking-line-height-tight)' }],
-        'viking-4xl': ['var(--viking-font-size-4xl)', { lineHeight: 'var(--viking-line-height-tight)' }],
+        'viking-md': [
+          'var(--viking-font-size-md)',
+          { lineHeight: 'var(--viking-line-height-relaxed)' },
+        ],
+        'viking-lg': [
+          'var(--viking-font-size-lg)',
+          { lineHeight: 'var(--viking-line-height-tight)' },
+        ],
+        'viking-xl': [
+          'var(--viking-font-size-xl)',
+          { lineHeight: 'var(--viking-line-height-tight)' },
+        ],
+        'viking-2xl': [
+          'var(--viking-font-size-2xl)',
+          { lineHeight: 'var(--viking-line-height-tight)' },
+        ],
+        'viking-3xl': [
+          'var(--viking-font-size-3xl)',
+          { lineHeight: 'var(--viking-line-height-tight)' },
+        ],
+        'viking-4xl': [
+          'var(--viking-font-size-4xl)',
+          { lineHeight: 'var(--viking-line-height-tight)' },
+        ],
       },
       spacing: {
         'viking-0': 'var(--viking-space-0)',

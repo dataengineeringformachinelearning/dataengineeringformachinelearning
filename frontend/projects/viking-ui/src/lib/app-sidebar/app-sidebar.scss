@@ -393,15 +393,15 @@ html[data-theme='light'] .viking-app-sidebar-host {
     }
 
     mark.search-highlight {
-      background: color-mix(in srgb, var(--viking-teal-600) 25%, transparent);
-      color: var(--viking-teal-600);
+      background: color-mix(in srgb, var(--viking-accent) 25%, transparent);
+      color: var(--viking-accent);
       font-weight: 700;
       border-radius: 0px;
       padding: 0 0px;
 
       :host-context(html[data-theme='light']) & {
-        background: color-mix(in srgb, var(--viking-teal-600) 15%, transparent);
-        color: var(--viking-teal-600);
+        background: color-mix(in srgb, var(--viking-accent) 15%, transparent);
+        color: var(--viking-accent);
       }
     }
   }

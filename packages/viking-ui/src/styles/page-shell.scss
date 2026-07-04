@@ -603,7 +603,7 @@
     height: var(--viking-space-3);
     border-radius: var(--viking-radius-sm);
     background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 14%, transparent));
-    color: var(--viking-accent-strong, var(--viking-teal-600));
+    color: var(--viking-accent-strong, var(--viking-accent));
     flex-shrink: 0;
   }
 }
@@ -695,7 +695,7 @@
 .stat-value {
   font-size: calc(var(--viking-font-size) * 1.35);
   font-weight: var(--viking-font-weight-bold, 700);
-  color: var(--viking-accent-strong, var(--viking-teal-600));
+  color: var(--viking-accent-strong, var(--viking-accent));
   letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
   line-height: var(--viking-line-height-tight, 1.2);
 }
@@ -813,7 +813,7 @@
   width: 100%;
 
   &.threat-text {
-    color: var(--viking-teal-600);
+    color: var(--viking-accent);
   }
 
   &.main-text {

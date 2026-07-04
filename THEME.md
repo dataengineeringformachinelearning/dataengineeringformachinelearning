@@ -36,7 +36,7 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 - **Dark-first engineering aesthetic** — deep charcoals, machined metallic edges, no decorative noise.
 - **Luxurious minimalism** — every pixel earns its place; data and metrics dominate ornament.
 - **Tactile surfaces** — subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`), restrained elevation, crisp borders.
-- **Refined accent discipline** — deep teal for primary action, rich crimson for secondary emphasis and danger; no neon gradients or ambient glow orbs on base surfaces.
+- **Refined accent discipline** — electric blue (`#2176ff`) for primary action, rich crimson for secondary emphasis and danger; no neon gradients or ambient glow orbs on base surfaces.
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
 - **Zero arbitrary hex** — all colors resolve to tokens below. Emojis are prohibited except 🇺🇸 on specific badges.
 
@@ -44,33 +44,33 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 
 [Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/frontend/projects/viking-ui) follows a **composable primitive** model: install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
 
-| Pattern                  | Viking-UI equivalent                                                   | Notes                                                            |
-| ------------------------ | ---------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                | Machined top-edge hairline, `--viking-radius-lg`, no glass blur  |
-| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)          | Label, description, error; shake on invalid                      |
-| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking               |
-| Dark-first shell         | `data-theme="dark"` default                                            | Light mode shifts teal/crimson lightness only — no hue inversion |
-| Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                 |
-| Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm  |
+| Pattern                  | Viking-UI equivalent                                                   | Notes                                                                |
+| ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Clean card surfaces      | `viking-card`, `viking-metric-card`, `viking-hud-panel`                | Machined top-edge hairline, `--viking-radius-lg`, no glass blur      |
+| Form field stack         | `viking-field` → control (`viking-input`, `viking-select`, …)          | Label, description, error; shake on invalid                          |
+| Button variants          | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking                   |
+| Dark-first shell         | `data-theme="dark"` default                                            | Light mode shifts electric/crimson lightness only — no hue inversion |
+| Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                     |
+| Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
 
-**Palette discipline:** **deep charcoals, metallic borders, and restrained teal/crimson** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
+**Palette discipline:** **deep navy/black surfaces, metallic borders, and restrained electric-blue/crimson accents** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
 
 ---
 
 ## 1. Color palette
 
-### 1.1 Charcoal surfaces (neutrals)
+### 1.1 Deep navy / charcoal surfaces
 
-Deep grays anchor every surface. Use stepped elevation, not arbitrary shades.
+Deep navy-black surfaces anchor every surface. The `--viking-charcoal-*` names remain as compatibility aliases over the navy scale; use stepped elevation, not arbitrary shades.
 
-| Token                   | HEX       | RGB               | Role                               |
-| ----------------------- | --------- | ----------------- | ---------------------------------- |
-| `--viking-charcoal-950` | `#0A0A0A` | `rgb(10, 10, 10)` | Deepest backdrop, modal scrim base |
-| `--viking-charcoal-900` | `#111111` | `rgb(17, 17, 17)` | Default page background (dark)     |
-| `--viking-charcoal-800` | `#1A1A1A` | `rgb(26, 26, 26)` | Cards, panels, sidebars            |
-| `--viking-charcoal-700` | `#2A2A2A` | `rgb(42, 42, 42)` | Elevated surfaces, inputs          |
-| `--viking-charcoal-600` | `#333333` | `rgb(51, 51, 51)` | Raised chips, hover states         |
-| `--viking-charcoal-500` | `#444444` | `rgb(68, 68, 68)` | Strong dividers (rare)             |
+| Token                   | HEX       | RGB                | Role                               |
+| ----------------------- | --------- | ------------------ | ---------------------------------- |
+| `--viking-charcoal-950` | `#030818` | `rgb(3, 8, 24)`    | Deepest backdrop, modal scrim base |
+| `--viking-charcoal-900` | `#0A1024` | `rgb(10, 16, 36)`  | Default page background (dark)     |
+| `--viking-charcoal-800` | `#101B33` | `rgb(16, 27, 51)`  | Cards, panels, sidebars            |
+| `--viking-charcoal-700` | `#162544` | `rgb(22, 37, 68)`  | Elevated surfaces, inputs          |
+| `--viking-charcoal-600` | `#1E3054` | `rgb(30, 48, 84)`  | Raised chips, hover states         |
+| `--viking-charcoal-500` | `#284068` | `rgb(40, 64, 104)` | Strong dividers (rare)             |
 
 ### 1.2 Metallic accents (borders & depth)
 
@@ -85,17 +85,19 @@ Machined aluminum feel — borders, axis lines, muted shell trim.
 | `--viking-metallic-200` | `#AAAAAA` | `rgb(170, 170, 170)` | Muted text (dark mode)  |
 | `--viking-metallic-100` | `#BBBBBB` | `rgb(187, 187, 187)` | Disabled shell trim     |
 
-### 1.3 Primary — deep teal
+### 1.3 Primary — electric blue
 
 Primary CTAs, links, focus rings, series 1 in charts.
 
-| Token               | HEX       | RGB                 | Role                                          |
-| ------------------- | --------- | ------------------- | --------------------------------------------- |
-| `--viking-teal-700` | `#0A5C5F` | `rgb(10, 92, 95)`   | Primary (light mode)                          |
-| `--viking-teal-600` | `#0D7377` | `rgb(13, 115, 119)` | Primary (dark mode), **Series color default** |
-| `--viking-teal-500` | `#109094` | `rgb(16, 144, 148)` | Hover                                         |
-| `--viking-teal-400` | `#14A3A8` | `rgb(20, 163, 168)` | Focus ring, strong accent                     |
-| `--viking-teal-300` | `#2DB8BD` | `rgb(45, 184, 189)` | Highlights (sparingly)                        |
+| Token                   | HEX       | RGB                  | Role                                          |
+| ----------------------- | --------- | -------------------- | --------------------------------------------- |
+| `--viking-electric-700` | `#0A4FD4` | `rgb(10, 79, 212)`   | Active / pressed primary                      |
+| `--viking-electric-600` | `#1565F0` | `rgb(21, 101, 240)`  | Primary (light mode)                          |
+| `--viking-electric-500` | `#2176FF` | `rgb(33, 118, 255)`  | Primary (dark mode), **Series color default** |
+| `--viking-electric-400` | `#4D94FF` | `rgb(77, 148, 255)`  | Focus ring, hover, strong accent              |
+| `--viking-electric-300` | `#7AB0FF` | `rgb(122, 176, 255)` | Highlights (sparingly)                        |
+
+Legacy `--viking-teal-*` aliases resolve to the electric-blue scale for backward compatibility; new component work should use semantic aliases such as `--viking-accent`, `--viking-ring`, and `--viking-text-link`.
 
 ### 1.4 Secondary — rich crimson
 
@@ -110,11 +112,11 @@ Secondary emphasis, destructive actions, critical series.
 
 ### 1.5 Semantic status
 
-| Token                | HEX       | RGB                 | Role                                 |
-| -------------------- | --------- | ------------------- | ------------------------------------ |
-| `--viking-green-500` | `#2A9D8F` | `rgb(42, 157, 143)` | Success, stable, series 3            |
-| `--viking-gold-500`  | `#C4A035` | `rgb(196, 160, 53)` | Warning, series 4                    |
-| `--viking-blue-500`  | `#14A3A8` | `rgb(20, 163, 168)` | Info, series 6 (`--viking-teal-400`) |
+| Token                | HEX       | RGB                 | Role                                     |
+| -------------------- | --------- | ------------------- | ---------------------------------------- |
+| `--viking-green-500` | `#2A9D8F` | `rgb(42, 157, 143)` | Success, stable, series 3                |
+| `--viking-gold-500`  | `#C4A035` | `rgb(196, 160, 53)` | Warning, series 4                        |
+| `--viking-blue-500`  | `#4D94FF` | `rgb(77, 148, 255)` | Info, series 6 (`--viking-electric-400`) |
 
 ### 1.6 Absolute neutrals
 
@@ -180,7 +182,7 @@ Parent apps may still expose these; Viking-UI maps them in `viking-ui.scss`:
 
 | Legacy             | Viking token               |
 | ------------------ | -------------------------- |
-| `--color-primary`  | `--viking-teal-600`        |
+| `--color-primary`  | `--viking-electric-600`    |
 | `--accent-color`   | `--viking-crimson-600`     |
 | `--bg-color`       | `--viking-bg`              |
 | `--text-color`     | `--viking-text`            |
@@ -194,13 +196,13 @@ Programmatic series colors map to fixed tokens — use these instead of raw hex 
 
 | Slot | Token               | HEX       | Role                 |
 | ---- | ------------------- | --------- | -------------------- |
-| 1    | `--viking-series-1` | `#0D7377` | Primary / default    |
+| 1    | `--viking-series-1` | `#2176FF` | Primary / default    |
 | 2    | `--viking-series-2` | `#922B3E` | Secondary comparison |
 | 3    | `--viking-series-3` | `#2A9D8F` | Success / stable     |
 | 4    | `--viking-series-4` | `#C4A035` | Warning / threshold  |
 | 5    | `--viking-series-5` | `#A83344` | Critical / anomaly   |
-| 6    | `--viking-series-6` | `#14A3A8` | Info / auxiliary     |
-| 7    | `--viking-series-7` | `#2A2A2A` | Baseline / muted     |
+| 6    | `--viking-series-6` | `#4D94FF` | Info / auxiliary     |
+| 7    | `--viking-series-7` | `#162544` | Baseline / muted     |
 | 8    | `--viking-series-8` | `#666666` | Disabled / archived  |
 
 Default selection: `--viking-series-default` → `--viking-series-1`.
@@ -446,9 +448,9 @@ If `data-theme` is omitted, `prefers-color-scheme` selects the palette.
 | Surface          | `--viking-charcoal-800` |
 | Text             | `--viking-white`        |
 | Muted text       | `--viking-metallic-200` |
-| Primary accent   | `--viking-teal-600`     |
+| Primary accent   | `--viking-electric-500` |
 | Secondary accent | `--viking-crimson-600`  |
-| Focus ring       | `--viking-teal-400`     |
+| Focus ring       | `--viking-electric-400` |
 
 ### 7.3 Light mode
 
@@ -458,9 +460,9 @@ If `data-theme` is omitted, `prefers-color-scheme` selects the palette.
 | Surface          | `--viking-white-pure` / `#F7F7F7` alt |
 | Text             | `--viking-charcoal-900`               |
 | Muted text       | `--viking-metallic-500`               |
-| Primary accent   | `--viking-teal-700`                   |
+| Primary accent   | `--viking-electric-600`               |
 | Secondary accent | `--viking-crimson-700`                |
-| Focus ring       | `--viking-teal-600`                   |
+| Focus ring       | `--viking-electric-500`               |
 
 ### 7.4 Dark mode rules
 
@@ -468,7 +470,7 @@ If `data-theme` is omitted, `prefers-color-scheme` selects the palette.
 - **Do** use `color-mix(in srgb, …)` for borders — never raw semi-transparent hex literals.
 - **Do** maintain 4.5:1 contrast for body text, 3:1 for large text and UI components.
 - **Don't** use pure `#000` page backgrounds (use `--viking-charcoal-900`).
-- **Don't** invert accent hues between modes — only shift lightness (teal-600 ↔ teal-700).
+- **Don't** invert accent hues between modes — only shift lightness (electric-500 ↔ electric-600).
 - **Don't** add gradient orbs, mesh backgrounds, or neon glow on base layouts (CES gauges may use controlled glow on needles only).
 
 ---
@@ -516,31 +518,31 @@ Each preset maps to a `--viking-series-N` token (§1.9). Import shared values fr
 
 #### Preset swatches (default order)
 
-| #   | HEX       | Token / role            | Use                                |
-| --- | --------- | ----------------------- | ---------------------------------- |
-| 1   | `#0D7377` | `--viking-teal-600`     | Primary series, default selection  |
-| 2   | `#922B3E` | `--viking-crimson-600`  | Secondary / comparison series      |
-| 3   | `#2A9D8F` | `--viking-green-500`    | Success / stable metrics           |
-| 4   | `#C4A035` | `--viking-gold-500`     | Warning / threshold proximity      |
-| 5   | `#A83344` | `--viking-crimson-500`  | Critical / anomaly series          |
-| 6   | `#14A3A8` | `--viking-blue-500`     | Info / auxiliary series (teal-400) |
-| 7   | `#2A2A2A` | `--viking-charcoal-700` | Baseline / muted series            |
-| 8   | `#666666` | `--viking-metallic-500` | Disabled / archived series         |
+| #   | HEX       | Token / role            | Use                                    |
+| --- | --------- | ----------------------- | -------------------------------------- |
+| 1   | `#2176FF` | `--viking-electric-500` | Primary series, default selection      |
+| 2   | `#922B3E` | `--viking-crimson-600`  | Secondary / comparison series          |
+| 3   | `#2A9D8F` | `--viking-green-500`    | Success / stable metrics               |
+| 4   | `#C4A035` | `--viking-gold-500`     | Warning / threshold proximity          |
+| 5   | `#A83344` | `--viking-crimson-500`  | Critical / anomaly series              |
+| 6   | `#4D94FF` | `--viking-blue-500`     | Info / auxiliary series (electric-400) |
+| 7   | `#162544` | `--viking-charcoal-700` | Baseline / muted series                |
+| 8   | `#666666` | `--viking-metallic-500` | Disabled / archived series             |
 
-**Default value:** `#0D7377` (`--viking-teal-600`)
+**Default value:** `#2176FF` (`--viking-electric-500`)
 
 **Implementation reference:**
 
 ```typescript
 // frontend/projects/viking-ui/src/tokens/series-presets.ts
 export const VIKING_SERIES_PRESETS = [
-  "#0d7377",
+  "#2176ff",
   "#922b3e",
   "#2a9d8f",
   "#c4a035",
   "#a83344",
-  "#14a3a8",
-  "#2a2a2a",
+  "#4d94ff",
+  "#162544",
   "#666666",
 ] as const;
 export const VIKING_SERIES_DEFAULT = VIKING_SERIES_PRESETS[0];
@@ -747,7 +749,7 @@ Marketing documentation pages (`/book`, `/whitepaper`, `/documentation`) share V
 | **The Whitepaper** | `WHITEPAPER.md` → `whitepaper.md`             | Sticky section nav, two-column card grid, integration pill strip |
 | **Documentation**  | Static Astro + `docs/integrations/*.md` links | Sticky outline nav, bento API cards, six integration examples    |
 
-All three pages use `--viking-teal-600` for primary CTAs, `--viking-charcoal-900` code blocks, and `--container-max-width` (1260px) outer wrappers. Never hardcode integration names inconsistently — the six official platforms are Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and AWS Redshift.
+All three pages use `--viking-accent` for primary CTAs, `--viking-charcoal-900` code blocks, and `--container-max-width` (1260px) outer wrappers. Never hardcode integration names inconsistently — the six official platforms are Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and AWS Redshift.
 
 ---
 
@@ -780,9 +782,9 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 - **Angular:** always `@dataengineeringformachinelearning/viking-ui` — no Material, no third-party UI runtimes, no one-off styled controls when a `viking-*` exists.
 - **Extend the library first:** shared primitives ship in `frontend/projects/viking-ui/`; apps consume, they do not duplicate.
 - **Composable ergonomics, Viking palette:** field stacks (`viking-field` → control), card surfaces (`viking-card`), button variants (`viking-button`) per §8 and the pattern mapping table in §Design philosophy.
-- **Premium restrained luxury:** machined surfaces, restrained elevation, teal/crimson accent discipline — data dominates ornament.
+- **Premium restrained luxury:** machined surfaces, restrained elevation, electric/crimson accent discipline — data dominates ornament.
 - **Non-Angular:** static `viking-ui.css` + semantic aliases only; run `sync_design_system.py` after token edits.
 
 When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
 
-**Version:** Viking-UI premium palette v2.2 (charcoal / teal / crimson, composable primitives, unified agent governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+**Version:** Viking-UI premium palette v3.0 (deep navy / electric blue / crimson, composable primitives, unified agent governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

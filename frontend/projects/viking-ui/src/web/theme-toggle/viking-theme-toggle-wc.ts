@@ -15,10 +15,10 @@ const VIKING_THEME_TOGGLE_STYLES = `
   height: var(--viking-control-height, 40px);
   min-width: var(--viking-control-height, 40px);
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 32%, var(--viking-border-strong, var(--viking-border)));
+  border: 1px solid color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 32%, var(--viking-border-strong, var(--viking-border)));
   border-radius: var(--viking-radius);
-  background: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 8%, var(--viking-surface));
-  color: var(--viking-accent-strong, var(--viking-teal-400));
+  background: color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 8%, var(--viking-surface));
+  color: var(--viking-accent-strong, var(--viking-ring));
   box-shadow: var(--viking-shadow-sm);
   cursor: pointer;
   transition: var(--viking-transition-interactive);
@@ -26,9 +26,9 @@ const VIKING_THEME_TOGGLE_STYLES = `
 }
 
 .theme-toggle-btn:hover {
-  border-color: var(--viking-accent-strong, var(--viking-teal-400));
-  background: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 14%, var(--viking-surface-alt));
-  color: var(--viking-accent-strong, var(--viking-teal-400));
+  border-color: var(--viking-accent-strong, var(--viking-ring));
+  background: color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 14%, var(--viking-surface-alt));
+  color: var(--viking-accent-strong, var(--viking-ring));
   box-shadow: var(--viking-shadow-md);
 }
 

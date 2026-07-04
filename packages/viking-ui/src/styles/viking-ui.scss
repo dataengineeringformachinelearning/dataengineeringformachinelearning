@@ -20,45 +20,45 @@
 
 :root {
   /* Accent — electric blue primary, crimson secondary */
-  --viking-accent: var(--color-primary, var(--viking-teal-600, var(--viking-teal-600)));
-  --viking-accent-hover: var(--viking-teal-500, var(--viking-electric-500));
-  --viking-accent-content: var(--color-on-primary, var(--viking-white-pure, var(--viking-white-pure)));
+  --viking-accent: var(--color-primary, var(--viking-electric-500));
+  --viking-accent-hover: var(--viking-electric-400);
+  --viking-accent-content: var(--color-on-primary, var(--viking-white-pure));
   --viking-accent-soft: color-mix(in srgb, var(--viking-accent) 18%, transparent);
-  --viking-accent-strong: var(--color-primary-container, var(--viking-teal-400, var(--viking-teal-400)));
+  --viking-accent-strong: var(--color-primary-container, var(--viking-electric-300));
 
-  --viking-accent-secondary: var(--accent-color, var(--viking-crimson-600, var(--viking-crimson-600)));
-  --viking-accent-secondary-hover: var(--viking-crimson-500, var(--viking-crimson-500));
-  --viking-accent-secondary-content: var(--viking-white-pure, var(--viking-white-pure));
+  --viking-accent-secondary: var(--accent-color, var(--viking-crimson-600));
+  --viking-accent-secondary-hover: var(--viking-crimson-500);
+  --viking-accent-secondary-content: var(--viking-white-pure);
   --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-accent-secondary) 16%, transparent);
 
   /* Surfaces */
-  --viking-bg: var(--bg-color, var(--viking-charcoal-900, #111111));
-  --viking-surface: var(--card-bg, var(--viking-charcoal-800, #1a1a1a));
-  --viking-surface-alt: var(--color-surface-variant, var(--viking-charcoal-700, var(--viking-charcoal-700)));
-  --viking-surface-raised: var(--viking-charcoal-600, #333333);
-  --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-950, #0a0a0a) 72%, transparent);
+  --viking-bg: var(--bg-color, var(--viking-charcoal-900));
+  --viking-surface: var(--card-bg, var(--viking-charcoal-800));
+  --viking-surface-alt: var(--color-surface-variant, var(--viking-charcoal-700));
+  --viking-surface-raised: var(--viking-charcoal-600);
+  --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-950) 72%, transparent);
 
   /* Text */
-  --viking-text: var(--text-color, var(--viking-white, var(--viking-white)));
-  --viking-text-muted: var(--text-muted, var(--viking-metallic-200, #aaaaaa));
-  --viking-text-subtle: var(--viking-metallic-300, #999999);
-  --viking-text-inverted: var(--color-on-primary, var(--viking-charcoal-900, #111111));
+  --viking-text: var(--text-color, var(--viking-white));
+  --viking-text-muted: var(--text-muted, var(--viking-metallic-200));
+  --viking-text-subtle: var(--viking-metallic-300);
+  --viking-text-inverted: var(--color-on-primary, var(--viking-charcoal-900));
 
   /* Borders / focus — fallbacks match _variables.scss premium v2.1 depths */
-  --viking-border: var(--border, color-mix(in srgb, var(--viking-metallic-600, #555555) 48%, transparent));
-  --viking-border-strong: var(--border-layout, color-mix(in srgb, var(--viking-metallic-400, #777777) 68%, transparent));
-  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600, #555555) 28%, transparent);
-  --viking-ring: var(--focus-ring-color, var(--viking-teal-400, var(--viking-teal-400)));
+  --viking-border: var(--border, color-mix(in srgb, var(--viking-metallic-600) 48%, transparent));
+  --viking-border-strong: var(--border-layout, color-mix(in srgb, var(--viking-metallic-400) 68%, transparent));
+  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 28%, transparent);
+  --viking-ring: var(--focus-ring-color, var(--viking-electric-400));
   --viking-ring-width: var(--focus-ring-width, 2px);
   --viking-ring-offset: var(--focus-ring-offset, 2px);
 
   /* Status */
-  --viking-success: var(--color-success, var(--viking-green-500, var(--viking-green-500)));
-  --viking-warning: var(--color-warning, var(--viking-gold-500, var(--viking-gold-500)));
-  --viking-danger: var(--color-error, var(--viking-crimson-500, var(--viking-crimson-500)));
-  --viking-info: var(--color-info, var(--viking-blue-500, var(--viking-blue-500)));
-  --viking-danger-text: color-mix(in srgb, var(--viking-danger) 50%, var(--viking-charcoal-900, #111111));
-  --viking-on-danger: var(--viking-white-pure, var(--viking-white-pure));
+  --viking-success: var(--color-success, var(--viking-green-500));
+  --viking-warning: var(--color-warning, var(--viking-gold-500));
+  --viking-danger: var(--color-error, var(--viking-crimson-500));
+  --viking-info: var(--color-info, var(--viking-blue-500));
+  --viking-danger-text: color-mix(in srgb, var(--viking-danger) 50%, var(--viking-charcoal-900));
+  --viking-on-danger: var(--viking-white-pure);
 
   /* Shape */
   --viking-radius-xs: 4px;
@@ -222,7 +222,7 @@ body,
   font-size: var(--viking-font-size-ui);
   line-height: var(--viking-line-height-snug);
   color: var(--viking-text-inverted);
-  background: var(--viking-charcoal-900, #111111);
+  background: var(--viking-charcoal-900);
   border: 1px solid var(--viking-border-strong);
   border-radius: var(--viking-radius);
   box-shadow: var(--viking-shadow-md);
@@ -231,16 +231,16 @@ body,
 }
 
 html[data-theme='light'] .viking-tooltip {
-  color: var(--viking-white-pure, var(--viking-white-pure));
-  background: var(--viking-charcoal-800, #1a1a1a);
-  border-color: color-mix(in srgb, var(--viking-charcoal-600, #333333) 45%, transparent);
+  color: var(--viking-white-pure);
+  background: var(--viking-charcoal-800);
+  border-color: color-mix(in srgb, var(--viking-charcoal-600) 45%, transparent);
 }
 
 @media (prefers-color-scheme: light) {
   html:not([data-theme='dark']) .viking-tooltip {
-    color: var(--viking-white-pure, var(--viking-white-pure));
-    background: var(--viking-charcoal-800, #1a1a1a);
-    border-color: color-mix(in srgb, var(--viking-charcoal-600, #333333) 45%, transparent);
+    color: var(--viking-white-pure);
+    background: var(--viking-charcoal-800);
+    border-color: color-mix(in srgb, var(--viking-charcoal-600) 45%, transparent);
   }
 }
 
