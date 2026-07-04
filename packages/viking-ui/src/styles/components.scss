@@ -1,0 +1,175 @@
+/*! Viking-UI Static Components. Source: packages/viking-ui/src/styles/components.scss */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--viking-bg);
+  color: var(--viking-text);
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size);
+  line-height: var(--viking-line-height-normal);
+}
+
+body {
+  margin: 0;
+  background: var(--viking-bg);
+  color: var(--viking-text);
+}
+
+a {
+  color: var(--viking-accent-strong);
+  text-decoration-thickness: var(--viking-space-px);
+  text-underline-offset: var(--viking-space-half);
+}
+
+:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+.page-inner-wrapper,
+.viking-page-inner {
+  width: min(
+    100% - (var(--viking-page-gutter) * 2),
+    var(--viking-container-max-width)
+  );
+  margin-inline: auto;
+}
+
+@media (min-width: 768px) {
+  .page-inner-wrapper,
+  .viking-page-inner {
+    width: min(
+      100% - (var(--viking-page-gutter-lg) * 2),
+      var(--viking-container-max-width)
+    );
+  }
+}
+
+.viking-stack {
+  display: grid;
+  gap: var(--viking-page-stack-gap);
+}
+
+.viking-section {
+  padding-block: var(--viking-page-section-gap);
+}
+
+.viking-card {
+  display: block;
+  padding: var(--viking-card-padding);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-recipe);
+  color: var(--viking-text);
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-card[data-compact="true"] {
+  padding: var(--viking-card-padding-compact);
+}
+
+.viking-button,
+.viking-btn {
+  display: inline-flex;
+  min-height: var(--viking-control-height);
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  padding: 0 var(--viking-control-padding-x);
+  border: 1px solid var(--viking-border-strong);
+  border-radius: var(--viking-radius);
+  background: var(--viking-surface);
+  color: var(--viking-text);
+  box-shadow: var(--viking-shadow-sm);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-semibold);
+  line-height: var(--viking-line-height-snug);
+  text-decoration: none;
+  transition: var(--viking-transition-interactive);
+}
+
+.viking-button:hover,
+.viking-btn:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 45%,
+    var(--viking-border-strong)
+  );
+  transform: translateY(var(--viking-state-hover-lift));
+}
+
+.viking-button[data-variant="primary"],
+.viking-btn-primary {
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 82%,
+    var(--viking-black)
+  );
+  background: var(--viking-accent);
+  color: var(--viking-accent-content);
+}
+
+.viking-button[data-variant="secondary"],
+.viking-btn-secondary {
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent-secondary) 82%,
+    var(--viking-black)
+  );
+  background: var(--viking-accent-secondary);
+  color: var(--viking-accent-secondary-content);
+}
+
+.viking-button[data-variant="ghost"],
+.viking-btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.viking-field {
+  display: grid;
+  gap: var(--viking-space-1);
+}
+
+.viking-label {
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-semibold);
+}
+
+.viking-input,
+.viking-select,
+.viking-textarea {
+  width: 100%;
+  min-height: var(--viking-control-height);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  background: var(--viking-surface-alt);
+  color: var(--viking-text);
+  font: inherit;
+  padding: 0 var(--viking-space-2);
+}
+
+.viking-textarea {
+  min-height: calc(var(--viking-control-height) * 2.5);
+  padding-block: var(--viking-space-1);
+  resize: vertical;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

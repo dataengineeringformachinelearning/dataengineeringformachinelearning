@@ -1,0 +1,219 @@
+/*! Viking-UI Design Tokens. Source: packages/viking-ui/src/styles/tokens.scss */
+:root,
+:host {
+  color-scheme: dark;
+
+  --viking-charcoal-950: #0a0a0a;
+  --viking-charcoal-900: #111111;
+  --viking-charcoal-800: #1a1a1a;
+  --viking-charcoal-700: #2a2a2a;
+  --viking-charcoal-600: #333333;
+  --viking-charcoal-500: #444444;
+
+  --viking-metallic-600: #555555;
+  --viking-metallic-500: #666666;
+  --viking-metallic-400: #777777;
+  --viking-metallic-300: #999999;
+  --viking-metallic-200: #aaaaaa;
+  --viking-metallic-100: #bbbbbb;
+
+  --viking-teal-700: #0a5c5f;
+  --viking-teal-600: #0d7377;
+  --viking-teal-500: #109094;
+  --viking-teal-400: #14a3a8;
+  --viking-teal-300: #2db8bd;
+
+  --viking-crimson-700: #7a2231;
+  --viking-crimson-600: #922b3e;
+  --viking-crimson-500: #a83344;
+  --viking-crimson-400: #c44355;
+
+  --viking-green-500: #2a9d8f;
+  --viking-gold-500: #c4a035;
+  --viking-blue-500: var(--viking-teal-400);
+  --viking-white: #f5f5f5;
+  --viking-white-pure: #ffffff;
+  --viking-black: #000000;
+
+  --viking-bg: var(--viking-charcoal-900);
+  --viking-surface: var(--viking-charcoal-800);
+  --viking-surface-alt: var(--viking-charcoal-700);
+  --viking-surface-raised: var(--viking-charcoal-600);
+  --viking-surface-recipe: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--viking-white-pure) 3%, var(--viking-surface)) 0%,
+    var(--viking-surface) 100%
+  );
+  --viking-overlay-backdrop: color-mix(
+    in srgb,
+    var(--viking-charcoal-950) 78%,
+    transparent
+  );
+
+  --viking-text: var(--viking-white);
+  --viking-text-muted: var(--viking-metallic-200);
+  --viking-text-subtle: var(--viking-metallic-300);
+  --viking-text-inverted: var(--viking-charcoal-900);
+
+  --viking-border: color-mix(
+    in srgb,
+    var(--viking-metallic-600) 52%,
+    transparent
+  );
+  --viking-border-strong: color-mix(
+    in srgb,
+    var(--viking-metallic-400) 68%,
+    transparent
+  );
+  --viking-border-subtle: color-mix(
+    in srgb,
+    var(--viking-metallic-600) 30%,
+    transparent
+  );
+
+  --viking-accent: var(--viking-teal-600);
+  --viking-accent-hover: var(--viking-teal-500);
+  --viking-accent-content: var(--viking-white-pure);
+  --viking-accent-soft: color-mix(
+    in srgb,
+    var(--viking-accent) 18%,
+    transparent
+  );
+  --viking-accent-strong: var(--viking-teal-400);
+  --viking-accent-secondary: var(--viking-crimson-600);
+  --viking-accent-secondary-hover: var(--viking-crimson-500);
+  --viking-accent-secondary-content: var(--viking-white-pure);
+  --viking-accent-secondary-soft: color-mix(
+    in srgb,
+    var(--viking-accent-secondary) 16%,
+    transparent
+  );
+
+  --viking-success: var(--viking-green-500);
+  --viking-warning: var(--viking-gold-500);
+  --viking-danger: var(--viking-crimson-500);
+  --viking-info: var(--viking-blue-500);
+  --viking-danger-text: var(--viking-crimson-400);
+  --viking-on-danger: var(--viking-white-pure);
+
+  --viking-grid-unit: 4px;
+  --viking-space-0: 0;
+  --viking-space-px: 1px;
+  --viking-space-half: 4px;
+  --viking-space-1: 8px;
+  --viking-space-1-5: 12px;
+  --viking-space-2: 16px;
+  --viking-space-3: 24px;
+  --viking-space-4: 32px;
+  --viking-space-5: 40px;
+  --viking-space-6: 48px;
+  --viking-space-7: 56px;
+  --viking-space-8: 64px;
+  --viking-space-9: 80px;
+  --viking-space-10: 96px;
+
+  --viking-font-family:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --viking-font-family-mono:
+    ui-monospace, "JetBrains Mono", "SF Mono", "Cascadia Code", Consolas,
+    monospace;
+  --viking-font-size-2xs: 11px;
+  --viking-font-size-xs: 12px;
+  --viking-font-size-sm: 14px;
+  --viking-font-size: 16px;
+  --viking-font-size-base: 16px;
+  --viking-font-size-md: 18px;
+  --viking-font-size-lg: 20px;
+  --viking-font-size-xl: 24px;
+  --viking-font-size-2xl: 30px;
+  --viking-font-size-3xl: 36px;
+  --viking-font-size-4xl: 48px;
+  --viking-font-weight-regular: 400;
+  --viking-font-weight-medium: 500;
+  --viking-font-weight-semibold: 600;
+  --viking-font-weight-bold: 700;
+  --viking-line-height-none: 1;
+  --viking-line-height-tight: 1.25;
+  --viking-line-height-snug: 1.375;
+  --viking-line-height-normal: 1.5;
+  --viking-line-height-relaxed: 1.625;
+  --viking-letter-spacing-normal: 0;
+  --viking-letter-spacing-wide: 0.025em;
+  --viking-letter-spacing-wider: 0.05em;
+  --viking-letter-spacing-caps: 0.08em;
+
+  --viking-radius-xs: 4px;
+  --viking-radius-sm: 6px;
+  --viking-radius: 8px;
+  --viking-radius-md: 10px;
+  --viking-radius-lg: 12px;
+  --viking-radius-xl: 16px;
+  --viking-radius-pill: 999px;
+
+  --viking-shadow-xs: 0 1px 2px rgb(0 0 0 / 20%);
+  --viking-shadow-sm:
+    0 1px 2px rgb(0 0 0 / 18%), 0 1px 3px rgb(0 0 0 / 12%),
+    inset 0 1px 0 rgb(255 255 255 / 4%);
+  --viking-shadow-md:
+    0 2px 4px rgb(0 0 0 / 16%), 0 4px 8px rgb(0 0 0 / 12%),
+    inset 0 1px 0 rgb(255 255 255 / 5%);
+  --viking-shadow-lg:
+    0 4px 8px rgb(0 0 0 / 14%), 0 12px 24px rgb(0 0 0 / 18%),
+    inset 0 1px 0 rgb(255 255 255 / 6%);
+  --viking-shadow-hover:
+    0 8px 16px rgb(0 0 0 / 14%), 0 4px 8px rgb(0 0 0 / 10%),
+    inset 0 1px 0 rgb(255 255 255 / 6%);
+
+  --viking-ring: var(--viking-teal-400);
+  --viking-ring-width: 2px;
+  --viking-ring-offset: 2px;
+  --viking-control-height: 44px;
+  --viking-control-height-sm: 40px;
+  --viking-control-height-xs: 32px;
+  --viking-control-padding-x: var(--viking-space-2);
+  --viking-container-max-width: 1260px;
+  --viking-content-readable-max-width: 48rem;
+  --viking-page-gutter: var(--viking-space-2);
+  --viking-page-gutter-lg: var(--viking-space-4);
+  --viking-page-section-gap: var(--viking-space-7);
+  --viking-page-stack-gap: var(--viking-space-4);
+  --viking-card-padding: var(--viking-space-3);
+  --viking-card-padding-compact: var(--viking-space-2);
+  --viking-state-hover-lift: -1px;
+  --viking-state-disabled-opacity: 0.48;
+  --viking-duration-fast: 150ms;
+  --viking-duration: 250ms;
+  --viking-ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --viking-transition-interactive:
+    color var(--viking-duration) var(--viking-ease-default),
+    background-color var(--viking-duration) var(--viking-ease-default),
+    border-color var(--viking-duration) var(--viking-ease-default),
+    box-shadow var(--viking-duration) var(--viking-ease-default),
+    transform var(--viking-duration) var(--viking-ease-default),
+    opacity var(--viking-duration) var(--viking-ease-default);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --viking-bg: var(--viking-white-pure);
+  --viking-surface: #f5f5f5;
+  --viking-surface-alt: #ffffff;
+  --viking-surface-raised: #ffffff;
+  --viking-text: var(--viking-charcoal-900);
+  --viking-text-muted: var(--viking-metallic-500);
+  --viking-text-subtle: var(--viking-metallic-600);
+  --viking-border: color-mix(
+    in srgb,
+    var(--viking-metallic-300) 50%,
+    transparent
+  );
+  --viking-border-strong: color-mix(
+    in srgb,
+    var(--viking-metallic-500) 62%,
+    transparent
+  );
+  --viking-accent: var(--viking-teal-700);
+  --viking-accent-hover: var(--viking-teal-600);
+  --viking-accent-secondary: var(--viking-crimson-700);
+}
