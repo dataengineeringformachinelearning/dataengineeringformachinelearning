@@ -140,10 +140,20 @@ export type VikingSheetSide = 'left' | 'right';
       }
       .viking-sheet-footer {
         display: flex;
+        flex-wrap: wrap;
         gap: var(--viking-space-2);
         justify-content: flex-end;
+        align-items: center;
         padding: var(--viking-space-2);
         border-top: 1px solid var(--viking-border);
+      }
+      :host ::ng-deep .viking-sheet-footer [vikingSheetActions] {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: center;
+        gap: var(--viking-space-2);
+        width: 100%;
       }
     `,
   ],

@@ -153,11 +153,12 @@
           <viking-text
             >Shift traffic to the healthy Cloud Run revision.</viking-text
           >
-          <div vikingSheetActions>
-            <viking-button variant="primary" (pressed)="sheetOpen.set(false)"
-              >Acknowledge</viking-button
-            >
-          </div>
+          <viking-button
+            vikingSheetActions
+            variant="primary"
+            (pressed)="sheetOpen.set(false)"
+            >Acknowledge</viking-button
+          >
         </viking-sheet>
       </section>
     </div>
@@ -559,17 +560,19 @@
         <viking-modal heading="Confirm key rotation" [(open)]="modalOpen">
           Rotating the tenant KMS key re-encrypts all secrets. Workers stay
           online during the rotation.
-          <div vikingModalActions>
-            <viking-button variant="outline" (pressed)="modalOpen.set(false)"
-              >Cancel</viking-button
-            >
-            <viking-button
-              variant="primary"
-              icon="lock"
-              (pressed)="modalOpen.set(false)"
-              >Rotate keys</viking-button
-            >
-          </div>
+          <viking-button
+            vikingModalActions
+            variant="outline"
+            (pressed)="modalOpen.set(false)"
+            >Cancel</viking-button
+          >
+          <viking-button
+            vikingModalActions
+            variant="primary"
+            icon="lock"
+            (pressed)="modalOpen.set(false)"
+            >Rotate keys</viking-button
+          >
         </viking-modal>
         <viking-command [items]="commandItems" [(open)]="commandOpen" />
       </section>
