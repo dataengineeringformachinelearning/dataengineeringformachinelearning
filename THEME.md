@@ -40,12 +40,12 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
 - **Zero arbitrary hex** — all colors resolve to tokens below. Emojis are prohibited except 🇺🇸 on specific badges.
 
-### Spartan.ng reference (structure, not palette)
+### Composable primitive model
 
-[Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/frontend/projects/viking-ui) follows the **composable primitive** model popularized by [spartan.ng](https://spartan.ng/): install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
+[Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/frontend/projects/viking-ui) follows a **composable primitive** model: install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
 
-| Spartan pattern | Viking-UI equivalent | Notes |
-| --------------- | -------------------- | ----- |
+| Pattern | Viking-UI equivalent | Notes |
+| ------- | -------------------- | ----- |
 | Clean card surfaces | `viking-card`, `viking-metric-card`, `viking-hud-panel` | Machined top-edge hairline, `--viking-radius-lg`, no glass blur |
 | Form field stack | `viking-field` → control (`viking-input`, `viking-select`, …) | Label, description, error; shake on invalid |
 | Button variants | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Min 44px touch on mobile; semibold + wide tracking |
@@ -53,7 +53,7 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 | Accessible focus | `--viking-ring` 2px + 2px offset | Visible on keyboard; never remove for aesthetics |
 | Settings / billing forms | `viking-form-section`, grouped fields | Section titles at `--viking-font-size-lg`, 24px vertical rhythm |
 
-**Where Viking-UI diverges (intentionally):** Spartan’s default zinc/neutral palette is replaced by **deep charcoals, metallic borders, and restrained teal/crimson** — more luxurious and industrial, less startup-neutral. Spartan’s copy-paste Tailwind classes become **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
+**Palette discipline:** **deep charcoals, metallic borders, and restrained teal/crimson** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
 
 ---
 
@@ -307,7 +307,7 @@ Apply `font-optical-sizing: auto` on `html` (set in `_typography.scss`). Metrics
 
 ## 3. Spacing (4px base grid)
 
-All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Think **Porsche instrument-panel precision**: consistent rhythm, no arbitrary 13px or 27px gaps, no “close enough” padding.
+All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim for **instrument-panel precision**: consistent rhythm, no arbitrary 13px or 27px gaps, no “close enough” padding.
 
 **Rules:**
 
@@ -385,7 +385,7 @@ Light mode uses lower-contrast shadows (charcoal at 6–10% alpha).
 
 ## 6. Motion & transitions
 
-Porsche-like **mechanical** motion: fast enough to feel responsive, slow enough to read state changes. Default 250ms; never bounce or elastic easing on data surfaces.
+**Mechanical** motion: fast enough to feel responsive, slow enough to read state changes. Default 250ms; never bounce or elastic easing on data surfaces.
 
 | Token                             | Value                                               |
 | --------------------------------- | --------------------------------------------------- |
@@ -570,9 +570,9 @@ Tones: `accent` | `success` | `warning` | `danger` | `muted` — each resolves t
 
 Shimmer uses `--viking-charcoal-700` → `--viking-charcoal-600` (dark) or `#EFEFEF` → `#F7F7F7` (light). No arbitrary animation colors.
 
-### 8.8 Forms (Spartan-style field stack)
+### 8.8 Forms (field stack)
 
-Compose every input through **`viking-field`** — the label wraps the control for implicit association (WCAG-friendly, spartan-like ergonomics).
+Compose every input through **`viking-field`** — the label wraps the control for implicit association (WCAG-friendly, accessible ergonomics).
 
 ```html
 <viking-form-section title="Billing address">
@@ -734,7 +734,7 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 
 | Layer | File | Role |
 | ----- | ---- | ---- |
-| IDE / Cursor | [.cursorrules](.cursorrules) | Mandatory Viking-UI imports, Spartan-structured composition, zero hardcoded styles |
+| IDE / Cursor | [.cursorrules](.cursorrules) | Mandatory Viking-UI imports, composable composition, zero hardcoded styles |
 | Tokens & components | **THEME.md** (this file) | Canonical `--viking-*` matrix, component standards, do's/don'ts |
 | Platform invariants | [AGENTS.md](AGENTS.md) | Architecture, security, automation, Viking-UI Uniformity Law |
 | Narrative & build | [BOOK.md § Ch.31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) | Kit philosophy, consumption, publish workflow |
@@ -743,10 +743,10 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 
 - **Angular:** always `@dataengineeringformachinelearning/viking-ui` — no Material, no third-party UI runtimes, no one-off styled controls when a `viking-*` exists.
 - **Extend the library first:** shared primitives ship in `frontend/projects/viking-ui/`; apps consume, they do not duplicate.
-- **Spartan ergonomics, Viking palette:** field stacks (`viking-field` → control), card surfaces (`viking-card`), button variants (`viking-button`) per §8 and the Spartan mapping table in §Design philosophy.
+- **Composable ergonomics, Viking palette:** field stacks (`viking-field` → control), card surfaces (`viking-card`), button variants (`viking-button`) per §8 and the pattern mapping table in §Design philosophy.
 - **Premium restrained luxury:** machined surfaces, restrained elevation, teal/crimson accent discipline — data dominates ornament.
 - **Non-Angular:** static `viking-ui.css` + semantic aliases only; run `sync_design_system.py` after token edits.
 
 When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
 
-**Version:** Viking-UI premium palette v2.2 (charcoal / teal / crimson, Spartan-structured, unified agent governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+**Version:** Viking-UI premium palette v2.2 (charcoal / teal / crimson, composable primitives, unified agent governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

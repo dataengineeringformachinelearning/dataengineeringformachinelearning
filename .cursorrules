@@ -1,11 +1,11 @@
-# DEML — Cursor Agent Rules (Viking-UI / Spartan Quality)
+# DEML — Cursor Agent Rules (Viking-UI Quality)
 
 You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must feel like **precision-engineered industrial luxury**: restrained, dark-first, token-driven, and WCAG 2.1 AA by construction.
 
 ## Rule hierarchy (read in order)
 
 1. **This file** (`.cursorrules`) — mandatory UI/component behavior for Cursor agents
-2. **[THEME.md](THEME.md)** — canonical token matrix, Spartan-structured component standards
+2. **[THEME.md](THEME.md)** — canonical token matrix, composable component standards
 3. **[AGENTS.md](AGENTS.md)** — platform architecture, security, automation invariants
 4. **[BOOK.md § Chapter 31](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit)** — Viking-UI kit narrative, build, publish
 
@@ -13,12 +13,12 @@ Before editing HTML, CSS/SCSS, Tailwind config, or Angular templates: **read THE
 
 ---
 
-## Spartan-inspired quality (structure, not palette)
+## Composable primitive quality (structure, not palette)
 
-Viking-UI follows the **composable primitive** model from [spartan.ng](https://spartan.ng/): install behavior in Angular, style from tokens, customize without a monolithic theme runtime.
+Viking-UI follows a **composable primitive** model: install behavior in Angular, style from tokens, customize without a monolithic theme runtime.
 
-| Spartan pattern | Viking-UI equivalent | You must |
-| --------------- | -------------------- | -------- |
+| Pattern | Viking-UI equivalent | You must |
+| ------- | -------------------- | -------- |
 | Card surfaces | `viking-card`, `viking-metric-card`, `viking-hud-panel` | Use these — never raw `<div class="card">` |
 | Form field stack | `viking-field` → control (`viking-input`, `viking-select`, …) | Compose every input through `viking-field` |
 | Button variants | `viking-button` (`primary`, `secondary`, `outline`, `danger`, `ghost`) | Never hand-roll button styles |
@@ -26,7 +26,7 @@ Viking-UI follows the **composable primitive** model from [spartan.ng](https://s
 | Accessible focus | `--viking-ring` 2px + 2px offset | Never remove `:focus-visible` for aesthetics |
 | Settings / billing forms | `viking-form-section` + grouped `viking-field` | Section rhythm: `--viking-space-3` / `--viking-font-size-lg` |
 
-**Intentional divergence from Spartan:** zinc/neutral palettes are replaced by **deep charcoals, machined metallic borders, restrained teal/crimson** — premium restrained luxury, not startup-neutral.
+**Intentional palette:** **deep charcoals, machined metallic borders, restrained teal/crimson** — premium restrained luxury, not startup-neutral.
 
 ---
 
@@ -57,7 +57,7 @@ import {
 
 - Load synced CSS: `design-tokens.css` + `viking-ui.css` (from `scripts/sync_design_system.py`).
 - Use semantic HTML + `var(--viking-*)` tokens and documented utility classes — no inline hex, no one-off palettes.
-- Mirror Spartan ergonomics with tokenized form markup; do not embed React/Vue widget runtimes.
+- Mirror composable field ergonomics with tokenized form markup; do not embed React/Vue widget runtimes.
 
 ---
 

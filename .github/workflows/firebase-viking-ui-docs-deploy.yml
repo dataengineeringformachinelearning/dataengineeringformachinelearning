@@ -1,5 +1,5 @@
 # Deploy Viking-UI documentation site to Firebase Hosting on merge to main.
-# Serves the spartan.ng-style component library docs at ui.dataengineeringformachinelearning.com
+# Serves the Viking-UI component library docs at ui.dataengineeringformachinelearning.com
 # (configure custom domain in Firebase console after first deploy).
 
 name: Deploy Viking-UI Docs

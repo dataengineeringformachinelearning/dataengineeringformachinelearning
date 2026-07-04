@@ -48,7 +48,7 @@
           icon="filter"
           title="Ingestion Queue"
         >
-          <viking-badge fluxHudPanelBadge tone="accent"
+          <viking-badge vikingHudPanelBadge tone="accent"
             >{{ filteredVulnerabilities().length }}</viking-badge
           >
 
@@ -267,7 +267,7 @@
       <div class="soc-operations-grid">
         <!-- Incident Cases -->
         <viking-hud-panel icon="shield" title="Active Incident Cases" class="soc-panel">
-          <div class="soc-header-actions" fluxHudPanelBadge>
+          <div class="soc-header-actions" vikingHudPanelBadge>
             <viking-badge tone="accent">SIEM</viking-badge>
             <button
               type="button"
@@ -337,7 +337,7 @@
 
         <!-- Response Playbooks -->
         <viking-hud-panel icon="bolt" title="Response Playbooks" class="soc-panel">
-          <div class="soc-header-actions" fluxHudPanelBadge>
+          <div class="soc-header-actions" vikingHudPanelBadge>
             <viking-badge tone="accent">SOAR</viking-badge>
             <button
               type="button"

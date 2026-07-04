@@ -6,7 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
-import { fluxUid } from '../core/uid';
+import { vikingUid } from '../core/uid';
 import { VikingOtpInput } from '../otp-input/otp-input';
 
 /**
@@ -125,9 +125,9 @@ export class VikingVerificationCodeField extends VikingControl<string> {
   readonly completed = output<string>();
 
   protected readonly value = signal<string>('');
-  protected readonly labelId = fluxUid('viking-verification-code-label');
-  protected readonly descriptionId = fluxUid('viking-verification-code-description');
-  protected readonly errorId = fluxUid('viking-verification-code-error');
+  protected readonly labelId = vikingUid('viking-verification-code-label');
+  protected readonly descriptionId = vikingUid('viking-verification-code-description');
+  protected readonly errorId = vikingUid('viking-verification-code-error');
 
   writeValue(value: string): void {
     this.value.set(value ?? '');

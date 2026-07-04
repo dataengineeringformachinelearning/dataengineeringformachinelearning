@@ -2239,18 +2239,18 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech** �
 
 Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle synced from `frontend/projects/viking-ui/src/styles/`.
 
-### Unified design governance (Spartan-inspired)
+### Unified design governance
 
 DEML unifies UI through a layered rule stack so agents, contributors, and surfaces never drift:
 
 | Layer | Document | Purpose |
 | ----- | -------- | ------- |
-| Cursor / IDE | [.cursorrules](.cursorrules) | Mandatory `viking-*` imports, Spartan field stacks, zero hardcoded styles |
+| Cursor / IDE | [.cursorrules](.cursorrules) | Mandatory `viking-*` imports, composable field stacks, zero hardcoded styles |
 | Tokens | [THEME.md](THEME.md) | Canonical `--viking-*` palette, component standards, maintenance |
 | Platform | [AGENTS.md](AGENTS.md) | Viking-UI Uniformity Law, architecture and security invariants |
 | Narrative | This chapter | Consumption patterns, build, publish, accessibility contracts |
 
-**Spartan structure, Viking palette:** Viking-UI adopts the composable primitive ergonomics popularized by [spartan.ng](https://spartan.ng/) — `viking-field` wrapping controls, variant-driven `viking-button`, dark-first `viking-card` surfaces — but replaces Spartan's zinc neutrals with **deep charcoals, machined metallic borders, and restrained teal/crimson**. The result is **premium restrained luxury**: every pixel earns its place, metrics dominate ornament, and tactile surfaces use subtle top-edge highlights instead of glass blur or neon glow.
+**Composable structure, Viking palette:** Viking-UI adopts composable primitive ergonomics — `viking-field` wrapping controls, variant-driven `viking-button`, dark-first `viking-card` surfaces — with **deep charcoals, machined metallic borders, and restrained teal/crimson**. The result is **premium restrained luxury**: every pixel earns its place, metrics dominate ornament, and tactile surfaces use subtle top-edge highlights instead of glass blur or neon glow.
 
 **Component law for all Angular work:** import from `@dataengineeringformachinelearning/viking-ui` only. Do not add Material, Bootstrap, or parallel button/input/chart implementations. When a primitive is missing, extend `frontend/projects/viking-ui/` first, then consume it from deml.app. Non-Angular pages use synced `design-tokens.css` and `viking-ui.css` with semantic `var(--viking-*)` aliases — never inline hex palettes.
 

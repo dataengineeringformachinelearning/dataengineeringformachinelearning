@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
-import { fluxUid } from '../core/uid';
+import { vikingUid } from '../core/uid';
 
 /**
  * viking-autocomplete — text input with filtered suggestions
@@ -152,7 +152,7 @@ export class VikingAutocomplete extends VikingControl<string> {
 
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(0);
-  protected readonly panelId = fluxUid('viking-autocomplete-panel');
+  protected readonly panelId = vikingUid('viking-autocomplete-panel');
 
   protected readonly filtered = computed(() => {
     const query = this.value().toLowerCase().trim();

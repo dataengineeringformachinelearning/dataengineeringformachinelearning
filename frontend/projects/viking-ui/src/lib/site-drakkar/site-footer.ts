@@ -22,7 +22,7 @@ import {
   template: `
     <viking-footer>
       <nav
-        fluxFooterDirectory
+        vikingFooterDirectory
         class="viking-footer-directory footer-directory"
         aria-label="Footer Directory"
       >
@@ -56,7 +56,7 @@ import {
         }
       </nav>
 
-      <ng-container fluxFooterBottom>
+      <ng-container vikingFooterBottom>
         <div class="footer-badges-top">
           <span
             class="usa-badge viking-usa-badge"

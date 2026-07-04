@@ -7,7 +7,7 @@ const COMPLETE_KEY = 'deml_onboarding_complete';
 
 @Injectable({ providedIn: 'root' })
 export class OnboardingService {
-  private readonly fluxDialog = inject(VikingDialogService);
+  private readonly vikingDialog = inject(VikingDialogService);
   private platformId = inject(PLATFORM_ID);
 
   private get storage(): Storage | null {
@@ -44,6 +44,6 @@ export class OnboardingService {
 
   openWizard(force = false): Promise<boolean | undefined> | null {
     if (!isPlatformBrowser(this.platformId)) return null;
-    return this.fluxDialog.openOnboarding(force);
+    return this.vikingDialog.openOnboarding(force);
   }
 }

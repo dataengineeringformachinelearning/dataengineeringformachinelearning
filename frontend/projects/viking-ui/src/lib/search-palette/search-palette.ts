@@ -64,7 +64,7 @@ import { VikingIcon } from '../icon/icon';
             <ng-content />
           </div>
           <footer class="viking-search-palette-footer">
-            <ng-content select="[fluxSearchPaletteFooter]" />
+            <ng-content select="[vikingSearchPaletteFooter]" />
           </footer>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingSelectOption } from '../core/types';
-import { fluxUid } from '../core/uid';
+import { vikingUid } from '../core/uid';
 
 /**
  * viking-radio-group — radio group.
@@ -109,7 +109,7 @@ export class VikingRadioGroup extends VikingControl<unknown> {
   readonly disabled = input<boolean>(false);
   readonly orientation = input<'vertical' | 'horizontal'>('vertical');
 
-  protected readonly groupName = fluxUid('viking-radio');
+  protected readonly groupName = vikingUid('viking-radio');
 
   writeValue(value: unknown): void {
     this.value.set(value);

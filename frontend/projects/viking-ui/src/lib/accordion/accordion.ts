@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, input, model } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { fluxUid } from '../core/uid';
+import { vikingUid } from '../core/uid';
 
 /**
  * viking-accordion — collapsible content panels.
@@ -106,7 +106,7 @@ export class VikingAccordionItem {
   readonly heading = input.required<string>();
   readonly expanded = model<boolean>(false);
 
-  protected readonly panelId = fluxUid('viking-accordion-panel');
+  protected readonly panelId = vikingUid('viking-accordion-panel');
 
   protected toggle = (): void => {
     this.expanded.update(value => !value);

@@ -12,9 +12,9 @@ import { ChangeDetectionStrategy, Component, ViewEncapsulation } from '@angular/
   template: `
     <footer class="viking-footer mega-footer">
       <div class="viking-footer-content footer-content">
-        <ng-content select="[fluxFooterDirectory]" />
+        <ng-content select="[vikingFooterDirectory]" />
         <section class="viking-footer-bottom footer-bottom">
-          <ng-content select="[fluxFooterBottom]" />
+          <ng-content select="[vikingFooterBottom]" />
         </section>
       </div>
     </footer>
