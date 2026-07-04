@@ -8,9 +8,12 @@
   display: flex;
 
   .viking-btn {
-    width: 100%;
-    min-width: 0;
+    @include btn.viking-btn-full;
   }
+}
+
+:host(.viking-compact) .viking-btn {
+  @include btn.viking-btn-compact;
 }
 
 .viking-btn {
@@ -73,6 +76,12 @@
   @include btn.viking-btn-subtle;
 }
 
+.viking-btn-label {
+  display: inline-flex;
+  align-items: center;
+  line-height: inherit;
+}
+
 .viking-btn-kbd {
   font-family: var(--viking-font-family-mono);
   font-size: var(--viking-font-size-xs);
@@ -83,4 +92,5 @@
   padding: 0 var(--viking-space-half);
   line-height: 1.4;
   margin-left: var(--viking-space-half);
+  font-weight: var(--viking-font-weight-medium);
 }

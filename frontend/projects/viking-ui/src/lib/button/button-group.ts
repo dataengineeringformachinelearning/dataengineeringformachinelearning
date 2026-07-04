@@ -15,6 +15,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
         display: inline-flex;
         border-radius: var(--viking-radius);
         box-shadow: var(--viking-shadow-sm);
+        overflow: hidden;
       }
       :host ::ng-deep viking-button:not(:first-child) .viking-btn {
         border-top-left-radius: 0;
@@ -27,6 +28,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       }
       :host ::ng-deep viking-button .viking-btn {
         box-shadow: none;
+        min-width: 0;
+      }
+      :host ::ng-deep viking-button .viking-btn:hover,
+      :host ::ng-deep viking-button .viking-btn:focus-visible {
+        z-index: 1;
       }
     `,
   ],

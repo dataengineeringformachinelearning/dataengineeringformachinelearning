@@ -61,7 +61,7 @@ import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '../../tokens/serie
         width: var(--viking-space-4);
         height: var(--viking-space-4);
         border: 1px solid var(--viking-border-strong);
-        border-radius: var(--viking-radius);
+        border-radius: var(--viking-radius-sm);
         cursor: pointer;
         color: var(--viking-accent-content);
         transition: var(--viking-transition-interactive);
@@ -70,20 +70,23 @@ import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '../../tokens/serie
       }
       .viking-color-swatch:hover,
       .viking-color-custom:hover {
-        transform: scale(1.06);
+        transform: scale(1.08);
         border-color: var(--viking-accent-strong);
         box-shadow: var(--viking-shadow-sm);
-      }
-      .viking-color-swatch:focus-visible,
-      .viking-color-custom:focus-within {
-        outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: var(--viking-ring-offset);
+        z-index: 1;
       }
       .viking-selected {
         border-color: var(--viking-text);
         box-shadow:
           var(--viking-shadow-sm),
+          0 0 0 2px color-mix(in srgb, var(--viking-accent) 35%, transparent),
           inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        transform: scale(1.04);
+      }
+      .viking-color-swatch:focus-visible,
+      .viking-color-custom:focus-within {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
       }
       /* The native input fills the swatch so clicks and focus land on it. */
       .viking-color-custom input {
@@ -96,11 +99,16 @@ import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '../../tokens/serie
         cursor: pointer;
       }
       .viking-color-value {
-        font-size: var(--viking-font-size);
+        font-family: var(--viking-font-family-mono);
+        font-size: var(--viking-font-size-sm);
         color: var(--viking-text-muted);
-        background: transparent;
-        padding: 0;
+        background: var(--viking-surface-alt);
+        border: 1px solid var(--viking-border-subtle);
+        border-radius: var(--viking-radius-xs);
+        padding: var(--viking-space-half) var(--viking-space-1);
         font-variant-numeric: tabular-nums;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
       }
     `,
   ],

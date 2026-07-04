@@ -59,20 +59,21 @@ import { VikingSpinner } from '../spinner/spinner';
         gap: var(--viking-space-1);
         min-height: var(--viking-control-height);
         padding: 0 var(--viking-space-2);
-        background: var(--viking-surface);
-        border: 1px solid var(--viking-border-strong);
-        border-radius: var(--viking-radius);
-        box-shadow: var(--viking-shadow-sm);
+        background: var(--viking-surface-alt);
+        border: 1px solid var(--viking-border);
+        border-radius: var(--viking-radius-sm);
+        box-shadow: var(--viking-shadow-xs);
         transition: var(--viking-transition-interactive);
       }
       .viking-input-shell:hover:not(.viking-disabled):not(.viking-loading) {
-        border-color: var(--viking-accent-strong);
-        box-shadow: var(--viking-shadow-md);
+        border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border-strong));
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-input-shell:focus-within:not(.viking-loading) {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
         border-color: var(--viking-accent);
+        box-shadow: var(--viking-shadow-sm);
       }
       .viking-disabled,
       .viking-loading {

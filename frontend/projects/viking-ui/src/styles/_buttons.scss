@@ -1,6 +1,6 @@
 // ============================================================================
 // Viking-UI Button System — canonical styles for viking-button + static HTML
-// Single source of truth aligned to THEME.md §8.1
+// Single source of truth aligned to THEME.md §8.1 (Spartan-structured)
 // ============================================================================
 
 @mixin viking-btn-base {
@@ -8,7 +8,7 @@
   font-size: var(--viking-font-size-ui);
   font-weight: var(--viking-font-weight-semibold);
   letter-spacing: var(--viking-letter-spacing-wide);
-  line-height: var(--viking-line-height-none);
+  line-height: var(--viking-line-height-snug);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -30,18 +30,25 @@
   &:focus-visible {
     outline: var(--viking-ring-width) solid var(--viking-ring);
     outline-offset: var(--viking-ring-offset);
+    z-index: 1;
   }
 
   &:disabled,
   &[aria-busy='true'] {
     opacity: var(--viking-state-disabled-opacity);
     cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
+    transform: none !important;
+    box-shadow: none !important;
   }
 
   &[aria-busy='true'] .viking-btn-label {
     opacity: 0.85;
+  }
+
+  viking-icon,
+  .viking-icon {
+    flex-shrink: 0;
+    pointer-events: none;
   }
 }
 
@@ -54,6 +61,7 @@
   &:hover:not(:disabled):not([aria-busy='true']) {
     background: var(--viking-surface-alt);
     border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border-strong));
+    color: var(--viking-text);
     box-shadow: var(--viking-shadow-md);
     transform: translateY(var(--viking-state-hover-lift));
   }
@@ -73,6 +81,7 @@
   &:hover:not(:disabled):not([aria-busy='true']) {
     background: var(--viking-accent-hover);
     border-color: var(--viking-accent-hover);
+    color: var(--viking-accent-content);
     box-shadow: var(--viking-shadow-hover);
     transform: translateY(var(--viking-state-hover-lift));
   }
@@ -92,6 +101,7 @@
   &:hover:not(:disabled):not([aria-busy='true']) {
     background: var(--viking-accent-secondary-hover);
     border-color: var(--viking-accent-secondary-hover);
+    color: var(--viking-accent-secondary-content);
     box-shadow: var(--viking-shadow-hover);
     transform: translateY(var(--viking-state-hover-lift));
   }
@@ -129,6 +139,7 @@
   &:hover:not(:disabled):not([aria-busy='true']) {
     background: color-mix(in srgb, var(--viking-danger) 88%, var(--viking-white));
     border-color: color-mix(in srgb, var(--viking-danger) 92%, var(--viking-white));
+    color: var(--viking-on-danger);
     box-shadow: var(--viking-shadow-hover);
     transform: translateY(var(--viking-state-hover-lift));
   }
@@ -144,6 +155,7 @@
   color: var(--viking-text);
   min-width: auto;
   box-shadow: none;
+  border-color: transparent;
 
   &:hover:not(:disabled):not([aria-busy='true']) {
     background: var(--viking-accent-soft);
@@ -177,6 +189,7 @@
   min-height: var(--viking-control-height-sm);
   padding: 0 var(--viking-space-2);
   font-size: var(--viking-font-size-xs);
+  min-width: auto;
 }
 
 @mixin viking-btn-size-xs {
@@ -186,12 +199,28 @@
   min-width: auto;
 }
 
+@mixin viking-btn-compact {
+  min-width: 0;
+}
+
+@mixin viking-btn-full {
+  width: 100%;
+  min-width: 0;
+}
+
 // Static HTML / marketing native buttons (legacy class names preserved)
 .viking-btn-primary,
 a.viking-btn-primary,
 button.viking-btn-primary {
   @include viking-btn-base;
   @include viking-btn-primary;
+}
+
+.viking-btn-secondary,
+a.viking-btn-secondary,
+button.viking-btn-secondary {
+  @include viking-btn-base;
+  @include viking-btn-secondary;
 }
 
 .viking-btn-outline,
@@ -249,4 +278,18 @@ button.viking-btn-subtle {
 
 .viking-btn.viking-subtle {
   @include viking-btn-subtle;
+}
+
+.viking-btn.viking-compact {
+  @include viking-btn-compact;
+}
+
+.viking-btn.viking-full {
+  @include viking-btn-full;
+}
+
+.viking-btn-label {
+  display: inline-flex;
+  align-items: center;
+  line-height: inherit;
 }

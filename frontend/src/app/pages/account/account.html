@@ -55,6 +55,7 @@
                   <viking-button
                     variant="primary"
                     type="button"
+                    [compact]="true"
                     (pressed)="sendMfaCode()"
                     [disabled]="!mfaPhoneNumber || isSendingMfaCode() || mfaVerificationId !== null"
                     [loading]="isSendingMfaCode()"
@@ -78,6 +79,7 @@
                     <viking-button
                       variant="primary"
                       type="button"
+                      [compact]="true"
                       (pressed)="verifyMfaCode()"
                       [disabled]="!mfaVerificationCode || isVerifyingMfaCode()"
                       [loading]="isVerifyingMfaCode()"
@@ -151,6 +153,7 @@
                     variant="primary"
                     type="button"
                     icon="plus"
+                    [compact]="true"
                     (pressed)="generateApiKey()"
                     [disabled]="!newApiKeyName || isGeneratingApiKey() || isViewer"
                     [loading]="isGeneratingApiKey()"

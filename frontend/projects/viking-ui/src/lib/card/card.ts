@@ -34,7 +34,7 @@ import { VikingSkeleton } from '../skeleton/skeleton';
     `
       :host {
         display: block;
-        background: var(--viking-surface);
+        background: var(--viking-surface-recipe, var(--viking-surface));
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);
         box-shadow: var(--viking-shadow-sm);

@@ -40,8 +40,10 @@
           <viking-button iconTrailing="chevron-down">Open</viking-button>
           <viking-button [loading]="true">Saving</viking-button>
           <viking-button [square]="true" icon="settings" label="Settings" />
-          <viking-button>Small</viking-button>
+          <viking-button size="sm">Small</viking-button>
           <viking-button size="xs">Extra small</viking-button>
+          <viking-button variant="primary" [compact]="true">Generate Key</viking-button>
+          <viking-button variant="outline" [compact]="true">Cancel</viking-button>
         </div>
         <div class="demo-row">
           <viking-button-group>

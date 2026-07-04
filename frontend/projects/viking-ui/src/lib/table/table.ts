@@ -46,6 +46,21 @@ import { VikingSkeleton } from '../skeleton/skeleton';
         background: var(--viking-surface);
         box-shadow: var(--viking-shadow-sm);
         transition: var(--viking-transition-colors);
+        position: relative;
+      }
+      :host::before {
+        content: '';
+        position: absolute;
+        inset: 0 0 auto;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+          transparent
+        );
+        pointer-events: none;
+        z-index: 1;
       }
       .viking-table-loading-state {
         display: flex;
