@@ -1,6 +1,71 @@
 // Shared navbar + theme toggle (frontend Angular, marketing Astro, backend Django).
 @use 'drakkar-buttons' as *;
 
+@mixin viking-navbar-search-shell-focus {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
+  outline-offset: var(--viking-ring-offset, 2px);
+}
+
+@mixin viking-navbar-utility-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--viking-control-height, 40px);
+  height: var(--viking-control-height, 40px);
+  min-width: var(--viking-control-height, 40px);
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  background: var(--viking-surface, var(--card-bg));
+  color: var(--viking-text, var(--text-color));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  cursor: pointer;
+  transition: var(--viking-transition-interactive, all 0.25s ease);
+
+  &:hover {
+    border-color: var(--viking-accent-strong, var(--viking-teal-400));
+    background: var(--viking-surface-alt, var(--viking-charcoal-700));
+    color: var(--viking-text, var(--text-color));
+    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  }
+
+  &:focus-visible {
+    @include viking-navbar-search-shell-focus;
+  }
+}
+
+@mixin viking-navbar-search-shell {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-1, 8px);
+  min-height: var(--viking-control-height, 40px);
+  padding: 0 var(--viking-space-2, 16px);
+  background: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
+  transition: var(--viking-transition-interactive, border-color 0.25s ease, box-shadow 0.25s ease);
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-teal-400)) 55%, var(--viking-border-strong, var(--border)));
+    box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  }
+}
+
+@mixin viking-navbar-search-panel {
+  margin: 0;
+  padding: var(--viking-space-1, 8px);
+  background: var(--viking-surface, var(--card-bg));
+  border: 1px solid var(--viking-border-strong, var(--border));
+  border-radius: var(--viking-radius, 8px);
+  box-shadow: var(--viking-shadow-md, var(--shadow-md));
+  max-height: 288px;
+  overflow: auto;
+  font-family: var(--viking-font-family, inherit);
+}
+
 .navbar {
   position: sticky;
   top: 0;
@@ -82,11 +147,10 @@
 }
 
 .navbar-content {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-1, 8px);
   width: 100%;
   max-width: none;
   margin: 0;
@@ -95,23 +159,30 @@
 }
 
 .navbar-left {
-  flex: 1;
+  grid-column: 1;
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
 .navbar-right {
-  flex: 1;
+  grid-column: 3;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-1, 8px);
+  min-width: 0;
+  flex-shrink: 0;
 }
 
 .navbar-center {
+  grid-column: 2;
   display: flex;
   justify-content: center;
+  align-items: center;
+  min-width: 0;
 }
 
 .desktop-nav {
@@ -119,8 +190,11 @@
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  gap: var(--viking-space-2, 16px);
+  gap: var(--viking-space-1, 8px);
   padding: var(--viking-space-half, 4px) 0;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .desktop-auth {
@@ -135,28 +209,31 @@
 
 .nav-btn {
   position: relative;
-  font-size: 1rem !important;
+  font-size: var(--viking-font-size-sm, 14px) !important;
   color: var(--nav-link-color, var(--text-muted)) !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.08em !important;
+  letter-spacing: 0.06em !important;
   transition:
     color 0.2s ease,
     background-color 0.2s ease,
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important;
-  padding: 0 var(--viking-space-2, 16px) !important;
+  padding: 0 var(--viking-space-1-5, 12px) !important;
   height: var(--viking-control-height, 40px) !important;
   line-height: var(--viking-control-height, 40px) !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 6px !important;
   text-decoration: none;
   background: transparent;
   border: none;
   cursor: pointer;
   overflow: hidden;
+  flex-shrink: 1;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .nav-btn .material-icons,
@@ -244,10 +321,15 @@ html[data-theme='light'] {
   --nav-link-color: color-mix(in srgb, var(--viking-charcoal-900) 88%, var(--white));
 
   .nav-btn,
-  .mobile-nav-btn,
-  .menu-toggle-btn,
-  .theme-toggle-btn {
+  .mobile-nav-btn {
     color: var(--nav-link-color) !important;
+  }
+
+  .menu-toggle-btn,
+  .theme-toggle-btn,
+  .navbar-search-trigger,
+  .navbar-search-mobile-btn {
+    color: var(--viking-text, var(--text-color)) !important;
   }
 
   .nav-btn:hover,
@@ -271,26 +353,12 @@ html[data-theme='light'] {
 
 .navbar .theme-toggle-btn,
 .theme-toggle-btn {
-  position: static;
-  background: transparent;
-  color: var(--text-muted);
-  border: none;
-  border-radius: 50%;
-  width: var(--viking-control-height, 40px);
-  height: var(--viking-control-height, 40px);
-  min-width: var(--viking-control-height, 40px);
-  padding: 0;
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: none;
-  flex-shrink: 0;
-  transition:
-    color 0.2s ease,
-    transform 0.2s ease,
-    background-color 0.2s ease;
+  @include viking-navbar-utility-btn;
+
+  &:hover {
+    transform: rotate(15deg);
+    background-color: color-mix(in srgb, var(--viking-teal-600) 5%, var(--viking-surface, var(--card-bg)));
+  }
 }
 
 .navbar .theme-toggle-btn .material-icons,
@@ -301,36 +369,16 @@ html[data-theme='light'] {
   height: 24px;
 }
 
-.navbar .theme-toggle-btn:hover,
-.theme-toggle-btn:hover {
-  color: var(--text-color);
-  transform: rotate(15deg);
-  background-color: color-mix(in srgb, var(--viking-teal-600) 5%, transparent);
-  box-shadow: none;
-}
-
-.navbar .theme-toggle-btn:focus-visible,
-.theme-toggle-btn:focus-visible {
-  outline: 2px solid var(--color-primary-container);
-  outline-offset: 3px;
-}
-
 .menu-toggle-btn {
+  @include viking-navbar-utility-btn;
   display: inline-flex !important;
-  color: var(--text-muted) !important;
-  transition: color 0.2s;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
 }
 
-.menu-toggle-btn:hover {
-  color: var(--text-color) !important;
+.menu-toggle-btn[aria-expanded='true'] {
+  border-color: var(--viking-accent, var(--viking-teal-600));
+  color: var(--viking-accent-strong, var(--viking-teal-400));
+  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-teal-600) 12%, transparent));
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
 .divider {
@@ -414,7 +462,7 @@ button.auth-btn {
   padding-bottom: calc(var(--viking-space-3, 24px) + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   z-index: 49;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-half, 4px);
 
   viking-button {
     width: 100%;
@@ -444,9 +492,12 @@ button.auth-btn {
 .mobile-nav-btn {
   width: 100% !important;
   justify-content: flex-start !important;
-  font-size: var(--viking-font-size, 16px) !important;
+  font-size: var(--viking-font-size-sm, 14px) !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
   color: var(--viking-text-muted, var(--text-muted)) !important;
-  min-height: var(--viking-control-height, 40px) !important;
+  min-height: 44px !important;
   border-radius: var(--viking-radius, 8px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
   display: inline-flex !important;
@@ -479,7 +530,18 @@ button.auth-btn {
 .mobile-divider {
   height: 1px;
   background-color: var(--viking-border, var(--border));
-  margin: var(--viking-space-1, 8px) 0;
+  margin: var(--viking-space-2, 16px) 0 var(--viking-space-1, 8px);
+  flex-shrink: 0;
+}
+
+.mobile-menu .mobile-auth-btn {
+  margin-top: var(--viking-space-half, 4px);
+}
+
+.mobile-menu a.mobile-auth-btn:not(.auth-signout-btn),
+.mobile-menu a.mobile-auth-btn:not(.auth-signout-btn) span,
+.mobile-menu a.mobile-auth-btn:not(.auth-signout-btn) svg {
+  color: var(--viking-white-pure, #ffffff) !important;
 }
 
 .navbar-link {
@@ -523,40 +585,6 @@ button.auth-btn {
 }
 
 // Algolia Experiences autocomplete — aligned with viking-autocomplete + search-palette.
-@mixin viking-navbar-search-shell {
-  display: flex;
-  align-items: center;
-  gap: var(--viking-space-1, 8px);
-  min-height: var(--viking-control-height, 40px);
-  padding: 0 var(--viking-space-2, 16px);
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
-  border-radius: var(--viking-radius, 8px);
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  transition: var(--viking-transition-interactive, border-color 0.25s ease, box-shadow 0.25s ease);
-
-  &:hover {
-    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-teal-400)) 55%, var(--viking-border-strong, var(--border)));
-    box-shadow: var(--viking-shadow-md, var(--shadow-md));
-  }
-}
-
-@mixin viking-navbar-search-shell-focus {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-teal-400));
-  outline-offset: var(--viking-ring-offset, 2px);
-}
-
-@mixin viking-navbar-search-panel {
-  margin: 0;
-  padding: var(--viking-space-1, 8px);
-  background: var(--viking-surface, var(--card-bg));
-  border: 1px solid var(--viking-border-strong, var(--border));
-  border-radius: var(--viking-radius, 8px);
-  box-shadow: var(--viking-shadow-md, var(--shadow-md));
-  max-height: 288px;
-  overflow: auto;
-  font-family: var(--viking-font-family, inherit);
-}
 
 .navbar-search {
   display: flex;
@@ -650,28 +678,7 @@ button.auth-btn {
 
 .navbar-search-trigger,
 .navbar-search-mobile-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--viking-control-height, 40px);
-  height: var(--viking-control-height, 40px);
-  border: 1px solid var(--viking-border-strong, var(--border));
-  border-radius: var(--viking-radius, 8px);
-  background: var(--viking-surface, var(--card-bg));
-  color: var(--viking-text, var(--text-color));
-  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  cursor: pointer;
-  transition: var(--viking-transition-interactive, all 0.25s ease);
-
-  &:hover {
-    border-color: var(--viking-accent-strong, var(--viking-teal-400));
-    background: var(--viking-surface-alt, var(--viking-charcoal-700));
-    box-shadow: var(--viking-shadow-md, var(--shadow-md));
-  }
-
-  &:focus-visible {
-    @include viking-navbar-search-shell-focus;
-  }
+  @include viking-navbar-utility-btn;
 }
 
 .algolia-autocomplete-host .aa-Autocomplete,
@@ -944,6 +951,22 @@ button.auth-btn {
   max-height: 50vh !important;
 }
 
+@media (max-width: 767px) {
+  .navbar-content {
+    gap: var(--viking-space-1, 8px);
+  }
+
+  .navbar-left {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .navbar-right {
+    flex: 0 0 auto;
+    gap: var(--viking-space-1, 8px);
+  }
+}
+
 @media (min-width: 768px) {
   .navbar-content {
     position: relative;
@@ -967,39 +990,54 @@ button.auth-btn {
     pointer-events: none;
   }
 
-  .navbar-right > * {
-    pointer-events: auto;
+    .desktop-auth {
+      display: flex;
+    }
+
+    .menu-toggle-btn {
+      display: none !important;
+    }
+
+    .mobile-menu:not(.open) {
+      display: none !important;
+    }
+
+    .navbar-right {
+      gap: var(--viking-space-2, 16px);
+    }
+
+    .desktop-nav {
+      gap: var(--viking-space-1, 8px);
+    }
+  }
+}
+
+// Compact desktop — icon-only nav labels when the bar is still tight.
+@container viking-navbar (min-width: 880px) and (max-width: 1120px) {
+  .nav-btn {
+    padding: 0 var(--viking-space-1, 8px) !important;
+    gap: 0 !important;
   }
 
-  .navbar-left {
-    flex: 0 0 auto;
+  .nav-btn > span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
+}
 
-  .navbar-right {
-    flex: 1;
-    min-width: 0;
-    gap: var(--viking-space-2, 16px);
-  }
-
-  .desktop-nav {
-    display: flex;
-  }
-
-  .desktop-auth {
-    display: flex;
-  }
-
-  .menu-toggle-btn {
-    display: none !important;
-  }
-
-  .mobile-menu {
-    display: none !important;
-  }
-
-  .navbar-search {
-    flex: 0 0 auto;
-    max-width: none;
-    margin: 0;
+// Full desktop — restore nav link labels and spacing.
+@container viking-navbar (min-width: 1121px) {
+  .nav-btn {
+    padding: 0 var(--viking-space-2, 16px) !important;
+    gap: 8px !important;
+    font-size: var(--viking-font-size, 16px) !important;
+    letter-spacing: 0.08em !important;
   }
 }

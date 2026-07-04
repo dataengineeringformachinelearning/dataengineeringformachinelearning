@@ -113,7 +113,7 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;
@@ -125,8 +125,8 @@ a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.n
     color 0.2s ease;
 }
 
-a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):hover,
-a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):focus-visible {
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):hover,
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):focus-visible {
   color: var(--link-hover-color);
   text-decoration: none;
   border-bottom-color: var(--link-hover-color); /* WCAG requirement: non-color hover indicator */
@@ -359,10 +359,14 @@ main.main {
 
 .dashboard-content-area {
   flex: 1;
-  padding: 0;
+  padding: var(--viking-space-3, 24px) 0 var(--viking-space-4, 32px);
   position: relative;
   z-index: 1;
   box-sizing: border-box;
+
+  @media (min-width: 768px) {
+    padding-top: var(--viking-space-4, 32px);
+  }
 }
 
 .content-wrapper {

@@ -450,6 +450,9 @@ export class AnalyticsComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.map?.invalidateSize();
       }, 100);
+      setTimeout(() => {
+        this.map?.invalidateSize();
+      }, 400);
     }, 100);
   }
 

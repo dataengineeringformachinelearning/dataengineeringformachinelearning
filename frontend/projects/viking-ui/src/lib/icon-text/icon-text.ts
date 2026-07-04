@@ -36,8 +36,8 @@ import { VikingTone } from '../core/types';
     `
       :host {
         display: inline-flex;
-        align-items: center;
-        gap: var(--viking-space-1, 8px);
+        align-items: flex-start;
+        gap: var(--viking-space-1-5, 12px);
         min-width: 0;
         flex: 1;
         font-family: var(--viking-font-family);
@@ -48,29 +48,37 @@ import { VikingTone } from '../core/types';
         align-items: center;
         justify-content: center;
         flex-shrink: 0;
-        width: 28px;
-        height: 28px;
+        width: 24px;
+        height: 24px;
+        margin-top: 1px;
+        border-radius: var(--viking-radius-sm);
+        background: var(--viking-accent-soft);
         color: var(--viking-text-muted);
       }
 
       .viking-icon-text-icon--success {
         color: var(--viking-success);
+        background: color-mix(in srgb, var(--viking-success) 14%, transparent);
       }
 
       .viking-icon-text-icon--info {
         color: var(--viking-info);
+        background: color-mix(in srgb, var(--viking-info) 14%, transparent);
       }
 
       .viking-icon-text-icon--warning {
         color: var(--viking-warning);
+        background: color-mix(in srgb, var(--viking-warning) 14%, transparent);
       }
 
       .viking-icon-text-icon--danger {
         color: var(--viking-danger);
+        background: color-mix(in srgb, var(--viking-danger) 14%, transparent);
       }
 
       .viking-icon-text-icon--accent {
         color: var(--viking-accent-strong);
+        background: var(--viking-accent-soft);
       }
 
       .viking-icon-text-body {
@@ -78,6 +86,7 @@ import { VikingTone } from '../core/types';
         flex-direction: column;
         gap: var(--viking-space-half, 4px);
         min-width: 0;
+        padding-top: 1px;
       }
 
       .viking-icon-text-title {
@@ -91,7 +100,7 @@ import { VikingTone } from '../core/types';
       .viking-icon-text-desc {
         display: block;
         margin: 0;
-        font-size: var(--viking-font-size, 16px);
+        font-size: var(--viking-font-size-sm, 14px);
         font-weight: var(--viking-font-weight-regular, 400);
         color: var(--viking-text-muted);
         line-height: var(--viking-line-height-relaxed, 1.625);
@@ -104,5 +113,5 @@ export class VikingIconText {
   readonly title = input.required<string>();
   readonly description = input<string>('');
   readonly tone = input<VikingTone>('muted');
-  readonly iconSize = input<number>(22);
+  readonly iconSize = input<number>(16);
 }

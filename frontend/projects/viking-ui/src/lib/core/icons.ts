@@ -9,6 +9,12 @@ import {
   VIKING_BRAND_ICON_NAMES_LIST,
   VIKING_DRAKKAR_ICON_FILLED_PATHS,
   VIKING_DRAKKAR_ICON_PATHS,
+  VIKING_DRAKKAR_ICON_NAMES_LIST,
+} from './brand-icons';
+
+export {
+  VIKING_DRAKKAR_ICON_NAMES_LIST,
+  VIKING_BRAND_ICON_NAMES_LIST,
 } from './brand-icons';
 
 export type VikingIconName = keyof typeof VIKING_ICON_PATHS;
