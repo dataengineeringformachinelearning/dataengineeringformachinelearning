@@ -29,18 +29,12 @@ jobs:
 
           if [ -n "$HF_TOKEN" ] && [ -n "${{ secrets.HF_SPACE_REPO }}" ]; then
             # Hugging Face rejects raw binary blobs in Git history.
-            # We create a fresh orphan branch, enforce Git LFS via .gitattributes,
-            # and push a clean squashed commit to HF.
+            # Root .gitattributes enforces Git LFS for woff2/png/mp4; sync_fonts.py
+            # copies canonical Inter files from viking-ui before deploy.
             git checkout --orphan hf-deploy
 
-            echo "*.png filter=lfs diff=lfs merge=lfs -text" > .gitattributes
-            echo "*.mp4 filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
-            echo "*.jpg filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
-            echo "*.jpeg filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
-            echo "*.woff2 filter=lfs diff=lfs merge=lfs -text" >> .gitattributes
-
-            # HF Spaces rejects untracked binary font blobs — omit from deploy bundle.
-            find backend/static/fonts -name '*.woff2' -delete 2>/dev/null || true
+            # Ensure fonts are synced from the canonical viking-ui source before push
+            python3 scripts/sync_fonts.py 2>/dev/null || true
 
             git add .gitattributes
             git add .
