@@ -8,9 +8,9 @@ import '../styles/publication.scss';
 
 const chapters = loadBookChapters();
 const { MARKETING_URL } = siteEnv();
-const pageTitle = 'The Book - DEML Platform';
+const pageTitle = 'The Book — DEML Platform';
 const pageDescription =
-  'Interactive chapters, deployment notes, and annotated walkthroughs for Data Engineering for Machine Learning.';
+  'Authoritative build specification for operational intelligence on the digital battlefield — interactive chapters, deployment notes, and annotated architectural walkthroughs.';
 const firstChapter = chapters.find(chapter => chapter.slug !== 'cover') ?? chapters[1] ?? chapters[0];
 const bookJsonLdPayload = bookJsonLd(pageTitle, pageDescription, canonicalHref('/book', MARKETING_URL));
 ---
@@ -34,10 +34,10 @@ const bookJsonLdPayload = bookJsonLd(pageTitle, pageDescription, canonicalHref('
           </div>
           <h1 class="hero-title">Data Engineering for Machine Learning</h1>
           <p class="hero-subtitle">
-            Building High-Throughput Event Platforms for Real-Time Detection and Response
+            Operational Intelligence for the New Digital Battlefield
           </p>
           <p class="hero-meta">
-            Interactive Guides, Working Notes, & Reference Material for Security Engineers
+            Authoritative Specification · Interactive Chapters · Reference Material for Security Engineers
           </p>
 
           <div class="hero-meta-row">

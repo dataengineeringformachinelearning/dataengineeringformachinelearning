@@ -5,9 +5,9 @@ import { siteEnv } from '../lib/site-env';
 import { techArticleJsonLd, canonicalHref } from '../lib/seo';
 
 const { MARKETING_URL } = siteEnv();
-const pageTitle = 'Documentation - DEML Platform';
+const pageTitle = 'Developer Portal — DEML Platform';
 const pageDescription =
-  'First-class integration guides for Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and AWS Redshift — plus the DEML telemetry and prediction API.';
+  'Hardened API gateway for the digital battlefield. First-class integration specifications for Kubernetes, TensorFlow, PyTorch, Apache Spark, Databricks, and AWS Redshift — plus telemetry ingestion and inference endpoints.';
 const docsJsonLd = techArticleJsonLd(
   pageTitle,
   pageDescription,
@@ -131,10 +131,10 @@ const quickStartSteps = [
             <span class="badge-dot pulse-dot" aria-hidden="true"></span>
             <span class="u-style-486a44">Developer Portal · Secured</span>
           </div>
-          <h1 class="docs-title">Build Secure ML Pipelines in Minutes</h1>
+          <h1 class="docs-title">Hardened ML Pipeline Integration</h1>
           <p class="docs-subtitle">
-            One API key. Zero-trust auth on every call. Stream telemetry, run inference, and monitor
-            threats — all through the same hardened gateway your production stack already trusts.
+            One API key. Zero-trust authentication on every call. Stream telemetry, execute inference,
+            and monitor threat posture — through the same gateway your production stack already trusts.
           </p>
           <div class="docs-hero-actions">
             <a href={FRONTEND_URL + '/login'} class="docs-cta primary">

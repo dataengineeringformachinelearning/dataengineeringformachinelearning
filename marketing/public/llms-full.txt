@@ -14,9 +14,9 @@ license: apache-2.0
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
 
-Welcome to **Data Engineering for Machine Learning (DEML)** — operational intelligence for the digital battlefield. This platform unifies rigorous data engineering, predictive machine learning, and defense-in-depth security into a single multi-tenant SaaS fabric. Every command path is versioned, every projection is idempotent, and every tenant is processed through identical symmetrical pipelines.
+**Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, predictive machine learning, and intelligence-driven defense into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
-Ship telemetry at scale. Forecast SLA breach before it manifests. Serialize anomalies into STIX 2.1 for downstream SOAR consumption. The architecture is documented with thesis-level rigor; the product is engineered for production deployment today.
+In contested operational environments, reactive dashboards are insufficient. DEML ingests telemetry at scale, forecasts SLA breach before degradation manifests, and serializes high-confidence anomalies into STIX 2.1 for downstream SOAR consumption. The architecture is specified with doctoral rigor; the system is deployed for production operations today.
 
 > **Looking for the Book or Whitepaper?**
 > The philosophical, educational, and narrative deep dives into data engineering, MLOps, and the architecture of this system can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
@@ -48,18 +48,18 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 
 ---
 
-## Core Features
+## Core Capabilities
 
-- **Event Projections Architecture**: Commands via Firebase Cloud Functions (`ingestEvent`) to Redpanda (with Firestore fallback); Projections materialized into Firestore (named `deml` DB); Queries via direct real-time subscriptions. Django workers act as the projection layer.
-- **High-Throughput Ingestion**: Broker-based telemetry pipelines via Redpanda and Polars.
-- **Account & Site Isolation**: One login per account (`UserProfile.account_id`); many status pages per user. Telemetry and widgets are scoped to your account—no org hierarchies or shared sub-logins.
-- **Big Data Aggregate Threat Modeling**: Models train on global anonymized data to leverage "herd immunity" for catching anomalies based on vast datasets.
-- **Account-Scoped Evaluation**: Threat reports map and evaluate your specific telemetry against the massive platform model.
-- **Predictive SLAs**: Deep learning models dynamically forecasting service level agreements.
-- **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
-- **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
-- **SaaS Reliability & Stability**: Comprehensive automated testing, static analysis (Ruff/ESLint/Axe), and clean-code architecture ensuring production-grade robustness.
-- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, app, API, and docs — composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
+- **Event Projections Architecture**: Commands ingress via Firebase Cloud Functions (`ingestEvent`) to Redpanda with Firestore fallback; projections materialize into the named `deml` database; queries execute through direct real-time subscriptions. Django workers constitute the authoritative projection layer.
+- **High-Throughput Ingestion**: Broker-native telemetry pipelines via Redpanda and Polars micro-batch aggregation—engineered for sub-second dispatch without JVM overhead.
+- **Account & Site Isolation**: One login per account (`UserProfile.account_id`); many status pages per operator. Telemetry and widgets remain strictly account-scoped—no org hierarchies, no shared sub-logins, no cross-tenant bleed.
+- **Aggregate Threat Modeling**: Global models train on anonymized platform telemetry to establish collective anomaly baselines—herd immunity without raw cross-account exposure.
+- **Account-Scoped Evaluation**: Threat reports correlate tenant-specific telemetry against the aggregate model under strict UUID isolation.
+- **Predictive SLAs**: PyTorch MLP modules forecast service-level breach trajectories from latency variance, error-rate vectors, and temporal patterns.
+- **Hugging Face Integrations**: Namespaced model Hub publishing and Spaces deployment with `state_dict` serialization—no pickle.
+- **SIEM/SOAR Federation**: ML-scored anomalies serialize to STIX 2.1 payloads for TAXII distribution to CISA AIS, MS-ISAC, and IT-ISAC hubs.
+- **Operational Assurance**: Automated testing, static analysis (Ruff, ESLint, Axe), and pre-commit enforcement sustain production-grade reliability under continuous deployment.
+- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, application, API, and documentation surfaces—composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
 
 ## Design System (Viking-UI)
 
@@ -72,7 +72,7 @@ All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** 
 | [backend.deml.app](https://backend.deml.app)                                           | `backend/static/viking-ui.css`                 |
 | Swagger / OpenAPI UI                                                                   | Same tokens via static CSS                     |
 
-**Philosophy:** Precision engineering and high-end industrial tech — composable primitives with a **premium restrained luxury** palette: dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. Always import `viking-*` components; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
+**Design doctrine:** Precision-engineered industrial surfaces—composable primitives on a **premium restrained luxury** palette: dark charcoal foundations (`--viking-charcoal-900`), deep teal primary actions (`--viking-teal-600`), crimson secondary emphasis (`--viking-crimson-600`), machined metallic borders, and native SVG telemetry charts. Import `viking-*` components exclusively; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
 
 ## Solution Architecture
 
@@ -153,7 +153,7 @@ flowchart TB
 
 ## The Integration Gateway
 
-Our platform is not just a standalone application; it is designed to be the central nervous system for your MLOps workflows. We provide a robust API Gateway to allow external systems to stream data to our models and request predictions securely.
+DEML is not a standalone observability console—it is the command-and-control layer for MLOps workflows. A hardened API gateway enables external systems to stream telemetry, invoke inference, and exchange threat indicators under zero-trust authentication.
 
 ### API Key Management
 
@@ -323,7 +323,7 @@ curl https://backend.deml.app/api/v1/integrations/redshift        -H "Authorizat
 
 ## Getting Started
 
-Welcome to the platform! Getting your infrastructure connected and streaming data takes less than five minutes.
+Operational onboarding requires fewer than five minutes. The sequence below establishes authenticated ingress, tenant-scoped projections, and live dashboard visibility.
 
 ### 1. Account Setup
 
@@ -450,20 +450,21 @@ We provide dedicated support for our users:
 
 ## Acknowledgements & Technologies
 
-I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power this platform's architecture:
+The DEML platform stands on open-source foundations, enterprise design references, and the tooling that authored this architecture. Gratitude is extended to each project, standard, and inspiration cited below.
 
-- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds for `@dataengineeringformachinelearning/viking-ui`), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/), [Algolia](https://www.algolia.com/) (DocSearch / Experiences via `DemlWidgets.openSearch()` and `algolia-search.js`)
+- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/), [Algolia](https://www.algolia.com/) (DocSearch / Experiences via `DemlWidgets.openSearch()` and `algolia-search.js`), [axe-core](https://github.com/dequelabs/axe-core) (WCAG 2.1 AA enforcement via `scripts/run_axe.js`)
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
+- **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Design & UX references (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (chart sizing and composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns), [Angular Material](https://material.angular.dev/) (layout ergonomics), [Blueprint](https://blueprintjs.com/docs/) (data-dense UI patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
-- **Enterprise & product design references**: [SpaceX](https://www.spacex.com/), [Palantir](https://www.palantir.com/), [Lockheed Martin](https://www.lockheedmartin.com/), [OpenAI](https://openai.com/), [Sequoia Capital](https://sequoiacap.com/), [McKinsey & Company](https://www.mckinsey.com/) (precision prose, operational clarity, and mission-critical UX tone)
+- **Enterprise & product design references**: [Lockheed Martin Intelligence Driven Defense®](https://www.lockheedmartin.com/en-us/capabilities/cyber.html) (Defendable Architectures, threat-driven security), [McKinsey & Company](https://www.mckinsey.com/) (operational clarity and executive prose), [SpaceX](https://www.spacex.com/), [Palantir](https://www.palantir.com/), [OpenAI](https://openai.com/), [Sequoia Capital](https://sequoiacap.com/) (precision engineering, mission-critical UX tone)
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Official Integrations** (customer-facing): [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](docs/integrations/)
-- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration for predictive systems), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/) (presentation companion)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
-- **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
+- **Organizations & Standards**: [NIST](https://www.nist.gov/), [OASIS CTI](https://www.oasis-open.org/committees/cyber-threat-intelligence/) (STIX 2.1 / TAXII 2.1), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
   - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
   - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
@@ -658,6 +659,209 @@ Full tables: [BOOK.md Appendix D](../BOOK.md#appendix-d-maintenance--automation-
 | [AGENTS.md](../AGENTS.md)                                            | Contributor / AI agent principles |
 | [Appendix C](../BOOK.md#appendix-c-cloud-run-deployment)             | Cloud Run deploy                  |
 | [Appendix D](../BOOK.md#appendix-d-maintenance--automation-schedule) | Schedules                         |
+
+
+# Apache Spark Integration
+
+Write Spark streaming and batch DataFrames directly to DEML ingestion endpoints for unified telemetry and ML feature pipelines.
+
+## Prerequisites
+
+- Apache Spark 3.4+ (Structured Streaming or batch)
+- Network egress to `https://backend.deml.app`
+- DEML API key stored in your cluster secrets manager
+
+## Batch Write Pattern
+
+Transform your DataFrame and POST batches via a `mapPartitions` sink:
+
+```python
+import json
+import requests
+from pyspark.sql import SparkSession
+
+API_KEY = "YOUR_API_KEY"
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+
+spark = SparkSession.builder.appName("deml-ingest").getOrCreate()
+df = spark.read.parquet("s3://datalake/events/")
+
+def send_partition(rows):
+    records = [row.asDict() for row in rows]
+    if not records:
+        return
+    requests.post(
+        INGEST_URL,
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"source": "spark", "records": records},
+        timeout=60,
+    ).raise_for_status()
+
+df.foreachPartition(send_partition)
+```
+
+## Structured Streaming
+
+Stream micro-batches to DEML as they arrive:
+
+```python
+from pyspark.sql.functions import col, struct, to_json
+
+stream = (
+    spark.readStream.format("kafka")
+    .option("kafka.bootstrap.servers", "broker:9092")
+    .option("subscribe", "telemetry")
+    .load()
+)
+
+payload = stream.select(
+    to_json(struct(col("value").alias("payload"))).alias("record")
+)
+
+def write_batch(batch_df, batch_id):
+    rows = [row.record for row in batch_df.collect()]
+    if rows:
+        requests.post(
+            INGEST_URL,
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"source": "spark-stream", "batch_id": batch_id, "records": rows},
+            timeout=60,
+        ).raise_for_status()
+
+query = payload.writeStream.foreachBatch(write_batch).start()
+```
+
+## Scala Alternative
+
+```scala
+df.writeStream
+  .format("org.apache.spark.sql.kafka010.KafkaSourceProvider")
+  .option("checkpointLocation", "/checkpoints/deml")
+  .foreachBatch { (batchDF: DataFrame, batchId: Long) =>
+    val records = batchDF.collect().map(_.getAs[String]("payload"))
+    // POST records to https://backend.deml.app/api/v1/ingest
+  }
+  .start()
+```
+
+## Planned Native Spark Connector
+
+A first-class `deml` format will simplify writes:
+
+```scala
+df.writeStream
+  .format("deml")
+  .option("api_key", sys.env("DEML_API_KEY"))
+  .option("endpoint", "https://backend.deml.app/api/v1/ingest")
+  .start()
+```
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/apache-spark \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+
+# Databricks Integration
+
+Connect Databricks notebooks and jobs to DEML for secure telemetry ingest, model inference, and cross-platform analytics.
+
+## Prerequisites
+
+- Databricks Runtime 13.3+ (Python or Scala)
+- DEML API key
+- Outbound HTTPS to `backend.deml.app`
+
+## Store Credentials in Databricks Secrets
+
+Never hardcode API keys in notebooks. Use a Secret Scope:
+
+```bash
+databricks secrets create-scope --scope deml
+databricks secrets put --scope deml --key api-key --string-value YOUR_API_KEY
+```
+
+In a notebook:
+
+```python
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+```
+
+## Ingest from a Notebook
+
+```python
+import requests
+
+INGEST_URL = "https://backend.deml.app/api/v1/ingest"
+api_key = dbutils.secrets.get(scope="deml", key="api-key")
+
+df = spark.table("analytics.telemetry_events")
+records = [row.asDict() for row in df.limit(1000).collect()]
+
+response = requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"source": "databricks", "records": records},
+    timeout=60,
+)
+response.raise_for_status()
+print(f"Ingested {len(records)} records")
+```
+
+## Scheduled Job Pattern
+
+1. Create a Databricks Job with a Python task.
+2. Mount the `deml` secret scope on the cluster.
+3. Run on a schedule (e.g., every 5 minutes) to push aggregated features.
+
+```python
+# Databricks job: push hourly rollups to DEML
+rollup = spark.sql("""
+  SELECT tenant_id, AVG(latency_ms) AS avg_latency, COUNT(*) AS requests
+  FROM delta.`/mnt/telemetry/raw`
+  WHERE event_time > current_timestamp() - INTERVAL 1 HOUR
+  GROUP BY tenant_id
+""")
+
+records = rollup.collect()
+requests.post(
+    INGEST_URL,
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={"source": "databricks-job", "records": [r.asDict() for r in records]},
+).raise_for_status()
+```
+
+## Real-time Inference from Databricks
+
+```python
+PREDICT_URL = "https://backend.deml.app/api/v1/predict"
+
+def predict_row(features: list[float]) -> float:
+    result = requests.post(
+        PREDICT_URL,
+        headers={"Authorization": f"Bearer {api_key}"},
+        json={"model_version": "v2", "inputs": features},
+        timeout=10,
+    )
+    result.raise_for_status()
+    return result.json()["outputs"][0]
+
+# Apply to a Spark UDF or driver-side batch calls
+scores = [predict_row(row.features) for row in df.limit(100).collect()]
+```
+
+## Unity Catalog & Multi-Tenancy
+
+Map Databricks workspace catalogs to DEML tenant UUIDs in your job metadata so analytics remain isolated per customer.
+
+## Integration Health Check
+
+```bash
+curl https://backend.deml.app/api/v1/integrations/databricks \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
 
 
 # Kubernetes Integration
@@ -892,209 +1096,6 @@ for batch in loader:
 
 ```bash
 curl https://backend.deml.app/api/v1/integrations/pytorch \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-
-# Databricks Integration
-
-Connect Databricks notebooks and jobs to DEML for secure telemetry ingest, model inference, and cross-platform analytics.
-
-## Prerequisites
-
-- Databricks Runtime 13.3+ (Python or Scala)
-- DEML API key
-- Outbound HTTPS to `backend.deml.app`
-
-## Store Credentials in Databricks Secrets
-
-Never hardcode API keys in notebooks. Use a Secret Scope:
-
-```bash
-databricks secrets create-scope --scope deml
-databricks secrets put --scope deml --key api-key --string-value YOUR_API_KEY
-```
-
-In a notebook:
-
-```python
-api_key = dbutils.secrets.get(scope="deml", key="api-key")
-```
-
-## Ingest from a Notebook
-
-```python
-import requests
-
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-api_key = dbutils.secrets.get(scope="deml", key="api-key")
-
-df = spark.table("analytics.telemetry_events")
-records = [row.asDict() for row in df.limit(1000).collect()]
-
-response = requests.post(
-    INGEST_URL,
-    headers={"Authorization": f"Bearer {api_key}"},
-    json={"source": "databricks", "records": records},
-    timeout=60,
-)
-response.raise_for_status()
-print(f"Ingested {len(records)} records")
-```
-
-## Scheduled Job Pattern
-
-1. Create a Databricks Job with a Python task.
-2. Mount the `deml` secret scope on the cluster.
-3. Run on a schedule (e.g., every 5 minutes) to push aggregated features.
-
-```python
-# Databricks job: push hourly rollups to DEML
-rollup = spark.sql("""
-  SELECT tenant_id, AVG(latency_ms) AS avg_latency, COUNT(*) AS requests
-  FROM delta.`/mnt/telemetry/raw`
-  WHERE event_time > current_timestamp() - INTERVAL 1 HOUR
-  GROUP BY tenant_id
-""")
-
-records = rollup.collect()
-requests.post(
-    INGEST_URL,
-    headers={"Authorization": f"Bearer {api_key}"},
-    json={"source": "databricks-job", "records": [r.asDict() for r in records]},
-).raise_for_status()
-```
-
-## Real-time Inference from Databricks
-
-```python
-PREDICT_URL = "https://backend.deml.app/api/v1/predict"
-
-def predict_row(features: list[float]) -> float:
-    result = requests.post(
-        PREDICT_URL,
-        headers={"Authorization": f"Bearer {api_key}"},
-        json={"model_version": "v2", "inputs": features},
-        timeout=10,
-    )
-    result.raise_for_status()
-    return result.json()["outputs"][0]
-
-# Apply to a Spark UDF or driver-side batch calls
-scores = [predict_row(row.features) for row in df.limit(100).collect()]
-```
-
-## Unity Catalog & Multi-Tenancy
-
-Map Databricks workspace catalogs to DEML tenant UUIDs in your job metadata so analytics remain isolated per customer.
-
-## Integration Health Check
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/databricks \
-  -H "Authorization: Bearer YOUR_API_KEY"
-```
-
-
-# Apache Spark Integration
-
-Write Spark streaming and batch DataFrames directly to DEML ingestion endpoints for unified telemetry and ML feature pipelines.
-
-## Prerequisites
-
-- Apache Spark 3.4+ (Structured Streaming or batch)
-- Network egress to `https://backend.deml.app`
-- DEML API key stored in your cluster secrets manager
-
-## Batch Write Pattern
-
-Transform your DataFrame and POST batches via a `mapPartitions` sink:
-
-```python
-import json
-import requests
-from pyspark.sql import SparkSession
-
-API_KEY = "YOUR_API_KEY"
-INGEST_URL = "https://backend.deml.app/api/v1/ingest"
-
-spark = SparkSession.builder.appName("deml-ingest").getOrCreate()
-df = spark.read.parquet("s3://datalake/events/")
-
-def send_partition(rows):
-    records = [row.asDict() for row in rows]
-    if not records:
-        return
-    requests.post(
-        INGEST_URL,
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"source": "spark", "records": records},
-        timeout=60,
-    ).raise_for_status()
-
-df.foreachPartition(send_partition)
-```
-
-## Structured Streaming
-
-Stream micro-batches to DEML as they arrive:
-
-```python
-from pyspark.sql.functions import col, struct, to_json
-
-stream = (
-    spark.readStream.format("kafka")
-    .option("kafka.bootstrap.servers", "broker:9092")
-    .option("subscribe", "telemetry")
-    .load()
-)
-
-payload = stream.select(
-    to_json(struct(col("value").alias("payload"))).alias("record")
-)
-
-def write_batch(batch_df, batch_id):
-    rows = [row.record for row in batch_df.collect()]
-    if rows:
-        requests.post(
-            INGEST_URL,
-            headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"source": "spark-stream", "batch_id": batch_id, "records": rows},
-            timeout=60,
-        ).raise_for_status()
-
-query = payload.writeStream.foreachBatch(write_batch).start()
-```
-
-## Scala Alternative
-
-```scala
-df.writeStream
-  .format("org.apache.spark.sql.kafka010.KafkaSourceProvider")
-  .option("checkpointLocation", "/checkpoints/deml")
-  .foreachBatch { (batchDF: DataFrame, batchId: Long) =>
-    val records = batchDF.collect().map(_.getAs[String]("payload"))
-    // POST records to https://backend.deml.app/api/v1/ingest
-  }
-  .start()
-```
-
-## Planned Native Spark Connector
-
-A first-class `deml` format will simplify writes:
-
-```scala
-df.writeStream
-  .format("deml")
-  .option("api_key", sys.env("DEML_API_KEY"))
-  .option("endpoint", "https://backend.deml.app/api/v1/ingest")
-  .start()
-```
-
-## Integration Health Check
-
-```bash
-curl https://backend.deml.app/api/v1/integrations/apache-spark \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
@@ -1358,7 +1359,9 @@ curl https://backend.deml.app/api/v1/integrations/tensorflow \
 
 # Data Engineering for Machine Learning: The Book
 
-Welcome to the definitive guide and architectural book for building modern, scalable Data Engineering and Machine Learning systems.
+*Operational Intelligence for the New Digital Battlefield*
+
+The definitive architectural specification and build narrative for production-grade data engineering and machine-learning systems—documented with doctoral rigor and engineered for deployment.
 
 > **Looking for the API Documentation & Developer Portal?**
 > If you are looking to integrate with our API, view endpoints, or deploy the platform, please see the **[Developer Portal (README.md)](README.md)**
@@ -1369,13 +1372,13 @@ Welcome to the definitive guide and architectural book for building modern, scal
 
 _By Joe Alongi_
 
-Welcome to my working notebook and companion repository. As 2026 began, I found myself immersed in a project that felt like the culmination of a decade's work. Instead of simply building another app, I was architecting a production-grade, full-stack telemetry and machine learning platform. This book acts as **"The Book"**, documenting the entire journey. Each chapter provides comprehensive narrative deep dives (minimum 600 words), alongside code snippets and technology links.
+This volume constitutes the authoritative build specification for a production-grade, full-stack telemetry and machine-learning platform. It is neither a tutorial nor a marketing narrative—it is an operational record: each chapter delivers comprehensive architectural analysis (minimum 600 words), executable code artifacts, and direct technology references. The prose adheres to the precision expected of enterprise systems engineering and doctoral specification—distinct, rigorous, and unambiguous.
 
-Over the last ten years, my path has evolved from early web development, through the founding of startups, to deep software engineering and architecture. Those foundational years unlocked the paradigms I am now pouring into this platform. My goal here is simple: to champion the thoughtful coders. We're going to build this system together, starting from a completely fresh Mac install and working my way up to a deployed, secure, and observable ML-driven application. I will merge rigorous data engineering with the predictive power of machine learning, prioritizing quality and precision every step of the way.
+The platform addresses a structural gap in modern infrastructure. Observability tooling remains predominantly reactive; threat analytics remain siloed; multi-tenant isolation remains inconsistently enforced. DEML closes that gap by fusing rigorous data engineering with predictive machine learning under defense-in-depth security—prioritizing quality, symmetry, and precision at every architectural boundary. The build sequence proceeds from bare-metal environment setup through deployed, secure, observable ML-driven operations.
 
-For a brief summary of the platform's hypothesis, value add, architecture diagrams, and algorithms, please read the [Whitepaper](WHITEPAPER.md). For how the platform is **operated** in production (vendors, workflows, maintenance, contingencies), read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual slide-deck overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
+For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
-**Note on Recent Evolution (2026 updates):** The architecture now emphasizes **Event Projections** with production reliability features. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for events and Firestore (named "deml" database + dedicated security rules) for materialized read models. Django uses a **Transactional Outbox** (`OutboxEvent` + `outbox_relay` command) for reliable publishing. The `telemetry_worker` performs idempotent projections (with DLQ support). Firebase Functions and rules deploy via dedicated GitHub workflow. See updated diagrams; the loop is health-checked automatically by a synthetic probe in the telemetry worker and surfaced as the "Event Projections" component on the `platform-status` page.
+**Architectural posture (2026):** The system emphasizes **Event Projections** with production reliability guarantees. Client commands route through Firebase Cloud Functions (`ingestEvent`, versioned), with Redpanda for event streaming and Firestore (named `deml` database with dedicated security rules) for materialized read models. Django employs a **Transactional Outbox** (`OutboxEvent` + `outbox_relay` command) for reliable publishing. The `telemetry_worker` performs idempotent projections with dead-letter-queue support. Firebase Functions and rules deploy via dedicated GitHub workflow. The end-to-end loop is health-checked automatically by a synthetic probe in the telemetry worker and surfaced as the "Event Projections" component on the `platform-status` sentinel.
 
 ## Quick Links
 
@@ -1391,11 +1394,11 @@ For a brief summary of the platform's hypothesis, value add, architecture diagra
 
 ## Concept of Operations (CONOPS)
 
-This section is the **single operational narrative** for the DEML platform: who uses it, how it runs in production, which technologies execute each responsibility, and what operators do when things degrade. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models). The canonical compute target is Google Cloud (Cloud Run services), but a cost-optimized and highly manageable alternative deployment topology exists on AWS using Lightsail Container Services, ECR, Fargate (for stateful components), and RDS or Lightsail Databases. Detailed checklists live in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
+This section constitutes the **single operational narrative** for the DEML platform: actors, production behavior, technology responsibilities, and degraded-mode contingencies. It reflects the 2026 **Event Projections** architecture (Firebase command gateway, Redpanda broker, Django workers, Firestore read models). The canonical compute target is Google Cloud (Cloud Run services); a cost-optimized alternative deployment topology exists on AWS using Lightsail Container Services, ECR, Fargate (for stateful components), and RDS or Lightsail Databases. Detailed checklists reside in [Appendix C](#appendix-c-cloud-run-deployment), [Appendix E](#appendix-e-aws-deployment), [Appendix D](#appendix-d-maintenance--automation-schedule), and [`docs/conops.md`](docs/conops.md).
 
 ### 1. Purpose & Scope
 
-The DEML platform is a multi-tenant observability and machine-learning SaaS. Operators, security engineers, and integrators use it to ingest telemetry, publish status pages, forecast SLAs, evaluate threat anomalies, and share STIX 2.1 indicators. This CONOPS covers:
+DEML is a multi-tenant observability and machine-learning SaaS engineered for the new digital battlefield. Operators, security engineers, and integrators employ it to ingest telemetry, publish status pages, forecast SLAs, evaluate threat anomalies, and federate STIX 2.1 indicators. This CONOPS specifies:
 
 - Normal steady-state operations across all production services
 - User-facing workflows (anonymous visitors, account owners, API integrators)
@@ -2741,19 +2744,21 @@ By combining per-account RBAC with publication- and ownership-aware ABAC, the pl
 
 ## Acknowledgements & Technologies
 
-I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power my book's architecture:
+The DEML platform stands on open-source foundations, enterprise design references, and the tooling that authored this architecture. Gratitude is extended to each project, standard, and inspiration cited below.
 
-- **Frontend**: [Angular](https://angular.dev/), [ng-packagr](https://github.com/ng-packagr/ng-packagr), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/), [Vitest](https://vitest.dev/), [AnalogJS](https://analogjs.org/)
+- **Frontend**: [Angular](https://angular.dev/), [ng-packagr](https://github.com/ng-packagr/ng-packagr), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase](https://firebase.google.com/), [Vitest](https://vitest.dev/), [AnalogJS](https://analogjs.org/), [Astro](https://astro.build/), [axe-core](https://github.com/dequelabs/axe-core)
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
-- **UI patterns (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
+- **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
+- **Design & UX references (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (chart sizing and composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns), [Angular Material](https://material.angular.dev/) (layout ergonomics), [Blueprint](https://blueprintjs.com/docs/) (data-dense UI patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
+- **Enterprise & product design references**: [Lockheed Martin Intelligence Driven Defense®](https://www.lockheedmartin.com/en-us/capabilities/cyber.html) (Defendable Architectures, threat-driven security), [McKinsey & Company](https://www.mckinsey.com/) (operational clarity and executive prose), [SpaceX](https://www.spacex.com/), [Palantir](https://www.palantir.com/), [OpenAI](https://openai.com/), [Sequoia Capital](https://sequoiacap.com/)
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Official Integrations**: [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](../docs/integrations/)
-- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **DevOps, Infrastructure & Tooling**: [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
-- **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
+- **Organizations & Standards**: [NIST](https://www.nist.gov/), [OASIS CTI](https://www.oasis-open.org/committees/cyber-threat-intelligence/) (STIX 2.1 / TAXII 2.1), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
   - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
   - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
@@ -3803,12 +3808,12 @@ Every surface — [dataengineeringformachinelearning.com](https://dataengineerin
 
 DEML unifies UI through a layered rule stack so agents, contributors, and surfaces never drift:
 
-| Layer | Document | Purpose |
-| ----- | -------- | ------- |
+| Layer        | Document                     | Purpose                                                                      |
+| ------------ | ---------------------------- | ---------------------------------------------------------------------------- |
 | Cursor / IDE | [.cursorrules](.cursorrules) | Mandatory `viking-*` imports, composable field stacks, zero hardcoded styles |
-| Tokens | [THEME.md](THEME.md) | Canonical `--viking-*` palette, component standards, maintenance |
-| Platform | [AGENTS.md](AGENTS.md) | Viking-UI Uniformity Law, architecture and security invariants |
-| Narrative | This chapter | Consumption patterns, build, publish, accessibility contracts |
+| Tokens       | [THEME.md](THEME.md)         | Canonical `--viking-*` palette, component standards, maintenance             |
+| Platform     | [AGENTS.md](AGENTS.md)       | Viking-UI Uniformity Law, architecture and security invariants               |
+| Narrative    | This chapter                 | Consumption patterns, build, publish, accessibility contracts                |
 
 **Composable structure, Viking palette:** Viking-UI adopts composable primitive ergonomics — `viking-field` wrapping controls, variant-driven `viking-button`, dark-first `viking-card` surfaces — with **deep charcoals, machined metallic borders, and restrained teal/crimson**. The result is **premium restrained luxury**: every pixel earns its place, metrics dominate ornament, and tactile surfaces use subtle top-edge highlights instead of glass blur or neon glow.
 
@@ -4107,31 +4112,33 @@ DEML adopts two Lockheed Martin white papers as guiding references for its threa
 > **Grok Build Beta** annotations in source (e.g. footer comments, this appendix) mark maintenance performed during automated end-of-day pipelines. Re-run `./scripts/deml-cleanup.sh` before each session and consult [Appendix D](#appendix-d-maintenance--automation-schedule) for scheduled worker cadence.
 
 
-# The Whitepaper: Scalable Telemetry, Predictive SLAs, & Automated Threat Mitigation
+# The Whitepaper: Operational Intelligence for the Digital Battlefield
 
-**Abstract:** Architecting the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform): A comprehensive guide to high-throughput event pipelines, ML-forecasted service levels, automated STIX 2.1 threat sharing, and integrated vulnerability management.
+**Abstract:** This paper specifies the architecture of the Data Engineering for Machine Learning (DEML) platform—a multi-tenant observability and threat-analytics system engineered for the new digital battlefield. The design unifies high-throughput event projections, ML-forecasted service levels, automated STIX 2.1 indicator federation, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
 
-**Published:** June 2026
+**Published:** July 2026
 **Author:** Joe Alongi [(ORCID: 0009-0007-2401-2603)](https://orcid.org/0009-0007-2401-2603)
 
 > [!IMPORTANT]
-> **arXiv Endorsement Request:** We are currently seeking an arXiv endorsement to formally publish this whitepaper to `cs.CR` (Cryptography and Security). If you are a qualified arXiv author and find this architecture valuable, we would greatly appreciate your endorsement! You can endorse the author [here](https://arxiv.org/auth/endorse?x=ZISEYL) using code **ZISEYL**.
+> **arXiv Endorsement Request:** The authors seek an arXiv endorsement to formally publish this whitepaper to `cs.CR` (Cryptography and Security). Qualified arXiv authors may endorse using code **ZISEYL** [here](https://arxiv.org/auth/endorse?x=ZISEYL).
 
 ---
 
 ## 1. Executive Summary
 
-Modern Software-as-a-Service (SaaS) applications demand continuous reliability. Traditionally, status dashboards and SLA tracking have been reactive—updating only after an incident is resolved. This paper details the architecture of the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform): a next-generation observability pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep learning pipeline with two active prediction modules—Service Level Agreement (SLA) predictions and Threat Anomaly (TA) analytics.
+The operational tempo of modern SaaS infrastructure has outpaced traditional observability. Status dashboards and SLA trackers remain predominantly reactive—recording failure only after user impact materializes. In adversarial network environments, that posture is tactically untenable.
 
-As a testament to the architecture's stability, the platform actively dogfoods its own infrastructure. The public **`platform-status`** page (`user=null`, `is_platform=True`) serves as a living "Apex Sandbox" and "Public Sentinel" showcasing real-time telemetry and threat analysis to the world—without requiring a separate organization login.
+This paper presents DEML: a next-generation observability and intelligence pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep-learning stack with two active prediction modules—Service Level Agreement (SLA) forecasting and Threat Anomaly (TA) analytics. The architecture embodies Lockheed Martin's *Defendable Architectures* principles—Visibility, Manageability, and Survivability—across every operational plane.
+
+As operational proof, the platform dogfoods its own infrastructure continuously. The public **`platform-status`** sentinel (`user=null`, `is_platform=True`) functions as a living Apex Sandbox and Public Witness—streaming real-time telemetry and threat analysis to anonymous observers without requiring a separate organizational login.
 
 ## 2. Concept of Operations (CONOPS)
 
-This section summarizes how the DEML platform is **operated** in production—the division of responsibilities across vendors, the steady-state data paths operators rely on, and the workflows each actor performs. The full narrative, service matrix, and contingency tables live in [BOOK.md § Concept of Operations](BOOK.md#concept-of-operations-conops) and [`docs/conops.md`](docs/conops.md).
+This section specifies how the DEML platform is **operated** in production: vendor boundaries, steady-state data paths, actor workflows, and degraded-mode behavior. The full operational narrative, service matrix, and contingency tables reside in [BOOK.md § Concept of Operations](BOOK.md#concept-of-operations-conops) and [`docs/conops.md`](docs/conops.md).
 
 ### 2.1 Mission
 
-Deliver account-isolated observability, predictive SLA forecasting, and threat analytics by combining:
+Deliver account-isolated observability, predictive SLA forecasting, and threat analytics through three decoupled planes:
 
 - **Commands** — client and API writes that must never block the transactional database
 - **Projections** — idempotent, enriched read models materialized for sub-second UI updates
@@ -4176,9 +4183,9 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 >
 > DEML's security architecture is guided by two Lockheed Martin white papers from the Intelligence Driven Defense® program: **[A Threat-Driven Approach to Cyber Security](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Threat-Driven-Approach.pdf)** (Muckin & Fitch, 2019), which supplies IDDIL/ATC threat analysis and STRIDE-LM categorization; and **[Defendable Architectures](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Defendable-Architectures.pdf)** (Fitch & Muckin, 2019), which defines the Visibility / Manageability / Survivability characteristics below. See [BOOK.md Appendix L](BOOK.md#appendix-l-foundational-security-frameworks) for full citations and rationale.
 
-Lockheed Martin's *Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems should exhibit to support intelligence-driven defense rather than static compliance alone. The DEML platform is engineered to embody each characteristic across its operational planes.
+Lockheed Martin's *Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems must exhibit to support intelligence-driven defense rather than static compliance alone. DEML is engineered to embody each characteristic across its operational planes.
 
-**Visibility** enables defenders to observe activity across the network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
+**Visibility** enables defenders to observe activity across network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
 
 **Manageability** ensures that security posture can be sustained and updated in response to emerging threats. Automated vulnerability management (Semgrep, Trivy, Renovate) feeds an integrated Kanban workflow; secrets are governed through Infisical with GCP KMS envelope encryption and 90-day key rotation. RBAC/ABAC (Viewer, Operator, Security Admin) with MFA on mutations segregates administrative traffic from end-user sessions. ML hyperparameters adapt via GridSearchCV without manual intervention, and the documented maintenance cadence—`outbox_relay` every 5s, daily model retraining, weekly dependency updates—provides a repeatable rhythm for threat-informed control evolution.
 
@@ -4186,7 +4193,7 @@ Lockheed Martin's *Defendable Architectures* framework (Fitch & Muckin, 2019) de
 
 ## 4. High-Throughput Ingestion Architecture
 
-The platform uses an **Event Projections** architecture for client telemetry with production-grade reliability:
+The platform implements an **Event Projections** architecture for client telemetry with production-grade reliability:
 
 - **Commands** (event ingestion): Client events flow through a Firebase Cloud Functions gateway (`ingestEvent` callable). The function attempts to publish to Redpanda (`frontend-events` topic, with `version` and `idempotency_key`) and falls back to Firestore. Django ingestion paths use a **Transactional Outbox** (events written atomically to a Postgres `OutboxEvent` table).
 - **Projections**: A dedicated `outbox_relay` command publishes from the Outbox. The Django `telemetry_worker` consumes from Redpanda (idempotent processing using stable keys, with DLQ to `frontend-events-dlq`), performs enrichment, and persists results to Firestore (named `deml` DB).
@@ -4250,21 +4257,21 @@ flowchart TB
 
 This hybrid approach (Outbox + idempotent projections + DLQ) provides strong reliability and "at-least-once + deduplication" semantics while preserving low-latency client feedback via Firestore and the high-throughput Redpanda + Polars pipeline. Dedicated GitHub Actions handle deployment of Firebase Functions, Firestore rules, and related components. A separate `outbox_relay` ensures reliable event delivery from Django.
 
-By utilizing Redpanda (a lightweight, C++ based Kafka-compatible broker), we achieve sub-millisecond dispatch latencies and avoid JVM resource overhead.
+Redpanda—a lightweight, C++ Kafka-compatible broker—achieves sub-millisecond dispatch latencies without JVM resource overhead.
 
-Additionally, to standardize distributed tracing and metrics, the platform integrates an OpenTelemetry (OTel) Collector. The collector receives native OTLP telemetry from the application services and infrastructure, exporting it directly to ClickHouse—a lightning-fast columnar database optimized for OLAP workloads. This separation enables scaled observability and efficient distributed tracing without burdening the primary PostgreSQL transactional database.
+To standardize distributed tracing and metrics, the platform integrates an OpenTelemetry (OTel) Collector. The collector receives native OTLP telemetry from application services and infrastructure, exporting directly to ClickHouse—a columnar database optimized for OLAP workloads. This separation enables scaled observability and efficient distributed tracing without burdening the primary PostgreSQL transactional database.
 
 ## 5. Asynchronous Batch Processing with Polars
 
-Processing streaming events row-by-row introduces significant database write amplification. Our telemetry worker aggregates incoming events from Redpanda and processes them in micro-batches using Polars, an extremely fast multi-threaded DataFrame library written in Rust.
+Row-by-row processing of streaming events introduces significant database write amplification. The telemetry worker aggregates incoming events from Redpanda and processes them in micro-batches using Polars—a multi-threaded DataFrame engine written in Rust.
 
-By batching calculations, we compute historical uptime graphs (30-day intervals) and update cumulative SLA and threat records efficiently, reducing disk I/O by over 80%.
+Batched computation of historical uptime graphs (30-day intervals) and cumulative SLA and threat records reduces disk I/O by over 80% compared to per-event persistence.
 
 ## 6. Extensible Deep Learning Pipeline
 
-To transition from reactive monitoring to proactive planning, we introduce a predictive deep learning pipeline built in PyTorch. The pipeline consumes sequence features derived from recent response-time variances, historical error rates, and peak usage patterns.
+Transitioning from reactive monitoring to proactive planning requires a predictive deep-learning pipeline built in PyTorch. The pipeline consumes sequence features derived from recent response-time variances, historical error rates, and peak usage patterns.
 
-Rather than isolated models, the architecture exposes an extensible registry allowing the system to run multiple prediction modules concurrently. Currently, the pipeline hosts two primary modules: SLA forecasting and TA (Threat Anomaly) forecasting, with hooks prepared for future specialized analytics modules.
+Rather than isolated models, the architecture exposes an extensible registry allowing multiple prediction modules to execute concurrently. The pipeline currently hosts two primary modules: SLA forecasting and TA (Threat Anomaly) analytics, with hooks prepared for future specialized analytics modules.
 
 The primary intelligence layer employs a PyTorch Multi-Layer Perceptron (MLP) to model Service Level Agreement (SLA) breaches.
 
@@ -4274,17 +4281,17 @@ The primary intelligence layer employs a PyTorch Multi-Layer Perceptron (MLP) to
 
 ## 7. ML-Powered 30-Day Threat Detection & Telemetry Ingestion
 
-Our integration within the DEML (DATA ENGINEERING FOR MACHINE LEARNING) (DEML Platform) with third-party analytics platforms (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) serves as a critical telemetry ingestion phase. By retrieving visitor logs, geolocation distributions, token metrics, and request patterns, we feed our deep learning pipeline to detect anomalies and forecast threat risks 30 days into the future. Looking forward, this third-party ingestion model serves as a precursor to an embedded first-party client script and dynamic widget that account owners can load directly on their status pages, providing zero-dependency telemetry streaming.
+Third-party analytics integrations (Google Analytics / GA4, Microsoft Clarity, and Cloudflare Web Analytics) constitute a critical telemetry ingestion phase. Visitor logs, geolocation distributions, token metrics, and request patterns feed the deep-learning pipeline to detect anomalies and forecast threat risk 30 days forward. This ingestion model serves as precursor to an embedded first-party client script and dynamic widget that account owners deploy directly on status pages—providing zero-dependency telemetry streaming.
 
 ## 8. Next-Generation SIEM/SOAR Digest & Automated Threat Sharing
 
-Modern cybersecurity trends demonstrate that AI, empowered by Machine Learning and Generative AI, has evolved into a powerful agentic paradigm for threat analysis. Because we can only plan for what we know or what history provides precedent for, we face a distinct challenge: if past data dictates future risk, we must engineer an entirely new way forward.
+Machine learning and generative AI have evolved into agentic paradigms for threat analysis. When historical precedent alone cannot bound future risk, the architecture must engineer forward-looking intelligence.
 
-Drawing architectural inspiration from established industry intelligence platforms such as IBM X-Force, Google Cloud Mandiant, and GreyNoise, as well as advanced analytical frameworks like the NSA's Ghidra, the DEML Platform was designed to push the boundaries of automated intelligence. To address this, the platform integrates a next-generation threat intelligence sharing pipeline that automatically serializes PyTorch neural network anomaly predictions into standard STIX 2.1 JSON payloads. These payloads define structural indicator, observed-data, and identity objects to map out threat signatures.
+Drawing architectural inspiration from established industry platforms—IBM X-Force, Google Cloud Mandiant, GreyNoise, and analytical frameworks such as the NSA's Ghidra—DEML integrates a threat-intelligence sharing pipeline that automatically serializes PyTorch neural-network anomaly predictions into standard STIX 2.1 JSON payloads. These payloads define structural indicator, observed-data, and identity objects to map threat signatures.
 
-Using TAXII 2.1 and REST protocols, these indicators are routed natively to federal databases like CISA AIS (Automated Indicator Sharing) and industry hubs like MS-ISAC or IT-ISAC. To protect public feeds from pollution, a sandbox mode safely runs simulated transmissions locally unless live credentials are provided.
+Using TAXII 2.1 and REST protocols, indicators route natively to federal databases such as CISA AIS (Automated Indicator Sharing) and industry hubs including MS-ISAC and IT-ISAC. A sandbox mode safely executes simulated transmissions locally unless live credentials are provisioned—protecting public feeds from indicator pollution.
 
-Furthermore, to support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 Readiness and compliance audits, the platform implements an end-to-end security architecture. This includes real-time E2E encryption telemetry (TLS 1.3 in-transit, and GCP KMS-backed envelope encryption at-rest with 30-day rotation), immutable audit logging streamed directly to centralized Google Cloud Logging buckets for SIEM ingestion, granular Role-Based Access Control (RBAC) supporting Viewer, Operator, and Security Admin configurations, hardened Google distroless container images executing under least-privilege non-root policies (USER nginx), strict Content-Security-Policy (CSP) and HSTS security headers, and continuous vulnerability guarding via Semgrep (for continuous code and dependency scanning), Renovate (for automated dependency upgrades), local Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets (with custom baseline filters), and Django Migration Linter checks.
+To support SOC 2 Type II, CMMC 2.0 (Level 2), and NIST SP 800-171 Rev. 3 readiness, the platform implements end-to-end security architecture: TLS 1.3 in-transit and GCP KMS-backed envelope encryption at-rest with 30-day rotation; immutable audit logging streamed to centralized Google Cloud Logging buckets for SIEM ingestion; granular RBAC (Viewer, Operator, Security Admin); hardened Google distroless container images under least-privilege non-root policies; strict Content-Security-Policy (CSP) and HSTS headers; and continuous vulnerability guarding via Semgrep, Renovate, Socket.dev, Checkov, Trivy, Gitleaks, detect-secrets, and Django Migration Linter.
 
 ## 9. Role-Based & Attribute-Based Access Control (RBAC & ABAC)
 
@@ -4334,21 +4341,21 @@ Private-by-default: until `is_published` is set, only the owning login (and the 
 
 ## 10. Data Tenancy, Retention, and Lifecycle Policy
 
-Observability systems must ensure strict isolation. The DEML Platform enforces **account-scoped isolation** at the database level: telemetry, integrations, threat reports, and status widgets are keyed to `User` / `UserProfile.account_id` (or the `platform` sentinel for `platform-status`). Data is private-by-default; nothing bleeds across accounts.
+Observability systems must enforce strict isolation. DEML implements **account-scoped isolation** at the database level: telemetry, integrations, threat reports, and status widgets are keyed to `User` / `UserProfile.account_id` (or the `platform` sentinel for `platform-status`). Data is private-by-default; nothing bleeds across accounts.
 
-However, to provide world-class threat detection, we employ a dual-model strategy. The global `platform_threat_model.pt` continuously trains on **aggregate, anonymized Big Data** across the entire platform (extracting non-PII metrics like global failure rates and suspicious request ratios). This allows all users to benefit from collective "herd immunity" while maintaining perfect isolation. Direct cross-account raw fallbacks are strictly eliminated; instead, threat models evaluate and predict anomalies exclusively against the target user's isolated telemetry fed through the massive aggregate network. If an account does not yet have enough collected telemetry, the model leverages safe, zero-threat baselines instead of raw shared data.
+To provide world-class threat detection, a dual-model strategy applies. The global `platform_threat_model.pt` continuously trains on **aggregate, anonymized Big Data** across the entire platform (extracting non-PII metrics such as global failure rates and suspicious request ratios). All tenants benefit from collective anomaly baselines while maintaining perfect isolation. Direct cross-account raw fallbacks are eliminated; threat models evaluate and predict anomalies exclusively against the target tenant's isolated telemetry fed through the aggregate network. Accounts without sufficient collected telemetry leverage safe, zero-threat baselines rather than raw shared data.
 
-To protect sensitive credentials (such as Google Analytics 4 tokens, Microsoft Clarity API keys, and Cloudflare tokens) from unauthorized exposure, the platform utilizes transparent application-level AES-256 Fernet encryption at-rest. Furthermore, public access to status page details, services, incidents, and telemetry graphs is strictly restricted. Unless the status page owner explicitly approves by publishing the page, the system blocks all public traffic, preventing the exposure of private endpoints or telemetry.
+Sensitive credentials (Google Analytics 4 tokens, Microsoft Clarity API keys, Cloudflare tokens) are protected via transparent application-level AES-256 Fernet encryption at-rest. Public access to status page details, services, incidents, and telemetry graphs remains restricted unless the status page owner explicitly publishes the page—preventing exposure of private endpoints or telemetry.
 
-Additionally, the platform implements a strict 30-day retention and lifecycle policy for raw telemetry data. Raw telemetry endpoint data, audit logs, and tracking consents are automatically purged after 30 days. Long-term raw metrics and traces are routed to ClickHouse for extensive OLAP querying. High-value business objects, such as incident histories, bug reports, threat reports, and user configuration data, are maintained indefinitely as the system of record. The ML training worker automatically triggers full model retraining and data optimization passes upon application deployment and runs continuously every day.
+A strict 30-day retention and lifecycle policy governs raw telemetry data. Raw endpoint telemetry, audit logs, and tracking consents are automatically purged after 30 days. Long-term raw metrics and traces route to ClickHouse for OLAP querying. High-value business objects—incident histories, bug reports, threat reports, and user configuration data—persist indefinitely as the system of record. The ML training worker triggers full model retraining and data optimization upon deployment and executes daily thereafter.
 
-Furthermore, our engineering roadmap includes integrations with monetization systems like Stripe. This will enable paid tiers where models and forecasts are refreshed at a high-frequency interval (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.
+The engineering roadmap includes Stripe monetization integrations enabling paid tiers where models and forecasts refresh at high frequency (every 15 minutes), while standard tiers continue on the baseline hourly retraining schedule.
 
 ## 11. Team Workflows and Integrated Vulnerability Management
 
-To facilitate collaborative security workflows and structured issue tracking, the platform implements a self-contained, integrated vulnerability tracking and management component. This component features an interactive Kanban board layout to prioritize, assign, and track remediation efforts natively, allowing security teams to update vulnerability states based on customized impact and likelihood metrics.
+Collaborative security workflows require structured issue tracking native to the platform. An integrated vulnerability management component provides an interactive Kanban board to prioritize, assign, and track remediation efforts—allowing security teams to update vulnerability states based on customized impact and likelihood metrics.
 
-Furthermore, we enforce strict compliance by integrating automated accessibility scanners (such as Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. For visual quality, the platform unifies every surface under the **Viking-UI** design system documented in [THEME.md](THEME.md): precision engineering and high-end industrial tech with deep charcoal surfaces, machined metallic borders, deep teal primary accents, and rich crimson secondary emphasis. `viking-skeleton` loaders provide structural loading states; native SVG `viking-chart` components bind to tokenized series colors — no third-party chart runtimes or neon gradient effects.
+Strict compliance is enforced by integrating automated accessibility scanners (Axe-Core) directly into local Git hooks, ensuring no inaccessible templates are staged or committed. Every surface unifies under the **Viking-UI** design system documented in [THEME.md](THEME.md): precision-engineered industrial surfaces with deep charcoal foundations, machined metallic borders, deep teal primary accents, and crimson secondary emphasis. `viking-skeleton` loaders provide structural loading states; native SVG `viking-chart` components bind to tokenized series colors—no third-party chart runtimes or decorative gradient effects.
 
 ## 11.1 Official Integrations
 
@@ -4367,20 +4374,23 @@ Guides with copy-paste examples live in [`docs/integrations/`](../docs/integrati
 
 ## 12. Conclusion
 
-By combining asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep learning models, we establish a robust data engineering framework that elevates the reliability of machine learning infrastructure.
+The new digital battlefield demands observability infrastructure that operates ahead of failure—not behind it. By unifying asynchronous broker patterns, ultra-fast DataFrame engines, and predictive deep-learning models under defendable architectural principles, DEML establishes a rigorous data-engineering framework that elevates the reliability, security, and intelligence of machine-learning infrastructure at operational scale.
 
 ## 13. Acknowledgments
 
-Special thanks to Google DeepMind and their groundbreaking work in Artificial Intelligence. The documentary _AlphaGo - The Movie_ served as a profound inspiration to delve deeper into the fields of AI and Machine Learning.
+This architecture rests on open-source foundations, enterprise design references, and the tooling that authored the specification.
 
-This platform was substantially authored with assistance from the following integrated development environments and AI coding tools:
+**Research & inspiration:** [Google DeepMind](https://deepmind.google/) and the documentary _AlphaGo — The Movie_ provided foundational inspiration for predictive systems and adversarial decision-making under uncertainty. [Lockheed Martin Intelligence Driven Defense®](https://www.lockheedmartin.com/en-us/capabilities/cyber.html) (Defendable Architectures, threat-driven security) and [McKinsey & Company](https://www.mckinsey.com/) (operational clarity) informed the prose and architectural posture of this work.
+
+**Design system & icons:** `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (Viking-UI premium palette v2 — charcoal / teal / crimson); typography via self-hosted [Inter](https://rsms.me/inter/) with `.viking-font-display` caps for CES instrumentation and marketing display only. [Lucide](https://lucide.dev/) icon paths are inlined at build time into `viking-icon` with zero runtime dependency. Composable and accessibility patterns draw inspiration from [Flux UI](https://fluxui.dev/), [Spartan](https://spartan.ng/), [Angular Material](https://material.angular.dev/), and [Blueprint](https://blueprintjs.com/docs/)—re-implemented natively without third-party UI runtimes.
+
+**Authoring environments:**
 
 - **Visual Studio Code + Cline** — Grok Code Fast 1 (xAI)
 - **Windsurf** — Grok Code Fast 1 (xAI)
 - **Google Antigravity** — Gemini 3.1 Pro, Gemini 3.5 Flash, Claude Opus, Claude Sonnet
 - **Grok Build** (Beta)
 - **Cursor** — Grok 4.3, Grok Build 0.1 (xAI)
-- **Design system**: `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (Viking-UI premium palette v2 — charcoal / teal / crimson); typography via self-hosted [Inter](https://rsms.me/inter/) with `.viking-font-display` caps for CES instrumentation and marketing display only
 
 ## 14. References
 
@@ -4408,11 +4418,11 @@ This platform was substantially authored with assistance from the following inte
 
 ## 15. DevSecOps and Platform Standardization Audit
 
-In our continuous pursuit of operational excellence, we have recently completed a comprehensive DevSecOps and UI/UX standardization audit. This effort guarantees an uncompromising mobile-first foundation across the platform, standardizing layout wrappers and enforcing identical maximum width containers (`1260px`) on the Viking-UI 4px grid for zero layout shifting. Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI — now shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix (premium standards). On the infrastructure side, we have transitioned our deployment pipeline to leverage strict Google Distroless multi-stage container builds (`gcr.io/distroless/nodejs22-debian12` for Angular SSR and `gcr.io/distroless/python3-debian12` for Django), fundamentally reducing the attack surface by eliminating unnecessary shells and package managers in production. Additionally, we have rigorously audited Django ORM queries and ML workers to ensure robust, leak-proof data tenancy and strict adherence to our 30-day data retention policy.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 4px grid for zero layout shift. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. On the infrastructure side, the deployment pipeline leverages strict Google Distroless multi-stage container builds (`gcr.io/distroless/nodejs22-debian12` for Angular SSR and `gcr.io/distroless/python3-debian12` for Django), fundamentally reducing attack surface by eliminating unnecessary shells and package managers in production. Django ORM queries and ML workers have been rigorously audited to ensure leak-proof data tenancy and strict adherence to the 30-day data retention policy.
 
-Most recently, we fully integrated Application-Level Zeek-equivalent middleware with zero-latency cached domain mappings for real-time passive telemetry ingestion. We also finalized our native OSINT and Dark Web scanners to actively serialize threat findings directly into native `ThreatIntelligence` database records instead of static logs. Finally, our Post-Quantum Cryptography (PQC) integration was fortified: the KEM architecture now enforces strict Forward Secrecy by caching ephemeral secret keys for exactly 5 minutes using UUIDs and destroying them immediately upon decapsulating payloads, neutralizing "Store Now, Decrypt Later" attacks natively at the ingestion gateway.
+Application-level Zeek-equivalent middleware with zero-latency cached domain mappings enables real-time passive telemetry ingestion. Native OSINT and Dark Web scanners serialize threat findings directly into `ThreatIntelligence` database records instead of static logs. Post-Quantum Cryptography (PQC) integration enforces strict Forward Secrecy: the KEM architecture caches ephemeral secret keys for exactly 5 minutes using UUIDs and destroys them immediately upon decapsulation—neutralizing "Store Now, Decrypt Later" attacks at the ingestion gateway.
 
-To ensure long-term, scalable SaaS reliability, we enforce an uncompromising CI/CD and pre-commit stabilization pipeline. The entire Python backend is continuously formatted and linted via `ruff`, while the frontend strictly adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including the telemetry ingestion endpoints, background threat modeling workers, and billing integration—are fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. The core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations that align perfectly with the production cluster.
+Long-term SaaS reliability is sustained through an uncompromising CI/CD and pre-commit stabilization pipeline. The Python backend is continuously formatted and linted via `ruff`; the frontend adheres to `eslint` and `axe-core` accessibility standards. Mission-critical business logic—including telemetry ingestion endpoints, background threat-modeling workers, and billing integration—is fortified by comprehensive `pytest` suites leveraging mocked Django databases (`@pytest.mark.django_db`) to guarantee parity with production. Core data models rely on a highly normalized PostgreSQL schema mapped strictly via Django's ORM, providing atomic transactions, referential integrity, and seamless database migrations aligned with the production cluster.
 
 ## 16. License
 

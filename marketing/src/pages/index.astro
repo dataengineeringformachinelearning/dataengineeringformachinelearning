@@ -12,9 +12,9 @@ import {
 } from '../lib/seo';
 
 const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
-const pageTitle = 'DEML (DATA ENGINEERING FOR MACHINE LEARNING)';
+const pageTitle = 'DEML — Operational Intelligence for the Digital Battlefield';
 const pageDescription =
-  'Operational intelligence for mission-critical ML pipelines. Ingest telemetry at scale, forecast SLA breach before it manifests, and keep every tenant isolated through symmetrical event projections.';
+  'Precision-engineered observability for contested ML infrastructure. Ingest telemetry at scale, forecast SLA breach before degradation manifests, and enforce symmetrical tenant isolation through versioned event projections.';
 const homeJsonLd = [
   organizationJsonLd(MARKETING_URL),
   webSiteJsonLd(MARKETING_URL),
@@ -32,42 +32,42 @@ const version = '2.0.0';
 const capabilities = [
   {
     tag: 'TELEMETRY',
-    title: 'Real-Time Analytics',
+    title: 'Operational Visibility',
     description:
-      'Every request is traced, enriched, and projected in under a second. OpenTelemetry flows into ClickHouse rollups and Firestore dashboards — operational visibility before drift becomes downtime.',
+      'Every request is traced, enriched at the edge, and projected in under one second. OpenTelemetry flows into ClickHouse rollups and Firestore dashboards — continuous witness before drift becomes downtime.',
     icon: 'analytics',
     metrics: [
       { label: 'P99 Latency', value: '42ms', trend: 'down' },
       { label: 'Uptime', value: '99.97%', trend: 'stable' },
       { label: 'Requests/min', value: '12.4K', trend: 'up' },
     ],
-    link: { href: '/documentation', label: 'View integration docs →', muted: false },
+    link: { href: '/documentation', label: 'Review integration specifications →', muted: false },
   },
   {
     tag: 'SECURITY',
     title: 'Threat Intelligence',
     description:
-      'ML models score anomalies at the edge. Semgrep and Trivy findings consolidate into a single triage board; high-confidence indicators serialize to STIX 2.1 for downstream SOAR consumption.',
+      'ML models score anomalies at ingress. Semgrep and Trivy findings consolidate into a unified triage board; high-confidence indicators serialize to STIX 2.1 for downstream SOAR and TAXII federation.',
     icon: 'security',
     metrics: [
       { label: 'Threat Score', value: '12%', trend: 'down' },
       { label: 'Open CVEs', value: '3', trend: 'down' },
       { label: 'Blocked', value: '847', trend: 'up' },
     ],
-    link: { href: FRONTEND_URL + '/login', label: 'Start threat monitoring →', muted: true },
+    link: { href: FRONTEND_URL + '/login', label: 'Activate threat monitoring →', muted: true },
   },
   {
     tag: 'PIPELINE',
     title: 'Event Projections',
     description:
-      'Commands enter through Firebase, commit to a transactional Outbox, and stream to Redpanda. Idempotent workers materialize live views in Firestore — versioned, replayable, and symmetrical across every tenant.',
+      'Commands ingress through Firebase, commit to a transactional Outbox, and stream to Redpanda. Idempotent workers materialize live views in Firestore — versioned, replayable, symmetrical across every tenant.',
     icon: 'layers',
     metrics: [
       { label: 'Events/sec', value: '8.2K', trend: 'up' },
       { label: 'DLQ Rate', value: '0.01%', trend: 'down' },
       { label: 'Tenants', value: 'Symmetrical', trend: 'stable' },
     ],
-    link: { href: FRONTEND_URL + '/status/platform-status', label: 'See live projections →', muted: true },
+    link: { href: FRONTEND_URL + '/status/platform-status', label: 'Observe live projections →', muted: true },
   },
 ];
 
@@ -75,34 +75,34 @@ const quickStartSteps = [
   {
     step: '01',
     title: 'Connect',
-    description: 'Drop in one script tag or API key. No agents to babysit.',
+    description: 'Deploy one script tag or API key. No agent fleet to maintain.',
     icon: 'link',
   },
   {
     step: '02',
     title: 'Observe',
-    description: 'Telemetry, threat scores, and CVEs surface in real time.',
+    description: 'Telemetry, threat scores, and CVE posture surface in real time.',
     icon: 'visibility',
   },
   {
     step: '03',
     title: 'Act',
-    description: 'Triage incidents, block anomalies, and ship with confidence.',
+    description: 'Triage incidents, contain anomalies, and sustain operational tempo.',
     icon: 'shield',
   },
   {
     step: '04',
     title: 'Scale',
-    description: 'Symmetrical for every tenant. Zero extra work per customer.',
+    description: 'Symmetrical pipelines for every tenant. Zero per-customer overhead.',
     icon: 'trending_up',
   },
 ];
 
 const securityPillars = [
-  { icon: 'lock', label: 'AES-256-GCM at rest', detail: 'Field-level encryption with KMS rotation' },
-  { icon: 'fingerprint', label: 'UUID isolation', detail: 'No sequential IDs, no cross-tenant leaks' },
-  { icon: 'gpp_maybe', label: 'Behavioral intel', detail: 'ASN, ISP, and biometrics enrichment' },
-  { icon: 'verified_user', label: 'Zero-trust auth', detail: 'Firebase JWT + ABAC on every endpoint' },
+  { icon: 'lock', label: 'AES-256-GCM at rest', detail: 'Field-level encryption with KMS rotation every 90 days' },
+  { icon: 'fingerprint', label: 'UUID isolation', detail: 'No sequential identifiers. No cross-tenant data paths.' },
+  { icon: 'gpp_maybe', label: 'Behavioral enrichment', detail: 'ASN, ISP, and biometric signals at ingress' },
+  { icon: 'verified_user', label: 'Zero-trust perimeter', detail: 'Firebase JWT + ABAC on every endpoint' },
 ];
 
 const integrations = [
@@ -130,11 +130,11 @@ const integrations = [
           <span class="badge-dot pulse-dot"></span>
           <span class="badge-text">Secured · Version {version}</span>
         </div>
-        <h1 class="title" id="main-title">Operational Intelligence<br />for ML Pipelines</h1>
+        <h1 class="title" id="main-title">Operational Intelligence<br />for the Digital Battlefield</h1>
         <p class="subtitle">
-          DEML unifies data engineering, predictive machine learning, and defense-in-depth security
-          into one multi-tenant fabric. Ship telemetry at scale, forecast SLA breach, and act on
-          threats — with thesis-level rigor and production-grade reliability.
+          DEML fuses data engineering, predictive machine learning, and intelligence-driven defense
+          into one multi-tenant operational fabric. Ingest telemetry at scale, forecast SLA breach
+          before it manifests, and federate threat indicators — with doctoral rigor and production-grade reliability.
         </p>
         <div class="hero-stats" aria-label="Platform highlights">
           <div class="hero-stat-pill">
@@ -214,9 +214,9 @@ const integrations = [
     <!-- Quick start -->
     <section class="quick-start-band" aria-labelledby="quick-start-title">
       <header class="quick-start-header">
-        <span class="section-tag">SIMPLE BY DESIGN</span>
-        <h2 id="quick-start-title">Up and Running in Four Steps</h2>
-        <p>No sprawling setup guides. Connect, observe, and act — the platform handles the rest.</p>
+        <span class="section-tag">DEPLOYMENT SEQUENCE</span>
+        <h2 id="quick-start-title">Operational Onboarding in Four Steps</h2>
+        <p>Connect, observe, and act. The platform sustains projections, enrichment, and threat scoring autonomously.</p>
       </header>
       <ol class="quick-start-steps">
         {quickStartSteps.map((item) => (
@@ -296,8 +296,8 @@ const integrations = [
           <span class="section-tag">EMBED ANYWHERE</span>
           <h2 id="widget-title">Live Status Widget</h2>
           <p>
-            One script tag streams real-time telemetry from any site. Zero dependencies, full
-            OpenTelemetry enrichment, and automatic tenant isolation.
+            One script tag streams real-time telemetry from any surface. Zero runtime dependencies,
+            full OpenTelemetry enrichment, and automatic tenant isolation at every boundary.
           </p>
           <div class="embed-code">
             <code set:html={widgetEmbedSnippetHtml} />
@@ -320,10 +320,10 @@ const integrations = [
     <section class="security-pillars-band" aria-labelledby="security-pillars-title">
       <header class="security-pillars-header">
         <span class="section-tag">DEFENSE IN DEPTH</span>
-        <h2 id="security-pillars-title">Security That Works While You Sleep</h2>
+        <h2 id="security-pillars-title">Perimeter Security Without Operational Friction</h2>
         <p>
-          Every layer — from ingestion to projection — is encrypted, isolated, and audited. You
-          focus on models; we guard the perimeter.
+          Every layer — from command ingress to projection materialization — is encrypted, isolated,
+          and audited. Operators focus on models; the platform sustains the perimeter.
         </p>
       </header>
       <ul class="security-pillars-grid">
@@ -341,8 +341,8 @@ const integrations = [
     <section class="pricing-showcase" aria-labelledby="pricing-title">
       <header class="pricing-header">
         <span class="section-tag">API ACCESS</span>
-        <h2 id="pricing-title">Simple, Transparent Pricing</h2>
-        <p>Choose the tier that fits your telemetry throughput needs.</p>
+        <h2 id="pricing-title">Transparent Throughput Tiers</h2>
+        <p>Select the operational tier aligned with your telemetry volume and threat-analytics requirements.</p>
       </header>
       <div class="pricing-cards-container">
         <div class="viking-card pricing-card standard-tier">
@@ -377,8 +377,8 @@ const integrations = [
     <section class="transparency-atmospheric" aria-labelledby="transparency-title">
       <div class="atmospheric-header">
         <span class="section-tag">COMPLIANCE PROTOCOL</span>
-        <h2 id="transparency-title">Built for Auditors and Engineers Alike</h2>
-        <p>Transparent telemetry, strict tenancy, and automated retention — no black boxes.</p>
+        <h2 id="transparency-title">Audit-Ready by Architectural Default</h2>
+        <p>Transparent telemetry, strict tenancy, and automated retention — no opaque control planes.</p>
       </div>
       <ul class="purpose-list">
         <li>
