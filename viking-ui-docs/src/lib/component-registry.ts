@@ -127,7 +127,9 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: 'Card',
         description: 'Machined surface panels with inset hairline highlights.',
         preview: `<div class="viking-card">
-  <h3 class="showcase-heading showcase-heading-sm">Event throughput</h3>
+  <div class="viking-card-header">
+    <h3 class="showcase-heading showcase-heading-sm">Event throughput</h3>
+  </div>
   <p class="showcase-text-muted">8.2K events/sec across symmetrical tenant pipelines.</p>
 </div>
 <div class="viking-card viking-card-compact">
@@ -136,7 +138,9 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
 </div>`,
         snippets: {
           angular: `<viking-card>
-  <viking-heading size="md" [level]="3">Event throughput</viking-heading>
+  <viking-card-header>
+    <viking-heading size="lg" [level]="3">Event throughput</viking-heading>
+  </viking-card-header>
   <viking-text variant="muted">8.2K events/sec</viking-text>
 </viking-card>`,
           astro: `<div class="viking-card">
@@ -424,6 +428,33 @@ select.className = 'showcase-select';`,
           django: `<div class="showcase-tabs" role="tablist">...</div>`,
           javascript: `tab.setAttribute('role', 'tab');`,
         },
+      },
+      {
+        id: 'search-palette',
+        name: 'Search palette',
+        description:
+          'Cross-suite command palette for deml.app, marketing, and backend — Algolia Experiences with Viking-UI modal styling.',
+        preview: `<div class="showcase-search-palette" role="dialog" aria-label="Search demo">
+  <div class="showcase-search-palette-header">
+    <span class="showcase-search-icon" aria-hidden="true">⌕</span>
+    <input type="search" class="showcase-search-input" placeholder="Search documentation, dashboard, API…" aria-label="Search" />
+  </div>
+  <div class="showcase-search-palette-body">
+    <p class="showcase-text-muted">Results indexed across deml.app · dataengineeringformachinelearning.com · backend.deml.app</p>
+  </div>
+  <footer class="showcase-search-palette-footer">
+    <span class="showcase-kbd">⌘K</span> toggle · <span class="showcase-kbd">Esc</span> close
+  </footer>
+</div>`,
+        snippets: {
+          angular: `<viking-search-palette [(open)]="searchOpen" [(query)]="searchQuery">
+  <!-- project custom result list -->
+</viking-search-palette>`,
+          astro: `{# Algolia widget: /assets/widgets/algolia-search.js + #autocomplete host #}`,
+          django: `{# Same Algolia widget as marketing — see partials/site_navbar.html #}`,
+          javascript: `window.DemlWidgets?.openSearch(); // ⌘K / Ctrl+K globally`,
+        },
+        tags: ['shell', 'algolia', 'css'],
       },
     ],
   },

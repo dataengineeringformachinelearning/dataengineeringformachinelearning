@@ -9,15 +9,14 @@
 
       <div class="settings-stack grid-layout">
         <!-- Multi-Factor Authentication (MFA) -->
-        <div class="viking-card status-card-outlined mfa-settings-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
+        <viking-card class="status-card-outlined mfa-settings-card">
+          <viking-card-header>
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="security" />
               Multi-Factor Authentication (MFA)
-            </h2>
-          </div>
-          <div class="card-body-clean">
-            <div>
+            </viking-heading>
+          </viking-card-header>
+          <div>
               <p class="embed-desc">
                 Secure your account by requiring a secondary verification method (SMS) during login.
                 This is required under SOC2 policies to perform administrative updates to system
@@ -121,18 +120,17 @@
               <div id="mfa-recaptcha-container" class="mfa-recaptcha-slot"></div>
             </div>
           </div>
-        </div>
+        </viking-card>
 
         <!-- API Keys & Security Credentials -->
-        <div class="viking-card status-card-outlined api-keys-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
+        <viking-card class="status-card-outlined api-keys-card">
+          <viking-card-header>
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="vpn_key" />
               API Keys & Integrations
-            </h2>
-          </div>
-          <div class="card-body-clean">
-            <div>
+            </viking-heading>
+          </viking-card-header>
+          <div>
               <p class="embed-desc">
                 Generate API keys to authenticate and ingest data from external systems (like Spark,
                 Databricks, or Kubernetes) into your platform. For security reasons, the raw key is
@@ -211,18 +209,17 @@
               </div>
             </div>
           </div>
-        </div>
+        </viking-card>
 
         <!-- Connected Accounts -->
-        <div class="viking-card status-card-outlined mfa-settings-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
+        <viking-card class="status-card-outlined mfa-settings-card">
+          <viking-card-header>
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="link" />
               Connected Accounts
-            </h2>
-          </div>
-          <div class="card-body-clean">
-            <div>
+            </viking-heading>
+          </viking-card-header>
+          <div>
               <p class="embed-desc">
                 Reconcile your credentials by linking third-party identity providers to this
                 account. Once connected, you can sign in using either method.
@@ -277,18 +274,17 @@
               }
             </div>
           </div>
-        </div>
+        </viking-card>
 
         <!-- Account & Billing Settings -->
-        <div class="viking-card status-card-outlined">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
+        <viking-card class="status-card-outlined">
+          <viking-card-header>
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="manage_accounts" />
               Account & Billing Settings
-            </h2>
-          </div>
-          <div class="card-body-clean">
-            <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
+            </viking-heading>
+          </viking-card-header>
+          <p class="embed-desc">Manage your email, password, and subscription billing details.</p>
 
             <viking-form-panel class="mt-3">
               <viking-form-section heading="Update Email" icon="mail" layout="inline">
@@ -393,35 +389,33 @@
               }
             </viking-form-panel>
           </div>
-        </div>
+        </viking-card>
 
         <!-- Account Settings & Danger Zone -->
-        <div class="viking-card status-card-outlined danger-zone-card">
-          <div class="card-header-clean">
-            <h2 class="card-title-main">
+        <viking-card class="status-card-outlined danger-zone-card">
+          <viking-card-header>
+            <viking-heading [level]="2" size="xl" class="card-section-title">
               <viking-app-icon name="warning" />
               Danger Zone
-            </h2>
+            </viking-heading>
+          </viking-card-header>
+          <div>
+            <h3>Delete Account</h3>
+            <p>
+              Permanently delete your account, tracked pages, monitored services, and all
+              associated data. This action is irreversible.
+            </p>
           </div>
-          <div class="card-body-clean">
-            <div>
-              <h3>Delete Account</h3>
-              <p>
-                Permanently delete your account, tracked pages, monitored services, and all
-                associated data. This action is irreversible.
-              </p>
-            </div>
-            <viking-button
-              variant="danger"
-              type="button"
-              (pressed)="deleteAccount()"
-              [disabled]="isDeletingAccount()"
-              [loading]="isDeletingAccount()"
-            >
-              Delete Account
-            </viking-button>
-          </div>
-        </div>
+          <viking-button
+            variant="danger"
+            type="button"
+            (pressed)="deleteAccount()"
+            [disabled]="isDeletingAccount()"
+            [loading]="isDeletingAccount()"
+          >
+            Delete Account
+          </viking-button>
+        </viking-card>
       </div>
     </div>
   </div>
