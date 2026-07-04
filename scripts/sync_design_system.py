@@ -67,6 +67,7 @@ def sync_design_system() -> None:
     os.path.join(root_dir, "frontend", "public", "assets", "viking-ui.css"),
     os.path.join(root_dir, "backend", "static", "viking-ui.css"),
     os.path.join(root_dir, "marketing", "public", "assets", "viking-ui.css"),
+    os.path.join(root_dir, "viking-ui-docs", "public", "assets", "viking-ui.css"),
   ]
 
   elements_targets = [
@@ -74,6 +75,7 @@ def sync_design_system() -> None:
     os.path.join(root_dir, "frontend", "public", "assets", "viking-ui-elements.js"),
     os.path.join(root_dir, "backend", "static", "viking-ui-elements.js"),
     os.path.join(root_dir, "marketing", "public", "assets", "viking-ui-elements.js"),
+    os.path.join(root_dir, "viking-ui-docs", "public", "assets", "viking-ui-elements.js"),
   ]
 
   for src, targets in (

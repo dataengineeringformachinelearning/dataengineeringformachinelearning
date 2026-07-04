@@ -36,9 +36,13 @@ def sync_widgets() -> None:
   root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
   marketing_widgets = os.path.join(root, "marketing", "public", "assets", "widgets")
   backend_widgets = os.path.join(root, "backend", "static", "widgets")
+  docs_widgets = os.path.join(root, "viking-ui-docs", "public", "assets", "widgets")
+  frontend_public_widgets = os.path.join(root, "frontend", "public", "assets", "widgets")
 
-  os.makedirs(marketing_widgets, exist_ok=True)
-  os.makedirs(backend_widgets, exist_ok=True)
+  for widgets_dir in (marketing_widgets, backend_widgets, docs_widgets, frontend_public_widgets):
+    os.makedirs(widgets_dir, exist_ok=True)
+
+  shared_widget_targets = (marketing_widgets, backend_widgets, docs_widgets, frontend_public_widgets)
 
   for name in WIDGET_FILES:
     src = resolve_widget_src(root, name)
@@ -46,20 +50,15 @@ def sync_widgets() -> None:
       print(f"Skip missing widget asset: {name}", file=sys.stderr)
       continue
 
-    if name == "command-palette.js":
-      shutil.copy2(src, os.path.join(marketing_widgets, name))
-      print(f"Synced {name} -> marketing")
-      shutil.copy2(src, os.path.join(backend_widgets, name))
-      print(f"Synced {name} -> backend")
-      frontend_public_widgets = os.path.join(root, "frontend", "public", "assets", "widgets")
-      os.makedirs(frontend_public_widgets, exist_ok=True)
-      shutil.copy2(src, os.path.join(frontend_public_widgets, name))
-      print(f"Synced {name} -> frontend/public")
-      continue
-
     if name == "cookie-consent.js":
       shutil.copy2(src, os.path.join(marketing_widgets, name))
       print(f"Synced {name} -> marketing")
+      continue
+
+    if name in ("command-palette.js", "navbar.js"):
+      for dst_dir in shared_widget_targets:
+        shutil.copy2(src, os.path.join(dst_dir, name))
+        print(f"Synced {name} -> {dst_dir}")
       continue
 
     for dst_dir in (marketing_widgets, backend_widgets):

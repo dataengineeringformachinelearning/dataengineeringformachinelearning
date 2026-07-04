@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import SiteHeader from '../components/SiteHeader.astro';
+import SiteNavbar from '../components/SiteNavbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import DocsSidebar from '../components/DocsSidebar.astro';
 import '../styles/docs-shell.scss';
@@ -15,7 +15,7 @@ const { title, description, sidebar = 'docs' } = Astro.props;
 ---
 
 <BaseLayout title={title} description={description} bodyClass="docs-shell">
-  <SiteHeader slot="header" />
+  <SiteNavbar slot="header" />
   <div class="docs-layout">
     {sidebar && <DocsSidebar variant={sidebar} />}
     <div class="docs-main">

@@ -205,7 +205,8 @@
   flex-shrink: 0;
   gap: var(--viking-space-1, 8px);
 
-  viking-button {
+  viking-button,
+  viking-button-wc {
     min-width: auto;
   }
 }
@@ -391,7 +392,8 @@ html[data-theme='light'] {
   height: 24px;
 }
 
-.menu-toggle-btn {
+.menu-toggle-btn,
+viking-button.menu-toggle-btn {
   @include viking-navbar-utility-btn;
   display: inline-grid !important;
   place-items: center;
@@ -632,6 +634,11 @@ button.auth-btn {
   min-height: var(--viking-control-height, 40px);
   margin: 0;
   line-height: 0;
+
+  viking-button,
+  viking-button-wc {
+    flex-shrink: 0;
+  }
 }
 
 .algolia-autocomplete-host {
@@ -1067,7 +1074,8 @@ button.auth-btn {
     display: flex;
   }
 
-  .menu-toggle-btn {
+  .menu-toggle-btn,
+  viking-button.menu-toggle-btn {
     display: none !important;
   }
 

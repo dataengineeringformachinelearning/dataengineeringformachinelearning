@@ -43,6 +43,10 @@
   };
 
   const initThemeToggle = () => {
+    if (document.querySelector('viking-theme-toggle-wc')) {
+      return;
+    }
+
     const themeBtn = document.getElementById('theme-toggle-btn');
     if (!themeBtn) return;
 
@@ -67,18 +71,55 @@
     const mobileMenu = document.getElementById('mobile-menu');
     if (!menuBtn || !mobileMenu) return;
 
-    menuBtn.addEventListener('click', () => {
+    const menuIcon = menuBtn.querySelector('[data-viking-icon]');
+
+    menuBtn.addEventListener('viking-press', toggleMobileMenu);
+    menuBtn.addEventListener('click', event => {
+      if (menuBtn.tagName.toLowerCase() === 'viking-button-wc') {
+        return;
+      }
+      toggleMobileMenu(event);
+    });
+
+    function toggleMobileMenu() {
       const isOpen = mobileMenu.classList.contains('open');
       if (isOpen) {
         mobileMenu.classList.remove('open');
         menuBtn.setAttribute('aria-expanded', 'false');
-        menuBtn.innerHTML = svgIcon('menu', 24);
+        menuBtn.setAttribute('aria-label', 'Toggle navigation menu');
+        if (menuIcon) {
+          menuIcon.setAttribute('data-viking-icon', 'menu');
+          setIcon(menuIcon, 'menu', 24);
+        } else {
+          menuBtn.innerHTML = svgIcon('menu', 24);
+        }
       } else {
         mobileMenu.classList.add('open');
         menuBtn.setAttribute('aria-expanded', 'true');
-        menuBtn.innerHTML = svgIcon('x', 24);
+        menuBtn.setAttribute('aria-label', 'Close navigation menu');
+        if (menuIcon) {
+          menuIcon.setAttribute('data-viking-icon', 'x');
+          setIcon(menuIcon, 'x', 24);
+        } else {
+          menuBtn.innerHTML = svgIcon('x', 24);
+        }
       }
-    });
+    }
+  };
+
+  const initSearchTrigger = () => {
+    const trigger = document.getElementById('navbar-search-trigger');
+    if (!trigger || trigger.dataset.searchBound === 'true') return;
+    trigger.dataset.searchBound = 'true';
+
+    const openSearch = () => {
+      window.DemlWidgets?.openSearch?.();
+    };
+
+    trigger.addEventListener('viking-press', openSearch);
+    if (trigger.tagName.toLowerCase() !== 'viking-button-wc') {
+      trigger.addEventListener('click', openSearch);
+    }
   };
 
   const initAuth = () => {
@@ -152,40 +193,40 @@
       });
     };
 
+    const setAuthButtonHref = (id, href) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.tagName.toLowerCase() === 'viking-button-wc') {
+        el.setAttribute('href', href);
+      } else {
+        el.href = href;
+      }
+    };
+
+    const setAuthButtonLabel = (textId, iconId, label, iconName) => {
+      const textEl = document.getElementById(textId);
+      const iconEl = document.getElementById(iconId);
+      if (textEl) textEl.textContent = label;
+      if (iconEl) setIcon(iconEl, iconName, 16);
+    };
+
     const updateAuthUIFromStatus = status => {
       const isLoggedIn = status?.isAuthenticated === true;
-      const desktopBtn = document.getElementById('auth-btn-desktop');
-      const desktopIcon = document.getElementById('auth-icon-desktop');
-      const desktopText = document.getElementById('auth-text-desktop');
-      const mobileBtn = document.getElementById('auth-btn-mobile');
-      const mobileIcon = document.getElementById('auth-icon-mobile');
-      const mobileText = document.getElementById('auth-text-mobile');
 
       if (isLoggedIn) {
-        if (desktopBtn) {
-          desktopBtn.href = `${FRONTEND_URL}/dashboard`;
-          if (desktopIcon) setIcon(desktopIcon, 'home', 16);
-          if (desktopText) desktopText.textContent = 'Dashboard';
-        }
-        if (mobileBtn) {
-          mobileBtn.href = `${FRONTEND_URL}/dashboard`;
-          if (mobileIcon) setIcon(mobileIcon, 'home', 16);
-          if (mobileText) mobileText.textContent = 'Dashboard';
-        }
+        setAuthButtonHref('auth-btn-desktop', `${FRONTEND_URL}/dashboard`);
+        setAuthButtonHref('auth-btn-mobile', `${FRONTEND_URL}/dashboard`);
+        setAuthButtonLabel('auth-text-desktop', 'auth-icon-desktop', 'Dashboard', 'home');
+        setAuthButtonLabel('auth-text-mobile', 'auth-icon-mobile', 'Dashboard', 'home');
         setSignOutVisible(true);
         setAuthNavLinksVisible(true);
       } else {
         clearAuthStorage();
-        if (desktopBtn) {
-          desktopBtn.href = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.origin)}`;
-          if (desktopIcon) setIcon(desktopIcon, 'arrow-right', 16);
-          if (desktopText) desktopText.textContent = 'Sign In';
-        }
-        if (mobileBtn) {
-          mobileBtn.href = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.origin)}`;
-          if (mobileIcon) setIcon(mobileIcon, 'arrow-right', 16);
-          if (mobileText) mobileText.textContent = 'Sign In';
-        }
+        const loginHref = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.origin)}`;
+        setAuthButtonHref('auth-btn-desktop', loginHref);
+        setAuthButtonHref('auth-btn-mobile', loginHref);
+        setAuthButtonLabel('auth-text-desktop', 'auth-icon-desktop', 'Sign In', 'arrow-right');
+        setAuthButtonLabel('auth-text-mobile', 'auth-icon-mobile', 'Sign In', 'arrow-right');
         setSignOutVisible(false);
         setAuthNavLinksVisible(false);
       }
@@ -207,10 +248,14 @@
         const btn = document.getElementById(id);
         if (!btn || btn.dataset.bound === 'true') continue;
         btn.dataset.bound = 'true';
-        btn.addEventListener('click', event => {
+        const handler = event => {
           event.preventDefault();
           signOut();
-        });
+        };
+        btn.addEventListener('viking-press', handler);
+        if (btn.tagName.toLowerCase() !== 'viking-button-wc') {
+          btn.addEventListener('click', handler);
+        }
       }
     };
 
@@ -323,6 +368,7 @@
     await loadIconPaths();
     initNavIcons();
     initThemeToggle();
+    initSearchTrigger();
     initMobileMenu();
     initAuth();
   };

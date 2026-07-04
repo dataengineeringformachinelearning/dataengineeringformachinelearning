@@ -51,45 +51,24 @@
 
     <div class="navbar-right">
       <div class="navbar-search" role="search">
-        <button
-          type="button"
-          class="navbar-search-trigger"
-          aria-label="Open search"
-          title="Search (⌘K)"
-          onclick="if (window.DemlWidgets) window.DemlWidgets.openSearch();"
-        >
+        <viking-button-wc variant="outline" square compact aria-label="Open search (⌘K)" id="navbar-search-trigger">
           <span data-viking-icon="search" data-viking-icon-size="20" aria-hidden="true"></span>
-        </button>
+        </viking-button-wc>
       </div>
 
       <div class="desktop-auth">
-        <a href="{{ frontend_url }}/login" class="auth-btn" id="auth-btn-desktop">
+        <viking-button-wc variant="primary" href="{{ frontend_url }}/login" id="auth-btn-desktop">
           <span id="auth-icon-desktop"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
           <span id="auth-text-desktop">Sign In</span>
-        </a>
-        <button type="button" class="auth-signout-btn" id="auth-signout-desktop" hidden>
-          Sign Out
-        </button>
+        </viking-button-wc>
+        <viking-button-wc variant="ghost" id="auth-signout-desktop" hidden>Sign Out</viking-button-wc>
       </div>
 
-      <button
-        type="button"
-        class="theme-toggle-btn"
-        aria-label="Toggle light and dark theme"
-        id="theme-toggle-btn"
-      >
-        <span data-viking-icon="sun" data-viking-icon-size="24" aria-hidden="true"></span>
-      </button>
+      <viking-theme-toggle-wc aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
-      <button
-        type="button"
-        class="menu-toggle-btn"
-        aria-label="Toggle navigation menu"
-        aria-expanded="false"
-        id="mobile-menu-btn"
-      >
+      <viking-button-wc variant="outline" square class="menu-toggle-btn" aria-label="Toggle navigation menu" id="mobile-menu-btn">
         <span data-viking-icon="menu" data-viking-icon-size="24" aria-hidden="true"></span>
-      </button>
+      </viking-button-wc>
     </div>
   </div>
 
@@ -117,13 +96,11 @@
 
     <div class="mobile-divider"></div>
 
-    <a href="{{ frontend_url }}/login" class="mobile-auth-btn" id="auth-btn-mobile">
+    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href="{{ frontend_url }}/login" id="auth-btn-mobile">
       <span id="auth-icon-mobile"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
       <span id="auth-text-mobile">Sign In</span>
-    </a>
-    <button type="button" class="mobile-auth-btn auth-signout-btn" id="auth-signout-mobile" hidden>
-      Sign Out
-    </button>
+    </viking-button-wc>
+    <viking-button-wc variant="ghost" full-width class="mobile-auth-btn" id="auth-signout-mobile" hidden>Sign Out</viking-button-wc>
   </nav>
 </header>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>

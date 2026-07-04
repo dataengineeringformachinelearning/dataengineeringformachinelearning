@@ -16,11 +16,14 @@
 
   const detectContext = () => {
     const explicit = document.documentElement.getAttribute('data-deml-context');
-    if (explicit === 'app' || explicit === 'marketing' || explicit === 'backend') {
+    if (explicit === 'app' || explicit === 'marketing' || explicit === 'backend' || explicit === 'docs') {
       return explicit;
     }
 
     const host = window.location.hostname;
+    if (host.startsWith('ui.')) {
+      return 'docs';
+    }
     if (host.includes('deml.app') && !host.startsWith('backend.')) {
       return 'app';
     }
@@ -161,21 +164,51 @@
     window.VikingUI?.registerVikingElements?.();
   };
 
+  const DOCS_SEARCH_EXTRAS = [
+    { title: 'Components', href: '/components', snippet: 'Browse all documented primitives', group: 'Viking-UI' },
+    { title: 'Playground', href: '/playground', snippet: 'Live Web Component sandbox', group: 'Viking-UI' },
+    { title: 'Architecture', href: '/architecture', snippet: 'CSS + WC + Angular layers', group: 'Viking-UI' },
+    { title: 'Design tokens', href: '/tokens', snippet: 'Canonical --viking-* token matrix', group: 'Viking-UI' },
+    { title: 'Theming', href: '/theming', snippet: 'Light/dark mode and sync pipeline', group: 'Viking-UI' },
+    { title: 'Framework guides', href: '/frameworks', snippet: 'Angular, Astro, Django setup', group: 'Viking-UI' },
+    { title: 'Contributing', href: '/contributing', snippet: 'Extend the Viking-UI kit', group: 'Viking-UI' },
+  ];
+
   const loadItems = async () => {
     const urls = readDemlUrls();
     const context = detectContext();
+
+    let items = [];
 
     try {
       const response = await fetch('/assets/site-drakkar.json', { cache: 'no-cache' });
       if (response.ok) {
         const drakkar = await response.json();
-        return buildItemsFromDrakkar(drakkar, context, urls);
+        items = buildItemsFromDrakkar(drakkar, context === 'docs' ? 'marketing' : context, urls);
       }
     } catch {
-      // Fall through to minimal defaults when JSON is unavailable.
+      items = buildItemsFromDrakkar({ navLinks: [], footerColumns: [] }, context === 'docs' ? 'marketing' : context, urls);
     }
 
-    return buildItemsFromDrakkar({ navLinks: [], footerColumns: [] }, context, urls);
+    if (context === 'docs') {
+      const docsOrigin = window.location.origin.replace(/\/$/, '');
+      items.push(
+        ...DOCS_SEARCH_EXTRAS.map(extra => ({
+          ...extra,
+          href: extra.href.startsWith('http') ? extra.href : `${docsOrigin}${extra.href}`,
+        })),
+      );
+    }
+
+    const seen = new Set();
+    return items.filter(item => {
+      const key = `${item.title}:${item.href}:${item.action ?? ''}`;
+      if (seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
   };
 
   const ensurePalette = async () => {
