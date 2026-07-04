@@ -187,6 +187,9 @@
   --viking-content-readable-max-width: 48rem;
   --viking-card-min-width: 0;
   --viking-card-max-width: none;
+  --viking-metric-card-min-height: 6.5rem;
+  --viking-metric-card-tall-min-height: 8.25rem;
+  --viking-metric-card-min-width: 10rem;
   --viking-surface-hairline-strength: 22%;
   /* ── Layering ────────────────────────────────────────────────────────────── */
   --viking-z-overlay: 1000;
@@ -258,7 +261,7 @@ html[data-theme=light] {
   --viking-text-inverted: var(--viking-white-pure);
   --viking-border: color-mix(in srgb, var(--viking-metallic-600) 32%, transparent);
   --viking-border-strong: color-mix(in srgb, var(--viking-metallic-600) 48%, transparent);
-  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 18%, transparent);
+  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 22%, transparent);
   --viking-accent: var(--viking-teal-700);
   --viking-accent-hover: var(--viking-teal-600);
   --viking-accent-content: var(--viking-white-pure);
