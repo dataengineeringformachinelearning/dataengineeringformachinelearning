@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
+import { VikingButton, VikingStatusMetricRow } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../viking-app-icon/viking-app-icon';
 
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
@@ -21,7 +21,7 @@ import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
 @Component({
   selector: 'app-status-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, VikingButton, VikingAppIcon, ProVerifiedBadge],
+  imports: [CommonModule, RouterModule, VikingButton, VikingStatusMetricRow, VikingAppIcon, ProVerifiedBadge],
   templateUrl: './status-card.html',
   styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

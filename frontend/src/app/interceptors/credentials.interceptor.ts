@@ -10,11 +10,14 @@ export const credentialsInterceptor: HttpInterceptorFn = (req, next) => {
   if (firebaseAuth && firebaseAuth.currentUser) {
     return from((firebaseAuth.currentUser as any).getIdToken() as Promise<string>).pipe(
       switchMap((token: string) => {
-        const authReq = req.clone({
-          setHeaders: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const headers: Record<string, string> = {
+          Authorization: `Bearer ${token}`,
+        };
+        const sessionId = authService.sessionId();
+        if (sessionId) {
+          headers['X-DEML-Session-Id'] = sessionId;
+        }
+        const authReq = req.clone({ setHeaders: headers });
         return next(authReq);
       }),
     );

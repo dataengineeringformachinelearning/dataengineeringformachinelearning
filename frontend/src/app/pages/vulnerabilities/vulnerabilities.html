@@ -197,48 +197,16 @@
                 <viking-app-icon name="tune" />
                 <h3>Update Status</h3>
               </div>
-              <div class="btn-group">
-                <button
-                  class="btn-triage"
-                  [class.active]="selectedVuln()?.status === 'Triage'"
-                  [attr.aria-pressed]="selectedVuln()?.status === 'Triage'"
-                  (click)="updateStatus('Triage')"
-                >
-                  Triage
-                </button>
-                <button
-                  class="btn-triage"
-                  [class.active]="selectedVuln()?.status === 'Open'"
-                  [attr.aria-pressed]="selectedVuln()?.status === 'Open'"
-                  (click)="updateStatus('Open')"
-                >
-                  Open
-                </button>
-                <button
-                  class="btn-triage"
-                  [class.active]="selectedVuln()?.status === 'In Progress'"
-                  [attr.aria-pressed]="selectedVuln()?.status === 'In Progress'"
-                  (click)="updateStatus('In Progress')"
-                >
-                  In Progress
-                </button>
-                <button
-                  class="btn-triage"
-                  [class.active]="selectedVuln()?.status === 'Resolved'"
-                  [attr.aria-pressed]="selectedVuln()?.status === 'Resolved'"
-                  (click)="updateStatus('Resolved')"
-                >
-                  Resolved
-                </button>
-                <button
-                  class="btn-triage"
-                  [class.active]="selectedVuln()?.status === 'False Positive'"
-                  [attr.aria-pressed]="selectedVuln()?.status === 'False Positive'"
-                  (click)="updateStatus('False Positive')"
-                >
-                  False Positive
-                </button>
-              </div>
+              <viking-toggle-group
+                [value]="selectedVuln()?.status ?? ''"
+                (valueChange)="updateStatus($event)"
+              >
+                <viking-toggle value="Triage">Triage</viking-toggle>
+                <viking-toggle value="Open">Open</viking-toggle>
+                <viking-toggle value="In Progress">In Progress</viking-toggle>
+                <viking-toggle value="Resolved">Resolved</viking-toggle>
+                <viking-toggle value="False Positive">False Positive</viking-toggle>
+              </viking-toggle-group>
             </div>
 
             <!-- Diagnostic Telemetry Code Section -->
