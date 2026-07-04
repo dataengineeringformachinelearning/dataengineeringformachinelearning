@@ -26,7 +26,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
-              "includePaths": ["src/design-system"]
+              "includePaths": ["src/design-system", "projects/viking-ui/src/styles"]
             },
             "assets": [
               {
@@ -63,7 +63,17 @@
             },
             "security": {
               "allowedHosts": ["dataengineeringformachinelearning.com", "deml.app"]
-            }
+            },
+            "allowedCommonJsDependencies": [
+              "leaflet",
+              "@sanity/eventsource",
+              "event-source-polyfill",
+              "eventsource",
+              "decompress-response",
+              "tunnel-agent",
+              "is-retry-allowed",
+              "through2"
+            ]
           },
           "configurations": {
             "production": {
@@ -75,8 +85,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "16kB",
-                  "maximumError": "40kB"
+                  "maximumWarning": "28kB",
+                  "maximumError": "48kB"
                 }
               ],
               "outputHashing": "all"

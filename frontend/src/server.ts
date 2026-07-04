@@ -9,6 +9,16 @@ import { join } from 'node:path';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
+/** Firebase web config served at runtime — never baked into Docker image layers. */
+const buildFirebaseConfig = (): Record<string, string> => ({
+  apiKey: process.env['FIREBASE_API_KEY'] ?? 'PLACEHOLDER_API_KEY',
+  authDomain: process.env['FIREBASE_AUTH_DOMAIN'] ?? 'demldotcom.firebaseapp.com',
+  projectId: process.env['FIREBASE_PROJECT_ID'] ?? 'demldotcom',
+  storageBucket: process.env['FIREBASE_STORAGE_BUCKET'] ?? 'demldotcom.firebasestorage.app',
+  messagingSenderId: process.env['FIREBASE_MESSAGING_SENDER_ID'] ?? '870072971206',
+  appId: process.env['FIREBASE_APP_ID'] ?? '1:870072971206:web:5231fde2822d750abfccc7',
+});
+
 const app = express();
 app.disable('x-powered-by');
 app.set('trust proxy', true);
@@ -84,6 +94,17 @@ app.use('/api/v1', async (req, res) => {
     console.error('Proxy error for %s:', sanitizedUrl, err);
     res.status(502).json({ error: 'Bad Gateway via Frontend Proxy' });
   }
+});
+
+/**
+ * Runtime Firebase config for the browser bundle (index.html loads /assets/firebase-config.js).
+ * Must be registered before express.static so env vars are not replaced by build artifacts.
+ */
+app.get('/assets/firebase-config.js', (_req, res) => {
+  res
+    .type('application/javascript')
+    .set('Cache-Control', 'no-store')
+    .send(`window.FIREBASE_CONFIG = ${JSON.stringify(buildFirebaseConfig())};`);
 });
 
 /**
