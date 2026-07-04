@@ -215,6 +215,7 @@
             [categories]="latencyCategories()"
             label="System Latency (Last 24h)"
             [showArea]="true"
+            curve="smooth"
             [fill]="true"
           />
           } @else {
@@ -313,6 +314,7 @@
             [categories]="frequencyCategories()"
             label="Request Frequency"
             [showArea]="true"
+            curve="smooth"
             [fill]="true"
           />
           } @else {
