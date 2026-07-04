@@ -166,13 +166,16 @@ const progressPct = Math.round(((chapter.index + 1) / chapters.length) * 100);
 .sidebar-section {
   padding: 16px 12px 24px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1, 8px);
 
   .section-title {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-muted);
-    margin: 0 0 12px 8px;
+    margin: 0 0 4px 8px;
     font-weight: 700;
   }
 }
