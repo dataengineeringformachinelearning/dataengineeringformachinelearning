@@ -125,8 +125,8 @@ import { VikingIcon } from '../icon/icon';
       .viking-modal-footer {
         display: flex;
         justify-content: flex-end;
-        gap: var(--viking-space-1);
-        padding-top: var(--viking-space-1);
+        gap: var(--viking-space-2);
+        padding-top: var(--viking-space-2);
         border-top: 1px solid var(--viking-border-subtle);
       }
       .viking-modal-footer:empty {

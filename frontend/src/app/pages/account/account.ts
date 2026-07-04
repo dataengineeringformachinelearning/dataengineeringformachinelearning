@@ -13,6 +13,7 @@ import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import {
   VikingButton,
+  VikingCallout,
   VikingField,
   VikingFormPanel,
   VikingFormSection,
@@ -35,6 +36,7 @@ import { environment } from '../../../environments/environment';
   imports: [
     CommonModule,
     VikingButton,
+    VikingCallout,
     VikingField,
     VikingFormPanel,
     VikingFormSection,

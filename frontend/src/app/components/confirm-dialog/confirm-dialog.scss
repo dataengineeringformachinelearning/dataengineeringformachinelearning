@@ -1,24 +1,24 @@
 .modal-header {
-  padding: 24px;
-  border-bottom: 1px solid var(--border);
+  padding: var(--viking-space-3, 24px);
+  border-bottom: 1px solid var(--viking-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(0, 0, 0, 0.05);
+  background: color-mix(in srgb, var(--viking-surface) 60%, transparent);
 
   h3 {
     margin: 0;
-    font-size: 1.25rem;
-    color: var(--color-primary-container);
+    font-size: var(--viking-font-size-md);
+    color: var(--viking-text);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 600;
+    letter-spacing: var(--viking-letter-spacing-caps);
+    font-weight: var(--viking-font-weight-semibold);
   }
 
   .title-wrapper {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--viking-space-1, 8px);
   }
 
   .header-icon {
@@ -82,74 +82,20 @@
 }
 
 .modal-footer {
-  padding: 16px 24px;
-  border-top: 1px solid var(--border);
+  padding: var(--viking-space-2, 16px) var(--viking-space-3, 24px);
+  border-top: 1px solid var(--viking-border);
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  background: rgba(0, 0, 0, 0.05);
+  gap: var(--viking-space-2, 16px);
+  margin-top: 0;
+  background: color-mix(in srgb, var(--viking-surface) 50%, transparent);
+}
 
-  .btn-icon {
-    font-size: var(--base-font-size);
-    width: 16px;
-    height: 16px;
-  }
-
-  button {
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    font-size: 1rem;
-
-    &.btn-cancel {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-
-      &:hover:not(:disabled) {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: var(--color-primary-container);
-      }
-    }
-
-    &.btn-submit {
-      border: none !important;
-      min-width: 96px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      color: white;
-      box-shadow: var(--shadow-sm) !important;
-
-      &.btn-warn {
-        background-color: var(--color-error) !important;
-      }
-
-      &.btn-primary {
-        background-color: var(--primary-color) !important;
-      }
-
-      &:hover:not(:disabled) {
-        opacity: 0.9;
-        box-shadow: var(--shadow-md) !important;
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-      }
-    }
-  }
+/* Rely on viking-button for height, radius, padding, contrast. Legacy rules removed. */
+.modal-footer viking-button + viking-button,
+.modal-footer .viking-btn + .viking-btn {
+  margin-left: 0;
 }
 
 :host-context(html[data-theme='light']) {

@@ -43,8 +43,9 @@ import { VikingIconName } from '../core/icons';
         display: flex;
         flex-direction: column;
         align-items: center;
+        justify-content: center;
         text-align: center;
-        gap: var(--viking-space-1-5);
+        gap: 0;
         max-width: 28rem;
       }
       .viking-empty-state-icon {
@@ -57,10 +58,10 @@ import { VikingIconName } from '../core/icons';
         background: var(--viking-accent-soft);
         color: var(--viking-accent-strong);
         box-shadow: var(--viking-shadow-sm);
-        margin-bottom: var(--viking-space-half);
+        margin-bottom: var(--viking-space-2);
       }
       .viking-empty-state-heading {
-        margin: 0;
+        margin: 0 0 var(--viking-space-1) 0;
         font-size: var(--viking-font-size-md);
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-tight);
@@ -78,8 +79,8 @@ import { VikingIconName } from '../core/icons';
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: var(--viking-space-1);
-        margin-top: var(--viking-space-1);
+        gap: var(--viking-space-2);
+        margin-top: var(--viking-space-2);
       }
       .viking-empty-state-actions:empty {
         display: none;

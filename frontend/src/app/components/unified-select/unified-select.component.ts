@@ -46,7 +46,7 @@ export interface SelectOption {
 
       :host(.unified-select-half) {
         width: 100%;
-        max-width: var(--viking-select-half-max-width, min(100%, 24rem));
+        max-width: 320px; /* grid-snapped explicit max ~40*8 */
       }
 
       :host ::ng-deep viking-field {
@@ -61,7 +61,7 @@ export class UnifiedSelect {
   @Input() options: SelectOption[] = [];
   @Input() value: string | null = null;
   @Input() disabled = false;
-  @Input() width: VikingSelectWidth = 'full';
+  @Input() width: VikingSelectWidth = 'half';
   @Output() valueChange = new EventEmitter<string>();
 
   protected get fluxOptions(): VikingSelectOption[] {

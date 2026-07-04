@@ -47,7 +47,7 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
         background: var(--viking-surface-alt);
         border: 1px dashed var(--viking-border-strong);
         box-shadow: var(--viking-shadow-inner);
-        gap: var(--viking-space-2);
+        gap: 0;
         animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
       }
 
@@ -102,11 +102,11 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
         background: var(--viking-accent-soft);
         color: var(--viking-accent-strong);
         box-shadow: var(--viking-shadow-sm);
-        margin-bottom: var(--viking-space-half);
+        margin-bottom: var(--viking-space-2);
       }
 
       .empty-title {
-        margin: 0;
+        margin: 0 0 var(--viking-space-1) 0;
         font-size: var(--viking-font-size-md);
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-caps);
@@ -128,8 +128,8 @@ export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';
         flex-wrap: wrap;
         align-items: center;
         justify-content: center;
-        gap: var(--viking-space-1);
-        margin-top: var(--viking-space-half);
+        gap: var(--viking-space-2);
+        margin-top: var(--viking-space-2);
       }
 
       .viking-chart-empty-actions:empty {

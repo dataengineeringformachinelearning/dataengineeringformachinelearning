@@ -196,7 +196,7 @@ export class VikingSelect extends VikingControl<unknown> {
   readonly placeholder = input<string>('Select…');
   readonly label = input<string>('');
   readonly disabled = input<boolean>(false);
-  readonly width = input<VikingSelectWidth>('full');
+  readonly width = input<VikingSelectWidth>('half');
 
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(0);

@@ -6,7 +6,7 @@
   top: 0;
   z-index: 50;
   width: 100%;
-  min-height: var(--viking-navbar-height, var(--navbar-height, 64px));
+  height: var(--viking-navbar-height, 64px);
   background-color: var(--navbar-bg, color-mix(in srgb, var(--viking-surface, var(--card-bg)) 92%, transparent));
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -14,7 +14,7 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  padding: var(--viking-space-1-5, 12px) var(--viking-space-2, 16px);
+  padding: 0 var(--viking-space-2, 16px);
   box-sizing: border-box;
 
   @media (min-width: 768px) {
@@ -25,11 +25,11 @@
 }
 
 .navbar-brand {
-  margin-right: 8px;
+  margin-right: var(--viking-space-1, 8px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--viking-space-1, 8px);
   text-decoration: none;
   overflow: visible;
   flex-shrink: 0;
@@ -85,11 +85,12 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: nowrap;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-2, 16px);
   width: 100%;
   max-width: none;
   margin: 0;
   min-width: 0;
+  min-height: var(--viking-navbar-height, 64px);
 }
 
 .navbar-left {
@@ -104,7 +105,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-2, 16px);
 }
 
 .navbar-center {
@@ -117,14 +118,14 @@
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  gap: 12px;
-  padding: 4px 0;
+  gap: var(--viking-space-2, 16px);
+  padding: var(--viking-space-half, 4px) 0;
 }
 
 .desktop-auth {
   display: none;
   align-items: center;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-2, 16px);
 
   viking-button {
     min-width: auto;
@@ -144,9 +145,9 @@
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important;
-  padding: 0 16px !important;
-  height: 40px !important;
-  line-height: 40px !important;
+  padding: 0 var(--viking-space-2, 16px) !important;
+  height: var(--viking-control-height, 40px) !important;
+  line-height: var(--viking-control-height, 40px) !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 8px !important;
@@ -274,9 +275,9 @@ html[data-theme='light'] {
   color: var(--text-muted);
   border: none;
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
+  width: var(--viking-control-height, 40px);
+  height: var(--viking-control-height, 40px);
+  min-width: var(--viking-control-height, 40px);
   padding: 0;
   margin: 0;
   display: inline-flex;
@@ -367,19 +368,19 @@ button.auth-btn {
   background: transparent !important;
   color: var(--text-muted) !important;
   font-weight: 600 !important;
-  border-radius: 96px !important;
-  padding: 0 14px !important;
+  border-radius: var(--viking-radius-pill, 999px) !important;
+  padding: 0 var(--viking-space-1-5, 12px) !important;
   border: 1px solid var(--border) !important;
-  height: 40px !important;
-  line-height: 40px !important;
+  height: var(--viking-control-height, 40px) !important;
+  line-height: var(--viking-control-height, 40px) !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: var(--viking-space-1, 8px) !important;
   white-space: nowrap !important;
   text-transform: uppercase !important;
   letter-spacing: 0.08em !important;
   cursor: pointer;
-  transition: var(--transition-smooth) !important;
+  transition: var(--viking-transition-interactive) !important;
 }
 
 .auth-signout-btn:hover {
@@ -552,7 +553,7 @@ button.auth-btn {
   max-width: none;
   min-width: 0;
   min-height: var(--viking-control-height, 40px);
-  margin: 0 4px;
+  margin: 0;
 }
 
 .algolia-autocomplete-host {
@@ -963,7 +964,7 @@ button.auth-btn {
   .navbar-right {
     flex: 1;
     min-width: 0;
-    gap: 8px;
+    gap: var(--viking-space-2, 16px);
   }
 
   .desktop-nav {

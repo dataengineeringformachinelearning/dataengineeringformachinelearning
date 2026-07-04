@@ -45,6 +45,10 @@ import { VikingSkeleton } from '../skeleton/skeleton';
         overflow: hidden;
         min-width: 0;
       }
+      :host(.viking-card-headerless) .viking-card-header,
+      :host(.viking-card-headerless) viking-card-header {
+        display: none;
+      }
       :host::before {
         content: '';
         position: absolute;
@@ -120,6 +124,11 @@ export class VikingCard {
         margin-bottom: var(--viking-space-2);
         border-bottom: 1px solid var(--viking-border-subtle);
       }
+      /* Support slotted left meta + right actions uniformly */
+      :host ::ng-deep > * {
+        display: inline-flex;
+        align-items: center;
+      }
     `,
   ],
 })
@@ -135,7 +144,7 @@ export class VikingCardHeader {}
       :host {
         display: flex;
         align-items: center;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-2);
         padding-top: var(--viking-space-2);
         margin-top: var(--viking-space-2);
         border-top: 1px solid var(--viking-border-subtle);

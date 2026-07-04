@@ -101,12 +101,16 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         color: var(--viking-warning);
       }
       :host(.viking-callout-danger) {
-        border-color: color-mix(in srgb, var(--viking-danger) 45%, transparent);
+        border-color: var(--viking-danger);
         border-left-color: var(--viking-danger);
-        background: color-mix(in srgb, var(--viking-danger) 10%, var(--viking-surface));
+        background: color-mix(in srgb, var(--viking-crimson-600) 22%, var(--viking-surface));
+        color: var(--viking-white);
       }
       :host(.viking-callout-danger) .viking-callout-icon {
-        color: var(--viking-danger);
+        color: var(--viking-crimson-400);
+      }
+      :host(.viking-callout-danger) .viking-callout-text {
+        color: var(--viking-white);
       }
       .viking-callout-body {
         flex: 1;

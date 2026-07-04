@@ -94,7 +94,7 @@ export class VikingNativeSelect extends VikingControl<string | number | null> {
   readonly placeholder = input('');
   readonly options = input<VikingSelectOption[]>([]);
   readonly disabled = input(false);
-  readonly width = input<VikingSelectWidth>('full');
+  readonly width = input<VikingSelectWidth>('half');
 
   readonly value = model<string | number | null>(null);
 

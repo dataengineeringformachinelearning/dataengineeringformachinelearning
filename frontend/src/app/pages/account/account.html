@@ -25,7 +25,7 @@
               </p>
 
               @if (isMfaEnrolled()) {
-              <div class="mfa-status-enrolled panel-clean">
+              <div class="mfa-status-enrolled panel-clean" style="display: flex; align-items: center; justify-content: space-between; gap: var(--viking-space-2, 16px);">
                 <viking-icon-text
                   icon="check-circle"
                   tone="success"
@@ -94,9 +94,9 @@
               <div id="mfa-recaptcha-container"></div>
 
               @if (mfaError()) {
-              <div class="alert alert-error">{{ mfaError() }}</div>
+              <viking-callout tone="danger" [heading]="'Error'">{{ mfaError() }}</viking-callout>
               } @if (mfaSuccess()) {
-              <div class="alert alert-success">{{ mfaSuccess() }}</div>
+              <viking-callout tone="success" [heading]="'Success'">{{ mfaSuccess() }}</viking-callout>
               }
             </div>
           </div>
@@ -250,9 +250,9 @@
               </div>
 
               @if (providerError()) {
-              <div class="alert alert-error mt-3">{{ providerError() }}</div>
+              <viking-callout tone="danger" class="mt-3">{{ providerError() }}</viking-callout>
               } @if (providerSuccess()) {
-              <div class="alert alert-success mt-3">{{ providerSuccess() }}</div>
+              <viking-callout tone="success" class="mt-3">{{ providerSuccess() }}</viking-callout>
               }
             </div>
           </div>
