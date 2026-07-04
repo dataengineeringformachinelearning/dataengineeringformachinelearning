@@ -36,12 +36,12 @@ import { buildSuiteSearchItems, type SuiteSearchItem } from '../site-drakkar/sui
     >
       <div class="viking-search-results" role="listbox" aria-label="Search results">
         @for (group of groupedResults(); track group.name) {
-          <p class="viking-search-suggestions-heading" role="presentation">{{ group.name }}</p>
+          <p class="viking-search-group-label" role="presentation">{{ group.name }}</p>
           @for (item of group.items; track item.title + item.href) {
             <button
               type="button"
               class="viking-search-result"
-              [class.viking-selected]="item === activeItem()"
+              [class.is-selected]="item === activeItem()"
               role="option"
               [attr.aria-selected]="item === activeItem()"
               (click)="activate(item)"

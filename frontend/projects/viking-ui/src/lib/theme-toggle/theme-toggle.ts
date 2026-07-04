@@ -17,6 +17,7 @@ import { VikingIcon } from '../icon/icon';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   imports: [VikingIcon],
+  host: { class: 'viking-theme-toggle-host' },
   template: `
     <button
       type="button"
@@ -24,7 +25,7 @@ import { VikingIcon } from '../icon/icon';
       aria-label="Toggle light and dark theme"
       (click)="toggle.emit()"
     >
-      <viking-icon [name]="icon()" [size]="24" />
+      <viking-icon [name]="icon()" [size]="20" />
     </button>
   `,
 })

@@ -9,26 +9,35 @@ const VIKING_THEME_TOGGLE_STYLES = `
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: var(--viking-touch-target-min, 44px);
-  min-height: var(--viking-touch-target-min, 44px);
-  padding: var(--viking-space-1);
-  border: 1px solid var(--viking-border);
+  flex-shrink: 0;
+  width: var(--viking-control-height, 40px);
+  height: var(--viking-control-height, 40px);
+  min-width: var(--viking-control-height, 40px);
+  padding: 0;
+  border: 1px solid var(--viking-border-strong, var(--viking-border));
   border-radius: var(--viking-radius);
   background: var(--viking-surface);
   color: var(--viking-text);
+  box-shadow: var(--viking-shadow-sm);
   cursor: pointer;
   transition: var(--viking-transition-interactive);
   -webkit-tap-highlight-color: transparent;
 }
 
 .theme-toggle-btn:hover {
-  border-color: var(--viking-border-strong);
+  border-color: var(--viking-accent-strong, var(--viking-teal-400));
   background: var(--viking-surface-alt);
+  color: var(--viking-accent-strong, var(--viking-teal-400));
+  box-shadow: var(--viking-shadow-md);
 }
 
 .theme-toggle-btn:focus-visible {
   outline: var(--viking-ring-width, 2px) solid var(--viking-ring);
   outline-offset: var(--viking-ring-offset, 2px);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(var(--viking-state-active-scale, 0.98));
 }
 
 .theme-icon {
