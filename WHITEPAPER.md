@@ -14,7 +14,7 @@
 
 The operational tempo of modern SaaS infrastructure has outpaced traditional observability. Status dashboards and SLA trackers remain predominantly reactive—recording failure only after user impact materializes. In adversarial network environments, that posture is tactically untenable.
 
-This paper presents DEML: a next-generation observability and intelligence pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep-learning stack with two active prediction modules—Service Level Agreement (SLA) forecasting and Threat Anomaly (TA) analytics. The architecture embodies Lockheed Martin's *Defendable Architectures* principles—Visibility, Manageability, and Survivability—across every operational plane.
+This paper presents DEML: a next-generation observability and intelligence pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep-learning stack with two active prediction modules—Service Level Agreement (SLA) forecasting and Threat Anomaly (TA) analytics. The architecture embodies *Defendable Architectures* principles—Visibility, Manageability, and Survivability—across every operational plane.
 
 As operational proof, the platform dogfoods its own infrastructure continuously. The public **`platform-status`** sentinel (`user=null`, `is_platform=True`) functions as a living Apex Sandbox and Public Witness—streaming real-time telemetry and threat analysis to anonymous observers without requiring a separate organizational login.
 
@@ -32,15 +32,15 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ### 2.2 Operational environment
 
-| Plane                 | Technology                               | Role                                                           |
+| Plane | Technology | Role |
 | --------------------- | ---------------------------------------- | -------------------------------------------------------------- |
-| Compute & persistence | Google Cloud Run (14 services)           | Django API, workers, Postgres, Redpanda, ClickHouse, caches    |
-| Client gateway        | Firebase Cloud Functions (`ingestEvent`) | Authenticated command ingress to Redpanda (Firestore fallback) |
-| Identity              | Firebase Auth                            | JWT perimeter; MFA on mutations                                |
-| Read models           | Firestore (`deml` DB)                    | `users/{uid}/data/stats` projections                           |
-| Marketing             | Firebase Hosting                         | Astro landing and documentation site                           |
-| Security controls     | GCP (KMS, immutable audit logs)          | Envelope encryption, tamper-evident logging                    |
-| Artifacts             | Hugging Face Hub                         | Namespaced PyTorch `state_dict` weights                        |
+| Compute & persistence | Google Cloud Run (14 services) | Django API, workers, Postgres, Redpanda, ClickHouse, caches |
+| Client gateway | Firebase Cloud Functions (`ingestEvent`) | Authenticated command ingress to Redpanda (Firestore fallback) |
+| Identity | Firebase Auth | JWT perimeter; MFA on mutations |
+| Read models | Firestore (`deml` DB) | `users/{uid}/data/stats` projections |
+| Marketing | Firebase Hosting | Astro landing and documentation site |
+| Security controls | GCP (KMS, immutable audit logs) | Envelope encryption, tamper-evident logging |
+| Artifacts | Hugging Face Hub | Namespaced PyTorch `state_dict` weights |
 
 ### 2.3 Actors & workflows
 
@@ -51,12 +51,12 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 
 ### 2.4 Operational modes
 
-| Mode              | Trigger                         | Behavior                                                                        |
+| Mode | Trigger | Behavior |
 | ----------------- | ------------------------------- | ------------------------------------------------------------------------------- |
-| Normal            | All services healthy            | Commands → Redpanda → worker → Firestore; outbox relay every 5s                 |
-| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers       |
-| Degraded (worker) | Consumer failure                | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts |
-| Maintenance       | `main` merge                    | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions           |
+| Normal | All services healthy | Commands → Redpanda → worker → Firestore; outbox relay every 5s |
+| Degraded (broker) | Functions cannot reach Redpanda | `ingestEvent` Firestore fallback; internal broker may still serve workers |
+| Degraded (worker) | Consumer failure | Messages to `frontend-events-dlq`; Postgres outbox backlog until relay restarts |
+| Maintenance | `main` merge | Cloud Run rolling deploy; Firebase Functions/rules via GitHub Actions |
 
 ### 2.5 Maintenance cadence (summary)
 
@@ -67,9 +67,9 @@ Deliver account-isolated observability, predictive SLA forecasting, and threat a
 > [!IMPORTANT]
 > **Foundational Frameworks — Key References**
 >
-> DEML's security architecture is guided by two Lockheed Martin white papers from the Intelligence Driven Defense® program: **[A Threat-Driven Approach to Cyber Security](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Threat-Driven-Approach.pdf)** (Muckin & Fitch, 2019), which supplies IDDIL/ATC threat analysis and STRIDE-LM categorization; and **[Defendable Architectures](https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Defendable-Architectures.pdf)** (Fitch & Muckin, 2019), which defines the Visibility / Manageability / Survivability characteristics below. See [BOOK.md Appendix L](BOOK.md#appendix-l-foundational-security-frameworks) for full citations and rationale.
+> DEML's security architecture is guided by two white papers: **A Threat-Driven Approach to Cyber Security** (Muckin & Fitch, 2019), which supplies IDDIL/ATC threat analysis and STRIDE-LM categorization; and **Defendable Architectures** (Fitch & Muckin, 2019), which defines the Visibility / Manageability / Survivability characteristics below. See [BOOK.md Appendix L](BOOK.md#appendix-l-foundational-security-frameworks) for full citations and rationale.
 
-Lockheed Martin's *Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems must exhibit to support intelligence-driven defense rather than static compliance alone. DEML is engineered to embody each characteristic across its operational planes.
+*Defendable Architectures* framework (Fitch & Muckin, 2019) defines three strategic characteristics—**Visibility**, **Manageability**, and **Survivability**—that networked systems must exhibit to support intelligence-driven defense rather than static compliance alone. DEML is engineered to embody each characteristic across its operational planes.
 
 **Visibility** enables defenders to observe activity across network, application, and data layers and to reconstruct events over time. OpenTelemetry instrumentation flows through a dedicated collector into ClickHouse for distributed tracing and OLAP retention; edge enrichment (user-agent parsing, geolocation, ASN/ISP mapping) augments raw telemetry at ingestion. Real-time Firestore projections (`users/{uid}/data/stats`) and the public `platform-status` sentinel provide continuous operational witness, while immutable audit records stream to GCP Cloud Logging for SIEM correlation. OSINT and dark-web scanners materialize findings as structured `ThreatIntelligence` records, and neural anomaly outputs serialize to STIX 2.1 for federated indicator sharing—preserving the historical depth required for campaign reconstruction.
 
@@ -87,58 +87,58 @@ The platform implements an **Event Projections** architecture for client telemet
 
 ```mermaid
 flowchart TB
-    subgraph Frontend
-        L[Astro Landing Page]
-        A[Angular Client]
-    end
+ subgraph Frontend
+ L[Astro Landing Page]
+ A[Angular Client]
+ end
 
-    subgraph "Client Event Gateway (Commands)"
-        FCF[Firebase Cloud Functions<br/>ingestEvent callable]
-        C[Firebase Authentication]
-        FCF -.->|Auth Context| C
-    end
+ subgraph "Client Event Gateway (Commands)"
+ FCF[Firebase Cloud Functions<br/>ingestEvent callable]
+ C[Firebase Authentication]
+ FCF -.->|Auth Context| C
+ end
 
-    subgraph "Event Broker & Processing"
-        D[Redpanda Kafka Broker<br/>frontend-events topic]
-        TW["Django Telemetry Worker<br/>(Polars + ORM enrichment)"]
-    end
+ subgraph "Event Broker & Processing"
+ D[Redpanda Kafka Broker<br/>frontend-events topic]
+ TW["Django Telemetry Worker<br/>(Polars + ORM enrichment)"]
+ end
 
-    subgraph "Event Projections (Read Models)"
-        FS[(Firestore<br/>named DB: deml)]
-    end
+ subgraph "Event Projections (Read Models)"
+ FS[(Firestore<br/>named DB: deml)]
+ end
 
-    subgraph "API Gateway & Auth (Legacy/Integrations)"
-        B[Django REST API]
-        C2[Firebase Authentication]
-        B -.->|Verifies JWT| C2
-    end
+ subgraph "API Gateway & Auth (Legacy/Integrations)"
+ B[Django REST API]
+ C2[Firebase Authentication]
+ B -.->|Verifies JWT| C2
+ end
 
-    subgraph "Analytics & ML"
-        E[Polars Batch Worker]
-        F[PyTorch SLA Models]
-        G[Scikit-learn Tuning]
-    end
+ subgraph "Analytics & ML"
+ E[Polars Batch Worker]
+ F[PyTorch SLA Models]
+ G[Scikit-learn Tuning]
+ end
 
-    subgraph "Data Storage & Observability"
-        H[(PostgreSQL)]
-        I[(ClickHouse)]
-        J[OpenTelemetry Collector]
-    end
+ subgraph "Data Storage & Observability"
+ H[(PostgreSQL)]
+ I[(ClickHouse)]
+ J[OpenTelemetry Collector]
+ end
 
-    A -->|Client Events (e.g. get_stats)| FCF
-    FCF -->|Try publish| D
-    FCF -->|Fallback write| FS
-    D -->|Consume| TW
-    TW -->|Enriched write| FS
-    FS -.->|onSnapshot (users/{uid}/data/stats)| A
-    A -->|REST / CORS| B
-    B -->|Produces Event| D
-    E -->|Consumes & Writes| H
-    E -->|Triggers Training| F
-    F -->|Optimizes| G
-    B -->|OTLP Traces| J
-    E -->|OTLP Traces| J
-    J -->|Stores| I
+ A -->|Client Events (e.g. get_stats)| FCF
+ FCF -->|Try publish| D
+ FCF -->|Fallback write| FS
+ D -->|Consume| TW
+ TW -->|Enriched write| FS
+ FS -.->|onSnapshot (users/{uid}/data/stats)| A
+ A -->|REST / CORS| B
+ B -->|Produces Event| D
+ E -->|Consumes & Writes| H
+ E -->|Triggers Training| F
+ F -->|Optimizes| G
+ B -->|OTLP Traces| J
+ E -->|OTLP Traces| J
+ J -->|Stores| I
 ```
 
 This hybrid approach (Outbox + idempotent projections + DLQ) provides strong reliability and "at-least-once + deduplication" semantics while preserving low-latency client feedback via Firestore and the high-throughput Redpanda + Polars pipeline. Dedicated GitHub Actions handle deployment of Firebase Functions, Firestore rules, and related components. A separate `outbox_relay` ensures reliable event delivery from Django.
@@ -192,11 +192,11 @@ Access control is implemented as defense-in-depth: **RBAC** (what a logged-in us
 
 Each `UserProfile` carries exactly one role: `Viewer`, `Operator`, or `Security Admin`. Roles apply to the **single login** behind that profile—not to nested org members.
 
-| Role             | Typical capability                                                                                                                 |
+| Role | Typical capability |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `Viewer`         | Read dashboards, status pages, and analytics; Settings UI is read-only.                                                            |
-| `Operator`       | Create/update/delete owned status pages (API-enforced); manage services, incidents, and integrations when UI controls are enabled. |
-| `Security Admin` | Same write surface as Operator; reserved for platform administration (`admin@…` bootstrap).                                        |
+| `Viewer` | Read dashboards, status pages, and analytics; Settings UI is read-only. |
+| `Operator` | Create/update/delete owned status pages (API-enforced); manage services, incidents, and integrations when UI controls are enabled. |
+| `Security Admin` | Same write surface as Operator; reserved for platform administration (`admin@…` bootstrap). |
 
 **API enforcement:** Status page lifecycle endpoints (`POST`/`PUT`/`DELETE` `/status_pages`) use `@role_required(["Operator", "Security Admin"])`. Viewers receive `403 Forbidden`. New Firebase users are provisioned as `Operator` on first login; `Viewer` is assigned when an account is deliberately restricted.
 
@@ -215,13 +215,13 @@ Programmatic ingestion (`/api/v1/ingest`, `/api/v1/predict`) resolves scope via 
 
 ### Access decision matrix (status pages & public stats)
 
-| Action                                   | Anonymous (logged out)         | Logged-in owner                              | Logged-in non-owner                                              |
+| Action | Anonymous (logged out) | Logged-in owner | Logged-in non-owner |
 | ---------------------------------------- | ------------------------------ | -------------------------------------------- | ---------------------------------------------------------------- |
-| List / explore status pages              | Published + `platform-status`  | Published + own + `platform-status`          | Published + `platform-status` only                               |
-| View services / incidents / uptime stats | Published or `platform-status` | Also own **unpublished** pages               | Published or `platform-status`; **403** on others' private pages |
-| Create / update / delete status page     | `401`                          | `Operator`/`Security Admin` + MFA + owner    | `403` or `404`                                                   |
-| Add / remove services or incidents       | `401`                          | Owner + MFA (Settings blocks `Viewer` in UI) | `404` not owner                                                  |
-| Mutate `platform-status`                 | N/A (read-only)                | **Forbidden**                                | **Forbidden**                                                    |
+| List / explore status pages | Published + `platform-status` | Published + own + `platform-status` | Published + `platform-status` only |
+| View services / incidents / uptime stats | Published or `platform-status` | Also own **unpublished** pages | Published or `platform-status`; **403** on others' private pages |
+| Create / update / delete status page | `401` | `Operator`/`Security Admin` + MFA + owner | `403` or `404` |
+| Add / remove services or incidents | `401` | Owner + MFA (Settings blocks `Viewer` in UI) | `404` not owner |
+| Mutate `platform-status` | N/A (read-only) | **Forbidden** | **Forbidden** |
 
 Private-by-default: until `is_published` is set, only the owning login (and the API with a valid owner session) can read operational stats—anonymous visitors hitting `/status/:slug` or the stats API receive `403`/`404`.
 
@@ -266,9 +266,9 @@ The new digital battlefield demands observability infrastructure that operates a
 
 This architecture rests on open-source foundations, enterprise design references, and the tooling that authored the specification.
 
-**Research & inspiration:** [Google DeepMind](https://deepmind.google/) and the documentary _AlphaGo — The Movie_ provided foundational inspiration for predictive systems and adversarial decision-making under uncertainty. [Lockheed Martin Intelligence Driven Defense®](https://www.lockheedmartin.com/en-us/capabilities/cyber.html) (Defendable Architectures, threat-driven security) and [McKinsey & Company](https://www.mckinsey.com/) (operational clarity) informed the prose and architectural posture of this work.
+**Research & inspiration:** [Google DeepMind](https://deepmind.google/) and the documentary _AlphaGo — The Movie_ provided foundational inspiration for predictive systems and adversarial decision-making under uncertainty.
 
-**Design system & icons:** `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (Viking-UI premium palette v2 — charcoal / teal / crimson); typography via self-hosted [Inter](https://rsms.me/inter/) with `.viking-font-display` caps for CES instrumentation and marketing display only. [Lucide](https://lucide.dev/) icon paths are inlined at build time into `viking-icon` with zero runtime dependency. Composable and accessibility patterns draw inspiration from [Flux UI](https://fluxui.dev/), [Spartan](https://spartan.ng/), [Angular Material](https://material.angular.dev/), and [Blueprint](https://blueprintjs.com/docs/)—re-implemented natively without third-party UI runtimes.
+**Design system & icons:** `@dataengineeringformachinelearning/viking-ui` and [THEME.md](THEME.md) (Viking-UI premium palette v2 — charcoal / teal / crimson); typography via self-hosted [Inter](https://rsms.me/inter/) with `.viking-font-display` caps for CES instrumentation and marketing display only. [Lucide](https://lucide.dev/) icon paths are inlined at build time into `viking-icon` with zero runtime dependency. Composable primitives and accessibility patterns are implemented natively in Viking-UI without third-party UI runtimes.
 
 **Authoring environments:**
 
@@ -299,8 +299,8 @@ This architecture rests on open-source foundations, enterprise design references
 17. Mend.io. (2026). _Mend: Application Security Testing_.
 18. American Institute of Certified Public Accountants (AICPA). (2026). _System and Organization Controls (SOC) 2_.
 19. Department of Defense (DoD). (2026). _Cybersecurity Maturity Model Certification (CMMC)_.
-20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Lockheed Martin Corporation. https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Defendable-Architectures.pdf
-21. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Lockheed Martin Corporation. https://www.lockheedmartin.com/content/dam/lockheed-martin/rms/documents/cyber/LM-White-Paper-Threat-Driven-Approach.pdf
+20. Fitch, S. C., & Muckin, M. (2019). _Defendable Architectures: Achieving Cyber Security by Designing for Intelligence Driven Defense_. Corporation. 
+21. Muckin, M., & Fitch, S. C. (2019). _A Threat-Driven Approach to Cyber Security: Methodologies, Practices and Tools to Enable a Functionally Integrated Cyber Security Organization_. Corporation. 
 
 ## 15. DevSecOps and Platform Standardization Audit
 

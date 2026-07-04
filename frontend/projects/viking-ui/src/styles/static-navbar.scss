@@ -80,6 +80,8 @@
   padding: 0 var(--viking-space-2, 16px);
   box-sizing: border-box;
   overflow: visible;
+  container-type: inline-size;
+  container-name: viking-navbar;
 
   @media (min-width: 768px) {
     padding-inline: var(--viking-space-3, 24px);
@@ -150,8 +152,8 @@
   align-items: center;
   gap: var(--viking-space-1, 8px);
   width: 100%;
-  max-width: none;
-  margin: 0;
+  max-width: var(--viking-container-max-width, 1260px);
+  margin-inline: auto;
   min-width: 0;
   min-height: var(--viking-navbar-height, 64px);
 }
@@ -587,15 +589,16 @@ button.auth-btn {
 // Algolia Experiences autocomplete — aligned with viking-autocomplete + search-palette.
 
 .navbar-search {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   align-self: center;
-  flex: 0;
+  flex: 0 0 auto;
   justify-content: center;
   max-width: none;
   min-width: 0;
   min-height: var(--viking-control-height, 40px);
   margin: 0;
+  line-height: 0;
 }
 
 .algolia-autocomplete-host {
@@ -986,6 +989,14 @@ button.auth-btn {
 
   .navbar-right {
     pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+    }
+  }
+
+  .desktop-nav {
+    display: flex;
   }
 
   .desktop-auth {
