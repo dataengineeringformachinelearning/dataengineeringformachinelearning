@@ -61,8 +61,9 @@ describe('viking-ui', () => {
     fixture.componentRef.setInput('compact', true);
     fixture.detectChanges();
     expect(fixture.nativeElement.classList.contains('viking-compact')).toBe(true);
-    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
-    expect(button.classList.contains('viking-primary')).toBe(true);
+    const wc = fixture.nativeElement.querySelector('viking-button-wc') as HTMLElement;
+    const button = wc?.shadowRoot?.querySelector('button') as HTMLButtonElement;
+    expect(button.classList.contains('viking-btn-primary')).toBe(true);
   });
 
   it('renders button variants with accessible focus and disabled semantics', async (): Promise<void> => {
@@ -70,8 +71,9 @@ describe('viking-ui', () => {
     fixture.componentRef.setInput('variant', 'primary');
     fixture.componentRef.setInput('disabled', true);
     fixture.detectChanges();
-    const button = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
-    expect(button.classList.contains('viking-primary')).toBe(true);
+    const wc = fixture.nativeElement.querySelector('viking-button-wc') as HTMLElement;
+    const button = wc?.shadowRoot?.querySelector('button') as HTMLButtonElement;
+    expect(button.classList.contains('viking-btn-primary')).toBe(true);
     expect(button.disabled).toBe(true);
   });
 
@@ -80,7 +82,8 @@ describe('viking-ui', () => {
     fixture.componentRef.setInput('href', 'https://deml.app');
     fixture.componentRef.setInput('target', '_blank');
     fixture.detectChanges();
-    const anchor = fixture.nativeElement.querySelector('a') as HTMLAnchorElement;
+    const wc = fixture.nativeElement.querySelector('viking-button-wc') as HTMLElement;
+    const anchor = wc?.shadowRoot?.querySelector('a') as HTMLAnchorElement;
     expect(anchor.getAttribute('rel')).toBe('noopener noreferrer');
   });
 

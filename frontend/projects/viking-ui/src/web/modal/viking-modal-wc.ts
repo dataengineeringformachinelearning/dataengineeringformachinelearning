@@ -1,134 +1,29 @@
-import { attachShadowStyles, readBoolAttr } from '../core/base';
-
-const VIKING_MODAL_STYLES = `
-:host {
-  display: contents;
-}
-
-.viking-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: var(--viking-z-overlay, 10001);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--viking-space-3);
-  background: var(--viking-overlay-backdrop, rgba(0, 0, 0, 0.55));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: none;
-  animation: viking-backdrop-in var(--viking-duration-fast) var(--viking-ease-out);
-}
-
-.viking-modal-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-2);
-  width: min(522px, calc(100vw - var(--viking-space-4)));
-  max-height: calc(100vh - var(--viking-space-6));
-  padding: var(--viking-space-3);
-  border: 1px solid var(--viking-border-strong);
-  border-radius: var(--viking-radius-lg);
-  background: var(--viking-surface);
-  color: var(--viking-text);
-  box-shadow: var(--viking-shadow-lg);
-  font-family: var(--viking-font-family);
-  position: relative;
-  overflow: hidden;
-  animation: viking-modal-in var(--viking-duration) var(--viking-ease-default);
-}
-
-.viking-modal-panel::before {
-  content: '';
-  position: absolute;
-  inset: 0 0 auto;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
-    transparent
-  );
-  pointer-events: none;
-}
-
-.viking-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--viking-space-2);
-}
-
-.viking-modal-heading {
-  margin: 0;
-  font-size: var(--viking-font-size-lg);
-  font-weight: var(--viking-font-weight-bold);
-  color: var(--viking-text);
-}
-
-.viking-modal-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: var(--viking-touch-target-comfort, 44px);
-  min-height: var(--viking-touch-target-comfort, 44px);
-  border: none;
-  background: transparent;
-  color: var(--viking-text-muted);
-  cursor: pointer;
-  border-radius: var(--viking-radius);
-  font-size: var(--viking-font-size-lg);
-  line-height: 1;
-}
-
-.viking-modal-close:hover {
-  color: var(--viking-text);
-  background: var(--viking-accent-soft);
-}
-
-.viking-modal-close:focus-visible {
-  outline: var(--viking-ring-width) solid var(--viking-ring);
-  outline-offset: var(--viking-ring-offset);
-}
-
-.viking-modal-body {
-  overflow-y: auto;
-  color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-sm);
-  line-height: var(--viking-line-height-relaxed);
-}
-
-.viking-modal-footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--viking-space-2);
-  justify-content: flex-end;
-}
-
-.viking-modal-footer:empty {
-  display: none;
-}
-
-@keyframes viking-backdrop-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes viking-modal-in {
-  from {
-    opacity: 0;
-    transform: translateY(var(--viking-space-1)) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-`;
+import { attachShadowStyles, closeModalDialog, showModalDialog } from '../core/base';
+import { escapeHtml } from '../core/dom';
+import { renderInlineIcon } from '../core/icons-inline';
+import { VIKING_MODAL_STYLES } from '../core/styles';
 
 /**
- * Framework-agnostic modal Web Component using native dialog semantics.
+ * Framework-agnostic modal Web Component using native `<dialog>` semantics.
  * Tag: `viking-modal-wc`
+ *
+ * @attr open - When present, shows the modal
+ * @attr title - Dialog title for aria-label / heading
+ * @attr dismissible - Allow Escape and backdrop click to close (default: true)
+ *
+ * @slot default - Modal body content
+ * @slot actions - Footer action buttons
+ *
+ * @method openModal() - Programmatically open
+ * @method closeModal() - Programmatically close
+ *
+ * @event viking-close - Fired when the dialog closes
+ *
+ * @example
+ * <viking-modal-wc title="Confirm deploy">
+ *   <p>Push v2.0.0 to production?</p>
+ *   <viking-button-wc slot="actions" variant="primary">Deploy</viking-button-wc>
+ * </viking-modal-wc>
  */
 export class VikingModalWc extends HTMLElement {
   static readonly tag = 'viking-modal-wc';
@@ -158,68 +53,98 @@ export class VikingModalWc extends HTMLElement {
     this.dialogEl?.removeEventListener('click', this.onBackdropClick);
   }
 
-  attributeChangedCallback(): void {
-    if (this.isConnected) {
+  attributeChangedCallback(name: string): void {
+    if (!this.isConnected) {
+      return;
+    }
+    if (name === 'open') {
       this.syncOpen();
+      return;
+    }
+    if (name === 'title') {
       this.updateTitle();
+      return;
+    }
+    if (name === 'dismissible') {
+      this.render();
+      this.syncOpen();
     }
   }
 
-  private readonly onClose = (): void => {
-    this.removeAttribute('open');
-    this.dispatchEvent(
-      new CustomEvent('viking-close', { bubbles: true, composed: true }),
-    );
-  };
-
-  private readonly onBackdropClick = (event: MouseEvent): void => {
-    if (!readBoolAttr(this, 'dismissible') && this.getAttribute('dismissible') !== null) return;
-    if (event.target === this.dialogEl) {
-      this.close();
-    }
-  };
-
-  open(): void {
+  /** Opens the modal dialog. */
+  openModal(): void {
     this.setAttribute('open', '');
     this.syncOpen();
   }
 
-  close(): void {
+  /** Closes the modal dialog. */
+  closeModal(): void {
     this.removeAttribute('open');
-    this.dialogEl?.close();
+    closeModalDialog(this.dialogEl);
   }
 
+  /** @deprecated Use openModal() */
+  open(): void {
+    this.openModal();
+  }
+
+  /** @deprecated Use closeModal() */
+  close(): void {
+    this.closeModal();
+  }
+
+  private get dismissible(): boolean {
+    return this.getAttribute('dismissible') !== 'false';
+  }
+
+  private readonly onClose = (): void => {
+    this.removeAttribute('open');
+    this.dispatchEvent(new CustomEvent('viking-close', { bubbles: true, composed: true }));
+  };
+
+  private readonly onBackdropClick = (event: MouseEvent): void => {
+    if (!this.dismissible) {
+      return;
+    }
+    if (event.target === this.dialogEl) {
+      this.closeModal();
+    }
+  };
+
   private syncOpen(): void {
-    if (!this.dialogEl) return;
+    if (!this.dialogEl) {
+      return;
+    }
     const shouldOpen = this.hasAttribute('open');
     if (shouldOpen && !this.dialogEl.open) {
-      this.dialogEl.showModal();
+      showModalDialog(this.dialogEl);
       queueMicrotask(() => {
         const closeBtn = this.shadow.querySelector<HTMLButtonElement>('.viking-modal-close');
-        closeBtn?.focus();
+        (closeBtn ?? this.dialogEl)?.focus();
       });
     } else if (!shouldOpen && this.dialogEl.open) {
-      this.dialogEl.close();
+      closeModalDialog(this.dialogEl);
     }
   }
 
   private updateTitle(): void {
     const title = this.getAttribute('title') ?? 'Dialog';
     const heading = this.shadow.querySelector('.viking-modal-heading');
-    if (heading) heading.textContent = title;
+    if (heading) {
+      heading.textContent = title;
+    }
     this.dialogEl?.setAttribute('aria-label', title);
   }
 
   private render(): void {
     const title = this.getAttribute('title') ?? 'Dialog';
-    const dismissible = this.getAttribute('dismissible') !== 'false';
 
     this.shadow.innerHTML = `
-      <dialog class="viking-modal-backdrop" aria-label="${title}" aria-modal="true">
-        <div class="viking-modal-panel" part="panel">
+      <dialog class="viking-modal-backdrop" aria-label="${escapeHtml(title)}" aria-modal="true">
+        <div class="viking-modal-panel" part="panel" role="document">
           <header class="viking-modal-header" part="header">
-            <h2 class="viking-modal-heading" part="title">${title}</h2>
-            ${dismissible ? '<button type="button" class="viking-modal-close" part="close" aria-label="Close dialog">✕</button>' : ''}
+            <h2 class="viking-modal-heading" part="title">${escapeHtml(title)}</h2>
+            ${this.dismissible ? `<button type="button" class="viking-modal-close" part="close" aria-label="Close dialog">${renderInlineIcon('x', 20)}</button>` : ''}
           </header>
           <div class="viking-modal-body" part="body"><slot></slot></div>
           <footer class="viking-modal-footer" part="footer"><slot name="actions"></slot></footer>
@@ -228,11 +153,11 @@ export class VikingModalWc extends HTMLElement {
     `;
 
     this.dialogEl = this.shadow.querySelector('dialog');
-    const closeBtn = this.shadow.querySelector('.viking-modal-close');
-    closeBtn?.addEventListener('click', () => this.close());
+    this.shadow.querySelector('.viking-modal-close')?.addEventListener('click', () => this.closeModal());
     this.dialogEl?.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && dismissible) {
-        this.close();
+      if (event.key === 'Escape' && this.dismissible) {
+        event.preventDefault();
+        this.closeModal();
       }
     });
   }

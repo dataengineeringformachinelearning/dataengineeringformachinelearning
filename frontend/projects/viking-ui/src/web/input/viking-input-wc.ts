@@ -1,4 +1,4 @@
-import { attachShadowStyles, readBoolAttr } from '../core/base';
+import { attachShadowStyles, readBoolAttr, setFormValue } from '../core/base';
 import { VIKING_INPUT_STYLES } from '../core/styles';
 
 /**
@@ -103,7 +103,7 @@ export class VikingInputWc extends HTMLElement {
   };
 
   private syncFormValue(): void {
-    this.internals.setFormValue(this.value);
+    setFormValue(this.internals, this.value);
   }
 
   private render(): void {
