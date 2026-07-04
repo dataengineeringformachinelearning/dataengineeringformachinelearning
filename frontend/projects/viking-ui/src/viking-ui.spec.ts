@@ -245,7 +245,7 @@ describe('viking-ui', () => {
     expect(outlineSvg.getAttribute('stroke')).toBe('currentColor');
     expect(outline.nativeElement.classList.contains('viking-icon-outline')).toBe(true);
     expect(outline.nativeElement.classList.contains('viking-icon-brand-drakkar')).toBe(true);
-    expect(outline.nativeElement.querySelector('g')?.innerHTML).toContain('M12 4v7');
+    expect(outline.nativeElement.querySelector('g')?.innerHTML).toContain('M12 2v3');
 
     const filled = TestBed.createComponent(VikingIcon);
     filled.componentRef.setInput('name', 'drakkar');

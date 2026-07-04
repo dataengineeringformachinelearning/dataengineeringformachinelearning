@@ -20,6 +20,9 @@ import {
   type VikingIntegrationBrandName,
 } from '../core/integration-brand-icons';
 
+const VIKING_FILLED_ICON_SET = new Set<string>(VIKING_FILLED_ICON_NAMES);
+const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);
+
 /**
  * viking-icon — themeable inline SVG icon (Lucide-sourced registry + DEML brand marks).
  * Zero runtime dependencies; paths are inlined at build time from Lucide.
@@ -229,12 +232,10 @@ export class VikingIcon {
     if (this.variant() === 'filled') {
       return true;
     }
-    return (VIKING_FILLED_ICON_NAMES as readonly string[]).includes(name);
+    return VIKING_FILLED_ICON_SET.has(name);
   });
 
-  protected readonly isDrakkarBrand = computed(() =>
-    (VIKING_DRAKKAR_ICON_NAMES_LIST as readonly string[]).includes(this.resolvedName()),
-  );
+  protected readonly isDrakkarBrand = computed(() => VIKING_DRAKKAR_ICON_SET.has(this.resolvedName()));
 
   protected readonly isIntegrationBrand = computed(() =>
     isIntegrationBrandIcon(this.resolvedName()),
