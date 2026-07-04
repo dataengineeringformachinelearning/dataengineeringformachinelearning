@@ -14,9 +14,9 @@ license: apache-2.0
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
 
-Welcome to **Data Engineering for Machine Learning (DEML)** — operational intelligence for the digital battlefield. This platform unifies rigorous data engineering, predictive machine learning, and defense-in-depth security into a single multi-tenant SaaS fabric. Every command path is versioned, every projection is idempotent, and every tenant is processed through identical symmetrical pipelines.
+**Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, predictive machine learning, and intelligence-driven defense into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
-Ship telemetry at scale. Forecast SLA breach before it manifests. Serialize anomalies into STIX 2.1 for downstream SOAR consumption. The architecture is documented with thesis-level rigor; the product is engineered for production deployment today.
+In contested operational environments, reactive dashboards are insufficient. DEML ingests telemetry at scale, forecasts SLA breach before degradation manifests, and serializes high-confidence anomalies into STIX 2.1 for downstream SOAR consumption. The architecture is specified with doctoral rigor; the system is deployed for production operations today.
 
 > **Looking for the Book or Whitepaper?**
 > The philosophical, educational, and narrative deep dives into data engineering, MLOps, and the architecture of this system can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
@@ -48,18 +48,18 @@ How the platform is **operated** in production—vendor boundaries, actor workfl
 
 ---
 
-## Core Features
+## Core Capabilities
 
-- **Event Projections Architecture**: Commands via Firebase Cloud Functions (`ingestEvent`) to Redpanda (with Firestore fallback); Projections materialized into Firestore (named `deml` DB); Queries via direct real-time subscriptions. Django workers act as the projection layer.
-- **High-Throughput Ingestion**: Broker-based telemetry pipelines via Redpanda and Polars.
-- **Account & Site Isolation**: One login per account (`UserProfile.account_id`); many status pages per user. Telemetry and widgets are scoped to your account—no org hierarchies or shared sub-logins.
-- **Big Data Aggregate Threat Modeling**: Models train on global anonymized data to leverage "herd immunity" for catching anomalies based on vast datasets.
-- **Account-Scoped Evaluation**: Threat reports map and evaluate your specific telemetry against the massive platform model.
-- **Predictive SLAs**: Deep learning models dynamically forecasting service level agreements.
-- **Hugging Face Integrations**: Automated ecosystem for model Hub sharing and Spaces deployment.
-- **Next-Gen SIEM/SOAR**: Automated AI anomaly serialization into STIX 2.1 payloads for TAXII sharing.
-- **SaaS Reliability & Stability**: Comprehensive automated testing, static analysis (Ruff/ESLint/Axe), and clean-code architecture ensuring production-grade robustness.
-- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, app, API, and docs — composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
+- **Event Projections Architecture**: Commands ingress via Firebase Cloud Functions (`ingestEvent`) to Redpanda with Firestore fallback; projections materialize into the named `deml` database; queries execute through direct real-time subscriptions. Django workers constitute the authoritative projection layer.
+- **High-Throughput Ingestion**: Broker-native telemetry pipelines via Redpanda and Polars micro-batch aggregation—engineered for sub-second dispatch without JVM overhead.
+- **Account & Site Isolation**: One login per account (`UserProfile.account_id`); many status pages per operator. Telemetry and widgets remain strictly account-scoped—no org hierarchies, no shared sub-logins, no cross-tenant bleed.
+- **Aggregate Threat Modeling**: Global models train on anonymized platform telemetry to establish collective anomaly baselines—herd immunity without raw cross-account exposure.
+- **Account-Scoped Evaluation**: Threat reports correlate tenant-specific telemetry against the aggregate model under strict UUID isolation.
+- **Predictive SLAs**: PyTorch MLP modules forecast service-level breach trajectories from latency variance, error-rate vectors, and temporal patterns.
+- **Hugging Face Integrations**: Namespaced model Hub publishing and Spaces deployment with `state_dict` serialization—no pickle.
+- **SIEM/SOAR Federation**: ML-scored anomalies serialize to STIX 2.1 payloads for TAXII distribution to CISA AIS, MS-ISAC, and IT-ISAC hubs.
+- **Operational Assurance**: Automated testing, static analysis (Ruff, ESLint, Axe), and pre-commit enforcement sustain production-grade reliability under continuous deployment.
+- **Viking-UI Design System**: Unified premium theme ([THEME.md](THEME.md), [.cursorrules](.cursorrules)) across marketing, application, API, and documentation surfaces—composable primitives, zero third-party UI runtimes, WCAG 2.1 AA by construction.
 
 ## Design System (Viking-UI)
 
@@ -72,7 +72,7 @@ All DEML surfaces share one visual language defined in **[THEME.md](THEME.md)** 
 | [backend.deml.app](https://backend.deml.app)                                           | `backend/static/viking-ui.css`                 |
 | Swagger / OpenAPI UI                                                                   | Same tokens via static CSS                     |
 
-**Philosophy:** Precision engineering and high-end industrial tech — composable primitives with a **premium restrained luxury** palette: dark charcoal surfaces (`--viking-charcoal-900`), deep teal primary CTAs (`--viking-teal-600`), rich crimson secondary accents (`--viking-crimson-600`), machined metallic borders, and native SVG charts. Always import `viking-*` components; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
+**Design doctrine:** Precision-engineered industrial surfaces—composable primitives on a **premium restrained luxury** palette: dark charcoal foundations (`--viking-charcoal-900`), deep teal primary actions (`--viking-teal-600`), crimson secondary emphasis (`--viking-crimson-600`), machined metallic borders, and native SVG telemetry charts. Import `viking-*` components exclusively; never hardcode styles. See [Chapter 31 in BOOK.md](BOOK.md#chapter-31-viking-ui--the-zero-dependency-ui-kit) for component coverage and build instructions.
 
 ## Solution Architecture
 
@@ -153,7 +153,7 @@ flowchart TB
 
 ## The Integration Gateway
 
-Our platform is not just a standalone application; it is designed to be the central nervous system for your MLOps workflows. We provide a robust API Gateway to allow external systems to stream data to our models and request predictions securely.
+DEML is not a standalone observability console—it is the command-and-control layer for MLOps workflows. A hardened API gateway enables external systems to stream telemetry, invoke inference, and exchange threat indicators under zero-trust authentication.
 
 ### API Key Management
 
@@ -323,7 +323,7 @@ curl https://backend.deml.app/api/v1/integrations/redshift        -H "Authorizat
 
 ## Getting Started
 
-Welcome to the platform! Getting your infrastructure connected and streaming data takes less than five minutes.
+Operational onboarding requires fewer than five minutes. The sequence below establishes authenticated ingress, tenant-scoped projections, and live dashboard visibility.
 
 ### 1. Account Setup
 
@@ -450,20 +450,21 @@ We provide dedicated support for our users:
 
 ## Acknowledgements & Technologies
 
-I want to acknowledge the incredible open-source tools, platforms, and AI assistants that power this platform's architecture:
+The DEML platform stands on open-source foundations, enterprise design references, and the tooling that authored this architecture. Gratitude is extended to each project, standard, and inspiration cited below.
 
-- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds for `@dataengineeringformachinelearning/viking-ui`), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/), [Algolia](https://www.algolia.com/) (DocSearch / Experiences via `DemlWidgets.openSearch()` and `algolia-search.js`)
+- **Frontend**: [Astro](https://astro.build/), [Angular](https://angular.dev/), [Prettier](https://prettier.io/), [ESLint](https://eslint.org/), Native Browser APIs, [Firebase Hosting](https://firebase.google.com/products/hosting), `@dataengineeringformachinelearning/viking-ui` (zero-dependency Angular UI kit themed with [THEME.md](THEME.md) tokens), [ng-packagr](https://github.com/ng-packagr/ng-packagr) (Angular Package Format builds), [AnalogJS](https://analogjs.org/) (`vite-plugin-angular` for Vitest component tests), [Vitest](https://vitest.dev/), [Algolia](https://www.algolia.com/) (DocSearch / Experiences via `DemlWidgets.openSearch()` and `algolia-search.js`), [axe-core](https://github.com/dequelabs/axe-core) (WCAG 2.1 AA enforcement via `scripts/run_axe.js`)
 - **Design system & typography**: [THEME.md](THEME.md) (Viking-UI premium palette v2); [Inter](https://rsms.me/inter/) (body/UI and `.viking-font-display` caps for CES instrumentation and marketing display)
+- **Icons (build-time, zero runtime)**: [Lucide](https://lucide.dev/) — SVG paths inlined at build time into `viking-icon`; no Lucide runtime package in production bundles
 - **Design & UX references (inspiration for Viking-UI)**: [Flux UI](https://fluxui.dev/) (chart sizing and composable component APIs), [Spartan](https://spartan.ng/) (headless accessibility patterns), [Angular Material](https://material.angular.dev/) (layout ergonomics), [Blueprint](https://blueprintjs.com/docs/) (data-dense UI patterns) — re-implemented natively in `@dataengineeringformachinelearning/viking-ui` without third-party UI runtime dependencies
-- **Enterprise & product design references**: [SpaceX](https://www.spacex.com/), [Palantir](https://www.palantir.com/), [Lockheed Martin](https://www.lockheedmartin.com/), [OpenAI](https://openai.com/), [Sequoia Capital](https://sequoiacap.com/), [McKinsey & Company](https://www.mckinsey.com/) (precision prose, operational clarity, and mission-critical UX tone)
+- **Enterprise & product design references**: [Lockheed Martin Intelligence Driven Defense®](https://www.lockheedmartin.com/en-us/capabilities/cyber.html) (Defendable Architectures, threat-driven security), [McKinsey & Company](https://www.mckinsey.com/) (operational clarity and executive prose), [SpaceX](https://www.spacex.com/), [Palantir](https://www.palantir.com/), [OpenAI](https://openai.com/), [Sequoia Capital](https://sequoiacap.com/) (precision engineering, mission-critical UX tone)
 - **Backend & APIs**: [Django](https://www.djangoproject.com/) ([Django Ninja](https://django-ninja.dev/), [Django Channels](https://channels.readthedocs.io/)), [Daphne](https://github.com/django/daphne), [Gunicorn](https://gunicorn.org/), [NGINX](https://nginx.org/), [cryptography](https://cryptography.io/en/latest/), [liboqs (PQC)](https://openquantumsafe.org/)
 - **Data & Broker**: [PostgreSQL](https://www.postgresql.org/), [Redpanda](https://redpanda.com/) (internal event bus), [Dragonfly](https://dragonflydb.io/), [Polars](https://pola.rs/)
 - **Official Integrations** (customer-facing): [Kubernetes](https://kubernetes.io/), [TensorFlow](https://www.tensorflow.org/), [PyTorch](https://pytorch.org/), [Apache Spark](https://spark.apache.org/), [Databricks](https://www.databricks.com/), [AWS Redshift](https://aws.amazon.com/redshift/) — see [`docs/integrations/`](docs/integrations/)
-- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Antigravity AI Agent (Google)](https://google.com/)
+- **Machine Learning & AI**: [PyTorch](https://pytorch.org/), [Scikit-learn](https://scikit-learn.org/), [Skops](https://skops.readthedocs.io/), [Hugging Face](https://huggingface.co/), [Google Gemini](https://google.com/technologies/gemini/), [Google DeepMind](https://deepmind.google/) (AlphaGo — foundational inspiration for predictive systems), [Antigravity AI Agent (Google)](https://google.com/)
 - **Observability, Security & CMS**: [Sentry](https://sentry.io/), [OpenTelemetry](https://opentelemetry.io/), [ClickHouse](https://clickhouse.com/), [Semgrep](https://semgrep.dev/), [Renovate](https://docs.renovatebot.com/), [FOSSA](https://fossa.com/), [Checkov](https://www.checkov.io/), [Trivy](https://trivy.dev/), [Socket.dev](https://socket.dev/), [Gitleaks](https://gitleaks.io/), [detect-secrets](https://github.com/Yelp/detect-secrets), [Mend](https://www.mend.io/), [OSV-Scanner](https://osv.dev/), [Wappalyzer](https://www.wappalyzer.com/), [Sanity.io](https://www.sanity.io/), [AbuseIPDB](https://www.abuseipdb.com/), [ipify](https://www.ipify.org/), [IPinfo](https://ipinfo.io/), [Google Analytics](https://analytics.google.com/), [Microsoft Clarity](https://clarity.microsoft.com/), [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/), [Resend](https://resend.com/), [Dependency-Track](https://dependencytrack.org/), [Tor](https://www.torproject.org/), [Have I Been Pwned](https://haveibeenpwned.com/), [crt.sh](https://crt.sh/), [Ahmia](https://ahmia.fi/)
-- **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter)
+- **DevOps, Infrastructure & Tooling**: [GitHub Actions](https://github.com/features/actions), [Firebase CLI](https://firebase.google.com/docs/cli), [Docker](https://www.docker.com/), [Distroless](https://github.com/GoogleContainerTools/distroless), [Cloud Run](https://cloud.google.com/run/), [Google Cloud](https://cloud.google.com/), [Amazon Lightsail](https://aws.amazon.com/lightsail/), [Amazon ECR](https://aws.amazon.com/ecr/), [Amazon ECS / Fargate](https://aws.amazon.com/ecs/), [Amazon RDS](https://aws.amazon.com/rds/), [Infisical](https://infisical.com/), [pre-commit](https://pre-commit.com/), [uv](https://docs.astral.sh/uv/), [Ruff](https://docs.astral.sh/ruff/), [Django Migration Linter](https://github.com/3YOURMIND/django-migration-linter), [Gamma](https://gamma.app/) (presentation companion)
 - **Billing & Payments**: [Stripe](https://stripe.com/)
-- **Organizations & Standards**: [NIST](https://www.nist.gov/), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
+- **Organizations & Standards**: [NIST](https://www.nist.gov/), [OASIS CTI](https://www.oasis-open.org/committees/cyber-threat-intelligence/) (STIX 2.1 / TAXII 2.1), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
   - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
   - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
