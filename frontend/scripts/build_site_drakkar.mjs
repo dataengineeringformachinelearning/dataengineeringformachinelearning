@@ -18,6 +18,7 @@ const EXPORT_OBJECT_PATTERNS = {
   LUCIDE_ICON_PATHS: /export const LUCIDE_ICON_PATHS = (\{[\s\S]*?\}) as const/,
   VIKING_BRAND_ICON_PATHS: /export const VIKING_BRAND_ICON_PATHS = (\{[\s\S]*?\}) as const/,
   VIKING_DRAKKAR_ICON_PATHS: /export const VIKING_DRAKKAR_ICON_PATHS = (\{[\s\S]*?\}) as const/,
+  VIKING_INTEGRATION_ICON_PATHS: /export const VIKING_INTEGRATION_ICON_PATHS = (\{[\s\S]*?\}) as const/,
   VIKING_BRAND_ICON_FILLED_PATHS: /export const VIKING_BRAND_ICON_FILLED_PATHS[\s\S]*?= (\{[\s\S]*?\});/,
   VIKING_DRAKKAR_ICON_FILLED_PATHS: /export const VIKING_DRAKKAR_ICON_FILLED_PATHS[\s\S]*?= (\{[\s\S]*?\});/,
 };
@@ -72,6 +73,7 @@ try {
     ...readObjectExport(lucidePath, 'LUCIDE_ICON_PATHS'),
     ...readObjectExport(brandPath, 'VIKING_BRAND_ICON_PATHS'),
     ...readObjectExport(brandPath, 'VIKING_DRAKKAR_ICON_PATHS'),
+    ...readObjectExport(brandPath, 'VIKING_INTEGRATION_ICON_PATHS'),
   };
   iconFilledPaths = {
     ...readObjectExport(brandPath, 'VIKING_BRAND_ICON_FILLED_PATHS'),

@@ -2236,12 +2236,12 @@ Every surface — [dataengineeringformachinelearning.com](https://dataengineerin
 
 DEML unifies UI through a layered rule stack so agents, contributors, and surfaces never drift:
 
-| Layer        | Document                     | Purpose                                                                      |
-| ------------ | ---------------------------- | ---------------------------------------------------------------------------- |
+| Layer | Document | Purpose |
+| ----- | -------- | ------- |
 | Cursor / IDE | [.cursorrules](.cursorrules) | Mandatory `viking-*` imports, composable field stacks, zero hardcoded styles |
-| Tokens       | [THEME.md](THEME.md)         | Canonical `--viking-*` palette, component standards, maintenance             |
-| Platform     | [AGENTS.md](AGENTS.md)       | Viking-UI Uniformity Law, architecture and security invariants               |
-| Narrative    | This chapter                 | Consumption patterns, build, publish, accessibility contracts                |
+| Tokens | [THEME.md](THEME.md) | Canonical `--viking-*` palette, component standards, maintenance |
+| Platform | [AGENTS.md](AGENTS.md) | Viking-UI Uniformity Law, architecture and security invariants |
+| Narrative | This chapter | Consumption patterns, build, publish, accessibility contracts |
 
 **Composable structure, Viking palette:** Viking-UI adopts composable primitive ergonomics — `viking-field` wrapping controls, variant-driven `viking-button`, dark-first `viking-card` surfaces — with **deep charcoals, machined metallic borders, and restrained teal/crimson**. The result is **premium restrained luxury**: every pixel earns its place, metrics dominate ornament, and tactile surfaces use subtle top-edge highlights instead of glass blur or neon glow.
 
@@ -2421,7 +2421,7 @@ This document outlines the dependencies and libraries used in this project.
 - `@angular/platform-server`: ^22.0.0
 - `@angular/router`: ^22.0.0
 - `@angular/ssr`: ^22.0.0
-- `@orama/orama`: ^3.1.18
+- `algoliasearch`: ^5.52.0
 - `@sanity/client`: ^7.22.1
 - `@sentry/angular`: ^10.57.0
 - `express`: ^5.1.0

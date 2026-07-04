@@ -10,11 +10,13 @@ import {
   VIKING_DRAKKAR_ICON_FILLED_PATHS,
   VIKING_DRAKKAR_ICON_PATHS,
   VIKING_DRAKKAR_ICON_NAMES_LIST,
+  VIKING_INTEGRATION_ICON_PATHS,
 } from './brand-icons';
 
 export {
   VIKING_DRAKKAR_ICON_NAMES_LIST,
   VIKING_BRAND_ICON_NAMES_LIST,
+  VIKING_INTEGRATION_ICON_NAMES_LIST,
 } from './brand-icons';
 
 export type VikingIconName = keyof typeof VIKING_ICON_PATHS;
@@ -55,6 +57,7 @@ export const VIKING_ICON_PATHS = {
   ...LUCIDE_ICON_PATHS,
   ...VIKING_BRAND_ICON_PATHS,
   ...VIKING_DRAKKAR_ICON_PATHS,
+  ...VIKING_INTEGRATION_ICON_PATHS,
   ...VIKING_CUSTOM_ICON_PATHS,
 } as const;
 
@@ -76,8 +79,6 @@ export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
   fingerprint: 'fingerprint',
   gpp_maybe: 'shield',
   verified_user: 'user-shield',
-  memory: 'chip',
-  psychology: 'brain',
   bolt: 'bolt',
   cloud: 'cloud',
   lan: 'network',
@@ -108,8 +109,10 @@ export const MATERIAL_ICON_ALIASES: Record<string, VikingIconName> = {
   cookie: 'cookie',
   search_off: 'search-off',
   person_add: 'user',
-  storage: 'folder',
-  data_object: 'folder',
+  storage: 'aws-redshift',
+  data_object: 'aws-redshift',
+  memory: 'tensorflow',
+  psychology: 'pytorch',
 };
 
 /** Icons always rendered with fill (play triangle, dot grids). */

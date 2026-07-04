@@ -14,7 +14,7 @@ import {
 const { FRONTEND_URL, BACKEND_URL, MARKETING_URL } = siteEnv();
 const pageTitle = 'DEML (DATA ENGINEERING FOR MACHINE LEARNING)';
 const pageDescription =
-  'Secure your data pipeline and ship ML faster. Real-time telemetry, threat intelligence, and tenant-safe event projections for modern data teams.';
+  'Operational intelligence for mission-critical ML pipelines. Ingest telemetry at scale, forecast SLA breach before it manifests, and keep every tenant isolated through symmetrical event projections.';
 const homeJsonLd = [
   organizationJsonLd(MARKETING_URL),
   webSiteJsonLd(MARKETING_URL),
@@ -34,7 +34,7 @@ const capabilities = [
     tag: 'TELEMETRY',
     title: 'Real-Time Analytics',
     description:
-      'Every request is traced, enriched, and projected in under a second. OpenTelemetry flows into ClickHouse rollups and Firestore dashboards — so you spot drift before it becomes downtime.',
+      'Every request is traced, enriched, and projected in under a second. OpenTelemetry flows into ClickHouse rollups and Firestore dashboards — operational visibility before drift becomes downtime.',
     icon: 'analytics',
     metrics: [
       { label: 'P99 Latency', value: '42ms', trend: 'down' },
@@ -47,7 +47,7 @@ const capabilities = [
     tag: 'SECURITY',
     title: 'Threat Intelligence',
     description:
-      'ML models score anomalies the moment they appear. Semgrep and Trivy findings land in a unified triage board — no more chasing alerts across five different tools.',
+      'ML models score anomalies at the edge. Semgrep and Trivy findings consolidate into a single triage board; high-confidence indicators serialize to STIX 2.1 for downstream SOAR consumption.',
     icon: 'security',
     metrics: [
       { label: 'Threat Score', value: '12%', trend: 'down' },
@@ -60,8 +60,8 @@ const capabilities = [
     tag: 'PIPELINE',
     title: 'Event Projections',
     description:
-      'Commands enter through Firebase, commit to a transactional Outbox, and stream to Redpanda. Idempotent workers materialize live views in Firestore — reliable by design, not by hope.',
-    icon: 'hub',
+      'Commands enter through Firebase, commit to a transactional Outbox, and stream to Redpanda. Idempotent workers materialize live views in Firestore — versioned, replayable, and symmetrical across every tenant.',
+    icon: 'kubernetes',
     metrics: [
       { label: 'Events/sec', value: '8.2K', trend: 'up' },
       { label: 'DLQ Rate', value: '0.01%', trend: 'down' },
@@ -106,12 +106,12 @@ const securityPillars = [
 ];
 
 const integrations = [
-  { name: 'Kubernetes', icon: 'hub' },
-  { name: 'TensorFlow', icon: 'memory' },
-  { name: 'PyTorch', icon: 'psychology' },
-  { name: 'Apache Spark', icon: 'bolt' },
-  { name: 'Databricks', icon: 'cloud' },
-  { name: 'AWS Redshift', icon: 'storage' },
+  { name: 'Kubernetes', icon: 'kubernetes' },
+  { name: 'TensorFlow', icon: 'tensorflow' },
+  { name: 'PyTorch', icon: 'pytorch' },
+  { name: 'Apache Spark', icon: 'apache-spark' },
+  { name: 'Databricks', icon: 'databricks' },
+  { name: 'AWS Redshift', icon: 'aws-redshift' },
 ];
 ---
 
@@ -130,10 +130,11 @@ const integrations = [
           <span class="badge-dot pulse-dot"></span>
           <span class="badge-text">Secured · Version {version}</span>
         </div>
-        <h1 class="title" id="main-title">Secure Your Data<br />Pipeline. Ship ML Faster.</h1>
+        <h1 class="title" id="main-title">Operational Intelligence<br />for ML Pipelines</h1>
         <p class="subtitle">
-          DEML fuses rigorous data engineering with predictive security. Stream telemetry, catch
-          threats in real time, and keep every tenant isolated — without slowing your team down.
+          DEML unifies data engineering, predictive machine learning, and defense-in-depth security
+          into one multi-tenant fabric. Ship telemetry at scale, forecast SLA breach, and act on
+          threats — with thesis-level rigor and production-grade reliability.
         </p>
         <div class="hero-stats" aria-label="Platform highlights">
           <div class="hero-stat-pill">

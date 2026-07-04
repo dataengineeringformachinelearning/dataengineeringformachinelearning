@@ -296,26 +296,33 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--viking-space-3);
-  max-width: 22rem;
-  margin: var(--viking-space-3) auto 0;
-  padding: var(--viking-space-3);
+  gap: var(--viking-space-4);
+  max-width: 24rem;
+  margin: var(--viking-space-4) auto 0;
+  padding: var(--viking-space-4);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   background: var(--viking-surface-alt);
+}
+
+.verification-code-showcase viking-verification-code-field {
+  width: 100%;
 }
 
 .verification-code-showcase-step {
   margin: 0;
   text-align: center;
   font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-medium);
   color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-normal);
 }
 
 .verification-code-showcase-actions {
   width: 100%;
   display: flex;
   justify-content: center;
+  padding-top: var(--viking-space-1);
 }
 
 @media (prefers-reduced-motion: reduce) {
