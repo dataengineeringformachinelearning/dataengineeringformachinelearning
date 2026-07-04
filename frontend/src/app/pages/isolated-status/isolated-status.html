@@ -58,7 +58,7 @@
 
           <div class="announcements-list-premium">
             @if (sanityService.loading()) {
-            <div class="announcement-card-premium info">
+            <div class="viking-card announcement-card-premium info">
               <div class="ann-header">
                 <span class="status-badge-premium info">info</span>
                 <span class="ann-date">Jun 13, 2026</span>
@@ -70,7 +70,7 @@
               </p>
             </div>
             } @else { @for (ann of sanityService.announcements(); track ann._id) {
-            <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
+            <div class="viking-card announcement-card-premium" [ngClass]="ann.severity || 'info'">
               <div class="ann-header">
                 <span class="status-badge-premium" [ngClass]="ann.severity || 'info'">
                   {{ ann.severity || 'info' }}
@@ -235,20 +235,20 @@
             </span>
           </div>
           <div class="threat-metrics-grid">
-            <div class="threat-metric-card">
+            <div class="viking-card threat-metric-card">
               <span class="threat-metric-label">Top Location Contribution</span>
               <strong class="threat-metric-value">
                 {{ threatReportsByPage()[page.id]?.top_location || 'N/A' }}
               </strong>
             </div>
-            <div class="threat-metric-card">
+            <div class="viking-card threat-metric-card">
               <span class="threat-metric-label">Traffic Weight</span>
               <strong class="threat-metric-value">
                 {{ ((threatReportsByPage()[page.id]?.location_weight ?? 0) * 100) | number:'1.0-1'
                 }}%
               </strong>
             </div>
-            <div class="threat-metric-card">
+            <div class="viking-card threat-metric-card">
               <span class="threat-metric-label">Suspicious Request Ratio</span>
               <strong class="threat-metric-value">
                 {{ ((threatReportsByPage()[page.id]?.suspicious_ratio ?? 0) * 100) | number:'1.0-1'
@@ -333,7 +333,7 @@
           <div class="incidents-stack-standalone">
             @for (incident of incidentsMap()[page.id]; track incident) {
             <div
-              class="standalone-incident-card"
+              class="viking-card standalone-incident-card"
               [ngClass]="{'resolved': incident.status === 'Resolved'}"
             >
               <div class="incident-top-meta">

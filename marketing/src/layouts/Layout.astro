@@ -107,6 +107,24 @@ const jsonLdPayload = jsonLd
 			crossorigin
 		/>
 
+		<!-- Critical Viking-UI tokens — prevent flash before bundles load (THEME.md v2) -->
+		<style is:inline>
+			:root,
+			html[data-theme='light'],
+			html[data-theme='dark'] {
+				--viking-teal-600: var(--viking-teal-600);
+				--viking-teal-400: var(--viking-teal-400);
+				--viking-gold-500: var(--viking-gold-500);
+				--viking-crimson-500: var(--viking-crimson-500);
+				--viking-charcoal-900: #111111;
+				--viking-white: var(--viking-white);
+				--viking-white-pure: var(--viking-white-pure);
+				--color-primary: var(--viking-teal-600);
+				--bg-color: var(--viking-charcoal-900);
+				--text-color: var(--viking-white);
+			}
+		</style>
+
 		<link rel="stylesheet" href="/assets/design-tokens.css" />
 		<link rel="stylesheet" href="/assets/deml-components.css" />
 		<link rel="stylesheet" href="/assets/viking-ui.css" />

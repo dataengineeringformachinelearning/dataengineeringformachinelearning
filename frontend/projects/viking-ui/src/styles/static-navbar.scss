@@ -543,7 +543,7 @@ button.auth-btn {
 .mobile-menu a.mobile-auth-btn:not(.auth-signout-btn),
 .mobile-menu a.mobile-auth-btn:not(.auth-signout-btn) span,
 .mobile-menu a.mobile-auth-btn:not(.auth-signout-btn) svg {
-  color: var(--viking-white-pure, #ffffff) !important;
+  color: var(--viking-white-pure, var(--viking-white-pure)) !important;
 }
 
 .navbar-link {

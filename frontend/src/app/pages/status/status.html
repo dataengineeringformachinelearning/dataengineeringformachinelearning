@@ -38,7 +38,7 @@
 
             <div class="announcements-list-premium">
               @if (sanityService.loading()) {
-              <div class="announcement-card-premium info">
+              <div class="viking-card announcement-card-premium info">
                 <div class="ann-header">
                   <viking-badge tone="accent">info</viking-badge>
                   <span class="ann-date">Jun 13, 2026</span>
@@ -50,7 +50,7 @@
                 </p>
               </div>
               } @else { @for (ann of sanityService.announcements(); track ann._id) {
-              <div class="announcement-card-premium" [ngClass]="ann.severity || 'info'">
+              <div class="viking-card announcement-card-premium" [ngClass]="ann.severity || 'info'">
                 <div class="ann-header">
                   <viking-badge [tone]="announcementTone(ann.severity)"
                     >{{ ann.severity || 'info' }}</viking-badge

@@ -206,7 +206,7 @@
 }
 
 .standalone-sla-card {
-  background: var(--card-bg);
+  background: var(--viking-surface);
   border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
   padding: var(--card-padding);
@@ -292,7 +292,7 @@
 
 /* Service Performance Section */
 .standalone-services-section {
-  background: var(--card-bg);
+  background: var(--viking-surface);
   border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
   padding: var(--card-padding);
@@ -493,7 +493,7 @@
 
 /* Standalone Uptime Timeline */
 .standalone-uptime-section {
-  background: var(--card-bg);
+  background: var(--viking-surface);
   border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
   padding: var(--card-padding);
@@ -584,7 +584,7 @@
 
 /* Standalone Incidents */
 .standalone-incidents-section {
-  background: var(--card-bg);
+  background: var(--viking-surface);
   border: 1px solid var(--border);
   border-radius: var(--border-radius-lg);
   padding: var(--card-padding);
@@ -779,11 +779,9 @@
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.01);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
 }
 
 .section-title-premium {

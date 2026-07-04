@@ -181,7 +181,7 @@ const quickStartSteps = [
           <ol class="docs-quick-start-steps">
             {quickStartSteps.map((step, idx) => (
               <li>
-                <a href={step.href} class="docs-quick-start-card">
+                <a href={step.href} class="viking-card docs-quick-start-card">
                   <span class="step-index" aria-hidden="true">{String(idx + 1).padStart(2, '0')}</span>
                   <VikingIcon name="{step.icon}" size={20} />
                   <h3>{step.title}</h3>
@@ -204,7 +204,7 @@ const quickStartSteps = [
         </aside>
 
         <div class="docs-bento-grid">
-          <div class="docs-bento-card docs-bento-full">
+          <div class="viking-card docs-bento-card docs-bento-full">
             <div class="bento-header">
               <VikingIcon name="vpn_key" size={20} />
               <h2>Authentication & Access</h2>
@@ -219,7 +219,7 @@ const quickStartSteps = [
             </div>
           </div>
 
-          <div class="docs-bento-card" id="data-ingestion">
+          <div class="viking-card docs-bento-card" id="data-ingestion">
             <div class="bento-header">
               <VikingIcon name="input" size={20} />
               <h2>Data Ingestion</h2>
@@ -241,7 +241,7 @@ const quickStartSteps = [
             </div>
           </div>
 
-          <div class="docs-bento-card">
+          <div class="viking-card docs-bento-card">
             <div class="bento-header">
               <VikingIcon name="model_training" size={20} />
               <h2>Real-time Inference</h2>
@@ -263,7 +263,7 @@ const quickStartSteps = [
             </div>
           </div>
 
-          <div class="docs-bento-card">
+          <div class="viking-card docs-bento-card">
             <div class="bento-header">
               <VikingIcon name="shield" size={20} />
               <h2>Threat Monitoring</h2>
@@ -285,7 +285,7 @@ const quickStartSteps = [
             </div>
           </div>
 
-          <div class="docs-bento-card">
+          <div class="viking-card docs-bento-card">
             <div class="bento-header">
               <VikingIcon name="security" size={20} />
               <h2>Enterprise Security</h2>
@@ -312,7 +312,7 @@ const quickStartSteps = [
 
           <div class="integration-cards">
             {integrationPlatforms.map(platform => (
-              <article class="integration-card">
+              <article class="viking-card integration-card">
                 <div class="integration-card-header">
                   <VikingIcon name={platform.icon} size={20} />
                   <h3>{platform.name}</h3>
