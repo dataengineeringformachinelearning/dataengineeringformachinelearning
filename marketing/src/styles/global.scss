@@ -113,7 +113,7 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
+a:not(.viking-button):not(.viking-button):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;
