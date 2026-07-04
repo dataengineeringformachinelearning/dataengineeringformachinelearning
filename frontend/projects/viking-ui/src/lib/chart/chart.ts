@@ -69,6 +69,7 @@ const WIDTH = 720;
 const HEIGHT_DEFAULT = 240;
 const HEIGHT_COMPACT = 200;
 const HEIGHT_FILL = 400;
+const HEIGHT_FILL_LINE = 280;
 const HEIGHT_SPARKLINE = 48;
 const BAR_WIDTH_MIN = 12;
 const BAR_WIDTH_MAX = 96;
@@ -534,9 +535,15 @@ export class VikingChart {
 
   protected readonly isSparkline = computed(() => this.kind() === 'sparkline');
 
-  protected readonly resolvedGutter = computed(() =>
-    parseGutter(this.gutter(), this.isSparkline()),
-  );
+  protected readonly resolvedGutter = computed(() => {
+    if (this.gutter() !== undefined && this.gutter() !== null) {
+      return parseGutter(this.gutter(), this.isSparkline());
+    }
+    if (this.fill() && !this.isSparkline()) {
+      return { top: 8, right: 8, bottom: 28, left: 36 };
+    }
+    return parseGutter(undefined, this.isSparkline());
+  });
 
   protected readonly legendVisible = computed(() => {
     const explicit = this.showLegend();
@@ -561,16 +568,28 @@ export class VikingChart {
       return HEIGHT_SPARKLINE;
     }
     if (this.fill()) {
-      return this.kind() === 'donut' ? WIDTH : HEIGHT_FILL;
+      if (this.kind() === 'donut') {
+        return WIDTH;
+      }
+      if (this.isLineKind()) {
+        return HEIGHT_FILL_LINE;
+      }
+      return HEIGHT_FILL;
     }
     return this.compact() ? HEIGHT_COMPACT : HEIGHT_DEFAULT;
   });
 
   protected readonly preserveAspectRatio = computed(() => {
-    if (this.fill() && this.kind() !== 'donut' && !this.isSparkline()) {
-      return 'none';
+    if (!this.fill() || this.isSparkline()) {
+      return 'xMidYMid meet';
     }
-    return 'xMidYMid meet';
+    if (this.kind() === 'donut') {
+      return 'xMidYMid meet';
+    }
+    if (this.isLineKind()) {
+      return 'xMidYMid slice';
+    }
+    return 'none';
   });
 
   protected readonly plotBottom = computed(() => this.height() - this.resolvedGutter().bottom);
@@ -587,6 +606,11 @@ export class VikingChart {
   protected readonly isBarKind = computed(() => {
     const kind = this.kind();
     return kind === 'bar' || kind === 'grouped-bar' || kind === 'stacked-bar';
+  });
+
+  protected readonly isLineKind = computed(() => {
+    const kind = this.kind();
+    return kind === 'line' || kind === 'area';
   });
 
   protected readonly renderArea = computed(

@@ -45,7 +45,7 @@ export type VikingChartPanelBody = 'default' | 'origin-map';
         flex-direction: column;
         position: relative;
         overflow: hidden;
-        padding: 0 var(--viking-space-3, 24px) var(--viking-space-3, 24px);
+        padding: 0 var(--viking-space-2, 16px) var(--viking-space-2, 16px);
         box-sizing: border-box;
       }
 

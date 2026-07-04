@@ -281,6 +281,12 @@
   grid-template-columns: 1fr;
   gap: var(--grid-gap);
   margin-bottom: var(--viking-space-3, var(--grid-gap, 24px));
+  --viking-chart-panel-min-height-md: auto;
+  --viking-chart-panel-min-height-lg: auto;
+  --viking-chart-panel-body-min-height-md: clamp(11rem, 20vw, 14rem);
+  --viking-chart-panel-body-min-height-lg: clamp(11rem, 20vw, 14rem);
+  --viking-chart-fill-min-height: clamp(9rem, 18vw, 12rem);
+  --viking-chart-fill-min-height-lg: clamp(9rem, 18vw, 12rem);
 }
 
 .panel-title-flex {
