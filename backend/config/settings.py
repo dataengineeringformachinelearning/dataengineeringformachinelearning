@@ -283,6 +283,8 @@ CORS_ALLOW_HEADERS = [
   "cache-control",
   "pragma",
   "expires",
+  # Browser session registry (Dragonfly) — sent by credentials.interceptor.ts
+  "x-deml-session-id",
 ]
 
 CORS_ALLOW_ALL_ORIGINS = False
