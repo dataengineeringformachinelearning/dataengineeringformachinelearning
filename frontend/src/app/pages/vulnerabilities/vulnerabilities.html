@@ -41,7 +41,7 @@
       </viking-metric-row>
 
       <!-- Dashboard Panel Grid -->
-      <div class="dashboard-grid">
+      <div class="grid-layout triage-grid">
         <!-- Left Triage Queue Panel -->
         <viking-hud-panel
           class="queue-panel col-span-4 col-span-md-4"
@@ -81,7 +81,7 @@
             </div>
             } @else if (filteredVulnerabilities().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="compact"
               tone="secure"
               icon="check-circle"
               title="System Secure"
@@ -253,7 +253,7 @@
           @          } @else {
           <div class="panel-body no-selection-body">
             <viking-chart-empty-state
-              layout="fill"
+              layout="compact"
               icon="search"
               title="Awaiting Threat Selection"
               description="Select an item from the ingestion queue to map risk matrices, analyze diagnostic payload data, and execute remediation protocols."
@@ -266,15 +266,9 @@
       <!-- SIEM / SOAR Operations -->
       <div class="soc-operations-grid">
         <!-- Incident Cases -->
-        <section class="soc-panel">
-          <div class="soc-panel-header">
-            <div class="soc-panel-title">
-              <viking-app-icon name="shield" [ariaHidden]="true" />
-              <div>
-                <span class="soc-panel-tag">SIEM</span>
-                <h2>Active Incident Cases</h2>
-              </div>
-            </div>
+        <viking-hud-panel icon="shield" title="Active Incident Cases" class="soc-panel">
+          <div class="soc-header-actions" fluxHudPanelBadge>
+            <viking-badge tone="accent">SIEM</viking-badge>
             <button
               type="button"
               class="soc-refresh-btn"
@@ -286,7 +280,7 @@
             </button>
           </div>
 
-          <div class="soc-panel-body">
+          <div class="soc-panel-body panel-body">
             @if (vulnService.incidentsLoading()) {
             <div class="soc-empty-state">
               <span class="spinner"></span>
@@ -294,7 +288,7 @@
             </div>
             } @else if (activeIncidents().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               tone="secure"
               icon="check-circle"
               title="All Clear"
@@ -339,18 +333,12 @@
             </div>
             }
           </div>
-        </section>
+        </viking-hud-panel>
 
         <!-- Response Playbooks -->
-        <section class="soc-panel">
-          <div class="soc-panel-header">
-            <div class="soc-panel-title">
-              <viking-app-icon name="bolt" [ariaHidden]="true" />
-              <div>
-                <span class="soc-panel-tag">SOAR</span>
-                <h2>Response Playbooks</h2>
-              </div>
-            </div>
+        <viking-hud-panel icon="bolt" title="Response Playbooks" class="soc-panel">
+          <div class="soc-header-actions" fluxHudPanelBadge>
+            <viking-badge tone="accent">SOAR</viking-badge>
             <button
               type="button"
               class="soc-refresh-btn"
@@ -362,7 +350,7 @@
             </button>
           </div>
 
-          <div class="soc-panel-body">
+          <div class="soc-panel-body panel-body">
             @if (vulnService.playbooksLoading()) {
             <div class="soc-empty-state">
               <span class="spinner"></span>
@@ -370,7 +358,7 @@
             </div>
             } @else if (playbooks().length === 0) {
             <viking-chart-empty-state
-              layout="fill"
+              layout="inline"
               icon="file"
               title="No Playbooks Yet"
               description="Default response playbooks seed automatically when threats are detected."
@@ -423,7 +411,7 @@
             </div>
             }
           </div>
-        </section>
+        </viking-hud-panel>
       </div>
 
       @if (actionMessage() || actionError()) {

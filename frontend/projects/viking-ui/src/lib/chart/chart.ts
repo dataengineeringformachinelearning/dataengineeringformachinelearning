@@ -69,7 +69,6 @@ const WIDTH = 720;
 const HEIGHT_DEFAULT = 240;
 const HEIGHT_COMPACT = 200;
 const HEIGHT_FILL = 400;
-/** 3:1 plot ratio for fill-mode line/area charts (Flux-style wide panels). */
 const HEIGHT_FILL_LINE = 240;
 const HEIGHT_SPARKLINE = 48;
 const BAR_WIDTH_MIN = 12;

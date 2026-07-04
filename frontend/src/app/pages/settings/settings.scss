@@ -485,7 +485,7 @@
   .integration-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding: var(--viking-space-3, 24px) 0;
     border-bottom: 1px solid var(--border);
 
@@ -533,7 +533,8 @@
 
   .integration-action {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 1px;
 
     button {
       white-space: nowrap !important;
@@ -751,7 +752,7 @@
 
   @media (min-width: 601px) {
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: var(--viking-space-3, 24px);
 

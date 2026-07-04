@@ -21,18 +21,17 @@
     }
   </div>
 
-  <div vikingModalActions>
-    @if (dialogData.type !== 'alert') {
-    <viking-button variant="outline" (pressed)="onCancel()">Cancel</viking-button>
-    }
-    <viking-button
-      [variant]="dialogData.confirmBtnColor === 'warn' ? 'danger' : 'primary'"
-      [disabled]="!isValid()"
-      [icon]="dialogData.type === 'alert' ? 'check-circle' : dialogData.confirmBtnColor === 'warn' ? 'trash' : 'check'"
-      (pressed)="onConfirm()"
-    >
-      {{ dialogData.confirmBtnText || (dialogData.type === 'alert' ? 'OK' : 'Confirm') }}
-    </viking-button>
-  </div>
+  @if (dialogData.type !== 'alert') {
+  <viking-button vikingModalActions variant="outline" (pressed)="onCancel()">Cancel</viking-button>
+  }
+  <viking-button
+    vikingModalActions
+    [variant]="dialogData.confirmBtnColor === 'warn' ? 'danger' : 'primary'"
+    [disabled]="!isValid()"
+    [icon]="dialogData.type === 'alert' ? 'check-circle' : dialogData.confirmBtnColor === 'warn' ? 'trash' : 'check'"
+    (pressed)="onConfirm()"
+  >
+    {{ dialogData.confirmBtnText || (dialogData.type === 'alert' ? 'OK' : 'Confirm') }}
+  </viking-button>
 </viking-modal>
 }

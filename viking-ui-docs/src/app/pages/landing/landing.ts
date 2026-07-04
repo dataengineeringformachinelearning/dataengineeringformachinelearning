@@ -1,16 +1,36 @@
-import { ChangeDetectionStrategy, Component } from "@angular/core";
-import { RouterLink } from "@angular/router";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
 import { Title } from "@angular/platform-browser";
-/** Landing page — spartan.ng-style hero before the component browser. */
+import {
+  VikingButton,
+  VikingCard,
+  VikingHeading,
+  VikingPageHeader,
+  VikingText,
+} from "@dataengineeringformachinelearning/viking-ui";
+
+/** Landing page — Viking-UI hero using library shell primitives. */
 @Component({
   selector: "app-landing",
-  imports: [RouterLink],
+  imports: [
+    VikingPageHeader,
+    VikingButton,
+    VikingHeading,
+    VikingText,
+    VikingCard,
+  ],
   templateUrl: "./landing.html",
   styleUrl: "./landing.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Landing {
+  private readonly router = inject(Router);
+
   constructor(private readonly title: Title) {
     this.title.setTitle("Viking-UI — Angular Component Library");
   }
+
+  protected goComponents = (): void => {
+    void this.router.navigate(["/components"]);
+  };
 }
