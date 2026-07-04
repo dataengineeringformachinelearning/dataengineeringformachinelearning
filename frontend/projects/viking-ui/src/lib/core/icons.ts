@@ -166,10 +166,12 @@ export const resolveVikingIconColor = (
   return color;
 };
 
+const VIKING_ICON_PATH_KEYS = new Set(Object.keys(VIKING_ICON_PATHS));
+
 /** Resolve a Viking or legacy Material icon name to a registry key. */
 export const resolveVikingIcon = (name: string): VikingIconName => {
   const normalized = name.trim().toLowerCase().replace(/\s+/g, '_');
-  if (normalized in VIKING_ICON_PATHS) {
+  if (VIKING_ICON_PATH_KEYS.has(normalized)) {
     return normalized as VikingIconName;
   }
   const alias = MATERIAL_ICON_ALIASES[normalized];

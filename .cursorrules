@@ -99,6 +99,63 @@ import {
 3. `node scripts/run_axe.js` passes (WCAG 2.1 AA).
 4. Token changes start in `frontend/projects/viking-ui/src/styles/_variables.scss`, then `npm run build:viking-ui-css` + `python scripts/sync_design_system.py`.
 5. Doc changes to design governance update **THEME.md**, **AGENTS.md**, **BOOK.md Ch.31**, and **README.md** together.
+6. `npm run test:viking-ui` and app `npm test` pass for touched surfaces (charts, auth, forms, icons).
+7. `node scripts/enforce-theme.js` reports zero violations before merge.
+
+---
+
+## Automated enforcement (run before commit)
+
+| Gate | Command | Blocks |
+| ---- | ------- | ------ |
+| Theme tokens / no hardcoding | `node scripts/enforce-theme.js` | Off-palette hex, legacy Lab Coat vars, Material classes, generic `.card`/`.btn-*` |
+| Accessibility | `node scripts/run_axe.js` | WCAG 2.1 AA violations on HTML/Astro |
+| Mobile-first layout | `node scripts/check_mobile_first.js` | Missing `.page-inner-wrapper`, sub-44px touch targets |
+| Lint | `cd frontend && npm run lint` | ESLint / angular-eslint |
+| Viking-UI tests | `cd frontend && npm run test:viking-ui` | Regressions in charts, forms, icons, auth panel |
+| Full quality | `uvx pre-commit run --all-files` | All pre-commit hooks |
+
+Apply safe theme auto-fixes: `node scripts/enforce-theme.js --apply`
+
+---
+
+## Testing requirements (key surfaces)
+
+Every change to these areas **must** include or update Vitest coverage:
+
+| Surface | Location | What to test |
+| ------- | -------- | ------------ |
+| Charts | `projects/viking-ui/src/lib/chart/` | SVG path generation, bar/line/donut kinds, zoom/pan window math (`chart-zoom.spec.ts`) |
+| Auth flows | `src/app/services/auth.service.spec.ts`, `lib/auth-panel/` | Login/logout/checkAuth signals, OAuth panel a11y, social button emits |
+| Forms | `lib/field/`, `lib/input/`, `lib/form-section/` | CVA/ngModel, required/error states, section layout classes |
+| Icons | `lib/core/icons.ts`, `lib/icon/` | Registry resolution, Material aliases, size presets, semantic color tokens, brand marks |
+
+Run library tests: `npm run test:viking-ui` (uses `vitest.viking-ui.config.ts` — real templates, not stubbed).
+
+---
+
+## Performance & minimalism (Starship-grade)
+
+Build like reusable flight hardware — every line earns its mass:
+
+- **OnPush + signals** on all Viking-UI components; avoid mutable state and unnecessary re-renders.
+- **Zero-dep charts/icons** — native SVG only; no canvas, D3, Chart.js, or icon font runtimes.
+- **Pure helpers** — extract testable math (chart zoom, icon resolution) into standalone modules; keep components thin.
+- **No speculative abstractions** — one composable primitive beats three wrapper layers.
+- **Lazy by default** — route-level code splitting in the app; no eager imports of showcase-only components.
+- **Token-only styling** — CSS variables compile once; no runtime theme engines or CSS-in-JS.
+- **Reusable first** — new UI belongs in `frontend/projects/viking-ui/` before app-specific forks.
+
+---
+
+## Hard rejections (never ship)
+
+- Third-party UI kits (Material, Bootstrap, PrimeNG, shadcn runtimes, Font Awesome, Lucide runtime packages).
+- Hardcoded hex/rgb/hsl in templates, SCSS, or inline styles (except `_variables.scss` / `_series-colors.scss`).
+- Hand-rolled buttons, inputs, modals, toasts, tables, or charts when `viking-*` exists.
+- `alert()`, generic spinners, color-only status, gradient orbs, neon glow, glass blur on base layouts.
+- Google Fonts CDN for Inter — use self-hosted `_fonts.scss`.
+- Pickle for ML models; hardcoded tenant domains in CORS; `"platform"` string FKs in workers.
 
 ---
 
