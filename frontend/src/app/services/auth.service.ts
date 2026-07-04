@@ -27,6 +27,9 @@ import {
   updatePassword,
 } from 'firebase/auth';
 
+import { SessionApiService } from './session-api.service';
+import { SessionWsService } from './session-ws.service';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -40,7 +43,11 @@ export class AuthService {
   public mfaEnrolled = signal<boolean>(false);
   /** Current ID token includes MFA verification (`amr` contains `mfa`). */
   public mfaVerifiedInSession = signal<boolean>(false);
+  /** Browser session id registered in Dragonfly session registry. */
+  public sessionId = signal<string | null>(null);
   private http = inject(HttpClient);
+  private sessionApi = inject(SessionApiService);
+  private sessionWs = inject(SessionWsService);
   public auth: any;
 
   private useMock =
@@ -113,6 +120,7 @@ export class AuthService {
                 this.currentUserRole.set(null);
               }
               await this.refreshMfaState();
+              await this.bindServerSession(user);
             } catch (e: any) {
               console.error('Failed to sync auth with backend', e);
               this.isAuthenticated.set(false);
@@ -127,6 +135,8 @@ export class AuthService {
             this.currentUserRole.set(null);
             this.mfaEnrolled.set(false);
             this.mfaVerifiedInSession.set(false);
+            this.sessionWs.disconnect();
+            this.sessionId.set(null);
           }
           this.isInitialized.set(true);
           this.isProcessing.set(false);
@@ -326,6 +336,7 @@ export class AuthService {
 
   async logout() {
     this.isProcessing.set(true);
+    await this.clearServerSession();
     if (this.useMock) {
       localStorage.removeItem('mock_user');
       this.auth = null;
@@ -674,5 +685,43 @@ export class AuthService {
     } finally {
       this.isProcessing.set(false);
     }
+  }
+
+  /** Register browser session in Dragonfly and open revoke WebSocket. */
+  private async bindServerSession(user: FirebaseUser): Promise<void> {
+    if (typeof window === 'undefined' || this.useMock) {
+      return;
+    }
+    let id = sessionStorage.getItem('deml_session_id');
+    if (!id) {
+      id = crypto.randomUUID();
+      sessionStorage.setItem('deml_session_id', id);
+    }
+    this.sessionId.set(id);
+    try {
+      const token = await user.getIdToken();
+      await this.sessionApi.register(id, token);
+      this.sessionWs.connect(token, id);
+    } catch (error) {
+      console.warn('Session registry unavailable', error);
+    }
+  }
+
+  /** Deregister current session server-side (best effort). */
+  private async clearServerSession(revokeAll = false): Promise<void> {
+    this.sessionWs.disconnect();
+    const id = this.sessionId();
+    if (this.auth?.currentUser && id && !this.useMock) {
+      try {
+        const token = await this.auth.currentUser.getIdToken();
+        await this.sessionApi.logout(id, token, revokeAll);
+      } catch {
+        /* best effort */
+      }
+    }
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('deml_session_id');
+    }
+    this.sessionId.set(null);
   }
 }

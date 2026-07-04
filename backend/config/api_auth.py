@@ -193,3 +193,102 @@ def verify_handoff_token(request, payload: HandoffVerifyIn):
     }
   except User.DoesNotExist:
     raise HttpError(404, "User not found") from None
+
+
+class SessionRegisterIn(Schema):
+  session_id: str
+  user_agent: str = ""
+
+
+class SessionOut(Schema):
+  session_id: str
+  user_agent: str = ""
+  ip: str = ""
+  created_at: int = 0
+  last_seen: int = 0
+
+
+class SessionRegisterOut(Schema):
+  status: str
+  session_id: str
+
+
+@router.post("/sessions", response=SessionRegisterOut, summary="Register browser session")
+def register_session_endpoint(request, payload: SessionRegisterIn):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+  firebase_uid = getattr(request, "firebase_token", {}).get("uid")
+  if not firebase_uid:
+    raise HttpError(400, "Missing Firebase UID")
+
+  from utils.session_registry import register_session
+
+  ip = request.META.get("REMOTE_ADDR", "")
+  if not register_session(
+    payload.session_id,
+    firebase_uid,
+    request.user.id,
+    user_agent=payload.user_agent,
+    ip=ip,
+  ):
+    raise HttpError(503, "Session registry unavailable")
+  return {"status": "success", "session_id": payload.session_id}
+
+
+@router.get("/sessions", response=list[SessionOut], summary="List active sessions")
+def list_sessions_endpoint(request):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+  firebase_uid = getattr(request, "firebase_token", {}).get("uid")
+  if not firebase_uid:
+    return []
+
+  from utils.session_registry import list_sessions
+
+  return list_sessions(firebase_uid)
+
+
+@router.delete("/sessions/{session_id}", response=SuccessSchema, summary="Revoke session")
+def revoke_session_endpoint(request, session_id: str):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+  firebase_uid = getattr(request, "firebase_token", {}).get("uid")
+  if not firebase_uid:
+    raise HttpError(400, "Missing Firebase UID")
+
+  from utils.session_registry import notify_force_logout, revoke_session
+
+  if not revoke_session(session_id, firebase_uid):
+    raise HttpError(404, "Session not found")
+  notify_force_logout(firebase_uid, session_id=session_id, reason="revoked")
+  return {"status": "success"}
+
+
+class LogoutIn(Schema):
+  session_id: str | None = None
+  revoke_all: bool = False
+
+
+@router.post("/logout", response=SuccessSchema, summary="Sign out server session")
+def logout_session_endpoint(request, payload: LogoutIn):
+  if not request.user.is_authenticated:
+    raise HttpError(401, "Not authenticated")
+  firebase_uid = getattr(request, "firebase_token", {}).get("uid")
+  if not firebase_uid:
+    return {"status": "success"}
+
+  from utils.session_registry import notify_force_logout, revoke_all_sessions, revoke_session
+
+  if payload.revoke_all:
+    revoke_all_sessions(firebase_uid)
+    notify_force_logout(firebase_uid, reason="logout_all")
+    try:
+      auth_mod = __import__("firebase_admin.auth", fromlist=["auth"])
+      auth_mod.revoke_refresh_tokens(firebase_uid)
+    except Exception:
+      pass
+  elif payload.session_id:
+    revoke_session(payload.session_id, firebase_uid)
+    notify_force_logout(firebase_uid, session_id=payload.session_id, reason="logout")
+
+  return {"status": "success"}

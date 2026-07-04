@@ -64,6 +64,17 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
       request.user = user
       request.firebase_token = decoded_token
 
+      session_id = request.META.get("HTTP_X_DEML_SESSION_ID")
+      firebase_uid = decoded_token.get("uid")
+      if session_id and firebase_uid:
+        from utils.session_registry import is_session_valid, touch_session
+
+        if not is_session_valid(session_id, firebase_uid):
+          from django.http import JsonResponse
+
+          return JsonResponse({"detail": "Session revoked or expired"}, status=401)
+        touch_session(session_id)
+
     except Exception as e:
       logger.exception("Firebase auth verification failed (type=%s)", type(e).__name__)
       # If token verification fails, request.user remains AnonymousUser

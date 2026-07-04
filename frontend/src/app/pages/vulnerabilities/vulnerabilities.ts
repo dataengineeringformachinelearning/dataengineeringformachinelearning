@@ -18,6 +18,8 @@ import {
   VikingMetricRow,
   VikingPageHeader,
   VikingChartEmptyState,
+  VikingToggle,
+  VikingToggleGroup,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type { VikingTone } from '@dataengineeringformachinelearning/viking-ui';
 import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
@@ -51,6 +53,8 @@ import {
     VikingMetricRow,
     VikingPageHeader,
     VikingChartEmptyState,
+    VikingToggle,
+    VikingToggleGroup,
     FormsModule,
     UnifiedSelect,
   ],

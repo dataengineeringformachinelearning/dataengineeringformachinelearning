@@ -28,46 +28,24 @@
         }
       </viking-page-header>
 
-      <nav class="tab-bar" aria-label="Dashboard views">
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="activeTab() === 'overview'"
-          (click)="setTab('overview')"
-        >
-          <span class="tab-btn-content">
-            <viking-app-icon name="dashboard" [ariaHidden]="true" />
-            <span>Overview</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="activeTab() === 'performance'"
-          (click)="setTab('performance')"
-        >
-          <span class="tab-btn-content">
-            <viking-app-icon name="monitoring" [ariaHidden]="true" />
-            <span>Performance</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="tab-btn"
-          [class.active]="activeTab() === 'security'"
-          (click)="setTab('security')"
-        >
-          <span class="tab-btn-content">
-            <viking-app-icon name="shield" [ariaHidden]="true" />
-            <span>Security</span>
-            @if (openVulnCount() > 0) {
+      <viking-tabs [value]="activeTab()" (valueChange)="setTab($any($event))">
+        <viking-tab value="overview">
+          <viking-app-icon name="dashboard" [ariaHidden]="true" />
+          Overview
+        </viking-tab>
+        <viking-tab value="performance">
+          <viking-app-icon name="monitoring" [ariaHidden]="true" />
+          Performance
+        </viking-tab>
+        <viking-tab value="security">
+          <viking-app-icon name="shield" [ariaHidden]="true" />
+          Security
+          @if (openVulnCount() > 0) {
             <viking-badge tone="danger" size="sm">{{ openVulnCount() }}</viking-badge>
-            }
-          </span>
-        </button>
-      </nav>
+          }
+        </viking-tab>
 
-      @if (activeTab() === 'overview') {
+        <viking-tab-panel value="overview">
       <section class="overview-grid">
         @if (!setupComplete()) {
         <div class="setup-banner col-span-full">
@@ -225,7 +203,9 @@
           </div>
         </section>
       </section>
-      } @if (activeTab() === 'performance') {
+        </viking-tab-panel>
+
+        <viking-tab-panel value="performance">
       <section class="detail-grid">
         <viking-metric-row class="detail-kpis">
           <viking-metric-card label="Network Stability" [value]="(stabilityLevel | number:'1.0-0') + '%'" />
@@ -312,7 +292,9 @@
           </div>
         </section>
       </section>
-      } @if (activeTab() === 'security') {
+        </viking-tab-panel>
+
+        <viking-tab-panel value="security">
       <section class="detail-grid">
         <viking-metric-row class="detail-kpis">
           <viking-metric-card label="Open Threats" variant="warning" [value]="openVulnCount()" />
@@ -388,7 +370,8 @@
           </ul>
         </section>
       </section>
-      }
+        </viking-tab-panel>
+      </viking-tabs>
     </div>
   </div>
 </div>

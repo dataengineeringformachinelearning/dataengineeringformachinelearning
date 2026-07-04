@@ -24,6 +24,9 @@ import {
   VikingPageHeader,
   VikingMetricRow,
   VikingMetricCard,
+  VikingTabs,
+  VikingTab,
+  VikingTabPanel,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 import { VulnerabilityService, Vulnerability } from '../../services/vulnerability.service';
@@ -64,6 +67,9 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     VikingPageHeader,
     VikingMetricRow,
     VikingMetricCard,
+    VikingTabs,
+    VikingTab,
+    VikingTabPanel,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

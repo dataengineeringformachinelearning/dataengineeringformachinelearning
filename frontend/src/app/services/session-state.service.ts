@@ -105,4 +105,12 @@ export class SessionStateService {
     const query = reason === 'timeout' ? { reason: 'timeout' } : undefined;
     void this.router.navigate(['/login'], { queryParams: query });
   }
+
+  /** Server- or cross-tab initiated sign-out. */
+  async forceLogout(reason?: string): Promise<void> {
+    if (!this.authService.isAuthenticated()) {
+      return;
+    }
+    await this.forceLocalLogout(reason);
+  }
 }
