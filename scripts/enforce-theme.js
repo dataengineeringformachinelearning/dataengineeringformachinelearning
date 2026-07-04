@@ -80,6 +80,41 @@ const SCANNABLE_EXTENSIONS = /\.(html|htm|astro|scss|css|ts|tsx|js|jsx|svg)$/i;
 /** @type {RegExp} */
 const TOKEN_DEFINITION_FILE = /[/\\](_variables\.scss|tokens\.scss|viking-ui-bundle\.scss)$/;
 
+/** Layout rhythm tokens — must exist in _variables.scss (THEME.md §3). */
+const LAYOUT_RHYTHM_TOKENS = [
+  '--viking-page-gutter',
+  '--viking-page-gutter-lg',
+  '--viking-page-stack-gap',
+  '--viking-page-section-gap',
+  '--viking-card-padding',
+  '--viking-card-padding-compact',
+  '--viking-panel-padding',
+  '--viking-panel-header-padding',
+  '--viking-form-max-width',
+  '--viking-form-narrow-max-width',
+  '--viking-content-readable-max-width',
+  '--viking-surface-hairline-strength',
+];
+
+/** Washed-out border mixes retired after Spartan reference drift. */
+const WASHED_BORDER_PATTERNS = [
+  {
+    pattern: /metallic-600[^)]*\)\s*35%/g,
+    message:
+      'Washed border mix (35%) — use --viking-border token (48% dark) per premium palette v2.1',
+  },
+  {
+    pattern: /metallic-600[^)]*\)\s*18%/g,
+    message:
+      'Washed border-subtle mix (18%) — use --viking-border-subtle token (28% dark) per premium palette v2.1',
+  },
+  {
+    pattern: /metallic-400[^)]*\)\s*55%/g,
+    message:
+      'Washed border-strong mix (55%) — use --viking-border-strong token (68% dark) per premium palette v2.1',
+  },
+];
+
 /** Canonical series palette from THEME.md §8.4 */
 const SERIES_PRESETS = [
   '#0d7377',
@@ -1017,6 +1052,81 @@ const scanFooterBrand = (content, filePath) => {
 };
 
 /**
+ * Validate layout rhythm tokens exist in _variables.scss.
+ */
+const validateLayoutTokens = () => {
+  const variablesPath = path.join(
+    WORKSPACE_ROOT,
+    'frontend/projects/viking-ui/src/styles/_variables.scss',
+  );
+  if (!fs.existsSync(variablesPath)) {
+    addFinding('layout-rhythm', variablesPath, '_variables.scss missing');
+    return;
+  }
+  const variables = fs.readFileSync(variablesPath, 'utf8');
+  for (const token of LAYOUT_RHYTHM_TOKENS) {
+    if (!variables.includes(token)) {
+      addFinding(
+        'layout-rhythm',
+        variablesPath,
+        `Layout token ${token} missing from _variables.scss — required by THEME.md §3`,
+      );
+    }
+  }
+};
+
+/**
+ * @param {string} content
+ * @param {string} filePath
+ */
+const scanBorderDrift = (content, filePath) => {
+  if (!/\/viking-ui\/src\/styles\//.test(filePath)) {
+    return;
+  }
+  for (const { pattern, message } of WASHED_BORDER_PATTERNS) {
+    let match;
+    while ((match = pattern.exec(content)) !== null) {
+      addFinding('border-drift', filePath, message, lineNumberAt(content, match.index));
+    }
+  }
+};
+
+/**
+ * Flag shell padding resets that flatten premium layout rhythm.
+ * @param {string} content
+ * @param {string} filePath
+ */
+const scanShellPaddingReset = (content, filePath) => {
+  if (!/\.(scss|css)$/i.test(filePath) || /viking-ui\/src\/styles\//.test(filePath)) {
+    return;
+  }
+  const lines = content.split('\n');
+  let inShellBlock = false;
+  let braceDepth = 0;
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/\.(?:page-inner-wrapper|dashboard-page-container|viking-page-shell)\b/.test(line) && line.includes('{')) {
+      inShellBlock = true;
+      braceDepth = (line.match(/\{/g) || []).length - (line.match(/\}/g) || []).length;
+    } else if (inShellBlock) {
+      braceDepth += (line.match(/\{/g) || []).length - (line.match(/\}/g) || []).length;
+      if (/padding(?:-(?:block|inline))?\s*:\s*0\b/.test(line)) {
+        addFinding(
+          'layout-rhythm',
+          filePath,
+          'Page shell padding reset to 0 — use --viking-page-gutter-* tokens from viking-ui',
+          i + 1,
+        );
+      }
+      if (braceDepth <= 0) {
+        inShellBlock = false;
+        braceDepth = 0;
+      }
+    }
+  }
+};
+
+/**
  * Validate THEME.md tokens exist in _variables.scss.
  */
 const validateThemeMd = () => {
@@ -1084,6 +1194,8 @@ const scanFile = (content, filePath) => {
   scanButtons(content, filePath);
   scanCards(content, filePath);
   scanFooterBrand(content, filePath);
+  scanBorderDrift(content, filePath);
+  scanShellPaddingReset(content, filePath);
 };
 
 /**
@@ -1116,6 +1228,7 @@ const main = () => {
   }
 
   validateThemeMd();
+  validateLayoutTokens();
 
   const findingsByRule = report.findings.reduce((acc, item) => {
     acc[item.rule] = (acc[item.rule] || 0) + 1;

@@ -38,7 +38,7 @@ import { VikingSkeleton } from '../skeleton/skeleton';
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);
         box-shadow: var(--viking-shadow-sm);
-        padding: var(--viking-space-3);
+        padding: var(--viking-card-padding, var(--viking-space-3));
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
         position: relative;
@@ -57,7 +57,7 @@ import { VikingSkeleton } from '../skeleton/skeleton';
         background: linear-gradient(
           90deg,
           transparent,
-          color-mix(in srgb, var(--viking-metallic-200) 18%, transparent),
+          color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
           transparent
         );
         pointer-events: none;
@@ -82,7 +82,7 @@ import { VikingSkeleton } from '../skeleton/skeleton';
         pointer-events: none;
       }
       :host(.viking-card-compact) {
-        padding: var(--viking-space-2);
+        padding: var(--viking-card-padding-compact, var(--viking-space-2));
       }
       .viking-card-skeleton {
         display: flex;

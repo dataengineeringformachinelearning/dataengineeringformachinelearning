@@ -518,7 +518,7 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
   border-color: var(--viking-border-strong);
 }
 
-/* Depth for newly migrated status metric rows (from #186 Viking-UI consolidation) */
+/* Depth for newly migrated status metric rows (Viking-UI consolidation PR 186) */
 .viking-status-metric-row {
   background: var(--viking-surface);
   border: 1px solid var(--viking-border);

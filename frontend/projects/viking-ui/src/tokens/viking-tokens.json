@@ -177,7 +177,17 @@
     "controlHeightSm": "32px",
     "controlHeightXs": "24px",
     "btnMinWidth": "120px",
-    "touchTargetMin": "44px"
+    "touchTargetMin": "44px",
+    "pageGutter": "16px",
+    "pageGutterLg": "24px",
+    "pageStackGap": "24px",
+    "pageSectionGap": "32px",
+    "cardPadding": "24px",
+    "cardPaddingCompact": "16px",
+    "panelPadding": "24px",
+    "formMaxWidth": "42rem",
+    "formNarrowMaxWidth": "28rem",
+    "contentReadableMaxWidth": "48rem"
   },
   "zIndex": {
     "overlay": 1000,

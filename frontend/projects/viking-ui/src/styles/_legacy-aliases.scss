@@ -45,7 +45,16 @@
   --space-9: var(--viking-space-9);
   --space-10: var(--viking-space-10);
   --grid-gap: var(--viking-space-3);
-  --card-padding: var(--viking-space-3);
+  --card-padding: var(--viking-card-padding);
+
+  /* Layout rhythm aliases */
+  --page-gutter: var(--viking-page-gutter);
+  --page-gutter-lg: var(--viking-page-gutter-lg);
+  --page-stack-gap: var(--viking-page-stack-gap);
+  --page-section-gap: var(--viking-page-section-gap);
+  --form-max-width: var(--viking-form-max-width);
+  --form-narrow-max-width: var(--viking-form-narrow-max-width);
+  --content-readable-max-width: var(--viking-content-readable-max-width);
 
   /* Layout */
   --container-max-width: var(--viking-container-max-width);

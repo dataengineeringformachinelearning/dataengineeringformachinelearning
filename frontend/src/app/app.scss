@@ -118,69 +118,45 @@
   flex-direction: column;
   flex: 1; /* Stretch to fill */
 
-  /* Vertical stack — gutters match --grid-gap so panel spacing equals outer padding on mobile */
+  /* Vertical stack — rhythm enforced by viking-ui _layout-enforcement.scss */
   .page-inner-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: var(--viking-space-3, var(--grid-gap, 24px));
-    flex: 1;
-    padding-block: var(--viking-space-3, var(--space-3, 24px));
-    padding-inline: var(--viking-space-3, var(--grid-gap, 24px));
-    box-sizing: border-box;
-
-    @media (min-width: 1920px) {
-      padding-inline: var(--viking-space-4, var(--space-4, 32px));
-    }
+    /* gap/padding inherited from .dashboard-page-container .page-inner-wrapper in viking-ui.css */
   }
 
   .hud-header {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 16px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-layout);
-    margin-bottom: var(--grid-gap);
-
-    @media (min-width: 768px) {
-      flex-direction: row;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 20px;
-      padding-bottom: 24px;
-    }
+    /* spacing inherited from .viking-page-header / .hud-header in viking-ui page-shell */
 
     .title-group {
       .section-tag-row {
-        margin-bottom: 8px;
+        margin-bottom: var(--viking-space-1);
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: var(--viking-space-1);
       }
 
       .section-tag {
       font-family: var(--viking-font-family-mono);
-        font-size: 1rem;
+        font-size: var(--viking-font-size-base);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
+        letter-spacing: var(--viking-letter-spacing-caps);
         color: var(--accent-color);
-        font-weight: 700;
+        font-weight: var(--viking-font-weight-bold);
       }
 
       .hud-title {
         margin: 0;
-        font-size: 1.75rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
+        font-size: var(--viking-font-size-xl);
+        font-weight: var(--viking-font-weight-bold);
+        letter-spacing: var(--viking-letter-spacing-tight);
         color: var(--text-color);
         text-transform: uppercase;
       }
 
       .hud-subtitle {
-        margin: 8px 0 0;
-        font-size: 1rem;
+        margin: var(--viking-space-1) 0 0;
+        font-size: var(--viking-font-size-base);
         color: var(--text-muted);
-        line-height: 1.4;
+        line-height: var(--viking-line-height-normal);
       }
     }
   }
