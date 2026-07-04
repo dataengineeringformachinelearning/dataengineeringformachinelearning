@@ -66,6 +66,27 @@ export type VikingChartPanelBody = 'default' | 'origin-map';
         --viking-chart-empty-min-height: var(--viking-chart-map-min-height, 22.5rem);
         min-height: var(--viking-chart-map-min-height, 22.5rem);
       }
+
+      :host(.viking-chart-panel-origin-map) ::ng-deep .origin-map-canvas {
+        flex: 1 1 auto;
+        height: var(--viking-chart-map-min-height, 22.5rem);
+        min-height: var(--viking-chart-map-min-height, 22.5rem);
+        width: 100%;
+        display: block;
+        border-radius: var(--viking-radius-md, 8px);
+        z-index: 0;
+      }
+
+      :host(.viking-chart-panel-origin-map) ::ng-deep .origin-map-canvas:not(.viking-map-ready) {
+        position: absolute;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      :host(.viking-chart-panel-origin-map) ::ng-deep .origin-map-canvas.viking-map-ready {
+        position: relative;
+        visibility: visible;
+      }
     `,
   ],
 })

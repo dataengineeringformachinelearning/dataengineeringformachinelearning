@@ -187,28 +187,13 @@
   }
 }
 
-/* Semantic Layout Classes — origin map canvas (panel shell lives in viking-chart-panel) */
-.origin-map-container {
-  min-height: var(--viking-chart-map-min-height, 22.5rem);
+/* Origin map canvas — panel shell + projected canvas sizing live in viking-chart-panel */
 
-  .origin-map-canvas {
-    height: var(--viking-chart-map-min-height, 22.5rem);
-    width: 100%;
-    display: block;
-    border-radius: var(--border-radius-md);
-    z-index: 0;
-
-    &:not(.viking-map-ready) {
-      position: absolute;
-      visibility: hidden;
-      pointer-events: none;
-    }
-
-    &.viking-map-ready {
-      position: relative;
-      visibility: visible;
-    }
-  }
+.dashboard-grid-map {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-gap);
+  margin-bottom: var(--viking-space-3, var(--grid-gap, 24px));
 }
 
 .dashboard-grid-responsive {
