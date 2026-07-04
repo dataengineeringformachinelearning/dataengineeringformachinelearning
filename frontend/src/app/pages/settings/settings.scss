@@ -43,15 +43,31 @@
 
 /* Outlined card — premium machined surface per Viking-UI / THEME.md */
 .status-card-outlined {
-  padding: var(--viking-space-3, 24px);
+  padding: var(--viking-card-padding, var(--viking-space-3));
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, 16px);
-  background: var(--viking-surface);
+  gap: var(--viking-space-2);
+  background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-sm);
-  transition: box-shadow var(--viking-transition-colors), border-color var(--viking-transition-colors);
+  transition: var(--viking-transition-interactive);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
 }
 
 .status-card-outlined:hover {
@@ -60,8 +76,8 @@
 }
 
 .card-header-clean {
-  padding: 0 0 var(--viking-space-2, 16px) 0;
-  border-bottom: 1px solid var(--viking-border);
+  padding: 0 0 var(--viking-space-2) 0;
+  border-bottom: 1px solid var(--viking-border-subtle);
   margin-bottom: var(--viking-space-1);
 
   .card-title-main {
@@ -168,7 +184,7 @@
     }
 
     &:not(:first-of-type) {
-      border-top: 1px solid var(--border);
+      border-top: 1px solid var(--viking-border-subtle);
     }
   }
 
@@ -201,8 +217,8 @@
   }
 
   .data-item-row {
-    padding: var(--viking-space-2, 16px) 0;
-    border-bottom: 1px solid var(--border);
+    padding: var(--viking-space-2) 0;
+    border-bottom: 1px solid var(--viking-border-subtle);
     border-radius: 0;
 
     &:last-child {
@@ -217,8 +233,8 @@
   }
 
   .code-block-outlined {
-    background-color: color-mix(in srgb, var(--viking-charcoal-900) 60%, var(--bg-color));
-    border: 1px solid var(--border);
+    background-color: color-mix(in srgb, var(--viking-charcoal-900) 60%, var(--viking-bg));
+    border: 1px solid var(--viking-border-subtle);
     border-radius: var(--border-radius-sm, 8px);
     padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
     font-size: 0.88rem;
@@ -227,7 +243,7 @@
   .empty-data-text {
     background: transparent;
     border: none;
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--viking-border-subtle);
     padding: var(--viking-space-4, 32px) var(--viking-space-2, 16px);
   }
 }
@@ -332,22 +348,15 @@
   }
 }
 
-/* Styled Dropdown Menu */
+/* Select wrapper — unified-select provides its own chevron */
 .select-wrapper {
   position: relative;
   display: inline-block;
-  min-width: 176px;
+  min-width: 11rem;
+  width: 100%;
 
-  &::after {
-    content: 'expand_more';
-    font-family: 'Material Icons';
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-muted);
-    pointer-events: none;
-    font-size: 20px;
+  @media (min-width: 601px) {
+    width: auto;
   }
 }
 
@@ -463,8 +472,8 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: var(--viking-space-3, 24px) 0;
-    border-bottom: 1px solid var(--border);
+    padding: var(--viking-space-3) 0;
+    border-bottom: 1px solid var(--viking-border-subtle);
 
     &:last-child {
       border-bottom: none;
@@ -819,7 +828,7 @@
 
 
 .integration-item-bordered {
-  border-bottom: 1px solid color-mix(in srgb, var(--viking-white) 5%, transparent);
-  padding-bottom: 16px;
-  margin-bottom: 16px;
+  border-bottom: 1px solid var(--viking-border-subtle);
+  padding-bottom: var(--viking-space-2);
+  margin-bottom: var(--viking-space-2);
 }

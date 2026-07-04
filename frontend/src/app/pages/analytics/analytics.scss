@@ -1,9 +1,5 @@
-@use '../status/status.scss' as *;
-
-:host-context(html[data-theme='light']) {
-  .gauge-card {
-    background-color: rgba(255, 255, 255, 0.65);
-  }
+:host {
+  display: block;
 }
 
 .chart-container {
@@ -17,190 +13,18 @@
   }
 }
 
-/* Screen Reader Only styling for Section 508 accessibility */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* Empty chart states — canonical styles in viking-ui page-shell (.empty-chart-state) */
-
-/* ------------------------------------- */
-/* CES METER GAUGE STYLES                */
-/* ------------------------------------- */
-
-.ces-meter-section {
-  margin-bottom: 32px;
-}
-
-.ces-gauge-cluster {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--grid-gap, var(--space-3));
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(12, 1fr);
-  }
-}
-
-.gauge-card {
-  background-color: var(--viking-surface);
-  border-radius: var(--viking-radius-lg);
-  border: 1px solid var(--viking-border);
-  padding: var(--viking-space-3);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  box-shadow: var(--viking-shadow-sm);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
-
-  &:hover {
-    box-shadow: var(--viking-shadow-md);
-    border-color: var(--viking-border-strong);
-  }
-
-  .gauge-card-header {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-
-    h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text-color);
-      margin: 0;
-    }
-
-    viking-app-icon {
-      color: var(--text-muted);
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-  }
-
-  .gauge-card-footer {
-    width: 100%;
-    margin-top: 24px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.1));
-    font-size: 1rem;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    viking-app-icon {
-      font-size: var(--viking-font-size-md, var(--base-font-size));
-      width: 16px;
-      height: 16px;
-      color: var(--color-warning);
-    }
-  }
-}
-
-.gauge-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  width: 100%;
-}
-
-.gauge-svg {
-  width: 100%;
-  max-width: min(100%, 17.5rem);
-
-  .gauge-bg {
-    fill: none;
-    stroke: color-mix(in srgb, var(--viking-text) 8%, transparent);
-    stroke-width: 8;
-    stroke-linecap: round;
-  }
-
-  .gauge-fill {
-    fill: none;
-    stroke-width: 8;
-    stroke-linecap: round;
-    transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &.theme-amber .gauge-fill { stroke: var(--viking-teal-600); }
-  &.theme-red .gauge-fill { stroke: var(--color-gauge-red); }
-  &.theme-primary .gauge-fill { stroke: var(--color-primary); }
-  &.theme-success .gauge-fill { stroke: var(--color-success); }
-}
-
-.gauge-center-text {
-  position: absolute;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-
-  &.threat-text { color: var(--viking-teal-600); }
-  &.main-text { color: var(--color-gauge-red); }
-  &.stability-text { color: var(--color-primary); }
-
-  .gauge-inner-icon {
-    font-size: 24px;
-    width: 24px;
-    height: 24px;
-    margin-bottom: 8px;
-    opacity: 0.8;
-  }
-
-  .unit {
-    font-size: 1rem;
-    margin-bottom: 8px;
-    color: var(--text-muted) !important;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .value {
-    font-size: 2.25rem;
-    line-height: 1;
-    color: var(--text-color) !important;
-    font-weight: 700;
-
-    .unit-symbol {
-      font-size: 1.2rem;
-      font-weight: 500;
-      margin-left: 0px;
-      color: var(--text-muted) !important;
-    }
-  }
-}
-
-/* Origin map canvas — panel shell + projected canvas sizing live in viking-chart-panel */
-
 .dashboard-grid-map {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--grid-gap);
-  margin-bottom: var(--viking-space-3, var(--grid-gap, 24px));
+  gap: var(--grid-gap, var(--viking-space-3));
+  margin-bottom: var(--viking-space-3);
 }
 
 .dashboard-grid-responsive {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--grid-gap);
-  margin-bottom: var(--viking-space-3, var(--grid-gap, 24px));
+  gap: var(--grid-gap, var(--viking-space-3));
+  margin-bottom: var(--viking-space-3);
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
@@ -212,60 +36,25 @@
 }
 
 .stat-panels-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--grid-gap, var(--space-3));
-
-  @media (min-width: 600px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
   .ml-stat-panel {
     flex-direction: column;
     align-items: flex-start;
-    gap: var(--space-1);
-    min-width: 0;
-
-    &.viking-stat-alert {
-      border-color: var(--color-error);
-
-      .stat-value {
-        color: var(--color-error);
-      }
-    }
-  }
-
-  .stat-title {
-    white-space: nowrap;
-    font-size: 0.85rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    gap: var(--viking-space-1);
   }
 
   .stat-value {
     white-space: nowrap;
-    font-size: 1.35rem;
-    line-height: 1.2;
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 }
 
-.stat-unit {
-  font-size: var(--viking-font-size-md, var(--base-font-size));
-  color: var(--text-muted);
-}
-
 .dashboard-grid-single {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--grid-gap);
-  margin-bottom: var(--viking-space-3, var(--grid-gap, 24px));
+  gap: var(--grid-gap, var(--viking-space-3));
+  margin-bottom: var(--viking-space-3);
   --viking-chart-panel-min-height-md: auto;
   --viking-chart-panel-min-height-lg: auto;
   --viking-chart-panel-body-min-height-md: clamp(13rem, 24vw, 16rem);
@@ -274,34 +63,13 @@
   --viking-chart-fill-min-height-lg: clamp(11rem, 22vw, 14rem);
 }
 
-.panel-title-flex {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.metrics-section-spacing {
-  margin-top: var(--viking-space-7, 56px);
-}
-
-.icon-small {
-  font-size: var(--viking-font-size-md, var(--base-font-size));
-  width: 16px;
-  height: 16px;
-}
-
-.panel-header-padded {
-  padding: var(--viking-space-3, 24px) var(--viking-space-3, 24px) 0;
-}
-
-/* Custom Filter Stylings */
 .filter-group-mobile {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--viking-space-1, 8px);
+  gap: var(--viking-space-1);
   width: 100%;
-  margin-bottom: var(--viking-space-3, 24px);
+  margin-bottom: var(--viking-space-3);
 
   app-unified-select {
     width: 100%;
@@ -311,29 +79,6 @@
   @media (min-width: 768px) {
     flex-direction: row;
     align-items: flex-end;
-    gap: var(--viking-space-2, 16px);
-    width: 100%;
-  }
-}
-
-.hud-select {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-color);
-  border: 1px solid var(--border);
-  padding: 8px 16px;
-  border-radius: 8px;
-  outline: none;
-  font-family: var(--viking-font-family);
-  font-size: var(--viking-font-size-md, var(--base-font-size));
-  min-width: 200px;
-  width: 100%;
-
-  @media (min-width: 768px) {
-    width: auto;
-  }
-
-  :host-context(html[data-theme='light']) & {
-    background: rgba(0, 0, 0, 0.03);
-    color: var(--text-color);
+    gap: var(--viking-space-2);
   }
 }

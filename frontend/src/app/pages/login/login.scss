@@ -18,7 +18,7 @@
   width: 100%;
   max-width: var(--viking-form-narrow-max-width);
   margin: 0 auto;
-  padding-inline: var(--viking-page-gutter, var(--viking-space-2));
+  padding: var(--viking-space-4) var(--viking-page-gutter, var(--viking-space-2));
 }
 
 .login-form {
