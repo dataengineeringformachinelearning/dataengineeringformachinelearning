@@ -16,7 +16,7 @@ import '../../styles/showcase.scss';
       <h1 class="viking-heading viking-heading-xl">Components</h1>
       <p class="viking-text-muted">
         Live previews and copy-ready snippets for Angular, Astro, Django, and Web Components.
-        {COMPONENT_COUNT} documented demos — each with a dedicated detail page and API reference.
+        <span id="component-search-count">{COMPONENT_COUNT} components</span> — each with a dedicated detail page and API reference.
       </p>
       <div class="viking-demo-row">
         <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
@@ -24,8 +24,49 @@ import '../../styles/showcase.scss';
       </div>
     </header>
 
+    <section class="showcase-toolbar viking-card viking-card-compact" aria-label="Gallery filters">
+      <div class="showcase-toolbar-row">
+        <label class="viking-field showcase-search-field" for="component-search">
+          <span class="viking-field-label">Search components</span>
+          <div class="viking-input-shell">
+            <input
+              id="component-search"
+              class="viking-input-native"
+              type="search"
+              placeholder="Search by name, tag, or description…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+        </label>
+        <label class="viking-field showcase-category-field" for="component-category-filter">
+          <span class="viking-field-label">Category</span>
+          <select id="component-category-filter" class="viking-select-native">
+            <option value="all">All categories</option>
+            {SHOWCASE_CATEGORIES.map((category) => (
+              <option value={category.id}>{category.label}</option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <p class="viking-text-muted showcase-toolbar-hint">
+        Previews use Viking-UI tokens and Web Components — toggle light/dark mode in the header to verify both themes.
+      </p>
+    </section>
+
+    <nav class="showcase-category-nav" aria-label="Component categories">
+      {SHOWCASE_CATEGORIES.map((category) => (
+        <a href={`#${category.id}`} class="viking-badge viking-badge-subtle">{category.label}</a>
+      ))}
+    </nav>
+
     {SHOWCASE_CATEGORIES.map((category) => (
-      <section class="showcase-category" id={category.id} aria-labelledby={`${category.id}-heading`}>
+      <section
+        class="showcase-category"
+        id={category.id}
+        data-category-id={category.id}
+        aria-labelledby={`${category.id}-heading`}
+      >
         <header class="showcase-category-header">
           <h2 class="viking-heading viking-heading-sm" id={`${category.id}-heading`}>
             {category.label}
@@ -34,7 +75,7 @@ import '../../styles/showcase.scss';
         </header>
         <div class="showcase-component-list">
           {category.components.map((component) => (
-            <ComponentCard component={component} />
+            <ComponentCard component={component} categoryId={category.id} />
           ))}
         </div>
       </section>
@@ -42,10 +83,58 @@ import '../../styles/showcase.scss';
   </div>
 </DocLayout>
 
+<script src="../../scripts/showcase-filter.ts"></script>
+
 <style>
   .viking-showcase {
     display: flex;
     flex-direction: column;
     gap: var(--viking-space-2);
+  }
+
+  .showcase-toolbar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-space-2);
+  }
+
+  .showcase-toolbar-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--viking-space-2);
+  }
+
+  @media (min-width: 768px) {
+    .showcase-toolbar-row {
+      grid-template-columns: minmax(0, 2fr) minmax(12rem, 1fr);
+      align-items: end;
+    }
+  }
+
+  .showcase-search-field,
+  .showcase-category-field {
+    margin: 0;
+  }
+
+  .showcase-toolbar-hint {
+    margin: 0;
+    font-size: var(--viking-font-size-sm);
+  }
+
+  .showcase-category-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--viking-space-1);
+    padding: var(--viking-space-1) 0 var(--viking-space-2);
+    border-bottom: 1px solid var(--viking-border-subtle);
+  }
+
+  .showcase-category-nav a {
+    text-decoration: none;
+  }
+
+  .showcase-category-nav a:hover {
+    border-color: var(--viking-accent);
+    color: var(--viking-accent);
   }
 </style>

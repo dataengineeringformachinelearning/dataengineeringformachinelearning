@@ -1,7 +1,9 @@
 ---
-import { SITE, NAV_LINKS, DOCS_SEARCH_ITEMS } from '../lib/site';
+import { SITE, NAV_LINKS, DOCS_PAGE_SEARCH_ITEMS } from '../lib/site';
+import { COMPONENT_SEARCH_ITEMS } from '../lib/component-registry';
+
 const currentPath = Astro.url.pathname;
-const searchItemsJson = JSON.stringify(DOCS_SEARCH_ITEMS);
+const searchItemsJson = JSON.stringify([...DOCS_PAGE_SEARCH_ITEMS, ...COMPONENT_SEARCH_ITEMS]);
 ---
 
 <header class="docs-header">
