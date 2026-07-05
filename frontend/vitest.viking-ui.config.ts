@@ -5,11 +5,11 @@ import { defineConfig } from 'vitest/config';
 // (which stubs component templates), the library tests compile real templates
 // via the Analog Angular plugin so signal-based inputs/models work under test.
 export default defineConfig({
-  plugins: [angular({ tsconfig: './projects/viking-ui/tsconfig.spec.json' })],
+  plugins: [angular({ tsconfig: '../packages/viking-ui/tsconfig.spec.json' })],
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.ts'],
-    include: ['projects/viking-ui/src/**/*.spec.ts'],
+    include: ['../packages/viking-ui/src/**/*.spec.ts'],
   },
 });

@@ -3,8 +3,7 @@ const path = require('path');
 
 const SCAN_DIRS = [
   path.resolve(__dirname, '../src'),
-  path.resolve(__dirname, '../projects/viking-ui/src'),
-  path.resolve(__dirname, '../../packages/viking-ui/src/styles'),
+  path.resolve(__dirname, '../../packages/viking-ui/src'),
   path.resolve(__dirname, '../../marketing/src/components'),
   path.resolve(__dirname, '../../marketing/src/pages'),
   path.resolve(__dirname, '../../marketing/src/layouts'),

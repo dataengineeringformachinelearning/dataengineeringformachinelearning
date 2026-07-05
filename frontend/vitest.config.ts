@@ -6,8 +6,15 @@ export default defineConfig({
     alias: {
       '@dataengineeringformachinelearning/viking-ui': path.resolve(
         __dirname,
-        'projects/viking-ui/src/public-api.ts',
+        '../packages/viking-ui/src/public-api.ts',
       ),
+    },
+  },
+  esbuild: {
+    tsconfigRaw: {
+      compilerOptions: {
+        experimentalDecorators: true,
+      },
     },
   },
   plugins: [

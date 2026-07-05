@@ -1,4 +1,4 @@
-import tokensJson from "../../../frontend/packages/viking-ui/src/tokens/viking-tokens.json";
+import tokensJson from "../../../packages/viking-ui/src/tokens/viking-tokens.json";
 
 export type TokenGroup = {
   id: string;

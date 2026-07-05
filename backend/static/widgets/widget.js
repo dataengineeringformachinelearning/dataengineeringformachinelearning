@@ -119,14 +119,13 @@
   function findWidgetScript(pageId) {
     const candidates = Array.from(document.querySelectorAll('script')).filter(script => {
       const src = script.getAttribute('src') ?? '';
-      return (
-        script.hasAttribute('data-page-id') ||
-        /(?:^|\/)widget\.js(?:\?|$|#)/i.test(src)
-      );
+      return script.hasAttribute('data-page-id') || /(?:^|\/)widget\.js(?:\?|$|#)/i.test(src);
     });
 
     if (pageId) {
-      const matchingPage = candidates.find(script => script.getAttribute('data-page-id') === pageId);
+      const matchingPage = candidates.find(
+        script => script.getAttribute('data-page-id') === pageId,
+      );
       if (matchingPage) return matchingPage;
     }
 
