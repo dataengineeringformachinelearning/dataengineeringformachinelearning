@@ -112,7 +112,7 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
       </div>
     </section>
 
-    <section class="landing-section landing-quickstart" aria-labelledby="quickstart-heading">
+<section class="landing-section landing-quickstart" aria-labelledby="quickstart-heading">
       <header class="landing-section-header">
         <span class="section-tag">Quick start</span>
         <h2 class="showcase-section-title" id="quickstart-heading">Install once. Compose everywhere.</h2>
@@ -132,6 +132,82 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
         </div>
         <div class="landing-quickstart-code">
           <CodeBlock snippets={quickStartSnippets} defaultTab="angular" />
+        </div>
+      </div>
+      <div class="landing-quickstart-steps viking-card">
+        <span class="viking-label">jsDelivr CDN (copy-paste ready)</span>
+        <p class="viking-text-muted">
+          Load directly from published assets on any host. Swap <code>@latest</code> with a pinned
+          version when you need deterministic releases.
+        </p>
+
+        <div class="viking-demo-stack">
+          <p class="viking-label">1) CSS only</p>
+          <pre><code>{`<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>`}</code></pre>
+
+          <p class="viking-label">2) Web Components only</p>
+          <pre><code>{`<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>`}</code></pre>
+
+          <p class="viking-label">3) CSS + Web Components</p>
+          <pre><code>{`<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>`}</code></pre>
+
+          <p class="viking-label">4) Version pinning</p>
+          <pre><code>{`<!-- Latest -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+
+<!-- Pinned -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/web-components.js"
+></script>`}</code></pre>
+
+          <p class="viking-label">5) Full minimal HTML (vanilla widget + external sites)</p>
+          <pre><code>{`<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Viking-UI CDN Example</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+    ></script>
+  </head>
+  <body>
+    <main style="max-width: 640px; margin: 2rem auto; display: grid; gap: 1rem;">
+      <h1 class="viking-heading viking-heading-lg">DEML Widget</h1>
+      <viking-card-wc compact>
+        <h2 class="viking-heading viking-heading-sm">Tokenized status card</h2>
+        <p class="viking-text-muted">This runs on any static site.</p>
+      </viking-card-wc>
+      <viking-button-wc variant="primary">Open dashboard</viking-button-wc>
+    </main>
+  </body>
+</html>`}</code></pre>
         </div>
       </div>
     </section>

@@ -67,6 +67,83 @@ import { SITE } from '../lib/site';
       </article>
     </div>
 
+    <section class="showcase-category" aria-labelledby="cdn-usage">
+      <header class="showcase-category-header">
+        <h2 class="viking-heading viking-heading-sm" id="cdn-usage">Use via jsDelivr CDN</h2>
+      </header>
+      <p class="viking-text-muted">
+        Copy these blocks for any project that can serve HTML. Use <code>@latest</code> for continuous
+        updates or pin to a release for deterministic rollouts.
+      </p>
+      <p class="viking-label">1) CSS only</p>
+      <pre><code>{`<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>`}</code></pre>
+
+      <p class="viking-label">2) Web Components only</p>
+      <pre><code>{`<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>`}</code></pre>
+
+      <p class="viking-label">3) CSS + Web Components</p>
+      <pre><code>{`<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>`}</code></pre>
+
+      <p class="viking-label">4) Version pinning</p>
+      <pre><code>{`<!-- Latest -->
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
+
+<!-- Pinned release -->
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/web-components.js"
+></script>
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/viking-ui.css"
+/>`}</code></pre>
+
+      <p class="viking-label">5) Full minimal HTML</p>
+      <pre><code>{`<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Viking Web Component example</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+    ></script>
+  </head>
+  <body>
+    <main style="max-width: 640px; margin: 2rem auto; display: grid; gap: 1rem;">
+      <h1 class="viking-heading viking-heading-lg">Operational widget</h1>
+      <viking-card-wc compact>
+        <h2 class="viking-heading viking-heading-sm">External site ready</h2>
+        <p class="viking-text-muted">Embed this HTML directly into any marketing or dashboard page.</p>
+      </viking-card-wc>
+      <viking-button-wc variant="primary">Launch operation</viking-button-wc>
+    </main>
+  </body>
+</html>`}</code></pre>
+    </section>
+
     <section class="showcase-category" aria-labelledby="angular-setup">
       <header class="showcase-category-header">
         <h2 class="viking-heading viking-heading-sm" id="angular-setup">Angular setup</h2>

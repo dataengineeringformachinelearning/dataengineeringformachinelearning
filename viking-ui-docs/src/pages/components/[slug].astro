@@ -18,6 +18,8 @@ const api = component.api ?? getComponentApi(component.id);
 const related = (component.related ?? [])
   .map((id) => findComponent(id))
   .filter(Boolean);
+const jsdelivrTag = component.wcSelector ?? 'viking-card-wc';
+const hasWebComponentTag = Boolean(component.wcSelector);
 ---
 
 <DocLayout
@@ -53,6 +55,59 @@ const related = (component.related ?? [])
     </header>
 
     <ComponentCard component={component} variant="full" showApi={false} hideHeader />
+
+    <section class="showcase-category">
+      <header class="showcase-section-header">
+        <h2 class="showcase-section-title">Use this component via jsDelivr CDN</h2>
+      </header>
+      <p class="viking-text-muted">
+        Copy-paste these patterns on any static page, internal dashboard, or external site.
+      </p>
+      <div class="viking-card" style="display: grid; gap: 1rem;">
+        <div>
+          <p class="viking-label">1) CSS only</p>
+          <pre><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />`}</code></pre>
+        </div>
+        {hasWebComponentTag && (
+          <div>
+            <p class="viking-label">2) Web Component only</p>
+            <pre><code>{`<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>`}</code></pre>
+          </div>
+        )}
+        {hasWebComponentTag && (
+          <div>
+            <p class="viking-label">3) CSS + Web Components together</p>
+            <pre><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>`}</code></pre>
+          </div>
+        )}
+        <div>
+          <p class="viking-label">4) Version pinning</p>
+          <pre><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/web-components.js"></script>`}</code></pre>
+        </div>
+        {hasWebComponentTag && (
+          <div>
+            <p class="viking-label">5) Full minimal HTML</p>
+            <pre><code>{`<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${component.name} CDN example</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
+  </head>
+  <body>
+    <main style="max-width: 640px; margin: 2rem auto;">
+      <${jsdelivrTag}>${component.name} via CDN</${jsdelivrTag}>
+    </main>
+  </body>
+</html>`}</code></pre>
+          </div>
+        )}
+      </div>
+    </section>
 
     {api && (
       <div class="viking-card component-api-panel">

@@ -42,6 +42,105 @@ import "@dataengineeringformachinelearning/viking-ui/elements.js";
 import "@dataengineeringformachinelearning/viking-ui/viking-ui.css";
 ```
 
+## Use via CDN (jsDelivr)
+
+The package artifacts are published in `dist/`, so you can load them directly from jsDelivr:
+
+### 1) CSS only
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+```
+
+### 2) Web Components only
+
+```html
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
+```
+
+### 3) CSS + Web Components together
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
+```
+
+### 4) Version pinning
+
+Use `@latest` for latest stable assets, or replace it with a concrete version for locked
+builds.
+
+```html
+<!-- Latest -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.0/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.0/dist/web-components.js"
+></script>
+```
+
+```html
+<!-- Pinned -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/web-components.js"
+></script>
+```
+
+### 5) Full minimal HTML example (copy/paste)
+
+```html
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Viking-UI CDN demo</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+    ></script>
+  </head>
+  <body>
+    <main
+      style="max-width: 680px; margin: 2rem auto; display: grid; gap: 1rem;"
+    >
+      <h1 class="viking-heading viking-heading-xl">Viking widget</h1>
+      <viking-card-wc compact>
+        <h2 class="viking-heading viking-heading-sm">Widget card</h2>
+        <p class="viking-text-muted">
+          Works in marketing pages and external websites.
+        </p>
+      </viking-card-wc>
+      <viking-button-wc variant="primary">Open dashboard</viking-button-wc>
+    </main>
+  </body>
+</html>
+```
+
 This package is the source of truth. Existing Angular wrappers in `frontend/projects/viking-ui` adapt the design system for Angular while migration continues; Astro and Django consume the package artifacts directly through synced static assets.
 
 Angular app shells consume the package CSS from `angular.json`:
