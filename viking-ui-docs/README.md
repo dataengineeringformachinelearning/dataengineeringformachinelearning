@@ -2,6 +2,9 @@
 
 Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` design system — the canonical open-source documentation site for community adoption and contributions.
 
+Published package: **`@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.4`**
+Consolidation status: **single source of truth under `packages/viking-ui/`** (including Angular wrappers).
+
 **Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)
 
 ## What this site provides
@@ -20,13 +23,12 @@ Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` de
 
 ## Repository layout
 
-| Path                  | Role                                                                     |
-| --------------------- | ------------------------------------------------------------------------ |
-| `viking-ui-docs/`     | Astro showcase + static CSS build entrypoint (build assets from package) |
-| `viking-ui-docs/src/` | Astro pages, component registry, token inspector                         |
-| `packages/viking-ui/` | Canonical library, Web Components, SCSS source, and package metadata     |
-| `packages/viking-ui/` | Canonical library source and Angular wrappers (thin surface layer)       |
-| `CONTRIBUTING.md`     | Root contribution guidelines                                             |
+| Path                  | Role                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `viking-ui-docs/`     | Astro showcase + static CSS build entrypoint (build assets from package)                                           |
+| `viking-ui-docs/src/` | Astro pages, component registry, token inspector                                                                   |
+| `packages/viking-ui/` | Canonical library source, Web Components, SCSS source, package metadata, and Angular wrappers (thin surface layer) |
+| `CONTRIBUTING.md`     | Root contribution guidelines                                                                                       |
 
 ## Local development
 
@@ -74,7 +76,8 @@ Firebase Hosting site **`deml-ui`** — not marketing or deml.app.
 
 - **Astro 7** for static documentation
 - **viking-ui.css** + **viking-ui-elements.js** for live previews
-- **jsDelivr CDN alternative**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js`
+- **jsDelivr CDN alternative**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.4/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.4/dist/web-components.js`
+  (`@latest` also resolves to this release)
 - Token-only SCSS in `src/styles/` — no hardcoded hex
 
 Port **4300** by default.
