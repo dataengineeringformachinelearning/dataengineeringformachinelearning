@@ -46,7 +46,6 @@ const SKIP_DIR_NAMES = new Set([
 /** @type {readonly string[]} */
 const SCAN_ROOTS = [
   "frontend/src",
-  "frontend/projects/viking-ui/src",
   "packages/viking-ui/src",
   "marketing/src",
   "marketing/public/assets/widgets",

@@ -1,0 +1,271 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "name": "@dataengineeringformachinelearning/viking-ui",
+  "description": "Machine-readable catalog of Viking-UI components and their Angular exports. Validated by `npm run check:viking-upstream`.",
+  "lastAudited": "2026-07-04",
+  "components": {
+    "accordion": {
+      "exports": ["VikingAccordion", "VikingAccordionItem"]
+    },
+    "app-header": {
+      "exports": ["VikingAppHeader"]
+    },
+    "app-sidebar": {
+      "exports": ["VikingAppSidebar"]
+    },
+    "auth-panel": {
+      "exports": ["VikingAuthPanel"]
+    },
+    "autocomplete": {
+      "exports": ["VikingAutocomplete"]
+    },
+    "avatar": {
+      "exports": ["VikingAvatar"]
+    },
+    "badge": {
+      "exports": ["VikingBadge"]
+    },
+    "bar": {
+      "exports": ["VikingBar"]
+    },
+    "brand": {
+      "exports": ["VikingBrand"]
+    },
+    "breadcrumbs": {
+      "exports": ["VikingBreadcrumb", "VikingBreadcrumbs"]
+    },
+    "button": {
+      "exports": ["VikingButton", "VikingButtonGroup", "VikingButtonVariant"]
+    },
+    "calendar": {
+      "exports": ["VikingCalendar"]
+    },
+    "callout": {
+      "exports": ["VikingCallout"]
+    },
+    "card": {
+      "exports": ["VikingCard", "VikingCardFooter", "VikingCardHeader"]
+    },
+    "carousel": {
+      "exports": ["VikingCarousel", "VikingCarouselSlide"]
+    },
+    "chart": {
+      "exports": ["VikingChart"]
+    },
+    "checkbox": {
+      "exports": ["VikingCheckbox"]
+    },
+    "color-picker": {
+      "exports": ["VikingColorPicker"]
+    },
+    "command": {
+      "exports": ["VikingCommand"]
+    },
+    "composer": {
+      "exports": ["VikingComposer"]
+    },
+    "context": {
+      "exports": ["VikingContext"]
+    },
+    "core": {
+      "exports": [
+        "VIKING_FILLED_ICON_NAMES",
+        "VIKING_ICON_NAMES",
+        "VIKING_ICON_PATHS",
+        "VikingChartCurve",
+        "VikingChartKind",
+        "VikingChartSeries",
+        "VikingCommandItem",
+        "VikingControl",
+        "VikingDonutSegment",
+        "VikingIconName",
+        "VikingKanbanCard",
+        "VikingKanbanColumn",
+        "VikingKanbanMove",
+        "VikingSelectOption",
+        "VikingSize",
+        "VikingToastInstance",
+        "VikingToastOptions",
+        "VikingTone",
+        "provideVikingCva"
+      ]
+    },
+    "date-picker": {
+      "exports": ["VikingDatePicker"]
+    },
+    "dropdown": {
+      "exports": ["VikingDropdown", "VikingMenuItem"]
+    },
+    "editor": {
+      "exports": ["VikingEditor"]
+    },
+    "empty-state": {
+      "exports": ["VikingEmptyState"]
+    },
+    "fab": {
+      "exports": ["VikingFab"]
+    },
+    "field": {
+      "exports": ["VikingField"]
+    },
+    "file-upload": {
+      "exports": ["VikingFileUpload"]
+    },
+    "footer": {
+      "exports": ["VikingFooter"]
+    },
+    "gauge-arc": {
+      "exports": ["VikingGaugeArc"]
+    },
+    "hud-panel": {
+      "exports": ["VikingHudPanel"]
+    },
+    "icon": {
+      "exports": ["VikingIcon"]
+    },
+    "icon-text": {
+      "exports": ["VikingIconText"]
+    },
+    "input": {
+      "exports": ["VikingInput"]
+    },
+    "kanban": {
+      "exports": ["VikingKanban"]
+    },
+    "kbd": {
+      "exports": ["VikingKbd"]
+    },
+    "label": {
+      "exports": ["VikingLabel"]
+    },
+    "loading-overlay": {
+      "exports": ["VikingLoadingOverlay"]
+    },
+    "menubar": {
+      "exports": ["VikingMenubar", "VikingMenubarItem"]
+    },
+    "metric-card": {
+      "exports": ["VikingMetricCard", "VikingMetricRow"]
+    },
+    "modal": {
+      "exports": ["VikingModal"]
+    },
+    "native-select": {
+      "exports": ["VikingNativeSelect"]
+    },
+    "navbar": {
+      "exports": ["VikingNavbar", "VikingNavbarItem"]
+    },
+    "navigation-menu": {
+      "exports": ["VikingNavItem", "VikingNavigationMenu"]
+    },
+    "otp-input": {
+      "exports": ["VikingOtpInput"]
+    },
+    "verification-code-field": {
+      "exports": ["VikingVerificationCodeField"]
+    },
+    "page-header": {
+      "exports": ["VikingPageHeader"]
+    },
+    "pagination": {
+      "exports": ["VikingPagination"]
+    },
+    "pillbox": {
+      "exports": ["VikingPillbox"]
+    },
+    "popover": {
+      "exports": ["VikingPopover"]
+    },
+    "profile": {
+      "exports": ["VikingProfile"]
+    },
+    "progress": {
+      "exports": ["VikingProgress"]
+    },
+    "radio": {
+      "exports": ["VikingRadioGroup"]
+    },
+    "ring-gauge": {
+      "exports": ["VikingRingGauge"]
+    },
+    "scroll-area": {
+      "exports": ["VikingScrollArea"]
+    },
+    "search-palette": {
+      "exports": ["VikingSearchPalette"]
+    },
+    "suite-search-palette": {
+      "exports": [
+        "VikingSuiteSearchPalette",
+        "VikingSuiteSearchPaletteWc",
+        "buildSuiteSearchItems"
+      ]
+    },
+    "select": {
+      "exports": ["VikingSelect"]
+    },
+    "separator": {
+      "exports": ["VikingSeparator"]
+    },
+    "sheet": {
+      "exports": ["VikingSheet", "VikingSheetSide"]
+    },
+    "site-drakkar": {
+      "exports": [
+        "VikingSiteNavbar",
+        "VikingSiteFooter",
+        "SITE_FOOTER_COLUMNS",
+        "DEFAULT_SITE_URLS",
+        "resolveFooterHref",
+        "resolveNavHref",
+        "resolveBrandHref"
+      ]
+    },
+    "skeleton": {
+      "exports": ["VikingSkeleton"]
+    },
+    "slider": {
+      "exports": ["VikingSlider"]
+    },
+    "spinner": {
+      "exports": ["VikingSpinner"]
+    },
+    "switch": {
+      "exports": ["VikingSwitch"]
+    },
+    "table": {
+      "exports": ["VikingTable"]
+    },
+    "tabs": {
+      "exports": ["VIKING_TABS", "VikingTab", "VikingTabPanel", "VikingTabs"]
+    },
+    "textarea": {
+      "exports": ["VikingTextarea"]
+    },
+    "time-picker": {
+      "exports": ["VikingTimePicker"]
+    },
+    "timeline": {
+      "exports": ["VikingTimeline", "VikingTimelineItem"]
+    },
+    "toast": {
+      "exports": ["VikingToastService", "VikingToaster"]
+    },
+    "toggle": {
+      "exports": ["VIKING_TOGGLE_GROUP", "VikingToggle", "VikingToggleGroup"]
+    },
+    "tooltip": {
+      "exports": ["VikingTooltip"]
+    },
+    "typography": {
+      "exports": ["VikingHeading", "VikingText"]
+    },
+    "uptime-bar": {
+      "exports": ["VikingUptimeBar", "VikingUptimeStatus"]
+    },
+    "whitepaper-cta": {
+      "exports": ["VikingWhitepaperCta"]
+    }
+  }
+}

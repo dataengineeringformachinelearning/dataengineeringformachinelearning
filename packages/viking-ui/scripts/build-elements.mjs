@@ -72,7 +72,7 @@ execFileSync(
   { cwd: packageDir, stdio: "inherit" },
 );
 
-execFileSync(tscBin, ["--project", "tsconfig.json"], {
+execFileSync(tscBin, ["--project", "tsconfig.elements.json"], {
   cwd: packageDir,
   stdio: "inherit",
 });

@@ -1,0 +1,28 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ViewEncapsulation,
+} from "@angular/core";
+
+/**
+ * viking-footer — site-wide Drakkar footer shell. Project directory columns and bottom row via slots.
+ * Static apps (marketing, backend) use the same class names from viking-ui.css.
+ */
+@Component({
+  selector: "viking-footer",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
+  host: { class: "viking-footer-host" },
+  template: `
+    <footer class="viking-footer mega-footer">
+      <div class="viking-footer-content footer-content">
+        <ng-content select="[vikingFooterDirectory]" />
+        <section class="viking-footer-bottom footer-bottom">
+          <ng-content select="[vikingFooterBottom]" />
+        </section>
+      </div>
+    </footer>
+  `,
+  styleUrl: "./footer.scss",
+})
+export class VikingFooter {}

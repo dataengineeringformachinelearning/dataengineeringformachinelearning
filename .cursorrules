@@ -43,7 +43,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 - **Feedback:** `viking-toast` / `VikingToastService`, `viking-callout`, `viking-badge` — not browser `alert()` or ad-hoc banners.
 - **Loading:** `viking-skeleton`, `viking-loading-overlay`, `viking-progress` — not generic spinners.
 - **Framework-neutral shared UI** (styles, primitives, services, utilities) belongs in `packages/viking-ui/` first.
-- `frontend/projects/viking-ui/` should only provide thin Angular wrappers and Angular-specific build configuration around that shared package.
+- `packages/viking-ui/` is the single home for all Viking-UI code, including framework-agnostic primitives and all Angular wrapper components.
 
 ```typescript
 import {
@@ -185,7 +185,7 @@ Every change to these areas **must** include or update Vitest coverage:
 
 | Surface | Location | What to test |
 | ------- | -------- | ------------ |
-| Charts | `projects/viking-ui/src/lib/chart/` | SVG path generation, bar/line/donut kinds, zoom/pan window math (`chart-zoom.spec.ts`) |
+| Charts | `packages/viking-ui/src/lib/chart/` | SVG path generation, bar/line/donut kinds, zoom/pan window math (`chart-zoom.spec.ts`) |
 | Auth flows | `src/app/services/auth.service.spec.ts`, `lib/auth-panel/` | Login/logout/checkAuth signals, OAuth panel a11y, social button emits |
 | Forms | `lib/field/`, `lib/input/`, `lib/form-section/` | CVA/ngModel, required/error states, section layout classes |
 | Icons | `lib/core/icons.ts`, `lib/icon/` | Registry resolution, Material aliases, size presets, semantic color tokens, brand marks |
@@ -204,7 +204,7 @@ Build like reusable flight hardware — every line earns its mass:
 - **No speculative abstractions** — one composable primitive beats three wrapper layers.
 - **Lazy by default** — route-level code splitting in the app; no eager imports of showcase-only components.
 - **Token-only styling** — CSS variables compile once; no runtime theme engines or CSS-in-JS.
-- **Reusable first** — shared UI logic belongs in `packages/viking-ui/` first, then adapt via thin wrappers in `frontend/projects/viking-ui/`.
+- **Reusable first** — all shared UI logic and thin Angular wrappers live together in `packages/viking-ui/`.
 
 ---
 

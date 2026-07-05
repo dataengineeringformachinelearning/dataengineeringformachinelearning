@@ -139,21 +139,21 @@
     },
     "viking-ui": {
       "projectType": "library",
-      "root": "projects/viking-ui",
-      "sourceRoot": "projects/viking-ui/src",
+      "root": "../packages/viking-ui",
+      "sourceRoot": "../packages/viking-ui/src",
       "prefix": "viking",
       "architect": {
         "build": {
           "builder": "@angular/build:ng-packagr",
           "options": {
-            "project": "projects/viking-ui/ng-package.json"
+            "project": "../packages/viking-ui/ng-package.json"
           },
           "configurations": {
             "production": {
-              "tsConfig": "projects/viking-ui/tsconfig.lib.prod.json"
+              "tsConfig": "../packages/viking-ui/tsconfig.lib.prod.json"
             },
             "development": {
-              "tsConfig": "projects/viking-ui/tsconfig.lib.json"
+              "tsConfig": "../packages/viking-ui/tsconfig.lib.json"
             }
           },
           "defaultConfiguration": "production"
@@ -162,8 +162,8 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": [
-              "projects/viking-ui/src/**/*.ts",
-              "projects/viking-ui/src/**/*.html"
+              "../packages/viking-ui/src/**/*.ts",
+              "../packages/viking-ui/src/**/*.html"
             ]
           }
         }

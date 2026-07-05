@@ -9,6 +9,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "lib": ["DOM", "ES2022"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true

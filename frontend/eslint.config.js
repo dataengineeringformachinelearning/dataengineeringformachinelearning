@@ -58,7 +58,7 @@ module.exports = defineConfig([
   },
   {
     // Viking-UI library uses the `viking` selector prefix for projection attributes.
-    files: ['projects/viking-ui/**/*.ts'],
+    files: ['packages/viking-ui/**/*.ts'],
     rules: {
       '@angular-eslint/directive-selector': [
         'error',
@@ -89,8 +89,8 @@ module.exports = defineConfig([
   {
     // viking-ui and showcase may set dynamic presentation via host bindings.
     files: [
-      'projects/viking-ui/**/*.html',
-      'projects/viking-ui/**/*.ts',
+      'packages/viking-ui/**/*.html',
+      'packages/viking-ui/**/*.ts',
       'projects/viking-ui-showcase/**/*.html',
       'projects/viking-ui-showcase/**/*.ts',
     ],

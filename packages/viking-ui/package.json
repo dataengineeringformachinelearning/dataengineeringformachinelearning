@@ -1,6 +1,6 @@
 {
   "name": "@dataengineeringformachinelearning/viking-ui",
-  "version": "3.0.0-alpha.3",
+  "version": "3.0.0-alpha.4",
   "description": "Universal Viking-UI design system for Astro, Angular, and Django.",
   "license": "Apache-2.0",
   "type": "module",

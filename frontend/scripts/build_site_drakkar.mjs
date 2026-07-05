@@ -39,7 +39,12 @@ const readJsonFromTsExport = (filePath, exportName) => {
   return Function(`"use strict"; return (${match[1]});`)();
 };
 
-const siteDrakkarConfigPath = path.join(vikingUiDir, 'site-drakkar', 'site-drakkar.config.ts');
+const siteDrakkarConfigPath = path.join(
+  vikingUiDir,
+  'lib',
+  'site-drakkar',
+  'site-drakkar.config.ts',
+);
 const iconsPath = path.join(vikingUiDir, 'core', 'icons.ts');
 
 const siteDrakkar = {
@@ -294,13 +299,13 @@ import {
   SITE_NAV_LINKS,
   resolveNavHref,
   resolveBrandHref,
-} from '../../../frontend/packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`
+} from '../../../packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`
     : `import { siteEnv } from '../lib/site-env';
 import {
   SITE_NAV_LINKS,
   resolveNavHref,
   resolveBrandHref,
-} from '../../../frontend/packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`;
+} from '../../../packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`;
 
   const setup = isDocs
     ? `const urls = { app: SITE.app, marketing: SITE.marketing, backend: 'https://backend.deml.app' };
