@@ -23,7 +23,7 @@
 .overview-grid,
 .detail-grid {
   display: grid;
-  gap: var(--grid-gap);
+  gap: var(--viking-page-stack-gap);
 }
 
 .overview-grid {
@@ -69,7 +69,7 @@
 .setup-banner-content {
   display: flex;
   align-items: flex-start;
-  gap: 14px;
+  gap: var(--viking-space-2);
   flex: 1;
   min-width: 0;
 
@@ -78,21 +78,21 @@
   }
 
   viking-app-icon {
-    color: var(--color-primary);
+    color: var(--viking-accent);
     flex-shrink: 0;
   }
 
   strong {
     display: block;
-    font-size: 1rem;
-    margin-bottom: 4px;
+    font-size: var(--viking-font-size-base);
+    margin-bottom: var(--viking-space-half);
   }
 
   p {
     margin: 0;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    line-height: 1.4;
+    color: var(--viking-text-muted);
+    font-size: var(--viking-font-size-sm);
+    line-height: var(--viking-line-height-normal);
   }
 }
 
@@ -101,13 +101,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px;
+  padding: var(--viking-card-padding);
   border-radius: var(--viking-radius-lg);
   border: 1px solid var(--viking-border);
   background: var(--viking-surface);
   box-shadow: var(--viking-shadow-sm);
   text-align: center;
-  transition: box-shadow 0.2s ease;
+  transition: var(--viking-transition-interactive);
 }
 
 .health-card:hover {
@@ -127,13 +127,13 @@
 
   .ring-bg {
     fill: none;
-    stroke: var(--border);
+    stroke: var(--viking-border);
     stroke-width: 8;
   }
 
   .ring-fill {
     fill: none;
-    stroke: var(--color-primary);
+    stroke: var(--viking-accent);
     stroke-width: 8;
     stroke-linecap: round;
     transition: stroke-dasharray 0.6s ease;
@@ -148,7 +148,7 @@
   }
 
   &[data-status='Watch'] .ring-fill {
-    stroke: var(--viking-teal-400);
+    stroke: var(--viking-info);
   }
 }
 
@@ -162,25 +162,25 @@
 }
 
 .health-value {
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: var(--viking-font-size-4xl);
+  font-weight: var(--viking-font-weight-bold);
   line-height: 1;
 }
 
 .health-label {
-  font-size: 0.8rem;
-  font-weight: 600;
+  font-size: var(--viking-font-size-xs);
+  font-weight: var(--viking-font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  margin-top: 4px;
+  letter-spacing: var(--viking-letter-spacing-caps);
+  color: var(--viking-text-muted);
+  margin-top: var(--viking-space-half);
 }
 
 .health-caption {
-  margin: 16px 0 0;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  line-height: 1.4;
+  margin: var(--viking-space-2) 0 0;
+  font-size: var(--viking-font-size-sm);
+  color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-normal);
 }
 
 .kpi-grid {
@@ -296,8 +296,8 @@
 
   .panel-header {
     margin-bottom: 0;
-    padding-bottom: var(--viking-space-2, 16px);
-    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--viking-space-2);
+    border-bottom: 1px solid var(--viking-border);
   }
 
   .panel-body {
@@ -305,20 +305,20 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding-top: var(--viking-space-2, 16px);
+    padding-top: var(--viking-space-2);
   }
 
   .snapshot-stats {
     margin-bottom: 0;
-    padding-bottom: var(--viking-space-2, 16px);
-    border-bottom: 1px solid var(--border);
+    padding-bottom: var(--viking-space-2);
+    border-bottom: 1px solid var(--viking-border);
   }
 
   .mini-chart {
     flex: 1 1 auto;
     min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
     max-height: var(--viking-chart-fill-max-height, clamp(20rem, 42vw, 22rem));
-    padding-top: var(--viking-space-2, 16px);
+    padding-top: var(--viking-space-2);
   }
 
   .threat-list {
@@ -329,8 +329,8 @@
     border: none;
     border-radius: 0;
     background: transparent;
-    padding: var(--viking-space-2, 16px) 0;
-    border-bottom: 1px solid var(--border);
+    padding: var(--viking-space-2) 0;
+    border-bottom: 1px solid var(--viking-border);
 
     &:last-child {
       border-bottom: none;
@@ -364,13 +364,13 @@
   justify-content: space-between;
   margin-bottom: var(--viking-space-2, 16px);
   padding-bottom: var(--viking-space-1, 8px);
-  border-bottom: 1px solid var(--viking-border, var(--border));
+  border-bottom: 1px solid var(--viking-border);
 
   h2 {
     margin: 0;
-    font-size: var(--viking-font-size-sm, 0.875rem);
-    font-weight: var(--viking-font-weight-bold, 700);
-    letter-spacing: var(--viking-letter-spacing-caps, 0.05em);
+    font-size: var(--viking-font-size-sm);
+    font-weight: var(--viking-font-weight-bold);
+    letter-spacing: var(--viking-letter-spacing-caps);
     text-transform: uppercase;
   }
 }
@@ -378,7 +378,7 @@
 .panel-title-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--viking-space-1);
 
   h2 {
     margin: 0;
@@ -386,27 +386,27 @@
 }
 
 .panel-title-icon {
-  color: var(--color-primary);
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  color: var(--viking-accent);
+  font-size: var(--viking-font-size-xl);
+  width: var(--viking-space-2-5);
+  height: var(--viking-space-2-5);
 }
 
 .detection-panel {
   .detection-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: var(--viking-space-1);
+    margin-bottom: var(--viking-space-1-5);
 
     viking-app-icon {
-      color: var(--color-primary);
+      color: var(--viking-accent);
     }
 
     h2 {
       margin: 0;
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: var(--viking-font-size-base);
+      font-weight: var(--viking-font-weight-bold);
     }
   }
 }
@@ -417,32 +417,32 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--viking-space-1);
 
   li {
     display: flex;
     align-items: center;
-    gap: 12px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    padding: 10px 12px;
-    border-radius: var(--border-radius-md);
-    border: 1px solid var(--border);
-    background: color-mix(in srgb, var(--color-surface) 4%, transparent);
+    gap: var(--viking-space-1-5);
+    font-size: var(--viking-font-size-sm);
+    color: var(--viking-text-muted);
+    padding: var(--viking-space-1-5);
+    border-radius: var(--viking-radius);
+    border: 1px solid var(--viking-border);
+    background: color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%);
   }
 
   .insight-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: var(--viking-radius, 8px);
-    background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+    width: var(--viking-space-4);
+    height: var(--viking-space-4);
+    border-radius: var(--viking-radius);
+    background: var(--viking-accent-soft);
     flex-shrink: 0;
 
     viking-app-icon {
-      color: var(--color-primary);
+      color: var(--viking-accent);
     }
   }
 }
@@ -453,18 +453,18 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: var(--viking-space-1);
 }
 
 .threat-item,
 .security-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 12px;
-  border-radius: var(--border-radius-md);
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--color-surface) 4%, transparent);
+  gap: var(--viking-space-half);
+  padding: var(--viking-space-1-5);
+  border-radius: var(--viking-radius);
+  border: 1px solid var(--viking-border);
+  background: color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%);
 }
 
 .threat-item {
@@ -476,23 +476,23 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--viking-space-half);
 
   strong {
-    font-size: 0.9rem;
+    font-size: var(--viking-font-size-sm);
   }
 
   span {
-    font-size: 0.8rem;
-    color: var(--text-muted);
+    font-size: var(--viking-font-size-xs);
+    color: var(--viking-text-muted);
   }
 }
 
 .severity-pill {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 0.7rem;
+  border-radius: var(--viking-radius-xs);
+  font-size: var(--viking-font-size-xs);
   font-weight: 700;
   text-transform: uppercase;
 
@@ -518,45 +518,45 @@
 }
 
 .status-pill {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
 }
 
 .security-item-header {
   display: flex;
-  gap: 8px;
+  gap: var(--viking-space-1);
   align-items: center;
 }
 
 .security-meta {
-  font-size: 0.8rem;
-  color: var(--text-muted);
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
 }
 
 .snapshot-stats {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: var(--viking-space-1-5);
+  margin-bottom: var(--viking-space-2);
   flex-shrink: 0;
 }
 
 .snapshot-stat {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--viking-space-half);
 }
 
 .snapshot-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--viking-letter-spacing-caps);
 }
 
 .snapshot-value {
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: var(--viking-font-size-xl);
+  font-weight: var(--viking-font-weight-bold);
 }
 
 .mini-chart {
@@ -582,16 +582,16 @@
 .panel-loading {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 24px;
-  color: var(--text-muted);
+  gap: var(--viking-space-1-5);
+  padding: var(--viking-card-padding);
+  color: var(--viking-text-muted);
 }
 
 .spinner {
   width: 18px;
   height: 18px;
-  border: 2px solid var(--border);
-  border-top-color: var(--color-primary);
+  border: 2px solid var(--viking-border);
+  border-top-color: var(--viking-accent);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -613,7 +613,7 @@
 .detail-kpis {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: var(--viking-space-1-5);
   grid-column: 1 / -1;
 
   @media (min-width: 480px) {
@@ -639,10 +639,10 @@
   h2 {
     margin: 0 0 var(--viking-space-2, 16px);
     padding-bottom: var(--viking-space-1, 8px);
-    border-bottom: 1px solid var(--viking-border, var(--border));
-    font-size: var(--viking-font-size-sm, 0.875rem);
-    font-weight: var(--viking-font-weight-bold, 700);
-    letter-spacing: var(--viking-letter-spacing-caps, 0.05em);
+    border-bottom: 1px solid var(--viking-border);
+    font-size: var(--viking-font-size-sm);
+    font-weight: var(--viking-font-weight-bold);
+    letter-spacing: var(--viking-letter-spacing-caps);
     text-transform: uppercase;
   }
 }
@@ -681,9 +681,9 @@
 
 .insight-panel {
   p {
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     line-height: 1.5;
-    margin: 0 0 16px;
+    margin: 0 0 var(--viking-space-2);
   }
 }
 

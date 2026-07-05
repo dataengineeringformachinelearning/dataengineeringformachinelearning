@@ -373,7 +373,6 @@ ${mobileAuthWcAstro(loginHrefExpr)}
 </header>
 
 <script is:inline src="/assets/widgets/navbar.js" defer></script>
-<script is:inline src="/assets/widgets/command-palette.js" defer></script>
 `;
 };
 

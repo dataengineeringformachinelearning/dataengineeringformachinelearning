@@ -1,17 +1,17 @@
 :host {
   display: block;
   width: 100%;
-  min-height: calc(100vh - 64px);
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  min-height: calc(100vh - var(--viking-navbar-height));
+  background-color: var(--viking-bg);
+  color: var(--viking-text);
 
   /* Set up theme-driven variables following THEME.md */
-  --settings-accent: var(--color-primary-container);
-  --manage-accent: var(--color-primary-container);
+  --settings-accent: var(--viking-accent-soft);
+  --manage-accent: var(--viking-accent-soft);
   --manage-active-gradient: var(--settings-active-gradient);
-  --settings-highlight: var(--color-primary-container);
-  --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
-  --new-page-hover-border: var(--color-primary-container);
+  --settings-highlight: var(--viking-accent-soft);
+  --post-incident-gradient: linear-gradient(135deg, var(--viking-danger), var(--viking-warning));
+  --new-page-hover-border: var(--viking-accent-strong);
   --new-page-border: color-mix(in srgb, var(--viking-border) 60%, transparent);
   --settings-active-gradient: linear-gradient(
     135deg,
@@ -22,11 +22,11 @@
 
 /* Light theme overrides matching THEME.md */
 :host-context(html[data-theme='light']) {
-  --settings-accent: var(--color-primary);
-  --manage-accent: var(--color-primary);
-  --post-incident-gradient: linear-gradient(135deg, var(--color-error), var(--color-warning));
-  --new-page-hover-border: var(--color-primary);
-  --new-page-border: color-mix(in srgb, var(--color-surface) 15%, transparent);
+  --settings-accent: var(--viking-accent);
+  --manage-accent: var(--viking-accent);
+  --post-incident-gradient: linear-gradient(135deg, var(--viking-danger), var(--viking-warning));
+  --new-page-hover-border: var(--viking-accent);
+  --new-page-border: color-mix(in srgb, var(--viking-surface) 15%, transparent);
   --settings-active-gradient: linear-gradient(
     135deg,
     color-mix(in srgb, var(--viking-surface) 80%, transparent) 0%,
@@ -38,17 +38,17 @@
 .manage-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--grid-gap);
+  gap: var(--viking-page-stack-gap);
 }
 
-/* Outlined card — page-specific overrides on viking-card host */
-.status-card-outlined {
+/* Outlined panel — page-specific overrides on viking-card host */
+.status-panel-outlined {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2);
 }
 
-.status-card-outlined:hover {
+.status-panel-outlined:hover {
   box-shadow: var(--viking-shadow-md);
   border-color: var(--viking-border-strong);
 }
@@ -101,8 +101,8 @@ viking-card-header {
   }
 }
 
-/* Flat section layout — one outer card, dividers between sections (no nested cards) */
-.status-card-outlined {
+/* Flat section layout — one outer panel, dividers between sections (no nested cards) */
+.status-panel-outlined {
   .panel-section {
     background: transparent;
     border: none;
@@ -126,11 +126,11 @@ viking-card-header {
   }
 
   .section-heading {
-    font-size: 0.72rem;
+    font-size: var(--viking-font-size-xs);
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: var(--viking-letter-spacing-caps);
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--viking-text-muted);
     margin: 0 0 var(--viking-space-3, 24px);
   }
 
@@ -172,7 +172,7 @@ viking-card-header {
   .code-block-outlined {
     background-color: color-mix(in srgb, var(--viking-charcoal-900) 60%, var(--viking-bg));
     border: 1px solid var(--viking-border-subtle);
-    border-radius: var(--border-radius-sm, 8px);
+    border-radius: var(--viking-radius-sm);
     padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
     font-size: 0.88rem;
   }
@@ -186,9 +186,9 @@ viking-card-header {
 }
 
 .section-heading {
-  font-size: 1.05rem;
+  font-size: var(--viking-font-size-lg);
   font-weight: 600;
-  color: var(--text-color);
+  color: var(--viking-text);
   margin: 0 0 var(--viking-space-2, 16px);
   display: flex;
   align-items: center;
@@ -200,10 +200,10 @@ viking-card-header {
     justify-content: center;
     width: 24px;
     height: 24px;
-    border-radius: var(--viking-radius-sm, 6px);
-    background: var(--viking-accent-soft, color-mix(in srgb, var(--color-primary) 12%, transparent));
-    color: var(--viking-accent-strong, var(--color-primary));
-    font-size: 16px;
+    border-radius: var(--viking-radius-sm);
+    background: var(--viking-accent-soft);
+    color: var(--viking-accent-strong);
+    font-size: var(--viking-font-size-base);
     flex-shrink: 0;
   }
 }
@@ -233,7 +233,7 @@ viking-card-header {
   min-width: 0;
 }
 
-/* Data rows — borders applied inside .status-card-outlined flat layout */
+/* Data rows — borders applied inside .status-panel-outlined flat layout */
 .data-item-row {
   display: flex;
   justify-content: space-between;
@@ -241,7 +241,7 @@ viking-card-header {
   transition: background-color 0.2s ease;
 
   &:hover {
-    background-color: var(--hover-color);
+    background-color: var(--viking-surface-alt);
   }
 }
 
@@ -252,14 +252,14 @@ viking-card-header {
 
 .data-title {
   font-weight: 600;
-  color: var(--text-color);
-  font-size: 1rem;
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-base);
 }
 
 .data-subtitle {
-  color: var(--text-muted);
-  font-size: 1rem;
-  margin-top: 8px;
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-base);
+  margin-top: var(--viking-space-1);
 }
 
 /* Incident Form Layout */
@@ -301,12 +301,12 @@ viking-card-header {
   width: 100%;
   padding: 0 32px 0 16px;
   height: 56px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background-color: var(--bg-color);
-  font-size: 1rem;
+  border-radius: var(--viking-radius);
+  border: 1px solid var(--viking-border);
+  background-color: var(--viking-surface);
+  font-size: var(--viking-font-size-base);
   font-weight: 500;
-  color: var(--text-color);
+  color: var(--viking-text);
   appearance: none;
   -webkit-appearance: none;
   cursor: pointer;
@@ -315,18 +315,18 @@ viking-card-header {
     box-shadow 0.2s ease;
 
   &:hover {
-    border-color: var(--primary-color);
+    border-color: var(--viking-accent-strong);
   }
 
   &:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-surface) 15%, transparent);
+    border-color: var(--viking-accent-strong);
+    box-shadow: 0 0 0 var(--viking-ring-width) color-mix(in srgb, var(--viking-ring) 35%, transparent);
   }
 
   option {
-    background-color: var(--card-bg);
-    color: var(--text-color);
+    background-color: var(--viking-surface);
+    color: var(--viking-text);
     padding: var(--viking-space-1, 8px);
   }
 }
@@ -362,18 +362,18 @@ viking-card-header {
 }
 
 .embed-desc {
-  color: var(--text-muted);
-  font-size: 0.95rem;
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-sm);
   line-height: 1.55;
   margin: 0 0 var(--viking-space-2, 16px);
 }
 
 .code-block-outlined {
   font-family: var(--viking-font-family-mono);
-  font-size: 0.88rem;
+  font-size: var(--viking-font-size-sm);
   overflow-x: auto;
   white-space: pre-wrap;
-  color: var(--text-color);
+  color: var(--viking-text);
   flex: 1;
   margin: 0;
 }
@@ -436,14 +436,14 @@ viking-card-header {
 
   .integration-name {
     display: block;
-    font-size: 1.05rem;
+    font-size: var(--viking-font-size-lg);
     font-weight: 600;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 
   .integration-status {
-    font-size: 1rem;
-    color: var(--text-muted);
+    font-size: var(--viking-font-size-base);
+    color: var(--viking-text-muted);
   }
 
   .integration-action {
@@ -543,7 +543,7 @@ viking-card-header {
 
 .status-icon {
   &.success {
-    color: var(--color-success) !important;
+    color: var(--viking-success) !important;
   }
 }
 
@@ -579,16 +579,16 @@ viking-card-header {
 
 
 .alert-viewer-banner {
-  margin-bottom: 24px;
+  margin-bottom: var(--viking-space-3);
   display: flex;
   align-items: center;
   gap: var(--viking-space-1, 8px);
 }
 
 .integration-sub-status {
-  margin-top: 8px;
+  margin-top: var(--viking-space-1);
   display: block;
-  font-size: 18px;
+  font-size: var(--viking-font-size-lg);
   opacity: 0.7;
 }
 
@@ -624,28 +624,28 @@ viking-card-header {
   justify-content: center;
   gap: var(--viking-space-1, 8px);
   padding: var(--viking-space-2, 16px);
-  border: 1px solid var(--viking-border-subtle, var(--border));
-  border-radius: var(--viking-radius-md, 8px);
-  background: color-mix(in srgb, var(--viking-surface, var(--color-surface)) 96%, var(--viking-accent) 4%);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius-md);
+  background: color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%);
   text-decoration: none;
-  color: var(--viking-text, var(--text-color));
+  color: var(--viking-text);
   transition:
     border-color var(--viking-duration-fast, 150ms) var(--viking-ease-standard, ease),
     box-shadow var(--viking-duration-fast, 150ms) var(--viking-ease-standard, ease);
 
   &:hover,
   &:focus-visible {
-    border-color: var(--viking-border-strong, var(--border));
+    border-color: var(--viking-border-strong);
     box-shadow: var(--viking-shadow-sm);
     outline: none;
   }
 }
 
 .platform-integration-name {
-  font-size: var(--viking-font-size-sm, 14px);
-  font-weight: var(--viking-font-weight-medium, 500);
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-medium);
   text-align: center;
-  color: var(--viking-text-muted, var(--text-muted));
+  color: var(--viking-text-muted);
 }
 
 
@@ -672,7 +672,7 @@ viking-card-header {
   strong {
     display: block;
     font-weight: 600;
-    color: var(--text-color);
+    color: var(--viking-text);
   }
 }
 
@@ -695,9 +695,9 @@ viking-card-header {
 
 .mfa-status-desc {
   margin: 0;
-  font-size: var(--viking-font-size, 16px);
-  color: var(--viking-text-muted, var(--text-muted));
-  line-height: var(--viking-line-height-relaxed, 1.625);
+  font-size: var(--viking-font-size-base);
+  color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-relaxed);
 }
 
 .mfa-status-enrolled {

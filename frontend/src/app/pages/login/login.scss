@@ -1,5 +1,5 @@
 .dashboard-page-container {
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - var(--viking-navbar-height));
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -24,11 +24,11 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2, 16px);
+  gap: var(--viking-space-2);
   width: 100%;
   min-width: 0;
 }
 
 :host ::ng-deep .viking-auth-links {
-  margin-top: var(--viking-space-2, 16px);
+  margin-top: var(--viking-space-2);
 }
