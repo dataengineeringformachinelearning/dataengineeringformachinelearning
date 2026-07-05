@@ -45,7 +45,7 @@ export class AuthService {
   public currentUserId = signal<number | null>(null);
   public currentUserRole = signal<string | null>(null);
   public isInitialized = signal<boolean>(false);
-  public isProcessing = signal<boolean>(true);
+  public isProcessing = signal<boolean>(false);
   /** Firebase user has enrolled MFA factors (account setting). */
   public mfaEnrolled = signal<boolean>(false);
   /** Current ID token includes MFA verification (`amr` contains `mfa`). */
@@ -106,7 +106,6 @@ export class AuthService {
         this.auth = getAuth(app);
 
         onAuthStateChanged(this.auth, async (user: FirebaseUser | null) => {
-          this.isProcessing.set(true);
           if (user) {
             try {
               const token = await user.getIdToken();

@@ -281,6 +281,25 @@ export class VikingSiteNavbar {
     this.mobileMenuOpen.set(false);
   }
 
+  @HostListener('document:click', ['$event'])
+  protected closeMobileMenuOnOutsideClick(event: MouseEvent): void {
+    if (!this.mobileMenuOpen()) return;
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    const path = typeof event.composedPath === 'function' ? event.composedPath() : [target];
+    const menu = document.getElementById('mobile-menu');
+    const toggle = document.getElementById('mobile-menu-btn');
+    const clickedInside = path.some(
+      (node) =>
+        node instanceof Node &&
+        ((menu && (node === menu || menu.contains(node))) ||
+          (toggle && (node === toggle || toggle.contains(node)))),
+    );
+    if (!clickedInside) {
+      this.closeMobileMenu();
+    }
+  }
+
   protected openSearch(): void {
     this.closeMobileMenu();
     this.searchOpen.emit();

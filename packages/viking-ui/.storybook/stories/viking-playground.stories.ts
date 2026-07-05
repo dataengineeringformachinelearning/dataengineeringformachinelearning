@@ -32,7 +32,7 @@ const renderPlayground = ({
   <div class="landing-playground-band">
     <div class="landing-playground-copy">
       <span class="viking-story-playground-title">Viking UI Playground</span>
-      <h3 class="viking-heading-sm">Lockheed + Northman battlefield shell</h3>
+      <h3 class="viking-heading-sm">DEML premium command shell</h3>
       <p class="viking-text-muted">
         Tune core components in one place with strict tokens, generous precision spacing, and production-safe
         interaction states.

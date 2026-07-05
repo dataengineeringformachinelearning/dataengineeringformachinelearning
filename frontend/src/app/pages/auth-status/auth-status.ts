@@ -6,6 +6,7 @@ const TRUSTED_PARENT_HOSTS = [
   'localhost',
   '127.0.0.1',
   'dataengineeringformachinelearning.com',
+  'ui.dataengineeringformachinelearning.com',
   'deml.app',
 ];
 

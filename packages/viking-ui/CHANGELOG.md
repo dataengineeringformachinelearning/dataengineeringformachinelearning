@@ -7,7 +7,7 @@
 - Prepare the package for npm publishing with the consolidated `packages/viking-ui/`
   source of truth, clean package files, public CSS/Web Component utility exports,
   and package validation for npm dry runs.
-- Lock the polished Lockheed Martin x The Northman aesthetic into Storybook:
+- Lock the polished DEML premium restrained luxury aesthetic into Storybook:
   token-only battlefield backgrounds, machined card surfaces, generous spacing,
   core Web Component coverage, and Chromatic mobile/tablet/desktop snapshots.
 - Update the UI showcase and release docs to describe the publishing workflow:

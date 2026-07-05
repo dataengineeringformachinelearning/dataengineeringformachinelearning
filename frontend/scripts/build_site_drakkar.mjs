@@ -208,7 +208,7 @@ const navbarRightWc = (
 
       <div class="desktop-auth">
         <viking-button-wc variant="primary" class="auth-btn" href="${loginHrefDesktop}" id="auth-btn-desktop">
-          <span id="auth-icon-desktop">${iconSlot('arrow-right', 16)}</span>
+          <span id="auth-icon-desktop" data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
           <span id="auth-text-desktop">Sign In</span>
         </viking-button-wc>
         <viking-button-wc
@@ -243,7 +243,7 @@ const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" ro
 
       <div class="desktop-auth">
         <viking-button-wc variant="primary" class="auth-btn" href={${loginHrefExpr}} id="auth-btn-desktop">
-          <span id="auth-icon-desktop"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
+          <span id="auth-icon-desktop" data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
           <span id="auth-text-desktop">Sign In</span>
         </viking-button-wc>
         <viking-button-wc
@@ -269,7 +269,7 @@ const mobileAuthWc = loginHrefMobile => `    <viking-button-wc
       href="${loginHrefMobile}"
       id="auth-btn-mobile"
     >
-      <span id="auth-icon-mobile">${iconSlot('arrow-right', 16)}</span>
+      <span id="auth-icon-mobile" data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
       <span id="auth-text-mobile">Sign In</span>
     </viking-button-wc>
     <viking-button-wc
@@ -287,7 +287,7 @@ const mobileAuthWcAstro = loginHrefExpr => `    <viking-button-wc
       href={${loginHrefExpr}}
       id="auth-btn-mobile"
     >
-      <span id="auth-icon-mobile"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
+      <span id="auth-icon-mobile" data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span>
       <span id="auth-text-mobile">Sign In</span>
     </viking-button-wc>
     <viking-button-wc

@@ -5,7 +5,7 @@ Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` de
 Publish target: **`@dataengineeringformachinelearning/viking-ui@4.0.5`**
 Consolidation status: **single source of truth under `packages/viking-ui/`** for token SCSS, static CSS, Web Components, framework-neutral utilities, package metadata, and Angular wrappers.
 
-Showcase rendering follows the Lockheed Martin × The Northman battlefield aesthetic: machined control surfaces, disciplined contrast, and restrained accents for technical precision.
+Showcase rendering follows the DEML premium restrained luxury aesthetic: machined control surfaces, disciplined contrast, and restrained accents for technical precision.
 
 **Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)
 

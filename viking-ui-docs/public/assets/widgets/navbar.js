@@ -165,13 +165,16 @@
       }
     };
 
+    const eventPathContains = (event, node) => {
+      if (!node) return false;
+      const path =
+        typeof event.composedPath === 'function' ? event.composedPath() : [event.target];
+      return path.includes(node);
+    };
+
     document.addEventListener('click', event => {
-      const target = event.target;
-      if (!target) {
-        return;
-      }
-      const isInsideNav = mobileMenu.contains(target) || menuBtn.contains(target);
-      if (!isInsideNav) {
+      if (!mobileMenu.classList.contains('open')) return;
+      if (!eventPathContains(event, mobileMenu) && !eventPathContains(event, menuBtn)) {
         closeMobileMenu();
       }
     });
@@ -333,14 +336,15 @@
       const textEl = document.getElementById(textId);
       const iconEl = document.getElementById(iconId);
       if (textEl) textEl.textContent = label;
-      if (iconEl) setIcon(iconEl, iconName, 16);
+      const iconTarget = iconEl?.querySelector?.('[data-viking-icon]') ?? iconEl;
+      if (iconTarget) setIcon(iconTarget, iconName, 16);
     };
 
     const updateAuthUIFromStatus = status => {
       const isLoggedIn = status?.isAuthenticated === true;
 
       if (isLoggedIn) {
-        setAuthButtonVisible(false);
+        setAuthButtonVisible(true);
         setSignOutVisible(true);
         setAuthNavLinksVisible(true);
         setAuthButtonHref('auth-btn-desktop', `${FRONTEND_URL}/dashboard`);
@@ -352,7 +356,7 @@
         setAuthButtonVisible(true);
         setSignOutVisible(false);
         setAuthNavLinksVisible(false);
-        const loginHref = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.origin)}`;
+        const loginHref = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.href)}`;
         setAuthButtonHref('auth-btn-desktop', loginHref);
         setAuthButtonHref('auth-btn-mobile', loginHref);
         setAuthButtonLabel('auth-text-desktop', 'auth-icon-desktop', 'Sign In', 'arrow-right');
@@ -477,6 +481,20 @@
     setSignOutVisible(false);
     void checkAuthHandoff();
     checkAuthViaIframe();
+
+    window.addEventListener('storage', event => {
+      if (event.key !== 'deml_auth_status') return;
+      if (event.newValue) {
+        try {
+          applyTrustedAuthStatus(JSON.parse(event.newValue), 'storage');
+        } catch {
+          localStorage.removeItem('deml_auth_status');
+          updateAuthUIFromStatus({ isAuthenticated: false });
+        }
+        return;
+      }
+      updateAuthUIFromStatus({ isAuthenticated: false });
+    });
   };
 
   const loadIconPaths = async () => {
