@@ -258,9 +258,7 @@ export class Login implements OnInit, OnDestroy {
     this.loginForm.get('verificationCode')?.clearValidators();
     this.loginForm.get('verificationCode')?.updateValueAndValidity();
 
-    this.loginForm
-      .get('phone')
-      ?.setValidators([Validators.required]);
+    this.loginForm.get('phone')?.setValidators([Validators.required]);
     this.loginForm.get('phone')?.updateValueAndValidity();
   }
 
@@ -353,7 +351,9 @@ export class Login implements OnInit, OnDestroy {
     } catch (e: unknown) {
       logFirebaseAuthError('Phone OTP send', e);
       const code =
-        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code?: string }).code)
+          : undefined;
       this.error.set(mapFirebasePhoneError(code));
     } finally {
       this.isLoading.set(false);
@@ -374,7 +374,9 @@ export class Login implements OnInit, OnDestroy {
     } catch (e: unknown) {
       logFirebaseAuthError('Phone OTP verify', e);
       const codeErr =
-        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code?: string }).code)
+          : undefined;
       this.error.set(mapFirebaseMfaError(codeErr));
     } finally {
       this.isLoading.set(false);
@@ -402,7 +404,9 @@ export class Login implements OnInit, OnDestroy {
     } catch (e: unknown) {
       logFirebaseAuthError('MFA SMS send', e);
       const code =
-        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code?: string }).code)
+          : undefined;
       this.error.set(mapFirebasePhoneError(code));
     }
   }
@@ -426,7 +430,9 @@ export class Login implements OnInit, OnDestroy {
     } catch (e: unknown) {
       logFirebaseAuthError('MFA verify', e);
       const codeErr =
-        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code?: string }).code)
+          : undefined;
       this.error.set(mapFirebaseMfaError(codeErr));
     } finally {
       this.isLoading.set(false);

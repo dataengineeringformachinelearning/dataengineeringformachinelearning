@@ -57,9 +57,15 @@
     "@angular/forms": "^22.0.0"
   },
   "peerDependenciesMeta": {
-    "@angular/common": { "optional": true },
-    "@angular/core": { "optional": true },
-    "@angular/forms": { "optional": true }
+    "@angular/common": {
+      "optional": true
+    },
+    "@angular/core": {
+      "optional": true
+    },
+    "@angular/forms": {
+      "optional": true
+    }
   },
   "dependencies": {
     "tslib": "^2.3.0"

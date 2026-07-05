@@ -16,10 +16,7 @@ import {
   VIKING_INTEGRATION_ICON_NAMES_LIST,
 } from './integration-brand-icons';
 
-export {
-  VIKING_DRAKKAR_ICON_NAMES_LIST,
-  VIKING_BRAND_ICON_NAMES_LIST,
-} from './brand-icons';
+export { VIKING_DRAKKAR_ICON_NAMES_LIST, VIKING_BRAND_ICON_NAMES_LIST } from './brand-icons';
 export {
   VIKING_INTEGRATION_ICON_NAMES_LIST,
   type VikingIntegrationIconName,
@@ -192,4 +189,6 @@ export const resolveVikingIcon = (name: string): VikingIconName => {
 export const VIKING_ICON_NAMES = Object.keys(VIKING_ICON_PATHS) as VikingIconName[];
 
 /** Lucide-sourced icon names (for docs and showcase grouping). */
-export const VIKING_LUCIDE_ICON_NAMES = Object.keys(LUCIDE_ICON_PATHS) as (keyof typeof LUCIDE_ICON_PATHS)[];
+export const VIKING_LUCIDE_ICON_NAMES = Object.keys(
+  LUCIDE_ICON_PATHS,
+) as (keyof typeof LUCIDE_ICON_PATHS)[];

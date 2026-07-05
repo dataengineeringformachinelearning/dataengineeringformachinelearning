@@ -77,4 +77,3 @@ export const logFirebaseAuthError = (context: string, error: unknown): void => {
       : 'unknown';
   console.warn(`[Auth] ${context}: ${code}`);
 };
-

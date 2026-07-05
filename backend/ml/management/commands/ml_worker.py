@@ -85,7 +85,7 @@ class Command(BaseCommand):
   @sync_to_async
   def train_all(self):
     from django.db import close_old_connections
-    from ml.ml_services import train_threat_model, train_spiking_temporal_forecaster
+    from ml.ml_services import train_spiking_temporal_forecaster, train_threat_model
 
     close_old_connections()
     try:

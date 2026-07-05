@@ -12,7 +12,10 @@ export class SessionApiService {
     await firstValueFrom(
       this.http.post(
         `${environment.backendUrl}/api/v1/auth/sessions`,
-        { session_id: sessionId, user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '' },
+        {
+          session_id: sessionId,
+          user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+        },
         { headers: { Authorization: `Bearer ${token}` } },
       ),
     );
@@ -27,4 +30,4 @@ export class SessionApiService {
       ),
     );
   };
-};
+}

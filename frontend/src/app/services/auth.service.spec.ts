@@ -72,7 +72,9 @@ describe('AuthService', () => {
 
   afterEach(() => {
     environment.firebase.apiKey = originalApiKey;
-    httpMock.match(() => true).forEach(req => req.flush({ status: 'success', user_id: 1, role: 'Operator' }));
+    httpMock
+      .match(() => true)
+      .forEach(req => req.flush({ status: 'success', user_id: 1, role: 'Operator' }));
     httpMock.verify();
     TestBed.resetTestingModule();
   });
@@ -155,12 +157,16 @@ describe('AuthService (mock mode)', () => {
   afterEach(() => {
     environment.firebase.apiKey = originalApiKey;
     localStorage.clear();
-    httpMock.match(() => true).forEach(req => req.flush({ status: 'success', user_id: 1, role: 'Operator' }));
+    httpMock
+      .match(() => true)
+      .forEach(req => req.flush({ status: 'success', user_id: 1, role: 'Operator' }));
     httpMock.verify();
     TestBed.resetTestingModule();
   });
 
-  const flushAuthUser = async (payload: Record<string, unknown> = { status: 'success', user_id: 1, role: 'Operator' }): Promise<void> => {
+  const flushAuthUser = async (
+    payload: Record<string, unknown> = { status: 'success', user_id: 1, role: 'Operator' },
+  ): Promise<void> => {
     await new Promise(resolve => setTimeout(resolve, 10));
     const req = httpMock.expectOne(`${environment.backendUrl}/api/v1/auth/user`);
     req.flush(payload);

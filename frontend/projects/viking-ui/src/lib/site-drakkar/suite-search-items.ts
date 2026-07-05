@@ -1,4 +1,9 @@
-import type { SiteDrakkarContext, SiteFooterLink, SiteNavLink, SiteUrls } from './site-drakkar.config';
+import type {
+  SiteDrakkarContext,
+  SiteFooterLink,
+  SiteNavLink,
+  SiteUrls,
+} from './site-drakkar.config';
 import {
   SITE_FOOTER_COLUMNS,
   SITE_NAV_LINKS,
@@ -172,7 +177,9 @@ const DOCS_SEARCH_EXTRAS: readonly SuiteSearchItem[] = [
 ];
 
 const resolveDocsHref = (href: string, docsOrigin: string): string =>
-  href.startsWith('http') ? href : `${docsOrigin.replace(/\/$/, '')}${href.startsWith('/') ? href : `/${href}`}`;
+  href.startsWith('http')
+    ? href
+    : `${docsOrigin.replace(/\/$/, '')}${href.startsWith('/') ? href : `/${href}`}`;
 
 /**
  * Builds curated command-palette links for deml.app, marketing, backend, and docs.

@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  effect,
-  input,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, input, signal } from '@angular/core';
 import {
   VikingChartCurve,
   VikingChartKind,
@@ -100,7 +93,12 @@ const resolveBarWidth = (slotWidth: number, count: number, widthPercent: number)
   return Math.min(BAR_WIDTH_MAX, Math.max(BAR_WIDTH_MIN, slotWidth * (widthPercent / 100)));
 };
 
-const resolveBarHeight = (value: number, normalized: number, plotHeight: number, minVisible: number): number => {
+const resolveBarHeight = (
+  value: number,
+  normalized: number,
+  plotHeight: number,
+  minVisible: number,
+): number => {
   if (value === 0) {
     return minVisible;
   }
@@ -217,147 +215,147 @@ const buildSmoothPath = (points: { x: number; y: number }[]): string => {
         (pointerleave)="onPanEnd()"
         (pointercancel)="onPanEnd()"
       >
-      <svg
-        [attr.viewBox]="'0 0 ' + width + ' ' + height()"
-        preserveAspectRatio="xMidYMid meet"
-        shape-rendering="geometricPrecision"
-        role="img"
-        [attr.aria-label]="label() || 'Chart'"
-        aria-hidden="true"
-      >
-        @if (kind() === 'donut') {
-          @for (slice of donutSlices(); track slice.label) {
-            <path
-              class="viking-chart-donut-slice"
-              [attr.d]="slice.path"
-              [style.fill]="toneVar(slice.tone)"
-            />
-          }
-          @if (donutSlices().length > 0) {
-            <circle
-              class="viking-chart-donut-hole"
-              [attr.cx]="width / 2"
-              [attr.cy]="plotCy()"
-              [attr.r]="donutInnerRadius()"
-            />
-            <text
-              class="viking-chart-donut-total"
-              [attr.x]="width / 2"
-              [attr.y]="plotCy()"
-              text-anchor="middle"
-              dominant-baseline="central"
-            >
-              {{ donutTotalLabel() }}
-            </text>
-          }
-        } @else {
-          <defs>
-            <clipPath id="viking-plot-clip">
-              <rect
-                [attr.x]="resolvedGutter().left"
-                [attr.y]="plotTop()"
-                [attr.width]="width - resolvedGutter().left - resolvedGutter().right"
-                [attr.height]="plotBottom() - plotTop()"
+        <svg
+          [attr.viewBox]="'0 0 ' + width + ' ' + height()"
+          preserveAspectRatio="xMidYMid meet"
+          shape-rendering="geometricPrecision"
+          role="img"
+          [attr.aria-label]="label() || 'Chart'"
+          aria-hidden="true"
+        >
+          @if (kind() === 'donut') {
+            @for (slice of donutSlices(); track slice.label) {
+              <path
+                class="viking-chart-donut-slice"
+                [attr.d]="slice.path"
+                [style.fill]="toneVar(slice.tone)"
               />
-            </clipPath>
-          </defs>
-          @if (!isSparkline()) {
-            @for (line of gridLines(); track line) {
-              <line
-                class="viking-chart-grid"
-                [attr.x1]="resolvedGutter().left"
-                [attr.x2]="width - resolvedGutter().right"
-                [attr.y1]="line"
-                [attr.y2]="line"
-              ></line>
             }
-            <line
-              class="viking-chart-axis-line"
-              [attr.x1]="resolvedGutter().left"
-              [attr.x2]="width - resolvedGutter().right"
-              [attr.y1]="plotBottom()"
-              [attr.y2]="plotBottom()"
-            ></line>
-            @for (tick of yAxisLabels(); track tick.text + tick.y) {
-              <text
-                class="viking-chart-axis-y"
-                [attr.x]="resolvedGutter().left - 10"
-                [attr.y]="tick.y"
-                [attr.text-anchor]="tick.anchor"
-                dominant-baseline="middle"
-              >
-                {{ tick.text }}
-              </text>
-            }
-            @for (tick of xAxisLabels(); track tick.text + tick.x) {
-              <text
-                class="viking-chart-axis-x"
-                [attr.x]="tick.x"
-                [attr.y]="height() - 10"
-                [attr.text-anchor]="tick.anchor"
-              >
-                {{ tick.text }}
-              </text>
-            }
-            @for (mark of xTickMarks(); track mark.x) {
-              <line
-                class="viking-chart-tick"
-                [attr.x1]="mark.x"
-                [attr.x2]="mark.x"
-                [attr.y1]="mark.y1"
-                [attr.y2]="mark.y2"
-              ></line>
-            }
-          }
-          @if (isBarKind()) {
-            @for (bar of barRects(); track bar.x + '-' + bar.y + '-' + bar.tone) {
-              <rect
-                class="viking-chart-bar"
-                [attr.x]="bar.x"
-                [attr.y]="bar.y"
-                [attr.width]="bar.width"
-                [attr.height]="bar.height"
-                [style.fill]="toneVar(bar.tone)"
-                [attr.rx]="bar.radiusTop ? barRadius() : 0"
-                [attr.ry]="bar.radiusTop ? barRadius() : 0"
+            @if (donutSlices().length > 0) {
+              <circle
+                class="viking-chart-donut-hole"
+                [attr.cx]="width / 2"
+                [attr.cy]="plotCy()"
+                [attr.r]="donutInnerRadius()"
               />
+              <text
+                class="viking-chart-donut-total"
+                [attr.x]="width / 2"
+                [attr.y]="plotCy()"
+                text-anchor="middle"
+                dominant-baseline="central"
+              >
+                {{ donutTotalLabel() }}
+              </text>
             }
           } @else {
-            <g clip-path="url(#viking-plot-clip)">
-              @for (path of paths(); track path.name) {
-                @if (renderArea()) {
+            <defs>
+              <clipPath id="viking-plot-clip">
+                <rect
+                  [attr.x]="resolvedGutter().left"
+                  [attr.y]="plotTop()"
+                  [attr.width]="width - resolvedGutter().left - resolvedGutter().right"
+                  [attr.height]="plotBottom() - plotTop()"
+                />
+              </clipPath>
+            </defs>
+            @if (!isSparkline()) {
+              @for (line of gridLines(); track line) {
+                <line
+                  class="viking-chart-grid"
+                  [attr.x1]="resolvedGutter().left"
+                  [attr.x2]="width - resolvedGutter().right"
+                  [attr.y1]="line"
+                  [attr.y2]="line"
+                ></line>
+              }
+              <line
+                class="viking-chart-axis-line"
+                [attr.x1]="resolvedGutter().left"
+                [attr.x2]="width - resolvedGutter().right"
+                [attr.y1]="plotBottom()"
+                [attr.y2]="plotBottom()"
+              ></line>
+              @for (tick of yAxisLabels(); track tick.text + tick.y) {
+                <text
+                  class="viking-chart-axis-y"
+                  [attr.x]="resolvedGutter().left - 10"
+                  [attr.y]="tick.y"
+                  [attr.text-anchor]="tick.anchor"
+                  dominant-baseline="middle"
+                >
+                  {{ tick.text }}
+                </text>
+              }
+              @for (tick of xAxisLabels(); track tick.text + tick.x) {
+                <text
+                  class="viking-chart-axis-x"
+                  [attr.x]="tick.x"
+                  [attr.y]="height() - 10"
+                  [attr.text-anchor]="tick.anchor"
+                >
+                  {{ tick.text }}
+                </text>
+              }
+              @for (mark of xTickMarks(); track mark.x) {
+                <line
+                  class="viking-chart-tick"
+                  [attr.x1]="mark.x"
+                  [attr.x2]="mark.x"
+                  [attr.y1]="mark.y1"
+                  [attr.y2]="mark.y2"
+                ></line>
+              }
+            }
+            @if (isBarKind()) {
+              @for (bar of barRects(); track bar.x + '-' + bar.y + '-' + bar.tone) {
+                <rect
+                  class="viking-chart-bar"
+                  [attr.x]="bar.x"
+                  [attr.y]="bar.y"
+                  [attr.width]="bar.width"
+                  [attr.height]="bar.height"
+                  [style.fill]="toneVar(bar.tone)"
+                  [attr.rx]="bar.radiusTop ? barRadius() : 0"
+                  [attr.ry]="bar.radiusTop ? barRadius() : 0"
+                />
+              }
+            } @else {
+              <g clip-path="url(#viking-plot-clip)">
+                @for (path of paths(); track path.name) {
+                  @if (renderArea()) {
+                    <path
+                      class="viking-chart-area"
+                      [attr.d]="path.area"
+                      [style.fill]="toneVar(path.tone)"
+                    ></path>
+                  }
                   <path
-                    class="viking-chart-area"
-                    [attr.d]="path.area"
-                    [style.fill]="toneVar(path.tone)"
+                    class="viking-chart-line"
+                    [attr.d]="path.line"
+                    [style.stroke]="toneVar(path.tone)"
                   ></path>
                 }
-                <path
-                  class="viking-chart-line"
-                  [attr.d]="path.line"
-                  [style.stroke]="toneVar(path.tone)"
-                ></path>
-              }
-              @if (renderPoints()) {
-                @for (point of linePoints(); track point.x + '-' + point.y + '-' + point.tone) {
-                  <circle
-                    class="viking-chart-point"
-                    [attr.cx]="point.x"
-                    [attr.cy]="point.y"
-                    [attr.r]="pointRadius()"
-                    [style.fill]="toneVar(point.tone)"
-                  />
+                @if (renderPoints()) {
+                  @for (point of linePoints(); track point.x + '-' + point.y + '-' + point.tone) {
+                    <circle
+                      class="viking-chart-point"
+                      [attr.cx]="point.x"
+                      [attr.cy]="point.y"
+                      [attr.r]="pointRadius()"
+                      [style.fill]="toneVar(point.tone)"
+                    />
+                  }
                 }
-              }
-            </g>
+              </g>
+            }
           }
+        </svg>
+        @if (zoomActive()) {
+          <button type="button" class="viking-chart-zoom-reset" (click)="resetZoom()">
+            Reset zoom
+          </button>
         }
-      </svg>
-      @if (zoomActive()) {
-        <button type="button" class="viking-chart-zoom-reset" (click)="resetZoom()">
-          Reset zoom
-        </button>
-      }
       </div>
       @if (legendVisible()) {
         <figcaption class="viking-chart-legend">

@@ -42,7 +42,12 @@ def sync_widgets() -> None:
   for widgets_dir in (marketing_widgets, backend_widgets, docs_widgets, frontend_public_widgets):
     os.makedirs(widgets_dir, exist_ok=True)
 
-  shared_widget_targets = (marketing_widgets, backend_widgets, docs_widgets, frontend_public_widgets)
+  shared_widget_targets = (
+    marketing_widgets,
+    backend_widgets,
+    docs_widgets,
+    frontend_public_widgets,
+  )
 
   for name in WIDGET_FILES:
     src = resolve_widget_src(root, name)

@@ -6,4 +6,5 @@ export {
 } from '@dataengineeringformachinelearning/viking-ui';
 
 /** @deprecated Import VikingConfirmDialogData from viking-ui directly. */
-export type ConfirmDialogData = import('@dataengineeringformachinelearning/viking-ui').VikingConfirmDialogData;
+export type ConfirmDialogData =
+  import('@dataengineeringformachinelearning/viking-ui').VikingConfirmDialogData;

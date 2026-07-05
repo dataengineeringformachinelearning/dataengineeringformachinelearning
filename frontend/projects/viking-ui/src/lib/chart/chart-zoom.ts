@@ -64,7 +64,5 @@ export const panChartWindow = (
   );
 
 /** Slice series rows and category labels for the active window. */
-export const sliceChartData = <T>(
-  values: T[],
-  window: ChartZoomWindow,
-): T[] => values.slice(window.start, window.end);
+export const sliceChartData = <T>(values: T[], window: ChartZoomWindow): T[] =>
+  values.slice(window.start, window.end);

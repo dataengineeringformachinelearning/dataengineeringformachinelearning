@@ -433,7 +433,9 @@ export class Account implements OnInit {
     } catch (e: unknown) {
       logFirebaseAuthError('MFA enrollment SMS', e);
       const code =
-        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code?: string }).code)
+          : undefined;
       this.mfaError.set(mapFirebasePhoneError(code));
     } finally {
       this.isSendingMfaCode.set(false);
@@ -462,7 +464,9 @@ export class Account implements OnInit {
     } catch (e: unknown) {
       logFirebaseAuthError('MFA enrollment verify', e);
       const code =
-        e && typeof e === 'object' && 'code' in e ? String((e as { code?: string }).code) : undefined;
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code?: string }).code)
+          : undefined;
       this.mfaError.set(mapFirebaseMfaError(code));
     } finally {
       this.isVerifyingMfaCode.set(false);

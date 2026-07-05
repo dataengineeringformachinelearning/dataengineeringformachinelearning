@@ -23,7 +23,15 @@ import { StatusCard } from '../../components/status-card/status-card';
 @Component({
   selector: 'app-explore',
   standalone: true,
-  imports: [CommonModule, VikingButton, VikingPageHeader, VikingAppIcon, RouterModule, StatusCta, StatusCard],
+  imports: [
+    CommonModule,
+    VikingButton,
+    VikingPageHeader,
+    VikingAppIcon,
+    RouterModule,
+    StatusCta,
+    StatusCard,
+  ],
   templateUrl: './explore.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

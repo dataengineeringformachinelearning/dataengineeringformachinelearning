@@ -328,7 +328,9 @@ describe('viking-ui', () => {
     const fixture = await render(FormSectionHost);
     const section = fixture.nativeElement.querySelector('viking-form-section') as HTMLElement;
     expect(section.classList.contains('viking-form-section-inline')).toBe(true);
-    expect(section.querySelector('.viking-form-section-title')?.textContent).toContain('Update Email');
+    expect(section.querySelector('.viking-form-section-title')?.textContent).toContain(
+      'Update Email',
+    );
     expect(section.querySelector('[vikingFormActions]')).toBeTruthy();
   });
 

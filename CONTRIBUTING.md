@@ -67,18 +67,32 @@ npm run start:viking-ui-docs
 Run these before submitting a PR:
 
 ```bash
+uvx pre-commit install --install-hooks --hook-type pre-commit
+
+# Theme and accessibility are enforced locally in pre-commit
+uvx pre-commit run --all-files
+
 # Theme token enforcement (no hardcoded hex)
 node scripts/enforce-theme.js
 
-# Viking-UI unit tests
-cd frontend && npm run test:viking-ui
+# Package-level unit tests (build + test)
+npm run test:viking-ui:package
 
-# Manifest vs public API drift check
-cd frontend && npm run check:viking-upstream
+# Visual + accessibility checks (Storybook + axe)
+npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui
+node scripts/run_axe.js packages/viking-ui/storybook-static/index.html
 
-# Full pre-commit suite (from repo root)
-uvx pre-commit run --all-files
+# Security checks
+npm audit --audit-level=high
 ```
+
+CI applies the same gates automatically on every Viking-UI PR via:
+
+- theme enforcement (`node scripts/enforce-theme.js`)
+- accessibility (`node scripts/run_axe.js` against Storybook build output)
+- unit tests (`npm run test:viking-ui:package`)
+- visual regression (Chromatic in PR workflow)
+- security (`npm audit`, dependency-review)
 
 ### Token changes
 
@@ -137,7 +151,7 @@ src/lib/my-component/my-component.ts
 Add Vitest coverage for non-trivial behavior:
 
 ```bash
-cd frontend && npm run test:viking-ui
+npm run test:viking-ui:package
 ```
 
 Required for charts, forms, icons, and auth surfaces per project policy.
@@ -179,10 +193,13 @@ Required for charts, forms, icons, and auth surfaces per project policy.
 
 - [ ] Changes live in `frontend/projects/viking-ui/` for shared UI
 - [ ] Showcase updated in `viking-ui-docs/` if user-facing
+- [ ] `uvx pre-commit run --all-files` passes
 - [ ] `node scripts/enforce-theme.js` passes
-- [ ] `npm run test:viking-ui` passes for touched surfaces
-- [ ] `npm run check:viking-upstream` passes if exports changed
-- [ ] Token changes synced via `build:static-css` + `sync_design_system.py`
+- [ ] `npm run test:viking-ui:package` passes for touched surfaces
+- [ ] `npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui` passes
+- [ ] `node scripts/run_axe.js packages/viking-ui/storybook-static/index.html` passes
+- [ ] `npm audit --audit-level=high` passes
+- [ ] Token changes synced via `npm run build:viking-ui:package` + `python scripts/sync_design_system.py`
 - [ ] THEME.md / BOOK.md updated if governance changed
 - [ ] WCAG 2.1 AA: keyboard nav, focus rings, semantic HTML, aria labels
 

@@ -34,31 +34,31 @@ Operational doctrine—how the platform runs in production, who performs which w
 6. **Spiking Temporal Forecasting (Fourth Model)**
    - New SpikingTemporalForecaster (Norse SNN or MLP fallback) for temporal/event-driven data. Processes sequences from telemetry streams (Redpanda events) to forecast spikes/anomalies. Trained with same teacher distillation. Exposed in status/analytics as "spiking_temporal_forecast". See models_inventory.md.
 
-6. **Next-Generation SIEM / SOAR Digest & Sharing**
+7. **Next-Generation SIEM / SOAR Digest & Sharing**
    - Automated serialization of AI anomaly predictions into industry-standard STIX 2.1 JSON payloads. These indicators are shared natively via TAXII 2.1 to central hubs (like MS-ISAC).
 
-7. **Hugging Face Global Ecosystem Integration**
+8. **Hugging Face Global Ecosystem Integration**
    - Native integration with Hugging Face automates the publication of PyTorch models to the Hub and continuously syncs public status pages and whitepapers via Spaces deployments.
 
-8. **`platform-status`, System Design, and Critical Path**
+9. **`platform-status`, System Design, and Critical Path**
    - The platform dogfoods itself via the public `platform-status` page (`user=null`, `is_platform=True`)—an "Apex Sandbox" and "Public Sentinel" under real load. Background workers iterate over active accounts plus this platform scope so pipelines stay symmetrical. Pipeline: **collect, enhance, aggregate, showcase**. Results land in optimized tables for snappy UI access.
 
-9. **Application-Level Zeek-Equivalent Middleware**
-   - Passive interception of HTTP headers, source IPs, methods, and latency. Zero-latency cached mappings associate traffic with the target `account_id` without blocking the request thread.
+10. **Application-Level Zeek-Equivalent Middleware**
+    - Passive interception of HTTP headers, source IPs, methods, and latency. Zero-latency cached mappings associate traffic with the target `account_id` without blocking the request thread.
 
-10. **OSINT & Dark Web Threat Intel Integration**
+11. **OSINT & Dark Web Threat Intel Integration**
     - Reconnaissance against Tor (Ahmia) and Certificate Transparency logs. Findings serialize into `ThreatIntelligence` and `Endpoints` for dashboard visibility.
 
-11. **Post-Quantum Cryptography (PQC) & Forward Secrecy**
+12. **Post-Quantum Cryptography (PQC) & Forward Secrecy**
     - Hybrid KEMs via `liboqs` on `/api/v1/telemetry/pq-key-exchange`. Ephemeral secret keys expire after five minutes.
 
-12. **Symmetrical Account Pipelines**
+13. **Symmetrical Account Pipelines**
     - Background workers, ML training loops, and OSINT scanners iterate over provisioned users/accounts (and the `platform` sentinel). No hardcoded single-customer exceptions.
 
-13. **Enterprise Compliance & Security Standards**
+14. **Enterprise Compliance & Security Standards**
     - Architected for SOC 2 Type II, CMMC 2.0, and NIST SP 800-171 Rev. 3 readiness.
 
-14. **RBAC & ABAC Access Control**
+15. **RBAC & ABAC Access Control**
     - **RBAC:** `UserProfile.role` is `Viewer`, `Operator`, or `Security Admin` (one role per login). Status page create/update/delete requires `Operator` or `Security Admin` (`@role_required`). Settings UI disables mutations for `Viewer`.
     - **ABAC:** Anonymous users read published pages and `platform-status` only. Owners read unpublished pages when logged in. `check_status_page_access` guards services, incidents, and stats APIs. Writes require ownership + MFA (`amr` contains `mfa`). `platform-status` is immutable for customers.
     - **Public stats:** `/status/:slug` and `/explore` expose uptime and service health only when `is_published=True` or `slug=platform-status`.

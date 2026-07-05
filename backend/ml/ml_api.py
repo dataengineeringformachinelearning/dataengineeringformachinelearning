@@ -6,7 +6,7 @@ from monitor.models import StatusPage
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
-from ml.ml_services import train_tenant_sla, train_spiking_temporal_forecaster
+from ml.ml_services import train_spiking_temporal_forecaster, train_tenant_sla
 from ml.models import ThreatReport, TrainingRun
 
 router = Router()

@@ -52,13 +52,22 @@ export type VikingChartPanelBody = 'default' | 'origin-map';
 
       :host(.viking-chart-panel-large) .viking-chart-panel-body {
         --viking-chart-empty-min-height: var(--viking-chart-empty-min-height-lg, 20rem);
-        --viking-chart-fill-min-height: var(--viking-chart-fill-min-height-lg, clamp(20rem, 40vw, 22rem));
+        --viking-chart-fill-min-height: var(
+          --viking-chart-fill-min-height-lg,
+          clamp(20rem, 40vw, 22rem)
+        );
         min-height: var(--viking-chart-panel-body-min-height-lg, 25rem);
       }
 
       :host(.viking-chart-panel-medium) .viking-chart-panel-body {
-        --viking-chart-empty-min-height: var(--viking-chart-empty-min-height, clamp(18rem, 36vw, 20rem));
-        --viking-chart-fill-min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
+        --viking-chart-empty-min-height: var(
+          --viking-chart-empty-min-height,
+          clamp(18rem, 36vw, 20rem)
+        );
+        --viking-chart-fill-min-height: var(
+          --viking-chart-fill-min-height,
+          clamp(18rem, 36vw, 20rem)
+        );
         min-height: var(--viking-chart-panel-body-min-height-md, 22rem);
       }
 

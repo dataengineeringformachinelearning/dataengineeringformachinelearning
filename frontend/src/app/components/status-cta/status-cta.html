@@ -35,18 +35,11 @@
 
   <div class="cta-actions">
     @if (!authService.isAuthenticated()) {
-    <viking-button
-      variant="primary"
-      type="button"
-      icon="arrow-right"
-      (pressed)="login()"
-    >
+    <viking-button variant="primary" type="button" icon="arrow-right" (pressed)="login()">
       Get Started
     </viking-button>
     } @if (authService.isAuthenticated()) {
-    <viking-button variant="primary" href="/manage" icon="plus">
-      Create Status Page
-    </viking-button>
+    <viking-button variant="primary" href="/manage" icon="plus"> Create Status Page </viking-button>
     }
   </div>
 </div>

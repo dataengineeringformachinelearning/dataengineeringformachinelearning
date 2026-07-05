@@ -163,8 +163,7 @@ export class Vulnerabilities implements OnInit {
     this.titleService.setTitle('Threat Matrix & Vulnerability Center - Platform Status');
     this.metaService.updateTag({
       name: 'description',
-      content:
-        'Enterprise vulnerability ingestion, analysis, and threat prioritization dashboard.',
+      content: 'Enterprise vulnerability ingestion, analysis, and threat prioritization dashboard.',
     });
   }
 

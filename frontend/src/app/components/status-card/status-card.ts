@@ -10,7 +10,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { VikingButton, VikingStatusMetricRow, VikingCard, VikingCardHeader, VikingHeading } from '@dataengineeringformachinelearning/viking-ui';
+import {
+  VikingButton,
+  VikingStatusMetricRow,
+  VikingCard,
+  VikingCardHeader,
+  VikingHeading,
+} from '@dataengineeringformachinelearning/viking-ui';
 
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
 import { ThreatReportResponse } from '../../services/ml.service';
@@ -20,7 +26,16 @@ import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
 @Component({
   selector: 'app-status-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, VikingButton, VikingStatusMetricRow, VikingCard, VikingCardHeader, VikingHeading, ProVerifiedBadge],
+  imports: [
+    CommonModule,
+    RouterModule,
+    VikingButton,
+    VikingStatusMetricRow,
+    VikingCard,
+    VikingCardHeader,
+    VikingHeading,
+    ProVerifiedBadge,
+  ],
   templateUrl: './status-card.html',
   styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

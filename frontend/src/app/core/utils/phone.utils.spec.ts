@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  isValidPhoneE164,
-  normalizePhoneE164,
-  phoneValidationError,
-} from './phone.utils';
+import { isValidPhoneE164, normalizePhoneE164, phoneValidationError } from './phone.utils';
 
 describe('phone.utils', () => {
   it('normalizes US numbers without country code', () => {

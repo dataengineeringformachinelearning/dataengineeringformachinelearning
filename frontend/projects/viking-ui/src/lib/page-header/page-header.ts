@@ -39,7 +39,9 @@ import { VikingPageBackLink } from '../page-back-link/page-back-link';
           }
           <h1 class="viking-page-header-title hud-title page-title">{{ title() }}</h1>
           @if (subtitle()) {
-            <p class="viking-page-header-subtitle hud-subtitle page-description">{{ subtitle() }}</p>
+            <p class="viking-page-header-subtitle hud-subtitle page-description">
+              {{ subtitle() }}
+            </p>
           }
           <ng-content select="[vikingPageHeaderExtra]" />
         </div>
