@@ -26,7 +26,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
-              "includePaths": ["../packages/viking-ui/src/styles"]
+              "includePaths": ["projects/viking-ui/src/styles"]
             },
             "assets": [
               {
@@ -44,7 +44,7 @@
               ".md": "text"
             },
             "styles": [
-              "../packages/viking-ui/dist/viking-ui.css",
+              "public/assets/viking-ui.css",
               "src/styles.scss",
               "node_modules/prismjs/themes/prism-okaidia.css"
             ],

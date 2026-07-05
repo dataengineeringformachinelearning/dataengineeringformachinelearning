@@ -27,6 +27,7 @@ import { VIKING_SELECT_STYLES } from '../core/styles';
  * </viking-select-wc>
  */
 export class VikingSelectWc extends HTMLElement {
+  static readonly formAssociated = true;
   static readonly tag = 'viking-select-wc';
 
   static get observedAttributes(): string[] {
@@ -125,7 +126,10 @@ export class VikingSelectWc extends HTMLElement {
     const required = this.hasAttribute('required');
     const error = this.getAttribute('error') ?? '';
     const description = this.getAttribute('description') ?? '';
-    const describedBy = [description && `${this.controlId}-desc`, error && `${this.controlId}-error`]
+    const describedBy = [
+      description && `${this.controlId}-desc`,
+      error && `${this.controlId}-error`,
+    ]
       .filter(Boolean)
       .join(' ');
 
@@ -175,7 +179,7 @@ export class VikingSelectWc extends HTMLElement {
       return;
     }
 
-    options.forEach((opt) => {
+    options.forEach(opt => {
       this.selectEl?.append(opt.cloneNode(true));
     });
 

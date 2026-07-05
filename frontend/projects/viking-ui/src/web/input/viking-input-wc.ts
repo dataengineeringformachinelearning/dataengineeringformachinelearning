@@ -10,6 +10,7 @@ import { VIKING_INPUT_STYLES } from '../core/styles';
  * <viking-input-wc placeholder="Email" name="email" type="email"></viking-input-wc>
  */
 export class VikingInputWc extends HTMLElement {
+  static readonly formAssociated = true;
   static readonly tag = 'viking-input-wc';
 
   static get observedAttributes(): string[] {

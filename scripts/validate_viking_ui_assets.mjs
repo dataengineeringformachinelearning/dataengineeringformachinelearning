@@ -89,11 +89,16 @@ for (const [artifact, mirror] of optionalDocsMirrors) {
 }
 
 const frontendAngularJson = readText("frontend/angular.json");
-if (!frontendAngularJson.includes("../packages/viking-ui/dist/viking-ui.css")) {
+if (!frontendAngularJson.includes("public/assets/viking-ui.css")) {
   failures.push(
-    "frontend/angular.json must load ../packages/viking-ui/dist/viking-ui.css globally.",
+    "frontend/angular.json must load public/assets/viking-ui.css globally for isolated Railway builds.",
   );
 }
+
+requireSameFile(
+  path.join("packages", "viking-ui", "dist", "viking-ui.css"),
+  "frontend/public/assets/viking-ui.css",
+);
 
 const sourceImportChecks = [
   "frontend/src/styles.scss",
@@ -109,7 +114,6 @@ const removedFrontendMirrors = [
   "frontend/public/assets/design-tokens.css",
   "frontend/public/assets/viking-components.css",
   "frontend/public/assets/deml-components.css",
-  "frontend/public/assets/viking-ui.css",
   "frontend/public/assets/viking-ui-elements.js",
   "backend/static/design-tokens.css",
   "backend/static/viking-components.css",
@@ -125,7 +129,7 @@ const removedFrontendMirrors = [
 for (const relativePath of removedFrontendMirrors) {
   if (existsSync(path.join(rootDir, relativePath))) {
     failures.push(
-      `${relativePath} should not exist; Angular consumes packages/viking-ui/dist via angular.json.`,
+      `${relativePath} should not exist; surfaces load the single viking-ui.css bundle.`,
     );
   }
 }

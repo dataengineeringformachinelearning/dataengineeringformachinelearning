@@ -25,11 +25,13 @@ export class GlobalErrorHandler implements ErrorHandler {
     console.error('GlobalErrorHandler caught an error:', error);
 
     if (isPlatformBrowser(this.platformId)) {
-      this.injector.get(VikingToastService).show({
-        heading: 'System Error',
-        text: 'An unexpected system error occurred. Please try again later.',
-        tone: 'danger',
-        duration: 6000,
+      queueMicrotask(() => {
+        this.injector.get(VikingToastService).show({
+          heading: 'System Error',
+          text: 'An unexpected system error occurred. Please try again later.',
+          tone: 'danger',
+          duration: 6000,
+        });
       });
     }
   }
