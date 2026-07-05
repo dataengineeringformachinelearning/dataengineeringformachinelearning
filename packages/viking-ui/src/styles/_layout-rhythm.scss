@@ -6,7 +6,7 @@
 .viking-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-stack-gap, var(--viking-space-2));
+  gap: var(--viking-stack-gap, var(--viking-space-3));
   align-items: var(--viking-stack-align, stretch);
 }
 
@@ -19,7 +19,7 @@
 }
 
 .viking-stack--loose {
-  --viking-stack-gap: var(--viking-space-3);
+  --viking-stack-gap: var(--viking-space-4);
 }
 
 .viking-stack--center {
@@ -29,7 +29,7 @@
 .viking-cluster {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--viking-cluster-gap, var(--viking-space-1));
+  gap: var(--viking-cluster-gap, var(--viking-space-2));
   align-items: var(--viking-cluster-align, center);
   justify-content: var(--viking-cluster-justify, flex-start);
 }
@@ -58,7 +58,7 @@
 
 .viking-grid {
   display: grid;
-  gap: var(--viking-grid-gap, var(--viking-space-2));
+  gap: var(--viking-grid-gap, var(--viking-space-3));
   width: 100%;
 }
 
@@ -67,7 +67,7 @@
 }
 
 .viking-grid--loose {
-  --viking-grid-gap: var(--viking-space-3);
+  --viking-grid-gap: var(--viking-space-4);
 }
 
 .viking-grid--2,
@@ -100,7 +100,7 @@
 .viking-divider {
   border: 0;
   border-top: 1px solid var(--viking-border-subtle);
-  margin: var(--viking-space-2) 0;
+  margin: var(--viking-space-3) 0;
 }
 
 .viking-divider--strong {

@@ -5,8 +5,8 @@
 .hud-metrics {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-2);
-  margin-bottom: var(--viking-space-2);
+  gap: var(--viking-space-3);
+  margin-bottom: var(--viking-page-section-gap, var(--viking-space-6));
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(2, 1fr);
@@ -25,7 +25,7 @@
 .metric-card {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-1);
   background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid var(--viking-border);
   padding: var(--viking-card-padding-compact, var(--viking-space-2));
@@ -143,8 +143,10 @@
 .viking-hud-panel-header,
 .panel-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: var(--viking-space-1);
+  justify-content: space-between;
+  gap: var(--viking-space-2);
   padding: var(--viking-panel-header-padding, var(--viking-space-3));
   background-color: color-mix(in srgb, var(--viking-bg) 2%, transparent);
   border-bottom: 1px solid var(--viking-border);
@@ -205,10 +207,10 @@
 .dashboard-topbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--viking-space-3);
-  padding-bottom: var(--viking-space-3);
+  gap: var(--viking-space-4);
+  padding-bottom: var(--viking-space-4);
   margin-bottom: var(--viking-page-section-gap, var(--viking-space-4));
   border-bottom: 1px solid var(--viking-border);
 }
@@ -225,14 +227,16 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-2);
   min-width: 0;
+  flex: 1 1 min(100%, 36rem);
 }
 
 .viking-page-header-title-block {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  gap: var(--viking-space-1);
   width: 100%;
   min-width: 0;
 }
@@ -245,10 +249,11 @@
 .hud-title,
 .page-title {
   margin: 0;
-  font-size: var(--viking-font-size-lg);
+  font-size: clamp(var(--viking-font-size-xl), 3vw, var(--viking-font-size-3xl));
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--viking-letter-spacing-tight);
   color: var(--viking-text);
+  line-height: var(--viking-line-height-tight);
 }
 
 .viking-page-header-subtitle,
@@ -257,7 +262,7 @@
   margin: var(--viking-space-1) 0 0;
   font-size: var(--viking-font-size);
   color: var(--viking-text-muted);
-  line-height: 1.6;
+  line-height: var(--viking-line-height-relaxed);
   max-width: var(--viking-content-readable-max-width);
 }
 
@@ -265,7 +270,7 @@
 .topbar-right {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
   justify-content: flex-end;
   gap: var(--viking-space-2);
   flex-shrink: 0;
@@ -576,8 +581,8 @@
 .metrics-overview-header {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1);
-  margin-bottom: var(--viking-space-3);
+  gap: var(--viking-space-2);
+  margin-bottom: var(--viking-space-4);
 }
 
 .metrics-section-spacing {
@@ -587,12 +592,12 @@
 .section-title-premium {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-1);
-  font-size: var(--viking-font-size-lg);
+  gap: var(--viking-space-2);
+  font-size: var(--viking-font-size-xl);
   font-weight: var(--viking-font-weight-bold, 700);
   letter-spacing: var(--viking-letter-spacing-tight, -0.01em);
   color: var(--viking-text, var(--text-color));
-  margin: 0 0 var(--viking-space-1);
+  margin: 0;
 
   viking-app-icon,
   viking-icon {
@@ -612,7 +617,7 @@
   font-size: var(--viking-font-size);
   line-height: var(--viking-line-height-relaxed);
   color: var(--viking-text-muted, var(--text-muted));
-  margin: 0 0 var(--viking-space-3);
+  margin: 0 0 var(--viking-space-4);
   max-width: var(--viking-content-readable-max-width, 42rem);
 }
 

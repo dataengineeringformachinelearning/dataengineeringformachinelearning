@@ -250,7 +250,7 @@
   --viking-state-active-scale: 0.985;
   --viking-state-disabled-opacity: 0.48;
   /* ── Controls ──────────────────────────────────────────────────────────── */
-  --viking-control-height: 40px;
+  --viking-control-height: 44px;
   --viking-control-height-sm: 32px;
   --viking-control-height-xs: 24px;
   --viking-touch-target-min: 44px;
@@ -263,17 +263,17 @@
   --viking-navbar-height: 64px;
   --viking-sidebar-width: 256px;
   /* ── Layout rhythm — premium spacing enforcement (THEME.md §3) ─────────── */
-  --viking-page-gutter: var(--viking-space-2);
-  --viking-page-gutter-lg: var(--viking-space-3);
-  --viking-page-gutter-xl: var(--viking-space-4);
-  --viking-page-stack-gap: var(--viking-space-3);
-  --viking-page-section-gap: var(--viking-space-4);
-  --viking-section-padding-y: var(--viking-space-6);
-  --viking-section-padding-y-compact: var(--viking-space-4);
-  --viking-card-padding: var(--viking-space-3);
-  --viking-card-padding-compact: var(--viking-space-2);
-  --viking-panel-padding: var(--viking-space-3);
-  --viking-panel-header-padding: var(--viking-space-3);
+  --viking-page-gutter: var(--viking-space-3);
+  --viking-page-gutter-lg: var(--viking-space-4);
+  --viking-page-gutter-xl: var(--viking-space-6);
+  --viking-page-stack-gap: var(--viking-space-4);
+  --viking-page-section-gap: var(--viking-space-6);
+  --viking-section-padding-y: var(--viking-space-8);
+  --viking-section-padding-y-compact: var(--viking-space-5);
+  --viking-card-padding: var(--viking-space-4);
+  --viking-card-padding-compact: var(--viking-space-3);
+  --viking-panel-padding: var(--viking-space-4);
+  --viking-panel-header-padding: var(--viking-space-3) var(--viking-space-4);
   --viking-form-max-width: 42rem;
   --viking-form-narrow-max-width: 28rem;
   --viking-content-readable-max-width: 48rem;

@@ -4,23 +4,23 @@
 .viking-page-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--grid-gap, var(--space-3, 24px));
+  gap: var(--viking-page-stack-gap, var(--viking-space-4));
   width: 100%;
   box-sizing: border-box;
 }
 
 .badge-dot {
   display: inline-block;
-  width: var(--grid-unit, 4px);
-  height: var(--grid-unit, 4px);
+  width: var(--viking-grid-unit, 4px);
+  height: var(--viking-grid-unit, 4px);
   border-radius: 50%;
-  background-color: var(--color-primary);
-  margin-right: calc(var(--grid-unit, 4px) * 2);
+  background-color: var(--viking-accent, var(--color-primary));
+  margin-right: var(--viking-space-1);
   flex-shrink: 0;
 }
 
 .badge-dot--success {
-  background-color: var(--color-success);
+  background-color: var(--viking-success, var(--color-success));
 }
 
 .is-hidden {
