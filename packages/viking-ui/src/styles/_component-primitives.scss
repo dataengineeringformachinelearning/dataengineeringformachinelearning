@@ -23,7 +23,12 @@
   );
 
   --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --viking-surface-recipe: var(--viking-surface) linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  --viking-surface-recipe: var(--viking-surface)
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 4%, transparent) 0%,
+      transparent 38%
+    );
 
   --viking-transition-interactive:
     color var(--viking-duration) var(--viking-ease-default),

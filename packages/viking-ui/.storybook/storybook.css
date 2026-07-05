@@ -3,52 +3,56 @@
   display: grid;
   align-content: start;
   justify-items: start;
-  padding: clamp(1.25rem, 2vw, 2.5rem);
-  background:
-    radial-gradient(
-      140% 120% at 0% 10%,
-      rgba(11, 197, 255, 0.14),
-      transparent 55%
-    ),
-    radial-gradient(
-      120% 100% at 100% 90%,
-      rgba(198, 49, 63, 0.18),
-      transparent 55%
-    ),
-    var(--viking-surface, #090b11);
-  color: var(--viking-text, #f4f4f4);
+  padding: var(--viking-space-3);
+  background-color: var(--viking-bg);
+  background-image: var(--viking-bg-pattern);
+  background-size: var(--viking-bg-pattern-size);
+  background-position: var(--viking-bg-pattern-position);
+  color: var(--viking-text);
   border-radius: 0;
+  box-sizing: border-box;
 }
 
 .viking-story-shell h1,
 .viking-story-shell h2,
 .viking-story-shell h3 {
-  font-family: var(
-    --viking-font-family-display,
-    "Inter",
-    system-ui,
-    sans-serif
-  );
-  letter-spacing: 0.02em;
+  font-family: var(--viking-font-family);
+  letter-spacing: var(--viking-letter-spacing-tight);
 }
 
 .viking-story-panel {
   width: min(100%, 940px);
-  border: 1px solid var(--viking-border, rgba(255, 255, 255, 0.15));
-  border-radius: var(--viking-radius-lg, 14px);
-  background: color-mix(
-    in srgb,
-    var(--viking-surface-strong, #0f172a) 84%,
-    var(--viking-surface, #0b0b12)
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  padding: var(--viking-card-padding);
+  box-shadow: var(--viking-shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.viking-story-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(
+      in srgb,
+      var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+      transparent
+    ),
+    transparent
   );
-  padding: 1.5rem;
-  box-shadow: var(--viking-shadow-lg, 0 26px 54px rgb(0 0 0 / 0.46));
+  pointer-events: none;
 }
 
 .viking-story-grid {
   display: grid;
-  gap: 1rem;
-  margin-top: 1rem;
+  gap: var(--viking-space-2);
+  margin-top: var(--viking-space-2);
 }
 
 .viking-story-grid.cols-2 {
@@ -59,5 +63,16 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--viking-space-1-5);
+}
+
+.viking-story-battlefield {
+  width: min(100%, 1120px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-section-gap);
+}
+
+.viking-story-battlefield .viking-metric-row {
+  margin-bottom: 0;
 }

@@ -150,6 +150,11 @@ export const VIKING_BUTTON_STYLES = `
   color: var(--viking-accent-content);
   border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
   box-shadow: var(--viking-shadow-sm);
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--viking-white-pure) 14%, transparent) 0%,
+    transparent 42%
+  );
 }
 
 .viking-btn-primary:hover:not(:disabled):not([aria-busy='true']) {

@@ -32,11 +32,11 @@ const preview: Preview = {
     },
     layout: "fullscreen",
     backgrounds: {
-      default: "surface-shell",
+      default: "battlefield-dark",
       values: [
-        { name: "surface-shell", value: "#0d1017" },
-        { name: "chalk", value: "#f5f5f2" },
-        { name: "obsidian", value: "#05070d" },
+        { name: "battlefield-dark", value: "var(--viking-charcoal-900)" },
+        { name: "command-light", value: "var(--viking-slate-050)" },
+        { name: "obsidian-deep", value: "var(--viking-navy-1000)" },
       ],
     },
   },
@@ -44,7 +44,7 @@ const preview: Preview = {
   decorators: [
     (story) => {
       const storyMarkup = story();
-      return `<div class="viking-story-shell">${storyMarkup}</div>`;
+      return `<div class="viking-story-shell viking-battlefield-shell" data-theme="dark">${storyMarkup}</div>`;
     },
   ],
 };

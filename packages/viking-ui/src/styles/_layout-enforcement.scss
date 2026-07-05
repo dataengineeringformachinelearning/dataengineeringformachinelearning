@@ -77,6 +77,22 @@
   }
 }
 
+.viking-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--viking-space-2);
+  padding-bottom: var(--viking-space-2);
+  margin-bottom: var(--viking-space-2);
+  border-bottom: 1px solid var(--viking-border-subtle);
+}
+
+.viking-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+}
+
 // ── Form width constraints ──────────────────────────────────────────────────
 .viking-form-constrained,
 .viking-form-narrow,

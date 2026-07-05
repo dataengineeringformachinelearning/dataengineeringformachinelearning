@@ -1,0 +1,238 @@
+// ============================================================================
+// Viking-UI Battlefield Aesthetic — Lockheed precision × Norse command shell
+// Tactical grid backdrops, HUD corner brackets, machined readouts.
+// All values resolve to --viking-* tokens (THEME.md compliant).
+// ============================================================================
+
+:root,
+html[data-theme='dark'] {
+  /* Tactical backdrop — subtle grid, no gradient orbs */
+  --viking-battlefield-grid-unit: 32px;
+  --viking-battlefield-grid-line: color-mix(
+    in srgb,
+    var(--viking-metallic-600) 9%,
+    transparent
+  );
+  --viking-battlefield-grid-major: color-mix(
+    in srgb,
+    var(--viking-metallic-500) 14%,
+    transparent
+  );
+  --viking-battlefield-scanline: color-mix(
+    in srgb,
+    var(--viking-metallic-200) 4%,
+    transparent
+  );
+  --viking-battlefield-bracket: color-mix(
+    in srgb,
+    var(--viking-accent) 62%,
+    var(--viking-metallic-400)
+  );
+  --viking-battlefield-bracket-muted: var(--viking-border-strong);
+  --viking-battlefield-accent-line: color-mix(
+    in srgb,
+    var(--viking-accent-secondary) 72%,
+    var(--viking-accent)
+  );
+
+  --viking-bg-pattern:
+    linear-gradient(var(--viking-battlefield-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--viking-battlefield-grid-line) 1px, transparent 1px),
+    linear-gradient(var(--viking-battlefield-grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--viking-battlefield-grid-major) 1px, transparent 1px);
+  --viking-bg-pattern-size:
+    var(--viking-battlefield-grid-unit) var(--viking-battlefield-grid-unit),
+    var(--viking-battlefield-grid-unit) var(--viking-battlefield-grid-unit),
+    calc(var(--viking-battlefield-grid-unit) * 4) calc(var(--viking-battlefield-grid-unit) * 4),
+    calc(var(--viking-battlefield-grid-unit) * 4) calc(var(--viking-battlefield-grid-unit) * 4);
+  --viking-bg-pattern-position: center top;
+}
+
+html[data-theme='light'] {
+  --viking-battlefield-grid-line: color-mix(
+    in srgb,
+    var(--viking-metallic-600) 6%,
+    transparent
+  );
+  --viking-battlefield-grid-major: color-mix(
+    in srgb,
+    var(--viking-metallic-500) 10%,
+    transparent
+  );
+  --viking-battlefield-bracket: color-mix(
+    in srgb,
+    var(--viking-accent) 48%,
+    var(--viking-metallic-500)
+  );
+}
+
+// ── Global battlefield shell (dark-first dashboards) ────────────────────────
+body,
+.viking-ui-body,
+.viking-battlefield-shell {
+  background-color: var(--viking-bg);
+  background-image: var(--viking-bg-pattern);
+  background-size: var(--viking-bg-pattern-size);
+  background-position: var(--viking-bg-pattern-position);
+}
+
+.viking-battlefield-shell {
+  min-height: 100vh;
+  color: var(--viking-text);
+  position: relative;
+  isolation: isolate;
+}
+
+.viking-battlefield-shell::after {
+  content: '';
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.35;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0,
+    transparent 3px,
+    var(--viking-battlefield-scanline) 3px,
+    var(--viking-battlefield-scanline) 4px
+  );
+}
+
+.viking-battlefield-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+// ── HUD corner brackets (Lockheed command console) ────────────────────────────
+@mixin viking-hud-brackets(
+  $size: 10px,
+  $weight: 1px,
+  $inset: var(--viking-space-1),
+  $color: var(--viking-battlefield-bracket-muted)
+) {
+  &::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: $inset;
+    background:
+      linear-gradient($color, $color) top left / $size $weight no-repeat,
+      linear-gradient($color, $color) top left / $weight $size no-repeat,
+      linear-gradient($color, $color) top right / $size $weight no-repeat,
+      linear-gradient($color, $color) top right / $weight $size no-repeat,
+      linear-gradient($color, $color) bottom left / $size $weight no-repeat,
+      linear-gradient($color, $color) bottom left / $weight $size no-repeat,
+      linear-gradient($color, $color) bottom right / $size $weight no-repeat,
+      linear-gradient($color, $color) bottom right / $weight $size no-repeat;
+  }
+}
+
+.viking-hud-brackets,
+.viking-hud-panel,
+.viking-metric-card,
+.viking-card.viking-card-tactical,
+.viking-panel-card,
+.status-card-outlined {
+  @include viking-hud-brackets();
+}
+
+.viking-hud-panel--command {
+  border-color: var(--viking-border-accent);
+  box-shadow:
+    var(--viking-shadow-md),
+    inset 0 0 0 1px color-mix(in srgb, var(--viking-accent) 12%, transparent);
+
+  @include viking-hud-brackets(
+    12px,
+    2px,
+    var(--viking-space-half),
+    var(--viking-battlefield-bracket)
+  );
+}
+
+// ── Norse command typography utilities ────────────────────────────────────────
+.viking-font-tactical,
+.viking-rune-caption,
+.viking-hud-panel-title,
+.hud-title {
+  font-family: var(--viking-font-family);
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+.viking-rune-caption {
+  font-size: var(--viking-font-size-2xs);
+  color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-snug);
+}
+
+.viking-readout,
+.viking-metric-value,
+.metric-card .metric-value {
+  font-family: var(--viking-font-family-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: var(--viking-letter-spacing-wide);
+}
+
+// ── Status rail — crimson accent for battlefield emphasis ─────────────────────
+.viking-status-rail {
+  position: relative;
+  padding-left: var(--viking-space-2);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: var(--viking-space-half);
+    bottom: var(--viking-space-half);
+    width: 3px;
+    border-radius: var(--viking-radius-pill);
+    background: var(--viking-battlefield-accent-line);
+  }
+}
+
+// ── Command header strip ─────────────────────────────────────────────────────
+.viking-command-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-2) var(--viking-space-3);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow: var(--viking-shadow-sm);
+
+  @include viking-hud-brackets(8px, 1px, var(--viking-space-1));
+}
+
+.viking-command-strip__meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-half);
+  min-width: 0;
+}
+
+.viking-command-strip__title {
+  margin: 0;
+  font-size: var(--viking-font-size-lg);
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-tight);
+  color: var(--viking-text);
+}
+
+.viking-command-strip__subtitle {
+  margin: 0;
+  font-size: var(--viking-font-size-sm);
+  color: var(--viking-text-muted);
+  max-width: var(--viking-content-readable-max-width);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-battlefield-shell::after {
+    display: none;
+  }
+}

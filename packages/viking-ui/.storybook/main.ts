@@ -8,7 +8,7 @@ const config: StorybookConfig = {
     "@chromatic-com/storybook",
   ],
   framework: {
-    name: "@storybook/html",
+    name: "@storybook/html-vite",
     options: {},
   },
   staticDirs: ["../dist"],

@@ -148,7 +148,7 @@
   justify-content: space-between;
   gap: var(--viking-space-2);
   padding: var(--viking-panel-header-padding, var(--viking-space-3));
-  background-color: color-mix(in srgb, var(--viking-bg) 2%, transparent);
+  background: color-mix(in srgb, var(--viking-bg) 18%, var(--viking-surface));
   border-bottom: 1px solid var(--viking-border);
 }
 

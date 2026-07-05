@@ -2,8 +2,8 @@
   "$schema": "./viking-tokens.schema.json",
   "meta": {
     "name": "viking-ui",
-    "version": "2.1.0",
-    "description": "Canonical DEML design tokens — single source of truth for primitives, semantic aliases, and component foundations",
+    "version": "2.2.0",
+    "description": "Canonical DEML design tokens — Lockheed battlefield shell + Norse command chrome",
     "canonicalScss": "../styles/_variables.scss",
     "documentation": "../../../THEME.md"
   },
