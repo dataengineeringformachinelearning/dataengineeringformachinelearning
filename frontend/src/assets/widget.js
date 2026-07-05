@@ -1,7 +1,7 @@
 (() => {
   if (customElements.get('platform-widget')) {
     // If already registered, only run the auto-initialization for this script if not already done
-    const currentScript = document.currentScript;
+    const currentScript = findWidgetScript();
     if (currentScript && currentScript.hasAttribute('data-page-id')) {
       const pageId = currentScript.getAttribute('data-page-id');
       const backendUrl = currentScript.getAttribute('data-backend-url');
@@ -115,6 +115,27 @@
       throw error;
     }
   };
+
+  function findWidgetScript(pageId) {
+    const candidates = Array.from(document.querySelectorAll('script')).filter(script => {
+      const src = script.getAttribute('src') ?? '';
+      return script.hasAttribute('data-page-id') || /(?:^|\/)widget\.js(?:\?|$|#)/i.test(src);
+    });
+
+    if (pageId) {
+      const matchingPage = candidates.find(
+        script => script.getAttribute('data-page-id') === pageId,
+      );
+      if (matchingPage) return matchingPage;
+    }
+
+    return (
+      document.currentScript ||
+      candidates.find(script => script.hasAttribute('data-page-id')) ||
+      candidates.find(script => script.src && /widget\.js/i.test(script.src)) ||
+      null
+    );
+  }
 
   const globalAgentData = {
     clicks: 0,
@@ -276,11 +297,11 @@
 
         // Resolve URLs: strictly prefer data-* attributes or the origin of the loaded script.
         // No hardcoded production domains or fallbacks. Set data-backend-url / data-frontend-url on the embed script.
-        const currentScript =
-          document.currentScript || document.querySelector('script[src*="widget.js"]');
-        const scriptOrigin = currentScript
-          ? new URL(currentScript.src).origin
-          : window.location.origin;
+        const currentScript = findWidgetScript(pageId);
+        const scriptOrigin =
+          currentScript && currentScript.getAttribute('src')
+            ? new URL(currentScript.src).origin
+            : window.location.origin;
 
         const backendUrl = this.getAttribute('data-backend-url') ?? '';
         const frontendHost = resolveFrontendHost({
@@ -989,8 +1010,7 @@
             // Only runs when data-otel-url is explicitly set on the script tag — skipping it
             // prevents spurious OPTIONS/POST requests to the page origin (e.g. 404 on telemetry.deml.app).
             try {
-              const scriptTag =
-                document.currentScript || document.querySelector('script[src*="widget.js"]');
+              const scriptTag = findWidgetScript(pageId);
               const otelUrl = scriptTag?.getAttribute('data-otel-url') ?? '';
 
               if (otelUrl) {
@@ -1142,8 +1162,7 @@
   );
 
   // Auto-initialize legacy script-only installations
-  const currentScript =
-    document.currentScript || document.querySelector('script[src*="widget.js"]');
+  const currentScript = findWidgetScript();
   if (currentScript && currentScript.hasAttribute('data-page-id')) {
     const pageId = currentScript.getAttribute('data-page-id');
     const backendUrl = currentScript.getAttribute('data-backend-url');

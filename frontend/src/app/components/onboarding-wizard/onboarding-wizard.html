@@ -64,6 +64,7 @@
       @if (createdPage()) {
       <div class="widget-preview">
         <p class="widget-label">Optional: embed this widget on your site</p>
+        <p class="widget-label">Option A: script served by this site</p>
         <pre class="widget-code">{{ getWidgetCode() }}</pre>
         <viking-button
           variant="outline"
@@ -73,6 +74,8 @@
         >
           {{ copiedWidget() ? 'Copied' : 'Copy widget code' }}
         </viking-button>
+        <p class="widget-label">Option B: jsDelivr CDN (no npm install)</p>
+        <pre class="widget-code">{{ getWidgetCdnCode() }}</pre>
       </div>
       }
     </div>

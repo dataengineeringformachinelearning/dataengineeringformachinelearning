@@ -2439,7 +2439,7 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech** �
 - **Refined accent discipline** — deep teal for primary action, rich crimson for secondary emphasis and danger.
 - **WCAG 2.1 AA** — contrast, focus rings, 44px mobile touch targets, keyboard navigation.
 
-Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle built from `packages/viking-ui/src/styles/` and synced via `scripts/sync_design_system.py`.
+Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle built from `packages/viking-ui/src/styles/` and synced via `scripts/sync_design_system.py`; external sites can load the same style bundle from jsDelivr.
 
 ### Unified design governance
 
@@ -2466,6 +2466,19 @@ Non-Angular surfaces (marketing Astro pages, Django templates) load the single s
 
 ```html
 <link rel="stylesheet" href="/assets/viking-ui.css" />
+```
+
+External HTML hosts can also use the jsDelivr CDN:
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
 ```
 
 ```ts
@@ -2566,7 +2579,7 @@ Mobile-first is non-negotiable. Every stylesheet defaults to single-column layou
 
 ### Framework cohesion and light/dark modes
 
-Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the same compiled `viking-ui.css` bundle synced from `packages/viking-ui/src/styles/` via `scripts/sync_design_system.py`. Static CSS is built by `packages/viking-ui/scripts/build-css.mjs`, and Angular keeps `includePaths` pointed at the canonical package token directory for library component SCSS. Light mode shifts lightness only; semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`) preserve WCAG 2.1 AA contrast in both themes. `node scripts/enforce-theme.js` blocks hardcoded hex drift before merge.
+Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the same compiled `viking-ui.css` bundle synced from `packages/viking-ui/src/styles/` via `scripts/sync_design_system.py`; external consumers can use the equivalent CDN assets from jsDelivr. Static CSS is built by `packages/viking-ui/scripts/build-css.mjs`, and Angular keeps `includePaths` pointed at the canonical package token directory for library component SCSS. Light mode shifts lightness only; semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`) preserve WCAG 2.1 AA contrast in both themes. `node scripts/enforce-theme.js` blocks hardcoded hex drift before merge.
 
 ### Accessibility and Section 508
 

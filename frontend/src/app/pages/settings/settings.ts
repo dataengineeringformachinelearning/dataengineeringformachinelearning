@@ -198,6 +198,16 @@ export class Settings implements OnInit {
     return `<script src="${statusAppUrl}/assets/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
   }
 
+  getWidgetCdnCode(): string {
+    const page = this.selectedPage();
+    if (!page) return '';
+    const statusAppUrl = this.getStatusAppUrl();
+    const backendUrl = environment.backendUrl;
+    return `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/widget.js" async defer data-page-id="${page.slug}" data-backend-url="${backendUrl}" data-frontend-url="${statusAppUrl}"></script>`;
+  }
+
   /** Angular app origin — status pages and widget deep links (FRONTEND_URL). */
   private getStatusAppUrl(): string {
     return environment.frontendUrl ?? window.location.origin;

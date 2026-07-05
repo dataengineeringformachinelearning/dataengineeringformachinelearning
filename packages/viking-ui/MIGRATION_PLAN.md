@@ -25,6 +25,9 @@
 ## 3. Migrate Consumers
 
 - Astro marketing and showcase load `packages/viking-ui/dist/viking-ui.css` plus `viking-ui-elements.js`.
+  External pages can use jsDelivr CDN equivalents:
+  - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css`
+  - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js`
 - Django templates and Swagger load the same static CSS and element bundle from collected static assets.
 - Angular keeps framework wrappers where they add typed APIs, forms integration, or signals, but consumes the new package tokens and element behavior.
 

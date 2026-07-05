@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -10,6 +10,13 @@ const packageDir = path.join(
 const rootDir = path.join(packageDir, "..", "..");
 const outDir = path.join(packageDir, "dist");
 const entry = path.join(packageDir, "src", "web-components", "index.ts");
+const widgetSource = path.join(
+  rootDir,
+  "frontend",
+  "src",
+  "assets",
+  "widget.js",
+);
 const localEsbuild = path.join(packageDir, "node_modules", ".bin", "esbuild");
 const frontendEsbuild = path.join(
   rootDir,
@@ -69,5 +76,14 @@ execFileSync(tscBin, ["--project", "tsconfig.json"], {
   cwd: packageDir,
   stdio: "inherit",
 });
+
+copyFileSync(
+  path.join(outDir, "viking-ui-elements.js"),
+  path.join(outDir, "web-components.js"),
+);
+
+if (existsSync(widgetSource)) {
+  copyFileSync(widgetSource, path.join(outDir, "widget.js"));
+}
 
 console.log(`Built Viking-UI elements in ${outDir}`);
