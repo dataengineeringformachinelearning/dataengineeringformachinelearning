@@ -13,6 +13,12 @@ on:
       - 'package.json'
       - '.github/workflows/publish-viking-ui.yml'
   workflow_dispatch:
+    inputs:
+      force_publish:
+        description: "Force a publish attempt (fails when version already exists)"
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -45,6 +51,17 @@ jobs:
       - name: Install workspace dependencies
         run: npm ci --legacy-peer-deps
 
+      - name: Verify npm publish token is present and valid
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::error ::NPM_TOKEN is not configured. Add repository secret NPM_TOKEN to enable publishing."
+            exit 1
+          fi
+          npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          npm whoami
+
       - name: Security gate (dependency audit)
         run: npm audit --audit-level=high
 
@@ -61,8 +78,38 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Assert release was published
+        id: ensure-release
+        run: |
+          LOCAL_VERSION="$(node -p "require('./packages/viking-ui/package.json').version")"
+          if [ "${{ steps.changesets.outputs.published }}" = "true" ]; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            echo "Viking-UI release flow completed via changesets."
+            exit 0
+          fi
+
+          if [ "${{ github.event.inputs.force_publish }}" = "true" ]; then
+            if npm view "@dataengineeringformachinelearning/viking-ui@${LOCAL_VERSION}" version >/dev/null 2>&1; then
+              echo "::error ::force_publish is enabled but version ${LOCAL_VERSION} already exists on npm. Bump version before republishing."
+              echo "published=false" >> "$GITHUB_OUTPUT"
+              exit 1
+            fi
+            echo "::warning ::Changesets did not publish (no releasable changesets). Running direct publish for v${LOCAL_VERSION}."
+            npm publish --access public --workspace packages/viking-ui
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if npm view "@dataengineeringformachinelearning/viking-ui@${LOCAL_VERSION}" version >/dev/null 2>&1; then
+            echo "::error ::No changesets were published and version ${LOCAL_VERSION} already exists on npm. Add a new changeset, bump version, or re-run with force_publish=true."
+          else
+            echo "::error ::No changesets were published. Add a changeset in .changeset/ or re-run with force_publish=true."
+          fi
+          echo "published=false" >> "$GITHUB_OUTPUT"
+          exit 1
+
       - name: Build Storybook and publish to Chromatic
-        if: steps.changesets.outputs.published == 'true' && secrets.CHROMATIC_PROJECT_TOKEN != ''
+        if: steps.ensure-release.outputs.published == 'true' && secrets.CHROMATIC_PROJECT_TOKEN != ''
         env:
           CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
         run: |
@@ -73,19 +120,19 @@ jobs:
             --exit-zero-on-changes
 
       - name: Skip Storybook publish
-        if: steps.changesets.outputs.published == 'true' && secrets.CHROMATIC_PROJECT_TOKEN == ''
+        if: steps.ensure-release.outputs.published == 'true' && secrets.CHROMATIC_PROJECT_TOKEN == ''
         run: echo "CHROMATIC_PROJECT_TOKEN is not set; skipping Storybook publish."
 
       - name: Sync canonical design-system assets
-        if: steps.changesets.outputs.published == 'true'
+        if: steps.ensure-release.outputs.published == 'true'
         run: npm run sync:design-system
 
       - name: Build Viking-UI showcase
-        if: steps.changesets.outputs.published == 'true'
+        if: steps.ensure-release.outputs.published == 'true'
         run: npm run build-viking-ui-docs
 
       - name: Authenticate to Firebase
-        if: steps.changesets.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
+        if: steps.ensure-release.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
         id: firebase-auth
         uses: google-github-actions/auth@v2
         with:
@@ -93,7 +140,7 @@ jobs:
           create_credentials_file: true
 
       - name: Deploy UI showcase
-        if: steps.changesets.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
+        if: steps.ensure-release.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.firebase-auth.outputs.credentials_file_path }}
         run: |
@@ -101,5 +148,5 @@ jobs:
           firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive
 
       - name: Skip showcase deploy
-        if: steps.changesets.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI == ''
+        if: steps.ensure-release.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI == ''
         run: echo "FIREBASE_SERVICE_ACCOUNT_DEML_UI is not set; showcase deploy skipped."
