@@ -25,24 +25,11 @@ const frontendEsbuild = path.join(
   ".bin",
   "esbuild",
 );
-const localTsc = path.join(packageDir, "node_modules", ".bin", "tsc");
-const frontendTsc = path.join(
-  rootDir,
-  "frontend",
-  "node_modules",
-  ".bin",
-  "tsc",
-);
 const esbuildBin = existsSync(localEsbuild)
   ? localEsbuild
   : existsSync(frontendEsbuild)
     ? frontendEsbuild
     : "esbuild";
-const tscBin = existsSync(localTsc)
-  ? localTsc
-  : existsSync(frontendTsc)
-    ? frontendTsc
-    : "tsc";
 
 mkdirSync(outDir, { recursive: true });
 
@@ -53,7 +40,7 @@ execFileSync(
     "--bundle",
     "--format=esm",
     "--target=es2022",
-    `--outfile=${path.join(outDir, "index.js")}`,
+    `--outfile=${path.join(outDir, "web-components.js")}`,
   ],
   { cwd: packageDir, stdio: "inherit" },
 );
@@ -70,16 +57,6 @@ execFileSync(
     `--outfile=${path.join(outDir, "viking-ui-elements.js")}`,
   ],
   { cwd: packageDir, stdio: "inherit" },
-);
-
-execFileSync(tscBin, ["--project", "tsconfig.elements.json"], {
-  cwd: packageDir,
-  stdio: "inherit",
-});
-
-copyFileSync(
-  path.join(outDir, "viking-ui-elements.js"),
-  path.join(outDir, "web-components.js"),
 );
 
 if (existsSync(widgetSource)) {

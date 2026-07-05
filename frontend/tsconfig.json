@@ -5,11 +5,6 @@
   "compilerOptions": {
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
-    "paths": {
-      "@dataengineeringformachinelearning/viking-ui": ["../packages/viking-ui/src/public-api.ts"],
-      "@dataengineeringformachinelearning/viking-ui/agnostic": ["../packages/viking-ui/src"],
-      "@dataengineeringformachinelearning/viking-ui/agnostic/*": ["../packages/viking-ui/src/*"]
-    },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
