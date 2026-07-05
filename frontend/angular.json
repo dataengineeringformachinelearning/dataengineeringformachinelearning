@@ -26,7 +26,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "stylePreprocessorOptions": {
-              "includePaths": ["projects/viking-ui/src/styles"]
+              "includePaths": ["../packages/viking-ui/src/styles"]
             },
             "assets": [
               {
