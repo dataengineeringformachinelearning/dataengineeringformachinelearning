@@ -23,13 +23,12 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background:
-      linear-gradient(
-        90deg,
-        transparent,
-        color-mix(in srgb, var(--viking-accent) 10%, transparent),
-        transparent
-      );
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-accent) 10%, transparent),
+      transparent
+    );
     opacity: 0.03;
   }
 }
@@ -82,8 +81,10 @@
     left: 0;
     width: 22px;
     height: 14px;
-    border-top: 1px solid color-mix(in srgb, var(--viking-accent) 40%, transparent);
-    border-left: 1px solid color-mix(in srgb, var(--viking-accent) 24%, transparent);
+    border-top: 1px solid
+      color-mix(in srgb, var(--viking-accent) 40%, transparent);
+    border-left: 1px solid
+      color-mix(in srgb, var(--viking-accent) 24%, transparent);
     opacity: 0.5;
     pointer-events: none;
   }
@@ -314,7 +315,8 @@
   flex-direction: column;
   gap: var(--viking-space-4);
   padding-block: var(--viking-space-5);
-  border-top: 1px solid color-mix(in srgb, var(--viking-accent) 20%, transparent);
+  border-top: 1px solid
+    color-mix(in srgb, var(--viking-accent) 20%, transparent);
   border-bottom: 1px solid var(--viking-border);
   scroll-margin-top: calc(
     var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
@@ -707,7 +709,7 @@
   display: grid;
   gap: var(--viking-space-5);
   align-items: center;
-  padding: var(--viking-space-5) 0 var(--viking-space-3);
+  padding: var(--viking-space-6) 0 var(--viking-space-4);
 }
 
 @media (min-width: 960px) {
@@ -740,7 +742,8 @@
   padding: var(--viking-space-1) var(--viking-space-2);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-pill);
-  background: var(--viking-surface);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow: var(--viking-shadow-xs);
   font-size: var(--viking-font-size-sm);
   font-weight: var(--viking-font-weight-semibold);
   letter-spacing: var(--viking-letter-spacing-wide);
@@ -776,17 +779,32 @@
 .landing-stat {
   padding: var(--viking-card-padding-compact);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius);
+  border-radius: var(--viking-radius-lg);
   background: var(--viking-surface-recipe, var(--viking-surface));
   min-width: 0;
-  box-shadow: var(--viking-shadow-xs);
+  box-shadow: var(--viking-shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-stat::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-border-strong) 72%, transparent),
+    transparent
+  );
 }
 
 .landing-section {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-3);
-  padding-block: var(--viking-space-4);
+  gap: var(--viking-space-4);
+  padding-block: var(--viking-page-section-gap);
   border-top: 1px solid var(--viking-border-subtle);
 }
 
@@ -826,11 +844,20 @@
   padding: var(--viking-card-padding);
   border: 1px solid var(--viking-border-strong);
   border-radius: var(--viking-radius-lg);
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  box-shadow: var(--viking-shadow-lg);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--viking-surface-raised) 22%, transparent),
+      transparent 32%
+    ),
+    var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow:
+    var(--viking-shadow-lg),
+    inset 0 0 0 1px
+      color-mix(in srgb, var(--viking-border-subtle) 72%, transparent);
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
   position: relative;
   overflow: hidden;
 }
@@ -846,6 +873,38 @@
     color-mix(in srgb, var(--viking-accent) 40%, transparent),
     transparent
   );
+}
+
+.landing-preview-panel::after {
+  content: "";
+  position: absolute;
+  inset: auto var(--viking-space-4) 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-accent-secondary) 36%, transparent),
+    transparent
+  );
+}
+
+.landing-preview-runelock {
+  position: absolute;
+  inset: var(--viking-space-3) var(--viking-space-3) auto auto;
+  display: grid;
+  grid-template-columns: repeat(3, var(--viking-space-2));
+  gap: var(--viking-space-half);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.landing-preview-runelock span {
+  height: var(--viking-space-3);
+  border-inline-start: 1px solid
+    color-mix(in srgb, var(--viking-accent) 42%, transparent);
+  border-block-start: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 68%, transparent);
+  transform: skewX(-12deg);
 }
 
 .landing-preview-toolbar,
@@ -886,10 +945,58 @@
   gap: var(--viking-space-half);
   padding: var(--viking-space-1) var(--viking-space-2);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-pill);
+  border-radius: var(--viking-radius);
   background: var(--viking-surface-alt);
   font-size: var(--viking-font-size-sm);
   font-weight: var(--viking-font-weight-medium);
+  box-shadow: var(--viking-shadow-xs);
+}
+
+.landing-visual-lock {
+  position: relative;
+}
+
+.landing-visual-lock::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-accent) 28%, transparent),
+    color-mix(in srgb, var(--viking-accent-secondary) 20%, transparent),
+    transparent
+  );
+}
+
+.landing-doctrine-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-3);
+}
+
+@media (min-width: 760px) {
+  .landing-doctrine-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1120px) {
+  .landing-doctrine-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+viking-card-wc.landing-doctrine-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  min-height: 100%;
+}
+
+viking-card-wc.landing-doctrine-card > * {
+  margin-block: 0;
 }
 
 .landing-framework-chip code {
@@ -900,7 +1007,7 @@
 .landing-quickstart-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-4);
   align-items: start;
 }
 

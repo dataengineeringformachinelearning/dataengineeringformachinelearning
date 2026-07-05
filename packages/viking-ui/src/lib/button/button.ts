@@ -57,7 +57,7 @@ export type VikingButtonVariant =
         <viking-icon [name]="icon()!" [size]="iconSize()" />
       }
       <span class="viking-btn-label"><ng-content /></span>
-      @if (iconTrailing()) {
+      @if (!loading() && iconTrailing()) {
         <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
       }
       @if (kbd()) {
@@ -86,7 +86,7 @@ export class VikingButton {
   readonly pressed = output<MouseEvent>();
 
   protected readonly iconSize = computed(() =>
-    this.size() === "base" ? 22 : 18,
+    this.size() === "base" ? 20 : 18,
   );
 
   protected onPress = (event: Event): void => {

@@ -10,6 +10,22 @@ const packageDir = path.join(
 const rootDir = path.join(packageDir, "..", "..");
 const outDir = path.join(packageDir, "dist");
 const entry = path.join(packageDir, "src", "web-components", "index.ts");
+const frameworkNeutralEntries = [
+  {
+    entry: path.join(packageDir, "src", "core", "icons.public.ts"),
+    outfile: path.join(outDir, "icons.js"),
+  },
+  {
+    entry: path.join(
+      packageDir,
+      "src",
+      "lib",
+      "site-drakkar",
+      "site-drakkar.config.ts",
+    ),
+    outfile: path.join(outDir, "site-drakkar.js"),
+  },
+];
 const widgetSource = path.join(
   rootDir,
   "frontend",
@@ -32,6 +48,20 @@ const esbuildBin = existsSync(localEsbuild)
     : "esbuild";
 
 mkdirSync(outDir, { recursive: true });
+
+for (const { entry: utilityEntry, outfile } of frameworkNeutralEntries) {
+  execFileSync(
+    esbuildBin,
+    [
+      utilityEntry,
+      "--bundle",
+      "--format=esm",
+      "--target=es2022",
+      `--outfile=${outfile}`,
+    ],
+    { cwd: packageDir, stdio: "inherit" },
+  );
+}
 
 execFileSync(
   esbuildBin,

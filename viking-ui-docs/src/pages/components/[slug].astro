@@ -63,7 +63,7 @@ const hasWebComponentTag = Boolean(component.wcSelector);
       <p class="viking-text-muted">
         Copy-paste these patterns on any static page, internal dashboard, or external site.
       </p>
-      <div class="viking-card" style="display: grid; gap: 1rem;">
+      <div class="viking-card viking-stack viking-stack--loose">
         <div>
           <p class="viking-label">1) CSS only</p>
           <pre><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />`}</code></pre>
@@ -83,8 +83,8 @@ const hasWebComponentTag = Boolean(component.wcSelector);
         )}
         <div>
           <p class="viking-label">4) Version pinning</p>
-          <pre><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/web-components.js"></script>`}</code></pre>
+          <pre><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/web-components.js"></script>`}</code></pre>
         </div>
         {hasWebComponentTag && (
           <div>
@@ -99,7 +99,7 @@ const hasWebComponentTag = Boolean(component.wcSelector);
     <script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
   </head>
   <body>
-    <main style="max-width: 640px; margin: 2rem auto;">
+    <main class="page-inner-wrapper">
       <${jsdelivrTag}>${component.name} via CDN</${jsdelivrTag}>
     </main>
   </body>

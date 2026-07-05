@@ -8,6 +8,22 @@
   const iconPaths = () => window.__VIKING_ICON_PATHS ?? {};
   const filledIconPaths = () => window.__VIKING_ICON_FILLED_PATHS ?? {};
 
+  const closeStaticMobileMenu = () => {
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (!menuBtn || !mobileMenu) return;
+    mobileMenu.classList.remove('open');
+    mobileMenu.setAttribute('hidden', 'true');
+    mobileMenu.style.setProperty('display', 'none', 'important');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    menuBtn.setAttribute('aria-label', 'Toggle navigation menu');
+    const menuIcon = menuBtn.querySelector('[data-viking-icon]');
+    if (menuIcon) {
+      menuIcon.setAttribute('data-viking-icon', 'menu');
+      setIcon(menuIcon, 'menu', 24);
+    }
+  };
+
   const resolveIconColor = color => {
     if (color === 'accent') return 'var(--viking-accent, var(--viking-teal-600))';
     if (color === 'muted') return 'var(--viking-text-muted, #777777)';
@@ -72,6 +88,12 @@
     if (!menuBtn || !mobileMenu) return;
 
     menuBtn.setAttribute('aria-controls', 'mobile-menu');
+    if (menuBtn.dataset.mobileMenuBound === 'true') {
+      closeStaticMobileMenu();
+      return;
+    }
+    menuBtn.dataset.mobileMenuBound = 'true';
+
     const menuIcon = menuBtn.querySelector('[data-viking-icon]');
     const setMobileMenuOpen = isOpen => {
       mobileMenu.classList.remove('open');
@@ -100,24 +122,10 @@
     };
 
     const interactiveMenuTarget = target => {
-      return target?.closest?.(
-        'a,button,viking-button-wc,viking-button,[role="button"]',
-      );
+      return target?.closest?.('a,button,viking-button-wc,viking-button,[role="button"]');
     };
 
-    const openMobileMenu = () => {
-      setMobileMenuOpen(true);
-    };
-
-    const syncMobileMenu = isOpen => {
-      if (isOpen) {
-        openMobileMenu();
-        return;
-      }
-      setMobileMenuOpen(false);
-    };
-
-    const closeMobileMenu = () => setMobileMenuOpen(false);
+    const closeMobileMenu = closeStaticMobileMenu;
 
     const closeOnDesktop = () => {
       if (window.innerWidth >= 768) {
@@ -125,10 +133,24 @@
       }
     };
 
-    menuBtn.addEventListener('viking-press', toggleMobileMenu);
+    let lastPressToggle = 0;
+    const toggleFromEvent = event => {
+      const now = Date.now();
+      if (event.type === 'click' && now - lastPressToggle < 250) {
+        return;
+      }
+      if (event.type === 'viking-press') {
+        lastPressToggle = now;
+      }
+      event.preventDefault();
+      const isOpen = mobileMenu.classList.contains('open');
+      setMobileMenuOpen(!isOpen);
+    };
+
+    menuBtn.addEventListener('viking-press', toggleFromEvent);
     menuBtn.addEventListener('click', event => {
       if (event.target === menuBtn || menuBtn.contains(event.target)) {
-        toggleMobileMenu(event);
+        toggleFromEvent(event);
       }
     });
 
@@ -148,29 +170,26 @@
       if (!target) {
         return;
       }
-      const isInsideNav =
-        mobileMenu.contains(target) || menuBtn.contains(target);
+      const isInsideNav = mobileMenu.contains(target) || menuBtn.contains(target);
       if (!isInsideNav) {
         closeMobileMenu();
       }
     });
 
     window.addEventListener('resize', closeOnDesktop);
+    const desktopQuery =
+      typeof window.matchMedia === 'function' ? window.matchMedia('(min-width: 768px)') : null;
+    desktopQuery?.addEventListener?.('change', closeOnDesktop);
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        closeMobileMenu();
+      }
+    });
 
     mobileMenu.addEventListener('click', maybeCloseForEvent);
     mobileMenu.addEventListener('viking-press', maybeCloseForEvent);
 
-    function toggleMobileMenu() {
-      const isOpen = mobileMenu.classList.contains('open');
-      syncMobileMenu(!isOpen);
-    }
-
-    closeOnDesktop();
-    if (window.innerWidth >= 768) {
-      closeMobileMenu();
-    } else {
-      closeMobileMenu();
-    }
+    closeMobileMenu();
   };
 
   const initSearchTrigger = () => {
@@ -343,7 +362,7 @@
 
     const signOut = () => {
       setSignOutBusy(true);
-      closeMobileMenu();
+      closeStaticMobileMenu();
       clearAuthStorage();
       updateAuthUIFromStatus({ isAuthenticated: false });
 

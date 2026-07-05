@@ -13,8 +13,9 @@ import { SITE } from '../lib/site';
       <p class="viking-label">Integration</p>
       <h1 class="viking-heading viking-heading-xl">Usage in different frameworks</h1>
       <p class="viking-text-muted">
-        Viking-UI v2 is framework-agnostic at the token and CSS layer. Choose the consumption mode
-        that fits your stack — all paths share the same <code>--viking-*</code> variables.
+        Viking-UI is one npm package with multiple public entrypoints. Choose the consumption mode
+        that fits your stack — Angular wrappers, Web Components, static CSS, and utility subpaths all
+        share the same <code>--viking-*</code> variables.
       </p>
     </header>
 
@@ -22,11 +23,10 @@ import { SITE } from '../lib/site';
       <article class="framework-card">
         <h2 class="viking-heading viking-heading-sm">Angular</h2>
         <p class="viking-text-muted">
-          Full component library with signals, OnPush, and thin Web Component wrappers. Used by
-          deml.app.
+          Full component library with signals, OnPush, and standalone wrappers. Used by deml.app.
         </p>
         <ul class="viking-text-muted">
-          <li>Import from <code>{SITE.npm}</code></li>
+          <li>Import from <code>{SITE.npm}</code> or <code>{SITE.npm}/angular</code></li>
           <li>Compose via <code>viking-field</code> stacks</li>
           <li>Charts, auth, kanban — full API</li>
         </ul>
@@ -40,6 +40,7 @@ import { SITE } from '../lib/site';
         <ul class="viking-text-muted">
           <li>Load synced <code>viking-ui.css</code> or jsDelivr CDN</li>
           <li>Use <code>&lt;viking-button-wc&gt;</code> in .astro files</li>
+          <li>Use <code>{SITE.npm}/icons</code> and <code>{SITE.npm}/site-drakkar</code> for prerender-safe utilities</li>
           <li>Token-only SCSS for custom layouts</li>
         </ul>
       </article>
@@ -60,7 +61,8 @@ import { SITE } from '../lib/site';
           Framework-agnostic custom elements with Shadow DOM and token injection.
         </p>
         <ul class="viking-text-muted">
-          <li><code>viking-ui-elements.js</code> auto-registers tags</li>
+          <li><code>web-components.js</code> auto-registers tags as an ESM bundle</li>
+          <li><code>viking-ui-elements.js</code> remains available as an IIFE compatibility bundle</li>
           <li>Prefer jsDelivr <code>web-components.js</code> for external or unmanaged pages</li>
           <li><code>viking-button-wc</code>, <code>viking-input-wc</code> today</li>
           <li>More primitives shipping incrementally</li>
@@ -108,12 +110,12 @@ import { SITE } from '../lib/site';
 <!-- Pinned release -->
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/web-components.js"
 ></script>
 
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/viking-ui.css"
 />`}</code></pre>
 
       <p class="viking-label">5) Full minimal HTML</p>
@@ -122,7 +124,6 @@ import { SITE } from '../lib/site';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Viking Web Component example</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
@@ -133,7 +134,7 @@ import { SITE } from '../lib/site';
     ></script>
   </head>
   <body>
-    <main style="max-width: 640px; margin: 2rem auto; display: grid; gap: 1rem;">
+    <main class="page-inner-wrapper viking-stack viking-stack--loose">
       <h1 class="viking-heading viking-heading-lg">Operational widget</h1>
       <viking-card-wc compact>
         <h2 class="viking-heading viking-heading-sm">External site ready</h2>
@@ -185,6 +186,10 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
 ---
 <link rel="stylesheet" href="/assets/viking-ui.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>
+
+// prerender-safe utilities
+import { resolveVikingIcon } from '${SITE.npm}/icons';
+import { SITE_NAV_LINKS } from '${SITE.npm}/site-drakkar';
 
 <viking-button-wc variant="primary">Launch</viking-button-wc>
 <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>`,

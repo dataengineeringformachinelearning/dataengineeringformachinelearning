@@ -17,7 +17,7 @@ const renderSuiteHeader = ({
       user-name="Maya Reyes"
       user-email="maya@deml.example"
     ></viking-suite-header>
-    <p class="viking-text-muted" style="margin-top: 1rem;">Authenticated navigation surfaces now show the user menu and dashboard actions.</p>
+    <p class="viking-text-muted viking-story-note">Authenticated navigation surfaces now show the user menu and dashboard actions.</p>
   </div>
 `;
 

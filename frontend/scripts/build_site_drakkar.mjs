@@ -223,7 +223,7 @@ const navbarRightWc = (
 
       <viking-theme-toggle-wc class="theme-toggle-btn" role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
-      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" id="mobile-menu-btn">
+      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
         ${iconSlot('menu', 24)}
       </viking-button-wc>`;
 
@@ -258,7 +258,7 @@ const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" ro
 
       <viking-theme-toggle-wc class="theme-toggle-btn" role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
-      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" id="mobile-menu-btn">
+      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
         <span data-viking-icon="menu" data-viking-icon-size="24" aria-hidden="true"></span>
       </viking-button-wc>`;
 
@@ -336,7 +336,7 @@ ${navbarRightWc('{{ frontend_url }}/login', '{{ frontend_url }}/login')}
     </div>
   </div>
 
-  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" hidden>
 ${navLinks.map(link => navLinkHtml(link, 'mobile-nav-btn')).join('\n')}
 
     <div class="mobile-divider"></div>
@@ -359,13 +359,13 @@ import {
   SITE_NAV_LINKS,
   resolveNavHref,
   resolveBrandHref,
-} from '../../../packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`
+} from '@dataengineeringformachinelearning/viking-ui/site-drakkar';`
     : `import { siteEnv } from '../lib/site-env';
 import {
   SITE_NAV_LINKS,
   resolveNavHref,
   resolveBrandHref,
-} from '../../../packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`;
+} from '@dataengineeringformachinelearning/viking-ui/site-drakkar';`;
 
   const setup = isDocs
     ? `const urls = { app: SITE.app, marketing: SITE.marketing, backend: 'https://backend.deml.app' };
@@ -433,7 +433,7 @@ ${navbarRightWcAstro(loginHrefExpr)}
     </div>
   </div>
 
-  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation">
+  <nav class="mobile-menu" id="mobile-menu" aria-label="Mobile navigation" hidden>
     ${navLinkBlock('mobile-nav-btn')}
 
     <div class="mobile-divider"></div>

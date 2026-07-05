@@ -3,7 +3,7 @@
   display: grid;
   align-content: start;
   justify-items: start;
-  padding: clamp(1rem, 1.6vw, 2rem);
+  padding: var(--viking-page-gutter);
   background:
     linear-gradient(
       180deg,
@@ -17,7 +17,7 @@
       transparent 1px,
       transparent 9px
     );
-  color: var(--viking-text, #f4f4f4);
+  color: var(--viking-text);
   border-radius: 0;
   position: relative;
   overflow: hidden;
@@ -36,12 +36,12 @@
 }
 
 .viking-story-panel {
-  width: min(100%, 1000px);
-  border: 1px solid var(--viking-border, rgba(255, 255, 255, 0.15));
-  border-radius: var(--viking-radius-lg, 14px);
+  width: min(100%, var(--viking-content-max-width));
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
   background: var(--viking-surface-recipe, var(--viking-surface));
   box-shadow: var(--viking-shadow-md);
-  padding: 1.5rem;
+  padding: var(--viking-card-padding);
   position: relative;
   overflow: hidden;
   isolation: isolate;
@@ -79,11 +79,15 @@
 .viking-story-grid {
   display: grid;
   gap: var(--viking-space-4);
-  margin-top: 1rem;
+  margin-top: var(--viking-space-4);
 }
 
 .viking-story-grid.cols-2 {
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.viking-story-grid.cols-3 {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
 }
 
 .viking-story-row {
@@ -107,4 +111,60 @@
 .landing-playground-band {
   width: 100%;
   margin: 0;
+}
+
+.viking-story-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-4);
+}
+
+.viking-story-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  max-width: var(--viking-text-max-width);
+}
+
+.viking-story-header .viking-heading-sm,
+.viking-story-header .viking-heading-md {
+  margin: 0;
+}
+
+.viking-story-metric-row {
+  display: grid;
+  gap: var(--viking-space-3);
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.viking-story-metric {
+  display: flex;
+  min-height: var(--viking-target-size-lg);
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-3);
+  border: 1px solid var(--viking-border-subtle);
+  border-radius: var(--viking-radius);
+  background: var(--viking-surface-muted);
+}
+
+.viking-story-checklist {
+  display: grid;
+  gap: var(--viking-space-2);
+  margin: 0;
+  padding-left: var(--viking-space-4);
+}
+
+.viking-story-note {
+  margin: var(--viking-space-3) 0 0;
+}
+
+.viking-story-footer-space {
+  margin-top: var(--viking-space-4);
+}
+
+.viking-theme-toggle-story-compact {
+  transform: scale(0.95);
+  transform-origin: center;
 }

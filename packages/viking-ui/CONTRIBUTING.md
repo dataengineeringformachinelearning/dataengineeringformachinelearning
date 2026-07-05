@@ -19,9 +19,12 @@ This package is the canonical Viking-UI library. For the full contribution guide
 ```text
 packages/viking-ui/
 ├── src/styles/_variables.scss    ← edit tokens here first
-├── src/lib/                     ← Angular components
+├── src/core/                    ← framework-neutral registries/utilities
+├── src/lib/                     ← Angular components and wrappers
 ├── src/web/                     ← Web Components (viking-*-wc)
-├── src/public-api.ts            ← Angular export surface
+├── src/web-components/          ← Web Component bundle entry
+├── src/public-api.ts            ← Angular/root export surface
+├── package.json                 ← npm/CDN subpath exports
 ├── viking.manifest.json         ← machine-readable catalog
 └── README/CONTRIBUTING/LICENSE  ← package metadata
 ```
@@ -30,11 +33,10 @@ packages/viking-ui/
 
 ```bash
 # From repo root
-npm run build:viking-ui --prefix frontend
-npm run build:viking-ui:package --prefix ../..
+npm run build:viking-ui:package
 python scripts/sync_design_system.py
-cd frontend && npm run test:viking-ui
-cd frontend && npm run check:viking-upstream
+npm run test:viking-ui:package
+npm run pack:viking-ui
 ```
 
 ## Adding a component (summary)
@@ -42,7 +44,7 @@ cd frontend && npm run check:viking-upstream
 1. Token-only SCSS in `packages/viking-ui/src/styles/`
 2. Optional Web Component in `packages/viking-ui/src/web/` (`viking-{name}-wc`)
 3. Angular wrapper in `src/lib/` with signal `input()` / `output()`
-4. Export from `public-api.ts` + entry in `viking.manifest.json`
+4. Export from `public-api.ts`, add subpath exports in `package.json` when needed, and update `viking.manifest.json`
 5. Showcase demo in `viking-ui-docs/src/lib/component-registry.ts`
 
 See the root [CONTRIBUTING.md](../../CONTRIBUTING.md) for the complete checklist.

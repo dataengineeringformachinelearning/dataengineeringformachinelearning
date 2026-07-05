@@ -34,7 +34,7 @@ const renderPlayground = ({
       <span class="viking-story-playground-title">Viking UI Playground</span>
       <h3 class="viking-heading-sm">Lockheed + Northman battlefield shell</h3>
       <p class="viking-text-muted">
-        Tune core components in one place with strict tokens, compact spacing, and production-safe
+        Tune core components in one place with strict tokens, generous precision spacing, and production-safe
         interaction states.
       </p>
       <div class="viking-story-row">

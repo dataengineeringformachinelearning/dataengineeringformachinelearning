@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  HostListener,
   ViewEncapsulation,
   computed,
   input,
@@ -155,6 +156,8 @@ import {
             class="menu-toggle-btn"
             [icon]="mobileMenuOpen() ? 'x' : 'menu'"
             id="mobile-menu-btn"
+            [attr.aria-controls]="'mobile-menu'"
+            [attr.aria-expanded]="mobileMenuOpen() ? 'true' : 'false'"
             [label]="
               mobileMenuOpen()
                 ? 'Close navigation menu'
@@ -167,7 +170,9 @@ import {
 
       <nav
         class="mobile-menu"
+        id="mobile-menu"
         [class.open]="mobileMenuOpen()"
+        [attr.hidden]="mobileMenuOpen() ? null : ''"
         aria-label="Mobile navigation"
       >
         @for (link of navLinks(); track link.id + "-mobile") {
@@ -277,10 +282,26 @@ export class VikingSiteNavbar {
   }
 
   protected openSearch(): void {
+    this.closeMobileMenu();
     this.searchOpen.emit();
     const widgets = (
       globalThis as { DemlWidgets?: { openSearch?: () => void } }
     ).DemlWidgets;
     widgets?.openSearch?.();
+  }
+
+  @HostListener("window:resize")
+  protected closeMobileMenuOnDesktop(): void {
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia("(min-width: 768px)").matches
+    ) {
+      this.closeMobileMenu();
+    }
+  }
+
+  @HostListener("document:keydown.escape")
+  protected closeMobileMenuOnEscape(): void {
+    this.closeMobileMenu();
   }
 }

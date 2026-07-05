@@ -23,6 +23,12 @@
 }
 
 .viking-btn {
+  --viking-btn-depth-shadow: var(--viking-shadow-sm);
+  --viking-btn-hover-shadow: var(--viking-shadow-hover);
+  --viking-btn-press-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--viking-black) 28%, transparent),
+    var(--viking-shadow-xs);
+
   font-family: inherit;
   font-size: var(--viking-font-size-ui, var(--viking-font-size-sm));
   font-weight: var(--viking-font-weight-semibold);
@@ -31,10 +37,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-1-5);
   min-height: var(--viking-control-height);
-  padding: 0 var(--viking-control-padding-x);
-  border-radius: var(--viking-radius-lg);
+  padding: var(--viking-space-half) var(--viking-control-padding-x);
+  border-radius: var(--viking-radius-md);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -49,7 +55,7 @@
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
   overflow: hidden;
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-depth-shadow);
 }
 
 .viking-btn::before {
@@ -64,7 +70,7 @@
     transparent
   );
   pointer-events: none;
-  opacity: 0.82;
+  opacity: 0.88;
   transition: var(--viking-transition-interactive);
 }
 
@@ -82,9 +88,13 @@
   box-shadow: none !important;
 }
 
+.viking-btn[aria-busy='true'] {
+  cursor: wait;
+}
+
 .viking-btn[aria-busy='true']::before,
 .viking-btn[aria-busy='true'] .viking-btn-label {
-  opacity: 0.85;
+  opacity: 0.78;
   transform: translateY(1px);
 }
 
@@ -188,27 +198,26 @@
   flex-shrink: 0;
   pointer-events: none;
   flex: 0 0 auto;
+  margin-block: calc(var(--viking-space-half) * -1);
 }
 
 .viking-btn-outline {
   background: var(--viking-surface);
   color: var(--viking-text);
   border-color: var(--viking-border-strong);
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-depth-shadow);
 }
 
 .viking-btn-outline:hover:not(:disabled):not([aria-busy='true']) {
-  background: var(--viking-surface-alt);
+  background: color-mix(in srgb, var(--viking-accent) 5%, var(--viking-surface-alt));
   border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border-strong));
-  box-shadow: var(--viking-shadow-md);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-btn-outline:active:not(:disabled):not([aria-busy='true']) {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  box-shadow: inset 0 1px 2px
-      color-mix(in srgb, var(--viking-black) 28%, transparent),
-    var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-press-shadow);
   border-color: var(--viking-border-strong);
 }
 
@@ -216,21 +225,21 @@
   background: var(--viking-accent);
   color: var(--viking-accent-content);
   border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow:
+    var(--viking-btn-depth-shadow),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 12%, transparent);
 }
 
 .viking-btn-primary:hover:not(:disabled):not([aria-busy='true']) {
   background: var(--viking-accent-hover);
   border-color: var(--viking-accent-hover);
-  box-shadow: var(--viking-shadow-hover);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-btn-primary:active:not(:disabled):not([aria-busy='true']) {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  box-shadow: inset 0 1px 2px
-      color-mix(in srgb, var(--viking-black) 28%, transparent),
-    var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-press-shadow);
   border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
 }
 
@@ -238,21 +247,21 @@
   background: var(--viking-accent-secondary);
   color: var(--viking-accent-secondary-content);
   border-color: color-mix(in srgb, var(--viking-accent-secondary) 82%, var(--viking-black));
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow:
+    var(--viking-btn-depth-shadow),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent);
 }
 
 .viking-btn-secondary:hover:not(:disabled):not([aria-busy='true']) {
   background: var(--viking-accent-secondary-hover);
   border-color: var(--viking-accent-secondary-hover);
-  box-shadow: var(--viking-shadow-hover);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-btn-secondary:active:not(:disabled):not([aria-busy='true']) {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  box-shadow: inset 0 1px 2px
-      color-mix(in srgb, var(--viking-black) 28%, transparent),
-    var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-press-shadow);
   border-color: color-mix(in srgb, var(--viking-accent-secondary) 82%, var(--viking-black));
 }
 
@@ -266,13 +275,13 @@
 .viking-btn-filled:hover:not(:disabled):not([aria-busy='true']) {
   border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border));
   background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface-alt));
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-depth-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-btn-filled:active:not(:disabled):not([aria-busy='true']) {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-press-shadow);
   border-color: color-mix(in srgb, var(--viking-accent) 20%, var(--viking-border));
   background: color-mix(in srgb, var(--viking-surface-alt) 84%, var(--viking-accent));
 }
@@ -281,13 +290,15 @@
   background: var(--viking-danger);
   color: var(--viking-on-danger);
   border-color: color-mix(in srgb, var(--viking-danger) 85%, var(--viking-black));
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow:
+    var(--viking-btn-depth-shadow),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent);
 }
 
 .viking-btn-danger:hover:not(:disabled):not([aria-busy='true']) {
   background: color-mix(in srgb, var(--viking-danger) 88%, var(--viking-white));
   border-color: color-mix(in srgb, var(--viking-danger) 92%, var(--viking-white));
-  box-shadow: var(--viking-shadow-hover);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
@@ -295,9 +306,7 @@
   transform: translateY(0) scale(var(--viking-state-active-scale));
   border-color: color-mix(in srgb, var(--viking-danger) 72%, var(--viking-black));
   background: color-mix(in srgb, var(--viking-danger) 84%, var(--viking-black));
-  box-shadow: inset 0 1px 2px
-      color-mix(in srgb, var(--viking-black) 28%, transparent),
-    var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-press-shadow);
 }
 
 .viking-btn-ghost {
@@ -311,6 +320,8 @@
 .viking-btn-ghost:hover:not(:disabled):not([aria-busy='true']) {
   background: var(--viking-accent-soft);
   color: var(--viking-accent-strong);
+  border-color: var(--viking-border-subtle);
+  transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-btn-ghost:active:not(:disabled):not([aria-busy='true']) {
@@ -356,11 +367,12 @@
 }
 
 .viking-btn-spinner {
-  width: 1.125rem;
-  height: 1.125rem;
+  flex: 0 0 auto;
+  width: var(--viking-icon-size-sm, 18px);
+  height: var(--viking-icon-size-sm, 18px);
   border: 2px solid currentColor;
   border-right-color: transparent;
-  border-radius: 50%;
+  border-radius: var(--viking-radius-pill);
   animation: viking-spin 0.8s linear infinite;
 }
 

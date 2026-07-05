@@ -1,8 +1,9 @@
 // Shared navbar + theme toggle (frontend Angular, marketing Astro, backend Django).
-@use 'drakkar-buttons' as *;
+@use "drakkar-buttons" as *;
 
 @mixin viking-navbar-search-shell-focus {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--viking-ring));
+  outline: var(--viking-ring-width, 2px) solid
+    var(--viking-ring, var(--viking-ring));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
@@ -46,10 +47,18 @@
   border: 1px solid var(--viking-border-strong, var(--border));
   border-radius: var(--viking-radius, 8px);
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
-  transition: var(--viking-transition-interactive, border-color 0.25s ease, box-shadow 0.25s ease);
+  transition: var(
+    --viking-transition-interactive,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease
+  );
 
   &:hover {
-    border-color: color-mix(in srgb, var(--viking-accent-strong, var(--viking-ring)) 55%, var(--viking-border-strong, var(--border)));
+    border-color: color-mix(
+      in srgb,
+      var(--viking-accent-strong, var(--viking-ring)) 55%,
+      var(--viking-border-strong, var(--border))
+    );
     box-shadow: var(--viking-shadow-md, var(--shadow-md));
   }
 }
@@ -293,7 +302,8 @@ viking-button-wc.auth-signout-btn::part(control) {
 .viking-button-wc.theme-toggle-btn:focus-visible::part(control),
 .viking-button-wc.navbar-search-trigger:focus-visible::part(control),
 .viking-button-wc.navbar-search-mobile-btn:focus-visible::part(control) {
-  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--focus-ring-color));
+  outline: var(--viking-ring-width, 2px) solid
+    var(--viking-ring, var(--focus-ring-color));
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
@@ -359,11 +369,19 @@ viking-button[hidden] {
 
 .nav-btn:hover {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--viking-accent) 10%, transparent) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--viking-accent) 10%,
+    transparent
+  ) !important;
 }
 
-html[data-theme='light'] {
-  --nav-link-color: color-mix(in srgb, var(--viking-charcoal-900) 88%, var(--white));
+html[data-theme="light"] {
+  --nav-link-color: color-mix(
+    in srgb,
+    var(--viking-charcoal-900) 88%,
+    var(--white)
+  );
 
   .nav-btn,
   .mobile-nav-btn {
@@ -379,13 +397,21 @@ html[data-theme='light'] {
 
   .nav-btn:hover,
   .mobile-nav-btn:hover {
-    background-color: color-mix(in srgb, var(--viking-accent) 10%, transparent) !important;
+    background-color: color-mix(
+      in srgb,
+      var(--viking-accent) 10%,
+      transparent
+    ) !important;
   }
 }
 
 .nav-btn.active {
   color: var(--text-color) !important;
-  background-color: color-mix(in srgb, var(--viking-accent) 14%, transparent) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--viking-accent) 14%,
+    transparent
+  ) !important;
   box-shadow:
     inset 0 -2px 0 0 var(--viking-accent),
     0 0 12px color-mix(in srgb, var(--viking-accent) 18%, transparent) !important;
@@ -482,10 +508,13 @@ viking-button-wc.menu-toggle-btn [data-viking-icon] {
   line-height: 1;
 }
 
-.menu-toggle-btn[aria-expanded='true'] {
+.menu-toggle-btn[aria-expanded="true"] {
   border-color: var(--viking-accent, var(--viking-accent));
   color: var(--viking-accent-strong, var(--viking-ring));
-  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent));
+  background: var(
+    --viking-accent-soft,
+    color-mix(in srgb, var(--viking-accent) 12%, transparent)
+  );
   box-shadow: var(--viking-shadow-sm, var(--shadow-sm));
 }
 
@@ -521,6 +550,17 @@ button.auth-btn {
   line-height: 1 !important;
 }
 
+.auth-btn::part(label),
+.auth-signout-btn::part(label),
+.mobile-auth-btn::part(label) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--viking-space-1, 8px) !important;
+  min-width: 0;
+  line-height: 1 !important;
+}
+
 .auth-btn::part(control),
 viking-button.auth-btn::part(control),
 viking-button.auth-btn viking-button-wc::part(control),
@@ -536,6 +576,17 @@ viking-button-wc.auth-btn::part(control),
   height: var(--viking-control-height, 40px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
   box-sizing: border-box !important;
+}
+
+.auth-btn[aria-busy="true"]::part(control),
+.auth-btn[loading]::part(control),
+.auth-signout-btn[aria-busy="true"]::part(control),
+.auth-signout-btn[loading]::part(control),
+viking-button.auth-btn viking-button-wc[aria-busy="true"]::part(control),
+viking-button.auth-btn viking-button-wc[loading]::part(control),
+viking-button-wc.auth-btn[aria-busy="true"]::part(control),
+viking-button-wc.auth-btn[loading]::part(control) {
+  min-width: var(--viking-btn-min-width, 120px) !important;
 }
 
 .auth-signout-btn {
@@ -563,21 +614,39 @@ viking-button-wc.auth-btn::part(control),
 
 .auth-btn [data-viking-icon],
 .auth-btn [data-viking-icon] svg,
+.auth-btn svg,
 .auth-signout-btn [data-viking-icon],
-.auth-signout-btn [data-viking-icon] svg {
+.auth-signout-btn [data-viking-icon] svg,
+.auth-signout-btn svg,
+#auth-icon-desktop,
+#auth-icon-mobile {
   margin: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
   width: 16px !important;
   height: 16px !important;
+  min-width: 16px !important;
   line-height: 1 !important;
+  flex: 0 0 auto !important;
+}
+
+#auth-text-desktop,
+#auth-text-mobile {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  line-height: 1;
 }
 
 .auth-signout-btn:hover {
   color: var(--text-color) !important;
   border-color: var(--viking-crimson-500) !important;
-  background: color-mix(in srgb, var(--viking-crimson-500) 10%, transparent) !important;
+  background: color-mix(
+    in srgb,
+    var(--viking-crimson-500) 10%,
+    transparent
+  ) !important;
 }
 
 .mobile-menu:not(.open) {
@@ -594,7 +663,9 @@ viking-button-wc.auth-btn::part(control),
   left: 0;
   right: 0;
   width: auto;
-  max-height: calc(100dvh - var(--viking-navbar-height, var(--navbar-height, 64px)));
+  max-height: calc(
+    100dvh - var(--viking-navbar-height, var(--navbar-height, 64px))
+  );
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -603,7 +674,9 @@ viking-button-wc.auth-btn::part(control),
   box-shadow: var(--viking-shadow-md, var(--shadow-md));
   border-bottom: 1px solid var(--viking-border, var(--border));
   padding: var(--viking-space-3, 24px);
-  padding-bottom: calc(var(--viking-space-3, 24px) + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(
+    var(--viking-space-3, 24px) + env(safe-area-inset-bottom, 0px)
+  );
   box-sizing: border-box;
   z-index: 49;
   gap: var(--viking-space-half, 4px);
@@ -668,12 +741,18 @@ viking-button-wc.auth-btn::part(control),
 
 .mobile-nav-btn:hover {
   color: var(--viking-text, var(--text-color)) !important;
-  background-color: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 8%, transparent)) !important;
+  background-color: var(
+    --viking-accent-soft,
+    color-mix(in srgb, var(--viking-accent) 8%, transparent)
+  ) !important;
 }
 
 .mobile-nav-btn.active {
   color: var(--viking-text, var(--text-color)) !important;
-  background-color: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent)) !important;
+  background-color: var(
+    --viking-accent-soft,
+    color-mix(in srgb, var(--viking-accent) 12%, transparent)
+  ) !important;
   box-shadow: inset 0 0 0 1px var(--viking-accent-strong, var(--viking-ring)) !important;
 }
 
@@ -709,29 +788,40 @@ viking-button-wc.auth-btn::part(control),
 }
 
 .glowing-icon-sm {
-  color: var(--color-primary, var(--primary-text-color, var(--viking-accent))) !important;
+  color: var(
+    --color-primary,
+    var(--primary-text-color, var(--viking-accent))
+  ) !important;
   transition: all 0.3s ease;
 }
 
 // Glow on the brand link wrapper so mat-icon overflow does not clip the filter.
 .navbar-brand.glowing-icon-sm,
 .navbar-brand:has(.glowing-icon-sm) {
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));
+  filter: drop-shadow(
+    0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent)
+  );
 }
 
 .navbar-brand.glowing-icon-sm:hover,
 .navbar-brand:has(.glowing-icon-sm):hover {
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent));
+  filter: drop-shadow(
+    0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent)
+  );
 }
 
 .loader-logo.glowing-icon-sm,
 :not(.navbar-brand) > .glowing-icon-sm {
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent));
+  filter: drop-shadow(
+    0 0 6px color-mix(in srgb, var(--color-primary) 60%, transparent)
+  );
 }
 
 .loader-logo.glowing-icon-sm:hover,
 :not(.navbar-brand) > .glowing-icon-sm:hover {
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent));
+  filter: drop-shadow(
+    0 0 10px color-mix(in srgb, var(--color-primary) 90%, transparent)
+  );
 }
 
 // Algolia Experiences autocomplete — aligned with viking-autocomplete + search-palette.
@@ -797,7 +887,8 @@ viking-button-wc.auth-btn::part(control),
   .aa-DetachedContainer {
     max-width: 600px;
     width: 100%;
-    border: 1px solid var(--viking-border-strong, var(--viking-border, var(--border)));
+    border: 1px solid
+      var(--viking-border-strong, var(--viking-border, var(--border)));
     border-radius: var(--viking-radius-lg, 12px);
     background: var(--viking-surface, var(--card-bg));
     box-shadow: var(--viking-shadow-lg, var(--shadow-md));
@@ -809,7 +900,7 @@ viking-button-wc.auth-btn::part(control),
 
   .aa-Autocomplete::before,
   .aa-DetachedContainer::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
@@ -831,11 +922,22 @@ viking-button-wc.auth-btn::part(control),
     border-bottom: 1px solid var(--viking-border, var(--border)) !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-    background: color-mix(in srgb, var(--viking-bg, var(--bg-color)) 20%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--viking-bg, var(--bg-color)) 20%,
+      transparent
+    );
 
     &:focus-within {
-      border-bottom-color: var(--viking-accent, var(--viking-accent)) !important;
-      box-shadow: inset 0 -2px 0 var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent)) !important;
+      border-bottom-color: var(
+        --viking-accent,
+        var(--viking-accent)
+      ) !important;
+      box-shadow: inset 0 -2px 0
+        var(
+          --viking-accent-soft,
+          color-mix(in srgb, var(--viking-accent) 12%, transparent)
+        ) !important;
       outline: none;
     }
   }
@@ -852,7 +954,7 @@ viking-button-wc.auth-btn::part(control),
   }
 
   &::after {
-    content: '⌘K toggle · Esc close';
+    content: "⌘K toggle · Esc close";
     display: block;
     max-width: 600px;
     width: 100%;
@@ -860,7 +962,8 @@ viking-button-wc.auth-btn::part(control),
     padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
     border: 1px solid var(--viking-border, var(--border));
     border-top: 1px solid var(--viking-border, var(--border));
-    border-radius: 0 0 var(--viking-radius-lg, 12px) var(--viking-radius-lg, 12px);
+    border-radius: 0 0 var(--viking-radius-lg, 12px)
+      var(--viking-radius-lg, 12px);
     background: var(--viking-surface, var(--card-bg));
     font-size: calc(var(--viking-font-size, 16px) * 0.85);
     color: var(--viking-text-muted, var(--text-muted));
@@ -1033,11 +1136,14 @@ viking-button-wc.auth-btn::part(control),
   transition: var(--viking-transition-interactive, background-color 0.2s ease);
 }
 
-.algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemLink,
-.algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemWrapper,
+.algolia-autocomplete-host .aa-Item[aria-selected="true"] .aa-ItemLink,
+.algolia-autocomplete-host .aa-Item[aria-selected="true"] .aa-ItemWrapper,
 .algolia-autocomplete-host .aa-Item:hover .aa-ItemLink,
 .algolia-autocomplete-host .aa-Item:hover .aa-ItemWrapper {
-  background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 12%, transparent));
+  background: var(
+    --viking-accent-soft,
+    color-mix(in srgb, var(--viking-accent) 12%, transparent)
+  );
 }
 
 .algolia-autocomplete-host .aa-ItemContent {
@@ -1070,7 +1176,7 @@ viking-button-wc.auth-btn::part(control),
   }
 }
 
-.algolia-autocomplete-host .aa-Item[aria-selected='true'] .aa-ItemIcon,
+.algolia-autocomplete-host .aa-Item[aria-selected="true"] .aa-ItemIcon,
 .algolia-autocomplete-host .aa-Item:hover .aa-ItemIcon {
   color: var(--viking-accent, var(--viking-accent));
 }
@@ -1105,7 +1211,11 @@ viking-button-wc.auth-btn::part(control),
 .algolia-autocomplete-host mark,
 .algolia-autocomplete-host .aa-ItemContentTitle mark,
 .algolia-autocomplete-host .aa-ItemContentDescription mark {
-  background: color-mix(in srgb, var(--viking-accent, var(--viking-accent)) 20%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--viking-accent, var(--viking-accent)) 20%,
+    transparent
+  );
   color: var(--viking-accent, var(--viking-accent));
   border-radius: 0;
   padding: 0;
@@ -1193,10 +1303,12 @@ viking-button-wc.auth-btn::part(control),
   }
 
   .menu-toggle-btn,
-  viking-button.menu-toggle-btn {
+  viking-button.menu-toggle-btn,
+  viking-button-wc.menu-toggle-btn {
     display: none !important;
   }
 
+  .mobile-menu,
   .mobile-menu:not(.open) {
     display: none !important;
     visibility: hidden !important;

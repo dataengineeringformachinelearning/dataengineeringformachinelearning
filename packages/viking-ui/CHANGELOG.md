@@ -1,5 +1,19 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.0.5
+
+### Patch Changes
+
+- Prepare the package for npm publishing with the consolidated `packages/viking-ui/`
+  source of truth, clean package files, public CSS/Web Component utility exports,
+  and package validation for npm dry runs.
+- Lock the polished Lockheed Martin x The Northman aesthetic into Storybook:
+  token-only battlefield backgrounds, machined card surfaces, generous spacing,
+  core Web Component coverage, and Chromatic mobile/tablet/desktop snapshots.
+- Update the UI showcase and release docs to describe the publishing workflow:
+  Changesets versioning, package build/test, Storybook build, Chromatic visual
+  regression, npm publish, asset sync, and showcase deployment.
+
 ## 4.0.3
 
 ### Patch Changes

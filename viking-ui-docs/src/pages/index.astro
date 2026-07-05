@@ -10,6 +10,29 @@ const featuredComponents = SHOWCASE_CATEGORIES.flatMap((category) =>
   category.components.map((component) => ({ ...component, category: category.label }))
 ).slice(0, 6);
 
+const aestheticPillars = [
+  {
+    label: 'Aerospace precision',
+    title: 'Machined hierarchy',
+    body: 'Clean command structure, deterministic rhythm, high-contrast reads, and metallic seams that feel engineered rather than decorated.',
+  },
+  {
+    label: 'Northman undertone',
+    title: 'Restrained battlefield gravity',
+    body: 'Subtle geometric linework, strong silhouettes, and mythic presence without fantasy illustration, ornament, or theatrical clutter.',
+  },
+  {
+    label: 'Tactile depth',
+    title: 'Cards and controls with mass',
+    body: 'Deep navy surfaces, etched borders, top-edge highlights, and measured elevation for panels, buttons, and telemetry cards.',
+  },
+  {
+    label: 'Generous precision',
+    title: 'Breathing room on the grid',
+    body: 'Spacing is generous but exact: every gap resolves to Viking tokens, avoiding both Spartan compression and loose marketing sprawl.',
+  },
+];
+
 const quickStartSnippets: ComponentSnippet = {
   angular: `npm install @dataengineeringformachinelearning/viking-ui
 
@@ -45,15 +68,15 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
       <div class="landing-hero-copy">
         <div class="landing-hero-badge">
           <span class="landing-hero-badge-dot" aria-hidden="true"></span>
-          <span>Universal design system / v2 / Apache-2.0</span>
+          <span>Universal design system / v4 / Apache-2.0</span>
         </div>
         <h1 class="viking-heading viking-heading-xl">
-          Precision UI primitives for serious engineering teams.
+          Lockheed Martin x The Northman UI for the digital battlefield.
         </h1>
         <p class="viking-text-muted">
-          Viking-UI delivers precision-engineered primitives for Angular, Astro, Django, and plain
-          Web Components. Token-driven styling, WCAG 2.1 AA by construction, zero third-party UI
-          runtime dependencies.
+          Viking-UI delivers one consolidated package for Angular, Astro, Django, and plain
+          Web Components: aerospace hierarchy, subtle Northman geometry, restrained teal/crimson
+          accents, WCAG 2.1 AA by construction, and zero third-party UI runtime dependencies.
         </p>
         <div class="landing-framework-strip" aria-label="Supported frameworks">
           <span class="landing-framework-chip"><code>Angular</code> thin wrappers</span>
@@ -90,8 +113,13 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
       </div>
 
       <div class="landing-preview-panel" aria-label="Live component preview">
+        <div class="landing-preview-runelock" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
         <div class="landing-preview-toolbar">
-          <span class="viking-label">Live surface</span>
+          <span class="viking-label">Digital battlefield surface</span>
           <viking-badge-wc tone="success">Production ready</viking-badge-wc>
         </div>
         <div class="landing-preview-grid">
@@ -116,12 +144,37 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
       </div>
     </section>
 
-<section class="landing-section landing-quickstart" aria-labelledby="quickstart-heading">
+    <section class="landing-section landing-visual-lock" aria-labelledby="visual-lock-heading">
+      <header class="landing-section-header">
+        <span class="section-tag">Visual lock</span>
+        <h2 class="showcase-section-title" id="visual-lock-heading">
+          Lockheed Martin precision. Northman battlefield presence.
+        </h2>
+        <p class="viking-text-muted showcase-section-desc">
+          The final Viking-UI direction is deep navy/charcoal command hardware with machined
+          metallic borders, subtle top-edge highlights, restrained teal and crimson accents, and
+          generous tokenized spacing.
+        </p>
+      </header>
+      <div class="landing-doctrine-grid">
+        {
+          aestheticPillars.map((pillar) => (
+            <viking-card-wc compact class="landing-doctrine-card">
+              <span class="viking-label">{pillar.label}</span>
+              <h3 class="viking-heading viking-heading-sm">{pillar.title}</h3>
+              <p class="viking-text-muted">{pillar.body}</p>
+            </viking-card-wc>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="landing-section landing-quickstart" aria-labelledby="quickstart-heading">
       <header class="landing-section-header">
         <span class="section-tag">Quick start</span>
         <h2 class="showcase-section-title" id="quickstart-heading">Install once. Compose everywhere.</h2>
         <p class="viking-text-muted showcase-section-desc">
-          The same token matrix powers Angular components, static CSS, and custom elements.
+          The same package powers Angular wrappers, static CSS, Web Components, and framework-neutral utilities.
         </p>
       </header>
       <div class="landing-quickstart-grid">
@@ -159,6 +212,44 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
             consume synced static assets.
           </li>
         </ul>
+      </div>
+    </section>
+
+    <section class="landing-section" aria-labelledby="release-heading">
+      <header class="landing-section-header">
+        <span class="section-tag">Publishing workflow</span>
+        <h2 class="showcase-section-title" id="release-heading">Release the package with visual proof.</h2>
+        <p class="viking-text-muted showcase-section-desc">
+          The polished <code>4.0.5</code> package moves through package build, npm dry run,
+          Storybook, Chromatic, npm publish, asset sync, and showcase deploy from the same
+          canonical source.
+        </p>
+      </header>
+      <div class="landing-doctrine-grid">
+        <viking-card-wc compact>
+          <span class="viking-label">1. Package gate</span>
+          <h3 class="viking-heading viking-heading-sm">Build, test, pack</h3>
+          <p class="viking-text-muted">
+            Run <code>npm run test:viking-ui:package</code> and <code>npm run pack:viking-ui</code>
+            to verify exports, files, CSS bundles, Web Components, and Angular wrappers.
+          </p>
+        </viking-card-wc>
+        <viking-card-wc compact>
+          <span class="viking-label">2. Visual gate</span>
+          <h3 class="viking-heading viking-heading-sm">Storybook + Chromatic</h3>
+          <p class="viking-text-muted">
+            Build <code>packages/viking-ui/storybook-static</code>, then publish Chromatic
+            snapshots with <code>CHROMATIC_PROJECT_TOKEN</code> for mobile, tablet, and desktop.
+          </p>
+        </viking-card-wc>
+        <viking-card-wc compact>
+          <span class="viking-label">3. Distribution</span>
+          <h3 class="viking-heading viking-heading-sm">npm, CDN, sync</h3>
+          <p class="viking-text-muted">
+            Publish through Changesets, consume with npm or jsDelivr, and reserve
+            <code>sync_design_system.py</code> for Django/static surfaces that need copied assets.
+          </p>
+        </viking-card-wc>
       </div>
     </section>
 
@@ -225,8 +316,8 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
 <script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
 
 <!-- Deterministic release -->
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/web-components.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/viking-ui.css" />`}</code></pre>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/web-components.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/viking-ui.css" />`}</code></pre>
       </div>
 
       <p class="viking-label">5) Full minimal HTML for external sites</p>
@@ -254,7 +345,7 @@ import "@dataengineeringformachinelearning/viking-ui/web-components.js";
     ></script>
   </head>
   <body>
-    <main style="max-width: 720px; margin: 2rem auto;">
+    <main class="page-inner-wrapper">
       <viking-card-wc compact>
         <h1 class="viking-heading viking-heading-lg">Platform status</h1>
         <p class="viking-text-muted">Drop this file into a marketing page or partner dashboard.</p>

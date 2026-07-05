@@ -2,18 +2,18 @@
 
 **Single source of truth** for visual design across all DEML surfaces:
 
-| Property                                                                                      | Stack                          | Theme entry point                             |
-| --------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------- |
-| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com)        | Marketing (Astro)              | `/assets/viking-ui.css` + this document       |
-| [deml.app](https://deml.app)                                                                  | Angular SSR frontend           | `packages/viking-ui/dist/` + Angular wrappers |
-| [backend.deml.app](https://backend.deml.app)                                                  | Django API + templates         | `backend/static/viking-ui.css`                |
-| Swagger / OpenAPI UI                                                                          | Django Ninja docs              | Same tokens via static CSS                    |
-| Marketing site                                                                                | `marketing/`                   | `marketing/public/assets/viking-ui.css`       |
-| Docs, Book & Whitepaper                                                                       | Synced content + Drakkar shell | THEME.md tokens in prose and components       |
-| [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/) | Viking-UI component docs       | `deml-ui` (Firebase Hosting)                  |
+| Property                                                                                      | Stack                          | Theme entry point                                               |
+| --------------------------------------------------------------------------------------------- | ------------------------------ | --------------------------------------------------------------- |
+| [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com)        | Marketing (Astro)              | `/assets/viking-ui.css` + this document                         |
+| [deml.app](https://deml.app)                                                                  | Angular SSR frontend           | `@dataengineeringformachinelearning/viking-ui` Angular wrappers |
+| [backend.deml.app](https://backend.deml.app)                                                  | Django API + templates         | `backend/static/viking-ui.css`                                  |
+| Swagger / OpenAPI UI                                                                          | Django Ninja docs              | Same tokens via static CSS                                      |
+| Marketing site                                                                                | `marketing/`                   | `marketing/public/assets/viking-ui.css`                         |
+| Docs, Book & Whitepaper                                                                       | Synced content + Drakkar shell | THEME.md tokens in prose and components                         |
+| [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com/) | Viking-UI component docs       | `deml-ui` (Firebase Hosting)                                    |
 
-**Canonical implementation:** `packages/viking-ui/`
-**Compiled CSS:** `packages/viking-ui/dist/` (`design-tokens.css`, `viking-components.css`, `viking-ui.css`, `viking-ui-elements.js`)
+**Canonical implementation:** `packages/viking-ui/` (tokens, static CSS, Web Components, utility exports, package metadata, and Angular wrappers)
+**Compiled artifacts:** `packages/viking-ui/dist/` (`design-tokens.css`, `viking-components.css`, `viking-ui.css`, `web-components.js`, `viking-ui-elements.js`, `icons.js`, `site-drakkar.js`, `widget.js`, `viking-tokens.json`)
 
 ### Token artifacts (single source of truth)
 
@@ -26,17 +26,20 @@
 | Tailwind preset    | `packages/viking-ui/src/tokens/tailwind.preset.js`                                    | `theme.extend` → CSS variables                                                                               |
 | TypeScript presets | `packages/viking-ui/src/tokens/series-presets.ts`                                     | `viking-color-picker` + chart bindings                                                                       |
 | Static CSS bundle  | `packages/viking-ui/dist/design-tokens.css` / `packages/viking-ui/dist/viking-ui.css` | Non-Angular surfaces — build via `npm run build:viking-ui:package`, sync via `scripts/sync_design_system.py` |
+| Utility subpaths   | `@dataengineeringformachinelearning/viking-ui/icons`, `/site-drakkar`, `/tokens.json` | Angular-free imports for Astro, static-site generation, nav/icon tooling                                     |
 
 ---
 
 ## Design philosophy
 
-Viking-UI expresses **precision engineering** and **high-end industrial command hardware**:
+Viking-UI's locked aesthetic is **Lockheed Martin x The Northman digital battlefield**: aerospace-grade command hardware with restrained mythic battlefield undertones.
 
-- **Dark-first engineering aesthetic** — deep charcoals, machined metallic edges, no decorative noise.
-- **Battlefield discipline** — every pixel earns its place; telemetry, commands, and hierarchy dominate ornament.
-- **Tactile surfaces** — subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`), restrained elevation, crisp borders.
-- **Refined accent discipline** — restrained electric-teal (`#2176ff`) for primary action, rich crimson for secondary emphasis and danger; no neon gradients or ambient glow orbs on base surfaces.
+- **Lockheed Martin precision engineering** — clean hierarchy, machined surfaces, deterministic rhythm, high-contrast operational readability, and zero visual drift under pressure.
+- **The Northman battlefield undertone** — subtle geometric/rune-inspired structure, strong silhouettes, ceremonial restraint, and presence without fantasy illustration or decorative clutter.
+- **Dark-first command surfaces** — deep navy/charcoal backgrounds, machined metallic edges, no decorative noise.
+- **Tactile surface depth** — crisp borders, directional elevation, and subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`) on cards, panels, and buttons.
+- **Refined accent discipline** — restrained electric-teal (`#2176ff`) for command/confirmation, rich crimson for escalation, secondary emphasis, and danger; no neon gradients or ambient glow orbs on base surfaces.
+- **Generous precision** — spacing breathes, but every gap resolves to the 4px grid and `--viking-space-*`; no Spartan tightness, no loose ornamental sprawl.
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
 - **Zero arbitrary hex** — all colors resolve to tokens below.
 
@@ -57,9 +60,11 @@ Viking-UI expresses **precision engineering** and **high-end industrial command 
 
 ### Directional language
 
-- Lockheed Martin-inspired precision: clean seams, deterministic rhythm, and zero visual drift under stress.
-- Northman field discipline: geometric accents are strategic, not ornamental, and reserved for section boundaries and critical-state callouts.
-- Surfaces stay deeply naval/charcoal with **machined metallic borders** and consistent top-edge highlights.
+- Name the direction as **Lockheed Martin x The Northman digital battlefield** in docs, reviews, and implementation notes.
+- Aerospace precision: clean seams, deterministic rhythm, machined hierarchy, and zero visual drift under stress.
+- Northman field discipline: geometric accents are strategic, not ornamental, and reserved for section boundaries, shell framing, and critical-state callouts.
+- Surfaces stay deeply navy/charcoal with **machined metallic borders**, consistent top-edge highlights, and stronger tactile depth on cards/buttons.
+- Never soften the system into startup SaaS neutrality, fantasy theming, glassmorphism, neon cyberpunk, or cramped utilitarian austerity.
 
 ---
 
@@ -325,11 +330,12 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 
 **Rules:**
 
-- Outer page gutters: `--viking-space-2` (mobile) → `--viking-space-3` (tablet+).
-- Card interior padding: `--viking-space-3` default; `--viking-space-2` for compact metric tiles.
+- Outer page gutters: `--viking-space-2` (mobile) -> `--viking-space-3` (tablet+).
+- Card interior padding: `--viking-card-padding` default; `--viking-card-padding-compact` for compact metric tiles.
 - Form field vertical stack: `--viking-space-3` between sections, `--viking-space-half` between label and control.
 - Button groups / inline chips: `--viking-space-1` gap.
-- Section breaks (page shell): `--viking-space-4` minimum.
+- Section breaks (page shell): `--viking-page-section-gap` preferred, `--viking-space-4` minimum.
+- Avoid Spartan tightness: dashboards may be dense, but cards, buttons, and panels must still feel like precise hardware, not compressed tables.
 
 | Token                 | Value | Multiples |
 | --------------------- | ----- | --------- |
@@ -356,10 +362,10 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 | `--viking-page-gutter`                | `--viking-space-2` (mobile)    |
 | `--viking-page-gutter-lg`             | `--viking-space-3` (tablet+)   |
 | `--viking-page-stack-gap`             | `--viking-space-3`             |
-| `--viking-page-section-gap`           | `--viking-space-4`             |
-| `--viking-card-padding`               | `--viking-space-3` (default)   |
-| `--viking-card-padding-compact`       | `--viking-space-2` (metrics)   |
-| `--viking-panel-padding`              | `--viking-space-3`             |
+| `--viking-page-section-gap`           | `--viking-space-6`             |
+| `--viking-card-padding`               | `--viking-space-4` (default)   |
+| `--viking-card-padding-compact`       | `--viking-space-3` (metrics)   |
+| `--viking-panel-padding`              | `--viking-space-4`             |
 | `--viking-form-max-width`             | 42rem                          |
 | `--viking-form-narrow-max-width`      | 28rem                          |
 | `--viking-content-readable-max-width` | 48rem                          |
@@ -394,7 +400,7 @@ Premium feel: 6–12px for interactive surfaces; pills for tags only.
 
 ## 5. Shadows & elevation
 
-Soft, directional shadows with a **machined top-edge specular line** and restrained falloff. No diffuse colored glows on standard UI. Elevation communicates hierarchy — cards lift 1px on hover max (`--viking-state-hover-lift`), never “float” 8px+ on static dashboards.
+Directional shadows with a **machined top-edge specular line** and restrained falloff. The feel should be tactile and engineered, not soft SaaS. No diffuse colored glows on standard UI. Elevation communicates hierarchy — cards lift 1px on hover max (`--viking-state-hover-lift`), never “float” 8px+ on static dashboards.
 
 | Token                   | Recipe                                                           |
 | ----------------------- | ---------------------------------------------------------------- |
@@ -501,7 +507,7 @@ If `data-theme` is omitted, `prefers-color-scheme` selects the palette.
 
 - Background: `--viking-surface`; border: `--viking-border`; radius: `--viking-radius-lg`.
 - Shadow: `--viking-shadow-sm`; optional top-edge metallic hairline via `::before` gradient.
-- Padding: `--viking-space-3` (compact: `--viking-space-2`).
+- Padding: `--viking-card-padding` (compact: `--viking-card-padding-compact`).
 - Interactive cards: hover border `--viking-accent-strong`, `--viking-shadow-hover`, 1px lift.
 
 ### 8.3 Icons & SVGs (`viking-icon`)
@@ -761,8 +767,8 @@ All three pages use `--viking-accent` for primary CTAs, `--viking-charcoal-900` 
 
 1. Edit `packages/viking-ui/src/styles/_variables.scss` for primitive token changes.
 2. Edit `_series-colors.scss` if the chart/picker palette changes; sync `viking-tokens.json` and `series-presets.ts`.
-3. Run `npm run build:viking-ui:package` to regenerate static CSS artifacts, then `python scripts/sync_design_system.py`.
-4. Run `python scripts/sync_design_system.py` to propagate `viking-ui.css`, Web Components, token JSON, and fonts.
+3. Run `npm run build:viking-ui:package` to regenerate CSS, Web Component, utility, widget, token, and Angular package artifacts.
+4. Run `python scripts/sync_design_system.py` to propagate `viking-ui.css`, Web Components, token JSON, widgets, and fonts.
 5. Run `python scripts/sync_fonts.py` after updating Inter font files.
 6. Update this document when tokens or component standards change.
 7. Sync marketing/backend copies in CI or publish step.
@@ -784,11 +790,11 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 ### Unified component policy
 
 - **Angular:** always `@dataengineeringformachinelearning/viking-ui` — no Material, no third-party UI runtimes, no one-off styled controls when a `viking-*` exists.
-- **Extend the library first:** shared primitives ship in `packages/viking-ui/`; apps consume, they do not duplicate.
+- **Extend the library first:** shared primitives ship in `packages/viking-ui/`; apps consume public package entrypoints, they do not duplicate or import package source internals.
 - **Composable ergonomics, Viking palette:** field stacks (`viking-field` → control), card surfaces (`viking-card`), button variants (`viking-button`) per §8 and the pattern mapping table in §Design philosophy.
 - **Premium restrained luxury:** machined surfaces, restrained elevation, electric/crimson accent discipline — data dominates ornament.
-- **Non-Angular:** static `viking-ui.css` + semantic aliases only; run `sync_design_system.py` after token edits.
+- **Non-Angular:** static `viking-ui.css` + semantic aliases, Web Components from `web-components.js`, and Angular-free utility subpaths only; run `sync_design_system.py` after token edits.
 
 When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
 
-**Version:** Viking-UI premium palette v3.0 (deep navy / electric blue / crimson, composable primitives, unified agent governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+**Version:** Viking-UI premium palette v4.0 (Lockheed Martin x The Northman digital battlefield, deep navy / teal / crimson, composable primitives, unified package governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

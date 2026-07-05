@@ -1,7 +1,7 @@
 # Viking-UI
 
-Published package: **`@dataengineeringformachinelearning/viking-ui@4.0.3`**
-Single source of truth: **`packages/viking-ui/`** (framework-agnostic primitives, styles, web components, and Angular wrapper entrypoints are consolidated here).
+Publish target: **`@dataengineeringformachinelearning/viking-ui@4.0.5`**
+Single source of truth: **`packages/viking-ui/`** (framework-agnostic styles, tokens, Web Components, and Angular wrapper entrypoints are consolidated here).
 
 Universal DEML component library for Astro, Angular, and Django.
 
@@ -12,8 +12,11 @@ This release reflects the Lockheed Martin × The Northman battlefield visual dir
 - `src/styles/_variables.scss` defines the canonical `--viking-*` design tokens.
 - `src/styles/components-bundle.scss` defines static CSS primitives shared by every app.
 - `src/tokens/viking-tokens.json` exposes the same token contract for tooling.
-- `src/elements/` contains framework-neutral Web Components with Shadow DOM style isolation.
-- `dist/design-tokens.css`, `dist/viking-components.css`, `dist/deml-components.css`, `dist/viking-ui.css`, `dist/viking-tokens.json`, and `dist/viking-ui-elements.js` are the built artifacts.
+- `src/web/` contains framework-neutral Web Components with Shadow DOM style isolation.
+- `src/web-components/index.ts` is the script-bundle entry that registers those Web Components for Astro, Django, static HTML, and external hosts.
+- `src/lib/` contains Angular standalone wrappers, services, and CVA helpers exported from the package root and `./angular`.
+- `dist/icons.js` and `dist/site-drakkar.js` are framework-neutral utility bundles for static-site consumers that should not load Angular.
+- `dist/design-tokens.css`, `dist/viking-components.css`, `dist/deml-components.css`, `dist/viking-ui.css`, `dist/viking-tokens.json`, `dist/web-components.js`, `dist/viking-ui-elements.js`, and `dist/widget.js` are the built artifacts.
 - `dist/viking-ui.css` is the full app bundle. Load it once per surface; do not stack it with the split CSS artifacts.
 
 ## Build
@@ -22,6 +25,21 @@ This release reflects the Lockheed Martin × The Northman battlefield visual dir
 npm run build --prefix packages/viking-ui
 npm run test:viking-ui:package
 ```
+
+## Storybook and Chromatic
+
+Storybook is the release-grade visual cockpit for the Web Component layer and
+publishing workflow.
+
+```bash
+npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui
+
+# Requires CHROMATIC_PROJECT_TOKEN
+npm run chromatic --workspace @dataengineeringformachinelearning/viking-ui
+```
+
+Chromatic snapshots publish from `packages/viking-ui/storybook-static` and cover
+mobile, tablet, and desktop widths.
 
 ## Versioning
 
@@ -69,6 +87,14 @@ import {
 // or when building custom element demos:
 import "@dataengineeringformachinelearning/viking-ui/web-components.js";
 import "@dataengineeringformachinelearning/viking-ui/viking-ui.css";
+```
+
+Framework-neutral utility imports are available without pulling in Angular:
+
+```ts
+import { resolveVikingIcon } from "@dataengineeringformachinelearning/viking-ui/icons";
+import { SITE_NAV_LINKS } from "@dataengineeringformachinelearning/viking-ui/site-drakkar";
+import tokens from "@dataengineeringformachinelearning/viking-ui/tokens.json";
 ```
 
 ### 2) jsDelivr CDN usage (recommended for widgets and quick embeds)
@@ -129,11 +155,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/web-components.js"
 ></script>
 ```
 
@@ -156,9 +182,7 @@ builds.
     ></script>
   </head>
   <body>
-    <main
-      style="max-width: 680px; margin: 2rem auto; display: grid; gap: 1rem;"
-    >
+    <main class="page-inner-wrapper viking-stack viking-stack--loose">
       <h1 class="viking-heading viking-heading-xl">Viking widget</h1>
       <viking-card-wc compact>
         <h2 class="viking-heading viking-heading-sm">Widget card</h2>
@@ -219,7 +243,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/widget.js"
   async
   defer
   data-page-id="platform-status"
@@ -230,7 +254,7 @@ Pinned release example:
 
 Replace `api.example.com` with your backend URL and update `data-page-id` / `data-frontend-url` for your status page.
 
-This package is the source of truth. Angular wrappers now live in `packages/viking-ui/src/lib` while canonical source files and token/build artifacts are also in `packages/viking-ui`; Astro and Django consume the package artifacts directly through synced static assets.
+This package is the source of truth. Angular wrappers live in `packages/viking-ui/src/lib`, framework-neutral Web Components live in `packages/viking-ui/src/web`, shared utility exports live under `packages/viking-ui/src/core`, and token/build artifacts are emitted from this package. Astro and Django consume package artifacts directly through npm, CDN, or synced static assets.
 
 Angular app shells consume the package CSS from `angular.json`:
 

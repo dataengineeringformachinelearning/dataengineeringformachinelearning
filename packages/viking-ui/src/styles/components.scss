@@ -59,32 +59,37 @@ a {
 }
 
 .viking-card {
-  display: block;
+  display: grid;
+  gap: var(--viking-card-content-gap, var(--viking-space-3));
   position: relative;
   overflow: hidden;
   background-clip: padding-box;
   isolation: isolate;
   padding: var(--viking-card-padding);
-  border: 1px solid var(--viking-border);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 72%, var(--viking-border));
   border-radius: var(--viking-radius-lg);
   background: var(--viking-surface-recipe);
   color: var(--viking-text);
-  box-shadow: var(--viking-shadow-sm), inset 0 1px 0 color-mix(
-      in srgb,
-      var(--viking-white-pure) 6%,
-      transparent
-    );
+  box-shadow:
+    var(--viking-shadow-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 7%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 18%, transparent);
 }
 
 .viking-card::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 1px;
+  height: 2px;
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
+    color-mix(
+      in srgb,
+      var(--viking-metallic-200) var(--viking-surface-hairline-strength, 28%),
+      transparent
+    ),
     transparent
   );
   pointer-events: none;
@@ -95,11 +100,11 @@ a {
   position: absolute;
   inset: 0 auto auto 0;
   right: 0;
-  width: 1px;
-  height: 28px;
+  width: 2px;
+  height: var(--viking-space-4);
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--viking-metallic-100) 22%, transparent),
+    color-mix(in srgb, var(--viking-metallic-100) 24%, transparent),
     transparent
   );
   pointer-events: none;
@@ -107,6 +112,7 @@ a {
 
 .viking-card[data-compact="true"] {
   padding: var(--viking-card-padding-compact);
+  gap: var(--viking-card-content-gap-compact, var(--viking-space-2));
 }
 
 .viking-card[data-interactive="true"],
@@ -117,32 +123,40 @@ a {
 .viking-card[data-interactive="true"]:hover,
 .viking-card.viking-card-interactive:hover {
   border-color: var(--viking-accent-strong);
-  box-shadow: var(--viking-shadow-hover),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
+  box-shadow:
+    var(--viking-shadow-hover),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 18%, transparent);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-card[data-interactive="true"]:active,
 .viking-card.viking-card-interactive:active {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  box-shadow: inset 0 1px 2px
-      color-mix(in srgb, var(--viking-black) 24%, transparent),
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--viking-black) 24%, transparent),
     var(--viking-shadow-sm);
 }
 
 .viking-button,
 .viking-btn {
+  --viking-btn-depth-shadow: var(--viking-shadow-sm);
+  --viking-btn-hover-shadow: var(--viking-shadow-hover);
+  --viking-btn-press-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--viking-black) 28%, transparent),
+    var(--viking-shadow-xs);
+
   display: inline-flex;
   min-height: var(--viking-control-height);
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-1);
-  padding: 0 var(--viking-control-padding-x);
+  gap: var(--viking-space-1-5);
+  padding: var(--viking-space-half) var(--viking-control-padding-x);
   border: 1px solid var(--viking-border-strong);
-  border-radius: var(--viking-radius-lg);
-  background: var(--viking-surface);
+  border-radius: var(--viking-radius-md);
+  background: var(--viking-surface-recipe, var(--viking-surface));
   color: var(--viking-text);
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-depth-shadow);
   background-clip: padding-box;
   overflow: hidden;
   position: relative;
@@ -158,16 +172,21 @@ a {
 
 .viking-button:disabled,
 .viking-btn:disabled,
-.viking-button[aria-busy='true'],
-.viking-btn[aria-busy='true'] {
+.viking-button[aria-busy="true"],
+.viking-btn[aria-busy="true"] {
   opacity: var(--viking-state-disabled-opacity);
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
 }
 
-.viking-button[aria-busy='true'] .viking-btn-label,
-.viking-btn[aria-busy='true'] .viking-btn-label {
+.viking-button[aria-busy="true"],
+.viking-btn[aria-busy="true"] {
+  cursor: wait;
+}
+
+.viking-button[aria-busy="true"] .viking-btn-label,
+.viking-btn[aria-busy="true"] .viking-btn-label {
   opacity: 0.85;
   transform: translateY(1px);
 }
@@ -220,6 +239,7 @@ a {
   line-height: 1;
   pointer-events: none;
   flex: 0 0 auto;
+  margin-block: calc(var(--viking-space-half) * -1);
 }
 
 .viking-button-label,
@@ -233,48 +253,63 @@ a {
   white-space: nowrap;
 }
 
-.viking-button:hover,
-.viking-btn:hover {
+.viking-btn-spinner {
+  flex: 0 0 auto;
+  width: var(--viking-icon-size-sm, 18px);
+  height: var(--viking-icon-size-sm, 18px);
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--viking-radius-pill);
+  animation: viking-spin 0.8s linear infinite;
+}
+
+.viking-button:hover:not(:disabled):not([aria-busy="true"]),
+.viking-btn:hover:not(:disabled):not([aria-busy="true"]) {
   border-color: color-mix(
     in srgb,
     var(--viking-accent) 45%,
     var(--viking-border-strong)
   );
-  box-shadow: var(--viking-shadow-md);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
-.viking-button:active,
-.viking-btn:active {
+.viking-button:active:not(:disabled):not([aria-busy="true"]),
+.viking-btn:active:not(:disabled):not([aria-busy="true"]) {
   transform: translateY(0) scale(var(--viking-state-active-scale));
 }
 
 .viking-button[data-variant="primary"],
 .viking-btn-primary {
-  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 82%,
+    var(--viking-black)
+  );
   background: var(--viking-accent);
   color: var(--viking-accent-content);
-  box-shadow: var(--viking-shadow-sm), inset 0 1px 0 color-mix(
-      in srgb,
-      var(--viking-white-pure) 8%,
-      transparent
-    );
+  box-shadow:
+    var(--viking-btn-depth-shadow),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 12%, transparent);
 }
 
 .viking-button[data-variant="primary"]:hover,
 .viking-btn-primary:hover {
   background: var(--viking-accent-hover);
   border-color: var(--viking-accent-hover);
-  box-shadow: var(--viking-shadow-hover);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-button[data-variant="primary"]:active,
 .viking-btn-primary:active {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
-  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--viking-black) 28%, transparent),
-    var(--viking-shadow-sm);
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 82%,
+    var(--viking-black)
+  );
+  box-shadow: var(--viking-btn-press-shadow);
 }
 
 .viking-button[data-variant="secondary"],
@@ -286,13 +321,16 @@ a {
   );
   background: var(--viking-accent-secondary);
   color: var(--viking-accent-secondary-content);
+  box-shadow:
+    var(--viking-btn-depth-shadow),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent);
 }
 
 .viking-button[data-variant="secondary"]:hover,
 .viking-btn-secondary:hover {
   background: var(--viking-accent-secondary-hover);
   border-color: var(--viking-accent-secondary-hover);
-  box-shadow: var(--viking-shadow-hover);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
@@ -304,8 +342,7 @@ a {
     var(--viking-accent-secondary) 82%,
     var(--viking-black)
   );
-  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--viking-black) 28%, transparent),
-    var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-press-shadow);
 }
 
 .viking-button[data-variant="filled"],
@@ -318,43 +355,72 @@ a {
 
 .viking-button[data-variant="filled"]:hover,
 .viking-btn-filled:hover {
-  border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border));
-  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface-alt));
-  box-shadow: var(--viking-shadow-sm);
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 45%,
+    var(--viking-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 8%,
+    var(--viking-surface-alt)
+  );
+  box-shadow: var(--viking-btn-depth-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-button[data-variant="filled"]:active,
 .viking-btn-filled:active {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  border-color: color-mix(in srgb, var(--viking-accent) 20%, var(--viking-border));
-  background: color-mix(in srgb, var(--viking-surface-alt) 84%, var(--viking-accent));
-  box-shadow: var(--viking-shadow-sm);
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent) 20%,
+    var(--viking-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--viking-surface-alt) 84%,
+    var(--viking-accent)
+  );
+  box-shadow: var(--viking-btn-press-shadow);
 }
 
 .viking-button[data-variant="danger"],
 .viking-btn-danger {
   background: var(--viking-danger);
   color: var(--viking-on-danger);
-  border-color: color-mix(in srgb, var(--viking-danger) 85%, var(--viking-black));
-  box-shadow: var(--viking-shadow-sm);
+  border-color: color-mix(
+    in srgb,
+    var(--viking-danger) 85%,
+    var(--viking-black)
+  );
+  box-shadow:
+    var(--viking-btn-depth-shadow),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent);
 }
 
 .viking-button[data-variant="danger"]:hover,
 .viking-btn-danger:hover {
   background: color-mix(in srgb, var(--viking-danger) 88%, var(--viking-white));
-  border-color: color-mix(in srgb, var(--viking-danger) 92%, var(--viking-white));
-  box-shadow: var(--viking-shadow-hover);
+  border-color: color-mix(
+    in srgb,
+    var(--viking-danger) 92%,
+    var(--viking-white)
+  );
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-button[data-variant="danger"]:active,
 .viking-btn-danger:active {
   transform: translateY(0) scale(var(--viking-state-active-scale));
-  border-color: color-mix(in srgb, var(--viking-danger) 72%, var(--viking-black));
+  border-color: color-mix(
+    in srgb,
+    var(--viking-danger) 72%,
+    var(--viking-black)
+  );
   background: color-mix(in srgb, var(--viking-danger) 84%, var(--viking-black));
-  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--viking-black) 28%, transparent),
-    var(--viking-shadow-sm);
+  box-shadow: var(--viking-btn-press-shadow);
 }
 
 .viking-button[data-variant="ghost"],
@@ -368,6 +434,8 @@ a {
 .viking-btn-ghost:hover {
   background: var(--viking-accent-soft);
   color: var(--viking-accent-strong);
+  border-color: var(--viking-border-subtle);
+  transform: translateY(var(--viking-state-hover-lift));
 }
 
 .viking-button[data-variant="ghost"]:active,
@@ -396,8 +464,13 @@ a {
 .viking-btn-subtle:active {
   transform: translateY(0) scale(var(--viking-state-active-scale));
   border-color: var(--viking-border);
-  background: color-mix(in srgb, var(--viking-accent-soft) 70%, var(--viking-surface));
-  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--viking-black) 24%, transparent);
+  background: color-mix(
+    in srgb,
+    var(--viking-accent-soft) 70%,
+    var(--viking-surface)
+  );
+  box-shadow: inset 0 1px 2px
+    color-mix(in srgb, var(--viking-black) 24%, transparent);
 }
 
 .viking-field {

@@ -17,6 +17,7 @@ const preview: Preview = {
         method: "alphabetical",
         order: [
           "Viking Web Components",
+          "Viking Web Components/Release",
           "Viking Web Components/Playground",
           "Viking Web Components/Controls",
           "Viking Web Components/Navigation",
@@ -51,12 +52,14 @@ const preview: Preview = {
       values: [
         {
           name: "battlefield-surface",
-          value:
-            "linear-gradient(180deg, #05070d 0%, #0a0d16 80%, #05070d 100%)",
+          value: "var(--viking-bg)",
         },
-        { name: "viking-charcoal", value: "#080b12" },
-        { name: "viking-glass", value: "#10131b" },
+        { name: "machined-surface", value: "var(--viking-surface)" },
+        { name: "raised-panel", value: "var(--viking-surface-raised)" },
       ],
+    },
+    chromatic: {
+      viewports: [390, 768, 1440],
     },
   },
   tags: ["autodocs"],

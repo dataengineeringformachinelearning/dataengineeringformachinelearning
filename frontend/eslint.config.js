@@ -87,13 +87,8 @@ module.exports = defineConfig([
     },
   },
   {
-    // viking-ui and showcase may set dynamic presentation via host bindings.
-    files: [
-      'packages/viking-ui/**/*.html',
-      'packages/viking-ui/**/*.ts',
-      'projects/viking-ui-showcase/**/*.html',
-      'projects/viking-ui-showcase/**/*.ts',
-    ],
+    // viking-ui may set dynamic presentation via host bindings.
+    files: ['packages/viking-ui/**/*.html', 'packages/viking-ui/**/*.ts'],
     rules: {
       '@angular-eslint/template/no-inline-styles': 'off',
     },

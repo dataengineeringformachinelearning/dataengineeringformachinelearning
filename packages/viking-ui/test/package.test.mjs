@@ -22,6 +22,25 @@ test("package exposes versioned public artifacts", () => {
     packageJson.exports["./elements.js"],
     "./dist/viking-ui-elements.js",
   );
+  assert.equal(
+    packageJson.exports["./web-components.js"],
+    "./dist/web-components.js",
+  );
+  assert.equal(packageJson.exports["./widget"], "./dist/widget.js");
+  assert.equal(packageJson.exports["./icons"].import, "./dist/icons.js");
+  assert.equal(
+    packageJson.exports["./site-drakkar"].import,
+    "./dist/site-drakkar.js",
+  );
+  assert.equal(
+    packageJson.exports["./tokens/tailwind.preset"],
+    "./dist/src/tokens/tailwind.preset.js",
+  );
+  assert.equal(
+    packageJson.exports["./manifest"],
+    "./dist/viking.manifest.json",
+  );
+  assert.deepEqual(packageJson.files, ["dist", "README.md", "LICENSE"]);
 });
 
 test("build writes the framework-neutral distribution files", () => {
@@ -32,8 +51,11 @@ test("build writes the framework-neutral distribution files", () => {
     "design-tokens.css",
     "viking-components.css",
     "deml-components.css",
+    "icons.js",
+    "site-drakkar.js",
     "viking-ui-elements.js",
     "web-components.js",
+    "widget.js",
     "viking-tokens.json",
   ];
 

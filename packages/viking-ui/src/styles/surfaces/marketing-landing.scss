@@ -79,8 +79,10 @@
     left: 0;
     width: 24px;
     height: 16px;
-    border-top: 1px solid color-mix(in srgb, var(--viking-accent) 45%, transparent);
-    border-left: 1px solid color-mix(in srgb, var(--viking-accent) 22%, transparent);
+    border-top: 1px solid
+      color-mix(in srgb, var(--viking-accent) 45%, transparent);
+    border-left: 1px solid
+      color-mix(in srgb, var(--viking-accent) 22%, transparent);
     opacity: 0.55;
     pointer-events: none;
   }
@@ -89,11 +91,11 @@
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: var(--viking-surface);
-  border: 1px solid var(--border);
-  padding: 8px 16px;
-  border-radius: 1000px;
+  gap: var(--viking-space-1);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  border: 1px solid var(--viking-border);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border-radius: var(--viking-radius-pill);
   width: fit-content;
   box-shadow: var(--shadow-sm);
   position: relative;
@@ -148,15 +150,15 @@
 .hero-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--viking-space-1-5);
 }
 
 .hero-stat-pill {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 1000px;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border-radius: var(--viking-radius-pill);
   background: color-mix(
     in srgb,
     var(--viking-accent) 10%,
@@ -231,16 +233,17 @@
     inset: 0;
     border-radius: inherit;
     pointer-events: none;
-    border: 1px solid color-mix(in srgb, var(--viking-metallic-500) 28%, transparent);
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white) 7%, transparent);
+    border: 1px solid
+      color-mix(in srgb, var(--viking-metallic-500) 28%, transparent);
+    box-shadow: inset 0 1px 0
+      color-mix(in srgb, var(--viking-white) 7%, transparent);
     opacity: 0.75;
-    background:
-      linear-gradient(
-        135deg,
-        transparent,
-        color-mix(in srgb, var(--viking-accent) 12%, transparent) 50%,
-        transparent
-      );
+    background: linear-gradient(
+      135deg,
+      transparent,
+      color-mix(in srgb, var(--viking-accent) 12%, transparent) 50%,
+      transparent
+    );
   }
 
   &::after {
@@ -250,8 +253,10 @@
     right: 28px;
     width: 30px;
     height: 18px;
-    border-bottom: 1px solid color-mix(in srgb, var(--viking-accent) 24%, transparent);
-    border-right: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--viking-accent) 24%, transparent);
+    border-right: 1px solid
+      color-mix(in srgb, var(--viking-accent) 18%, transparent);
     transform: skewX(-18deg);
     pointer-events: none;
     opacity: 0.55;
@@ -333,16 +338,16 @@
 
 .mockup-main {
   flex: 1;
-  padding: 20px;
+  padding: var(--viking-card-padding);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--viking-space-3);
 }
 
 .mockup-gauges {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: var(--viking-space-2);
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(3, 1fr);
@@ -356,8 +361,8 @@
     var(--color-surface)
   );
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
+  border-radius: var(--viking-radius-lg);
+  padding: var(--viking-card-padding-compact);
   text-align: center;
 
   &.primary {
@@ -386,10 +391,10 @@
   flex: 1;
   display: flex;
   align-items: flex-end;
-  gap: 6px;
-  padding: 12px;
+  gap: var(--viking-space-half);
+  padding: var(--viking-card-padding-compact);
   background: color-mix(in srgb, var(--viking-charcoal-900) 50%, transparent);
-  border-radius: 10px;
+  border-radius: var(--viking-radius-lg);
   border: 1px solid var(--border);
   min-height: 100px;
 
@@ -432,7 +437,7 @@
 .mockup-stats-row {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: var(--viking-space-2);
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(3, 1fr);
@@ -441,8 +446,8 @@
   .mockup-stat {
     background: var(--viking-surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 12px;
+    border-radius: var(--viking-radius-lg);
+    padding: var(--viking-card-padding-compact);
 
     span {
       display: block;
@@ -529,7 +534,7 @@
   background: var(--color-surface);
   border: 1px solid var(--border);
   border-radius: var(--viking-radius-xl, 16px);
-  padding: 32px 28px;
+  padding: var(--viking-card-padding);
   text-align: center;
   transition:
     border-color 0.25s ease,
@@ -556,7 +561,7 @@
 
   &:hover {
     border-color: var(--viking-accent);
-    transform: translateY(-2px);
+    transform: translateY(var(--viking-state-hover-lift));
     box-shadow: var(--shadow-hover);
   }
 
@@ -598,7 +603,7 @@
 
 /* ── Security pillars ── */
 .security-pillars-band {
-  padding: 72px 0;
+  padding: var(--viking-page-section-gap) 0;
   border-bottom: 1px solid var(--border);
   position: relative;
 }
@@ -624,7 +629,7 @@
 .security-pillars-header {
   text-align: center;
   max-width: 680px;
-  margin: 0 auto 48px;
+  margin: 0 auto var(--viking-page-section-gap);
 
   h2 {
     font-size: clamp(1.75rem, 3vw, 2.5rem);
@@ -645,7 +650,7 @@
 .security-pillars-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
+  gap: var(--viking-space-3);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -664,9 +669,9 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
-  padding: 28px 20px;
-  border-radius: 16px;
+  gap: var(--viking-space-2);
+  padding: var(--viking-card-padding);
+  border-radius: var(--viking-radius-lg);
   background: color-mix(in srgb, var(--viking-accent) 6%, var(--color-surface));
   border: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
   position: relative;
@@ -705,7 +710,8 @@
     content: "";
     position: absolute;
     inset: 8px;
-    border: 1px solid color-mix(in srgb, var(--viking-metallic-400) 26%, transparent);
+    border: 1px solid
+      color-mix(in srgb, var(--viking-metallic-400) 26%, transparent);
     border-radius: inherit;
     opacity: 0.5;
     pointer-events: none;
@@ -715,8 +721,8 @@
 /* ── Integrations strip ── */
 .integrations-strip {
   width: 100%;
-  padding: 32px 0;
-  margin-bottom: 64px;
+  padding: var(--viking-space-4) 0;
+  margin-bottom: var(--viking-page-section-gap);
   border: 0;
   text-align: center;
   position: relative;
@@ -883,11 +889,7 @@
     width: 42px;
     height: 1px;
     margin-top: 18px;
-    background: linear-gradient(
-      90deg,
-      var(--viking-accent),
-      transparent
-    );
+    background: linear-gradient(90deg, var(--viking-accent), transparent);
     opacity: 0.35;
   }
 }
@@ -925,9 +927,11 @@
     content: "";
     position: absolute;
     inset: 0;
-    border: 1px solid color-mix(in srgb, var(--viking-metallic-500) 24%, transparent);
+    border: 1px solid
+      color-mix(in srgb, var(--viking-metallic-500) 24%, transparent);
     border-radius: inherit;
-    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white) 6%, transparent);
+    box-shadow: inset 0 1px 0
+      color-mix(in srgb, var(--viking-white) 6%, transparent);
     pointer-events: none;
   }
 
@@ -938,8 +942,10 @@
     left: 18px;
     width: 36px;
     height: 12px;
-    border-bottom: 1px solid color-mix(in srgb, var(--viking-accent) 35%, transparent);
-    border-left: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
+    border-bottom: 1px solid
+      color-mix(in srgb, var(--viking-accent) 35%, transparent);
+    border-left: 1px solid
+      color-mix(in srgb, var(--viking-accent) 18%, transparent);
     opacity: 0.45;
     pointer-events: none;
   }
@@ -1126,7 +1132,11 @@
   box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
-  border-color: color-mix(in srgb, var(--viking-border-strong) 85%, transparent);
+  border-color: color-mix(
+    in srgb,
+    var(--viking-border-strong) 85%,
+    transparent
+  );
 
   &::before {
     content: "";
@@ -1321,7 +1331,8 @@
         var(--viking-accent) 6%,
         var(--color-surface)
       );
-      box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white) 8%, transparent);
+      box-shadow: inset 0 1px 0
+        color-mix(in srgb, var(--viking-white) 8%, transparent);
 
       .recommended-badge {
         position: absolute;

@@ -1,4 +1,4 @@
-import tokensJson from "../../../packages/viking-ui/src/tokens/viking-tokens.json";
+import tokensJson from "@dataengineeringformachinelearning/viking-ui/tokens.json";
 
 export type TokenGroup = {
   id: string;

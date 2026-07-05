@@ -11,7 +11,7 @@ on:
     paths:
       - 'packages/viking-ui/src/**'
       - 'viking-ui-docs/**'
-      - 'frontend/projects/viking-ui/**'
+      - 'packages/viking-ui/**'
       - 'scripts/**'
       - 'firebase.json'
       - '.firebaserc'

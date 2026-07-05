@@ -12,12 +12,14 @@ Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is th
 | ---------------------- | ----------------------------------------------- | ------------------------------------- |
 | **Angular components** | `packages/viking-ui/src/lib/`                   | Angular wrapper components            |
 | **Web Components**     | `packages/viking-ui/src/web/`                   | Framework-agnostic custom elements    |
+| **Shared utilities**   | `packages/viking-ui/src/core/`                  | Icon registries and Angular-free data |
 | **Design tokens**      | `packages/viking-ui/src/styles/_variables.scss` | Colors, spacing, typography, motion   |
 | **Static CSS build**   | `packages/viking-ui/scripts/build-css.mjs`      | CSS bundle pipeline changes           |
+| **Web/utility build**  | `packages/viking-ui/scripts/build-elements.mjs` | Custom elements, widgets, utility JS  |
 | **Showcase / docs**    | `viking-ui-docs/src/`                           | Demos, guides, playground             |
 | **Governance docs**    | `THEME.md`, `BOOK.md` Ch.31                     | Architectural or token policy changes |
 
-New shared UI **always** belongs in `packages/viking-ui/` first (styles, tokens, web components, utilities), where Angular wrappers are also maintained.
+New shared UI **always** belongs in `packages/viking-ui/` first (styles, tokens, Web Components, utilities, package exports), where Angular wrappers are also maintained. Application code should consume public package entrypoints (`@dataengineeringformachinelearning/viking-ui`, `/angular`, `/web-components.js`, `/icons`, `/site-drakkar`, `/tokens.json`) rather than importing from package source paths.
 
 ---
 
@@ -35,13 +37,12 @@ New shared UI **always** belongs in `packages/viking-ui/` first (styles, tokens,
 git clone https://github.com/dataengineeringformachinelearning/deml.git
 cd deml
 
-# Frontend + library
-cd frontend && npm ci --legacy-peer-deps
-npm run build:viking-ui
+# Workspace + library
+npm ci --legacy-peer-deps
+npm run build:viking-ui:package
 
 # Docs showcase (port 4300)
-cd ../viking-ui-docs && npm ci --legacy-peer-deps
-npm run dev
+cd viking-ui-docs && npm run dev
 ```
 
 From repo root you can also run:
@@ -56,7 +57,7 @@ npm run start:viking-ui-docs
 
 1. **Fork** the repository and create a branch: `cursor/your-feature-160c` or `feature/your-feature`.
 2. **Read** [THEME.md](THEME.md) and [.cursorrules](.cursorrules) before editing styles or components.
-3. **Implement** in the library first; add showcase demos in `viking-ui-docs/src/lib/component-registry.ts`.
+3. **Implement** in the package first; add or update public exports in `packages/viking-ui/src/public-api.ts` and `packages/viking-ui/package.json` as needed, then add showcase demos in `viking-ui-docs/src/lib/component-registry.ts`.
 4. **Run quality gates** (see below).
 5. **Open a pull request** with a clear description, screenshots for UI changes, and linked issues if applicable.
 
@@ -141,6 +142,7 @@ src/lib/my-component/my-component.ts
 ### 4. Manifest and docs
 
 - Add entry to `viking.manifest.json`
+- Add public exports in `src/public-api.ts`; add `package.json` subpath exports for framework-neutral bundles when a static-site consumer needs them
 - Add showcase entry in `viking-ui-docs/src/lib/component-registry.ts` with:
   - Live preview HTML
   - Snippets for Angular, Astro, Django, and Web Components
@@ -192,6 +194,7 @@ Required for charts, forms, icons, and auth surfaces per project policy.
 ## Pull request checklist
 
 - [ ] Shared UI changes live in `packages/viking-ui/` first; update Angular wrappers there as needed
+- [ ] App/docs imports use public package entrypoints, not `packages/viking-ui/src/...`
 - [ ] Showcase updated in `viking-ui-docs/` if user-facing
 - [ ] `uvx pre-commit run --all-files` passes
 - [ ] `node scripts/enforce-theme.js` passes

@@ -13,7 +13,8 @@ import { SITE } from '../lib/site';
       <h1 class="viking-heading viking-heading-xl">Contributing</h1>
       <p class="viking-text-muted">
         Viking-UI is Apache-2.0 and lives in the DEML monorepo. New shared UI belongs in
-        <code>packages/viking-ui/</code> first — extend the library, then wire thin Angular wrappers.
+        <code>packages/viking-ui/</code> first — extend tokens, Web Components, utility exports, and
+        Angular wrappers there before consuming them in apps.
         Full guidelines: <a href={`${SITE.github}/blob/main/CONTRIBUTING.md`} target="_blank" rel="noopener">CONTRIBUTING.md</a>.
       </p>
       <div class="viking-demo-row">
@@ -29,12 +30,14 @@ import { SITE } from '../lib/site';
       <article class="contribute-step viking-card">
         <h3 class="viking-heading viking-heading-sm">1. Clone and install</h3>
         <p class="viking-text-muted">
-          Fork the repository, install frontend dependencies, and start the docs site locally.
+          Fork the repository, install workspace dependencies, build the package, and start the docs
+          site locally.
         </p>
         <pre class="code-block-panel is-active contribute-code"><code>git clone {SITE.github}.git
-cd deml/frontend && npm ci --legacy-peer-deps
-npm run build:viking-ui
-cd ../viking-ui-docs && npm ci --legacy-peer-deps
+cd deml
+npm ci --legacy-peer-deps
+npm run build:viking-ui:package
+cd viking-ui-docs
 npm run dev</code></pre>
       </article>
 
@@ -42,8 +45,9 @@ npm run dev</code></pre>
         <h3 class="viking-heading viking-heading-sm">2. Understand the architecture</h3>
         <p class="viking-text-muted">
           Read the <a href="/architecture">architecture guide</a> before adding components. Token changes
-          start in <code>_variables.scss</code>. Component logic lives under
-          <code>src/lib/</code>. Web Components under <code>src/web/</code>.
+          start in <code>packages/viking-ui/src/styles/_variables.scss</code>. Angular wrappers live
+          under <code>src/lib/</code>, Web Components under <code>src/web/</code>, and public
+          utility exports under <code>src/core/</code> plus package subpaths.
         </p>
       </article>
 
@@ -53,7 +57,7 @@ npm run dev</code></pre>
           <li>Token-only SCSS in <code>src/styles/</code></li>
           <li>Optional Web Component: <code>{'viking-{name}-wc'}</code> in <code>src/web/</code></li>
           <li>Angular wrapper with signal <code>input()</code> / <code>output()</code></li>
-          <li>Export from <code>public-api.ts</code> + <code>viking.manifest.json</code></li>
+          <li>Export from <code>public-api.ts</code>, update <code>package.json</code> subpaths when needed, and update <code>viking.manifest.json</code></li>
           <li>Showcase demo in <code>viking-ui-docs/src/lib/component-registry.ts</code></li>
           <li>API reference in <code>component-api.ts</code> when adding new props</li>
         </ol>
@@ -62,22 +66,36 @@ npm run dev</code></pre>
       <article class="contribute-step viking-card">
         <h3 class="viking-heading viking-heading-sm">4. Run quality gates</h3>
         <p class="viking-text-muted">
-          Pre-commit enforces theme tokens, accessibility, and lint. From repo root:
+          Pre-commit enforces theme tokens, accessibility, and lint. Storybook provides the package
+          visual baseline before Chromatic publishes snapshots. From repo root:
         </p>
-        <pre class="code-block-panel is-active contribute-code"><code>node scripts/enforce-theme.js
-cd frontend && npm run test:viking-ui
-cd frontend && npm run check:viking-upstream
+        <pre class="code-block-panel is-active contribute-code"><code>npm run build:viking-ui:package
+npm run test:viking-ui:package
+npm run pack:viking-ui
+npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui
+node scripts/enforce-theme.js
 uvx pre-commit run --all-files</code></pre>
       </article>
 
       <article class="contribute-step viking-card">
-        <h3 class="viking-heading viking-heading-sm">5. Sync static CSS (token changes only)</h3>
+        <h3 class="viking-heading viking-heading-sm">5. Prepare publishing</h3>
+        <p class="viking-text-muted">
+          Add a Changeset for package changes, verify the version is not already on npm, and publish
+          Chromatic snapshots when the project token is available.
+        </p>
+        <pre class="code-block-panel is-active contribute-code"><code>npm run changeset
+npm view @dataengineeringformachinelearning/viking-ui@$(node -p "require('./packages/viking-ui/package.json').version") version
+CHROMATIC_PROJECT_TOKEN=... npm run chromatic --workspace @dataengineeringformachinelearning/viking-ui</code></pre>
+      </article>
+
+      <article class="contribute-step viking-card">
+        <h3 class="viking-heading viking-heading-sm">6. Sync static CSS (token changes only)</h3>
         <pre class="code-block-panel is-active contribute-code"><code>npm run build:viking-ui:package
 python scripts/sync_design_system.py</code></pre>
       </article>
 
       <article class="contribute-step viking-card">
-        <h3 class="viking-heading viking-heading-sm">6. Submit a pull request</h3>
+        <h3 class="viking-heading viking-heading-sm">7. Submit a pull request</h3>
         <p class="viking-text-muted">
           Use conventional commits. Document governance changes in THEME.md and BOOK.md Ch.31 together.
           Include screenshots for UI changes and link related issues.
@@ -93,6 +111,7 @@ python scripts/sync_design_system.py</code></pre>
         <li>Use <code>--viking-*</code> tokens only — no hardcoded hex in components</li>
         <li>WCAG 2.1 AA: visible focus rings, 44px touch targets, no color-only status</li>
         <li>New shared UI in <code>viking-ui</code> library first, then consume in apps</li>
+        <li>Use public package entrypoints; do not import from <code>packages/viking-ui/src/...</code> in app or docs runtime code</li>
         <li>Compose form controls through <code>viking-field</code> stacks</li>
         <li>Web Components: Shadow DOM + token styles from <code>src/web/core/</code></li>
         <li>Tests required for charts, forms, icons, and auth surfaces</li>

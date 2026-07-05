@@ -4,7 +4,6 @@ on:
   pull_request:
     paths:
       - "packages/viking-ui/**"
-      - "frontend/projects/viking-ui/**"
       - "viking-ui-docs/**"
       - ".changeset/**"
       - "scripts/enforce-theme.js"

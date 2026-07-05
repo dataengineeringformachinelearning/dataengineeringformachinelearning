@@ -6,6 +6,8 @@
 export * from "./core/types";
 export {
   VIKING_ICON_NAMES,
+  VIKING_FILLED_ICON_NAMES,
+  VIKING_ICON_FILLED_PATHS,
   VIKING_ICON_PATHS,
   VIKING_ICON_SIZE_PRESETS,
   VIKING_BRAND_ICON_NAMES,
@@ -14,9 +16,11 @@ export {
   resolveVikingIcon,
   resolveVikingIconColor,
   resolveVikingIconSize,
+  type VikingIconColorToken,
   type VikingIconName,
-  vikingIconViewBox,
   type VikingIconSizePreset,
+  type VikingIconVariant,
+  vikingIconViewBox,
 } from "./core/icons";
 export {
   VIKING_BRAND_ICON_PATHS,
@@ -29,13 +33,27 @@ export {
   type VikingDrakkarIconName,
 } from "./core/brand-icons";
 export {
+  VIKING_INTEGRATION_BRAND_COLORS,
+  VIKING_INTEGRATION_BRAND_NAMES,
+  VIKING_INTEGRATION_BRAND_SVGS,
+  VIKING_INTEGRATION_ICON_NAMES_LIST,
+  VIKING_INTEGRATION_ICON_PATHS,
+  isIntegrationBrandIcon,
+  type VikingIntegrationBrandName,
+  type VikingIntegrationIconName,
+} from "./core/integration-brand-icons";
+export {
   type VikingChartCurve,
   type VikingChartKind,
   type VikingDonutSegment,
   type VikingCommandItem,
   type VikingSelectOption,
 } from "./core/types";
-export { type VikingSeriesPreset } from "./tokens/series-presets";
+export {
+  VIKING_SERIES_DEFAULT,
+  VIKING_SERIES_PRESETS,
+  type VikingSeriesPreset,
+} from "./tokens/series-presets";
 export { VikingControl, provideVikingCva } from "./lib/core/cva";
 
 // Framework-agnostic Web Components + registration
@@ -44,20 +62,24 @@ export {
   VikingButtonWc,
   VikingCalloutWc,
   VikingCardWc,
+  VikingFieldWc,
   VikingInputWc,
   VikingModalWc,
   VikingSearchPaletteWc,
   VikingSelectWc,
+  VikingSuiteHeaderWc,
   VikingSuiteSearchPaletteWc,
   VikingThemeToggleWc,
   registerVikingBadgeWc,
   registerVikingButtonWc,
   registerVikingCalloutWc,
   registerVikingCardWc,
+  registerVikingFieldWc,
   registerVikingInputWc,
   registerVikingModalWc,
   registerVikingSearchPaletteWc,
   registerVikingSelectWc,
+  registerVikingSuiteHeaderWc,
   registerVikingSuiteSearchPaletteWc,
   registerVikingThemeToggleWc,
   registerVikingElements,
@@ -128,7 +150,6 @@ export * from "./lib/menubar/menubar";
 export * from "./lib/modal/modal";
 export * from "./lib/native-select/native-select";
 export * from "./lib/navigation-menu/navigation-menu";
-export type { VikingNavItem } from "./lib/navigation-menu/navigation-menu";
 export * from "./lib/navbar/navbar";
 export * from "./lib/otp-input/otp-input";
 export * from "./lib/verification-code-field/verification-code-field";
@@ -165,7 +186,6 @@ export * from "./lib/toast/toast";
 export * from "./lib/uptime-bar/uptime-bar";
 export * from "./lib/whitepaper-cta/whitepaper-cta";
 export * from "./lib/wizard/wizard";
-export type { VikingUptimeStatus } from "./lib/uptime-bar/uptime-bar";
 export * from "./lib/tooltip/tooltip";
 export * from "./lib/typography/heading";
 export * from "./lib/typography/text";

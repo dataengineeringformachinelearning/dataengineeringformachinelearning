@@ -38,14 +38,22 @@ import { VikingSkeleton } from "../skeleton/skeleton";
   styles: [
     `
       :host {
-        display: block;
+        display: grid;
+        gap: var(--viking-card-content-gap, var(--viking-space-3));
         background: var(--viking-surface-recipe, var(--viking-surface));
-        border: 1px solid var(--viking-border);
+        border: 1px solid
+          color-mix(
+            in srgb,
+            var(--viking-border-strong) 72%,
+            var(--viking-border)
+          );
         border-radius: var(--viking-radius-lg);
         box-shadow:
           var(--viking-shadow-sm),
           inset 0 1px 0
-            color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
+            color-mix(in srgb, var(--viking-white-pure) 7%, transparent),
+          inset 0 -1px 0
+            color-mix(in srgb, var(--viking-black) 18%, transparent);
         padding: var(--viking-card-padding, var(--viking-space-3));
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
@@ -63,14 +71,14 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         content: "";
         position: absolute;
         inset: 0 0 auto;
-        height: 1px;
+        height: 2px;
         background: linear-gradient(
           90deg,
           transparent,
           color-mix(
             in srgb,
             var(--viking-metallic-200)
-              var(--viking-surface-hairline-strength, 22%),
+              var(--viking-surface-hairline-strength, 28%),
             transparent
           ),
           transparent
@@ -83,11 +91,11 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         position: absolute;
         inset: 0 auto auto 0;
         right: 0;
-        width: 1px;
-        height: 28px;
+        width: 2px;
+        height: var(--viking-space-4);
         background: linear-gradient(
           180deg,
-          color-mix(in srgb, var(--viking-metallic-100) 22%, transparent),
+          color-mix(in srgb, var(--viking-metallic-100) 24%, transparent),
           transparent
         );
         pointer-events: none;
@@ -106,7 +114,9 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         box-shadow:
           var(--viking-shadow-hover),
           inset 0 1px 0
-            color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
+            color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
+          inset 0 -1px 0
+            color-mix(in srgb, var(--viking-black) 18%, transparent);
         transform: translateY(var(--viking-state-hover-lift));
       }
       :host(.viking-card-interactive):active {
@@ -116,20 +126,17 @@ import { VikingSkeleton } from "../skeleton/skeleton";
             color-mix(in srgb, var(--viking-black) 24%, transparent),
           var(--viking-shadow-sm);
       }
-      :host(.viking-card-interactive):focus-visible {
-        outline: var(--viking-ring-width) solid var(--viking-ring);
-        outline-offset: var(--viking-ring-offset);
-      }
       :host(.viking-card-loading) {
         pointer-events: none;
       }
       :host(.viking-card-compact) {
         padding: var(--viking-card-padding-compact, var(--viking-space-2));
+        gap: var(--viking-card-content-gap-compact, var(--viking-space-2));
       }
       .viking-card-skeleton {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-1-5);
+        gap: var(--viking-space-2);
       }
     `,
   ],
@@ -161,9 +168,10 @@ export class VikingCard {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         padding-bottom: var(--viking-space-2);
-        margin-bottom: var(--viking-space-2);
+        margin-bottom: 0;
+        border-bottom: 1px solid var(--viking-border-subtle);
       }
       /* Support slotted left meta + right actions uniformly */
       :host ::ng-deep > * {
@@ -190,9 +198,11 @@ export class VikingCardHeader {}
       :host {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         gap: var(--viking-space-2);
         padding-top: var(--viking-space-2);
-        margin-top: var(--viking-space-2);
+        margin-top: 0;
+        border-top: 1px solid var(--viking-border-subtle);
       }
     `,
   ],

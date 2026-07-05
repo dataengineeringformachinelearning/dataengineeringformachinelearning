@@ -6,8 +6,7 @@ on:
       - main
     paths:
       - 'packages/viking-ui/**'
-      - 'frontend/projects/viking-ui/src/**'
-      - 'packages/viking-ui/src/**'
+      - 'viking-ui-docs/**'
       - '.changeset/**'
       - 'package-lock.json'
       - 'package.json'

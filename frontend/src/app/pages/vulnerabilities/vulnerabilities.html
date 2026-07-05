@@ -265,7 +265,7 @@
               description="No active incidents. New cases appear here automatically when detected."
             />
             } @else {
-            <div class="viking-card soc-card-list">
+            <div class="soc-card-list">
               @for (incident of activeIncidents(); track incident.id) {
               <div
                 class="viking-card soc-card incident-card"
@@ -278,14 +278,14 @@
                 (keydown.enter)="selectIncident(incident)"
                 (keydown.space)="$event.preventDefault(); selectIncident(incident)"
               >
-                <div class="viking-card soc-card-top">
+                <div class="soc-card-top">
                   <span class="soc-id">INC-{{ incident.id.substring(0, 8).toUpperCase() }}</span>
                   <span class="severity-pill" [ngClass]="incident.severity.toLowerCase()">
                     {{ incident.severity }}
                   </span>
                 </div>
                 <h3 class="soc-card-title">{{ incident.title }}</h3>
-                <p class="viking-card soc-card-desc">{{ incident.description }}</p>
+                <p class="soc-card-desc">{{ incident.description }}</p>
                 <div class="soc-card-footer">
                   <div class="soc-status-field" (click)="$event.stopPropagation()">
                     <app-unified-select
@@ -336,7 +336,7 @@
               description="Default response playbooks seed automatically when threats are detected."
             />
             } @else {
-            <div class="viking-card soc-card-list">
+            <div class="soc-card-list">
               @for (playbook of playbooks(); track playbook.id) {
               <div
                 class="viking-card soc-card playbook-card"
@@ -353,13 +353,13 @@
                   (keydown.enter)="selectPlaybook(playbook)"
                   (keydown.space)="$event.preventDefault(); selectPlaybook(playbook)"
                 >
-                  <div class="viking-card soc-card-top">
+                  <div class="soc-card-top">
                     <h3 class="soc-card-title">{{ playbook.name }}</h3>
                     <span class="soc-status-chip" [class.active]="playbook.is_active">
                       {{ playbook.is_active ? 'Active' : 'Paused' }}
                     </span>
                   </div>
-                  <p class="viking-card soc-card-desc">{{ playbook.description }}</p>
+                  <p class="soc-card-desc">{{ playbook.description }}</p>
                 </div>
                 <div class="playbook-toggle-row" (click)="$event.stopPropagation()">
                   <label class="playbook-toggle">

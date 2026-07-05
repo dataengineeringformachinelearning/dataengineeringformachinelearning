@@ -191,8 +191,9 @@ All DEML surfaces share one design system. **[.cursorrules](.cursorrules)** is t
 - **Always import and use** `@dataengineeringformachinelearning/viking-ui` components (`viking-button`, `viking-field`, `viking-card`, `viking-chart`, etc.) in Angular — never Material, Bootstrap, or other third-party UI runtimes.
 - **Composable structure, Viking palette:** accessible field stacks and primitive components; colors/spacing/typography from `--viking-*` tokens only.
 - **Premium restrained luxury:** dark-first charcoals, machined metallic borders, restrained teal/crimson accents — no gradient orbs, neon glow, or decorative clutter.
-- **Extend the kit, don't fork it:** framework-neutral styles, primitives, services, and shared utilities belong in `packages/viking-ui/` first, where both framework-agnostic code and Angular wrappers now live together, and surfaces are built from the synced `viking-ui.css`.
-- **Non-Angular surfaces** (marketing Astro, Django templates, Swagger) load the single built `viking-ui.css` bundle and use `var(--viking-*)` — no inline hex palettes.
+- **Extend the kit, don't fork it:** `packages/viking-ui/` is the single source of truth for token SCSS, static CSS bundles, framework-neutral Web Components, Angular-free utility exports, package metadata, and Angular wrappers. New shared UI starts there, is exported through public package entrypoints, then is consumed by apps.
+- **External-style library consumption:** Angular code imports from `@dataengineeringformachinelearning/viking-ui` or `/angular`; Web Component hosts load `/web-components.js`; static-site utilities use `/icons`, `/site-drakkar`, `/tokens.json`, and `/manifest`. Do not reach into `packages/viking-ui/src/...` from application runtime code, and do not reference retired frontend-local library paths.
+- **Non-Angular surfaces** (marketing Astro, Django templates, Swagger) load the single built `viking-ui.css` bundle and use `var(--viking-*)` — no inline hex palettes. Astro/build-time code must use Angular-free subpaths rather than importing the Angular barrel during prerender.
 
 ### Critical Code Styling & Theming Law
 

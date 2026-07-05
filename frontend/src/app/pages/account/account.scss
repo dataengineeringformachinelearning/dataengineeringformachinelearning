@@ -7,10 +7,13 @@
 
 .panel-clean {
   position: relative;
-  padding: var(--viking-space-2);
+  padding: var(--viking-card-padding-compact);
   border: 1px solid var(--viking-border-subtle);
   border-radius: var(--viking-radius-md);
-  background: var(--viking-surface-recipe, color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%));
+  background: var(
+    --viking-surface-recipe,
+    color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%)
+  );
   overflow: hidden;
 
   &::before {
@@ -21,7 +24,11 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;

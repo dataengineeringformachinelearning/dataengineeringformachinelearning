@@ -25,7 +25,7 @@
 .metric-card {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-1-5);
   background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid var(--viking-border);
   padding: var(--viking-card-padding-compact, var(--viking-space-2));
@@ -42,14 +42,18 @@
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -117,14 +121,18 @@
   position: relative;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -172,14 +180,18 @@
   box-shadow: var(--viking-shadow-sm);
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -249,7 +261,11 @@
 .hud-title,
 .page-title {
   margin: 0;
-  font-size: clamp(var(--viking-font-size-xl), 3vw, var(--viking-font-size-3xl));
+  font-size: clamp(
+    var(--viking-font-size-xl),
+    3vw,
+    var(--viking-font-size-3xl)
+  );
   font-weight: 700;
   letter-spacing: var(--viking-letter-spacing-tight);
   color: var(--viking-text);
@@ -315,12 +331,18 @@
 }
 
 .chart-container-large {
-  --viking-chart-fill-min-height: var(--viking-chart-fill-min-height-lg, clamp(20rem, 40vw, 22rem));
+  --viking-chart-fill-min-height: var(
+    --viking-chart-fill-min-height-lg,
+    clamp(20rem, 40vw, 22rem)
+  );
   min-height: var(--viking-chart-panel-body-min-height-lg, 25rem);
 }
 
 .chart-container-medium {
-  --viking-chart-fill-min-height: var(--viking-chart-fill-min-height, clamp(18rem, 36vw, 20rem));
+  --viking-chart-fill-min-height: var(
+    --viking-chart-fill-min-height,
+    clamp(18rem, 36vw, 20rem)
+  );
   min-height: var(--viking-chart-panel-body-min-height-md, 22rem);
 }
 
@@ -452,14 +474,18 @@
   box-shadow: var(--viking-shadow-sm);
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -582,7 +608,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2);
-  margin-bottom: var(--viking-space-4);
+  margin-bottom: var(--viking-space-5);
 }
 
 .metrics-section-spacing {
@@ -607,7 +633,10 @@
     width: var(--viking-space-3);
     height: var(--viking-space-3);
     border-radius: var(--viking-radius-sm);
-    background: var(--viking-accent-soft, color-mix(in srgb, var(--viking-accent) 14%, transparent));
+    background: var(
+      --viking-accent-soft,
+      color-mix(in srgb, var(--viking-accent) 14%, transparent)
+    );
     color: var(--viking-accent-strong, var(--viking-accent));
     flex-shrink: 0;
   }
@@ -626,8 +655,8 @@
 .stat-panels-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-2, var(--grid-gap));
-  margin-bottom: var(--viking-space-3);
+  gap: var(--viking-space-3, var(--grid-gap));
+  margin-bottom: var(--viking-page-section-gap, var(--viking-space-6));
 
   @media (min-width: 600px) {
     grid-template-columns: repeat(2, 1fr);
@@ -643,7 +672,7 @@
   background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
-  padding: var(--viking-card-padding-compact, var(--viking-space-2));
+  padding: var(--viking-card-padding-compact, var(--viking-space-3));
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -653,14 +682,18 @@
   min-width: 0;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -719,7 +752,7 @@
 .ces-gauge-cluster {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--viking-space-2, var(--grid-gap));
+  gap: var(--viking-space-3, var(--grid-gap));
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(12, 1fr);
@@ -740,14 +773,18 @@
   overflow: hidden;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0 0 auto;
     height: 1px;
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -851,7 +888,7 @@
   }
 }
 
-html[data-theme='light'] {
+html[data-theme="light"] {
   .gauge-card,
   .ml-stat-panel {
     background: var(--viking-surface-recipe, var(--viking-surface));

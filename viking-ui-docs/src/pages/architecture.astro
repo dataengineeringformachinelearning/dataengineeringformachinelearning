@@ -14,9 +14,9 @@ import { API_CONVENTIONS } from '../lib/component-api';
       <p class="viking-label">Universal design system</p>
       <h1 class="viking-heading viking-heading-xl">Architecture</h1>
       <p class="viking-text-muted">
-        Viking-UI ships one visual language across Angular, Astro, Django, and vanilla HTML. Every
-        surface reads from the same <code>--viking-*</code> token matrix — no runtime theme engine, no
-        third-party UI kit dependencies.
+        Viking-UI ships one package across Angular, Astro, Django, and vanilla HTML.
+        <code>packages/viking-ui/</code> is the single source of truth for tokens, static CSS,
+        Web Components, Angular wrappers, and framework-neutral utility exports.
       </p>
     </header>
 
@@ -78,26 +78,30 @@ import { API_CONVENTIONS } from '../lib/component-api';
       <header class="showcase-category-header">
         <h2 class="viking-heading viking-heading-sm" id="flow-heading">Build and sync pipeline</h2>
       </header>
-      <pre class="code-block-panel is-active architecture-flow" aria-label="Build pipeline diagram"><code>src/styles/_variables.scss          ← single source of truth (edit tokens here)
+      <pre class="code-block-panel is-active architecture-flow" aria-label="Build pipeline diagram"><code>packages/viking-ui/
+├── src/styles/_variables.scss       ← single source of truth (edit tokens here)
         │
         ├── tokens-export.scss        → design-tokens.css
         ├── components-bundle.scss    → viking-components.css
         └── viking-ui-bundle.scss     → viking-ui.css (full bundle)
 
-src/web/index.ts                      → viking-ui-elements.js (Web Components)
+├── src/web/index.ts                  → web-components.js / viking-ui-elements.js
+├── src/core/icons.public.ts          → icons.js
+├── src/lib/site-drakkar/*.ts         → site-drakkar.js
+└── src/public-api.ts                 → Angular/root package barrel
 
-npm run build:viking-ui:package         (packages/viking-ui/scripts/build-css.mjs)
+npm run build:viking-ui:package         (ng-packagr + package scripts)
 python scripts/sync_design_system.py    → frontend, backend, marketing assets
 
-npm run build:viking-ui                 (ng-packagr → npm package)</code></pre>
+npm run pack:viking-ui                  → external-style npm package check</code></pre>
     </section>
 
     <section class="showcase-category" aria-labelledby="wc-heading">
       <header class="showcase-category-header">
         <h2 class="viking-heading viking-heading-sm" id="wc-heading">Web Component pattern (v2)</h2>
         <p class="viking-text-muted">
-          New interactive primitives follow a thin-wrapper architecture. Button and input demonstrate
-          the pattern; more components migrate incrementally.
+          New interactive primitives follow a package-first architecture. Framework-neutral code,
+          public exports, and Angular wrappers live together in <code>packages/viking-ui/</code>.
         </p>
       </header>
 
@@ -132,8 +136,9 @@ npm run build:viking-ui                 (ng-packagr → npm package)</code></pre
       <header class="showcase-category-header">
         <h2 class="viking-heading viking-heading-sm" id="api-heading">Consistent component API</h2>
         <p class="viking-text-muted">
-          All Angular components use signal inputs and outputs. Shared types live in
-          <code>src/lib/core/types.ts</code>.
+          All Angular components use signal inputs and outputs. Shared types and framework-neutral
+          registries are exported through public package entrypoints such as <code>/icons</code>,
+          <code>/site-drakkar</code>, and <code>/tokens.json</code>.
         </p>
       </header>
       <div class="showcase-table-wrap">
