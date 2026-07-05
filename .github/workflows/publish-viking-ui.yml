@@ -95,7 +95,7 @@ jobs:
               exit 1
             fi
             echo "::warning ::Changesets did not publish (no releasable changesets). Running direct publish for v${LOCAL_VERSION}."
-            npm publish --access public --workspace packages/viking-ui
+            (cd packages/viking-ui && npm publish --access public --tag latest)
             echo "published=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
