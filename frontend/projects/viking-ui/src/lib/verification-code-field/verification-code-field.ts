@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { vikingUid } from '../core/uid';
 import { VikingOtpInput } from '../otp-input/otp-input';

@@ -442,7 +442,10 @@ export class Settings implements OnInit {
           error: async err => {
             await this.vikingDialog.openConfirm({
               title: 'Failed to Add Service',
-              message: apiErrorMessage(err, 'Failed to add monitored service. Verify the URL and try again.'),
+              message: apiErrorMessage(
+                err,
+                'Failed to add monitored service. Verify the URL and try again.',
+              ),
               type: 'alert',
               confirmBtnText: 'OK',
               confirmBtnColor: 'warn',

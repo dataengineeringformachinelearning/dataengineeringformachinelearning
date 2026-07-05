@@ -25,7 +25,11 @@ const main = async () => {
   const starModules = [...publicApi.matchAll(starExportPattern)].map(match => match[1]);
   for (const block of publicApi.matchAll(/export\s+(?:type\s+)?\{([^}]+)\}/g)) {
     for (const part of block[1].split(',')) {
-      const name = part.trim().split(/\s+as\s+/).pop()?.trim();
+      const name = part
+        .trim()
+        .split(/\s+as\s+/)
+        .pop()
+        ?.trim();
       if (name) publicExports.add(name);
     }
   }
@@ -54,7 +58,9 @@ const main = async () => {
   const manifestComponentExports = new Set([...manifestExports].filter(isComponentExport));
   const publicComponentExports = new Set([...publicExports].filter(isComponentExport));
 
-  const missingFromManifest = [...publicComponentExports].filter(name => !manifestComponentExports.has(name));
+  const missingFromManifest = [...publicComponentExports].filter(
+    name => !manifestComponentExports.has(name),
+  );
 
   console.log(`Manifest component exports: ${manifestComponentExports.size}`);
   console.log(`Public API component exports: ${publicComponentExports.size}`);

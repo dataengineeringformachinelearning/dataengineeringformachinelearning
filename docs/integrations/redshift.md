@@ -11,12 +11,12 @@ Connect Amazon Redshift warehouses to DEML for scheduled analytics exports, feat
 
 ## Architecture Options
 
-| Pattern                    | Best for                              | Latency   | Ops overhead |
-| -------------------------- | ------------------------------------- | --------- | ------------ |
-| **Scheduled UNLOAD → S3**  | Nightly feature rollups, batch ingest | Minutes   | Low          |
-| **Lambda + UNLOAD**        | Event-driven exports after ETL        | Seconds   | Medium       |
-| **Redshift Data API**      | Serverless queries without JDBC       | Variable  | Low          |
-| **Spectrum + Spark sink**  | Lakehouse federated queries           | Minutes   | Medium       |
+| Pattern                   | Best for                              | Latency  | Ops overhead |
+| ------------------------- | ------------------------------------- | -------- | ------------ |
+| **Scheduled UNLOAD → S3** | Nightly feature rollups, batch ingest | Minutes  | Low          |
+| **Lambda + UNLOAD**       | Event-driven exports after ETL        | Seconds  | Medium       |
+| **Redshift Data API**     | Serverless queries without JDBC       | Variable | Low          |
+| **Spectrum + Spark sink** | Lakehouse federated queries           | Minutes  | Medium       |
 
 ## Scheduled UNLOAD to DEML Ingest
 

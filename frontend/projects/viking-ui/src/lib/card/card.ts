@@ -57,7 +57,11 @@ import { VikingSkeleton } from '../skeleton/skeleton';
         background: linear-gradient(
           90deg,
           transparent,
-          color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+          color-mix(
+            in srgb,
+            var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+            transparent
+          ),
           transparent
         );
         pointer-events: none;

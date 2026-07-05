@@ -314,14 +314,14 @@ Long-term SaaS reliability is sustained through an uncompromising CI/CD and pre-
 
 The July 2026 daily platform audit codified several evolutionary steps critical for enterprise compliance reviews:
 
-| Milestone                   | Engineering outcome                                                                                                    | Compliance relevance                                                |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Unified dashboard shell     | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status`                        | Consistent operator UX; reduced misconfiguration during incidents   |
-| Root mobile-first gate      | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first` | Process integrity — layout regressions fail before deploy           |
-| Viking-UI CSS consolidation | Static bundle owned by `viking-ui-docs`; Railway frontend compiles live SCSS only                                      | Supply-chain minimization; smaller attack surface in CI             |
-| Retention centralization    | `backend/utils/retention.py` constants drive `db_cleanup`                                                              | SOC 2 confidentiality; CMMC data minimization                       |
-| CES anonymization contract  | ClickHouse aggregates only; no PII in CES engine                                                                       | Safe cross-tenant statistical contribution without identity leakage |
-| Live Developer Portal       | `/documentation` section documents Railway matrix, schedulers, distroless strategy                                     | Auditor-readable operational truth synchronized with BOOK Ch.32     |
+| Milestone                   | Engineering outcome                                                                                                     | Compliance relevance                                                |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| Unified dashboard shell     | `.dashboard-page-container` + `.page-inner-wrapper` on every deml.app route including `/status`                         | Consistent operator UX; reduced misconfiguration during incidents   |
+| Root mobile-first gate      | `scripts/check_mobile_first.js` delegates to frontend scanner; Docker frontend build runs `npm run check:mobile-first`  | Process integrity — layout regressions fail before deploy           |
+| Viking-UI CSS consolidation | `packages/viking-ui` is the single source of truth for CSS; Railway frontend compiles via package-synced artifacts only | Supply-chain minimization; smaller attack surface in CI             |
+| Retention centralization    | `backend/utils/retention.py` constants drive `db_cleanup`                                                               | SOC 2 confidentiality; CMMC data minimization                       |
+| CES anonymization contract  | ClickHouse aggregates only; no PII in CES engine                                                                        | Safe cross-tenant statistical contribution without identity leakage |
+| Live Developer Portal       | `/documentation` section documents Railway matrix, schedulers, distroless strategy                                      | Auditor-readable operational truth synchronized with BOOK Ch.32     |
 
 These milestones do not replace formal certification—they produce traceable evidence that Visibility, Manageability, and Survivability controls described in Section 3 remain operable under daily engineering velocity.
 

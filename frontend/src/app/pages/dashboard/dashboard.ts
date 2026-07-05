@@ -157,7 +157,7 @@ export class Dashboard implements OnInit, OnDestroy {
   });
 
   // Fourth model: Spiking Temporal Forecast (from backend overview telemetry)
-  temporalForecast = signal<number>(52);  // populated from API / status service in real impl
+  temporalForecast = signal<number>(52); // populated from API / status service in real impl
 
   myPages = computed(() => {
     const uid = this.authService.currentUserId();

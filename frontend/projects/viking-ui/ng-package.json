@@ -3,7 +3,7 @@
   "dest": "../../dist/viking-ui",
   "lib": {
     "entryFile": "src/public-api.ts",
-    "styleIncludePaths": ["src/styles"]
+    "styleIncludePaths": ["src/styles", "../../../packages/viking-ui/src/styles"]
   },
   "assets": [
     "./src/tokens/**/*.{json,js,ts}",

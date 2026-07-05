@@ -45,7 +45,12 @@ registerVikingElements();
       @if (loading()) {
         <viking-spinner slot="trailing" [size]="16" label="Loading input" />
       } @else if (iconTrailing()) {
-        <viking-icon slot="trailing" class="viking-input-icon" [name]="iconTrailing()!" [size]="20" />
+        <viking-icon
+          slot="trailing"
+          class="viking-input-icon"
+          [name]="iconTrailing()!"
+          [size]="20"
+        />
       }
       @if (kbd()) {
         <kbd slot="trailing" class="viking-input-kbd">{{ kbd() }}</kbd>

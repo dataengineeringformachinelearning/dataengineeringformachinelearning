@@ -182,7 +182,11 @@ export type VikingSelectWidth = 'full' | 'half';
       .viking-selected {
         font-weight: var(--viking-font-weight-semibold);
         color: var(--viking-accent-strong);
-        background: color-mix(in srgb, var(--viking-accent) 14%, var(--viking-select-panel-bg, var(--viking-surface-raised)));
+        background: color-mix(
+          in srgb,
+          var(--viking-accent) 14%,
+          var(--viking-select-panel-bg, var(--viking-surface-raised))
+        );
       }
     `,
   ],

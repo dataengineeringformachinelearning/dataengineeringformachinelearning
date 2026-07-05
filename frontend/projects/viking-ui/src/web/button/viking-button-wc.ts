@@ -113,8 +113,7 @@ export class VikingButtonWc extends HTMLElement {
       .join(' ');
 
     const label = this.getAttribute('aria-label') ?? '';
-    const busy =
-      this.getAttribute('aria-busy') === 'true' || this.loading ? 'true' : null;
+    const busy = this.getAttribute('aria-busy') === 'true' || this.loading ? 'true' : null;
 
     this.shadow.innerHTML = `
       <${tag}

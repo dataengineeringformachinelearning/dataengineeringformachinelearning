@@ -12,11 +12,7 @@ const FILLED_ICON_SET = new Set<string>(VIKING_FILLED_ICON_NAMES);
  * Renders a zero-dependency inline SVG icon for Web Components.
  * Uses the same registry as `viking-icon` in Angular.
  */
-export const renderInlineIcon = (
-  name: string,
-  size = 16,
-  className = 'viking-wc-icon',
-): string => {
+export const renderInlineIcon = (name: string, size = 16, className = 'viking-wc-icon'): string => {
   const resolved = resolveVikingIcon(name);
   const filled = FILLED_ICON_SET.has(resolved);
   const paths = filled

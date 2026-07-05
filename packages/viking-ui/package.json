@@ -63,6 +63,9 @@
     "build": "npm run clean && npm run build:css && npm run build:elements",
     "build:css": "node scripts/build-css.mjs",
     "build:elements": "node scripts/build-elements.mjs",
+    "storybook": "npm run build:css && storybook dev --config-dir .storybook --port 6006",
+    "build-storybook": "npm run build:css && storybook build --config-dir .storybook --output-dir ./storybook-static",
+    "chromatic": "npm run build-storybook && chromatic --project-token=${CHROMATIC_PROJECT_TOKEN} --exit-zero-on-changes",
     "validate": "node ../../scripts/validate_viking_ui_assets.mjs",
     "test": "node --test test/*.test.mjs",
     "pack:check": "npm pack --dry-run",
@@ -77,6 +80,10 @@
     "./src/index.ts"
   ],
   "devDependencies": {
+    "@chromatic-com/storybook": "^3.2.7",
+    "@storybook/addon-a11y": "^8.6.12",
+    "@storybook/addon-essentials": "^8.6.12",
+    "@storybook/html": "^8.6.12",
     "esbuild": "^0.28.1",
     "sass": "^1.101.0",
     "typescript": "~6.0.3"

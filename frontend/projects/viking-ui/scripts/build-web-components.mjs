@@ -19,8 +19,7 @@ const esbuildCandidates = [
   path.join(rootDir, 'frontend', 'node_modules', '.bin', 'esbuild'),
   path.join(docsDir, 'node_modules', '.bin', 'esbuild'),
 ];
-const esbuildBin =
-  esbuildCandidates.find((candidate) => fs.existsSync(candidate)) ?? 'esbuild';
+const esbuildBin = esbuildCandidates.find(candidate => fs.existsSync(candidate)) ?? 'esbuild';
 
 fs.mkdirSync(outDir, { recursive: true });
 

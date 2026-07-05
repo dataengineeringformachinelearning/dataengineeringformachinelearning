@@ -9,8 +9,10 @@ on:
     branches:
       - main
     paths:
+      - 'packages/viking-ui/src/**'
       - 'viking-ui-docs/**'
       - 'frontend/projects/viking-ui/**'
+      - 'scripts/**'
       - 'firebase.json'
       - '.firebaserc'
       - '.github/workflows/firebase-viking-ui-docs-deploy.yml'
@@ -29,6 +31,11 @@ jobs:
           node-version: '24'
           cache: npm
           cache-dependency-path: viking-ui-docs/package-lock.json
+
+      - name: Sync design-system assets from canonical package
+        run: |
+          npm ci
+          npm run sync:design-system
 
       - name: Install and build Viking-UI docs site (Astro + static CSS)
         run: |

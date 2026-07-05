@@ -74,10 +74,18 @@ describe('viking-auth-panel', () => {
     ) as NodeListOf<HTMLElement>;
     expect(buttons.length).toBe(2);
     buttons[0].dispatchEvent(
-      new CustomEvent('viking-press', { bubbles: true, composed: true, detail: new MouseEvent('click') }),
+      new CustomEvent('viking-press', {
+        bubbles: true,
+        composed: true,
+        detail: new MouseEvent('click'),
+      }),
     );
     buttons[1].dispatchEvent(
-      new CustomEvent('viking-press', { bubbles: true, composed: true, detail: new MouseEvent('click') }),
+      new CustomEvent('viking-press', {
+        bubbles: true,
+        composed: true,
+        detail: new MouseEvent('click'),
+      }),
     );
     fixture.detectChanges();
     expect(fixture.componentInstance.googleCalled).toBe(true);

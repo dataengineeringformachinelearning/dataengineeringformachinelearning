@@ -235,7 +235,9 @@ export class VikingIcon {
     return VIKING_FILLED_ICON_SET.has(name);
   });
 
-  protected readonly isDrakkarBrand = computed(() => VIKING_DRAKKAR_ICON_SET.has(this.resolvedName()));
+  protected readonly isDrakkarBrand = computed(() =>
+    VIKING_DRAKKAR_ICON_SET.has(this.resolvedName()),
+  );
 
   protected readonly isIntegrationBrand = computed(() =>
     isIntegrationBrandIcon(this.resolvedName()),

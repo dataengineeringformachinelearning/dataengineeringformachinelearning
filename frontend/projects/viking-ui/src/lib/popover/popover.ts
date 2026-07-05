@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  input,
-  model,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, input, model } from '@angular/core';
 
 /**
  * viking-popover — anchored floating panel.

@@ -153,8 +153,10 @@ export class VikingModalWc extends HTMLElement {
     `;
 
     this.dialogEl = this.shadow.querySelector('dialog');
-    this.shadow.querySelector('.viking-modal-close')?.addEventListener('click', () => this.closeModal());
-    this.dialogEl?.addEventListener('keydown', (event) => {
+    this.shadow
+      .querySelector('.viking-modal-close')
+      ?.addEventListener('click', () => this.closeModal());
+    this.dialogEl?.addEventListener('keydown', event => {
       if (event.key === 'Escape' && this.dismissible) {
         event.preventDefault();
         this.closeModal();

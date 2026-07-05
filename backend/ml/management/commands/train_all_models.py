@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
-from ml.ml_services import train_tenant_sla, train_threat_model, train_spiking_temporal_forecaster
+from ml.ml_services import train_spiking_temporal_forecaster, train_tenant_sla, train_threat_model
 
 User = get_user_model()
 
@@ -95,4 +95,6 @@ class Command(BaseCommand):
       except Exception as e:
         self.stderr.write(self.style.ERROR(f"  - Spiking training for user failed: {e}"))
 
-    self.stdout.write(self.style.SUCCESS("All models (including fourth Spiking Temporal) trained successfully."))
+    self.stdout.write(
+      self.style.SUCCESS("All models (including fourth Spiking Temporal) trained successfully.")
+    )

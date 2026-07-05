@@ -1,14 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import {
-  VikingIconColorToken,
-  VikingIconName,
-  VikingIconSizePreset,
-} from '../core/icons';
+import { VikingIconColorToken, VikingIconName, VikingIconSizePreset } from '../core/icons';
 
 export type VikingIconBadgeTone = 'default' | 'success' | 'warning' | 'danger' | 'info';
 

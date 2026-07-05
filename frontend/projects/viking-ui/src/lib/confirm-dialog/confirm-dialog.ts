@@ -14,7 +14,15 @@ import { VikingConfirmDialogData, VikingDialogService } from './dialog.service';
  */
 @Component({
   selector: 'viking-confirm-dialog',
-  imports: [FormsModule, VikingModal, VikingButton, VikingField, VikingInput, VikingText, VikingIcon],
+  imports: [
+    FormsModule,
+    VikingModal,
+    VikingButton,
+    VikingField,
+    VikingInput,
+    VikingText,
+    VikingIcon,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (data(); as dialogData) {

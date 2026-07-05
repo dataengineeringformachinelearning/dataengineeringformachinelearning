@@ -9,8 +9,10 @@ logger = logging.getLogger(__name__)
 try:
   import torch
   import torch.nn as nn
+
   try:
     import norse.torch as norse
+
     HAS_NORSE = True
   except ImportError:
     norse = None  # type: ignore
@@ -247,6 +249,7 @@ class CESModel(nn.Module):
 # For temporal/event-driven data processing with Spiking Neural Networks.
 # Falls back gracefully if norse not installed.
 if HAS_NORSE:
+
   class SpikingTemporalForecaster(nn.Module):
     """Spiking Neural Network model for forecasting temporal patterns in telemetry.
 
@@ -255,6 +258,7 @@ if HAS_NORSE:
 
     Input: (batch, time_steps, features) or similar; outputs forecast score 0-1 or 0-100.
     """
+
     FEATURE_DIM: Final[int] = 6  # Align with threat features for now; can expand for sequences
 
     def __init__(self, in_features: int = FEATURE_DIM, hidden_size: int = 32):
@@ -280,8 +284,10 @@ if HAS_NORSE:
       out = self.readout(s2.v if s2 else z)
       return self.sigmoid(out)
 else:
+
   class SpikingTemporalForecaster(nn.Module):
     """Fallback to simple MLP if Norse not available."""
+
     FEATURE_DIM: Final[int] = 6
 
     def __init__(self, in_features: int = FEATURE_DIM):
@@ -767,7 +773,9 @@ def train_ces_model() -> dict:
 # Uses Norse SNN for temporal data processing on event/telemetry sequences.
 # This is the new fourth model, focused on forecasting temporal patterns
 # (e.g., upcoming latency spikes or anomaly sequences from Redpanda streams).
-def train_spiking_temporal_forecaster(user: Any = None, *, is_platform: bool = False) -> TrainingRun | None:
+def train_spiking_temporal_forecaster(
+  user: Any = None, *, is_platform: bool = False
+) -> TrainingRun | None:
   """Train a Spiking NN (Norse) or fallback MLP for temporal forecasting.
 
   Uses sequences of telemetry features to predict future scores (e.g., next SLA or threat level).
@@ -777,8 +785,9 @@ def train_spiking_temporal_forecaster(user: Any = None, *, is_platform: bool = F
     logger.warning("Norse and/or torch not available; skipping spiking temporal model")
     return None
 
-  import numpy as np
   import random
+
+  import numpy as np
   import torch.optim as optim
 
   if is_platform:
@@ -856,9 +865,10 @@ def train_spiking_temporal_forecaster(user: Any = None, *, is_platform: bool = F
   hf_repo = os.environ.get("HF_REPO_ID")
   if hf_token and hf_repo:
     try:
-      from huggingface_hub import HfApi
       import hashlib
       import tempfile
+
+      from huggingface_hub import HfApi
 
       identifier = "platform" if is_platform else getattr(user, "username", "default")
       safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
@@ -884,14 +894,16 @@ def train_spiking_temporal_forecaster(user: Any = None, *, is_platform: bool = F
     user=None if is_platform else user,
     is_platform=is_platform,
     average_sla=avg_pred,  # reuse field or extend later
-    loss=float(loss.item()) if 'loss' in locals() else 0.0,
+    loss=float(loss.item()) if "loss" in locals() else 0.0,
   )
 
   # Invalidate caches
   from django.core.cache import cache as _cache
+
   _cache.delete("ml:latest_run:platform")
   if not is_platform and user:
     from monitor.models import StatusPage as _SP
+
     for _page in _SP.objects.filter(user=user):
       _cache.delete(f"ml:latest_run:{_page.id}")
 

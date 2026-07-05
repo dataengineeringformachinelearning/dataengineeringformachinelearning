@@ -4,7 +4,9 @@ import { VikingIconHeading } from './icon-heading';
 
 @Component({
   imports: [VikingIconHeading],
-  template: `<viking-icon-heading icon="shield" headingLevel="h3">Tenant Isolation</viking-icon-heading>`,
+  template: `<viking-icon-heading icon="shield" headingLevel="h3"
+    >Tenant Isolation</viking-icon-heading
+  >`,
 })
 class HostComponent {}
 

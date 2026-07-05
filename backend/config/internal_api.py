@@ -24,6 +24,7 @@ from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
+
 class InternalSecretAuth(APIKeyHeader):
   """Validates the `X-Internal-Secret` header against the shared secret.
 

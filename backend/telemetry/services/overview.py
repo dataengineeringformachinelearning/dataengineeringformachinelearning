@@ -18,7 +18,11 @@ except ImportError:
 from account.platform import PLATFORM_ACCOUNT_ID
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from ml.ml_services import CESModel, get_ces_model_path, train_spiking_temporal_forecaster, SpikingTemporalForecaster, HAS_NORSE
+from ml.ml_services import (
+  HAS_NORSE,
+  CESModel,
+  get_ces_model_path,
+)
 from monitor.models import (
   AggregatedAnalytics,
   AnalyticsIntegration,
@@ -367,9 +371,7 @@ class OverviewService:
         fallback_uptime = round(
           100.0
           - (
-            sum(a.error_rate_percent for a in aggregated) / len(aggregated)
-            if aggregated
-            else 0.0
+            sum(a.error_rate_percent for a in aggregated) / len(aggregated) if aggregated else 0.0
           ),
           2,
         )

@@ -57,9 +57,10 @@ repos:
         name: Accessibility Scan (axe-core)
         entry: node scripts/run_axe.js
         language: system
-        files: \.(html|astro)$
+        files: ^(packages/viking-ui|frontend/projects/viking-ui|viking-ui-docs)/.*\.(html|astro)$
         exclude: ^backend/templates/swagger\.html$
         pass_filenames: true
+        stages: [pre-commit]
 
       - id: cleanup-theme
         name: Viking-UI theme consistency (dry-run)
@@ -68,7 +69,7 @@ repos:
         files: ^(frontend|marketing|backend|packages)/.*\.(scss|css|astro|html|ts|js|svg)$
         exclude: ^.*/(viking-ui|design-tokens|deml-components)\.css$
         pass_filenames: false
-        stages: [manual]
+        stages: [pre-commit, manual]
 
       # --- Pre-push security & infra scans ---
       - id: semgrep-sast
