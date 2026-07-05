@@ -45,9 +45,6 @@
               "src/styles.scss",
               "prismjs/themes/prism-okaidia.css"
             ],
-            "stylePreprocessorOptions": {
-              "includePaths": ["../packages/viking-ui/src/styles"]
-            },
             "scripts": [
               "prismjs/prism.js",
               "prismjs/components/prism-bash.min.js",
@@ -133,38 +130,6 @@
           "builder": "@angular-eslint/builder:lint",
           "options": {
             "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
-          }
-        }
-      }
-    },
-    "viking-ui": {
-      "projectType": "library",
-      "root": "../packages/viking-ui",
-      "sourceRoot": "../packages/viking-ui/src",
-      "prefix": "viking",
-      "architect": {
-        "build": {
-          "builder": "@angular/build:ng-packagr",
-          "options": {
-            "project": "../packages/viking-ui/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "../packages/viking-ui/tsconfig.lib.prod.json"
-            },
-            "development": {
-              "tsConfig": "../packages/viking-ui/tsconfig.lib.json"
-            }
-          },
-          "defaultConfiguration": "production"
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "../packages/viking-ui/src/**/*.ts",
-              "../packages/viking-ui/src/**/*.html"
-            ]
           }
         }
       }

@@ -6,7 +6,12 @@ import { fileURLToPath } from 'node:url';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const frontendDir = path.join(dirname, '..');
 const rootDir = path.join(frontendDir, '..');
-const vikingUiDir = path.join(frontendDir, '..', 'packages', 'viking-ui', 'src');
+const vikingUiDir = path.join(rootDir, 'packages', 'viking-ui', 'src');
+
+if (!fs.existsSync(vikingUiDir)) {
+  console.log('Skipping build_site_drakkar: packages/viking-ui is not available in this checkout.');
+  process.exit(0);
+}
 
 /** Hardcoded extractors — avoids dynamic RegExp (Semgrep ReDoS rule). */
 const EXPORT_ARRAY_PATTERNS = {
@@ -484,7 +489,7 @@ for (const { path: outPath, content } of templateOutputs) {
 }
 
 const faviconSource = path.join(
-  frontendDir,
+  rootDir,
   'packages',
   'viking-ui',
   'src',

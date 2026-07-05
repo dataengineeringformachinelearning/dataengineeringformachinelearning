@@ -9,7 +9,13 @@ import { fileURLToPath } from 'node:url';
 import * as lucide from 'lucide';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.resolve(__dirname, '../packages/viking-ui/src/core/lucide-paths.generated.ts');
+const VIKING_UI_DIR = path.resolve(__dirname, '../packages/viking-ui');
+const OUT = path.resolve(VIKING_UI_DIR, 'src/core/lucide-paths.generated.ts');
+
+if (!fs.existsSync(VIKING_UI_DIR)) {
+  console.log('Skipping lucide sync: packages/viking-ui is not present in this checkout.');
+  process.exit(0);
+}
 
 /** Viking registry key → Lucide PascalCase export. */
 const LUCIDE_MAP = {
