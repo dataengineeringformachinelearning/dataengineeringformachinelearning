@@ -41,20 +41,23 @@
               ".md": "text"
             },
             "styles": [
-              "../packages/viking-ui/dist/viking-ui.css",
+              "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
               "src/styles.scss",
-              "node_modules/prismjs/themes/prism-okaidia.css"
+              "prismjs/themes/prism-okaidia.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": ["../packages/viking-ui/src/styles"]
+            },
             "scripts": [
-              "node_modules/prismjs/prism.js",
-              "node_modules/prismjs/components/prism-bash.min.js",
-              "node_modules/prismjs/components/prism-docker.min.js",
-              "node_modules/prismjs/components/prism-python.min.js",
-              "node_modules/prismjs/components/prism-scss.min.js",
-              "node_modules/prismjs/components/prism-typescript.min.js",
-              "node_modules/prismjs/components/prism-nginx.min.js",
-              "node_modules/prismjs/components/prism-javascript.min.js",
-              "node_modules/prismjs/components/prism-css.min.js"
+              "prismjs/prism.js",
+              "prismjs/components/prism-bash.min.js",
+              "prismjs/components/prism-docker.min.js",
+              "prismjs/components/prism-python.min.js",
+              "prismjs/components/prism-scss.min.js",
+              "prismjs/components/prism-typescript.min.js",
+              "prismjs/components/prism-nginx.min.js",
+              "prismjs/components/prism-javascript.min.js",
+              "prismjs/components/prism-css.min.js"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",

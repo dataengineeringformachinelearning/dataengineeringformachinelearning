@@ -24,7 +24,7 @@
 
 ## 3. Migrate Consumers
 
-- Astro marketing and showcase load `packages/viking-ui/dist/viking-ui.css` plus `viking-ui-elements.js`.
+- Astro marketing and showcase load `@dataengineeringformachinelearning/viking-ui/viking-ui.css` plus `web-components.js`.
   External pages can use jsDelivr CDN equivalents:
   - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css`
   - `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js`

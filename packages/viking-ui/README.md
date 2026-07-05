@@ -32,17 +32,43 @@ release, visual regression, and propagation workflow.
 
 ## Consumption
 
-```html
-<link rel="stylesheet" href="/assets/viking-ui.css" />
-<script type="module" src="/assets/viking-ui-elements.js"></script>
-```
+### 1) NPM usage (recommended for apps)
+
+Use this for app-first surfaces such as deml.app, internal dashboards, and any build chain that supports package installs.
 
 ```ts
-import "@dataengineeringformachinelearning/viking-ui/elements.js";
 import "@dataengineeringformachinelearning/viking-ui/viking-ui.css";
 ```
 
-## Use via CDN (jsDelivr)
+```ts
+import {
+  VikingButton,
+  VikingInput,
+  VikingModal,
+} from "@dataengineeringformachinelearning/viking-ui";
+```
+
+```bash
+npm install @dataengineeringformachinelearning/viking-ui
+```
+
+For Angular components, continue using the exported Angular APIs and theme tokens as normal.
+
+```ts
+import {
+  VikingButton,
+  VikingInput,
+  VikingModal,
+} from "@dataengineeringformachinelearning/viking-ui";
+
+// or when building custom element demos:
+import "@dataengineeringformachinelearning/viking-ui/web-components.js";
+import "@dataengineeringformachinelearning/viking-ui/viking-ui.css";
+```
+
+### 2) jsDelivr CDN usage (recommended for widgets and quick embeds)
+
+Use this for external websites, marketing snippets, and widget-style integrations that should load without npm.
 
 The package artifacts are published in `dist/`, so you can load them directly from jsDelivr:
 
@@ -86,11 +112,11 @@ builds.
 <!-- Latest -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
 ></script>
 ```
 
@@ -98,11 +124,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/web-components.js"
 ></script>
 ```
 
@@ -141,6 +167,17 @@ builds.
 </html>
 ```
 
+### 3) When to use the sync script
+
+Use `scripts/sync_design_system.py` when you need synced static assets instead of npm:
+
+```bash
+python scripts/sync_design_system.py
+```
+
+This path remains for surfaces that are not using package installs directly, especially
+legacy or Django-rendered templates that consume `/assets/viking-ui.css` and shared class names.
+
 ### 6) Status widget via jsDelivr (no npm install)
 
 Use this when embedding a live status badge on external pages:
@@ -177,7 +214,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/widget.js"
   async
   defer
   data-page-id="platform-status"
@@ -194,7 +231,10 @@ Angular app shells consume the package CSS from `angular.json`:
 
 ```json
 {
-  "styles": ["../packages/viking-ui/dist/viking-ui.css", "src/styles.scss"]
+  "styles": [
+    "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
+    "src/styles.scss"
+  ]
 }
 ```
 

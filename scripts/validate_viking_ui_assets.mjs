@@ -89,9 +89,17 @@ for (const [artifact, mirror] of optionalDocsMirrors) {
 }
 
 const frontendAngularJson = readText("frontend/angular.json");
-if (!frontendAngularJson.includes("public/assets/viking-ui.css")) {
+if (
+  !frontendAngularJson.includes("public/assets/viking-ui.css") &&
+  !frontendAngularJson.includes(
+    "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
+  ) &&
+  !frontendAngularJson.includes(
+    "@dataengineeringformachinelearning/viking-ui/dist/viking-ui.css",
+  )
+) {
   failures.push(
-    "frontend/angular.json must load public/assets/viking-ui.css globally for isolated Railway builds.",
+    "frontend/angular.json must load the full Viking-UI bundle globally (public asset or package CSS import).",
   );
 }
 
@@ -143,16 +151,54 @@ for (const relativePath of sourceImportChecks) {
   }
 }
 
+const marketingLayout = readText("marketing/src/layouts/Layout.astro");
+const marketingElementsScripts =
+  marketingLayout.match(
+    /viking-ui-(?:elements)\.js|viking-ui\/web-components\.js/g,
+  ) ?? [];
+if (marketingElementsScripts.length !== 1) {
+  failures.push(
+    "marketing/src/layouts/Layout.astro should load one Viking UI element entrypoint exactly once.",
+  );
+}
+
+const packageJson = JSON.parse(readText("packages/viking-ui/package.json"));
+const requiredExports = [
+  "./viking-ui.css",
+  "./design-tokens.css",
+  "./components.css",
+  "./deml-components.css",
+  "./elements.js",
+  "./web-components.js",
+  "./viking-ui-elements.js",
+  "./tokens.json",
+];
+
+for (const exportPath of requiredExports) {
+  if (!packageJson.exports?.[exportPath]) {
+    failures.push(
+      `packages/viking-ui/package.json is missing export ${exportPath}`,
+    );
+  }
+}
+
 const singleBundleLayouts = [
   "marketing/src/layouts/Layout.astro",
   "viking-ui-docs/src/layouts/BaseLayout.astro",
   "backend/templates/base.html",
 ];
 
+const countBundleCssImports = (content) => {
+  const importMatches =
+    content.match(/import\s+["'][^"']*viking-ui\.css["']/g) ?? [];
+  const linkMatches = content.match(/<link[^>]+viking-ui\.css[^>]*>/g) ?? [];
+  return importMatches.length + linkMatches.length;
+};
+
 for (const relativePath of singleBundleLayouts) {
   const content = readText(relativePath);
-  const cssLinks = content.match(/<link[^>]+viking-ui\.css[^>]*>/g) ?? [];
-  if (cssLinks.length !== 1) {
+  const cssLinkCount = countBundleCssImports(content);
+  if (cssLinkCount !== 1) {
     failures.push(`${relativePath} should load viking-ui.css exactly once.`);
   }
   for (const splitBundle of [
@@ -165,34 +211,6 @@ for (const relativePath of singleBundleLayouts) {
         `${relativePath} should not load ${splitBundle}; viking-ui.css is the full bundle.`,
       );
     }
-  }
-}
-
-const marketingLayout = readText("marketing/src/layouts/Layout.astro");
-const marketingElementsScripts =
-  marketingLayout.match(/<script[^>]+viking-ui-elements\.js[^>]*>/g) ?? [];
-if (marketingElementsScripts.length !== 1) {
-  failures.push(
-    "marketing/src/layouts/Layout.astro should load viking-ui-elements.js exactly once.",
-  );
-}
-
-const packageJson = JSON.parse(readText("packages/viking-ui/package.json"));
-const requiredExports = [
-  "./viking-ui.css",
-  "./design-tokens.css",
-  "./components.css",
-  "./deml-components.css",
-  "./elements.js",
-  "./viking-ui-elements.js",
-  "./tokens.json",
-];
-
-for (const exportPath of requiredExports) {
-  if (!packageJson.exports?.[exportPath]) {
-    failures.push(
-      `packages/viking-ui/package.json is missing export ${exportPath}`,
-    );
   }
 }
 
