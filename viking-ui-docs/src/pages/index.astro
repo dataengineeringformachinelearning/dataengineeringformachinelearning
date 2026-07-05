@@ -1,21 +1,53 @@
 ---
 import DocLayout from '../layouts/DocLayout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
 import { SITE } from '../lib/site';
-import { COMPONENT_COUNT } from '../lib/component-registry';
+import { COMPONENT_COUNT, SHOWCASE_CATEGORIES } from '../lib/component-registry';
 import { LIBRARY_COMPONENT_COUNT } from '../lib/library-stats';
+import type { ComponentSnippet } from '../lib/component-registry';
 import '../styles/showcase.scss';
+
+const featuredComponents = SHOWCASE_CATEGORIES.flatMap((category) =>
+  category.components.map((component) => ({ ...component, category: category.label }))
+).slice(0, 6);
+
+const quickStartSnippets: ComponentSnippet = {
+  angular: `npm install ${SITE.npm}
+
+import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
+
+<viking-field label="Mission ID" [required]="true">
+  <viking-input placeholder="DEML-2049" />
+</viking-field>
+<viking-button variant="primary">Deploy</viking-button>`,
+  astro: `<link rel="stylesheet" href="/assets/design-tokens.css" />
+<link rel="stylesheet" href="/assets/viking-ui.css" />
+<script type="module" src="/assets/viking-ui-elements.js"></script>
+
+<viking-button-wc variant="primary">Deploy</viking-button-wc>
+<viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>`,
+  django: `{% load static %}
+<link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
+<link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
+
+<button type="button" class="viking-btn viking-btn-primary">Deploy</button>`,
+  javascript: `<link rel="stylesheet" href="/assets/viking-ui.css" />
+<script type="module" src="/assets/viking-ui-elements.js"></script>
+
+<viking-button-wc variant="primary">Deploy</viking-button-wc>`,
+};
 ---
 
 <DocLayout title="Viking-UI — Precision Design System" hideSubnav={false}>
-  <div class="page-inner-wrapper">
+  <div class="page-inner-wrapper landing-showcase">
     <section class="landing-hero">
       <div class="landing-hero-copy">
         <div class="landing-hero-badge">
           <span class="landing-hero-badge-dot" aria-hidden="true"></span>
-          <span>Universal design system · v2 · Apache-2.0</span>
+          <span>Universal design system / v2 / Apache-2.0</span>
         </div>
         <h1 class="viking-heading viking-heading-xl">
-          Stop fighting your component library.
+          Precision UI primitives for serious engineering teams.
         </h1>
         <p class="viking-text-muted">
           Viking-UI delivers precision-engineered primitives for Angular, Astro, Django, and plain
@@ -57,82 +89,160 @@ import '../styles/showcase.scss';
       </div>
 
       <div class="landing-preview-panel" aria-label="Live component preview">
-        <span class="viking-label">Live preview</span>
-        <div class="viking-demo-row">
-          <viking-button-wc variant="primary">Deploy</viking-button-wc>
-          <viking-button-wc variant="outline">Cancel</viking-button-wc>
+        <div class="landing-preview-toolbar">
+          <span class="viking-label">Live surface</span>
+          <viking-badge-wc tone="success">Production ready</viking-badge-wc>
         </div>
-        <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
-        <viking-card-wc compact>
-          <span class="viking-label">Event throughput</span>
-          <strong class="viking-metric">8.2K/s</strong>
-          <viking-badge-wc tone="success">Healthy</viking-badge-wc>
-        </viking-card-wc>
+        <div class="landing-preview-grid">
+          <viking-card-wc compact>
+            <span class="viking-label">Event throughput</span>
+            <strong class="viking-metric">8.2K/s</strong>
+            <viking-badge-wc tone="success">Healthy</viking-badge-wc>
+          </viking-card-wc>
+          <viking-card-wc compact>
+            <span class="viking-label">Token drift</span>
+            <strong class="viking-metric">0</strong>
+            <viking-badge-wc tone="accent">Guarded</viking-badge-wc>
+          </viking-card-wc>
+        </div>
+        <div class="landing-preview-form">
+          <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
+          <div class="viking-demo-row">
+            <viking-button-wc variant="primary">Deploy</viking-button-wc>
+            <viking-button-wc variant="outline">Review</viking-button-wc>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section aria-labelledby="features-heading">
-      <h2 class="viking-heading viking-heading-sm" id="features-heading">
-        Built for precision engineering
-      </h2>
+    <section class="landing-section landing-quickstart" aria-labelledby="quickstart-heading">
+      <header class="landing-section-header">
+        <span class="section-tag">Quick start</span>
+        <h2 class="showcase-section-title" id="quickstart-heading">Install once. Compose everywhere.</h2>
+        <p class="viking-text-muted showcase-section-desc">
+          The same token matrix powers Angular components, static CSS, and custom elements.
+        </p>
+      </header>
+      <div class="landing-quickstart-grid">
+        <div class="landing-quickstart-steps viking-card">
+          <span class="viking-label">Recommended path</span>
+          <ol class="landing-step-list viking-text-muted">
+            <li>Install <code>{SITE.npm}</code> or use the synced static assets.</li>
+            <li>Load <code>design-tokens.css</code> and <code>viking-ui.css</code> globally.</li>
+            <li>Compose forms through field stacks and actions through Viking buttons.</li>
+            <li>Use the registry-backed gallery to copy framework-specific examples.</li>
+          </ol>
+        </div>
+        <div class="landing-quickstart-code">
+          <CodeBlock snippets={quickStartSnippets} defaultTab="angular" />
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-section" aria-labelledby="gallery-heading">
+      <header class="landing-section-header landing-section-header-row">
+        <div>
+          <span class="section-tag">Component gallery</span>
+          <h2 class="showcase-section-title" id="gallery-heading">Registry-backed primitives</h2>
+          <p class="viking-text-muted showcase-section-desc">
+            The gallery is generated from <code>src/lib/component-registry.ts</code>, so demos,
+            snippets, and detail pages stay aligned.
+          </p>
+        </div>
+        <viking-button-wc variant="outline" href="/components">View all {COMPONENT_COUNT}</viking-button-wc>
+      </header>
+      <div class="landing-component-grid">
+        {featuredComponents.map((component) => (
+          <a class="landing-component-card viking-card" href={`/components/${component.id}`}>
+            <span class="viking-label">{component.category}</span>
+            <h3 class="viking-heading viking-heading-sm">{component.name}</h3>
+            <p class="viking-text-muted">{component.description}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <section class="landing-section landing-playground-band" aria-labelledby="playground-heading">
+      <div class="landing-playground-copy">
+        <span class="section-tag">Live playground</span>
+        <h2 class="showcase-section-title" id="playground-heading">Tune props. See the component. Copy the code.</h2>
+        <p class="viking-text-muted showcase-section-desc">
+          Use the playground for quick decisions across button, input, badge, and card primitives.
+          It updates previews and generated snippets without leaving the docs.
+        </p>
+        <div class="viking-demo-row">
+          <viking-button-wc variant="primary" href="/playground">Open playground</viking-button-wc>
+          <viking-button-wc variant="secondary" href="/components/button">Inspect button API</viking-button-wc>
+        </div>
+      </div>
+      <div class="landing-playground-preview viking-card" aria-label="Playground sample">
+        <span class="viking-label">Variant sample</span>
+        <div class="viking-demo-row">
+          <viking-button-wc variant="primary">Primary</viking-button-wc>
+          <viking-button-wc variant="secondary">Secondary</viking-button-wc>
+          <viking-badge-wc tone="warning">Degraded</viking-badge-wc>
+        </div>
+      </div>
+    </section>
+
+    <section class="landing-section" aria-labelledby="frameworks-heading">
+      <header class="landing-section-header">
+        <span class="section-tag">Framework usage</span>
+        <h2 class="showcase-section-title" id="frameworks-heading">One visual system, four consumption paths</h2>
+      </header>
+      <div class="landing-framework-grid">
+        <a class="landing-framework-card viking-card" href="/frameworks#angular-setup">
+          <span class="viking-label">Angular</span>
+          <strong>Signals, OnPush, typed inputs</strong>
+          <span class="viking-text-muted">Full package imports for deml.app surfaces.</span>
+        </a>
+        <a class="landing-framework-card viking-card" href="/frameworks#astro-setup">
+          <span class="viking-label">Astro</span>
+          <strong>Static CSS + custom elements</strong>
+          <span class="viking-text-muted">Docs and marketing pages stay framework-light.</span>
+        </a>
+        <a class="landing-framework-card viking-card" href="/frameworks#django-setup">
+          <span class="viking-label">Django / HTML</span>
+          <strong>Server-rendered classes</strong>
+          <span class="viking-text-muted">Swagger, admin, and backend templates share tokens.</span>
+        </a>
+        <a class="landing-framework-card viking-card" href="/frameworks#wc-setup">
+          <span class="viking-label">Web Components</span>
+          <strong>Framework-neutral primitives</strong>
+          <span class="viking-text-muted">Auto-registered tags for portable UI.</span>
+        </a>
+      </div>
+    </section>
+
+    <section class="landing-section" aria-labelledby="docs-heading">
+      <header class="landing-section-header">
+        <span class="section-tag">Architecture & theming</span>
+        <h2 class="showcase-section-title" id="docs-heading">Governed like production infrastructure</h2>
+      </header>
       <div class="landing-feature-grid">
         <div class="viking-card">
-          <h3 class="viking-heading viking-heading-sm">Framework-agnostic</h3>
+          <h3 class="viking-heading viking-heading-sm">Token pipeline</h3>
           <p class="viking-text-muted">
-            One token matrix powers CSS classes, Web Components, and Angular thin wrappers.
-            Ship the same visual language everywhere.
+            Edit canonical SCSS once, build static CSS, and sync to Angular, Astro, Django, and
+            backend assets.
           </p>
-          <a href="/architecture" class="component-detail-link">Read architecture →</a>
+          <a href="/theming" class="component-detail-link">Read theming</a>
         </div>
         <div class="viking-card">
-          <h3 class="viking-heading viking-heading-sm">Zero UI runtime deps</h3>
+          <h3 class="viking-heading viking-heading-sm">Layered architecture</h3>
           <p class="viking-text-muted">
-            Native SVG charts, inline icon registry, platform dialog elements. No Material, no CDK
-            bloat.
+            Tokens, CSS primitives, Web Components, and Angular wrappers share one contract.
           </p>
+          <a href="/architecture" class="component-detail-link">Read architecture</a>
         </div>
         <div class="viking-card">
-          <h3 class="viking-heading viking-heading-sm">Open for contributions</h3>
+          <h3 class="viking-heading viking-heading-sm">Contribution workflow</h3>
           <p class="viking-text-muted">
-            Extend the kit in <code>frontend/projects/viking-ui/</code>. Quality gates enforce tokens,
-            a11y, and tests automatically.
+            New UI lands in the library first, then gets documented through the registry.
           </p>
-          <a href="/contributing" class="component-detail-link">Contributing guide →</a>
+          <a href="/contributing" class="component-detail-link">Contributing guide</a>
         </div>
       </div>
-    </section>
-
-    <section class="showcase-category" aria-labelledby="quickstart-heading">
-      <header class="showcase-section-header">
-        <h2 class="showcase-section-title" id="quickstart-heading">Quick start</h2>
-        <p class="viking-text-muted">Install tokens, load components, compose primitives.</p>
-      </header>
-      <pre class="code-block-panel is-active" style="border:1px solid var(--viking-border);border-radius:var(--viking-radius-lg);background:var(--viking-charcoal-950,#0a0a0a);padding:var(--viking-space-2);margin:0;"><code># npm
-npm install {SITE.npm}
-
-# Static CSS (Astro / Django)
-link design-tokens.css + viking-components.css + viking-ui-elements.js
-
-# Angular
-import &#123; VikingButton, VikingField, VikingInput &#125; from '{SITE.npm}';</code></pre>
-      <p class="viking-text-muted">
-        See <a href="/frameworks">framework guides</a> and <a href="/theming">theming guide</a> for
-        complete setup paths.
-      </p>
     </section>
   </div>
 </DocLayout>
-
-<style>
-  .component-detail-link {
-    display: inline-block;
-    margin-top: var(--viking-space-1);
-    font-size: var(--viking-font-size-sm);
-    color: var(--viking-accent);
-    text-decoration: none;
-  }
-
-  .component-detail-link:hover {
-    text-decoration: underline;
-  }
-</style>

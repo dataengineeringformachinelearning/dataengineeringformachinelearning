@@ -158,7 +158,7 @@ html[data-theme='light'] .theme-icon-moon { display: block; }
 
 .showcase-subnav-scroll {
   display: flex;
-  gap: var(--viking-space-half);
+  gap: var(--viking-space-1);
   overflow-x: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
@@ -171,6 +171,7 @@ html[data-theme='light'] .theme-icon-moon { display: block; }
 .showcase-subnav-link {
   flex-shrink: 0;
   padding: var(--viking-space-1) var(--viking-space-2);
+  border: 1px solid transparent;
   border-radius: var(--viking-radius);
   color: var(--viking-text-muted);
   font-size: var(--viking-font-size-sm);
@@ -190,6 +191,7 @@ html[data-theme='light'] .theme-icon-moon { display: block; }
 
 .showcase-subnav-link.is-active {
   color: var(--viking-accent);
+  border-color: color-mix(in srgb, var(--viking-accent) 28%, var(--viking-border));
   background: color-mix(in srgb, var(--viking-accent) 10%, var(--viking-surface));
 }
 
