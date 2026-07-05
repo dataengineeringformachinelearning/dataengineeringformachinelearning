@@ -1,7 +1,11 @@
 import { ChangeDetectionStrategy, Component, model, output, signal } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
 import { VikingBadge } from '../badge/badge';
-import { VikingKanbanCard, VikingKanbanColumn, VikingKanbanMove } from '../core/types';
+import {
+  VikingKanbanCard,
+  VikingKanbanColumn,
+  VikingKanbanMove,
+} from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-kanban — drag & drop board.

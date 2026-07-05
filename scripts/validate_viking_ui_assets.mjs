@@ -144,7 +144,7 @@ for (const relativePath of removedFrontendMirrors) {
 
 for (const relativePath of sourceImportChecks) {
   const content = readText(relativePath);
-  if (content.includes("projects/viking-ui/src/styles")) {
+  if (content.includes("packages/viking-ui/src/styles")) {
     failures.push(
       `${relativePath} must consume package CSS instead of Viking-UI source SCSS.`,
     );

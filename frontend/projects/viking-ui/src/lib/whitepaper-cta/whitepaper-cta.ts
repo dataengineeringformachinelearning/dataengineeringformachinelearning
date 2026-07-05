@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingBar } from '../bar/bar';
 import { VikingButton } from '../button/button';
 import { VikingChart } from '../chart/chart';
-import { VikingChartSeries } from '../core/types';
+import { VikingChartSeries } from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-whitepaper-cta — Polars-style animated research CTA with bar grid + sparkline.

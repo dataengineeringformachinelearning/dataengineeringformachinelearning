@@ -11,7 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { VikingCommandItem } from '../core/types';
+import { VikingCommandItem } from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-command — command palette.

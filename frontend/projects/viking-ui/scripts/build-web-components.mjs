@@ -12,7 +12,17 @@ const pkgDir = path.join(dirname, '..');
 const rootDir = path.join(pkgDir, '..', '..', '..');
 const docsDir = path.join(rootDir, 'viking-ui-docs');
 const outDir = path.join(docsDir, 'dist', 'static-css');
-const entry = path.join(pkgDir, 'src', 'web', 'index.ts');
+const entry = path.join(
+  pkgDir,
+  '..',
+  '..',
+  '..',
+  'packages',
+  'viking-ui',
+  'src',
+  'web',
+  'index.ts',
+);
 const outFile = path.join(outDir, 'viking-ui-elements.js');
 
 const esbuildCandidates = [

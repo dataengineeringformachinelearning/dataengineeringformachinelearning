@@ -8,7 +8,7 @@ import {
   output,
 } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 
 /**
  * viking-dropdown — expandable menu.

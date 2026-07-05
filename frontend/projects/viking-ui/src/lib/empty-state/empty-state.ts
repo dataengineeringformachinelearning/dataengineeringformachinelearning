@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 
 /**
  * viking-empty-state — reusable empty / zero-data placeholder.

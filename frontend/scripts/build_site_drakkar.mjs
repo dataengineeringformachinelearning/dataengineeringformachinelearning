@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const frontendDir = path.join(dirname, '..');
 const rootDir = path.join(frontendDir, '..');
-const vikingUiDir = path.join(frontendDir, 'projects', 'viking-ui', 'src', 'lib');
+const vikingUiDir = path.join(frontendDir, '..', 'packages', 'viking-ui', 'src');
 
 /** Hardcoded extractors — avoids dynamic RegExp (Semgrep ReDoS rule). */
 const EXPORT_ARRAY_PATTERNS = {
@@ -294,13 +294,13 @@ import {
   SITE_NAV_LINKS,
   resolveNavHref,
   resolveBrandHref,
-} from '../../../frontend/projects/viking-ui/src/lib/site-drakkar/site-drakkar.config';`
+} from '../../../frontend/packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`
     : `import { siteEnv } from '../lib/site-env';
 import {
   SITE_NAV_LINKS,
   resolveNavHref,
   resolveBrandHref,
-} from '../../../frontend/projects/viking-ui/src/lib/site-drakkar/site-drakkar.config';`;
+} from '../../../frontend/packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';`;
 
   const setup = isDocs
     ? `const urls = { app: SITE.app, marketing: SITE.marketing, backend: 'https://backend.deml.app' };
@@ -480,8 +480,9 @@ for (const { path: outPath, content } of templateOutputs) {
 
 const faviconSource = path.join(
   frontendDir,
-  'projects',
+  'packages',
   'viking-ui',
+  'src',
   'assets',
   'drakkar-favicon.svg',
 );

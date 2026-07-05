@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
-import { VikingSelectOption } from '../core/types';
+import { VikingSelectOption } from '../../../../../packages/viking-ui/src/core/types';
 
 export type VikingSelectWidth = 'full' | 'half';
 

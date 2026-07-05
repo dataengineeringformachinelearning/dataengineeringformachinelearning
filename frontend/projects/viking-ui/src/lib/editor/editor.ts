@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 
 interface EditorAction {
   icon: VikingIconName;

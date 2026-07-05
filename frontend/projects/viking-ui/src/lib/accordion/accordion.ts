@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Optional, input, model } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { vikingUid } from '../core/uid';
+import { vikingUid } from '../../../../../packages/viking-ui/src/core/uid';
 
 /**
  * viking-accordion — collapsible content panels.

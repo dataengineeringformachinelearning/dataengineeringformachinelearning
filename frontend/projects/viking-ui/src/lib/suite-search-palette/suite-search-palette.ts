@@ -15,8 +15,8 @@ import {
   DEFAULT_SITE_URLS,
   type SiteDrakkarContext,
   type SiteUrls,
-} from '../site-drakkar/site-drakkar.config';
-import { registerVikingElements } from '../../web/index';
+} from '../../../../../packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';
+import { registerVikingElements } from '../../../../../packages/viking-ui/src/web/index';
 
 registerVikingElements();
 

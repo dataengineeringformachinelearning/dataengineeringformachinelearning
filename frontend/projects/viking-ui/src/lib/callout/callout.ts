@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
-import { VikingTone } from '../core/types';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
+import { VikingTone } from '../../../../../packages/viking-ui/src/core/types';
 
 const TONE_ICONS: Record<string, VikingIconName> = {
   accent: 'info',

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingIconBadge } from '../icon-badge/icon-badge';
-import { VikingIconName } from '../core/icons';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 
 export type VikingChartEmptyTone = 'default' | 'secure';
 export type VikingChartEmptyLayout = 'fill' | 'overlay' | 'compact' | 'inline';

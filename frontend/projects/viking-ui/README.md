@@ -69,19 +69,19 @@ See the [framework guides](https://ui.dataengineeringformachinelearning.com/fram
 ```
 frontend/projects/viking-ui/
 ├── src/
-│   ├── styles/                 # Canonical SCSS → compiled CSS
-│   │   ├── _variables.scss     # ★ Edit tokens here first
-│   │   ├── _buttons.scss       # .viking-btn-* base classes
-│   │   ├── _forms.scss         # .viking-control surface
-│   │   ├── tokens-export.scss  # → design-tokens.css
-│   │   ├── components-bundle.scss  # → viking-components.css
-│   │   └── viking-ui-bundle.scss   # → viking-ui.css (full)
-│   ├── web/                    # Framework-agnostic Web Components
-│   │   ├── button/             # <viking-button-wc>
-│   │   ├── input/              # <viking-input-wc>
-│   │   └── index.ts            # registerVikingElements()
+│   ├── styles/                 # Angular-only wrapper styles (legacy shell-specific overrides)
+│   ├── public-api.ts           # Angular export surface
 │   ├── lib/                    # Angular components (70+ primitives)
-│   └── tokens/                 # JSON, Tailwind preset, series presets
+packages/viking-ui/             # Canonical library source (outside wrapper project)
+├── src/styles/                 # Canonical SCSS tokens + components + bundles
+│   ├── _variables.scss         # ★ Edit tokens here first
+│   ├── _series-colors.scss     # Chart palette slots
+│   ├── _legacy-aliases.scss    # Compat aliases
+│   ├── tokens-export.scss      # → design-tokens.css
+│   ├── components-bundle.scss  # → viking-components.css
+│   └── viking-ui-bundle.scss   # → viking-ui.css (full)
+├── src/web/                    # Framework-agnostic Web Components
+├── src/tokens/                 # JSON, Tailwind preset, series presets
 ├── viking.manifest.json        # Machine-readable component catalog
 └── package.json                # npm exports
 ```

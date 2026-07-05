@@ -1,7 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
-import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '../../tokens/series-presets';
+import {
+  VIKING_SERIES_DEFAULT,
+  VIKING_SERIES_PRESETS,
+} from '../../../../../packages/viking-ui/src/tokens/series-presets';
 
 /**
  * viking-color-picker — swatch presets + custom color input

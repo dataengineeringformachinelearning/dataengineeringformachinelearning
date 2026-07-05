@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ViewEncapsulation, input } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 
 /**
  * viking-icon-heading — icon + title row with shared vertical alignment.

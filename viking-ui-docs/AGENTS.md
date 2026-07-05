@@ -5,7 +5,7 @@ This is the **standalone Astro showcase** for Viking-UI. Do not merge this into 
 ## Conventions
 
 - Read `THEME.md` before editing styles or components.
-- Library source lives in `../frontend/projects/viking-ui/` — edit components there, not in this app.
+- Canonical library source (styles/tokens/web components) lives in `../packages/viking-ui/`; Angular wrappers live in `../frontend/projects/viking-ui/`.
 - This app **demonstrates** library primitives via CSS + Web Components; keep demo pages thin.
 - Component registry: `src/lib/component-registry.ts`
 - Deploy via Firebase Hosting site **`deml-ui`**, not marketing or deml.app.

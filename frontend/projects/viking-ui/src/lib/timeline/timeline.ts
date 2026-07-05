@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
-import { VikingTone } from '../core/types';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
+import { VikingTone } from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-timeline — vertical event feed.

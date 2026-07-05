@@ -6,7 +6,7 @@ import { VikingIcon } from '../icon/icon';
 import { VikingInput } from '../input/input';
 import { VikingModal } from '../modal/modal';
 import { VikingText } from '../typography/text';
-import type { VikingIconName } from '../core/icons';
+import type { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 import { VikingConfirmDialogData, VikingDialogService } from './dialog.service';
 
 /**

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { vikingUid } from '../core/uid';
+import { vikingUid } from '../../../../../packages/viking-ui/src/core/uid';
 
 /**
  * viking-field — label / description / error wrapper for any control

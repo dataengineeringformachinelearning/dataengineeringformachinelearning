@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
-import { VikingSize, VikingTone } from '../core/types';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
+import { VikingSize, VikingTone } from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-badge — status pill.

@@ -5,7 +5,7 @@ import {
   VikingChartSeries,
   VikingDonutSegment,
   VikingTone,
-} from '../core/types';
+} from '../../../../../packages/viking-ui/src/core/types';
 import {
   ChartZoomWindow,
   clampChartWindow,

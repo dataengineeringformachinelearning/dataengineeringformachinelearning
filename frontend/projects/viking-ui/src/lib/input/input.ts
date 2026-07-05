@@ -8,10 +8,10 @@ import {
 } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
-import { VikingIconName } from '../core/icons';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 import { VikingSpinner } from '../spinner/spinner';
-import { registerVikingElements } from '../../web/index';
-import type { VikingInputWc } from '../../web/input/viking-input-wc';
+import { registerVikingElements } from '../../../../../packages/viking-ui/src/web/index';
+import type { VikingInputWc } from '../../../../../packages/viking-ui/src/web/input/viking-input-wc';
 
 registerVikingElements();
 

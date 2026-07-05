@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import * as lucide from 'lucide';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const OUT = path.resolve(__dirname, '../projects/viking-ui/src/lib/core/lucide-paths.generated.ts');
+const OUT = path.resolve(__dirname, '../packages/viking-ui/src/core/lucide-paths.generated.ts');
 
 /** Viking registry key → Lucide PascalCase export. */
 const LUCIDE_MAP = {

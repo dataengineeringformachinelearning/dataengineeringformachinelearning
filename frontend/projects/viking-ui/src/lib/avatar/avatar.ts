@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, signal } from '@angular/core';
-import { VikingTone } from '../core/types';
+import { VikingTone } from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-avatar — image or initials avatar with optional status indicator

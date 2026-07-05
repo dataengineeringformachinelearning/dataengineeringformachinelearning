@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingAvatar } from '../avatar/avatar';
-import { VikingTone } from '../core/types';
+import { VikingTone } from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-profile — user identity block.

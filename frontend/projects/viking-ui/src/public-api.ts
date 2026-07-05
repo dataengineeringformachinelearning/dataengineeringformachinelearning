@@ -4,8 +4,12 @@
  */
 
 // Core
-export * from './lib/core/types';
-export type { VikingChartCurve, VikingChartKind, VikingDonutSegment } from './lib/core/types';
+export * from '../../../packages/viking-ui/src/core/types';
+export type {
+  VikingChartCurve,
+  VikingChartKind,
+  VikingDonutSegment,
+} from '../../../packages/viking-ui/src/core/types';
 export {
   VIKING_ICON_NAMES,
   VIKING_ICON_PATHS,
@@ -18,7 +22,7 @@ export {
   resolveVikingIconColor,
   resolveVikingIconSize,
   vikingIconViewBox,
-} from './lib/core/icons';
+} from '../../../packages/viking-ui/src/core/icons';
 export {
   VIKING_BRAND_ICON_PATHS,
   VIKING_BRAND_ICON_FILLED_PATHS,
@@ -26,20 +30,23 @@ export {
   VIKING_DRAKKAR_ICON_PATHS,
   VIKING_DRAKKAR_ICON_FILLED_PATHS,
   VIKING_DRAKKAR_ICON_NAMES_LIST,
-} from './lib/core/brand-icons';
-export type { VikingBrandIconName, VikingDrakkarIconName } from './lib/core/brand-icons';
+} from '../../../packages/viking-ui/src/core/brand-icons';
+export type {
+  VikingBrandIconName,
+  VikingDrakkarIconName,
+} from '../../../packages/viking-ui/src/core/brand-icons';
 export {
   VIKING_SERIES_PRESETS,
   VIKING_SERIES_DEFAULT,
   type VikingSeriesPreset,
-} from './tokens/series-presets';
+} from '../../../packages/viking-ui/src/tokens/series-presets';
 export type {
   VikingIconName,
   VikingIconSizePreset,
   VikingIconVariant,
   VikingIconColorToken,
-} from './lib/core/icons';
-export { VikingControl, provideVikingCva } from './lib/core/cva';
+} from '../../../packages/viking-ui/src/core/icons';
+export { VikingControl, provideVikingCva } from './core/cva';
 
 // Framework-agnostic Web Components + registration
 export {
@@ -66,13 +73,13 @@ export {
   registerVikingElements,
   type VikingSearchPaletteItem,
   type VikingWcTone,
-} from './web/index';
+} from '../../../packages/viking-ui/src/web/index';
 
 // Components (alphabetical)
-export * from './lib/site-drakkar/site-drakkar.config';
+export * from '../../../packages/viking-ui/src/lib/site-drakkar/site-drakkar.config';
 export * from './lib/site-drakkar/site-navbar';
 export * from './lib/site-drakkar/site-footer';
-export * from './lib/site-drakkar/suite-search-items';
+export * from '../../../packages/viking-ui/src/lib/site-drakkar/suite-search-items';
 export * from './lib/suite-search-palette/suite-search-palette';
 export * from './lib/theme-toggle/theme-toggle';
 export * from './lib/app-header/app-header';
@@ -93,7 +100,7 @@ export * from './lib/card/card';
 export * from './lib/card/card-title';
 export * from './lib/carousel/carousel';
 export * from './lib/chart/chart';
-export * from './lib/chart/chart-zoom';
+export * from '../../../packages/viking-ui/src/lib/chart/chart-zoom';
 export * from './lib/confirm-dialog/confirm-dialog';
 export * from './lib/confirm-dialog/dialog.service';
 export * from './lib/chart-card-header/chart-card-header';

@@ -41,9 +41,6 @@
   "files": [
     "dist/css",
     "dist/viking-ui-elements.js",
-    "src/styles",
-    "src/tokens",
-    "src/web",
     "README.md",
     "LICENSE"
   ],
@@ -71,7 +68,6 @@
     "tslib": "^2.3.0"
   },
   "sideEffects": [
-    "./dist/viking-ui-elements.js",
-    "./src/web/index.ts"
+    "./dist/viking-ui-elements.js"
   ]
 }

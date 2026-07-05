@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
 import { VikingIcon } from '../icon/icon';
-import { vikingUid } from '../core/uid';
+import { vikingUid } from '../../../../../packages/viking-ui/src/core/uid';
 
 /**
  * viking-autocomplete — text input with filtered suggestions

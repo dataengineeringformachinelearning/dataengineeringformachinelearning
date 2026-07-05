@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
-import { VikingSelectOption } from '../core/types';
-import { vikingUid } from '../core/uid';
+import { VikingSelectOption } from '../../../../../packages/viking-ui/src/core/types';
+import { vikingUid } from '../../../../../packages/viking-ui/src/core/uid';
 
 /**
  * viking-radio-group — radio group.

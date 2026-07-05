@@ -23,8 +23,8 @@
 | Series palette     | `packages/viking-ui/src/styles/_series-colors.scss`                                   | Chart / picker series slots 1–8                                                                              |
 | Legacy aliases     | `packages/viking-ui/src/styles/_legacy-aliases.scss`                                  | `--color-primary`, `--space-*`, Django/marketing compat                                                      |
 | JSON export        | `packages/viking-ui/src/tokens/viking-tokens.json`                                    | Tooling, docs, design QA                                                                                     |
-| Tailwind preset    | `frontend/projects/viking-ui/src/tokens/tailwind.preset.js`                           | `theme.extend` → CSS variables                                                                               |
-| TypeScript presets | `frontend/projects/viking-ui/src/tokens/series-presets.ts`                            | `viking-color-picker` + chart bindings                                                                       |
+| Tailwind preset    | `packages/viking-ui/src/tokens/tailwind.preset.js`                                    | `theme.extend` → CSS variables                                                                               |
+| TypeScript presets | `packages/viking-ui/src/tokens/series-presets.ts`                                     | `viking-color-picker` + chart bindings                                                                       |
 | Static CSS bundle  | `packages/viking-ui/dist/design-tokens.css` / `packages/viking-ui/dist/viking-ui.css` | Non-Angular surfaces — build via `npm run build:viking-ui:package`, sync via `scripts/sync_design_system.py` |
 
 ---
@@ -42,7 +42,7 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 
 ### Composable primitive model
 
-[Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/frontend/projects/viking-ui) follows a **composable primitive** model: install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
+[Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/packages/viking-ui) follows a **composable primitive** model: install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
 
 | Pattern                  | Viking-UI equivalent                                                   | Notes                                                                |
 | ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -534,7 +534,7 @@ Each preset maps to a `--viking-series-N` token (§1.9). Import shared values fr
 **Implementation reference:**
 
 ```typescript
-// frontend/projects/viking-ui/src/tokens/series-presets.ts
+// packages/viking-ui/src/tokens/series-presets.ts
 export const VIKING_SERIES_PRESETS = [
   "#2176ff",
   "#922b3e",
@@ -549,8 +549,8 @@ export const VIKING_SERIES_DEFAULT = VIKING_SERIES_PRESETS[0];
 ```
 
 ```typescript
-// frontend/projects/viking-ui/src/lib/color-picker/color-picker.ts
-import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '../../tokens/series-presets';
+// packages/viking-ui/src/lib/color-picker/color-picker.ts
+import { VIKING_SERIES_DEFAULT, VIKING_SERIES_PRESETS } from '@dataengineeringformachinelearning/viking-ui/agnostic/series-presets';
 readonly presets = input<string[]>([...VIKING_SERIES_PRESETS]);
 readonly value = model<string>(VIKING_SERIES_DEFAULT);
 ```
@@ -699,9 +699,7 @@ Load token CSS first, then extend Tailwind with the Viking preset:
 ```javascript
 // tailwind.config.js
 module.exports = {
-  presets: [
-    require("./frontend/projects/viking-ui/src/tokens/tailwind.preset.js"),
-  ],
+  presets: [require("./packages/viking-ui/src/tokens/tailwind.preset.js")],
   content: ["./src/**/*.{html,ts}"],
 };
 ```
@@ -780,7 +778,7 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 ### Unified component policy
 
 - **Angular:** always `@dataengineeringformachinelearning/viking-ui` — no Material, no third-party UI runtimes, no one-off styled controls when a `viking-*` exists.
-- **Extend the library first:** shared primitives ship in `frontend/projects/viking-ui/`; apps consume, they do not duplicate.
+- **Extend the library first:** shared primitives ship in `packages/viking-ui/`; apps consume, they do not duplicate.
 - **Composable ergonomics, Viking palette:** field stacks (`viking-field` → control), card surfaces (`viking-card`), button variants (`viking-button`) per §8 and the pattern mapping table in §Design philosophy.
 - **Premium restrained luxury:** machined surfaces, restrained elevation, electric/crimson accent discipline — data dominates ornament.
 - **Non-Angular:** static `viking-ui.css` + semantic aliases only; run `sync_design_system.py` after token edits.

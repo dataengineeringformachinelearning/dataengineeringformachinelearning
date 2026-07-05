@@ -18,9 +18,9 @@ This package is the canonical Viking-UI library. For the full contribution guide
 
 ```text
 frontend/projects/viking-ui/
-├── src/styles/_variables.scss   ← edit tokens here first
+├── packages/viking-ui/src/styles/_variables.scss   ← edit tokens here first
 ├── src/lib/                     ← Angular components
-├── src/web/                     ← Web Components (viking-*-wc)
+├── packages/viking-ui/src/web/  ← Web Components (viking-*-wc)
 ├── src/public-api.ts            ← export surface
 └── viking.manifest.json         ← machine-readable catalog
 ```
@@ -38,8 +38,8 @@ cd frontend && npm run check:viking-upstream
 
 ## Adding a component (summary)
 
-1. Token-only SCSS in `src/styles/`
-2. Optional Web Component in `src/web/` (`viking-{name}-wc`)
+1. Token-only SCSS in `packages/viking-ui/src/styles/`
+2. Optional Web Component in `packages/viking-ui/src/web/` (`viking-{name}-wc`)
 3. Angular wrapper in `src/lib/` with signal `input()` / `output()`
 4. Export from `public-api.ts` + entry in `viking.manifest.json`
 5. Showcase demo in `viking-ui-docs/src/lib/component-registry.ts`

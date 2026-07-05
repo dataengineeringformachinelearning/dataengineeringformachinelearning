@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, model } from '@angular/core';
 import { VikingControl, provideVikingCva } from '../core/cva';
-import { VikingSelectOption } from '../core/types';
+import { VikingSelectOption } from '../../../../../packages/viking-ui/src/core/types';
 import type { VikingSelectWidth } from '../select/select';
-import { vikingUid } from '../core/uid';
+import { vikingUid } from '../../../../../packages/viking-ui/src/core/uid';
 
 /**
  * viking-native-select — styled native &lt;select&gt;.

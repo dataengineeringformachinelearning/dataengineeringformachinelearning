@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingIconBadge, VikingIconBadgeTone } from '../icon-badge/icon-badge';
-import { VikingIconName } from '../core/icons';
+import { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 import { VikingHeading } from '../typography/heading';
 
 /**

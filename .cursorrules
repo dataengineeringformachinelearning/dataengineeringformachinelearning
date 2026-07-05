@@ -42,7 +42,8 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 - **Icons:** `viking-icon` only — no Material Icons, Font Awesome, or Lucide runtime packages.
 - **Feedback:** `viking-toast` / `VikingToastService`, `viking-callout`, `viking-badge` — not browser `alert()` or ad-hoc banners.
 - **Loading:** `viking-skeleton`, `viking-loading-overlay`, `viking-progress` — not generic spinners.
-- **New framework-neutral shared UI** belongs in `packages/viking-ui/` first; Angular wrappers can adapt it in `frontend/projects/viking-ui/`.
+- **Framework-neutral shared UI** (styles, primitives, services, utilities) belongs in `packages/viking-ui/` first.
+- `frontend/projects/viking-ui/` should only provide thin Angular wrappers and Angular-specific build configuration around that shared package.
 
 ```typescript
 import {
@@ -203,7 +204,7 @@ Build like reusable flight hardware — every line earns its mass:
 - **No speculative abstractions** — one composable primitive beats three wrapper layers.
 - **Lazy by default** — route-level code splitting in the app; no eager imports of showcase-only components.
 - **Token-only styling** — CSS variables compile once; no runtime theme engines or CSS-in-JS.
-- **Reusable first** — new UI belongs in `frontend/projects/viking-ui/` before app-specific forks.
+- **Reusable first** — shared UI logic belongs in `packages/viking-ui/` first, then adapt via thin wrappers in `frontend/projects/viking-ui/`.
 
 ---
 

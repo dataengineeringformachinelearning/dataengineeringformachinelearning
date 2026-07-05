@@ -13,12 +13,12 @@ import {
   VikingIconSizePreset,
   VikingIconVariant,
   VIKING_DRAKKAR_ICON_NAMES_LIST,
-} from '../core/icons';
+} from '../../../../../packages/viking-ui/src/core/icons';
 import {
   isIntegrationBrandIcon,
   VIKING_INTEGRATION_BRAND_SVGS,
   type VikingIntegrationBrandName,
-} from '../core/integration-brand-icons';
+} from '../../../../../packages/viking-ui/src/core/integration-brand-icons';
 
 const VIKING_FILLED_ICON_SET = new Set<string>(VIKING_FILLED_ICON_NAMES);
 const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);

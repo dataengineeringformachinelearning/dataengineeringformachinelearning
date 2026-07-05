@@ -10,14 +10,14 @@ Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is th
 
 | Area                   | Path                                            | When to edit                          |
 | ---------------------- | ----------------------------------------------- | ------------------------------------- |
-| **Angular components** | `frontend/projects/viking-ui/src/lib/`          | New or updated UI primitives          |
-| **Web Components**     | `frontend/projects/viking-ui/src/web/`          | Framework-agnostic custom elements    |
+| **Angular components** | `frontend/projects/viking-ui/src/lib/`          | Angular wrapper components            |
+| **Web Components**     | `packages/viking-ui/src/web/`                   | Framework-agnostic custom elements    |
 | **Design tokens**      | `packages/viking-ui/src/styles/_variables.scss` | Colors, spacing, typography, motion   |
 | **Static CSS build**   | `packages/viking-ui/scripts/build-css.mjs`      | CSS bundle pipeline changes           |
 | **Showcase / docs**    | `viking-ui-docs/src/`                           | Demos, guides, playground             |
 | **Governance docs**    | `THEME.md`, `BOOK.md` Ch.31                     | Architectural or token policy changes |
 
-New shared UI **always** belongs in `frontend/projects/viking-ui/` first. Do not fork one-off styles in app pages, marketing, or backend templates.
+New shared UI **always** belongs in `packages/viking-ui/` first (styles, tokens, web components, utilities), then thin Angular wrappers go in `frontend/projects/viking-ui/`.
 
 ---
 
@@ -191,7 +191,7 @@ Required for charts, forms, icons, and auth surfaces per project policy.
 
 ## Pull request checklist
 
-- [ ] Changes live in `frontend/projects/viking-ui/` for shared UI
+- [ ] Shared UI changes live in `packages/viking-ui/` first; update Angular wrappers in `frontend/projects/viking-ui/` as needed
 - [ ] Showcase updated in `viking-ui-docs/` if user-facing
 - [ ] `uvx pre-commit run --all-files` passes
 - [ ] `node scripts/enforce-theme.js` passes

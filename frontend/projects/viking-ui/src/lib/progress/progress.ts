@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { VikingTone } from '../core/types';
+import { VikingTone } from '../../../../../packages/viking-ui/src/core/types';
 
 /**
  * viking-progress — determinate/indeterminate progress bar

@@ -225,7 +225,7 @@ Pinned release example:
 
 Replace `api.example.com` with your backend URL and update `data-page-id` / `data-frontend-url` for your status page.
 
-This package is the source of truth. Existing Angular wrappers in `frontend/projects/viking-ui` adapt the design system for Angular while migration continues; Astro and Django consume the package artifacts directly through synced static assets.
+This package is the source of truth. Angular wrappers in `frontend/projects/viking-ui` adapt the design system for Angular while canonical source files and token/build artifacts remain in `packages/viking-ui`; Astro and Django consume the package artifacts directly through synced static assets.
 
 Angular app shells consume the package CSS from `angular.json`:
 

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { VikingIcon } from '../icon/icon';
-import type { VikingIconName } from '../core/icons';
+import type { VikingIconName } from '../../../../../packages/viking-ui/src/core/icons';
 
 /**
  * viking-status-metric-row — icon + title/subtitle + value row for status cards.

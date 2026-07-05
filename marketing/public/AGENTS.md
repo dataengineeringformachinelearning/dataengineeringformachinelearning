@@ -191,7 +191,7 @@ All DEML surfaces share one design system. **[.cursorrules](.cursorrules)** is t
 - **Always import and use** `@dataengineeringformachinelearning/viking-ui` components (`viking-button`, `viking-field`, `viking-card`, `viking-chart`, etc.) in Angular — never Material, Bootstrap, or other third-party UI runtimes.
 - **Composable structure, Viking palette:** accessible field stacks and primitive components; colors/spacing/typography from `--viking-*` tokens only.
 - **Premium restrained luxury:** dark-first charcoals, machined metallic borders, restrained teal/crimson accents — no gradient orbs, neon glow, or decorative clutter.
-- **Extend the kit, don't fork it:** new shared UI belongs in `frontend/projects/viking-ui/` first, then consumed by deml.app and marketing surfaces via synced `viking-ui.css`.
+- **Extend the kit, don't fork it:** framework-neutral styles, primitives, services, and shared utilities belong in `packages/viking-ui/` first, then consumed by Angular via thin wrappers in `frontend/projects/viking-ui/` and surfaced by synced `viking-ui.css`.
 - **Non-Angular surfaces** (marketing Astro, Django templates, Swagger) load the single built `viking-ui.css` bundle and use `var(--viking-*)` — no inline hex palettes.
 
 ### Critical Code Styling & Theming Law
