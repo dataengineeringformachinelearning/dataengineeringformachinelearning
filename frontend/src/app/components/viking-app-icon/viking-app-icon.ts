@@ -11,12 +11,13 @@ import { mapMaterialIcon } from '../../core/viking-icon-map';
     '[attr.aria-hidden]': 'ariaHidden() ? "true" : null',
     '[class]': 'hostClass()',
   },
-  template: `<viking-icon
-    [name]="resolvedName()"
-    [size]="size()"
-    [sizePreset]="sizePreset()"
-    [spin]="spin()"
-  />`,
+  template: `
+    @if (sizePreset(); as preset) {
+      <viking-icon [name]="resolvedName()" [sizePreset]="preset" [spin]="spin()" />
+    } @else {
+      <viking-icon [name]="resolvedName()" [size]="sizeValue()" [spin]="spin()" />
+    }
+  `,
   styles: [
     `
       :host {
@@ -38,4 +39,5 @@ export class VikingAppIcon {
   readonly hostClass = input<string>('');
 
   protected readonly resolvedName = computed(() => mapMaterialIcon(this.name()));
+  protected readonly sizeValue = computed(() => this.size() ?? 22);
 }

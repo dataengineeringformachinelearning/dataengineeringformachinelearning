@@ -130,17 +130,30 @@
         }
 
         <div vikingAuthFooter>
+          @if (submitIcon(); as icon) {
           <viking-button
             variant="primary"
             type="button"
             [fullWidth]="true"
             [loading]="isLoading()"
             [disabled]="(loginForm.invalid && !successMessage()) || isLoading()"
-            [icon]="submitIcon()"
+            [icon]="icon"
             (pressed)="onSubmit()"
           >
             {{ submitLabel() }}
           </viking-button>
+          } @else {
+          <viking-button
+            variant="primary"
+            type="button"
+            [fullWidth]="true"
+            [loading]="isLoading()"
+            [disabled]="(loginForm.invalid && !successMessage()) || isLoading()"
+            (pressed)="onSubmit()"
+          >
+            {{ submitLabel() }}
+          </viking-button>
+          }
         </div>
       </viking-auth-panel>
     </div>
