@@ -2,10 +2,10 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/viking-ui",
   "lib": {
-    "entryFile": "src/public-api.ts"
+    "entryFile": "src/public-api.ts",
+    "styleIncludePaths": ["../../../packages/viking-ui/src/styles"]
   },
   "assets": [
-    "./src/styles/**/*.scss",
     "./src/tokens/**/*.{json,js,ts}",
     "./src/web/**/*.ts",
     "./scripts/build-web-components.mjs",

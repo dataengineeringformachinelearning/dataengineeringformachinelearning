@@ -19,15 +19,7 @@ const rootDir = path.join(packageDir, "..", "..");
 const sourceDir = path.join(packageDir, "src", "styles");
 const tokensJson = path.join(packageDir, "src", "tokens", "viking-tokens.json");
 const outDir = path.join(packageDir, "dist");
-const fontSourceDir = path.join(
-  rootDir,
-  "frontend",
-  "projects",
-  "viking-ui",
-  "assets",
-  "fonts",
-  "inter",
-);
+const fontSourceDir = path.join(packageDir, "src", "assets", "fonts", "inter");
 const fontOutDir = path.join(outDir, "fonts", "inter");
 const localSass = path.join(packageDir, "node_modules", ".bin", "sass");
 const designSystemSass = path.join(

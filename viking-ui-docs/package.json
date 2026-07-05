@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "private": true,
   "type": "module",
-  "description": "Viking-UI documentation showcase (Astro) and static CSS build owner for the DEML design system.",
+  "description": "Viking-UI documentation showcase (Astro) for the DEML design system.",
   "scripts": {
     "prebuild": "npm run build:static-css",
     "predev": "npm run build:static-css",

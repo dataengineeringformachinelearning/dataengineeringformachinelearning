@@ -30,7 +30,7 @@
 
 ## 4. Retire Duplicate Sources
 
-- Replace legacy style ownership in `frontend/projects/viking-ui/src/styles/` with imports or generated sync from `packages/viking-ui`.
+- Legacy style ownership has moved into canonical sources in `packages/viking-ui`.
 - Remove `packages/deml-design-system` after all surfaces consume the universal package.
 - Collapse ad-hoc marketing/backend CSS into tokenized primitives or app-local layout only.
 

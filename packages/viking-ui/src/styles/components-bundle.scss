@@ -1,6 +1,6 @@
 /*! Viking-UI Interactive Components — framework-agnostic CSS primitives.
  *  Load after design-tokens.css for Astro, Django, or any HTML project.
- *  Build: npm run build:static-css --prefix viking-ui-docs */
+ *  Build: npm run build:viking-ui:package */
 @use 'fonts';
 @use 'component-primitives';
 @use 'static-primitives';

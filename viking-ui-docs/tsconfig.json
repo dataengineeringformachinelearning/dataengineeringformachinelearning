@@ -1,35 +1,11 @@
 {
-  "compileOnSave": false,
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
-    "strict": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "ES2022",
-    "module": "preserve",
     "baseUrl": ".",
-    "ignoreDeprecations": "6.0",
     "paths": {
-      "@dataengineeringformachinelearning/viking-ui": [
-        "../frontend/projects/viking-ui/src/public-api.ts"
-      ],
-      "@dataengineeringformachinelearning/viking-ui/*": [
-        "../frontend/projects/viking-ui/src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
-  "angularCompilerOptions": {
-    "enableI18nLegacyMessageIdFormat": false,
-    "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true,
-    "strictTemplates": true
-  },
-  "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }]
+  "include": ["src/**/*"],
+  "exclude": ["dist/**", "node_modules/**"]
 }

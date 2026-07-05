@@ -626,7 +626,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
   placeholder="Search documentation, dashboard, settings…"
 />`,
           astro: `---
-// In the shared Astro layout, after design-tokens.css + viking-ui.css
+// In the shared Astro layout, after viking-ui.css
 ---
 <script type="module" src="/assets/viking-ui-elements.js"></script>
 <viking-suite-command-palette

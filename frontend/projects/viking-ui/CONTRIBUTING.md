@@ -6,13 +6,13 @@ This package is the canonical Viking-UI library. For the full contribution guide
 
 ## Quick links
 
-| Topic | Location |
-| ----- | -------- |
+| Topic                  | Location                                                                                     |
+| ---------------------- | -------------------------------------------------------------------------------------------- |
 | Live docs & playground | [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com) |
-| Architecture | [/architecture](https://ui.dataengineeringformachinelearning.com/architecture) |
-| Theming | [/theming](https://ui.dataengineeringformachinelearning.com/theming) |
-| Component gallery | [/components](https://ui.dataengineeringformachinelearning.com/components) |
-| Token reference | [THEME.md](../../THEME.md) |
+| Architecture           | [/architecture](https://ui.dataengineeringformachinelearning.com/architecture)               |
+| Theming                | [/theming](https://ui.dataengineeringformachinelearning.com/theming)                         |
+| Component gallery      | [/components](https://ui.dataengineeringformachinelearning.com/components)                   |
+| Token reference        | [THEME.md](../../THEME.md)                                                                   |
 
 ## Library-specific paths
 
@@ -30,7 +30,7 @@ frontend/projects/viking-ui/
 ```bash
 # From repo root
 npm run build:viking-ui --prefix frontend
-npm run build:static-css --prefix viking-ui-docs
+npm run build:viking-ui:package --prefix ../..
 python scripts/sync_design_system.py
 cd frontend && npm run test:viking-ui
 cd frontend && npm run check:viking-upstream

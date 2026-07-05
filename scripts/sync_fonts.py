@@ -20,7 +20,7 @@ FONT_TARGETS = (
 
 def sync_fonts() -> None:
   root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-  src_dir = os.path.join(root, "frontend", "projects", "viking-ui", "assets", "fonts", "inter")
+  src_dir = os.path.join(root, "packages", "viking-ui", "src", "assets", "fonts", "inter")
 
   if not os.path.isdir(src_dir):
     print(f"Font source directory missing: {src_dir}", file=sys.stderr)

@@ -2,7 +2,7 @@
 
 **Viking-UI v2** is DEML's framework-agnostic design system — one visual language for Angular, Astro, Django, and any HTML surface. Tokens are the single source of truth; Web Components and CSS classes share the same `--viking-*` variables.
 
-**Documentation:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)  
+**Documentation:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)
 **Contributing:** [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
 ## Design philosophy
@@ -39,8 +39,7 @@ import { VikingButton, VikingField, VikingInput } from '@dataengineeringformachi
 
 ```html
 <!-- Layout.astro -->
-<link rel="stylesheet" href="/assets/design-tokens.css" />
-<link rel="stylesheet" href="/assets/viking-components.css" />
+<link rel="stylesheet" href="/assets/viking-ui.css" />
 <link rel="stylesheet" href="/assets/viking-ui.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>
 
@@ -89,11 +88,11 @@ frontend/projects/viking-ui/
 
 ## Consumption modes
 
-| Surface | Load | Use |
-| ------- | ---- | --- |
-| **Django / static HTML** | `design-tokens.css` + `viking-components.css` | `.viking-btn`, `.viking-card`, `.viking-input-shell` |
-| **Astro / marketing** | tokens + components CSS + `viking-ui-elements.js` | `<viking-button-wc variant="primary">` |
-| **Angular** | App styles + npm package | `import { VikingButton } from '@dataengineeringformachinelearning/viking-ui'` |
+| Surface                  | Load                                              | Use                                                                           |
+| ------------------------ | ------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **Django / static HTML** | `design-tokens.css` + `viking-components.css`     | `.viking-btn`, `.viking-card`, `.viking-input-shell`                          |
+| **Astro / marketing**    | tokens + components CSS + `viking-ui-elements.js` | `<viking-button-wc variant="primary">`                                        |
+| **Angular**              | App styles + npm package                          | `import { VikingButton } from '@dataengineeringformachinelearning/viking-ui'` |
 
 ## npm exports
 
@@ -111,7 +110,7 @@ frontend/projects/viking-ui/
 
 ```bash
 # Static CSS + Web Components (from repo root)
-npm run build:static-css --prefix viking-ui-docs
+npm run build:viking-ui:package --prefix ../..
 python scripts/sync_design_system.py
 
 # Angular library

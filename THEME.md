@@ -223,11 +223,11 @@ Inter is the **primary typeface** for every DEML surface. The variable font is *
 
 **Self-hosting:**
 
-| Asset                        | Canonical source                                  | Deployed paths                                                               |
-| ---------------------------- | ------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `InterVariable.woff2`        | `frontend/projects/viking-ui/assets/fonts/inter/` | `*/assets/fonts/inter/` (frontend, marketing), `backend/static/fonts/inter/` |
-| `InterVariable-Italic.woff2` | Same                                              | Same                                                                         |
-| `@font-face` declarations    | `packages/viking-ui/src/styles/_fonts.scss`       | Compiled into `viking-ui.css` on every surface                               |
+| Asset                        | Canonical source                             | Deployed paths                                                                     |
+| ---------------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `InterVariable.woff2`        | `packages/viking-ui/src/assets/fonts/inter/` | `*/assets/fonts/inter/` (frontend, marketing, docs), `backend/static/fonts/inter/` |
+| `InterVariable-Italic.woff2` | Same                                         | Same                                                                               |
+| `@font-face` declarations    | `packages/viking-ui/src/styles/_fonts.scss`  | Compiled into `viking-ui.css` on every surface                                     |
 
 Sync fonts after changes: `python scripts/sync_fonts.py` (also runs inside `scripts/sync_design_system.py`).
 
@@ -707,7 +707,7 @@ module.exports = {
 ```
 
 ```html
-<link rel="stylesheet" href="/assets/design-tokens.css" />
+<link rel="stylesheet" href="/assets/viking-ui.css" />
 ```
 
 Utility examples: `bg-viking-surface`, `text-viking-text-muted`, `rounded-viking-lg`, `shadow-viking-sm`, `p-viking-3`, `text-viking-series-1`.
@@ -758,7 +758,7 @@ All three pages use `--viking-accent` for primary CTAs, `--viking-charcoal-900` 
 1. Edit `packages/viking-ui/src/styles/_variables.scss` for primitive token changes.
 2. Edit `_series-colors.scss` if the chart/picker palette changes; sync `viking-tokens.json` and `series-presets.ts`.
 3. Run `npm run build:viking-ui:package` to regenerate static CSS artifacts, then `python scripts/sync_design_system.py`.
-4. Run `python scripts/sync_design_system.py` to propagate `design-tokens.css`, `viking-ui.css`, and SCSS copies.
+4. Run `python scripts/sync_design_system.py` to propagate `viking-ui.css`, Web Components, token JSON, and fonts.
 5. Run `python scripts/sync_fonts.py` after updating Inter font files.
 6. Update this document when tokens or component standards change.
 7. Sync marketing/backend copies in CI or publish step.

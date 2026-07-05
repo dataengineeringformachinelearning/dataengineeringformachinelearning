@@ -5,7 +5,6 @@ import { SITE } from '../lib/site';
 import { COMPONENT_COUNT, SHOWCASE_CATEGORIES } from '../lib/component-registry';
 import { LIBRARY_COMPONENT_COUNT } from '../lib/library-stats';
 import type { ComponentSnippet } from '../lib/component-registry';
-import '../styles/showcase.scss';
 
 const featuredComponents = SHOWCASE_CATEGORIES.flatMap((category) =>
   category.components.map((component) => ({ ...component, category: category.label }))

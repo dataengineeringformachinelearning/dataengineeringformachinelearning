@@ -5,7 +5,6 @@ import ShowcaseCategoryBar from '../../components/ShowcaseCategoryBar.astro';
 import ApiReference from '../../components/ApiReference.astro';
 import { ALL_COMPONENTS, SHOWCASE_CATEGORIES, findComponent } from '../../lib/component-registry';
 import { getComponentApi } from '../../lib/component-api';
-import '../../styles/showcase.scss';
 
 export const getStaticPaths = () =>
   ALL_COMPONENTS.map((component) => ({

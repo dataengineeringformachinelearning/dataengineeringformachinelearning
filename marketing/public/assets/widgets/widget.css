@@ -5,7 +5,7 @@
   margin: var(--space-2, 16px) auto;
 }
 
-/* Requires design-tokens.css + viking-ui.css on the host page (THEME.md). */
+/* Requires the built viking-ui.css bundle on the host page (THEME.md). */
 
 .widget-container {
   display: inline-flex;
@@ -66,7 +66,11 @@
 }
 
 .report-trigger:hover {
-  background-color: color-mix(in srgb, var(--viking-crimson-500) 15%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--viking-crimson-500) 15%,
+    transparent
+  );
 }
 
 .report-icon {
@@ -187,7 +191,8 @@
 .form-field input:focus,
 .form-field textarea:focus {
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--viking-teal-600) 25%, transparent);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--viking-teal-600) 25%, transparent);
 }
 
 .form-row {
@@ -228,7 +233,11 @@
 }
 
 .btn-cancel:hover {
-  background-color: color-mix(in srgb, var(--viking-white-pure) 5%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--viking-white-pure) 5%,
+    transparent
+  );
   color: var(--text-color);
 }
 
@@ -261,8 +270,13 @@
 }
 
 .status-msg.error {
-  background-color: color-mix(in srgb, var(--viking-crimson-500) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--viking-crimson-500) 30%, transparent);
+  background-color: color-mix(
+    in srgb,
+    var(--viking-crimson-500) 15%,
+    transparent
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--viking-crimson-500) 30%, transparent);
   color: var(--viking-crimson-500);
 }
 

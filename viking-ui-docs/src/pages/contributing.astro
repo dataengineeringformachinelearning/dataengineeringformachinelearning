@@ -1,7 +1,6 @@
 ---
 import DocLayout from '../layouts/DocLayout.astro';
 import { SITE } from '../lib/site';
-import '../styles/showcase.scss';
 ---
 
 <DocLayout
@@ -73,7 +72,7 @@ uvx pre-commit run --all-files</code></pre>
 
       <article class="contribute-step viking-card">
         <h3 class="viking-heading viking-heading-sm">5. Sync static CSS (token changes only)</h3>
-        <pre class="code-block-panel is-active contribute-code"><code>npm run build:static-css --prefix viking-ui-docs
+        <pre class="code-block-panel is-active contribute-code"><code>npm run build:viking-ui:package
 python scripts/sync_design_system.py</code></pre>
       </article>
 

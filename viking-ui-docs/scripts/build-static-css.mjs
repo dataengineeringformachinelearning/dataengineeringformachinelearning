@@ -16,9 +16,6 @@ const outDir = path.join(docsDir, "dist", "static-css");
 const publicAssetsDir = path.join(docsDir, "public", "assets");
 
 const artifacts = [
-  "design-tokens.css",
-  "viking-components.css",
-  "deml-components.css",
   "viking-ui.css",
   "viking-ui-elements.js",
   "viking-tokens.json",

@@ -4,7 +4,7 @@ const path = require('path');
 const SCAN_DIRS = [
   path.resolve(__dirname, '../src'),
   path.resolve(__dirname, '../projects/viking-ui/src'),
-  path.resolve(__dirname, '../../marketing/src/styles'),
+  path.resolve(__dirname, '../../packages/viking-ui/src/styles'),
   path.resolve(__dirname, '../../marketing/src/components'),
   path.resolve(__dirname, '../../marketing/src/pages'),
   path.resolve(__dirname, '../../marketing/src/layouts'),
@@ -14,7 +14,7 @@ const SCAN_DIRS = [
 
 // Generated bundles may minify entire files onto one line; property names like
 // max-width must not be mistaken for @media (max-width: …) breakpoints.
-const GENERATED_CSS = /(?:^|\/)(?:viking-ui|deml-components|design-tokens)\.css$/;
+const GENERATED_CSS = /(?:^|\/)(?:viking-ui|deml-components|design-tokens|viking-components)\.css$/;
 
 // Desktop-first breakpoint: @media … (max-width: …) — not layout max-width properties.
 const DESKTOP_FIRST_MEDIA = /@media[^{]*\([^)]*\bmax-width\s*:/i;

@@ -5,7 +5,7 @@
   margin: var(--space-2, 16px) auto;
 }
 
-/* Requires design-tokens.css + viking-ui.css on the host page (THEME.md). */
+/* Requires the built viking-ui.css bundle on the host page (THEME.md). */
 
 .widget-container {
   display: inline-flex;

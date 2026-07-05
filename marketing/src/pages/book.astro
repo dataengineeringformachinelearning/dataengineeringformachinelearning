@@ -4,7 +4,6 @@ import VikingIcon from '../components/VikingIcon.astro';
 import { loadBookChapters, SIDEBAR_GROUPS } from '../lib/book-chapters';
 import { bookJsonLd, canonicalHref } from '../lib/seo';
 import { siteEnv } from '../lib/site-env';
-import '../styles/publication.scss';
 
 const chapters = loadBookChapters();
 const { MARKETING_URL } = siteEnv();

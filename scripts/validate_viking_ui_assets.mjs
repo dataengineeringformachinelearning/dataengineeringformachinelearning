@@ -63,18 +63,6 @@ const staticMirrors = [
     "viking-ui-elements.js",
     "viking-ui-docs/public/assets/viking-ui-elements.js",
   ],
-  ["design-tokens.css", "backend/static/design-tokens.css"],
-  ["design-tokens.css", "marketing/public/assets/design-tokens.css"],
-  ["design-tokens.css", "viking-ui-docs/public/assets/design-tokens.css"],
-  ["viking-components.css", "backend/static/viking-components.css"],
-  ["viking-components.css", "marketing/public/assets/viking-components.css"],
-  [
-    "viking-components.css",
-    "viking-ui-docs/public/assets/viking-components.css",
-  ],
-  ["deml-components.css", "backend/static/deml-components.css"],
-  ["deml-components.css", "marketing/public/assets/deml-components.css"],
-  ["deml-components.css", "viking-ui-docs/public/assets/deml-components.css"],
   ["viking-tokens.json", "viking-ui-docs/public/assets/viking-tokens.json"],
 ];
 
@@ -88,12 +76,6 @@ const optionalDocsMirrors = [
     "viking-ui-elements.js",
     "viking-ui-docs/dist/static-css/viking-ui-elements.js",
   ],
-  ["design-tokens.css", "viking-ui-docs/dist/static-css/design-tokens.css"],
-  [
-    "viking-components.css",
-    "viking-ui-docs/dist/static-css/viking-components.css",
-  ],
-  ["deml-components.css", "viking-ui-docs/dist/static-css/deml-components.css"],
   ["viking-tokens.json", "viking-ui-docs/dist/static-css/viking-tokens.json"],
 ];
 
@@ -113,18 +95,9 @@ if (!frontendAngularJson.includes("../packages/viking-ui/dist/viking-ui.css")) {
   );
 }
 
-const docsAngularJson = readText("viking-ui-docs/angular.json");
-if (!docsAngularJson.includes("../packages/viking-ui/dist/viking-ui.css")) {
-  failures.push(
-    "viking-ui-docs/angular.json must load ../packages/viking-ui/dist/viking-ui.css globally.",
-  );
-}
-
 const sourceImportChecks = [
   "frontend/src/styles.scss",
   "frontend/src/theme.scss",
-  "marketing/src/styles/theme.scss",
-  "viking-ui-docs/src/styles.scss",
 ];
 
 const removedFrontendMirrors = [
@@ -138,6 +111,15 @@ const removedFrontendMirrors = [
   "frontend/public/assets/deml-components.css",
   "frontend/public/assets/viking-ui.css",
   "frontend/public/assets/viking-ui-elements.js",
+  "backend/static/design-tokens.css",
+  "backend/static/viking-components.css",
+  "backend/static/deml-components.css",
+  "marketing/public/assets/design-tokens.css",
+  "marketing/public/assets/viking-components.css",
+  "marketing/public/assets/deml-components.css",
+  "viking-ui-docs/public/assets/design-tokens.css",
+  "viking-ui-docs/public/assets/viking-components.css",
+  "viking-ui-docs/public/assets/deml-components.css",
 ];
 
 for (const relativePath of removedFrontendMirrors) {

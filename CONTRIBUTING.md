@@ -8,14 +8,14 @@ Thank you for helping make Viking-UI easier to adopt and extend. Viking-UI is th
 
 ## Where to contribute
 
-| Area | Path | When to edit |
-| ---- | ---- | ------------ |
-| **Angular components** | `frontend/projects/viking-ui/src/lib/` | New or updated UI primitives |
-| **Web Components** | `frontend/projects/viking-ui/src/web/` | Framework-agnostic custom elements |
-| **Design tokens** | `frontend/projects/viking-ui/src/styles/_variables.scss` | Colors, spacing, typography, motion |
-| **Static CSS build** | `viking-ui-docs/scripts/build-static-css.mjs` | CSS bundle pipeline changes |
-| **Showcase / docs** | `viking-ui-docs/src/` | Demos, guides, playground |
-| **Governance docs** | `THEME.md`, `BOOK.md` Ch.31 | Architectural or token policy changes |
+| Area                   | Path                                            | When to edit                          |
+| ---------------------- | ----------------------------------------------- | ------------------------------------- |
+| **Angular components** | `frontend/projects/viking-ui/src/lib/`          | New or updated UI primitives          |
+| **Web Components**     | `frontend/projects/viking-ui/src/web/`          | Framework-agnostic custom elements    |
+| **Design tokens**      | `packages/viking-ui/src/styles/_variables.scss` | Colors, spacing, typography, motion   |
+| **Static CSS build**   | `packages/viking-ui/scripts/build-css.mjs`      | CSS bundle pipeline changes           |
+| **Showcase / docs**    | `viking-ui-docs/src/`                           | Demos, guides, playground             |
+| **Governance docs**    | `THEME.md`, `BOOK.md` Ch.31                     | Architectural or token policy changes |
 
 New shared UI **always** belongs in `frontend/projects/viking-ui/` first. Do not fork one-off styles in app pages, marketing, or backend templates.
 
@@ -85,7 +85,7 @@ uvx pre-commit run --all-files
 When you edit `_variables.scss`:
 
 ```bash
-npm run build:static-css --prefix viking-ui-docs
+npm run build:viking-ui:package
 python scripts/sync_design_system.py
 ```
 
