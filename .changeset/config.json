@@ -8,11 +8,10 @@
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": [
-    "deml-platform",
     "frontend",
     "marketing",
     "viking-ui-docs",
     "functions",
-    "studio"
+    "dataengineeringformachinelearning-studio"
   ]
 }
