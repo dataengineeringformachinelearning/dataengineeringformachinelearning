@@ -1,6 +1,5 @@
 // Self-hosted Inter variable font — single woff2 covers weights 100–900.
-// Default relative path resolves from viking-ui.css (assets/ or static/).
-// Angular apps override $font-base-path to '/assets/fonts/inter'.
+// Default relative path resolves from viking-ui.css in package dist or copied static roots.
 
 $font-base-path: 'fonts/inter' !default;
 

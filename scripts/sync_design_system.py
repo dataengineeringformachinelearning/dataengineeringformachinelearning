@@ -52,29 +52,21 @@ def sync_design_system() -> None:
       sys.exit(1)
 
   token_targets = [
-    os.path.join(root_dir, "frontend", "src", "assets", "design-tokens.css"),
-    os.path.join(root_dir, "frontend", "public", "assets", "design-tokens.css"),
     os.path.join(root_dir, "backend", "static", "design-tokens.css"),
     os.path.join(root_dir, "marketing", "public", "assets", "design-tokens.css"),
   ]
 
   viking_components_targets = [
-    os.path.join(root_dir, "frontend", "src", "assets", "viking-components.css"),
-    os.path.join(root_dir, "frontend", "public", "assets", "viking-components.css"),
     os.path.join(root_dir, "backend", "static", "viking-components.css"),
     os.path.join(root_dir, "marketing", "public", "assets", "viking-components.css"),
   ]
 
   component_targets = [
-    os.path.join(root_dir, "frontend", "src", "assets", "deml-components.css"),
-    os.path.join(root_dir, "frontend", "public", "assets", "deml-components.css"),
     os.path.join(root_dir, "backend", "static", "deml-components.css"),
     os.path.join(root_dir, "marketing", "public", "assets", "deml-components.css"),
   ]
 
   viking_css_targets = [
-    os.path.join(root_dir, "frontend", "src", "assets", "viking-ui.css"),
-    os.path.join(root_dir, "frontend", "public", "assets", "viking-ui.css"),
     os.path.join(root_dir, "backend", "static", "viking-ui.css"),
     os.path.join(root_dir, "marketing", "public", "assets", "viking-ui.css"),
     os.path.join(root_dir, "viking-ui-docs", "public", "assets", "viking-ui.css"),
@@ -82,8 +74,6 @@ def sync_design_system() -> None:
   ]
 
   elements_targets = [
-    os.path.join(root_dir, "frontend", "src", "assets", "viking-ui-elements.js"),
-    os.path.join(root_dir, "frontend", "public", "assets", "viking-ui-elements.js"),
     os.path.join(root_dir, "backend", "static", "viking-ui-elements.js"),
     os.path.join(root_dir, "marketing", "public", "assets", "viking-ui-elements.js"),
     os.path.join(root_dir, "viking-ui-docs", "public", "assets", "viking-ui-elements.js"),
@@ -141,6 +131,12 @@ def sync_design_system() -> None:
   print("Syncing widget assets...")
   subprocess.run(
     [sys.executable, os.path.join(root_dir, "scripts", "sync_widgets.py")],
+    check=True,
+  )
+
+  print("Validating Viking-UI package propagation...")
+  subprocess.run(
+    ["node", os.path.join(root_dir, "scripts", "validate_viking_ui_assets.mjs")],
     check=True,
   )
 

@@ -32,7 +32,10 @@
                 "output": "/assets/fonts"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "../packages/viking-ui/dist/viking-ui.css",
+              "src/styles.scss"
+            ],
             "outputPath": "dist"
           },
           "configurations": {

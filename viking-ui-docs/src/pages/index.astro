@@ -20,14 +20,12 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
   <viking-input placeholder="DEML-2049" />
 </viking-field>
 <viking-button variant="primary">Deploy</viking-button>`,
-  astro: `<link rel="stylesheet" href="/assets/design-tokens.css" />
-<link rel="stylesheet" href="/assets/viking-ui.css" />
+  astro: `<link rel="stylesheet" href="/assets/viking-ui.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>
 
 <viking-button-wc variant="primary">Deploy</viking-button-wc>
 <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>`,
   django: `{% load static %}
-<link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
 <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
 
 <button type="button" class="viking-btn viking-btn-primary">Deploy</button>`,
@@ -128,7 +126,7 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
           <span class="viking-label">Recommended path</span>
           <ol class="landing-step-list viking-text-muted">
             <li>Install <code>{SITE.npm}</code> or use the synced static assets.</li>
-            <li>Load <code>design-tokens.css</code> and <code>viking-ui.css</code> globally.</li>
+            <li>Load the full <code>viking-ui.css</code> bundle globally.</li>
             <li>Compose forms through field stacks and actions through Viking buttons.</li>
             <li>Use the registry-backed gallery to copy framework-specific examples.</li>
           </ol>

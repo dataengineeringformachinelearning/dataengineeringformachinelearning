@@ -51,37 +51,31 @@ import '../styles/showcase.scss';
     <section class="showcase-category" aria-labelledby="load-css-heading">
       <header class="showcase-category-header">
         <h2 class="viking-heading viking-heading-sm" id="load-css-heading">Minimal CSS setup</h2>
-        <p class="viking-text-muted">Load tokens first, then components. Order matters for cascade.</p>
+        <p class="viking-text-muted">Load the full package CSS once. Split token/component CSS is exported for tooling and advanced partial builds.</p>
       </header>
 
       <article class="viking-card theming-setup-card">
         <h3 class="viking-heading viking-heading-sm">Angular</h3>
         <p class="viking-text-muted">
-          Include library SCSS in <code>angular.json</code> styles or import in <code>styles.scss</code>.
-          For npm consumers, import CSS exports directly.
+          Include the built package CSS in <code>angular.json</code> before app-specific styles.
         </p>
-        <pre class="code-block-panel is-active"><code>{`// styles.scss
-@use '@dataengineeringformachinelearning/viking-ui/tokens.css';
-@use '@dataengineeringformachinelearning/viking-ui/components.css';
-
-// Or compile from source in monorepo:
-@use 'projects/viking-ui/src/styles/viking-ui';`}</code></pre>
+        <pre class="code-block-panel is-active"><code>{`// angular.json
+"styles": [
+  "../packages/viking-ui/dist/viking-ui.css",
+  "src/styles.scss"
+]`}</code></pre>
       </article>
 
       <article class="viking-card theming-setup-card">
         <h3 class="viking-heading viking-heading-sm">Astro / static sites</h3>
-        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="/assets/design-tokens.css" />
-<link rel="stylesheet" href="/assets/viking-components.css" />
-<link rel="stylesheet" href="/assets/viking-ui.css" />
+        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="/assets/viking-ui.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>`}</code></pre>
       </article>
 
       <article class="viking-card theming-setup-card">
-        <h3 class="viking-heading viking-heading-sm">Django</h3>
+<h3 class="viking-heading viking-heading-sm">Django</h3>
         <pre class="code-block-panel is-active"><code>{`{# base.html #}
 {% load static %}
-<link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
-<link rel="stylesheet" href="{% static 'viking-components.css' %}" />
 <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />`}</code></pre>
       </article>
     </section>
@@ -169,7 +163,7 @@ import '../styles/showcase.scss';
         <li>Do not load Inter from Google Fonts CDN — use bundled <code>_fonts.scss</code></li>
         <li>Preserve <code>:focus-visible</code> rings (<code>--viking-ring</code>)</li>
         <li>Respect <code>prefers-reduced-motion</code> for animations</li>
-        <li>After token changes: <code>npm run build:static-css</code> + <code>sync_design_system.py</code></li>
+        <li>After token changes: <code>npm run build:viking-ui:package</code> + <code>sync_design_system.py</code></li>
       </ul>
     </section>
   </div>

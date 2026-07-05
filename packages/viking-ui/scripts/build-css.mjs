@@ -1,6 +1,7 @@
 import { execFileSync } from "node:child_process";
 import {
   copyFileSync,
+  cpSync,
   existsSync,
   mkdirSync,
   readFileSync,
@@ -18,6 +19,16 @@ const rootDir = path.join(packageDir, "..", "..");
 const sourceDir = path.join(packageDir, "src", "styles");
 const tokensJson = path.join(packageDir, "src", "tokens", "viking-tokens.json");
 const outDir = path.join(packageDir, "dist");
+const fontSourceDir = path.join(
+  rootDir,
+  "frontend",
+  "projects",
+  "viking-ui",
+  "assets",
+  "fonts",
+  "inter",
+);
+const fontOutDir = path.join(outDir, "fonts", "inter");
 const localSass = path.join(packageDir, "node_modules", ".bin", "sass");
 const designSystemSass = path.join(
   rootDir,
@@ -75,5 +86,11 @@ writeFileSync(path.join(outDir, "viking-components.css"), componentsCss);
 writeFileSync(path.join(outDir, "deml-components.css"), demlComponentsCss);
 writeFileSync(path.join(outDir, "viking-ui.css"), bundleCss);
 copyFileSync(tokensJson, path.join(outDir, "viking-tokens.json"));
+
+if (!existsSync(fontSourceDir)) {
+  throw new Error(`Expected Inter font source missing: ${fontSourceDir}`);
+}
+mkdirSync(fontOutDir, { recursive: true });
+cpSync(fontSourceDir, fontOutDir, { recursive: true });
 
 console.log(`Built Viking-UI CSS in ${outDir}`);

@@ -25,16 +25,21 @@
       "import": "./dist/index.js"
     },
     "./elements.js": "./dist/viking-ui-elements.js",
+    "./viking-ui-elements.js": "./dist/viking-ui-elements.js",
     "./web-components": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
     "./web-components.js": "./dist/viking-ui-elements.js",
+    "./dist/viking-ui-elements.js": "./dist/viking-ui-elements.js",
     "./css": "./dist/viking-ui.css",
+    "./css/index.css": "./dist/viking-ui.css",
     "./css/viking-ui.css": "./dist/viking-ui.css",
     "./css/design-tokens.css": "./dist/design-tokens.css",
     "./css/viking-components.css": "./dist/viking-components.css",
     "./css/deml-components.css": "./dist/deml-components.css",
+    "./css/tokens.css": "./dist/design-tokens.css",
+    "./css/components.css": "./dist/viking-components.css",
     "./design-tokens.css": "./dist/design-tokens.css",
     "./tokens.css": "./dist/design-tokens.css",
     "./tokens": "./dist/viking-tokens.json",
@@ -55,6 +60,7 @@
     "build": "npm run clean && npm run build:css && npm run build:elements",
     "build:css": "node scripts/build-css.mjs",
     "build:elements": "node scripts/build-elements.mjs",
+    "validate": "node ../../scripts/validate_viking_ui_assets.mjs",
     "pack:check": "npm pack --dry-run",
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },

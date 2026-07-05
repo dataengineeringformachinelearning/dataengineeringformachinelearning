@@ -1,9 +1,1 @@
-@use '../../frontend/projects/viking-ui/src/styles/fonts' with (
-  $font-base-path: '/assets/fonts/inter'
-);
-@use '../../frontend/projects/viking-ui/src/styles/typography';
-@use '../../frontend/projects/viking-ui/src/styles/tokens' as *;
-@use '../../frontend/projects/viking-ui/src/styles/viking-ui' as *;
-@use '../../frontend/projects/viking-ui/src/styles/static-navbar' as *;
-@use '../../frontend/projects/viking-ui/src/lib/footer/footer' as *;
-@use '../../frontend/projects/viking-ui/src/lib/whitepaper-cta/whitepaper-cta' as *;
+/* Viking-UI global CSS is loaded from packages/viking-ui/dist via angular.json. */

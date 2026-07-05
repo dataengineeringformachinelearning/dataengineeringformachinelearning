@@ -49,7 +49,7 @@ import { SITE } from '../lib/site';
           CSS-only primitives for Swagger, admin templates, and backend-rendered pages.
         </p>
         <ul class="viking-text-muted">
-          <li><code>design-tokens.css</code> + <code>viking-components.css</code></li>
+          <li>Load synced <code>viking-ui.css</code> once</li>
           <li><code>viking-btn</code>, <code>viking-input-shell</code> classes</li>
           <li>Set <code>data-theme</code> on <code>&lt;html&gt;</code></li>
         </ul>
@@ -105,8 +105,6 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
           astro: `---
 // Layout.astro — load once globally
 ---
-<link rel="stylesheet" href="/assets/design-tokens.css" />
-<link rel="stylesheet" href="/assets/viking-components.css" />
 <link rel="stylesheet" href="/assets/viking-ui.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>
 
@@ -127,9 +125,8 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
         snippets={{
           angular: '',
           astro: '',
-          django: `{# base.html #}
-<link rel="stylesheet" href="{% static 'design-tokens.css' %}" />
-<link rel="stylesheet" href="{% static 'viking-components.css' %}" />
+django: `{# base.html #}
+<link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
 
 <html data-theme="dark">
   <button type="button" class="viking-btn viking-btn-primary">Deploy</button>
@@ -152,8 +149,7 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
           angular: '',
           astro: '',
           django: '',
-          javascript: `<link rel="stylesheet" href="/assets/design-tokens.css" />
-<link rel="stylesheet" href="/assets/viking-components.css" />
+          javascript: `<link rel="stylesheet" href="/assets/viking-ui.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>
 
 <viking-button-wc variant="primary">Launch</viking-button-wc>

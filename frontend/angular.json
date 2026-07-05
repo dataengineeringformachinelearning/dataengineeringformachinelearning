@@ -43,7 +43,11 @@
             "loader": {
               ".md": "text"
             },
-            "styles": ["src/styles.scss", "node_modules/prismjs/themes/prism-okaidia.css"],
+            "styles": [
+              "../packages/viking-ui/dist/viking-ui.css",
+              "src/styles.scss",
+              "node_modules/prismjs/themes/prism-okaidia.css"
+            ],
             "scripts": [
               "node_modules/prismjs/prism.js",
               "node_modules/prismjs/components/prism-bash.min.js",

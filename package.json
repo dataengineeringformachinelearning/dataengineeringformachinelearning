@@ -19,6 +19,7 @@
     "sync:content": "python scripts/deml_tooling.py sync --content",
     "sync:design-system": "python scripts/deml_tooling.py sync --design-system",
     "sync:widgets": "python scripts/deml_tooling.py sync --widgets",
+    "validate:viking-ui:assets": "node scripts/validate_viking_ui_assets.mjs",
     "hygiene": "python scripts/deml_tooling.py hygiene",
     "hygiene:cache": "python scripts/deml_tooling.py hygiene --cache",
     "theme:clean": "node scripts/enforce-theme.js",
