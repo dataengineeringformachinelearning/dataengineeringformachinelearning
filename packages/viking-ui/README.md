@@ -32,17 +32,43 @@ release, visual regression, and propagation workflow.
 
 ## Consumption
 
+### 1) NPM usage (recommended for apps)
+
+Use this for app-first surfaces such as deml.app, internal dashboards, and any build chain that supports package installs.
+
 ```html
 <link rel="stylesheet" href="/assets/viking-ui.css" />
-<script type="module" src="/assets/viking-ui-elements.js"></script>
 ```
 
 ```ts
+import {
+  VikingButton,
+  VikingInput,
+  VikingModal,
+} from "@dataengineeringformachinelearning/viking-ui";
+```
+
+```bash
+npm install @dataengineeringformachinelearning/viking-ui
+```
+
+For Angular components, continue using the exported Angular APIs and theme tokens as normal.
+
+```ts
+import {
+  VikingButton,
+  VikingInput,
+  VikingModal,
+} from "@dataengineeringformachinelearning/viking-ui";
+
+// or when building custom element demos:
 import "@dataengineeringformachinelearning/viking-ui/elements.js";
 import "@dataengineeringformachinelearning/viking-ui/viking-ui.css";
 ```
 
-## Use via CDN (jsDelivr)
+### 2) jsDelivr CDN usage (recommended for widgets and quick embeds)
+
+Use this for external websites, marketing snippets, and widget-style integrations that should load without npm.
 
 The package artifacts are published in `dist/`, so you can load them directly from jsDelivr:
 
@@ -140,6 +166,17 @@ builds.
   </body>
 </html>
 ```
+
+### 3) When to use the sync script
+
+Use `scripts/sync_design_system.py` when you need synced static assets instead of npm:
+
+```bash
+python scripts/sync_design_system.py
+```
+
+This path remains for surfaces that are not using package installs directly, especially
+legacy or Django-rendered templates that consume `/assets/viking-ui.css` and shared class names.
 
 ### 6) Status widget via jsDelivr (no npm install)
 
