@@ -63,6 +63,7 @@ dist/
 chromatic.log
 chromatic-build-*.xml
 build-archive.log
+packages/viking-ui/storybook-static/
 
 # Terraform
 **/.terraform/*
