@@ -1,5 +1,14 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.0.6
+
+### Patch Changes
+
+- Fix navbar Sign In icon alignment and remove auth-button loading flash on page load.
+- Hide mobile menu toggle on desktop and close mobile menu on outside click (Shadow DOM safe).
+- Sync cross-site auth session state: Dashboard + Sign Out on static navbars, trusted iframe origins, and localStorage storage events.
+- Remove deprecated brand language from theme and docs copy.
+
 ## 4.0.5
 
 ### Patch Changes

@@ -101,7 +101,7 @@ npm view @dataengineeringformachinelearning/viking-ui@$(node -p "require('./pack
 ```
 
 If npm returns a version, bump the package before publishing. The current
-publish target is `4.0.5` because `4.0.4` is already present on npm.
+publish target is `4.0.6`.
 
 The publish workflow performs the release in this order:
 
