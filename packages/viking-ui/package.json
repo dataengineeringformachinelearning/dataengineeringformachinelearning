@@ -4,7 +4,7 @@
   "description": "Universal Viking-UI design system for Astro, Angular, and Django.",
   "license": "Apache-2.0",
   "type": "module",
-  "private": true,
+  "private": false,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,6 +14,9 @@
     "type": "git",
     "url": "git+https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning.git",
     "directory": "packages/viking-ui"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "exports": {
     ".": {
@@ -61,6 +64,7 @@
     "build:css": "node scripts/build-css.mjs",
     "build:elements": "node scripts/build-elements.mjs",
     "validate": "node ../../scripts/validate_viking_ui_assets.mjs",
+    "test": "node --test test/*.test.mjs",
     "pack:check": "npm pack --dry-run",
     "typecheck": "tsc --project tsconfig.json --noEmit"
   },

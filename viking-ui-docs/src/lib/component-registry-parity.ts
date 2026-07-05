@@ -1,33 +1,23 @@
-import type { ShowcaseCategory, ShowcaseComponent, ComponentSnippet } from './component-registry';
-import { getComponentApi } from './component-api';
-
-const snippets = (
-  angular: string,
-  astro: string,
-  django: string,
-  javascript: string,
-): ComponentSnippet => ({ angular, astro, django, javascript });
-
-const entry = (
-  partial: Omit<ShowcaseComponent, 'snippets'> & { snippets?: Partial<ComponentSnippet> },
-  defaults: ComponentSnippet,
-): ShowcaseComponent => ({
-  ...partial,
-  snippets: { ...defaults, ...partial.snippets },
-});
+import type { ShowcaseCategory } from "./component-registry";
+import { getComponentApi } from "./component-api";
+import {
+  defineShowcaseComponent as entry,
+  defineSnippets as snippets,
+} from "./component-registry-kit";
 
 /** ~40 additional primitives toward full manifest parity. */
 export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   {
-    id: 'layout-shell',
-    label: 'Layout & Shell',
-    description: 'Application chrome, HUD panels, and workspace scaffolding.',
+    id: "layout-shell",
+    label: "Layout & Shell",
+    description: "Application chrome, HUD panels, and workspace scaffolding.",
     components: [
       entry(
         {
-          id: 'app-header',
-          name: 'App header',
-          description: 'Top navigation bar with brand, actions, and search slot.',
+          id: "app-header",
+          name: "App header",
+          description:
+            "Top navigation bar with brand, actions, and search slot.",
           preview: `<header class="viking-page-header-static">
   <p class="viking-label">Tenant0 · Operations</p>
   <h2 class="viking-heading viking-heading-sm">Mission control</h2>
@@ -36,8 +26,8 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <viking-button-wc variant="outline" size="sm">Settings</viking-button-wc>
   </div>
 </header>`,
-          selector: 'viking-app-header',
-          tags: ['angular', 'shell'],
+          selector: "viking-app-header",
+          tags: ["angular", "shell"],
         },
         snippets(
           `<viking-app-header title="Mission control" [showSearch]="true" />`,
@@ -48,9 +38,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'app-sidebar',
-          name: 'App sidebar',
-          description: 'Collapsible workspace navigation with icon + label items.',
+          id: "app-sidebar",
+          name: "App sidebar",
+          description:
+            "Collapsible workspace navigation with icon + label items.",
           preview: `<nav class="viking-card viking-card-compact" aria-label="Sidebar demo" style="max-width:14rem">
   <span class="viking-label">Workspace</span>
   <div class="viking-demo-row viking-demo-row-stack">
@@ -59,8 +50,8 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <span class="viking-text-muted">Security</span>
   </div>
 </nav>`,
-          selector: 'viking-app-sidebar',
-          tags: ['angular', 'shell'],
+          selector: "viking-app-sidebar",
+          tags: ["angular", "shell"],
         },
         snippets(
           `<viking-app-sidebar [items]="navItems" [(collapsed)]="sidebarCollapsed" />`,
@@ -71,15 +62,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'hud-panel',
-          name: 'HUD panel',
-          description: 'Machined operational panel with inset hairline for telemetry HUDs.',
+          id: "hud-panel",
+          name: "HUD panel",
+          description:
+            "Machined operational panel with inset hairline for telemetry HUDs.",
           preview: `<div class="viking-hud-panel">
   <span class="viking-label">Live telemetry</span>
   <strong class="viking-metric">8.2K/s</strong>
   <p class="viking-text-muted">Symmetrical tenant pipeline throughput.</p>
 </div>`,
-          selector: 'viking-hud-panel',
+          selector: "viking-hud-panel",
         },
         snippets(
           `<viking-hud-panel label="Live telemetry" value="8.2K/s" />`,
@@ -90,14 +82,14 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'footer',
-          name: 'Footer',
-          description: 'Application footer with links and compliance slots.',
+          id: "footer",
+          name: "Footer",
+          description: "Application footer with links and compliance slots.",
           preview: `<footer class="viking-card viking-card-compact">
   <span class="viking-label">DEML Platform</span>
   <p class="viking-text-muted">© 2026 Data Engineering for Machine Learning</p>
 </footer>`,
-          selector: 'viking-footer',
+          selector: "viking-footer",
         },
         snippets(
           `<viking-footer [links]="footerLinks" />`,
@@ -108,9 +100,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'site-navbar',
-          name: 'Site navbar',
-          description: 'Marketing-grade navbar with search, theme toggle, and CTA slots.',
+          id: "site-navbar",
+          name: "Site navbar",
+          description:
+            "Marketing-grade navbar with search, theme toggle, and CTA slots.",
           preview: `<div class="viking-card viking-card-compact">
   <div class="viking-demo-row">
     <strong class="viking-heading viking-heading-sm">DEML</strong>
@@ -118,8 +111,8 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <viking-button-wc variant="primary" size="sm">Launch</viking-button-wc>
   </div>
 </div>`,
-          selector: 'viking-site-navbar',
-          tags: ['angular', 'marketing'],
+          selector: "viking-site-navbar",
+          tags: ["angular", "marketing"],
         },
         snippets(
           `import { VikingSiteNavbar } from '@dataengineeringformachinelearning/viking-ui';
@@ -133,20 +126,20 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'display',
-    label: 'Display & Content',
-    description: 'Avatars, empty states, spinners, and typographic helpers.',
+    id: "display",
+    label: "Display & Content",
+    description: "Avatars, empty states, spinners, and typographic helpers.",
     components: [
       entry(
         {
-          id: 'avatar',
-          name: 'Avatar',
-          description: 'User or tenant identity circle with initials fallback.',
+          id: "avatar",
+          name: "Avatar",
+          description: "User or tenant identity circle with initials fallback.",
           preview: `<div class="viking-demo-row">
   <span class="viking-avatar-static" aria-hidden="true">CT</span>
   <span class="viking-avatar-static viking-avatar-accent" aria-hidden="true">D0</span>
 </div>`,
-          selector: 'viking-avatar',
+          selector: "viking-avatar",
         },
         snippets(
           `<viking-avatar initials="CT" [size]="40" />`,
@@ -157,15 +150,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'empty-state',
-          name: 'Empty state',
-          description: 'Centered placeholder when lists or charts have no data.',
+          id: "empty-state",
+          name: "Empty state",
+          description:
+            "Centered placeholder when lists or charts have no data.",
           preview: `<div class="viking-empty-state-static">
   <p class="viking-heading viking-heading-sm">No incidents</p>
   <p class="viking-text-muted">Threat scoring has not flagged any events in this window.</p>
   <viking-button-wc variant="outline">Refresh</viking-button-wc>
 </div>`,
-          selector: 'viking-empty-state',
+          selector: "viking-empty-state",
         },
         snippets(
           `<viking-empty-state heading="No incidents" description="Threat scoring clear">
@@ -178,14 +172,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'spinner',
-          name: 'Spinner',
-          description: 'Indeterminate loading indicator with reduced-motion respect.',
+          id: "spinner",
+          name: "Spinner",
+          description:
+            "Indeterminate loading indicator with reduced-motion respect.",
           preview: `<div class="viking-demo-row">
   <span class="viking-spinner-static" role="status" aria-label="Loading"></span>
   <span class="viking-text-muted">Relaying Outbox events…</span>
 </div>`,
-          selector: 'viking-spinner',
+          selector: "viking-spinner",
         },
         snippets(
           `<viking-spinner [size]="24" aria-label="Loading" />`,
@@ -196,15 +191,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'loading-overlay',
-          name: 'Loading overlay',
-          description: 'Full-surface blocking loader for async route transitions.',
+          id: "loading-overlay",
+          name: "Loading overlay",
+          description:
+            "Full-surface blocking loader for async route transitions.",
           preview: `<div class="viking-loading-overlay-demo viking-card">
   <span class="viking-spinner-static" role="status" aria-label="Loading dashboard"></span>
   <p class="viking-text-muted">Materializing Firestore projections…</p>
 </div>`,
-          selector: 'viking-loading-overlay',
-          tags: ['angular'],
+          selector: "viking-loading-overlay",
+          tags: ["angular"],
         },
         snippets(
           `<viking-loading-overlay [active]="loading()" message="Loading dashboard" />`,
@@ -215,15 +211,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'separator',
-          name: 'Separator',
-          description: 'Visual divider between sections — horizontal or vertical.',
+          id: "separator",
+          name: "Separator",
+          description:
+            "Visual divider between sections — horizontal or vertical.",
           preview: `<div class="viking-demo-row-stack">
   <span class="viking-text">Billing</span>
   <hr class="viking-separator-static" />
   <span class="viking-text-muted">Payment methods</span>
 </div>`,
-          selector: 'viking-separator',
+          selector: "viking-separator",
         },
         snippets(
           `<viking-separator />`,
@@ -234,12 +231,13 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'kbd',
-          name: 'Keyboard hint',
-          description: 'Styled kbd element for shortcuts — pairs with search palette footer.',
+          id: "kbd",
+          name: "Keyboard hint",
+          description:
+            "Styled kbd element for shortcuts — pairs with search palette footer.",
           preview: `<span class="viking-kbd-static">⌘</span><span class="viking-kbd-static">K</span>
 <span class="viking-text-muted">Open command palette</span>`,
-          selector: 'viking-kbd',
+          selector: "viking-kbd",
         },
         snippets(
           `<viking-kbd>⌘</viking-kbd><viking-kbd>K</viking-kbd>`,
@@ -250,12 +248,12 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'label',
-          name: 'Label',
-          description: 'Caps-style field and section labels with token rhythm.',
+          id: "label",
+          name: "Label",
+          description: "Caps-style field and section labels with token rhythm.",
           preview: `<span class="viking-label">Retention policy</span>
 <span class="viking-label">Threat scoring</span>`,
-          selector: 'viking-label',
+          selector: "viking-label",
         },
         snippets(
           `<viking-label>Retention policy</viking-label>`,
@@ -266,9 +264,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'icon-badge',
-          name: 'Icon badge',
-          description: 'Circular icon container for settings headers and metric rows.',
+          id: "icon-badge",
+          name: "Icon badge",
+          description:
+            "Circular icon container for settings headers and metric rows.",
           preview: `<div class="viking-demo-row">
   <span class="viking-icon-badge-static" aria-hidden="true">◆</span>
   <div>
@@ -276,8 +275,8 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <p class="viking-text-muted">RBAC and ABAC policies</p>
   </div>
 </div>`,
-          selector: 'viking-icon-badge',
-          tags: ['angular'],
+          selector: "viking-icon-badge",
+          tags: ["angular"],
         },
         snippets(
           `<viking-icon-badge icon="shield" tone="accent" />`,
@@ -288,14 +287,14 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'brand',
-          name: 'Brand mark',
-          description: 'Logo lockup with wordmark for navbars and auth panels.',
+          id: "brand",
+          name: "Brand mark",
+          description: "Logo lockup with wordmark for navbars and auth panels.",
           preview: `<div class="viking-demo-row">
   <svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 18 L12 4 L20 18 Z"/></svg>
   <strong class="viking-heading viking-heading-sm">DEML</strong>
 </div>`,
-          selector: 'viking-brand',
+          selector: "viking-brand",
         },
         snippets(
           `<viking-brand href="/" />`,
@@ -307,21 +306,23 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'forms-extended',
-    label: 'Extended Forms',
-    description: 'Text areas, radios, sliders, pickers, and verification inputs.',
+    id: "forms-extended",
+    label: "Extended Forms",
+    description:
+      "Text areas, radios, sliders, pickers, and verification inputs.",
     components: [
       entry(
         {
-          id: 'textarea',
-          name: 'Textarea',
-          description: 'Multi-line input with field composition and validation.',
+          id: "textarea",
+          name: "Textarea",
+          description:
+            "Multi-line input with field composition and validation.",
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="notes">Runbook notes</label>
   <textarea id="notes" class="viking-textarea-static" rows="3" placeholder="Document rollback steps…"></textarea>
 </div>`,
-          selector: 'viking-textarea',
-          related: ['field-stack'],
+          selector: "viking-textarea",
+          related: ["field-stack"],
         },
         snippets(
           `<viking-field label="Runbook notes"><viking-textarea rows="3" placeholder="Document rollback steps…" /></viking-field>`,
@@ -332,15 +333,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'radio',
-          name: 'Radio group',
-          description: 'Single selection from mutually exclusive options.',
+          id: "radio",
+          name: "Radio group",
+          description: "Single selection from mutually exclusive options.",
           preview: `<fieldset class="viking-radio-static">
   <legend class="viking-label">Deployment target</legend>
   <label><input type="radio" name="target" checked /> Production</label>
   <label><input type="radio" name="target" /> Staging</label>
 </fieldset>`,
-          selector: 'viking-radio-group',
+          selector: "viking-radio-group",
         },
         snippets(
           `<viking-radio-group [(value)]="target" [options]="targets" />`,
@@ -351,15 +352,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'slider',
-          name: 'Slider',
-          description: 'Range input for retention windows and alert thresholds.',
+          id: "slider",
+          name: "Slider",
+          description:
+            "Range input for retention windows and alert thresholds.",
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="threshold">Alert threshold</label>
   <input id="threshold" class="viking-slider-static" type="range" min="0" max="100" value="72" />
   <span class="viking-text-muted">72% CPU utilization</span>
 </div>`,
-          selector: 'viking-slider',
+          selector: "viking-slider",
         },
         snippets(
           `<viking-slider [(value)]="threshold" [min]="0" [max]="100" />`,
@@ -370,17 +372,17 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'native-select',
-          name: 'Native select',
-          description: 'Accessible native dropdown with Viking field styling.',
+          id: "native-select",
+          name: "Native select",
+          description: "Accessible native dropdown with Viking field styling.",
           preview: `<viking-select-wc label="Retention window">
   <option value="7d">7 days</option>
   <option value="30d" selected>30 days</option>
   <option value="90d">90 days</option>
 </viking-select-wc>`,
-          selector: 'viking-native-select',
-          wcSelector: 'viking-select-wc',
-          tags: ['web-component'],
+          selector: "viking-native-select",
+          wcSelector: "viking-select-wc",
+          tags: ["web-component"],
         },
         snippets(
           `<viking-native-select label="Retention window" [options]="retentionOptions" />`,
@@ -391,17 +393,18 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'autocomplete',
-          name: 'Autocomplete',
-          description: 'Typeahead combobox with keyboard navigation and clear button.',
+          id: "autocomplete",
+          name: "Autocomplete",
+          description:
+            "Typeahead combobox with keyboard navigation and clear button.",
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="tenant">Tenant</label>
   <div class="viking-input-shell">
     <input id="tenant" class="viking-input-native" type="text" placeholder="Search tenants…" autocomplete="off" />
   </div>
 </div>`,
-          selector: 'viking-autocomplete',
-          tags: ['angular'],
+          selector: "viking-autocomplete",
+          tags: ["angular"],
         },
         snippets(
           `<viking-autocomplete [(value)]="tenant" [options]="tenantOptions" placeholder="Search tenants…" />`,
@@ -412,17 +415,18 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'date-picker',
-          name: 'Date picker',
-          description: 'Calendar popover for incident time ranges and billing cycles.',
+          id: "date-picker",
+          name: "Date picker",
+          description:
+            "Calendar popover for incident time ranges and billing cycles.",
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="incident-date">Incident date</label>
   <div class="viking-input-shell">
     <input id="incident-date" class="viking-input-native" type="date" />
   </div>
 </div>`,
-          selector: 'viking-date-picker',
-          tags: ['angular'],
+          selector: "viking-date-picker",
+          tags: ["angular"],
         },
         snippets(
           `<viking-date-picker [(value)]="incidentDate" label="Incident date" />`,
@@ -433,17 +437,17 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'time-picker',
-          name: 'Time picker',
-          description: 'Time-of-day selection for maintenance windows.',
+          id: "time-picker",
+          name: "Time picker",
+          description: "Time-of-day selection for maintenance windows.",
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="window">Maintenance window</label>
   <div class="viking-input-shell">
     <input id="window" class="viking-input-native" type="time" value="02:00" />
   </div>
 </div>`,
-          selector: 'viking-time-picker',
-          tags: ['angular'],
+          selector: "viking-time-picker",
+          tags: ["angular"],
         },
         snippets(
           `<viking-time-picker [(value)]="maintenanceTime" />`,
@@ -454,17 +458,17 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'otp-input',
-          name: 'OTP input',
-          description: 'One-time passcode digit boxes with auto-advance focus.',
+          id: "otp-input",
+          name: "OTP input",
+          description: "One-time passcode digit boxes with auto-advance focus.",
           preview: `<div class="viking-otp-static" role="group" aria-label="Verification code">
   <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 1" />
   <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 2" />
   <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 3" />
   <input type="text" inputmode="numeric" maxlength="1" aria-label="Digit 4" />
 </div>`,
-          selector: 'viking-otp-input',
-          tags: ['angular'],
+          selector: "viking-otp-input",
+          tags: ["angular"],
         },
         snippets(
           `<viking-otp-input [(value)]="code" [length]="6" />`,
@@ -475,15 +479,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'file-upload',
-          name: 'File upload',
-          description: 'Drag-and-drop file picker with progress and validation.',
+          id: "file-upload",
+          name: "File upload",
+          description:
+            "Drag-and-drop file picker with progress and validation.",
           preview: `<div class="viking-file-upload-static viking-card viking-card-compact">
   <p class="viking-text-muted">Drop model state_dict (.pt) or drag here</p>
   <viking-button-wc variant="outline">Browse files</viking-button-wc>
 </div>`,
-          selector: 'viking-file-upload',
-          tags: ['angular'],
+          selector: "viking-file-upload",
+          tags: ["angular"],
         },
         snippets(
           `<viking-file-upload accept=".pt" (filesSelected)="onUpload($event)" />`,
@@ -494,16 +499,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'pillbox',
-          name: 'Pillbox',
-          description: 'Multi-select tag input for filters and alert routing.',
+          id: "pillbox",
+          name: "Pillbox",
+          description: "Multi-select tag input for filters and alert routing.",
           preview: `<div class="viking-pillbox-static">
   <span class="viking-badge viking-badge-accent">production</span>
   <span class="viking-badge">staging</span>
   <viking-input-wc placeholder="Add tag…" size="sm"></viking-input-wc>
 </div>`,
-          selector: 'viking-pillbox',
-          tags: ['angular'],
+          selector: "viking-pillbox",
+          tags: ["angular"],
         },
         snippets(
           `<viking-pillbox [(tags)]="envTags" placeholder="Add environment…" />`,
@@ -515,15 +520,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'data-viz-extended',
-    label: 'Extended Data Viz',
-    description: 'Gauges, chart panels, and operational metric rows.',
+    id: "data-viz-extended",
+    label: "Extended Data Viz",
+    description: "Gauges, chart panels, and operational metric rows.",
     components: [
       entry(
         {
-          id: 'gauge-arc',
-          name: 'Gauge arc',
-          description: 'Semi-circular gauge for SLA and capacity utilization.',
+          id: "gauge-arc",
+          name: "Gauge arc",
+          description: "Semi-circular gauge for SLA and capacity utilization.",
           preview: `<div class="viking-gauge-demo" role="img" aria-label="72% capacity">
   <svg viewBox="0 0 120 70" width="120" height="70" aria-hidden="true">
     <path d="M10,60 A50,50 0 0,1 110,60" fill="none" stroke="var(--viking-border)" stroke-width="8"/>
@@ -531,7 +536,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   </svg>
   <strong class="viking-metric">72%</strong>
 </div>`,
-          selector: 'viking-gauge-arc',
+          selector: "viking-gauge-arc",
         },
         snippets(
           `<viking-gauge-arc [value]="72" label="Capacity" />`,
@@ -542,9 +547,9 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'ring-gauge',
-          name: 'Ring gauge',
-          description: 'Circular progress ring for model training epochs.',
+          id: "ring-gauge",
+          name: "Ring gauge",
+          description: "Circular progress ring for model training epochs.",
           preview: `<div class="viking-ring-gauge-demo" role="img" aria-label="Epoch 8 of 12">
   <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
     <circle cx="24" cy="24" r="20" fill="none" stroke="var(--viking-border)" stroke-width="4"/>
@@ -552,7 +557,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   </svg>
   <span class="viking-label">8/12</span>
 </div>`,
-          selector: 'viking-ring-gauge',
+          selector: "viking-ring-gauge",
         },
         snippets(
           `<viking-ring-gauge [value]="8" [max]="12" label="Epochs" />`,
@@ -563,9 +568,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'chart-panel',
-          name: 'Chart panel',
-          description: 'Card wrapper with header slot for viking-chart telemetry views.',
+          id: "chart-panel",
+          name: "Chart panel",
+          description:
+            "Card wrapper with header slot for viking-chart telemetry views.",
           preview: `<viking-card-wc>
   <div class="viking-card-header">
     <h3 class="viking-heading viking-heading-sm">P99 latency</h3>
@@ -573,8 +579,8 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   </div>
   <div class="showcase-chart-demo"><svg viewBox="0 0 320 80" width="100%"><polyline class="showcase-chart-line" points="0,60 80,45 160,50 240,30 320,35" fill="none" stroke="var(--viking-accent)" stroke-width="2"/></svg></div>
 </viking-card-wc>`,
-          selector: 'viking-chart-panel',
-          related: ['chart'],
+          selector: "viking-chart-panel",
+          related: ["chart"],
         },
         snippets(
           `<viking-chart-panel title="P99 latency"><viking-chart kind="line" [data]="series" /></viking-chart-panel>`,
@@ -585,15 +591,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'chart-empty-state',
-          name: 'Chart empty state',
-          description: 'Placeholder when chart series has insufficient data points.',
+          id: "chart-empty-state",
+          name: "Chart empty state",
+          description:
+            "Placeholder when chart series has insufficient data points.",
           preview: `<div class="viking-chart-empty-static viking-card viking-card-compact">
   <p class="viking-heading viking-heading-sm">Insufficient data</p>
   <p class="viking-text-muted">Collect at least 24h of telemetry to render trend lines.</p>
 </div>`,
-          selector: 'viking-chart-empty-state',
-          related: ['chart', 'empty-state'],
+          selector: "viking-chart-empty-state",
+          related: ["chart", "empty-state"],
         },
         snippets(
           `<viking-chart-empty-state heading="Insufficient data" description="Collect 24h of telemetry" />`,
@@ -604,15 +611,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'status-metric-row',
-          name: 'Status metric row',
-          description: 'Horizontal KPI strip with tone badge — never color alone.',
+          id: "status-metric-row",
+          name: "Status metric row",
+          description:
+            "Horizontal KPI strip with tone badge — never color alone.",
           preview: `<div class="viking-status-metric-row">
   <span class="viking-label">Outbox relay</span>
   <strong class="viking-metric">0.1s</strong>
   <viking-badge-wc tone="success">Healthy</viking-badge-wc>
 </div>`,
-          selector: 'viking-status-metric-row',
+          selector: "viking-status-metric-row",
         },
         snippets(
           `<viking-status-metric-row label="Outbox relay" value="0.1s" tone="success" />`,
@@ -623,15 +631,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'bar',
-          name: 'Bar',
-          description: 'Horizontal bar visualization for comparative metrics.',
+          id: "bar",
+          name: "Bar",
+          description: "Horizontal bar visualization for comparative metrics.",
           preview: `<div class="viking-bar-static">
   <span class="viking-label">Tenant isolation</span>
   <div class="viking-bar-track"><div class="viking-bar-fill" style="width:94%"></div></div>
   <span class="viking-text-muted">94%</span>
 </div>`,
-          selector: 'viking-bar',
+          selector: "viking-bar",
         },
         snippets(
           `<viking-bar [value]="94" label="Tenant isolation" />`,
@@ -643,15 +651,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'navigation-extended',
-    label: 'Extended Navigation',
-    description: 'Menus, dropdowns, command surfaces, and sidebar patterns.',
+    id: "navigation-extended",
+    label: "Extended Navigation",
+    description: "Menus, dropdowns, command surfaces, and sidebar patterns.",
     components: [
       entry(
         {
-          id: 'dropdown',
-          name: 'Dropdown',
-          description: 'Action menu with keyboard roving focus and escape dismiss.',
+          id: "dropdown",
+          name: "Dropdown",
+          description:
+            "Action menu with keyboard roving focus and escape dismiss.",
           preview: `<div class="viking-dropdown-demo viking-card viking-card-compact">
   <viking-button-wc variant="outline">Actions ▾</viking-button-wc>
   <div class="viking-demo-row viking-demo-row-stack">
@@ -660,8 +669,8 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <span class="viking-text-muted">View logs</span>
   </div>
 </div>`,
-          selector: 'viking-dropdown',
-          tags: ['angular'],
+          selector: "viking-dropdown",
+          tags: ["angular"],
         },
         snippets(
           `<viking-dropdown label="Actions"><viking-menu-item>Deploy</viking-menu-item></viking-dropdown>`,
@@ -672,16 +681,17 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'menubar',
-          name: 'Menubar',
-          description: 'Horizontal application menu bar for dense operator UIs.',
+          id: "menubar",
+          name: "Menubar",
+          description:
+            "Horizontal application menu bar for dense operator UIs.",
           preview: `<div class="viking-menubar-static" role="menubar" aria-label="Application menu">
   <button type="button" class="viking-tab" role="menuitem">File</button>
   <button type="button" class="viking-tab" role="menuitem">Edit</button>
   <button type="button" class="viking-tab" role="menuitem">View</button>
 </div>`,
-          selector: 'viking-menubar',
-          tags: ['angular'],
+          selector: "viking-menubar",
+          tags: ["angular"],
         },
         snippets(
           `<viking-menubar><viking-menubar-item label="File" /></viking-menubar>`,
@@ -692,15 +702,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'navigation-menu',
-          name: 'Navigation menu',
-          description: 'Multi-level nav with active state and icon support.',
+          id: "navigation-menu",
+          name: "Navigation menu",
+          description: "Multi-level nav with active state and icon support.",
           preview: `<nav class="viking-nav-menu-static" aria-label="Settings">
   <a href="#" class="viking-nav-item-static is-active">Profile</a>
   <a href="#" class="viking-nav-item-static">Billing</a>
   <a href="#" class="viking-nav-item-static">Security</a>
 </nav>`,
-          selector: 'viking-navigation-menu',
+          selector: "viking-navigation-menu",
         },
         snippets(
           `<viking-navigation-menu [items]="settingsNav" />`,
@@ -711,15 +721,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'sidebar-nav',
-          name: 'Sidebar nav',
-          description: 'Vertical nav list for settings and account pages.',
+          id: "sidebar-nav",
+          name: "Sidebar nav",
+          description: "Vertical nav list for settings and account pages.",
           preview: `<nav class="viking-sidebar-nav-static" aria-label="Account">
   <a href="#" class="viking-sidebar-nav-item is-active">General</a>
   <a href="#" class="viking-sidebar-nav-item">API keys</a>
   <a href="#" class="viking-sidebar-nav-item">Audit log</a>
 </nav>`,
-          selector: 'viking-sidebar-nav',
+          selector: "viking-sidebar-nav",
         },
         snippets(
           `<viking-sidebar-nav [items]="accountNav" />`,
@@ -730,9 +740,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'popover',
-          name: 'Popover',
-          description: 'Anchored floating panel for contextual actions and filters.',
+          id: "popover",
+          name: "Popover",
+          description:
+            "Anchored floating panel for contextual actions and filters.",
           preview: `<div class="viking-popover-demo">
   <viking-button-wc variant="outline">Filters</viking-button-wc>
   <div class="viking-card viking-card-compact" style="margin-top:var(--viking-space-1);max-width:16rem">
@@ -740,8 +751,8 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   <viking-select-wc label="Window"><option>30 days</option></viking-select-wc>
   </div>
 </div>`,
-          selector: 'viking-popover',
-          tags: ['angular'],
+          selector: "viking-popover",
+          tags: ["angular"],
         },
         snippets(
           `<viking-popover trigger="Filters"><viking-field label="Retention">...</viking-field></viking-popover>`,
@@ -753,15 +764,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'content-patterns',
-    label: 'Content Patterns',
-    description: 'Accordions, carousels, timelines, and rich editors.',
+    id: "content-patterns",
+    label: "Content Patterns",
+    description: "Accordions, carousels, timelines, and rich editors.",
     components: [
       entry(
         {
-          id: 'accordion',
-          name: 'Accordion',
-          description: 'Expandable sections for FAQ and dense settings pages.',
+          id: "accordion",
+          name: "Accordion",
+          description: "Expandable sections for FAQ and dense settings pages.",
           preview: `<details class="viking-accordion-static" open>
   <summary class="viking-heading viking-heading-sm">Event projections</summary>
   <p class="viking-text-muted">Commands commit to Outbox before Redpanda publish.</p>
@@ -770,7 +781,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   <summary class="viking-heading viking-heading-sm">Multi-tenancy</summary>
   <p class="viking-text-muted">Symmetrical pipelines iterate Tenant.objects.all().</p>
 </details>`,
-          selector: 'viking-accordion',
+          selector: "viking-accordion",
         },
         snippets(
           `<viking-accordion><viking-accordion-item title="Event projections">...</viking-accordion-item></viking-accordion>`,
@@ -781,14 +792,14 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'timeline',
-          name: 'Timeline',
-          description: 'Vertical event history for audit logs and deployments.',
+          id: "timeline",
+          name: "Timeline",
+          description: "Vertical event history for audit logs and deployments.",
           preview: `<ol class="viking-timeline-static">
   <li><span class="viking-label">14:02 UTC</span><p class="viking-text">Outbox relay published v2.0.0</p></li>
   <li><span class="viking-label">14:01 UTC</span><p class="viking-text-muted">Deploy command committed</p></li>
 </ol>`,
-          selector: 'viking-timeline',
+          selector: "viking-timeline",
         },
         snippets(
           `<viking-timeline><viking-timeline-item time="14:02 UTC">Outbox relay published</viking-timeline-item></viking-timeline>`,
@@ -799,16 +810,17 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'carousel',
-          name: 'Carousel',
-          description: 'Horizontal slide deck for marketing highlights and onboarding.',
+          id: "carousel",
+          name: "Carousel",
+          description:
+            "Horizontal slide deck for marketing highlights and onboarding.",
           preview: `<div class="viking-carousel-static viking-card">
   <p class="viking-heading viking-heading-sm">Slide 1 — Event throughput</p>
   <p class="viking-text-muted">8.2K events/sec across symmetrical pipelines.</p>
   <div class="viking-demo-row"><viking-button-wc variant="ghost" size="sm">←</viking-button-wc><viking-button-wc variant="ghost" size="sm">→</viking-button-wc></div>
 </div>`,
-          selector: 'viking-carousel',
-          tags: ['angular'],
+          selector: "viking-carousel",
+          tags: ["angular"],
         },
         snippets(
           `<viking-carousel><viking-carousel-slide>...</viking-carousel-slide></viking-carousel>`,
@@ -819,15 +831,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'toggle',
-          name: 'Toggle group',
-          description: 'Segmented single-select control for view modes and filters.',
+          id: "toggle",
+          name: "Toggle group",
+          description:
+            "Segmented single-select control for view modes and filters.",
           preview: `<div class="viking-toggle-group-static" role="group" aria-label="View mode">
   <button type="button" class="viking-tab viking-tab-active">Chart</button>
   <button type="button" class="viking-tab">Table</button>
   <button type="button" class="viking-tab">Raw</button>
 </div>`,
-          selector: 'viking-toggle-group',
+          selector: "viking-toggle-group",
         },
         snippets(
           `<viking-toggle-group [(value)]="viewMode"><viking-toggle value="chart">Chart</viking-toggle></viking-toggle-group>`,
@@ -838,13 +851,13 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'fab',
-          name: 'FAB',
-          description: 'Floating action button for primary mobile workflows.',
+          id: "fab",
+          name: "FAB",
+          description: "Floating action button for primary mobile workflows.",
           preview: `<div style="position:relative;min-height:5rem">
   <button type="button" class="viking-fab-static" aria-label="Create incident">+</button>
 </div>`,
-          selector: 'viking-fab',
+          selector: "viking-fab",
         },
         snippets(
           `<viking-fab icon="plus" aria-label="Create incident" (pressed)="create()" />`,
@@ -855,14 +868,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'scroll-area',
-          name: 'Scroll area',
-          description: 'Tokenized overflow container for dense tables and code blocks.',
+          id: "scroll-area",
+          name: "Scroll area",
+          description:
+            "Tokenized overflow container for dense tables and code blocks.",
           preview: `<div class="viking-scroll-area-static" tabindex="0">
   <p class="viking-text-muted">Long content scrolls inside machined border…</p>
   <p class="viking-text-muted">Line 2 · Line 3 · Line 4 · Line 5</p>
 </div>`,
-          selector: 'viking-scroll-area',
+          selector: "viking-scroll-area",
         },
         snippets(
           `<viking-scroll-area [maxHeight]="320"><viking-table>...</viking-table></viking-scroll-area>`,
@@ -874,15 +888,16 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'actions-dialogs',
-    label: 'Actions & Dialogs',
-    description: 'Confirm dialogs, button groups, and contextual actions.',
+    id: "actions-dialogs",
+    label: "Actions & Dialogs",
+    description: "Confirm dialogs, button groups, and contextual actions.",
     components: [
       entry(
         {
-          id: 'confirm-dialog',
-          name: 'Confirm dialog',
-          description: 'Destructive action confirmation via VikingDialogService.',
+          id: "confirm-dialog",
+          name: "Confirm dialog",
+          description:
+            "Destructive action confirmation via VikingDialogService.",
           preview: `<div class="showcase-modal-demo" aria-hidden="true">
   <div class="showcase-modal-backdrop"></div>
   <div class="showcase-modal-panel viking-card">
@@ -894,10 +909,10 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     </footer>
   </div>
 </div>`,
-          selector: 'viking-confirm-dialog',
-          wcSelector: 'viking-modal-wc',
-          api: getComponentApi('modal'),
-          tags: ['angular', 'web-component'],
+          selector: "viking-confirm-dialog",
+          wcSelector: "viking-modal-wc",
+          api: getComponentApi("modal"),
+          tags: ["angular", "web-component"],
         },
         snippets(
           `this.dialog.confirm({ title: 'Delete tenant?', confirmVariant: 'danger' });`,
@@ -908,15 +923,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'button-group',
-          name: 'Button group',
-          description: 'Grouped actions with shared borders and roving focus.',
+          id: "button-group",
+          name: "Button group",
+          description: "Grouped actions with shared borders and roving focus.",
           preview: `<div class="viking-button-group-static" role="group" aria-label="Export formats">
   <viking-button-wc variant="outline" size="sm">CSV</viking-button-wc>
   <viking-button-wc variant="outline" size="sm">JSON</viking-button-wc>
   <viking-button-wc variant="outline" size="sm">Parquet</viking-button-wc>
 </div>`,
-          selector: 'viking-button-group',
+          selector: "viking-button-group",
         },
         snippets(
           `<viking-button-group><viking-button variant="outline">CSV</viking-button></viking-button-group>`,
@@ -927,15 +942,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'whitepaper-cta',
-          name: 'Whitepaper CTA',
-          description: 'Marketing call-to-action block for research downloads.',
+          id: "whitepaper-cta",
+          name: "Whitepaper CTA",
+          description: "Marketing call-to-action block for research downloads.",
           preview: `<div class="viking-whitepaper-cta-static viking-card">
   <h3 class="viking-heading viking-heading-sm">Read the whitepaper</h3>
   <p class="viking-text-muted">Event projections architecture for operational ML platforms.</p>
   <viking-button-wc variant="primary">Download PDF</viking-button-wc>
 </div>`,
-          selector: 'viking-whitepaper-cta',
+          selector: "viking-whitepaper-cta",
         },
         snippets(
           `<viking-whitepaper-cta title="Read the whitepaper" href="/whitepaper.pdf" />`,

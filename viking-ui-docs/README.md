@@ -6,26 +6,27 @@ Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` de
 
 ## What this site provides
 
-| Route | Purpose |
-| ----- | ------- |
-| `/` | Landing page with live Web Component previews |
-| `/components` | Interactive gallery with multi-framework snippets |
-| `/components/[slug]` | Per-component detail pages with API reference |
-| `/playground` | Live Storybook-style playground (button + input) |
-| `/architecture` | Universal three-layer architecture guide |
-| `/tokens` | Searchable token inspector |
-| `/theming` | Theming and customization guide |
-| `/frameworks` | Angular, Astro, Django, Web Component setup |
-| `/contributing` | Contribution workflow (links to root CONTRIBUTING.md) |
+| Route                | Purpose                                               |
+| -------------------- | ----------------------------------------------------- |
+| `/`                  | Landing page with live Web Component previews         |
+| `/components`        | Interactive gallery with multi-framework snippets     |
+| `/components/[slug]` | Per-component detail pages with API reference         |
+| `/playground`        | Live Storybook-style playground (button + input)      |
+| `/architecture`      | Universal three-layer architecture guide              |
+| `/tokens`            | Searchable token inspector                            |
+| `/theming`           | Theming and customization guide                       |
+| `/frameworks`        | Angular, Astro, Django, Web Component setup           |
+| `/contributing`      | Contribution workflow (links to root CONTRIBUTING.md) |
 
 ## Repository layout
 
-| Path | Role |
-| ---- | ---- |
-| `viking-ui-docs/` | Astro showcase + **static CSS build owner** |
-| `viking-ui-docs/src/` | Astro pages, component registry, token inspector |
-| `frontend/projects/viking-ui/` | Canonical library + SCSS source |
-| `CONTRIBUTING.md` | Root contribution guidelines |
+| Path                           | Role                                                                 |
+| ------------------------------ | -------------------------------------------------------------------- |
+| `viking-ui-docs/`              | Astro showcase + **static CSS build owner**                          |
+| `viking-ui-docs/src/`          | Astro pages, component registry, token inspector                     |
+| `packages/viking-ui/`          | Canonical library, Web Components, SCSS source, and package metadata |
+| `frontend/projects/viking-ui/` | Angular wrappers while migration continues                           |
+| `CONTRIBUTING.md`              | Root contribution guidelines                                         |
 
 ## Local development
 
@@ -42,12 +43,19 @@ Static CSS is rebuilt automatically via `predev` / `prebuild` hooks.
 
 ## Adding component demos
 
-1. Edit `src/lib/component-registry.ts` — add preview HTML and snippets for all 4 frameworks
+1. Edit `src/lib/component-registry.ts` or add a focused registry extension module
+   with helpers from `src/lib/component-registry-kit.ts`
 2. Add API reference in `src/lib/component-api.ts` for documented props
 3. Detail page auto-generates at `/components/[slug]`
 4. Verify in dev server and playground if applicable
 
 See [CONTRIBUTING.md](../CONTRIBUTING.md) for the full checklist.
+
+## Release and stability checks
+
+See [docs/viking-ui-release.md](../docs/viking-ui-release.md) for the
+Changesets versioning flow, visual regression commands, CI checks, and
+cross-app asset propagation steps.
 
 ## Static CSS build
 

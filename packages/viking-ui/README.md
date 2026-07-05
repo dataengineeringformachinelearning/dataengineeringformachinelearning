@@ -15,7 +15,20 @@ Universal DEML component library for Astro, Angular, and Django.
 
 ```bash
 npm run build --prefix packages/viking-ui
+npm run test:viking-ui:package
 ```
+
+## Versioning
+
+Viking-UI uses Changesets from the repository root:
+
+```bash
+npm run changeset
+npm run version:viking-ui
+```
+
+See [docs/viking-ui-release.md](../../docs/viking-ui-release.md) for the full
+release, visual regression, and propagation workflow.
 
 ## Consumption
 

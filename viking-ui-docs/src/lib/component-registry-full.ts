@@ -1,32 +1,23 @@
-import type { ShowcaseCategory, ShowcaseComponent, ComponentSnippet } from './component-registry';
-
-const snippets = (
-  angular: string,
-  astro: string,
-  django: string,
-  javascript: string,
-): ComponentSnippet => ({ angular, astro, django, javascript });
-
-const entry = (
-  partial: Omit<ShowcaseComponent, 'snippets'> & { snippets?: Partial<ComponentSnippet> },
-  defaults: ComponentSnippet,
-): ShowcaseComponent => ({
-  ...partial,
-  snippets: { ...defaults, ...partial.snippets },
-});
+import type { ShowcaseCategory } from "./component-registry";
+import {
+  defineShowcaseComponent as entry,
+  defineSnippets as snippets,
+} from "./component-registry-kit";
 
 /** Final batch toward full Angular export parity (~90 documented demos). */
 export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   {
-    id: 'specialized-inputs',
-    label: 'Specialized Inputs',
-    description: 'Calendar grids, color swatches, custom selects, and verification fields.',
+    id: "specialized-inputs",
+    label: "Specialized Inputs",
+    description:
+      "Calendar grids, color swatches, custom selects, and verification fields.",
     components: [
       entry(
         {
-          id: 'calendar',
-          name: 'Calendar',
-          description: 'Month-grid date picker with keyboard navigation and ISO value binding.',
+          id: "calendar",
+          name: "Calendar",
+          description:
+            "Month-grid date picker with keyboard navigation and ISO value binding.",
           preview: `<div class="viking-card viking-card-compact" style="max-width:18rem">
   <div class="viking-demo-row" style="justify-content:space-between">
     <viking-button-wc variant="ghost" size="sm" aria-label="Previous month">‹</viking-button-wc>
@@ -43,9 +34,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <viking-button-wc variant="ghost" size="sm">4</viking-button-wc>
   </div>
 </div>`,
-          selector: 'viking-calendar',
-          tags: ['angular', 'forms'],
-          related: ['date-picker'],
+          selector: "viking-calendar",
+          tags: ["angular", "forms"],
+          related: ["date-picker"],
         },
         snippets(
           `import { VikingCalendar } from '@dataengineeringformachinelearning/viking-ui';
@@ -58,18 +49,19 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'color-picker',
-          name: 'Color picker',
-          description: 'Series preset swatches plus custom color input — maps to --viking-series-* tokens.',
+          id: "color-picker",
+          name: "Color picker",
+          description:
+            "Series preset swatches plus custom color input — maps to --viking-series-* tokens.",
           preview: `<div class="viking-demo-row" role="group" aria-label="Color picker">
   <button type="button" class="viking-btn viking-btn-outline viking-btn-compact" style="border-color:var(--viking-series-1)" aria-label="Series 1" aria-pressed="true">✓</button>
   <button type="button" class="viking-btn viking-btn-outline viking-btn-compact" style="border-color:var(--viking-series-2)" aria-label="Series 2"></button>
   <button type="button" class="viking-btn viking-btn-outline viking-btn-compact" style="border-color:var(--viking-series-3)" aria-label="Series 3"></button>
   <input type="color" class="viking-input-native" value="#2176FF" aria-label="Custom color" style="width:2.5rem;height:2.5rem;padding:0" />
 </div>`,
-          selector: 'viking-color-picker',
-          tags: ['angular', 'forms'],
-          related: ['chart'],
+          selector: "viking-color-picker",
+          tags: ["angular", "forms"],
+          related: ["chart"],
         },
         snippets(
           `import { VIKING_SERIES_PRESETS, VikingColorPicker } from '@dataengineeringformachinelearning/viking-ui';
@@ -82,9 +74,10 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'custom-select',
-          name: 'Custom select',
-          description: 'Styled combobox with keyboard navigation — distinct from native-select.',
+          id: "custom-select",
+          name: "Custom select",
+          description:
+            "Styled combobox with keyboard navigation — distinct from native-select.",
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="worker-select">Worker</label>
   <div class="viking-input-shell">
@@ -96,9 +89,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <span class="viking-text-muted">threat_scanner</span>
   </div>
 </div>`,
-          selector: 'viking-select',
-          tags: ['angular'],
-          related: ['native-select', 'select'],
+          selector: "viking-select",
+          tags: ["angular"],
+          related: ["native-select", "select"],
         },
         snippets(
           `<viking-select label="Worker" [(value)]="worker" [options]="workerOptions" />`,
@@ -109,9 +102,10 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'verification-code-field',
-          name: 'Verification code field',
-          description: 'Labeled OTP fieldset for MFA and phone verification with error states.',
+          id: "verification-code-field",
+          name: "Verification code field",
+          description:
+            "Labeled OTP fieldset for MFA and phone verification with error states.",
           preview: `<fieldset class="viking-field">
   <legend class="viking-field-label">Verification code</legend>
   <div class="viking-otp-static" role="group" aria-label="Verification code">
@@ -124,9 +118,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   </div>
   <p class="viking-text-muted">Enter the code sent to your device.</p>
 </fieldset>`,
-          selector: 'viking-verification-code-field',
-          tags: ['angular', 'auth'],
-          related: ['otp-input', 'auth-panel'],
+          selector: "viking-verification-code-field",
+          tags: ["angular", "auth"],
+          related: ["otp-input", "auth-panel"],
         },
         snippets(
           `<viking-verification-code-field
@@ -143,15 +137,16 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'rich-content',
-    label: 'Rich Content',
-    description: 'Message composers and lightweight rich-text editors.',
+    id: "rich-content",
+    label: "Rich Content",
+    description: "Message composers and lightweight rich-text editors.",
     components: [
       entry(
         {
-          id: 'composer',
-          name: 'Composer',
-          description: 'Message composer with attachments slot and send action for incident threads.',
+          id: "composer",
+          name: "Composer",
+          description:
+            "Message composer with attachments slot and send action for incident threads.",
           preview: `<div class="viking-card viking-card-compact">
   <textarea class="viking-textarea-static" rows="2" placeholder="Add a runbook note…"></textarea>
   <div class="viking-demo-row" style="justify-content:space-between;margin-top:var(--viking-space-1)">
@@ -159,8 +154,8 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <viking-button-wc variant="primary" size="sm">Send</viking-button-wc>
   </div>
 </div>`,
-          selector: 'viking-composer',
-          tags: ['angular'],
+          selector: "viking-composer",
+          tags: ["angular"],
         },
         snippets(
           `<viking-composer
@@ -176,9 +171,10 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'editor',
-          name: 'Editor',
-          description: 'Zero-dependency contenteditable with formatting toolbar — outputs HTML.',
+          id: "editor",
+          name: "Editor",
+          description:
+            "Zero-dependency contenteditable with formatting toolbar — outputs HTML.",
           preview: `<div class="viking-card viking-card-compact">
   <div class="viking-demo-row">
     <viking-button-wc variant="ghost" size="sm" aria-label="Bold"><strong>B</strong></viking-button-wc>
@@ -187,9 +183,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   </div>
   <div class="viking-textarea-static" contenteditable="true" role="textbox" aria-label="Rich text editor" style="min-height:4rem">Document rollback steps for <strong>telemetry_worker</strong>…</div>
 </div>`,
-          selector: 'viking-editor',
-          tags: ['angular'],
-          related: ['textarea'],
+          selector: "viking-editor",
+          tags: ["angular"],
+          related: ["textarea"],
         },
         snippets(
           `<viking-field label="Runbook">
@@ -203,22 +199,23 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'display-extended',
-    label: 'Extended Display',
-    description: 'Icon headings, profile blocks, and chart card headers.',
+    id: "display-extended",
+    label: "Extended Display",
+    description: "Icon headings, profile blocks, and chart card headers.",
     components: [
       entry(
         {
-          id: 'icon-heading',
-          name: 'Icon heading',
-          description: 'Icon + title lockup for settings sections and dashboard panels.',
+          id: "icon-heading",
+          name: "Icon heading",
+          description:
+            "Icon + title lockup for settings sections and dashboard panels.",
           preview: `<div class="viking-icon-heading">
   <span class="viking-icon-heading__icon" aria-hidden="true">◆</span>
   <h3 class="viking-icon-heading__title">Threat scoring</h3>
 </div>
 <p class="viking-text-muted">Behavioral biometrics and AbuseIPDB enrichment at ingress.</p>`,
-          selector: 'viking-icon-heading',
-          related: ['icon', 'page-header'],
+          selector: "viking-icon-heading",
+          related: ["icon", "page-header"],
         },
         snippets(
           `<viking-icon-heading icon="shield" title="Threat scoring" />`,
@@ -229,9 +226,10 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'icon-text',
-          name: 'Icon text',
-          description: 'Icon beside title and description for status rows and account settings.',
+          id: "icon-text",
+          name: "Icon text",
+          description:
+            "Icon beside title and description for status rows and account settings.",
           preview: `<div class="viking-demo-row" style="align-items:flex-start">
   <span class="viking-icon-badge-static" aria-hidden="true">✓</span>
   <div>
@@ -239,9 +237,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <p class="viking-text-muted">Authenticator app verified · last used 2h ago</p>
   </div>
 </div>`,
-          selector: 'viking-icon-text',
-          tags: ['angular'],
-          related: ['icon-badge'],
+          selector: "viking-icon-text",
+          tags: ["angular"],
+          related: ["icon-badge"],
         },
         snippets(
           `<viking-icon-text icon="shield-check" title="MFA enrolled" description="Authenticator verified" tone="success" />`,
@@ -252,9 +250,10 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'profile',
-          name: 'Profile',
-          description: 'User identity block with avatar, name, detail, and actions slot.',
+          id: "profile",
+          name: "Profile",
+          description:
+            "User identity block with avatar, name, detail, and actions slot.",
           preview: `<div class="viking-demo-row">
   <span class="viking-avatar-static" aria-hidden="true">CT</span>
   <div>
@@ -263,9 +262,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   </div>
   <viking-button-wc variant="outline" size="sm">Edit</viking-button-wc>
 </div>`,
-          selector: 'viking-profile',
-          tags: ['angular'],
-          related: ['avatar'],
+          selector: "viking-profile",
+          tags: ["angular"],
+          related: ["avatar"],
         },
         snippets(
           `<viking-profile name="Commander Tenant" detail="Security Admin" status="online">
@@ -278,16 +277,17 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'chart-card-header',
-          name: 'Chart card header',
-          description: 'Shared label / value / trend header for analytics chart cards.',
+          id: "chart-card-header",
+          name: "Chart card header",
+          description:
+            "Shared label / value / trend header for analytics chart cards.",
           preview: `<div class="chart-custom-header viking-card-header">
   <div class="chart-custom-title">P99 latency</div>
   <div class="chart-custom-value">42ms</div>
   <div class="chart-custom-trend viking-badge viking-badge-success">↓ 12%</div>
 </div>`,
-          selector: 'viking-chart-card-header',
-          related: ['chart-panel', 'metric-card'],
+          selector: "viking-chart-card-header",
+          related: ["chart-panel", "metric-card"],
         },
         snippets(
           `<viking-chart-panel>
@@ -301,16 +301,17 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'metric-row',
-          name: 'Metric row',
-          description: 'Compact horizontal KPI row for dense dashboard headers.',
+          id: "metric-row",
+          name: "Metric row",
+          description:
+            "Compact horizontal KPI row for dense dashboard headers.",
           preview: `<div class="viking-status-metric-row">
   <span class="viking-label">Events/sec</span>
   <strong class="viking-metric">8.2K</strong>
   <viking-badge-wc tone="accent">Live</viking-badge-wc>
 </div>`,
-          selector: 'viking-metric-row',
-          related: ['metric-card', 'status-metric-row'],
+          selector: "viking-metric-row",
+          related: ["metric-card", "status-metric-row"],
         },
         snippets(
           `<viking-metric-row label="Events/sec" value="8.2K" tone="accent" />`,
@@ -322,24 +323,25 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'navigation-chrome',
-    label: 'Navigation Chrome',
-    description: 'In-app navbar, marketing footer, and back navigation.',
+    id: "navigation-chrome",
+    label: "Navigation Chrome",
+    description: "In-app navbar, marketing footer, and back navigation.",
     components: [
       entry(
         {
-          id: 'navbar',
-          name: 'Navbar',
-          description: 'Horizontal in-app navigation with items and active state.',
+          id: "navbar",
+          name: "Navbar",
+          description:
+            "Horizontal in-app navigation with items and active state.",
           preview: `<nav class="viking-menubar-static" role="navigation" aria-label="Application">
   <a href="#" class="viking-nav-item-static is-active">Overview</a>
   <a href="#" class="viking-nav-item-static">Metrics</a>
   <a href="#" class="viking-nav-item-static">Security</a>
   <a href="#" class="viking-nav-item-static">Settings</a>
 </nav>`,
-          selector: 'viking-navbar',
-          tags: ['angular'],
-          related: ['navigation-menu', 'site-navbar'],
+          selector: "viking-navbar",
+          tags: ["angular"],
+          related: ["navigation-menu", "site-navbar"],
         },
         snippets(
           `<viking-navbar>
@@ -353,9 +355,10 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'site-footer',
-          name: 'Site footer',
-          description: 'Marketing-grade footer with directory columns and compliance links.',
+          id: "site-footer",
+          name: "Site footer",
+          description:
+            "Marketing-grade footer with directory columns and compliance links.",
           preview: `<footer class="viking-card viking-card-compact">
   <div class="viking-demo-row" style="align-items:flex-start;flex-wrap:wrap;gap:var(--viking-space-4)">
     <div>
@@ -372,9 +375,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
   <hr class="viking-separator-static" />
   <p class="viking-text-muted">© 2026 Data Engineering for Machine Learning</p>
 </footer>`,
-          selector: 'viking-site-footer',
-          tags: ['angular', 'marketing'],
-          related: ['footer', 'site-navbar'],
+          selector: "viking-site-footer",
+          tags: ["angular", "marketing"],
+          related: ["footer", "site-navbar"],
         },
         snippets(
           `import { VikingSiteFooter, DEFAULT_SITE_URLS } from '@dataengineeringformachinelearning/viking-ui';
@@ -387,17 +390,18 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
       ),
       entry(
         {
-          id: 'page-back-link',
-          name: 'Page back link',
-          description: 'Consistent dashboard back navigation with icon and tokenized spacing.',
+          id: "page-back-link",
+          name: "Page back link",
+          description:
+            "Consistent dashboard back navigation with icon and tokenized spacing.",
           preview: `<nav class="viking-page-back-link-host" aria-label="Back navigation">
   <a href="/components" class="viking-page-back-link" style="display:inline-flex;align-items:center;gap:var(--viking-space-1);color:var(--viking-accent);text-decoration:none">
     <span aria-hidden="true">←</span>
     <span>Back to components</span>
   </a>
 </nav>`,
-          selector: 'viking-page-back-link',
-          related: ['breadcrumbs', 'page-header'],
+          selector: "viking-page-back-link",
+          related: ["breadcrumbs", "page-header"],
         },
         snippets(
           `<viking-page-back-link route="/settings" label="Back to settings" />`,
@@ -409,15 +413,16 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     ],
   },
   {
-    id: 'menus-context',
-    label: 'Menus & Context',
-    description: 'Right-click context menus and contextual actions.',
+    id: "menus-context",
+    label: "Menus & Context",
+    description: "Right-click context menus and contextual actions.",
     components: [
       entry(
         {
-          id: 'context',
-          name: 'Context menu',
-          description: 'Right-click menu wrapper — project viking-menu-item elements with vikingMenu attribute.',
+          id: "context",
+          name: "Context menu",
+          description:
+            "Right-click menu wrapper — project viking-menu-item elements with vikingMenu attribute.",
           preview: `<div class="viking-card viking-card-compact" style="max-width:16rem">
   <p class="viking-text-muted">Right-click this card in Angular apps</p>
   <div class="viking-card viking-card-compact" style="margin-top:var(--viking-space-1);box-shadow:var(--viking-shadow-md)">
@@ -426,9 +431,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <span class="viking-text-muted">Rollback</span>
   </div>
 </div>`,
-          selector: 'viking-context',
-          tags: ['angular'],
-          related: ['dropdown', 'command'],
+          selector: "viking-context",
+          tags: ["angular"],
+          related: ["dropdown", "command"],
         },
         snippets(
           `<viking-context>

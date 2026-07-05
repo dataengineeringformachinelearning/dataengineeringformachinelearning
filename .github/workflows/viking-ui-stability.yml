@@ -1,0 +1,77 @@
+name: Viking-UI Stability
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'packages/viking-ui/**'
+      - 'viking-ui-docs/**'
+      - '.changeset/**'
+      - '.github/workflows/viking-ui-stability.yml'
+      - 'package.json'
+  pull_request:
+    paths:
+      - 'packages/viking-ui/**'
+      - 'viking-ui-docs/**'
+      - '.changeset/**'
+      - '.github/workflows/viking-ui-stability.yml'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  package:
+    name: Package build and smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            packages/viking-ui/package-lock.json
+            viking-ui-docs/package-lock.json
+
+      - name: Install package dependencies
+        run: npm ci --legacy-peer-deps --prefix packages/viking-ui
+
+      - name: Install docs dependencies
+        run: npm ci --legacy-peer-deps --prefix viking-ui-docs
+
+      - name: Build library and run package tests
+        run: npm run test:viking-ui:package
+
+      - name: Build showcase
+        run: npm run build:viking-ui-docs
+
+  visual:
+    name: Showcase visual regression
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            packages/viking-ui/package-lock.json
+            viking-ui-docs/package-lock.json
+
+      - name: Install package dependencies
+        run: npm ci --legacy-peer-deps --prefix packages/viking-ui
+
+      - name: Install docs dependencies
+        run: npm ci --legacy-peer-deps --prefix viking-ui-docs
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+        working-directory: viking-ui-docs
+
+      - name: Build showcase
+        run: npm run build:viking-ui-docs
+
+      - name: Run visual checks
+        run: npm run test:viking-ui:visual

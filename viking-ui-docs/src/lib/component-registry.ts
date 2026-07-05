@@ -1,6 +1,10 @@
 import type { ComponentApi } from "./component-api";
 import { getComponentApi } from "./component-api";
 import type { FrameworkTab } from "./site";
+import {
+  composeShowcaseCategories,
+  defineShowcaseCategory,
+} from "./component-registry-kit";
 
 export type ComponentSnippet = Record<FrameworkTab, string>;
 
@@ -72,8 +76,8 @@ import { EXTENDED_SHOWCASE_CATEGORIES } from "./component-registry-extended";
 import { FULL_SHOWCASE_CATEGORIES } from "./component-registry-full";
 import { PARITY_SHOWCASE_CATEGORIES } from "./component-registry-parity";
 
-export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
-  {
+const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
+  defineShowcaseCategory({
     id: "foundations",
     label: "Foundations",
     description: "Buttons, badges, typography, and surface primitives.",
@@ -240,8 +244,8 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         tags: ["angular"],
       },
     ],
-  },
-  {
+  }),
+  defineShowcaseCategory({
     id: "forms",
     label: "Forms & Inputs",
     description: "Accessible field stacks, controls, and validation patterns.",
@@ -347,8 +351,8 @@ export const SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         api: getComponentApi("select"),
       },
     ],
-  },
-  {
+  }),
+  defineShowcaseCategory({
     id: "feedback",
     label: "Feedback & Overlays",
     description: "Callouts, progress, skeletons, and overlay patterns.",
@@ -470,8 +474,8 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         },
       },
     ],
-  },
-  {
+  }),
+  defineShowcaseCategory({
     id: "data",
     label: "Data Visualization",
     description: "Native SVG charts, metrics, and operational dashboards.",
@@ -543,8 +547,8 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         },
       },
     ],
-  },
-  {
+  }),
+  defineShowcaseCategory({
     id: "shell",
     label: "Application Shell",
     description: "Navigation, page headers, and workspace layout primitives.",
@@ -796,8 +800,8 @@ palette.openPalette();
         tags: ["a11y"],
       },
     ],
-  },
-  {
+  }),
+  defineShowcaseCategory({
     id: "auth",
     label: "Authentication",
     description: "OAuth panels and verification flows.",
@@ -829,11 +833,16 @@ palette.openPalette();
         },
       },
     ],
-  },
-  ...EXTENDED_SHOWCASE_CATEGORIES,
-  ...PARITY_SHOWCASE_CATEGORIES,
-  ...FULL_SHOWCASE_CATEGORIES,
+  }),
 ];
+
+export const SHOWCASE_CATEGORIES: ShowcaseCategory[] =
+  composeShowcaseCategories([
+    ...CORE_SHOWCASE_CATEGORIES,
+    ...EXTENDED_SHOWCASE_CATEGORIES,
+    ...PARITY_SHOWCASE_CATEGORIES,
+    ...FULL_SHOWCASE_CATEGORIES,
+  ]);
 
 export const ALL_COMPONENTS = SHOWCASE_CATEGORIES.flatMap((c) => c.components);
 

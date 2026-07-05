@@ -11,7 +11,9 @@
     "dev": "astro dev --port 4300",
     "start": "astro dev --port 4300",
     "build": "astro build",
-    "preview": "astro preview --port 4300"
+    "preview": "astro preview --port 4300",
+    "test:visual": "playwright test --config=playwright.config.ts",
+    "test:visual:update": "playwright test --config=playwright.config.ts --update-snapshots"
   },
   "engines": {
     "node": ">=22.12.0"
@@ -21,6 +23,7 @@
     "astro": "^7.0.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "esbuild": "^0.25.12",
     "sass": "^1.89.2",
     "typescript": "~6.0.3"
