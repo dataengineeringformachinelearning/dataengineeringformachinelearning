@@ -247,10 +247,63 @@
   flex-shrink: 1;
   min-width: 0;
   white-space: nowrap;
+  border-bottom: 1px solid transparent;
+  box-shadow: none;
+}
+
+.navbar-search::part(control),
+.menu-toggle-btn::part(control),
+.theme-toggle-btn::part(control),
+.navbar-search-trigger::part(control),
+.navbar-search-mobile-btn::part(control),
+.auth-btn::part(control),
+.mobile-auth-btn::part(control),
+.auth-signout-btn::part(control),
+.navbar .theme-toggle-btn::part(control),
+.navbar .menu-toggle-btn::part(control),
+.navbar .navbar-search-trigger::part(control),
+.navbar .navbar-search-mobile-btn::part(control),
+viking-button-wc.menu-toggle-btn::part(control),
+viking-button-wc.theme-toggle-btn::part(control),
+viking-button-wc.navbar-search-trigger::part(control),
+viking-button-wc.mobile-auth-btn::part(control),
+viking-button-wc.auth-btn::part(control),
+viking-button-wc.auth-signout-btn::part(control) {
+  border-color: inherit;
+}
+
+.nav-btn:focus-visible,
+.mobile-nav-btn:focus-visible,
+.auth-btn:focus-visible,
+.auth-signout-btn:focus-visible,
+.menu-toggle-btn:focus-visible,
+.theme-toggle-btn:focus-visible,
+.navbar-search-trigger:focus-visible,
+.navbar-search-mobile-btn:focus-visible,
+.mobile-auth-btn:focus-visible {
+  outline: var(--viking-ring-width, 2px) solid
+    var(--viking-ring, var(--focus-ring-color));
+  outline-offset: var(--viking-ring-offset, 2px);
+}
+
+.viking-button-wc.nav-btn:focus-visible::part(control),
+.viking-button-wc.auth-btn:focus-visible::part(control),
+.viking-button-wc.auth-signout-btn:focus-visible::part(control),
+.viking-button-wc.menu-toggle-btn:focus-visible::part(control),
+.viking-button-wc.theme-toggle-btn:focus-visible::part(control),
+.viking-button-wc.navbar-search-trigger:focus-visible::part(control),
+.viking-button-wc.navbar-search-mobile-btn:focus-visible::part(control) {
+  outline: var(--viking-ring-width, 2px) solid var(--viking-ring, var(--focus-ring-color));
+  outline-offset: var(--viking-ring-offset, 2px);
 }
 
 .nav-btn[hidden],
-.mobile-nav-btn[hidden] {
+.mobile-nav-btn[hidden],
+.auth-btn[hidden],
+.auth-signout-btn[hidden],
+.mobile-auth-btn[hidden],
+viking-button-wc[hidden],
+viking-button[hidden] {
   display: none !important;
 }
 
@@ -304,35 +357,9 @@
   height: 16px;
 }
 
-.nav-btn::before {
-  content: '';
-  position: absolute;
-  inset: auto 16px 0;
-  height: 2px;
-  border-radius: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--viking-accent) 80%, transparent),
-    transparent
-  );
-  opacity: 0;
-  transform: scaleX(0.4);
-  transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
-  pointer-events: none;
-}
-
 .nav-btn:hover {
   color: var(--text-color) !important;
   background-color: color-mix(in srgb, var(--viking-accent) 10%, transparent) !important;
-  transform: translateY(-1px);
-}
-
-.nav-btn:hover::before {
-  opacity: 1;
-  transform: scaleX(1);
 }
 
 html[data-theme='light'] {
@@ -362,11 +389,6 @@ html[data-theme='light'] {
   box-shadow:
     inset 0 -2px 0 0 var(--viking-accent),
     0 0 12px color-mix(in srgb, var(--viking-accent) 18%, transparent) !important;
-}
-
-.nav-btn.active::before {
-  opacity: 1;
-  transform: scaleX(1);
 }
 
 .navbar .theme-toggle-btn,
@@ -566,6 +588,8 @@ viking-button-wc.auth-btn::part(control),
   display: none;
   flex-direction: column;
   position: absolute;
+  visibility: hidden;
+  pointer-events: none;
   top: var(--viking-navbar-height, var(--navbar-height, 64px));
   left: 0;
   right: 0;
@@ -612,6 +636,7 @@ viking-button-wc.auth-btn::part(control),
   opacity: 1;
   pointer-events: auto;
   display: flex;
+  visibility: visible;
 }
 
 .mobile-nav-btn {
@@ -727,6 +752,11 @@ viking-button-wc.auth-btn::part(control),
   viking-button-wc {
     flex-shrink: 0;
   }
+}
+
+.navbar [hidden],
+.mobile-menu [hidden] {
+  display: none !important;
 }
 
 .algolia-autocomplete-host {
@@ -1169,10 +1199,15 @@ viking-button-wc.auth-btn::part(control),
 
   .mobile-menu:not(.open) {
     display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
   .mobile-menu.open {
     display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
   }
 
   .navbar-right {

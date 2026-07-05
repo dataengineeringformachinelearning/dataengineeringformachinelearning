@@ -43,6 +43,31 @@ const pageTitle = title === SITE.title ? title : `${title} · ${SITE.name}`;
 
     <script type="module" src="/assets/viking-ui-elements.js"></script>
     <script is:inline src="/assets/widgets/command-palette.js" defer></script>
+    <script is:inline>
+      window.ALGOLIA_CONFIG = window.ALGOLIA_CONFIG || {
+        appId: "ZJAFYOSH2V",
+        // nosemgrep: generic.secrets.security.detected-generic-api-key.detected-generic-api-key
+        apiKey: "7c9de08d7f553ba6c60441c1324c105d", // pragma: allowlist secret
+        experienceId: "ZJAFYOSH2V",
+        env: "prod",
+        domains: [
+          "https://deml.app",
+          "https://dataengineeringformachinelearning.com",
+          "https://backend.deml.app",
+        ],
+        sitemaps: [
+          "https://deml.app/sitemap.xml",
+          "https://dataengineeringformachinelearning.com/sitemap-index.xml",
+          "https://backend.deml.app/sitemap.xml",
+        ],
+      };
+      window.__DEML = window.__DEML || {};
+      window.__DEML.USE_ALGOLIA_SEARCH = true;
+      window.__DEML.FRONTEND_URL = SITE.app;
+      window.__DEML.MARKETING_URL = SITE.marketing;
+      window.__DEML.BACKEND_URL = 'https://backend.deml.app';
+    </script>
+    <script is:inline src="/assets/widgets/algolia-search.js" defer></script>
 
     <script is:inline>
       (function () {

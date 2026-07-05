@@ -1,10 +1,11 @@
 .viking-footer,
 .mega-footer {
-  background-color: var(--viking-surface, var(--color-surface));
-  border-top: 1px solid var(--viking-border-strong, var(--border-layout));
+  background-color: var(--viking-surface, var(--card-bg, var(--viking-charcoal-950)));
+  border-top: 1px solid
+    var(--viking-border-strong, var(--border-layout, var(--border, var(--viking-charcoal-700))));
   padding: calc(var(--viking-space-2) * 2) var(--viking-space-2);
   font-family: var(--viking-font-family);
-  color: var(--viking-text-muted);
+  color: var(--viking-text-muted, var(--text-muted, var(--viking-metallic-300)));
 }
 
 .viking-footer-content,
@@ -19,7 +20,8 @@
   grid-template-columns: 1fr;
   gap: calc(var(--viking-space-2) * 1.75);
   padding-bottom: calc(var(--viking-space-2) * 2);
-  border-bottom: 1px solid var(--viking-border-strong, var(--border-layout));
+  border-bottom: 1px solid
+    var(--viking-border-strong, var(--border-layout, var(--border, var(--viking-charcoal-700))));
 }
 
 @media (min-width: 600px) {
@@ -40,7 +42,7 @@
 .footer-column-title {
   font-size: var(--viking-font-size);
   font-weight: 700;
-  color: var(--viking-text);
+  color: var(--viking-text, var(--text-color, var(--viking-metallic-100)));
   margin: 0 0 var(--viking-space-2);
   letter-spacing: 0.05em;
 }
@@ -58,7 +60,7 @@
 .viking-footer-list a,
 .footer-list a {
   font-size: var(--viking-font-size);
-  color: var(--viking-text-muted);
+  color: var(--viking-text-muted, var(--text-muted, var(--viking-metallic-300)));
   text-decoration: none !important;
   border-bottom: 1px solid transparent;
   transition: color 0.2s ease, border-color 0.2s ease;
@@ -66,7 +68,7 @@
 
 .viking-footer-list a:hover,
 .footer-list a:hover {
-  color: var(--viking-text);
+  color: var(--viking-text, var(--text-color, var(--viking-metallic-100)));
   border-bottom-color: var(--viking-text);
 }
 
@@ -126,19 +128,33 @@
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius-pill);
   background-color: transparent;
-  border: 1px solid var(--viking-border);
-  cursor: default;
+  border: 1px solid var(--viking-border, var(--border, var(--viking-charcoal-700)));
+  cursor: pointer;
   transition: var(--viking-transition-colors);
   font-size: var(--viking-font-size);
   font-weight: 500;
-  color: var(--viking-text-muted);
+  color: var(--viking-text-muted, var(--text-muted, var(--viking-metallic-300)));
+}
+
+.viking-usa-badge:focus-visible,
+.usa-badge:focus-visible {
+  outline: var(--viking-ring-width, 2px) solid
+    var(--viking-ring, var(--focus-ring-color, var(--viking-teal-400)));
+  outline-offset: var(--viking-ring-offset, 2px);
 }
 
 .viking-usa-badge:hover,
 .usa-badge:hover {
-  background-color: color-mix(in srgb, var(--viking-surface) 95%, var(--viking-accent) 5%);
-  border-color: var(--viking-border-strong);
-  color: var(--viking-text);
+  background-color: color-mix(
+    in srgb,
+    var(--viking-surface, var(--card-bg, var(--viking-charcoal-950))) 95%,
+    var(--viking-accent, var(--color-primary, var(--viking-teal-600))) 5%
+  );
+  border-color: var(
+    --viking-border-strong,
+    var(--viking-border, var(--border, var(--viking-charcoal-700)))
+  );
+  color: var(--viking-text, var(--text-color, var(--viking-metallic-100)));
   box-shadow: var(--viking-shadow-sm);
 }
 

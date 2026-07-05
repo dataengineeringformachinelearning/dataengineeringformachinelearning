@@ -73,16 +73,29 @@
 
     menuBtn.setAttribute('aria-controls', 'mobile-menu');
     const menuIcon = menuBtn.querySelector('[data-viking-icon]');
-    const closeMobileMenu = () => {
-      if (!mobileMenu.classList.contains('open')) return;
+    const setMobileMenuOpen = isOpen => {
       mobileMenu.classList.remove('open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      menuBtn.setAttribute('aria-label', 'Toggle navigation menu');
-      if (menuIcon) {
-        menuIcon.setAttribute('data-viking-icon', 'menu');
-        setIcon(menuIcon, 'menu', 24);
+      if (isOpen) {
+        mobileMenu.classList.add('open');
+        mobileMenu.removeAttribute('hidden');
+      }
+
+      if (isOpen) {
+        mobileMenu.style.removeProperty('display');
       } else {
-        menuBtn.innerHTML = svgIcon('menu', 24);
+        mobileMenu.setAttribute('hidden', 'true');
+        mobileMenu.style.setProperty('display', 'none', 'important');
+      }
+      menuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      menuBtn.setAttribute(
+        'aria-label',
+        isOpen ? 'Close navigation menu' : 'Toggle navigation menu',
+      );
+      if (menuIcon) {
+        menuIcon.setAttribute('data-viking-icon', isOpen ? 'x' : 'menu');
+        setIcon(menuIcon, isOpen ? 'x' : 'menu', 24);
+      } else {
+        menuBtn.innerHTML = svgIcon(isOpen ? 'x' : 'menu', 24);
       }
     };
 
@@ -93,15 +106,7 @@
     };
 
     const openMobileMenu = () => {
-      mobileMenu.classList.add('open');
-      menuBtn.setAttribute('aria-expanded', 'true');
-      menuBtn.setAttribute('aria-label', 'Close navigation menu');
-      if (menuIcon) {
-        menuIcon.setAttribute('data-viking-icon', 'x');
-        setIcon(menuIcon, 'x', 24);
-      } else {
-        menuBtn.innerHTML = svgIcon('x', 24);
-      }
+      setMobileMenuOpen(true);
     };
 
     const syncMobileMenu = isOpen => {
@@ -109,8 +114,10 @@
         openMobileMenu();
         return;
       }
-      closeMobileMenu();
+      setMobileMenuOpen(false);
     };
+
+    const closeMobileMenu = () => setMobileMenuOpen(false);
 
     const closeOnDesktop = () => {
       if (window.innerWidth >= 768) {
@@ -120,10 +127,9 @@
 
     menuBtn.addEventListener('viking-press', toggleMobileMenu);
     menuBtn.addEventListener('click', event => {
-      if (menuBtn.tagName.toLowerCase() === 'viking-button-wc') {
-        return;
+      if (event.target === menuBtn || menuBtn.contains(event.target)) {
+        toggleMobileMenu(event);
       }
-      toggleMobileMenu(event);
     });
 
     const maybeCloseForEvent = event => {
@@ -160,6 +166,11 @@
     }
 
     closeOnDesktop();
+    if (window.innerWidth >= 768) {
+      closeMobileMenu();
+    } else {
+      closeMobileMenu();
+    }
   };
 
   const initSearchTrigger = () => {
@@ -168,13 +179,20 @@
     trigger.dataset.searchBound = 'true';
 
     const openSearch = () => {
+      if (window.DemlWidgets?.openSearch) {
+        window.DemlWidgets.openSearch();
+        return;
+      }
+      const host = document.getElementById('autocomplete');
+      if (host) {
+        host.classList.add('algolia-autocomplete-open');
+        host.setAttribute('aria-hidden', 'false');
+      }
       window.DemlWidgets?.openSearch?.();
     };
 
     trigger.addEventListener('viking-press', openSearch);
-    if (trigger.tagName.toLowerCase() !== 'viking-button-wc') {
-      trigger.addEventListener('click', openSearch);
-    }
+    trigger.addEventListener('click', openSearch);
   };
 
   const initAuth = () => {
@@ -232,12 +250,26 @@
       localStorage.removeItem('deml_auth_status');
     };
 
+    const setNodeVisibility = (id, visible) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.hidden = !visible;
+      if (visible) {
+        el.style.removeProperty('display');
+      } else {
+        el.style.setProperty('display', 'none', 'important');
+      }
+    };
+
     const setSignOutVisible = visible => {
       for (const id of ['auth-signout-desktop', 'auth-signout-mobile']) {
-        const el = document.getElementById(id);
-        if (!el) continue;
-        el.hidden = !visible;
-        el.style.display = visible ? '' : 'none';
+        setNodeVisibility(id, visible);
+      }
+    };
+
+    const setAuthButtonVisible = visible => {
+      for (const id of ['auth-btn-desktop', 'auth-btn-mobile']) {
+        setNodeVisibility(id, visible);
       }
     };
 
@@ -260,7 +292,11 @@
     const setAuthNavLinksVisible = visible => {
       document.querySelectorAll('[data-require-auth="true"]').forEach(el => {
         el.hidden = !visible;
-        el.style.display = visible ? '' : 'none';
+        if (visible) {
+          el.style.removeProperty('display');
+        } else {
+          el.style.setProperty('display', 'none', 'important');
+        }
       });
     };
 
@@ -285,21 +321,23 @@
       const isLoggedIn = status?.isAuthenticated === true;
 
       if (isLoggedIn) {
+        setAuthButtonVisible(false);
+        setSignOutVisible(true);
+        setAuthNavLinksVisible(true);
         setAuthButtonHref('auth-btn-desktop', `${FRONTEND_URL}/dashboard`);
         setAuthButtonHref('auth-btn-mobile', `${FRONTEND_URL}/dashboard`);
         setAuthButtonLabel('auth-text-desktop', 'auth-icon-desktop', 'Dashboard', 'home');
         setAuthButtonLabel('auth-text-mobile', 'auth-icon-mobile', 'Dashboard', 'home');
-        setSignOutVisible(true);
-        setAuthNavLinksVisible(true);
       } else {
         clearAuthStorage();
+        setAuthButtonVisible(true);
+        setSignOutVisible(false);
+        setAuthNavLinksVisible(false);
         const loginHref = `${FRONTEND_URL}/login?returnUrl=${encodeURIComponent(window.location.origin)}`;
         setAuthButtonHref('auth-btn-desktop', loginHref);
         setAuthButtonHref('auth-btn-mobile', loginHref);
         setAuthButtonLabel('auth-text-desktop', 'auth-icon-desktop', 'Sign In', 'arrow-right');
         setAuthButtonLabel('auth-text-mobile', 'auth-icon-mobile', 'Sign In', 'arrow-right');
-        setSignOutVisible(false);
-        setAuthNavLinksVisible(false);
       }
     };
 
@@ -416,6 +454,8 @@
 
     bindSignOutButtons();
     setAuthNavLinksVisible(false);
+    setAuthButtonVisible(true);
+    setSignOutVisible(false);
     void checkAuthHandoff();
     checkAuthViaIframe();
   };

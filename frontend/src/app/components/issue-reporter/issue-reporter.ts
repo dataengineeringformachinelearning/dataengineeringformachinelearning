@@ -51,9 +51,7 @@ export class IssueReporter {
 
   @HostListener('window:openBugReporter')
   onOpenBugReporter() {
-    if (!this.isOpen()) {
-      this.toggleModal();
-    }
+    this.openModal();
   }
 
   toggleModal() {
@@ -62,6 +60,21 @@ export class IssueReporter {
       // Reset form on open
       this.issueDescription.set('');
       this.submissionStatus.set('idle');
+    }
+  }
+
+  openModal() {
+    if (!this.isOpen()) {
+      this.isOpen.set(true);
+      this.issueDescription.set('');
+      this.submissionStatus.set('idle');
+      this.isSubmitting.set(false);
+    }
+  }
+
+  closeModal() {
+    if (this.isOpen()) {
+      this.isOpen.set(false);
     }
   }
 
@@ -83,7 +96,7 @@ export class IssueReporter {
       next: () => {
         this.isSubmitting.set(false);
         this.submissionStatus.set('success');
-        setTimeout(() => this.toggleModal(), 2000); // Close after 2s
+        setTimeout(() => this.closeModal(), 2000); // Close after 2s
       },
       error: err => {
         console.error('Failed to submit issue', err);

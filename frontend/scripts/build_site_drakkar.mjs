@@ -193,58 +193,110 @@ const navbarRightWc = (
   loginHrefDesktop,
   loginHrefMobile,
 ) => `      <div class="navbar-search" role="search">
-        <viking-button-wc variant="outline" square compact role="button" aria-label="Open search (⌘K)" id="navbar-search-trigger">
+        <viking-button-wc
+          variant="outline"
+          square
+          compact
+          class="navbar-search-trigger"
+          role="button"
+          aria-label="Open search (⌘K)"
+          id="navbar-search-trigger"
+        >
           ${iconSlot('search', 20)}
         </viking-button-wc>
       </div>
 
       <div class="desktop-auth">
-        <viking-button-wc variant="primary" href="${loginHrefDesktop}" id="auth-btn-desktop">
+        <viking-button-wc variant="primary" class="auth-btn" href="${loginHrefDesktop}" id="auth-btn-desktop">
           <span id="auth-icon-desktop">${iconSlot('arrow-right', 16)}</span>
           <span id="auth-text-desktop">Sign In</span>
         </viking-button-wc>
-        <viking-button-wc variant="ghost" id="auth-signout-desktop" hidden>Sign Out</viking-button-wc>
+        <viking-button-wc
+          variant="ghost"
+          class="auth-btn auth-signout-btn"
+          id="auth-signout-desktop"
+          hidden
+        >
+          Sign Out
+        </viking-button-wc>
       </div>
 
-      <viking-theme-toggle-wc role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
+      <viking-theme-toggle-wc class="theme-toggle-btn" role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
       <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" id="mobile-menu-btn">
         ${iconSlot('menu', 24)}
       </viking-button-wc>`;
 
 const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" role="search">
-        <viking-button-wc variant="outline" square compact role="button" aria-label="Open search (⌘K)" id="navbar-search-trigger">
+        <viking-button-wc
+          variant="outline"
+          square
+          compact
+          class="navbar-search-trigger"
+          role="button"
+          aria-label="Open search (⌘K)"
+          id="navbar-search-trigger"
+        >
           <span data-viking-icon="search" data-viking-icon-size="20" aria-hidden="true"></span>
         </viking-button-wc>
       </div>
 
       <div class="desktop-auth">
-        <viking-button-wc variant="primary" href={${loginHrefExpr}} id="auth-btn-desktop">
+        <viking-button-wc variant="primary" class="auth-btn" href={${loginHrefExpr}} id="auth-btn-desktop">
           <span id="auth-icon-desktop"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
           <span id="auth-text-desktop">Sign In</span>
         </viking-button-wc>
-        <viking-button-wc variant="ghost" id="auth-signout-desktop" hidden>Sign Out</viking-button-wc>
+        <viking-button-wc
+          variant="ghost"
+          class="auth-btn auth-signout-btn"
+          id="auth-signout-desktop"
+          hidden
+        >
+          Sign Out
+        </viking-button-wc>
       </div>
 
-      <viking-theme-toggle-wc role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
+      <viking-theme-toggle-wc class="theme-toggle-btn" role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
       <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" id="mobile-menu-btn">
         <span data-viking-icon="menu" data-viking-icon-size="24" aria-hidden="true"></span>
       </viking-button-wc>`;
 
-const mobileAuthWc =
-  loginHrefMobile => `    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href="${loginHrefMobile}" id="auth-btn-mobile">
+const mobileAuthWc = loginHrefMobile => `    <viking-button-wc
+      variant="primary"
+      full-width
+      class="mobile-auth-btn auth-btn"
+      href="${loginHrefMobile}"
+      id="auth-btn-mobile"
+    >
       <span id="auth-icon-mobile">${iconSlot('arrow-right', 16)}</span>
       <span id="auth-text-mobile">Sign In</span>
     </viking-button-wc>
-    <viking-button-wc variant="ghost" full-width class="mobile-auth-btn" id="auth-signout-mobile" hidden>Sign Out</viking-button-wc>`;
+    <viking-button-wc
+      variant="ghost"
+      full-width
+      class="mobile-auth-btn auth-btn auth-signout-btn"
+      id="auth-signout-mobile"
+      hidden
+    >Sign Out</viking-button-wc>`;
 
-const mobileAuthWcAstro =
-  loginHrefExpr => `    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href={${loginHrefExpr}} id="auth-btn-mobile">
+const mobileAuthWcAstro = loginHrefExpr => `    <viking-button-wc
+      variant="primary"
+      full-width
+      class="mobile-auth-btn auth-btn"
+      href={${loginHrefExpr}}
+      id="auth-btn-mobile"
+    >
       <span id="auth-icon-mobile"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
       <span id="auth-text-mobile">Sign In</span>
     </viking-button-wc>
-    <viking-button-wc variant="ghost" full-width class="mobile-auth-btn" id="auth-signout-mobile" hidden>Sign Out</viking-button-wc>`;
+    <viking-button-wc
+      variant="ghost"
+      full-width
+      class="mobile-auth-btn auth-btn auth-signout-btn"
+      id="auth-signout-mobile"
+      hidden
+    >Sign Out</viking-button-wc>`;
 
 const generateSiteNavbarHtml = navLinks => `{% load static %}
 {# AUTO-GENERATED by frontend/scripts/build_site_drakkar.mjs — do not edit by hand #}
@@ -253,6 +305,7 @@ const generateSiteNavbarHtml = navLinks => `{% load static %}
     FRONTEND_URL: "{{ frontend_url|escapejs }}",
     BACKEND_URL: "{{ request.scheme }}://{{ request.get_host }}",
     MARKETING_URL: "{{ marketing_url|escapejs }}",
+    USE_ALGOLIA_SEARCH: true,
   };
 </script>
 <header class="navbar">
@@ -291,9 +344,11 @@ ${navLinks.map(link => navLinkHtml(link, 'mobile-nav-btn')).join('\n')}
 ${mobileAuthWc('{{ frontend_url }}/login')}
   </nav>
 </header>
+<div id="autocomplete" class="algolia-autocomplete-host" aria-hidden="true"></div>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>
 <script type="module" src="{% static 'viking-ui-elements.js' %}"></script>
 <script src="{% static 'widgets/command-palette.js' %}" defer></script>
+<script src="{% static 'widgets/algolia-search.js' %}" defer></script>
 `;
 
 const generateSiteNavbarAstro = (navLinks, variant = 'marketing') => {
@@ -347,7 +402,12 @@ ${setup}
 ---
 
 <script define:vars={{ FRONTEND_URL, BACKEND_URL, MARKETING_URL, returnUrl }}>
-  window.__DEML = { FRONTEND_URL, BACKEND_URL, MARKETING_URL };
+  window.__DEML = {
+    FRONTEND_URL,
+    BACKEND_URL,
+    MARKETING_URL,
+    USE_ALGOLIA_SEARCH: true,
+  };
 </script>
 
 <header class="navbar">
@@ -382,7 +442,11 @@ ${mobileAuthWcAstro(loginHrefExpr)}
   </nav>
 </header>
 
+<div id="autocomplete" class="algolia-autocomplete-host" aria-hidden="true"></div>
+
 <script is:inline src="/assets/widgets/navbar.js" defer></script>
+<script is:inline src="/assets/widgets/command-palette.js" defer></script>
+<script is:inline src="/assets/widgets/algolia-search.js" defer></script>
 `;
 };
 
@@ -423,6 +487,83 @@ ${column.links
     </section>
   </div>
 </footer>
+
+<script>
+  (function () {
+    const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
+    const confettiSrc =
+      'https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js';
+    const confettiLoad = (window.__DEMlUsaConfettiLoad ??
+      (window.__DEMlUsaConfettiLoad = new Promise(resolve => {
+        const existing = document.querySelector('script[data-deml-usa-confetti]');
+        if (window.confetti) {
+          resolve(window.confetti);
+          return;
+        }
+        const script = existing ?? document.createElement('script');
+        if (!existing) {
+          script.src = confettiSrc;
+          script.async = true;
+          script.setAttribute('data-deml-usa-confetti', '1');
+          script.onload = () => resolve(window.confetti);
+          script.onerror = () => resolve(null);
+          document.body.appendChild(script);
+        } else {
+          script.addEventListener('load', () => resolve(window.confetti));
+          script.addEventListener('error', () => resolve(null));
+        }
+      })));
+
+    const fireUsaConfetti = async target => {
+      const confetti = await confettiLoad;
+      if (typeof confetti !== 'function') {
+        return;
+      }
+      const rect = target.getBoundingClientRect();
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        colors: USA_CONFETTI_COLORS,
+        disableForReducedMotion: true,
+        zIndex: 9999,
+        origin: {
+          x: (rect.left + rect.width / 2) / window.innerWidth,
+          y: (rect.top + rect.height / 2) / window.innerHeight,
+        },
+      });
+    };
+
+    const bindUsaBadgeConfetti = () => {
+      const usaBadge = document.getElementById('usa-badge');
+      if (!usaBadge || usaBadge.dataset.confettiBound === 'true') {
+        return;
+      }
+      usaBadge.dataset.confettiBound = 'true';
+      usaBadge.addEventListener('mouseenter', event => {
+        fireUsaConfetti(event.currentTarget);
+      });
+      usaBadge.addEventListener('focusin', event => {
+        fireUsaConfetti(event.currentTarget);
+      });
+      usaBadge.addEventListener('click', event => {
+        event.preventDefault();
+        fireUsaConfetti(event.currentTarget);
+      });
+      usaBadge.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          fireUsaConfetti(event.currentTarget);
+        }
+      });
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindUsaBadgeConfetti);
+    } else {
+      bindUsaBadgeConfetti();
+    }
+  })();
+</script>
 `;
 
 const outputs = [

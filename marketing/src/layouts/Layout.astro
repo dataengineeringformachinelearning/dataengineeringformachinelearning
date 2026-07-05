@@ -145,9 +145,15 @@ const jsonLdPayload = jsonLd
 					'https://backend.deml.app/sitemap.xml',
 				],
 			};
+			window.__DEML = window.__DEML || {};
+			window.__DEML.USE_ALGOLIA_SEARCH = true;
+			window.__DEML.MARKETING_URL = 'https://dataengineeringformachinelearning.com';
+			window.__DEML.FRONTEND_URL = 'https://deml.app';
+			window.__DEML.BACKEND_URL = 'https://backend.deml.app';
 		</script>
 		<script is:inline src="/assets/widgets/cookie-consent.js" defer></script>
 		<script is:inline src="/assets/widgets/command-palette.js" defer></script>
+		<script is:inline src="/assets/widgets/algolia-search.js" defer></script>
 
 		<script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-MH3M99CQ80"></script>
 		<script is:inline>

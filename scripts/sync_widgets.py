@@ -17,6 +17,7 @@ WIDGET_FILES = (
   "widget.js",
   "widget.css",
   "cookie-consent.js",
+  "algolia-search.js",
   "command-palette.js",
   "navbar.js",
 )

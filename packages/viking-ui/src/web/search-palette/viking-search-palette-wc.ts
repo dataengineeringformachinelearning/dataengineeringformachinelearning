@@ -125,6 +125,7 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
 
   connectedCallback(): void {
     this.render();
+    this.removeAttribute("open");
     this.syncOpen();
     this.bindGlobalShortcut();
     this.dialogEl?.addEventListener("close", this.onClose);

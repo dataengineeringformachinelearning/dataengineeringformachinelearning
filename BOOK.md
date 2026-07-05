@@ -1403,6 +1403,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
 - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
 - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
+- [OpenAI Codex](https://openai.com/codex/) — Codex: GPT-5.5, GPT-5.3-Codex-Spark
 - [Grok Build Beta](https://x.ai/news/grok-build-cli)
 - [Cursor](https://cursor.com/) — [Grok 4.3](https://docs.x.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
 

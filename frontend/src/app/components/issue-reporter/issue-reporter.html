@@ -1,4 +1,4 @@
-<viking-fab icon="alert-triangle" label="Report Issue" (pressed)="toggleModal()" />
+<viking-fab icon="alert-triangle" label="Report Issue" (pressed)="openModal()" />
 
 <viking-modal [open]="isOpen()" (openChange)="isOpen.set($event)" heading="Report an Issue">
   <viking-text>
@@ -22,7 +22,7 @@
   }
 
   <div vikingModalActions>
-    <viking-button variant="outline" [disabled]="isSubmitting()" (pressed)="toggleModal()">
+    <viking-button variant="outline" [disabled]="isSubmitting()" (pressed)="closeModal()">
       Cancel
     </viking-button>
     <viking-button

@@ -22,7 +22,7 @@ const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: '' };
                 {link.action === 'cookie-settings' ? (
                   <a
                     href="#"
-                    onclick="event.preventDefault(); if(window.DemlWidgets) window.DemlWidgets.openCookieSettings();"
+                    onclick="event.preventDefault(); if(window.DemlWidgets?.openCookieSettings) { window.DemlWidgets.openCookieSettings(); } else { window.location.assign('/?cookieSettings=1'); }"
                   >
                     {link.label}
                   </a>
@@ -40,7 +40,13 @@ const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: '' };
 
     <section class="footer-bottom">
       <div class="footer-badges-top">
-        <span class="usa-badge" id="usa-badge">
+        <span
+          class="usa-badge"
+          id="usa-badge"
+          role="button"
+          tabindex="0"
+          aria-label="Made in the U.S.A."
+        >
           <span class="usa-badge-icon" aria-hidden="true">🇺🇸</span>
           <span>Made in the U.S.A</span>
         </span>
@@ -60,11 +66,34 @@ const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: '' };
 </footer>
 
 <script>
-  import confetti from 'canvas-confetti';
-
   const USA_CONFETTI_COLORS = ['#ff0000', '#ffffff', '#0000ff'];
+  const confettiSrc =
+    'https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js';
+  const confettiLoad =
+    window.__DEMlUsaConfettiLoad ??
+    (window.__DEMlUsaConfettiLoad = new Promise(resolve => {
+      const existing = document.querySelector('script[data-deml-usa-confetti]');
+      if (window.confetti) {
+        resolve(window.confetti);
+        return;
+      }
+      const script = existing ?? document.createElement('script');
+      if (!existing) {
+        script.src = confettiSrc;
+        script.async = true;
+        script.setAttribute('data-deml-usa-confetti', '1');
+        script.onload = () => resolve(window.confetti);
+        script.onerror = () => resolve(null);
+        document.body.appendChild(script);
+      } else {
+        script.addEventListener('load', () => resolve(window.confetti));
+        script.addEventListener('error', () => resolve(null));
+      }
+    }));
 
-  const fireUsaConfetti = (target: HTMLElement) => {
+  const fireUsaConfetti = async (target: HTMLElement) => {
+    const confetti = await confettiLoad;
+    if (typeof confetti !== 'function') return;
     const rect = target.getBoundingClientRect();
     confetti({
       particleCount: 50,
@@ -83,7 +112,21 @@ const urls = { app: FRONTEND_URL, marketing: MARKETING_URL, backend: '' };
     const usaBadge = document.getElementById('usa-badge');
     if (!usaBadge || usaBadge.dataset.confettiBound === 'true') return;
     usaBadge.dataset.confettiBound = 'true';
-    usaBadge.addEventListener('mouseenter', () => fireUsaConfetti(usaBadge));
+    usaBadge.addEventListener('mouseenter', event =>
+      fireUsaConfetti(event.currentTarget),
+    );
+    usaBadge.addEventListener('focusin', event =>
+      fireUsaConfetti(event.currentTarget),
+    );
+    usaBadge.addEventListener('click', event =>
+      fireUsaConfetti(event.currentTarget),
+    );
+    usaBadge.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        fireUsaConfetti(event.currentTarget as HTMLElement);
+      }
+    });
   };
 
   bindUsaBadgeConfetti();

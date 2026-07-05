@@ -127,11 +127,18 @@
   border-radius: var(--viking-radius-pill);
   background-color: transparent;
   border: 1px solid var(--viking-border);
-  cursor: default;
+  cursor: pointer;
   transition: var(--viking-transition-colors);
   font-size: var(--viking-font-size);
   font-weight: 500;
   color: var(--viking-text-muted);
+}
+
+.viking-usa-badge:focus-visible,
+.usa-badge:focus-visible {
+  outline: var(--viking-ring-width, 2px) solid
+    var(--viking-ring, var(--viking-ring));
+  outline-offset: var(--viking-ring-offset, 2px);
 }
 
 .viking-usa-badge:hover,

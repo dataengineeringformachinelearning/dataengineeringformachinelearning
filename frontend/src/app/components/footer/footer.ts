@@ -29,7 +29,7 @@ export class Footer {
     window.dispatchEvent(new CustomEvent('openBugReporter'));
   }
 
-  async fireConfetti(event: MouseEvent): Promise<void> {
+  async fireConfetti(event: Event): Promise<void> {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const x = (rect.left + rect.width / 2) / window.innerWidth;
     const y = (rect.top + rect.height / 2) / window.innerHeight;

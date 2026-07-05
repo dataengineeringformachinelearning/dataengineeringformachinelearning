@@ -22,6 +22,7 @@ import { VikingIcon } from "../icon/icon";
     <button
       type="button"
       class="theme-toggle-btn"
+      id="theme-toggle-btn"
       aria-label="Toggle light and dark theme"
       (click)="toggle.emit()"
     >

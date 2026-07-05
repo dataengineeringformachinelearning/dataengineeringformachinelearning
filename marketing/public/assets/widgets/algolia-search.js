@@ -27,7 +27,25 @@ const loadAlgoliaExperiences = () => {
 };
 
 const getSearchPanel = host =>
-  host?.querySelector('.aa-Autocomplete, .aa-DetachedContainer, .aa-Form, form') ?? null;
+  host?.querySelector(
+    '.aa-Panel, .aa-Autocomplete, .aa-DetachedContainer, .aa-Form, form',
+  ) ?? null;
+
+const getDetachedSearchPanel = () =>
+  document.querySelector('.aa-DetachedContainer');
+
+const isSearchTarget = target => {
+  if (!target) return false;
+  const host = document.getElementById('autocomplete');
+  if (!host) return false;
+  const panel = getSearchPanel(host);
+  const detached = getDetachedSearchPanel();
+  return (
+    host.contains(target) ||
+    (panel && panel.contains(target)) ||
+    (detached && detached.contains(target))
+  );
+};
 
 const setSearchActive = active => {
   const root = document.querySelector('.navbar-search');
@@ -84,11 +102,10 @@ const watchForAutocompleteHost = () => {
   }, 15000);
 };
 
-document.addEventListener('click', event => {
+document.addEventListener('pointerdown', event => {
   const host = document.getElementById('autocomplete');
   if (!host?.classList.contains('algolia-autocomplete-open')) return;
-  const panel = getSearchPanel(host);
-  if (panel?.contains(event.target)) return;
+  if (isSearchTarget(event.target)) return;
   closeSearch();
 });
 

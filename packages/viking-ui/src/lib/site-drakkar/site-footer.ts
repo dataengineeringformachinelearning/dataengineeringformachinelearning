@@ -71,6 +71,10 @@ import {
             class="usa-badge viking-usa-badge"
             id="usa-badge"
             (mouseenter)="usaBadgeHover.emit($event)"
+            (focusin)="usaBadgeHover.emit($event)"
+            (click)="usaBadgeHover.emit($event)"
+            role="button"
+            tabindex="0"
           >
             <span
               class="usa-badge-icon viking-usa-badge-icon"
@@ -105,7 +109,7 @@ export class VikingSiteFooter {
 
   readonly cookieSettings = output<Event>();
   readonly bugReport = output<Event>();
-  readonly usaBadgeHover = output<MouseEvent>();
+  readonly usaBadgeHover = output<Event>();
 
   protected readonly columns = SITE_FOOTER_COLUMNS;
 

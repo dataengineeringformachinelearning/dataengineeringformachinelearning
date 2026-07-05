@@ -9,6 +9,8 @@
 @use 'layout-enforcement';
 @use 'page-shell';
 @use 'layout-shell';
+@use 'static-navbar';
+@use 'components/footer';
 
 // ============================================================================
 // Viking-UI design tokens

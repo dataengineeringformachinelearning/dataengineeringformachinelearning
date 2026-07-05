@@ -100,8 +100,10 @@ import {
             <div class="navbar-search" role="search">
               <viking-button
                 variant="outline"
+                class="navbar-search-trigger"
                 [square]="true"
                 [compact]="true"
+                id="navbar-search-trigger"
                 icon="search"
                 label="Open search (⌘K)"
                 (pressed)="openSearch()"
@@ -114,7 +116,8 @@ import {
               <viking-button
                 variant="primary"
                 icon="arrow-right"
-                class="auth-btn"
+                class="auth-btn auth-btn-desktop"
+                id="auth-btn-desktop"
                 [loading]="isBusy()"
                 (pressed)="login.emit()"
               >
@@ -124,7 +127,8 @@ import {
               <viking-button
                 variant="primary"
                 icon="home"
-                class="auth-btn"
+                class="auth-btn auth-btn-desktop"
+                id="auth-btn-desktop"
                 [href]="urls().app + '/dashboard'"
               >
                 Dashboard
@@ -132,6 +136,7 @@ import {
               <viking-button
                 variant="ghost"
                 class="auth-btn auth-signout-btn"
+                id="auth-signout-desktop"
                 [loading]="isBusy()"
                 (pressed)="logout.emit()"
                 >Sign Out</viking-button
@@ -149,6 +154,7 @@ import {
             [square]="true"
             class="menu-toggle-btn"
             [icon]="mobileMenuOpen() ? 'x' : 'menu'"
+            id="mobile-menu-btn"
             [label]="
               mobileMenuOpen()
                 ? 'Close navigation menu'
@@ -195,6 +201,7 @@ import {
             variant="primary"
             icon="arrow-right"
             class="mobile-auth-btn auth-btn"
+            id="auth-btn-mobile"
             [loading]="isBusy()"
             [fullWidth]="true"
             (pressed)="login.emit(); closeMobileMenu()"
@@ -206,6 +213,7 @@ import {
             variant="primary"
             icon="home"
             class="mobile-auth-btn auth-btn"
+            id="auth-btn-mobile"
             [fullWidth]="true"
             [href]="urls().app + '/dashboard'"
             (pressed)="closeMobileMenu()"
@@ -215,6 +223,7 @@ import {
           <viking-button
             variant="ghost"
             class="mobile-auth-btn auth-btn auth-signout-btn"
+            id="auth-signout-mobile"
             [loading]="isBusy()"
             [fullWidth]="true"
             (pressed)="logout.emit(); closeMobileMenu()"

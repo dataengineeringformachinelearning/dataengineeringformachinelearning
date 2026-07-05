@@ -5,6 +5,7 @@
     FRONTEND_URL: "{{ frontend_url|escapejs }}",
     BACKEND_URL: "{{ request.scheme }}://{{ request.get_host }}",
     MARKETING_URL: "{{ marketing_url|escapejs }}",
+    USE_ALGOLIA_SEARCH: true,
   };
 </script>
 <header class="navbar">
@@ -51,20 +52,35 @@
 
     <div class="navbar-right">
       <div class="navbar-search" role="search">
-        <viking-button-wc variant="outline" square compact role="button" aria-label="Open search (⌘K)" id="navbar-search-trigger">
+        <viking-button-wc
+          variant="outline"
+          square
+          compact
+          class="navbar-search-trigger"
+          role="button"
+          aria-label="Open search (⌘K)"
+          id="navbar-search-trigger"
+        >
           <span data-viking-icon="search" data-viking-icon-size="20" aria-hidden="true"></span>
         </viking-button-wc>
       </div>
 
       <div class="desktop-auth">
-        <viking-button-wc variant="primary" href="{{ frontend_url }}/login" id="auth-btn-desktop">
+        <viking-button-wc variant="primary" class="auth-btn" href="{{ frontend_url }}/login" id="auth-btn-desktop">
           <span id="auth-icon-desktop"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
           <span id="auth-text-desktop">Sign In</span>
         </viking-button-wc>
-        <viking-button-wc variant="ghost" id="auth-signout-desktop" hidden>Sign Out</viking-button-wc>
+        <viking-button-wc
+          variant="ghost"
+          class="auth-btn auth-signout-btn"
+          id="auth-signout-desktop"
+          hidden
+        >
+          Sign Out
+        </viking-button-wc>
       </div>
 
-      <viking-theme-toggle-wc role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
+      <viking-theme-toggle-wc class="theme-toggle-btn" role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
       <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" id="mobile-menu-btn">
         <span data-viking-icon="menu" data-viking-icon-size="24" aria-hidden="true"></span>
@@ -96,13 +112,27 @@
 
     <div class="mobile-divider"></div>
 
-    <viking-button-wc variant="primary" full-width class="mobile-auth-btn" href="{{ frontend_url }}/login" id="auth-btn-mobile">
+    <viking-button-wc
+      variant="primary"
+      full-width
+      class="mobile-auth-btn auth-btn"
+      href="{{ frontend_url }}/login"
+      id="auth-btn-mobile"
+    >
       <span id="auth-icon-mobile"><span data-viking-icon="arrow-right" data-viking-icon-size="16" aria-hidden="true"></span></span>
       <span id="auth-text-mobile">Sign In</span>
     </viking-button-wc>
-    <viking-button-wc variant="ghost" full-width class="mobile-auth-btn" id="auth-signout-mobile" hidden>Sign Out</viking-button-wc>
+    <viking-button-wc
+      variant="ghost"
+      full-width
+      class="mobile-auth-btn auth-btn auth-signout-btn"
+      id="auth-signout-mobile"
+      hidden
+    >Sign Out</viking-button-wc>
   </nav>
 </header>
+<div id="autocomplete" class="algolia-autocomplete-host" aria-hidden="true"></div>
 <script src="{% static 'widgets/navbar.js' %}" defer></script>
 <script type="module" src="{% static 'viking-ui-elements.js' %}"></script>
 <script src="{% static 'widgets/command-palette.js' %}" defer></script>
+<script src="{% static 'widgets/algolia-search.js' %}" defer></script>

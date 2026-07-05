@@ -136,6 +136,10 @@ body.backend-swagger {
   background: transparent !important;
 }
 
+.swagger-ui .scheme-container span {
+  color: var(--viking-text, var(--text-color));
+}
+
 .swagger-ui .scheme-container .schemes > label {
   color: var(--viking-text-muted, var(--text-muted));
   font-size: 0.72rem;
@@ -211,9 +215,14 @@ body.backend-swagger {
   outline-offset: var(--viking-ring-offset, 2px);
 }
 
+.swagger-ui .scheme-container span.scheme-title {
+  color: var(--viking-text, var(--text-color));
+}
+
 .swagger-ui .btn.authorize,
 .swagger-ui .btn.authorize.unlocked,
-.swagger-ui .btn.execute {
+.swagger-ui .btn.execute,
+.swagger-ui .authorization__btn {
   background: var(--viking-accent, var(--color-primary));
   border-color: color-mix(
     in srgb,
@@ -224,10 +233,41 @@ body.backend-swagger {
   box-shadow: var(--viking-shadow-sm);
   min-height: var(--viking-control-height, 40px);
   border-radius: var(--viking-radius, 8px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1, 8px);
+  text-align: center;
+  line-height: 1;
+  min-width: auto;
+  white-space: nowrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.swagger-ui .btn.authorize .viking-icon,
+.swagger-ui .btn.authorize svg,
+.swagger-ui .btn.execute .viking-icon,
+.swagger-ui .btn.execute svg,
+.swagger-ui .authorization__btn svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swagger-ui .btn.authorize .viking-icon,
+.swagger-ui .btn.authorize svg,
+.swagger-ui .btn.execute .viking-icon,
+.swagger-ui .btn.execute svg,
+.swagger-ui .authorization__btn svg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .swagger-ui .btn.authorize:hover,
 .swagger-ui .btn.authorize.unlocked:hover,
+.swagger-ui .authorization__btn:hover,
 .swagger-ui .btn.execute:hover {
   background: var(--viking-accent-hover, var(--viking-teal-500));
   border-color: color-mix(
@@ -237,6 +277,57 @@ body.backend-swagger {
   );
   color: var(--viking-accent-content, var(--viking-white-pure));
   box-shadow: var(--viking-shadow-md);
+}
+
+.swagger-ui .btn.authorize svg,
+.swagger-ui .btn.execute svg,
+.swagger-ui .btn.authorization__btn svg,
+.swagger-ui .authorization__btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  fill: var(--viking-accent-content, var(--viking-white-pure));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swagger-ui .btn.authorize .viking-icon,
+.swagger-ui .btn.execute .viking-icon,
+.swagger-ui .authorization__btn .viking-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swagger-ui .btn.authorize .viking-icon svg,
+.swagger-ui .btn.execute .viking-icon svg,
+.swagger-ui .authorization__btn .viking-icon svg {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
+  fill: currentColor;
+  margin: 0;
+}
+
+.swagger-ui .btn.authorize .authorization-btn-icon,
+.swagger-ui .btn.execute .authorization-btn-icon,
+.swagger-ui .authorization__btn .authorization-btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swagger-ui .scheme-container .authorization__btn,
+.swagger-ui .btn.authorization__btn {
+  min-height: var(--viking-control-height, 40px);
+  height: var(--viking-control-height, 40px);
+  padding: 0 var(--viking-space-2, 16px);
+  box-sizing: border-box;
+  text-align: center;
 }
 
 /* ── Tag groups ──────────────────────────────────────────────────────────── */
