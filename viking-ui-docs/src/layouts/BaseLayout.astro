@@ -1,5 +1,7 @@
 ---
 import { SITE } from '../lib/site';
+import '@dataengineeringformachinelearning/viking-ui/dist/viking-ui.css';
+import '@dataengineeringformachinelearning/viking-ui/dist/web-components.js';
 
 export interface Props {
   title?: string;
@@ -40,9 +42,6 @@ const pageTitle = title === SITE.title ? title : `${title} · ${SITE.name}`;
       crossorigin
     />
 
-    <link rel="stylesheet" href="/assets/viking-ui.css" />
-
-    <script type="module" src="/assets/viking-ui-elements.js"></script>
     <script is:inline src="/assets/widgets/command-palette.js" defer></script>
 
     <script is:inline>

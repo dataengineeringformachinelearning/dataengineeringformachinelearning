@@ -25,9 +25,6 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
-            "stylePreprocessorOptions": {
-              "includePaths": ["../packages/viking-ui/src/styles"]
-            },
             "assets": [
               {
                 "glob": "**/*",
@@ -44,7 +41,7 @@
               ".md": "text"
             },
             "styles": [
-              "public/assets/viking-ui.css",
+              "../packages/viking-ui/dist/viking-ui.css",
               "src/styles.scss",
               "node_modules/prismjs/themes/prism-okaidia.css"
             ],
