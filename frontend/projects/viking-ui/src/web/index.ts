@@ -6,6 +6,7 @@ import { registerVikingInputWc } from './input/viking-input-wc';
 import { registerVikingModalWc } from './modal/viking-modal-wc';
 import { registerVikingSearchPaletteWc } from './search-palette/viking-search-palette-wc';
 import { registerVikingSuiteSearchPaletteWc } from './suite-search-palette/viking-suite-search-palette-wc';
+import { registerVikingSuiteHeaderWc } from './suite-header/viking-suite-header-wc';
 import { registerVikingSelectWc } from './select/viking-select-wc';
 import { registerVikingThemeToggleWc } from './theme-toggle/viking-theme-toggle-wc';
 
@@ -24,6 +25,10 @@ export {
   VikingSuiteSearchPaletteWc,
   registerVikingSuiteSearchPaletteWc,
 } from './suite-search-palette/viking-suite-search-palette-wc';
+export {
+  VikingSuiteHeaderWc,
+  registerVikingSuiteHeaderWc,
+} from './suite-header/viking-suite-header-wc';
 export { VikingSelectWc, registerVikingSelectWc } from './select/viking-select-wc';
 export {
   VikingThemeToggleWc,
@@ -42,6 +47,7 @@ export const registerVikingElements = (): void => {
   registerVikingModalWc();
   registerVikingSearchPaletteWc();
   registerVikingSuiteSearchPaletteWc();
+  registerVikingSuiteHeaderWc();
   registerVikingThemeToggleWc();
 };
 

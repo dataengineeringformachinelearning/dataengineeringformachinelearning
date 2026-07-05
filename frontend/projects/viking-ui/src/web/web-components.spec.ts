@@ -5,6 +5,7 @@ import {
   registerVikingModalWc,
   registerVikingSearchPaletteWc,
   registerVikingSelectWc,
+  registerVikingSuiteHeaderWc,
   registerVikingSuiteSearchPaletteWc,
 } from './index';
 
@@ -15,6 +16,7 @@ const registerAll = (): void => {
   registerVikingModalWc();
   registerVikingSearchPaletteWc();
   registerVikingSuiteSearchPaletteWc();
+  registerVikingSuiteHeaderWc();
 };
 
 describe('Viking Web Components v2', () => {
@@ -148,6 +150,7 @@ describe('Viking Web Components v2', () => {
     expect(customElements.get('viking-suite-command-palette')).toBeTruthy();
     expect(customElements.get('viking-suite-search-palette')).toBeTruthy();
     expect(customElements.get('viking-suite-search-palette-wc')).toBeTruthy();
+    expect(customElements.get('viking-suite-header')).toBeTruthy();
   });
 
   it('toggles open state with the global shortcut handler', async () => {
@@ -189,5 +192,53 @@ describe('Viking Web Components v2', () => {
     expect(titles).toContain('Documentation');
     expect(titles).toContain('Privacy Policy');
     expect(titles).toContain('Whitepaper');
+  });
+
+  it('renders the suite header with shared navigation and opens search', async () => {
+    const header = document.createElement('viking-suite-header');
+    header.setAttribute('context', 'marketing');
+    document.body.append(header);
+
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(header.shadowRoot?.querySelector('.suite-header__brand')).toBeTruthy();
+    expect(header.shadowRoot?.textContent).toContain('Explore');
+    expect(header.shadowRoot?.textContent).toContain('Documentation');
+    expect(header.shadowRoot?.textContent).toContain('Sign In');
+    expect(header.shadowRoot?.querySelector('viking-theme-toggle-wc')).toBeTruthy();
+
+    let opened = false;
+    header.addEventListener('viking-search-open', () => {
+      opened = true;
+    });
+    header.shadowRoot?.querySelector<HTMLButtonElement>('[data-search-trigger]')?.click();
+    await Promise.resolve();
+
+    const palette = header.shadowRoot?.querySelector('viking-suite-command-palette');
+    const commandPalette = palette?.querySelector('viking-command-palette');
+    expect(opened).toBe(true);
+    expect(commandPalette?.hasAttribute('open')).toBe(true);
+  });
+
+  it('renders authenticated suite header menu actions', () => {
+    const header = document.createElement('viking-suite-header');
+    header.setAttribute('authenticated', '');
+    header.setAttribute('user-name', 'Ada Lovelace');
+    document.body.append(header);
+
+    expect(header.shadowRoot?.textContent).toContain('Ada Lovelace');
+
+    header.shadowRoot?.querySelector<HTMLButtonElement>('[data-user-toggle]')?.click();
+    expect(header.shadowRoot?.querySelector('.suite-header__user')?.getAttribute('data-open')).toBe(
+      'true',
+    );
+
+    let signedOut = false;
+    header.addEventListener('viking-sign-out', () => {
+      signedOut = true;
+    });
+    header.shadowRoot?.querySelector<HTMLButtonElement>('[data-sign-out]')?.click();
+    expect(signedOut).toBe(true);
   });
 });
