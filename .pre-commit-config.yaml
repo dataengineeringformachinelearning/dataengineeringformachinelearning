@@ -38,13 +38,13 @@ repos:
         name: Sync design system package to consumers
         entry: python scripts/sync_design_system.py
         language: system
-        files: ^(packages/viking-ui/src/styles/|packages/viking-ui/src/web/|packages/viking-ui/scripts/|frontend/projects/viking-ui/src/styles/|viking-ui-docs/scripts/build-static-css\.mjs)
+        files: ^(packages/viking-ui/src/styles/|packages/viking-ui/src/web/|packages/viking-ui/scripts/|viking-ui-docs/scripts/build-static-css\.mjs)
         pass_filenames: false
       - id: sync-site-drakkar
         name: Sync site drakkar JSON and Django partials
         entry: bash -c 'cd frontend && npm run build:site-drakkar && cd .. && python scripts/sync_widgets.py'
         language: system
-        files: ^frontend/projects/viking-ui/src/lib/site-drakkar/|^frontend/scripts/build_site_drakkar\.mjs$|^frontend/src/assets/widgets/navbar\.js$
+        files: ^packages/viking-ui/src/lib/site-drakkar/|^frontend/scripts/build_site_drakkar\.mjs$|^frontend/src/assets/widgets/navbar\.js$
         pass_filenames: false
       - id: semgrep-css
         name: Semgrep CSS/SCSS Scan
@@ -57,7 +57,7 @@ repos:
         name: Accessibility Scan (axe-core)
         entry: node scripts/run_axe.js
         language: system
-        files: ^(packages/viking-ui|frontend/projects/viking-ui|viking-ui-docs)/.*\.(html|astro)$
+        files: ^(packages/viking-ui|viking-ui-docs)/.*\.(html|astro)$
         exclude: ^backend/templates/swagger\.html$
         pass_filenames: true
         stages: [pre-commit]
