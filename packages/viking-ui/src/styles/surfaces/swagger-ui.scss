@@ -8,7 +8,7 @@ body.backend-swagger {
 }
 
 .backend-swagger-shell {
-  padding-block: var(--viking-space-3) var(--viking-space-6);
+  padding-block: var(--viking-space-6) var(--viking-space-8);
 }
 
 /* ── VikingCard panel wrapping Swagger UI ──────────────────────────────────── */
@@ -26,7 +26,7 @@ body.backend-swagger {
 }
 
 .backend-swagger-toolbar {
-  padding: var(--viking-space-2) var(--viking-space-3);
+  padding: var(--viking-space-3) var(--viking-card-padding);
   border-bottom: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-surface-alt) 40%, transparent);
 }
@@ -41,7 +41,8 @@ body.backend-swagger {
 }
 
 .backend-swagger-panel #swagger-ui {
-  padding: 0 var(--viking-space-3) var(--viking-space-3);
+  padding: var(--viking-space-2) var(--viking-card-padding)
+    var(--viking-card-padding);
 }
 
 .swagger-ui .opblock .opblock-summary {
@@ -290,7 +291,7 @@ body.backend-swagger {
 .swagger-ui .opblock .opblock-summary {
   border: none;
   background: transparent !important;
-  padding: var(--viking-space-2, 16px) 0;
+  padding: var(--viking-space-3, 24px) 0;
 }
 
 .swagger-ui .opblock.is-open .opblock-summary {
@@ -411,7 +412,7 @@ body.backend-swagger {
 }
 
 .swagger-ui .opblock-body {
-  padding: var(--viking-space-2, 16px) 0;
+  padding: var(--viking-space-3, 24px) 0;
 }
 
 .swagger-ui .opblock-description-wrapper,
@@ -422,7 +423,7 @@ body.backend-swagger {
   font-family: inherit;
   font-size: 0.88rem;
   margin: 0;
-  padding: var(--viking-space-1, 8px) 0;
+  padding: var(--viking-space-2, 16px) 0;
 }
 
 .swagger-ui .opblock-description-wrapper h4,
@@ -438,7 +439,7 @@ body.backend-swagger {
 
 .swagger-ui .table-container {
   background: transparent;
-  padding: var(--viking-space-1, 8px) 0;
+  padding: var(--viking-space-2, 16px) 0;
 }
 
 .swagger-ui .parameters-col_description,
@@ -634,7 +635,7 @@ body.backend-swagger {
   color: var(--viking-text, var(--text-color));
   font-family: var(--viking-font-family-mono, "JetBrains Mono", monospace);
   font-size: 0.88rem;
-  min-height: 32px;
+  min-height: var(--viking-control-height, 44px);
   padding: var(--viking-space-1, 8px) var(--viking-space-2, 16px);
 }
 

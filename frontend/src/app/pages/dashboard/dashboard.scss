@@ -5,7 +5,7 @@
 .scope-filters {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
   width: 100%;
 
   @media (min-width: 768px) {
@@ -19,11 +19,10 @@
   }
 }
 
-
 .overview-grid,
 .detail-grid {
   display: grid;
-  gap: var(--viking-page-stack-gap);
+  gap: var(--viking-page-section-gap);
 }
 
 .overview-grid {
@@ -58,8 +57,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--viking-space-2);
-  padding: var(--viking-space-3);
+  gap: var(--viking-space-3);
+  padding: var(--viking-card-padding);
   border-radius: var(--viking-radius-lg);
   border: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface));
@@ -187,7 +186,7 @@
   grid-area: kpis;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
 
   @media (min-width: 480px) {
     grid-template-columns: repeat(4, 1fr);
@@ -197,8 +196,8 @@
 .kpi-card {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-half);
-  padding: var(--viking-card-padding-compact, var(--viking-space-2));
+  gap: var(--viking-space-1);
+  padding: var(--viking-card-padding-compact, var(--viking-space-3));
   min-height: var(--viking-metric-card-tall-min-height);
   border-radius: var(--viking-radius-lg);
   border: 1px solid var(--viking-border);
@@ -219,7 +218,11 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(
+        in srgb,
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+        transparent
+      ),
       transparent
     );
     pointer-events: none;
@@ -292,7 +295,7 @@
   display: flex;
   flex-direction: column;
   min-height: 280px;
-  padding: var(--viking-space-3, 24px);
+  padding: var(--viking-card-padding);
 
   .panel-header {
     margin-bottom: 0;
@@ -305,7 +308,7 @@
     display: flex;
     flex-direction: column;
     min-height: 0;
-    padding-top: var(--viking-space-2);
+    padding-top: var(--viking-space-3);
   }
 
   .snapshot-stats {
@@ -354,7 +357,10 @@
 
   viking-chart-empty-state {
     flex: 1 1 auto;
-    --viking-chart-empty-min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+    --viking-chart-empty-min-height: var(
+      --viking-chart-fill-min-height,
+      clamp(16rem, 32vw, 17.5rem)
+    );
   }
 }
 
@@ -362,8 +368,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--viking-space-2, 16px);
-  padding-bottom: var(--viking-space-1, 8px);
+  margin-bottom: var(--viking-space-3);
+  padding-bottom: var(--viking-space-2);
   border-bottom: 1px solid var(--viking-border);
 
   h2 {
@@ -417,7 +423,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-2);
 
   li {
     display: flex;
@@ -425,7 +431,7 @@
     gap: var(--viking-space-1-5);
     font-size: var(--viking-font-size-sm);
     color: var(--viking-text-muted);
-    padding: var(--viking-space-1-5);
+    padding: var(--viking-space-2);
     border-radius: var(--viking-radius);
     border: 1px solid var(--viking-border);
     background: color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%);
@@ -453,15 +459,15 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-2);
 }
 
 .threat-item,
 .security-item {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-half);
-  padding: var(--viking-space-1-5);
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-2);
   border-radius: var(--viking-radius);
   border: 1px solid var(--viking-border);
   background: color-mix(in srgb, var(--viking-surface) 96%, var(--viking-accent) 4%);
@@ -667,7 +673,10 @@
 
   viking-chart-empty-state {
     flex: 1 1 auto;
-    --viking-chart-empty-min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 17.5rem));
+    --viking-chart-empty-min-height: var(
+      --viking-chart-fill-min-height,
+      clamp(16rem, 32vw, 17.5rem)
+    );
   }
 }
 

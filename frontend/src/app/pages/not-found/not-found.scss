@@ -3,56 +3,43 @@
   justify-content: center;
   align-items: center;
   min-height: 60vh;
-  padding: var(--space-2);
+  padding: 0;
   box-sizing: border-box;
 
-  @media (min-width: 481px) {
-    padding: 32px;
+  .page-inner-wrapper {
+    align-items: center;
+    justify-content: center;
   }
 }
 
 .not-found-card {
-  background: var(--viking-surface);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-6) var(--space-4);
   text-align: center;
   max-width: var(--viking-form-narrow-max-width);
   width: 100%;
-  box-shadow: var(--shadow-lg);
-  transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--color-primary);
-  }
 }
 
 .error-code {
   font-size: 6rem;
   font-weight: 800;
   line-height: 1;
-  color: var(--color-primary);
-  margin-bottom: var(--space-2);
-  letter-spacing: -0.05em;
+  color: var(--viking-accent);
+  margin-bottom: var(--viking-space-3);
+  letter-spacing: var(--viking-letter-spacing-tight);
 }
 
 .error-title {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--hero-title-color);
-  margin: 0 0 16px 0;
-  letter-spacing: -0.02em;
+  color: var(--viking-text);
+  margin: 0 0 var(--viking-space-2);
+  letter-spacing: var(--viking-letter-spacing-tight);
 }
 
 .error-message {
   font-size: 1.05rem;
   line-height: 1.6;
-  color: var(--text-muted);
-  margin: 0 0 32px 0;
+  color: var(--viking-text-muted);
+  margin: 0 0 var(--viking-space-4);
 }
 
 .action-box {
@@ -63,27 +50,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--color-success);
-    color: var(--white) !important;
-    padding: 8px 32px;
-    font-size: 1rem;
-    font-weight: 600;
     text-decoration: none;
-    border-radius: 8px;
-    transition:
-      background-color 0.2s ease,
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-    box-shadow: 0 4px 14px color-mix(in srgb, var(--color-success) 40%, transparent);
-
-    &:hover {
-      background-color: var(--color-success);
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px color-mix(in srgb, var(--color-success) 60%, transparent);
-    }
-
-    &:active {
-      transform: translateY(1px);
-    }
   }
 }

@@ -7,7 +7,7 @@ import CodeBlock from '../components/CodeBlock.astro';
   title="Playground"
   description="Live interactive playground for Viking-UI button and input primitives — tweak props and copy generated code."
 >
-  <div class="page-inner-wrapper">
+  <div class="page-inner-wrapper showcase-page playground-page">
     <header class="viking-page-header-static">
       <p class="viking-label">Live playground</p>
       <h1 class="viking-heading viking-heading-xl">Component playground</h1>
@@ -370,26 +370,33 @@ import CodeBlock from '../components/CodeBlock.astro';
 <style>
   .playground-layout {
     display: grid;
-    gap: var(--viking-space-3);
+    gap: var(--viking-page-section-gap);
     grid-template-columns: 1fr;
   }
 
   @media (min-width: 900px) {
     .playground-layout {
-      grid-template-columns: minmax(240px, 320px) 1fr;
+      grid-template-columns: minmax(280px, 360px) 1fr;
     }
   }
 
   .playground-controls {
     display: flex;
     flex-direction: column;
-    gap: var(--viking-space-2);
+    gap: var(--viking-space-3);
     align-self: start;
     position: sticky;
-    top: var(--viking-space-3);
+    top: calc(var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) + var(--viking-space-3));
   }
 
   .playground-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--viking-page-stack-gap);
+  }
+
+  .playground-preview,
+  .playground-code {
     display: flex;
     flex-direction: column;
     gap: var(--viking-space-3);
@@ -399,9 +406,9 @@ import CodeBlock from '../components/CodeBlock.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 120px;
-    padding: var(--viking-space-3);
-    margin-top: var(--viking-space-2);
+    min-height: clamp(14rem, 28vw, 20rem);
+    padding: var(--viking-card-padding);
+    margin-top: 0;
     border: 1px dashed var(--viking-border);
     border-radius: var(--viking-radius);
     background: var(--viking-surface-alt);

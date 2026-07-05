@@ -78,16 +78,16 @@ import { VikingSeparator } from "../separator/separator";
       :host {
         display: block;
         width: 100%;
-        max-width: 480px;
+        max-width: 520px;
         margin-inline: auto;
         font-family: var(--viking-font-family);
       }
       .viking-auth-panel {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-3);
+        gap: var(--viking-space-4);
         width: 100%;
-        padding: var(--viking-space-3);
+        padding: var(--viking-card-padding);
         background: var(--viking-surface);
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);
@@ -111,8 +111,8 @@ import { VikingSeparator } from "../separator/separator";
       .viking-auth-header {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-1);
-        margin-bottom: var(--viking-space-1);
+        gap: var(--viking-space-2);
+        margin-bottom: var(--viking-space-2);
       }
       .viking-auth-tag-row {
         display: flex;
@@ -158,13 +158,13 @@ import { VikingSeparator } from "../separator/separator";
       .viking-auth-body {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         width: 100%;
       }
       :host ::ng-deep .viking-auth-stack {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         width: 100%;
       }
       :host ::ng-deep .viking-auth-stack viking-callout {
@@ -174,13 +174,13 @@ import { VikingSeparator } from "../separator/separator";
       :host ::ng-deep .login-form {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         width: 100%;
       }
       .viking-auth-social {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         width: 100%;
       }
       .viking-auth-footer {

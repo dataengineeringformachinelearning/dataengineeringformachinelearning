@@ -14,7 +14,13 @@ body {
 body {
   background-color: var(--viking-bg, var(--bg-color));
   color: var(--viking-text, var(--text-color));
-  font-family: var(--viking-font-family, "Inter", ui-sans-serif, system-ui, sans-serif);
+  font-family: var(
+    --viking-font-family,
+    "Inter",
+    ui-sans-serif,
+    system-ui,
+    sans-serif
+  );
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -23,7 +29,7 @@ body {
 .backend-landing-shell {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-page-section-gap, var(--viking-space-7, 56px));
+  gap: var(--viking-space-8);
   min-height: calc(100vh - var(--viking-navbar-height, 64px));
 }
 
@@ -32,6 +38,7 @@ body {
   align-items: center;
   max-width: var(--viking-content-readable-max-width, 48rem);
   margin-inline: auto;
+  padding-block: var(--viking-space-7);
   box-shadow: var(--viking-shadow-sm);
 }
 
@@ -51,13 +58,16 @@ body {
 
 @keyframes backend-status-pulse {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-success) 70%, transparent);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--viking-success) 70%, transparent);
   }
   70% {
-    box-shadow: 0 0 0 var(--viking-space-1) color-mix(in srgb, var(--viking-success) 0%, transparent);
+    box-shadow: 0 0 0 var(--viking-space-1)
+      color-mix(in srgb, var(--viking-success) 0%, transparent);
   }
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-success) 0%, transparent);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--viking-success) 0%, transparent);
   }
 }
 
@@ -68,28 +78,28 @@ body {
 
 .backend-hero-cta {
   justify-content: center;
-  margin-top: var(--viking-space-1);
+  margin-top: var(--viking-space-3);
 }
 
 /* ── Feature cards (VikingCard WC + icon tile) ─────────────────────────────── */
 .backend-feature-grid {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-4);
   width: 100%;
 }
 
 .backend-feature-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-4);
   width: 100%;
 }
 
 .backend-feature-card-body {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
 }
 
 .backend-feature-icon {
@@ -119,7 +129,9 @@ body.backend-404 .backend-error-logo {
   max-width: 100px;
   width: 100%;
   margin: 0 auto var(--viking-space-3);
-  filter: drop-shadow(0 4px 12px color-mix(in srgb, var(--viking-black) 15%, transparent));
+  filter: drop-shadow(
+    0 4px 12px color-mix(in srgb, var(--viking-black) 15%, transparent)
+  );
 }
 
 body.backend-404 .backend-error-card .viking-heading-xl {

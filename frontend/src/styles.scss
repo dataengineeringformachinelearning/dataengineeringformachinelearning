@@ -110,9 +110,9 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
-    .viking-btn
-  ) {
+a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(
+    .mobile-nav-btn
+  ):not(.viking-btn) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;
@@ -124,12 +124,12 @@ a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-
     color 0.2s ease;
 }
 
-a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
-    .viking-btn
-  ):hover,
-a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
-    .viking-btn
-  ):focus-visible {
+a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(
+    .mobile-nav-btn
+  ):not(.viking-btn):hover,
+a:not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(
+    .mobile-nav-btn
+  ):not(.viking-btn):focus-visible {
   color: var(--link-hover-color);
   text-decoration: none;
   border-bottom-color: var(--link-hover-color); /* WCAG requirement: non-color hover indicator */
@@ -214,7 +214,9 @@ main.main {
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-sm);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .page-content:hover {
@@ -457,7 +459,9 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-sm);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .viking-card:hover {
@@ -471,8 +475,10 @@ div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-sm);
-  padding: var(--viking-space-2);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  padding: var(--viking-card-padding-compact);
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .viking-status-metric-row:hover {

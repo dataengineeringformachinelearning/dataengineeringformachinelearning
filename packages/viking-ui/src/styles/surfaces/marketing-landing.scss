@@ -1,17 +1,20 @@
 .landing-container {
   position: relative;
   min-height: calc(100vh - 64px);
-  padding: 48px 16px 32px;
+  padding-block: var(--viking-space-6) var(--viking-space-4);
   overflow: hidden;
   font-family: var(--viking-font-family);
 
   @media (min-width: 768px) {
-    padding: 72px 32px 64px;
+    padding-block: var(--viking-space-9) var(--viking-space-8);
   }
 }
 
 .showcase-layout {
-  max-width: var(--container-max-width, 1260px);
+  max-width: var(
+    --viking-container-max-width,
+    var(--container-max-width, 1260px)
+  );
   margin: 0 auto;
 }
 
@@ -19,22 +22,22 @@
 .hero-showcase {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 48px;
+  gap: var(--viking-page-section-gap, var(--viking-space-6));
   align-items: center;
-  margin-bottom: 72px;
+  margin-bottom: var(--viking-space-9);
   position: relative;
   z-index: 10;
   overflow: hidden;
   @media (min-width: 960px) {
     grid-template-columns: 1fr 1.1fr;
-    gap: 64px;
+    gap: var(--viking-space-8);
   }
 }
 
 .hero-copy {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--viking-space-3);
 }
 
 .hero-badge {
@@ -93,7 +96,11 @@
   gap: 8px;
   padding: 8px 14px;
   border-radius: 1000px;
-  background: color-mix(in srgb, var(--viking-accent) 10%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-accent) 10%,
+    var(--color-surface)
+  );
   border: 1px solid color-mix(in srgb, var(--viking-accent) 25%, transparent);
   font-size: 0.85rem;
   font-weight: 600;
@@ -115,7 +122,8 @@
 @keyframes pulseDot {
   0%,
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-accent) 60%, transparent);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--viking-accent) 60%, transparent);
   }
   50% {
     box-shadow: 0 0 0 6px
@@ -151,7 +159,11 @@
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: color-mix(in srgb, var(--viking-charcoal-900) 60%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-charcoal-900) 60%,
+    var(--color-surface)
+  );
   border-bottom: 1px solid var(--border);
 
   .mockup-dot {
@@ -229,7 +241,11 @@
 }
 
 .mockup-gauge {
-  background: color-mix(in srgb, var(--viking-charcoal-900) 40%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-charcoal-900) 40%,
+    var(--color-surface)
+  );
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 12px;
@@ -270,7 +286,11 @@
 
   .chart-bar {
     flex: 1;
-    background: linear-gradient(180deg, var(--viking-accent), var(--viking-accent-strong));
+    background: linear-gradient(
+      180deg,
+      var(--viking-accent),
+      var(--viking-accent-strong)
+    );
     border-radius: 4px 4px 0 0;
     opacity: 0.85;
     animation: barPulse 3s ease-in-out infinite;
@@ -283,7 +303,7 @@
     }
 
     @for $h from 40 through 95 {
-      &[data-height='#{$h}'] {
+      &[data-height="#{$h}"] {
         --chart-bar-height: #{$h};
       }
     }
@@ -332,8 +352,8 @@
 
 /* ── Quick start ── */
 .quick-start-band {
-  padding: 56px 0 64px;
-  margin-bottom: 32px;
+  padding: var(--viking-space-7) 0 var(--viking-space-8);
+  margin-bottom: var(--viking-space-4);
   border-bottom: 1px solid var(--border);
   position: relative;
 }
@@ -359,7 +379,7 @@
 .quick-start-header {
   text-align: center;
   max-width: 640px;
-  margin: 0 auto 48px;
+  margin: 0 auto var(--viking-page-section-gap, var(--viking-space-6));
 
   h2 {
     font-size: clamp(1.75rem, 3vw, 2.25rem);
@@ -380,14 +400,14 @@
 .quick-start-steps {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: var(--viking-space-3);
   list-style: none;
   padding: 0;
   margin: 0;
 
   @media (min-width: 768px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 32px;
+    gap: var(--viking-space-4);
   }
 
   @media (min-width: 1100px) {
@@ -633,16 +653,16 @@
 .showcase-band {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 40px;
+  gap: var(--viking-space-5);
   align-items: center;
-  padding: 56px 0;
+  padding: var(--viking-space-7) 0;
   border-bottom: 1px solid var(--border);
   position: relative;
 
   @media (min-width: 900px) {
     grid-template-columns: 1fr 1fr;
-    gap: 64px;
-    padding: 72px 0;
+    gap: var(--viking-space-8);
+    padding: var(--viking-space-9) 0;
   }
 
   /* double divider accent for each capability showcase */
@@ -727,7 +747,7 @@
   background: var(--color-surface);
   border: 1px solid var(--border);
   border-radius: var(--viking-radius-xl, 16px);
-  padding: 28px;
+  padding: var(--viking-card-padding, var(--viking-space-4));
   box-shadow: var(--shadow-md);
 }
 
@@ -752,12 +772,12 @@
 .visual-metrics {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 12px;
-  margin-bottom: 24px;
+  gap: var(--viking-space-2);
+  margin-bottom: var(--viking-space-3);
 
   @media (min-width: 600px) {
     grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+    gap: var(--viking-space-2);
   }
 
   @media (min-width: 900px) {
@@ -766,10 +786,14 @@
 }
 
 .visual-metric {
-  background: color-mix(in srgb, var(--viking-charcoal-900) 35%, var(--color-surface));
+  background: color-mix(
+    in srgb,
+    var(--viking-charcoal-900) 35%,
+    var(--color-surface)
+  );
   border: 1px solid var(--border);
   border-radius: var(--viking-radius-lg);
-  padding: 16px;
+  padding: var(--viking-card-padding-compact, var(--viking-space-3));
   position: relative;
 
   .metric-label {
@@ -818,7 +842,7 @@
 
 /* ── Widget showcase ── */
 .widget-showcase {
-  padding: 72px 0;
+  padding: var(--viking-space-9) 0;
   border-bottom: 1px solid var(--border);
   position: relative;
 }
@@ -844,12 +868,12 @@
 .widget-showcase-inner {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 40px;
+  gap: var(--viking-space-5);
   align-items: center;
 
   @media (min-width: 900px) {
     grid-template-columns: 1fr 1fr;
-    gap: 64px;
+    gap: var(--viking-space-8);
   }
 }
 
@@ -902,13 +926,13 @@
   background: var(--color-surface);
   border: 1px solid var(--border);
   border-radius: var(--viking-radius-xl, 16px);
-  padding: 32px;
+  padding: var(--viking-card-padding, var(--viking-space-4));
   box-shadow: var(--shadow-md);
 }
 
 /* ── Pricing ── */
 .pricing-showcase {
-  padding: 72px 0;
+  padding: var(--viking-space-9) 0;
   text-align: center;
   border-bottom: 1px solid var(--border);
   position: relative;
@@ -933,7 +957,7 @@
 }
 
 .pricing-header {
-  margin-bottom: 48px;
+  margin-bottom: var(--viking-page-section-gap, var(--viking-space-6));
 
   .section-tag {
     font-size: 0.85rem;
@@ -960,7 +984,7 @@
 
 .pricing-cards-container {
   display: flex;
-  gap: 2rem;
+  gap: var(--viking-space-4);
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -977,8 +1001,8 @@
     width: 100%;
     min-width: 0;
     max-width: 100%;
-    padding: 2.5rem 2rem;
-    border-radius: 1.5rem;
+    padding: var(--viking-space-5) var(--viking-card-padding);
+    border-radius: var(--viking-radius-xl);
     background: var(--color-surface);
     border: 1px solid var(--border);
     transition:
@@ -1159,7 +1183,8 @@
   padding: 64px 24px;
   position: relative;
   z-index: 10;
-  border-top: 1px solid color-mix(in srgb, var(--viking-accent) 25%, transparent);
+  border-top: 1px solid
+    color-mix(in srgb, var(--viking-accent) 25%, transparent);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1249,7 +1274,7 @@
 }
 
 /* Inline Viking SVG icons must not clip in marketing pages */
-.landing-container svg[aria-hidden='true'] {
+.landing-container svg[aria-hidden="true"] {
   overflow: visible;
   line-height: 1;
   display: inline-flex;
