@@ -19,9 +19,9 @@ from account.platform import PLATFORM_ACCOUNT_ID
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from ml.ml_services import (
-  HAS_NORSE,
   CESModel,
   get_ces_model_path,
+  infer_spiking_temporal_forecast,
 )
 from monitor.models import (
   AggregatedAnalytics,
@@ -241,13 +241,13 @@ class OverviewService:
     except Exception:
       ces_level = max(0, min(100, ces_sla * 0.5 + ces_stability * 0.4 + (100 - ces_threat) * 0.1))
 
-    # Fourth model integration (Spiking Temporal Forecaster):
-    # temporal_score exposed for status pages/analytics/dashboards.
-    # See ml_services.py:train_spiking_temporal_forecaster and models_inventory.md
-    temporal_score = ces_level * 0.9  # placeholder; real seq inference in prod
-    if HAS_NORSE:
-      # TODO: load SpikingTemporalForecaster and run on seq_features for real temporal forecast
-      pass
+    # Fourth model integration (Spiking Temporal Forecaster / Norse SNN):
+    # temporal_score exposed for status pages, analytics, and dashboards.
+    temporal_score = infer_spiking_temporal_forecast(
+      None,
+      is_platform=True,
+      fallback_score=max(0.0, min(100.0, ces_level * 0.9)),
+    )
 
     return {
       "level": round(ces_level, 2),

@@ -7,11 +7,22 @@ User = get_user_model()
 
 
 class TrainingRun(models.Model):
+  MODEL_TYPE_SLA: str = "sla"
+  MODEL_TYPE_SPIKING: str = "spiking"
+
   id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
   user = models.ForeignKey(
     User, on_delete=models.CASCADE, related_name="training_runs", null=True, blank=True
   )
   is_platform = models.BooleanField(default=False)
+  model_type = models.CharField(
+    max_length=16,
+    default=MODEL_TYPE_SLA,
+    choices=[
+      (MODEL_TYPE_SLA, "SLA Estimator"),
+      (MODEL_TYPE_SPIKING, "Spiking Temporal Forecaster"),
+    ],
+  )
   created_at = models.DateTimeField(auto_now_add=True)
   average_sla = models.FloatField()
   loss = models.FloatField()

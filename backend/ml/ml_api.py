@@ -6,7 +6,12 @@ from monitor.models import StatusPage
 from ninja import Router, Schema
 from ninja.errors import HttpError
 
-from ml.ml_services import train_spiking_temporal_forecaster, train_tenant_sla
+from ml.ml_services import (
+  HAS_NORSE,
+  infer_spiking_temporal_forecast,
+  train_spiking_temporal_forecaster,
+  train_tenant_sla,
+)
 from ml.models import ThreatReport, TrainingRun
 
 router = Router()
@@ -17,9 +22,17 @@ def _scope_from_status_page(status_page: StatusPage) -> tuple[Any, bool]:
 
 
 def _training_runs_for_page(status_page: StatusPage):
+  qs = TrainingRun.objects.filter(model_type=TrainingRun.MODEL_TYPE_SLA)
   if status_page.is_platform:
-    return TrainingRun.objects.filter(is_platform=True, user__isnull=True)
-  return TrainingRun.objects.filter(user=status_page.user, is_platform=False)
+    return qs.filter(is_platform=True, user__isnull=True)
+  return qs.filter(user=status_page.user, is_platform=False)
+
+
+def _spiking_runs_for_page(status_page: StatusPage):
+  qs = TrainingRun.objects.filter(model_type=TrainingRun.MODEL_TYPE_SPIKING)
+  if status_page.is_platform:
+    return qs.filter(is_platform=True, user__isnull=True)
+  return qs.filter(user=status_page.user, is_platform=False)
 
 
 def _threat_reports_for_page(status_page: StatusPage):
@@ -41,6 +54,14 @@ class LatestRunOut(Schema):
   message: str | None = None
   average_sla: float | None = None
   loss: float | None = None
+  created_at: datetime.datetime | None = None
+
+
+class TemporalForecastOut(Schema):
+  status: str
+  message: str | None = None
+  spiking_temporal_forecast: float | None = None
+  uses_norse: bool = False
   created_at: datetime.datetime | None = None
 
 
@@ -103,7 +124,9 @@ def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
     run = _training_runs_for_page(status_page).order_by("-created_at").first()
   else:
     run = (
-      TrainingRun.objects.filter(is_platform=True, user__isnull=True)
+      TrainingRun.objects.filter(
+        is_platform=True, user__isnull=True, model_type=TrainingRun.MODEL_TYPE_SLA
+      )
       .order_by("-created_at")
       .first()
     )
@@ -126,6 +149,52 @@ def get_latest_training(request: Any, status_page_id: str | None = None) -> Any:
   else:
     result = {"status": "success", "average_sla": None, "message": "No training runs available"}
 
+  return result
+
+
+@router.get("/temporal-forecast", response=TemporalForecastOut)
+def get_temporal_forecast(request: Any, status_page_id: str | None = None) -> Any:
+  _cache_key = f"ml:temporal_forecast:{status_page_id or 'platform'}"
+  _cached = cache.get(_cache_key)
+  if _cached is not None:
+    return _cached
+
+  status_page = None
+  if status_page_id:
+    try:
+      status_page = StatusPage.objects.get(id=status_page_id)
+    except (StatusPage.DoesNotExist, ValueError):
+      raise HttpError(404, "Status page not found") from None
+  else:
+    status_page = StatusPage.objects.filter(slug="platform-status").first()
+
+  if status_page:
+    from monitor.access import check_status_page_access
+
+    if not check_status_page_access(request, status_page):
+      raise HttpError(403, "Permission denied")
+    user, is_platform = _scope_from_status_page(status_page)
+    latest_run = _spiking_runs_for_page(status_page).order_by("-created_at").first()
+  else:
+    user, is_platform = None, True
+    latest_run = (
+      TrainingRun.objects.filter(
+        is_platform=True, user__isnull=True, model_type=TrainingRun.MODEL_TYPE_SPIKING
+      )
+      .order_by("-created_at")
+      .first()
+    )
+
+  fallback = latest_run.average_sla if latest_run else 50.0
+  forecast = infer_spiking_temporal_forecast(user, is_platform=is_platform, fallback_score=fallback)
+
+  result = {
+    "status": "success",
+    "spiking_temporal_forecast": round(forecast, 2),
+    "uses_norse": HAS_NORSE,
+    "created_at": latest_run.created_at if latest_run else None,
+  }
+  cache.set(_cache_key, result, 300)
   return result
 
 

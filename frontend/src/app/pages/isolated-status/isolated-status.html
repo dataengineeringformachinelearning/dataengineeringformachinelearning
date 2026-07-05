@@ -178,6 +178,37 @@
           </div>
         </div>
 
+        <!-- Norse SNN Temporal Forecast -->
+        <div class="metrics-overview-header isolated-status-extracted-1">
+          <h3 class="section-title-premium">
+            <viking-app-icon name="insights" />
+            Temporal Forecast (Norse SNN)
+          </h3>
+          <p class="section-description-premium">
+            Spiking neural network forecast of upcoming anomaly and spike risk on event sequences,
+            powered by the Norse temporal forecaster (fourth ML model).
+          </p>
+        </div>
+
+        <div class="ml-stat-panels-row">
+          <div class="ml-stat-panel">
+            <div class="stat-info">
+              <viking-app-icon name="online_prediction" hostClass="stat-icon" />
+              <div>
+                <span class="stat-title">Spike Risk Score</span>
+                <span class="stat-subtitle">Norse SNN on telemetry sequences</span>
+              </div>
+            </div>
+            <div class="stat-value-container">
+              <span class="stat-value">
+                {{ (mlService.latestTemporalForecasts()[page.id] !== undefined &&
+                mlService.latestTemporalForecasts()[page.id] !== null ?
+                mlService.latestTemporalForecasts()[page.id] : 0) | number:'1.1-2' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <!-- Threat Intelligence Metrics Overview -->
         <div class="metrics-overview-header isolated-status-extracted-1">
           <h3 class="section-title-premium">

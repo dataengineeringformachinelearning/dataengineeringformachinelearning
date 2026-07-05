@@ -85,6 +85,7 @@
               [page]="page"
               [services]="servicesMap()[page.id] || []"
               [predictedSla]="mlService.latestStats()[page.id]"
+              [predictedTemporalForecast]="mlService.latestTemporalForecasts()[page.id]"
               [threatReport]="mlService.latestThreatReports()[page.id] || null"
               [incidents]="incidentsMap()[page.id] || []"
               [showIncidents]="true"

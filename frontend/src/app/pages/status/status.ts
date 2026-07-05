@@ -150,6 +150,7 @@ export class Status implements OnInit {
             sorted.forEach(page => {
               this.mlService.fetchLatestStat(page.id);
               this.mlService.fetchThreatReport(page.id);
+              this.mlService.fetchTemporalForecast(page.id);
             });
             this.isLoading.set(false);
             this.cdr.markForCheck();

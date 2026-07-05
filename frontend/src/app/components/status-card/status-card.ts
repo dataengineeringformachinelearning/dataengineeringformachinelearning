@@ -44,6 +44,7 @@ export class StatusCard implements OnInit, OnChanges {
   @Input({ required: true }) page!: StatusPageData;
   @Input({ required: true }) services: MonitoredServiceData[] = [];
   @Input() predictedSla: number | null | undefined = null;
+  @Input() predictedTemporalForecast: number | null | undefined = null;
   @Input() threatReport: ThreatReportResponse | null = null;
   @Input() incidents: IncidentData[] = [];
   @Input() showViewButton = false;

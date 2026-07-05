@@ -141,7 +141,7 @@ class Command(BaseCommand):
   def train_single(self, account_id):
     from account.context import resolve_scope_from_account_id
     from django.db import close_old_connections
-    from ml.ml_services import train_threat_model
+    from ml.ml_services import train_spiking_temporal_forecaster, train_threat_model
 
     close_old_connections()
     try:
@@ -166,6 +166,15 @@ class Command(BaseCommand):
         self.stdout.write(
           self.style.SUCCESS(
             f"Trained threat forecast model for '{label}' (Score: {report.anomaly_score * 100:.1f}%)"
+          )
+        )
+
+      spiking_run = train_spiking_temporal_forecaster(user, is_platform=is_platform)
+      if spiking_run:
+        self.stdout.write(
+          self.style.SUCCESS(
+            f"Trained Spiking Temporal Forecaster (4th model) for '{label}' "
+            f"(Forecast: {spiking_run.average_sla:.2f}%)"
           )
         )
     except Exception as e:

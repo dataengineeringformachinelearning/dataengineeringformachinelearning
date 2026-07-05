@@ -4,6 +4,7 @@ export const API_ENDPOINTS = {
   ML: {
     LATEST: `${environment.backendUrl}/api/v1/ml/latest`,
     TRAIN: `${environment.backendUrl}/api/v1/ml/train`,
+    TEMPORAL_FORECAST: `${environment.backendUrl}/api/v1/ml/temporal-forecast`,
   },
   SYSTEM_STATUS: {
     ENDPOINTS: `${environment.backendUrl}/api/v1/system-status/endpoints`,

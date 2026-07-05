@@ -157,7 +157,7 @@ export class Dashboard implements OnInit, OnDestroy {
   });
 
   // Fourth model: Spiking Temporal Forecast (from backend overview telemetry)
-  temporalForecast = signal<number>(52); // populated from API / status service in real impl
+  temporalForecast = signal<number>(0);
 
   myPages = computed(() => {
     const uid = this.authService.currentUserId();
@@ -314,6 +314,7 @@ export class Dashboard implements OnInit, OnDestroy {
           this.threatLevel = ces?.threat || 0;
           this.slaLevel = ces?.sla || 0;
           this.stabilityLevel = ces?.stability || 0;
+          this.temporalForecast.set(ces?.spiking_temporal_forecast ?? 0);
           this.p99Latency = user_metrics?.p99_latency_ms || 0;
           this.uptimePercent = user_metrics?.uptime_percent || 0;
           this.totalRequests = user_metrics?.total_requests_24h || 0;
