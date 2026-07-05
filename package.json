@@ -38,6 +38,14 @@
     "start:viking-ui-docs": "npm run start --prefix viking-ui-docs",
     "start": "npm run start:viking-ui-docs",
     "deploy:viking-ui-docs": "npm run build:viking-ui-docs && npx --yes firebase-tools@latest deploy --only hosting:deml-ui --project deml-ui",
+    "test:visual": "playwright test",
+    "chromatic": "chromatic --playwright",
+    "chromatic:ci": "npm run test:visual && chromatic --playwright --exit-zero-on-changes",
     "install-hooks": "python scripts/deml_tooling.py install-hooks && uvx pre-commit install --hook-type pre-commit --hook-type pre-push"
+  },
+  "devDependencies": {
+    "@chromatic-com/playwright": "^0.14.10",
+    "@playwright/test": "^1.52.0",
+    "chromatic": "^18.0.1"
   }
 }
