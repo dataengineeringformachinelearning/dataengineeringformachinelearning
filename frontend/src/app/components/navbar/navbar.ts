@@ -15,6 +15,7 @@ import { environment } from '../../../environments/environment';
       context="app"
       [urls]="siteUrls"
       [isAuthenticated]="authService.isAuthenticated()"
+      [isBusy]="authService.isProcessing()"
       [theme]="themeService.theme()"
       [showSearch]="true"
       (login)="login()"

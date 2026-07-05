@@ -4,24 +4,34 @@ const renderCard = ({
   title,
   compact,
   interactive,
+  loading,
   heading,
   metric,
+  detail,
+  showFooter,
+  footerLabel,
 }: {
   title: string;
   compact: boolean;
   interactive: boolean;
+  loading: boolean;
   heading: string;
   metric: string;
+  detail: string;
+  showFooter: boolean;
+  footerLabel: string;
 }) => `
   <div class="viking-story-grid cols-2">
-    <viking-card ${compact ? "compact" : ""} ${
-      interactive ? "interactive" : ""
+    <viking-card ${compact ? "compact" : ""} ${interactive ? "interactive" : ""} ${
+      loading ? "loading" : ""
     } title="${title}">
       <div class="viking-card-header">
         <h3>${heading}</h3>
+        <viking-badge tone="accent" icon="shield">Signal</viking-badge>
       </div>
       <p class="viking-text-muted">${metric}</p>
-      <p>High-fidelity UI primitives and design tokens keep this card consistent across Angular, Astro, and static surfaces.</p>
+      <p>${detail}</p>
+      ${showFooter ? `<div class="viking-card-footer"><viking-button size="sm" variant="ghost">${footerLabel}</viking-button></div>` : ""}
     </viking-card>
   </div>
 `;
@@ -33,9 +43,13 @@ const meta: Meta<typeof renderCard> = {
   argTypes: {
     compact: { control: "boolean" },
     interactive: { control: "boolean" },
+    loading: { control: "boolean" },
     title: { control: "text" },
     heading: { control: "text" },
     metric: { control: "text" },
+    detail: { control: "text" },
+    showFooter: { control: "boolean" },
+    footerLabel: { control: "text" },
   },
 };
 
@@ -47,8 +61,13 @@ export const Default: Story = {
     title: "Events per second",
     compact: false,
     interactive: true,
+    loading: false,
     heading: "Events per second",
     metric: "8.4K sustained ingest throughput.",
+    detail:
+      "High-fidelity UI primitives and design tokens keep this card consistent across Angular, Astro, and static surfaces.",
+    showFooter: false,
+    footerLabel: "Open signal detail",
   },
 };
 
@@ -57,7 +76,27 @@ export const Compact: Story = {
     title: "SLO compliance",
     compact: true,
     interactive: false,
+    loading: false,
     heading: "SLO compliance",
     metric: "99.92% availability across last 24h.",
+    detail:
+      "Monitoring integrity and release confidence across the full event stream.",
+    showFooter: true,
+    footerLabel: "Review SLO",
+  },
+};
+
+export const LoadingState: Story = {
+  args: {
+    title: "Forecast model",
+    compact: false,
+    interactive: false,
+    loading: true,
+    heading: "Forecast model",
+    metric: "Model artifact sync pending.",
+    detail:
+      "This card demonstrates the loading state while pipeline snapshots refresh.",
+    showFooter: false,
+    footerLabel: "Open artifact",
   },
 };

@@ -3,21 +3,24 @@
   display: grid;
   align-content: start;
   justify-items: start;
-  padding: clamp(1.25rem, 2vw, 2.5rem);
+  padding: clamp(1rem, 1.6vw, 2rem);
   background:
-    radial-gradient(
-      140% 120% at 0% 10%,
-      rgba(11, 197, 255, 0.14),
-      transparent 55%
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-bg) 70%, transparent) 0%,
+      color-mix(in srgb, var(--viking-bg) 90%, var(--viking-surface) 10%) 100%
     ),
-    radial-gradient(
-      120% 100% at 100% 90%,
-      rgba(198, 49, 63, 0.18),
-      transparent 55%
-    ),
-    var(--viking-surface, #090b11);
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--viking-border-subtle) 8%, transparent),
+      color-mix(in srgb, var(--viking-border-subtle) 8%, transparent) 1px,
+      transparent 1px,
+      transparent 9px
+    );
   color: var(--viking-text, #f4f4f4);
   border-radius: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .viking-story-shell h1,
@@ -33,21 +36,49 @@
 }
 
 .viking-story-panel {
-  width: min(100%, 940px);
+  width: min(100%, 1000px);
   border: 1px solid var(--viking-border, rgba(255, 255, 255, 0.15));
   border-radius: var(--viking-radius-lg, 14px);
-  background: color-mix(
-    in srgb,
-    var(--viking-surface-strong, #0f172a) 84%,
-    var(--viking-surface, #0b0b12)
-  );
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow: var(--viking-shadow-md);
   padding: 1.5rem;
-  box-shadow: var(--viking-shadow-lg, 0 26px 54px rgb(0 0 0 / 0.46));
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background-clip: padding-box;
+}
+
+.viking-story-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-metallic-200) 35%, transparent),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.viking-story-panel::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 auto;
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--viking-metallic-100) 28%, transparent),
+    transparent
+  );
+  pointer-events: none;
 }
 
 .viking-story-grid {
   display: grid;
-  gap: 1rem;
+  gap: var(--viking-space-4);
   margin-top: 1rem;
 }
 
@@ -59,5 +90,21 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--viking-space-2);
+}
+
+.viking-story-playground-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-xs);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+  margin-bottom: var(--viking-space-1);
+}
+
+.landing-playground-band {
+  width: 100%;
+  margin: 0;
 }

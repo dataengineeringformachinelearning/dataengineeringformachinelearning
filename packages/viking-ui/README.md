@@ -1,9 +1,11 @@
 # Viking-UI
 
-Published package: **`@dataengineeringformachinelearning/viking-ui@4.0.1`**
+Published package: **`@dataengineeringformachinelearning/viking-ui@4.0.3`**
 Single source of truth: **`packages/viking-ui/`** (framework-agnostic primitives, styles, web components, and Angular wrapper entrypoints are consolidated here).
 
 Universal DEML component library for Astro, Angular, and Django.
+
+This release reflects the Lockheed Martin × The Northman battlefield visual direction with machined borders, high-contrast depth, and restrained teal/crimson accents.
 
 ## Architecture
 
@@ -48,7 +50,7 @@ import {
   VikingButton,
   VikingInput,
   VikingModal,
-} from "@dataengineeringformachinelearning/viking-ui";
+} from "@dataengineeringformachinelearning/viking-ui/angular";
 ```
 
 ```bash
@@ -127,11 +129,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.1/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.1/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/web-components.js"
 ></script>
 ```
 
@@ -217,7 +219,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.1/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/widget.js"
   async
   defer
   data-page-id="platform-status"

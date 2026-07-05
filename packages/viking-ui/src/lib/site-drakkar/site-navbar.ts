@@ -114,6 +114,8 @@ import {
               <viking-button
                 variant="primary"
                 icon="arrow-right"
+                class="auth-btn"
+                [loading]="isBusy()"
                 (pressed)="login.emit()"
               >
                 Sign In
@@ -122,11 +124,16 @@ import {
               <viking-button
                 variant="primary"
                 icon="home"
+                class="auth-btn"
                 [href]="urls().app + '/dashboard'"
               >
                 Dashboard
               </viking-button>
-              <viking-button variant="ghost" (pressed)="logout.emit()"
+              <viking-button
+                variant="ghost"
+                class="auth-btn auth-signout-btn"
+                [loading]="isBusy()"
+                (pressed)="logout.emit()"
                 >Sign Out</viking-button
               >
             }
@@ -187,7 +194,8 @@ import {
           <viking-button
             variant="primary"
             icon="arrow-right"
-            class="mobile-auth-btn"
+            class="mobile-auth-btn auth-btn"
+            [loading]="isBusy()"
             [fullWidth]="true"
             (pressed)="login.emit(); closeMobileMenu()"
           >
@@ -197,7 +205,7 @@ import {
           <viking-button
             variant="primary"
             icon="home"
-            class="mobile-auth-btn"
+            class="mobile-auth-btn auth-btn"
             [fullWidth]="true"
             [href]="urls().app + '/dashboard'"
             (pressed)="closeMobileMenu()"
@@ -206,7 +214,8 @@ import {
           </viking-button>
           <viking-button
             variant="ghost"
-            class="mobile-auth-btn"
+            class="mobile-auth-btn auth-btn auth-signout-btn"
+            [loading]="isBusy()"
             [fullWidth]="true"
             (pressed)="logout.emit(); closeMobileMenu()"
           >
@@ -221,6 +230,7 @@ export class VikingSiteNavbar {
   readonly context = input<SiteDrakkarContext>("app");
   readonly urls = input<SiteUrls>(DEFAULT_SITE_URLS);
   readonly isAuthenticated = input<boolean>(false);
+  readonly isBusy = input<boolean>(false);
   readonly theme = input<"light" | "dark">("dark");
   readonly showSearch = input<boolean>(false);
 

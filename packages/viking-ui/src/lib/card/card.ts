@@ -42,13 +42,18 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         background: var(--viking-surface-recipe, var(--viking-surface));
         border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);
-        box-shadow: var(--viking-shadow-sm);
+        box-shadow:
+          var(--viking-shadow-sm),
+          inset 0 1px 0
+            color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
         padding: var(--viking-card-padding, var(--viking-space-3));
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
         position: relative;
+        isolation: isolate;
         overflow: hidden;
         min-width: 0;
+        background-clip: padding-box;
       }
       :host(.viking-card-headerless) .viking-card-header,
       :host(.viking-card-headerless) viking-card-header {
@@ -72,17 +77,44 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         );
         pointer-events: none;
       }
+
+      :host::after {
+        content: "";
+        position: absolute;
+        inset: 0 auto auto 0;
+        right: 0;
+        width: 1px;
+        height: 28px;
+        background: linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--viking-metallic-100) 22%, transparent),
+          transparent
+        );
+        pointer-events: none;
+      }
+
       :host(.viking-card-interactive) {
         cursor: pointer;
       }
+
+      :host(.viking-card-interactive):focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
+      }
       :host(.viking-card-interactive):hover {
         border-color: var(--viking-accent-strong);
-        box-shadow: var(--viking-shadow-hover);
+        box-shadow:
+          var(--viking-shadow-hover),
+          inset 0 1px 0
+            color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
         transform: translateY(var(--viking-state-hover-lift));
       }
       :host(.viking-card-interactive):active {
         transform: translateY(0) scale(var(--viking-state-active-scale));
-        box-shadow: var(--viking-shadow-md);
+        box-shadow:
+          inset 0 1px 2px
+            color-mix(in srgb, var(--viking-black) 24%, transparent),
+          var(--viking-shadow-sm);
       }
       :host(.viking-card-interactive):focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
@@ -132,7 +164,6 @@ export class VikingCard {
         gap: var(--viking-space-2);
         padding-bottom: var(--viking-space-2);
         margin-bottom: var(--viking-space-2);
-        border-bottom: 1px solid var(--viking-border-subtle);
       }
       /* Support slotted left meta + right actions uniformly */
       :host ::ng-deep > * {
@@ -162,7 +193,6 @@ export class VikingCardHeader {}
         gap: var(--viking-space-2);
         padding-top: var(--viking-space-2);
         margin-top: var(--viking-space-2);
-        border-top: 1px solid var(--viking-border-subtle);
       }
     `,
   ],

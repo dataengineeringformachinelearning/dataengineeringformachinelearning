@@ -1,1 +1,1 @@
-export * from "./web/index";
+export * from "./public-api";

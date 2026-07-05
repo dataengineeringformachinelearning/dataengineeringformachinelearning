@@ -28,7 +28,7 @@ export class VikingCardWc extends HTMLElementBase {
   static readonly legacyTag = "viking-card-wc";
 
   static get observedAttributes(): string[] {
-    return ["compact", "interactive", "title"];
+    return ["compact", "interactive", "title", "loading"];
   }
 
   connectedCallback(): void {
@@ -48,6 +48,7 @@ export class VikingCardWc extends HTMLElementBase {
       "viking-card-interactive",
       this.hasAttribute("interactive"),
     );
+    this.classList.toggle("viking-card-loading", this.hasAttribute("loading"));
 
     const title = this.getAttribute("title");
     if (title) {

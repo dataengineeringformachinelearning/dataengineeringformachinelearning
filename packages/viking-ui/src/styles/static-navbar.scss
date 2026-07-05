@@ -216,7 +216,7 @@
 
   viking-button,
   viking-button-wc {
-    min-width: auto;
+    min-width: var(--viking-btn-min-width, 120px) !important;
   }
 }
 
@@ -488,7 +488,7 @@ button.auth-btn {
   align-items: center !important;
   justify-content: center !important;
   gap: var(--viking-space-1, 8px) !important;
-  min-width: auto !important;
+  min-width: var(--viking-btn-min-width, 120px) !important;
   height: var(--viking-control-height, 40px) !important;
   min-height: var(--viking-control-height, 40px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
@@ -497,6 +497,23 @@ button.auth-btn {
   text-transform: uppercase !important;
   white-space: nowrap !important;
   line-height: 1 !important;
+}
+
+.auth-btn::part(control),
+viking-button.auth-btn::part(control),
+viking-button.auth-btn viking-button-wc::part(control),
+viking-button.auth-btn viking-button-wc,
+viking-button-wc.auth-btn::part(control),
+.auth-btn.viking-full::part(control) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--viking-space-1, 8px) !important;
+  min-width: var(--viking-btn-min-width, 120px) !important;
+  min-height: var(--viking-control-height, 40px) !important;
+  height: var(--viking-control-height, 40px) !important;
+  padding: 0 var(--viking-space-2, 16px) !important;
+  box-sizing: border-box !important;
 }
 
 .auth-signout-btn {
@@ -520,6 +537,19 @@ button.auth-btn {
 
 .auth-signout-btn[hidden] {
   display: none !important;
+}
+
+.auth-btn [data-viking-icon],
+.auth-btn [data-viking-icon] svg,
+.auth-signout-btn [data-viking-icon],
+.auth-signout-btn [data-viking-icon] svg {
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 16px !important;
+  height: 16px !important;
+  line-height: 1 !important;
 }
 
 .auth-signout-btn:hover {
@@ -554,12 +584,17 @@ button.auth-btn {
   z-index: 49;
   gap: var(--viking-space-half, 4px);
 
-  viking-button {
+  viking-button,
+  viking-button-wc,
+  .mobile-auth-btn {
     width: 100%;
   }
 
   .mobile-auth-btn,
-  .auth-signout-btn {
+  .auth-signout-btn,
+  .mobile-auth-btn::part(control),
+  .mobile-auth-btn.auth-btn::part(control),
+  .mobile-auth-btn.auth-signout-btn::part(control) {
     flex-shrink: 0;
     width: 100%;
   }
@@ -1133,6 +1168,10 @@ button.auth-btn {
   }
 
   .mobile-menu:not(.open) {
+    display: none !important;
+  }
+
+  .mobile-menu.open {
     display: none !important;
   }
 

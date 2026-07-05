@@ -1,6 +1,6 @@
 # DEML — Cursor Agent Rules (Viking-UI Quality)
 
-You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must feel like **precision-engineered industrial luxury**: restrained, dark-first, token-driven, and WCAG 2.1 AA by construction.
+You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must feel like **precision-engineered mission hardware**: restrained, dark-first, token-driven, combining **Lockheed Martin-grade industrial rigor** with **Northman command discipline** under WCAG 2.1 AA constraints.
 
 ## Rule hierarchy (read in order)
 
@@ -26,7 +26,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 | Accessible focus | `--viking-ring` 2px + 2px offset | Never remove `:focus-visible` for aesthetics |
 | Settings / billing forms | `viking-form-section` + grouped `viking-field` | Section rhythm: `--viking-space-3` / `--viking-font-size-lg` |
 
-**Intentional palette:** **deep charcoals, machined metallic borders, restrained teal/crimson** — premium restrained luxury, not startup-neutral.
+**Intentional palette:** **deep-charcoal surfaces, machined steel borders, restrained electric-teal + crimson accents** — premium and austere, not startup-neutral.
 
 ---
 
@@ -86,8 +86,9 @@ import {
 
 ### Layout & aesthetic
 
-- **Premium restrained luxury:** data and metrics dominate; ornament is minimal.
-- **Tactile surfaces:** subtle inset top-edge highlights, crisp `--viking-border`, 1px hover lift max.
+- **Premium restrained luxury:** data and metrics dominate; ornament is minimal, structural, and mission-focused.
+- **Tactile surfaces:** subtle inset top-edge highlights, etched steel-like borders, and 1px hover lift max.
+- **Engineered glyph geometry:** subtle rune-inspired geometric separators, border notches, or runelock linework are allowed only where they improve orientation, hierarchy, or emphasis.
 - **Mobile-first:** 44px touch targets, `--viking-space-2` gutters scaling to `--viking-space-3`.
 - **Status:** never color alone — pair tone with `viking-icon`, label, or pattern.
 
@@ -97,7 +98,7 @@ import {
 
 Every surface must match the **marketing site polish bar** — use it as the visual benchmark before shipping UI.
 
-**Visual benchmark:** [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/) (`marketing/src/pages/index.astro`, `marketing/src/styles/landing.scss`). Match its breathing room, section hierarchy, machined card surfaces, and restrained teal/crimson accents. If deml.app, backend, docs, or showcase feels flatter or tighter than marketing, it is not done.
+**Visual benchmark:** [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/) (`marketing/src/pages/index.astro`, `marketing/src/styles/landing.scss`). Match its breathing room, section hierarchy, machined card surfaces, and restrained teal/crimson accents. If deml.app, backend, docs, or showcase feels flatter, less disciplined, or less legible than marketing, it is not done.
 
 ### Tokens only — spacing, color, wrappers
 

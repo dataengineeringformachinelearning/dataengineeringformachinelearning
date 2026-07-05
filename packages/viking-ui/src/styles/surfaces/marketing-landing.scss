@@ -32,12 +32,58 @@
     grid-template-columns: 1fr 1.1fr;
     gap: var(--viking-space-8);
   }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 -2px 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-accent) 35%, transparent),
+      transparent
+    );
+    opacity: 0.45;
+    pointer-events: none;
+  }
 }
 
 .hero-copy {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-3);
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-400) 48%, transparent),
+      transparent
+    );
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 24px;
+    height: 16px;
+    border-top: 1px solid color-mix(in srgb, var(--viking-accent) 45%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--viking-accent) 22%, transparent);
+    opacity: 0.55;
+    pointer-events: none;
+  }
 }
 
 .hero-badge {
@@ -50,6 +96,21 @@
   border-radius: 1000px;
   width: fit-content;
   box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+  border-color: var(--viking-border-strong);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 1px;
+    right: 1px;
+    top: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--viking-accent) 35%, transparent);
+    opacity: 0.6;
+    pointer-events: none;
+  }
 
   .badge-dot {
     width: var(--grid-unit, 8px);
@@ -106,6 +167,20 @@
   font-weight: 600;
   color: var(--text-color);
   letter-spacing: 0.02em;
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--viking-accent) 28%, var(--border));
+  box-shadow: var(--shadow-sm);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--viking-accent) 40%, transparent);
+    opacity: 0.45;
+    pointer-events: none;
+  }
 
   svg {
     width: 18px;
@@ -148,6 +223,40 @@
     0 0 0 1px color-mix(in srgb, var(--viking-accent) 15%, transparent);
   transform: rotateY(-4deg) rotateX(2deg);
   transition: transform 0.4s ease;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    border: 1px solid color-mix(in srgb, var(--viking-metallic-500) 28%, transparent);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white) 7%, transparent);
+    opacity: 0.75;
+    background:
+      linear-gradient(
+        135deg,
+        transparent,
+        color-mix(in srgb, var(--viking-accent) 12%, transparent) 50%,
+        transparent
+      );
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 28px;
+    width: 30px;
+    height: 18px;
+    border-bottom: 1px solid color-mix(in srgb, var(--viking-accent) 24%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
+    transform: skewX(-18deg);
+    pointer-events: none;
+    opacity: 0.55;
+    z-index: 2;
+  }
 
   &:hover {
     transform: rotateY(0deg) rotateX(0deg);
@@ -358,7 +467,7 @@
   position: relative;
 }
 
-/* pola.rs-inspired minimal geometric rule (subtle, high-contrast, works in light/dark) */
+/* Structural command-line divider for section cadence */
 .quick-start-band::after {
   content: "";
   position: absolute;
@@ -426,10 +535,28 @@
     border-color 0.25s ease,
     transform 0.25s ease,
     box-shadow 0.25s ease;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--viking-accent) 35%, transparent),
+      transparent
+    );
+    opacity: 0.45;
+    pointer-events: none;
+  }
 
   &:hover {
     border-color: var(--viking-accent);
-    transform: translateY(-4px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-hover);
   }
 
@@ -542,6 +669,8 @@
   border-radius: 16px;
   background: color-mix(in srgb, var(--viking-accent) 6%, var(--color-surface));
   border: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
+  position: relative;
+  overflow: hidden;
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease;
@@ -570,6 +699,16 @@
     font-size: 0.9rem;
     color: var(--text-muted);
     line-height: 1.45;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1px solid color-mix(in srgb, var(--viking-metallic-400) 26%, transparent);
+    border-radius: inherit;
+    opacity: 0.5;
+    pointer-events: none;
   }
 }
 
@@ -665,7 +804,23 @@
     padding: var(--viking-space-9) 0;
   }
 
-  /* double divider accent for each capability showcase */
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-accent) 22%, transparent),
+      transparent
+    );
+    opacity: 0.25;
+  }
+
+  /* Structured divider marker for each capability showcase */
   &::after {
     content: "";
     position: absolute;
@@ -721,6 +876,20 @@
     line-height: 1.65;
     margin: 0 0 24px 0;
   }
+
+  &::after {
+    content: "";
+    display: block;
+    width: 42px;
+    height: 1px;
+    margin-top: 18px;
+    background: linear-gradient(
+      90deg,
+      var(--viking-accent),
+      transparent
+    );
+    opacity: 0.35;
+  }
 }
 
 .showcase-link {
@@ -749,6 +918,31 @@
   border-radius: var(--viking-radius-xl, 16px);
   padding: var(--viking-card-padding, var(--viking-space-4));
   box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid color-mix(in srgb, var(--viking-metallic-500) 24%, transparent);
+    border-radius: inherit;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white) 6%, transparent);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 18px;
+    width: 36px;
+    height: 12px;
+    border-bottom: 1px solid color-mix(in srgb, var(--viking-accent) 35%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--viking-accent) 18%, transparent);
+    opacity: 0.45;
+    pointer-events: none;
+  }
 }
 
 .visual-panel-header {
@@ -795,6 +989,8 @@
   border-radius: var(--viking-radius-lg);
   padding: var(--viking-card-padding-compact, var(--viking-space-3));
   position: relative;
+  border-color: color-mix(in srgb, var(--viking-accent) 12%, var(--border));
+  box-shadow: var(--shadow-sm);
 
   .metric-label {
     display: block;
@@ -847,7 +1043,7 @@
   position: relative;
 }
 
-/* pola.rs-inspired double divider accent */
+/* Structured double divider accent */
 .widget-showcase::after {
   content: "";
   position: absolute;
@@ -928,6 +1124,29 @@
   border-radius: var(--viking-radius-xl, 16px);
   padding: var(--viking-card-padding, var(--viking-space-4));
   box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, var(--viking-border-strong) 85%, transparent);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        140px 42px at 16px 0,
+        color-mix(in srgb, var(--viking-accent) 10%, transparent),
+        transparent
+      ),
+      linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--viking-accent-strong) 16%, transparent),
+        transparent
+      );
+    opacity: 0.35;
+  }
 }
 
 /* ── Pricing ── */
@@ -938,7 +1157,7 @@
   position: relative;
 }
 
-/* pola.rs-inspired double divider accent */
+/* Structured double divider accent */
 .pricing-showcase::after {
   content: "";
   position: absolute;
@@ -1005,6 +1224,9 @@
     border-radius: var(--viking-radius-xl);
     background: var(--color-surface);
     border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
     transition:
       transform 0.3s ease,
       box-shadow 0.3s ease;
@@ -1020,8 +1242,25 @@
     }
 
     &:hover {
-      transform: translateY(-8px);
+      transform: translateY(-2px);
+      border-color: var(--viking-accent);
       box-shadow: var(--shadow-hover);
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--viking-accent) 24%, transparent),
+        transparent
+      );
+      opacity: 0.45;
+      pointer-events: none;
     }
 
     h3 {
@@ -1030,6 +1269,7 @@
       margin: 0;
       text-transform: uppercase;
       letter-spacing: 0.1em;
+      font-weight: var(--viking-font-weight-semibold);
     }
 
     .price {
@@ -1081,6 +1321,7 @@
         var(--viking-accent) 6%,
         var(--color-surface)
       );
+      box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white) 8%, transparent);
 
       .recommended-badge {
         position: absolute;

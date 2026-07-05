@@ -12,6 +12,21 @@ const preview: Preview = {
       expanded: true,
       sort: "requiredFirst",
     },
+    options: {
+      storySort: {
+        method: "alphabetical",
+        order: [
+          "Viking Web Components",
+          "Viking Web Components/Playground",
+          "Viking Web Components/Controls",
+          "Viking Web Components/Navigation",
+          "Viking Web Components/Layout",
+          "Viking Web Components/Forms",
+          "Viking Web Components/Feedback",
+          "Viking Web Components/Overlay",
+        ],
+      },
+    },
     actions: {
       handles: [
         "viking-press",
@@ -32,11 +47,15 @@ const preview: Preview = {
     },
     layout: "fullscreen",
     backgrounds: {
-      default: "surface-shell",
+      default: "battlefield-surface",
       values: [
-        { name: "surface-shell", value: "#0d1017" },
-        { name: "chalk", value: "#f5f5f2" },
-        { name: "obsidian", value: "#05070d" },
+        {
+          name: "battlefield-surface",
+          value:
+            "linear-gradient(180deg, #05070d 0%, #0a0d16 80%, #05070d 100%)",
+        },
+        { name: "viking-charcoal", value: "#080b12" },
+        { name: "viking-glass", value: "#10131b" },
       ],
     },
   },

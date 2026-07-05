@@ -16,6 +16,22 @@
   flex-direction: column;
   gap: var(--viking-page-section-gap, var(--viking-space-5));
   padding-block: var(--viking-space-6);
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--viking-accent) 10%, transparent),
+        transparent
+      );
+    opacity: 0.03;
+  }
 }
 
 @media (min-width: 768px) {
@@ -29,6 +45,21 @@
   display: grid;
   gap: var(--viking-space-5);
   align-items: center;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 -2px 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-accent) 35%, transparent),
+      transparent
+    );
+    opacity: 0.4;
+  }
 }
 
 @media (min-width: 960px) {
@@ -42,6 +73,20 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-3);
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 22px;
+    height: 14px;
+    border-top: 1px solid color-mix(in srgb, var(--viking-accent) 40%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--viking-accent) 24%, transparent);
+    opacity: 0.5;
+    pointer-events: none;
+  }
 }
 
 .showcase-hero-badge {
@@ -54,6 +99,18 @@
   border-radius: var(--viking-radius-pill);
   background: var(--viking-surface);
   box-shadow: var(--viking-shadow-sm);
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 1px;
+    right: 1px;
+    top: 0;
+    height: 1px;
+    background: color-mix(in srgb, var(--viking-accent) 35%, transparent);
+    opacity: 0.55;
+  }
 }
 
 .showcase-hero-badge-dot {
@@ -90,7 +147,6 @@
   margin: 0;
   font-size: clamp(2rem, 4.5vw, 3rem);
   font-weight: var(--viking-font-weight-bold, 800);
-  line-height: var(--viking-line-height-tight);
   letter-spacing: var(--viking-letter-spacing-tight);
   color: var(--viking-text);
 }
@@ -115,6 +171,11 @@
   gap: var(--viking-space-2);
   position: relative;
   overflow: hidden;
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  padding: var(--viking-space-2);
+  background: var(--viking-surface);
+  box-shadow: var(--viking-shadow-sm);
 }
 
 .showcase-hero-panel::before {
@@ -129,6 +190,7 @@
     transparent
   );
   pointer-events: none;
+  opacity: 0.7;
 }
 
 /* ── Toolbar ── */
@@ -252,6 +314,7 @@
   flex-direction: column;
   gap: var(--viking-space-4);
   padding-block: var(--viking-space-5);
+  border-top: 1px solid color-mix(in srgb, var(--viking-accent) 20%, transparent);
   border-bottom: 1px solid var(--viking-border);
   scroll-margin-top: calc(
     var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +

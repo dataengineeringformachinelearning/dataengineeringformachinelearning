@@ -31,14 +31,14 @@
 
 ## Design philosophy
 
-Viking-UI expresses **precision engineering** and **high-end industrial tech**:
+Viking-UI expresses **precision engineering** and **high-end industrial command hardware**:
 
 - **Dark-first engineering aesthetic** — deep charcoals, machined metallic edges, no decorative noise.
-- **Luxurious minimalism** — every pixel earns its place; data and metrics dominate ornament.
+- **Battlefield discipline** — every pixel earns its place; telemetry, commands, and hierarchy dominate ornament.
 - **Tactile surfaces** — subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`), restrained elevation, crisp borders.
-- **Refined accent discipline** — electric blue (`#2176ff`) for primary action, rich crimson for secondary emphasis and danger; no neon gradients or ambient glow orbs on base surfaces.
+- **Refined accent discipline** — restrained electric-teal (`#2176ff`) for primary action, rich crimson for secondary emphasis and danger; no neon gradients or ambient glow orbs on base surfaces.
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
-- **Zero arbitrary hex** — all colors resolve to tokens below. Emojis are prohibited except 🇺🇸 on specific badges.
+- **Zero arbitrary hex** — all colors resolve to tokens below.
 
 ### Composable primitive model
 
@@ -53,7 +53,13 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech**:
 | Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                     |
 | Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
 
-**Palette discipline:** **deep navy/black surfaces, metallic borders, and restrained electric-blue/crimson accents** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
+**Palette discipline:** **deep navy/black surfaces, metallic borders, and restrained electric-teal/crimson accents** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
+
+### Directional language
+
+- Lockheed Martin-inspired precision: clean seams, deterministic rhythm, and zero visual drift under stress.
+- Northman field discipline: geometric accents are strategic, not ornamental, and reserved for section boundaries and critical-state callouts.
+- Surfaces stay deeply naval/charcoal with **machined metallic borders** and consistent top-edge highlights.
 
 ---
 
@@ -74,7 +80,7 @@ Deep navy-black surfaces anchor every surface. The `--viking-charcoal-*` names r
 
 ### 1.2 Metallic accents (borders & depth)
 
-Machined aluminum feel — borders, axis lines, muted shell trim.
+Machined aluminum feel with aerospace-grade trim — borders, axis lines, and defensive shell structure.
 
 | Token                   | HEX       | RGB                  | Role                    |
 | ----------------------- | --------- | -------------------- | ----------------------- |
@@ -85,7 +91,7 @@ Machined aluminum feel — borders, axis lines, muted shell trim.
 | `--viking-metallic-200` | `#AAAAAA` | `rgb(170, 170, 170)` | Muted text (dark mode)  |
 | `--viking-metallic-100` | `#BBBBBB` | `rgb(187, 187, 187)` | Disabled shell trim     |
 
-### 1.3 Primary — electric blue
+### 1.3 Primary — restrained electric-teal
 
 Primary CTAs, links, focus rings, series 1 in charts.
 
@@ -388,7 +394,7 @@ Premium feel: 6–12px for interactive surfaces; pills for tags only.
 
 ## 5. Shadows & elevation
 
-Soft, directional shadows with a **machined top edge** (inset highlight). No diffuse colored glows on standard UI. Elevation communicates hierarchy — cards lift 1px on hover max (`--viking-state-hover-lift`), never “float” 8px+ on static dashboards.
+Soft, directional shadows with a **machined top-edge specular line** and restrained falloff. No diffuse colored glows on standard UI. Elevation communicates hierarchy — cards lift 1px on hover max (`--viking-state-hover-lift`), never “float” 8px+ on static dashboards.
 
 | Token                   | Recipe                                                           |
 | ----------------------- | ---------------------------------------------------------------- |
