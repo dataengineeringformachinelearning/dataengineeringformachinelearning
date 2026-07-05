@@ -222,10 +222,12 @@
   align-items: center;
   flex-shrink: 0;
   gap: var(--viking-space-1, 8px);
+  min-height: var(--viking-control-height, 40px);
 
   viking-button,
   viking-button-wc {
     min-width: var(--viking-btn-min-width, 120px) !important;
+    flex-shrink: 0;
   }
 }
 
@@ -553,12 +555,7 @@ button.auth-btn {
 .auth-btn::part(label),
 .auth-signout-btn::part(label),
 .mobile-auth-btn::part(label) {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: var(--viking-space-1, 8px) !important;
-  min-width: 0;
-  line-height: 1 !important;
+  display: contents;
 }
 
 .auth-btn::part(control),
@@ -576,6 +573,7 @@ viking-button-wc.auth-btn::part(control),
   height: var(--viking-control-height, 40px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
   box-sizing: border-box !important;
+  border-radius: var(--viking-radius-md, var(--viking-radius, 8px)) !important;
 }
 
 .auth-btn[aria-busy="true"]::part(control),
@@ -615,6 +613,7 @@ viking-button-wc.auth-btn[loading]::part(control) {
 .auth-btn [data-viking-icon],
 .auth-btn [data-viking-icon] svg,
 .auth-btn svg,
+.auth-btn viking-icon,
 .auth-signout-btn [data-viking-icon],
 .auth-signout-btn [data-viking-icon] svg,
 .auth-signout-btn svg,
@@ -629,6 +628,11 @@ viking-button-wc.auth-btn[loading]::part(control) {
   min-width: 16px !important;
   line-height: 1 !important;
   flex: 0 0 auto !important;
+}
+
+#auth-icon-desktop,
+#auth-icon-mobile {
+  display: contents;
 }
 
 #auth-text-desktop,
@@ -1304,22 +1308,22 @@ viking-button-wc.auth-btn[loading]::part(control) {
 
   .menu-toggle-btn,
   viking-button.menu-toggle-btn,
-  viking-button-wc.menu-toggle-btn {
+  viking-button-wc.menu-toggle-btn,
+  #mobile-menu-btn {
     display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
   }
 
   .mobile-menu,
-  .mobile-menu:not(.open) {
+  .mobile-menu:not(.open),
+  .mobile-menu.open,
+  #mobile-menu,
+  #mobile-menu.open {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
-  }
-
-  .mobile-menu.open {
-    display: none !important;
     opacity: 0 !important;
-    pointer-events: none !important;
-    visibility: hidden !important;
   }
 
   .navbar-right {

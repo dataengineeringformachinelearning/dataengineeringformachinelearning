@@ -32,10 +32,10 @@
 
 ## Design philosophy
 
-Viking-UI's locked aesthetic is **Lockheed Martin x The Northman digital battlefield**: aerospace-grade command hardware with restrained mythic battlefield undertones.
+Viking-UI's locked aesthetic is **precision-engineered industrial luxury**: dark-first command hardware with machined metallic surfaces and restrained operational presence.
 
-- **Lockheed Martin precision engineering** — clean hierarchy, machined surfaces, deterministic rhythm, high-contrast operational readability, and zero visual drift under pressure.
-- **The Northman battlefield undertone** — subtle geometric/rune-inspired structure, strong silhouettes, ceremonial restraint, and presence without fantasy illustration or decorative clutter.
+- **Precision engineering** — clean hierarchy, machined surfaces, deterministic rhythm, high-contrast operational readability, and zero visual drift under pressure.
+- **Operational restraint** — subtle geometric structure, strong silhouettes, ceremonial restraint, and presence without fantasy illustration or decorative clutter.
 - **Dark-first command surfaces** — deep navy/charcoal backgrounds, machined metallic edges, no decorative noise.
 - **Tactile surface depth** — crisp borders, directional elevation, and subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`) on cards, panels, and buttons.
 - **Refined accent discipline** — restrained electric-teal (`#2176ff`) for command/confirmation, rich crimson for escalation, secondary emphasis, and danger; no neon gradients or ambient glow orbs on base surfaces.
@@ -60,9 +60,9 @@ Viking-UI's locked aesthetic is **Lockheed Martin x The Northman digital battlef
 
 ### Directional language
 
-- Name the direction as **Lockheed Martin x The Northman digital battlefield** in docs, reviews, and implementation notes.
-- Aerospace precision: clean seams, deterministic rhythm, machined hierarchy, and zero visual drift under stress.
-- Northman field discipline: geometric accents are strategic, not ornamental, and reserved for section boundaries, shell framing, and critical-state callouts.
+- Name the direction as **precision-engineered industrial luxury** in docs, reviews, and implementation notes.
+- Machined precision: clean seams, deterministic rhythm, machined hierarchy, and zero visual drift under stress.
+- Geometric discipline: accents are strategic, not ornamental, and reserved for section boundaries, shell framing, and critical-state callouts.
 - Surfaces stay deeply navy/charcoal with **machined metallic borders**, consistent top-edge highlights, and stronger tactile depth on cards/buttons.
 - Never soften the system into startup SaaS neutrality, fantasy theming, glassmorphism, neon cyberpunk, or cramped utilitarian austerity.
 
@@ -797,4 +797,4 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 
 When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
 
-**Version:** Viking-UI premium palette v4.0 (Lockheed Martin x The Northman digital battlefield, deep navy / teal / crimson, composable primitives, unified package governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+**Version:** Viking-UI premium palette v4.0 (precision-engineered industrial luxury, deep navy / teal / crimson, composable primitives, unified package governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

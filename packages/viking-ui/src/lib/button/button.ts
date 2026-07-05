@@ -56,7 +56,7 @@ export type VikingButtonVariant =
       } @else if (icon()) {
         <viking-icon [name]="icon()!" [size]="iconSize()" />
       }
-      <span class="viking-btn-label"><ng-content /></span>
+      <ng-content />
       @if (!loading() && iconTrailing()) {
         <viking-icon [name]="iconTrailing()!" [size]="iconSize()" />
       }

@@ -363,12 +363,27 @@ export const VIKING_BUTTON_STYLES = `
 .viking-btn-label {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--viking-space-1);
   line-height: 1.2;
   min-width: 0;
-  justify-content: center;
   text-align: center;
   white-space: nowrap;
+}
+
+.viking-btn-label ::slotted(*) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  line-height: 1;
+}
+
+.viking-btn-label ::slotted([data-viking-icon]),
+.viking-btn-label ::slotted(svg),
+.viking-btn-label ::slotted(viking-icon) {
+  width: var(--viking-icon-size-md);
+  height: var(--viking-icon-size-md);
 }
 
 .viking-btn-spinner {

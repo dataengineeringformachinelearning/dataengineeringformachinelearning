@@ -1,5 +1,14 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.0.6
+
+### Patch Changes
+
+- Fix navbar Sign In icon alignment and remove auth-button loading flash on page load.
+- Hide mobile menu toggle on desktop and close mobile menu on outside click (Shadow DOM safe).
+- Sync cross-site auth session state: Dashboard + Sign Out on static navbars, trusted iframe origins, and localStorage storage events.
+- Remove deprecated brand language from theme and docs copy.
+
 ## 4.0.5
 
 ### Patch Changes
@@ -7,7 +16,7 @@
 - Prepare the package for npm publishing with the consolidated `packages/viking-ui/`
   source of truth, clean package files, public CSS/Web Component utility exports,
   and package validation for npm dry runs.
-- Lock the polished Lockheed Martin x The Northman aesthetic into Storybook:
+- Lock the polished DEML premium restrained luxury aesthetic into Storybook:
   token-only battlefield backgrounds, machined card surfaces, generous spacing,
   core Web Component coverage, and Chromatic mobile/tablet/desktop snapshots.
 - Update the UI showcase and release docs to describe the publishing workflow:

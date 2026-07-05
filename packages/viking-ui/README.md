@@ -1,11 +1,11 @@
 # Viking-UI
 
-Publish target: **`@dataengineeringformachinelearning/viking-ui@4.0.5`**
+Publish target: **`@dataengineeringformachinelearning/viking-ui@4.0.6`**
 Single source of truth: **`packages/viking-ui/`** (framework-agnostic styles, tokens, Web Components, and Angular wrapper entrypoints are consolidated here).
 
 Universal DEML component library for Astro, Angular, and Django.
 
-This release reflects the Lockheed Martin × The Northman battlefield visual direction with machined borders, high-contrast depth, and restrained teal/crimson accents.
+This release reflects the DEML premium restrained luxury visual direction with machined borders, high-contrast depth, and restrained teal/crimson accents.
 
 ## Architecture
 
@@ -155,11 +155,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.6/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.6/dist/web-components.js"
 ></script>
 ```
 
@@ -243,7 +243,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.5/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.6/dist/widget.js"
   async
   defer
   data-page-id="platform-status"

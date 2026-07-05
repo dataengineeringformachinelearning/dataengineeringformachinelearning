@@ -1,6 +1,6 @@
 # DEML — Cursor Agent Rules (Viking-UI Quality)
 
-You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must follow the locked **Lockheed Martin x The Northman digital battlefield** aesthetic: restrained, dark-first, token-driven mission hardware that combines aerospace precision engineering with mythic battlefield gravity under WCAG 2.1 AA constraints.
+You are building the **Data Engineering for Machine Learning (DEML)** platform. Every UI change must feel like **precision-engineered industrial luxury**: restrained, dark-first, token-driven, and WCAG 2.1 AA by construction.
 
 ## Rule hierarchy (read in order)
 
@@ -26,17 +26,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 | Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Never remove `:focus-visible` for aesthetics                 |
 | Settings / billing forms | `viking-form-section` + grouped `viking-field`                         | Section rhythm: `--viking-space-3` / `--viking-font-size-lg` |
 
-**Intentional palette:** **deep-charcoal surfaces, machined steel borders, restrained electric-teal + crimson accents** — premium and austere, not startup-neutral.
-
-## Locked aesthetic: Lockheed Martin x The Northman
-
-This is the final Viking-UI visual direction. Treat it as product law, not seasonal styling.
-
-- **Lockheed Martin precision:** clean hierarchy, aerospace-console restraint, machined seams, deterministic spacing, and high-contrast operational readability.
-- **The Northman undertone:** subtle geometric/rune-inspired structure, strong silhouette, ceremonial restraint, and battlefield presence without fantasy ornament.
-- **Digital battlefield surface:** deep navy/charcoal fields, metallic borders, specular top-edge highlights, and tactile card/button depth.
-- **Accent discipline:** teal is command/confirmation, crimson is escalation/danger/secondary emphasis. Use both sparingly.
-- **Generous precision:** spacing must breathe, but every gap must resolve to `--viking-space-*`; no Spartan compression and no loose marketing sprawl.
+**Intentional palette:** **deep charcoals, machined metallic borders, restrained teal/crimson** — premium restrained luxury, not startup-neutral.
 
 ---
 
