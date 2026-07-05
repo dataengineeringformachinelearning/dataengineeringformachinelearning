@@ -7,13 +7,16 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
     "@chromatic-com/storybook",
   ],
+  core: {
+    disableTelemetry: true,
+  },
   framework: {
     name: "@storybook/html",
     options: {},
   },
   staticDirs: ["../dist"],
   docs: {
-    autodocs: true,
+    autodocs: "tag",
   },
 };
 

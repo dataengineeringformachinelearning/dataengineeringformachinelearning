@@ -2,6 +2,7 @@
 
 :host {
   display: inline-flex;
+  align-items: center;
 }
 
 :host(.viking-full) {
@@ -18,6 +19,20 @@
 
 .viking-btn {
   @include btn.viking-btn-base;
+  line-height: 1;
+}
+
+.viking-btn viking-icon,
+.viking-btn .viking-icon,
+.viking-btn [data-viking-icon] {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--viking-icon-size-md);
+  height: var(--viking-icon-size-md);
+  line-height: 1;
+  pointer-events: none;
 }
 
 .viking-sm {
@@ -79,7 +94,15 @@
 .viking-btn-label {
   display: inline-flex;
   align-items: center;
+  gap: var(--viking-space-1);
   line-height: inherit;
+  min-width: 0;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+.viking-btn kbd {
+  margin-top: 0;
 }
 
 .viking-btn-kbd {

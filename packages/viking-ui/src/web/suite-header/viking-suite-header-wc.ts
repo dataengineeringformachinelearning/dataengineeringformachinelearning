@@ -204,6 +204,17 @@ const VIKING_SUITE_HEADER_STYLES = `
   text-transform: uppercase;
 }
 
+.suite-header__auth-icon,
+.suite-header__menu-icon,
+.suite-header__action-icon,
+.suite-header__avatar-icon,
+.suite-header__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .suite-header__auth-link:hover {
   background: var(--viking-accent-hover);
   color: var(--viking-accent-content);
@@ -354,6 +365,10 @@ viking-suite-command-palette {
   }
 
   .suite-header__menu-button {
+    display: none;
+  }
+
+  .suite-header[data-menu-open='true'] .suite-header__mobile {
     display: none;
   }
 }

@@ -2,8 +2,10 @@
 
 Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` design system — the canonical open-source documentation site for community adoption and contributions.
 
-Published package: **`@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.4`**
+Published package: **`@dataengineeringformachinelearning/viking-ui@4.0.3`**
 Consolidation status: **single source of truth under `packages/viking-ui/`** (including Angular wrappers).
+
+Showcase rendering follows the Lockheed Martin × The Northman battlefield aesthetic: machined control surfaces, disciplined contrast, and restrained accents for technical precision.
 
 **Production URL:** [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)
 
@@ -76,7 +78,7 @@ Firebase Hosting site **`deml-ui`** — not marketing or deml.app.
 
 - **Astro 7** for static documentation
 - **viking-ui.css** + **viking-ui-elements.js** for live previews
-- **jsDelivr CDN alternative**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.4/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.4/dist/web-components.js`
+- **jsDelivr CDN alternative**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.3/dist/web-components.js`
   (`@latest` also resolves to this release)
 - Token-only SCSS in `src/styles/` — no hardcoded hex
 

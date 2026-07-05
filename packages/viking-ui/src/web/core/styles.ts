@@ -39,7 +39,7 @@ export const VIKING_BUTTON_STYLES = `
   gap: var(--viking-space-1);
   min-height: var(--viking-control-height);
   padding: 0 var(--viking-control-padding-x);
-  border-radius: var(--viking-radius);
+  border-radius: var(--viking-radius-lg);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -48,9 +48,29 @@ export const VIKING_BUTTON_STYLES = `
   min-width: var(--viking-btn-min-width, 120px);
   white-space: nowrap;
   position: relative;
+  background-clip: padding-box;
+  isolation: isolate;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.viking-btn::before {
+  content: "";
+  position: absolute;
+  inset: 1px 1px auto;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--viking-metallic-100) 45%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  opacity: 0.82;
+  transition: var(--viking-transition-interactive);
 }
 
 .viking-btn:focus-visible {
@@ -65,6 +85,36 @@ export const VIKING_BUTTON_STYLES = `
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
+}
+
+.viking-btn[aria-busy='true']::before,
+.viking-btn[aria-busy='true'] .viking-btn-label {
+  opacity: 0.85;
+  transform: translateY(1px);
+}
+
+.viking-btn[aria-busy='true'] .viking-btn-spinner {
+  opacity: 0.85;
+}
+
+.viking-btn::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(
+      in srgb,
+      var(--viking-metallic-100) 18%,
+      transparent
+    ),
+    transparent
+  );
+  pointer-events: none;
+  opacity: 0.45;
+  transition: var(--viking-transition-interactive);
 }
 
 .viking-btn-sm {
@@ -131,6 +181,20 @@ export const VIKING_BUTTON_STYLES = `
   height: var(--viking-icon-size-md, 20px);
 }
 
+::slotted(viking-icon),
+::slotted(.viking-icon),
+::slotted([data-viking-icon]) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--viking-icon-size-md);
+  height: var(--viking-icon-size-md);
+  line-height: 1;
+  flex-shrink: 0;
+  pointer-events: none;
+  flex: 0 0 auto;
+}
+
 .viking-btn-outline {
   background: var(--viking-surface);
   color: var(--viking-text);
@@ -143,6 +207,14 @@ export const VIKING_BUTTON_STYLES = `
   border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border-strong));
   box-shadow: var(--viking-shadow-md);
   transform: translateY(var(--viking-state-hover-lift));
+}
+
+.viking-btn-outline:active:not(:disabled):not([aria-busy='true']) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: inset 0 1px 2px
+      color-mix(in srgb, var(--viking-black) 28%, transparent),
+    var(--viking-shadow-sm);
+  border-color: var(--viking-border-strong);
 }
 
 .viking-btn-primary {
@@ -159,6 +231,14 @@ export const VIKING_BUTTON_STYLES = `
   transform: translateY(var(--viking-state-hover-lift));
 }
 
+.viking-btn-primary:active:not(:disabled):not([aria-busy='true']) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: inset 0 1px 2px
+      color-mix(in srgb, var(--viking-black) 28%, transparent),
+    var(--viking-shadow-sm);
+  border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
+}
+
 .viking-btn-secondary {
   background: var(--viking-accent-secondary);
   color: var(--viking-accent-secondary-content);
@@ -171,6 +251,14 @@ export const VIKING_BUTTON_STYLES = `
   border-color: var(--viking-accent-secondary-hover);
   box-shadow: var(--viking-shadow-hover);
   transform: translateY(var(--viking-state-hover-lift));
+}
+
+.viking-btn-secondary:active:not(:disabled):not([aria-busy='true']) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: inset 0 1px 2px
+      color-mix(in srgb, var(--viking-black) 28%, transparent),
+    var(--viking-shadow-sm);
+  border-color: color-mix(in srgb, var(--viking-accent-secondary) 82%, var(--viking-black));
 }
 
 .viking-btn-filled {
@@ -187,6 +275,13 @@ export const VIKING_BUTTON_STYLES = `
   transform: translateY(var(--viking-state-hover-lift));
 }
 
+.viking-btn-filled:active:not(:disabled):not([aria-busy='true']) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  box-shadow: var(--viking-shadow-sm);
+  border-color: color-mix(in srgb, var(--viking-accent) 20%, var(--viking-border));
+  background: color-mix(in srgb, var(--viking-surface-alt) 84%, var(--viking-accent));
+}
+
 .viking-btn-danger {
   background: var(--viking-danger);
   color: var(--viking-on-danger);
@@ -196,8 +291,18 @@ export const VIKING_BUTTON_STYLES = `
 
 .viking-btn-danger:hover:not(:disabled):not([aria-busy='true']) {
   background: color-mix(in srgb, var(--viking-danger) 88%, var(--viking-white));
+  border-color: color-mix(in srgb, var(--viking-danger) 92%, var(--viking-white));
   box-shadow: var(--viking-shadow-hover);
   transform: translateY(var(--viking-state-hover-lift));
+}
+
+.viking-btn-danger:active:not(:disabled):not([aria-busy='true']) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  border-color: color-mix(in srgb, var(--viking-danger) 72%, var(--viking-black));
+  background: color-mix(in srgb, var(--viking-danger) 84%, var(--viking-black));
+  box-shadow: inset 0 1px 2px
+      color-mix(in srgb, var(--viking-black) 28%, transparent),
+    var(--viking-shadow-sm);
 }
 
 .viking-btn-ghost {
@@ -209,6 +314,12 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-ghost:hover:not(:disabled):not([aria-busy='true']) {
+  background: var(--viking-accent-soft);
+  color: var(--viking-accent-strong);
+}
+
+.viking-btn-ghost:active:not(:disabled):not([aria-busy='true']) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
   background: var(--viking-accent-soft);
   color: var(--viking-accent-strong);
 }
@@ -227,6 +338,13 @@ export const VIKING_BUTTON_STYLES = `
   border-color: var(--viking-border-strong);
 }
 
+.viking-btn-subtle:active:not(:disabled):not([aria-busy='true']) {
+  transform: translateY(0) scale(var(--viking-state-active-scale));
+  border-color: var(--viking-border);
+  background: color-mix(in srgb, var(--viking-accent-soft) 70%, var(--viking-surface));
+  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--viking-black) 24%, transparent);
+}
+
 .viking-btn:active:not(:disabled):not([aria-busy='true']) {
   transform: translateY(0) scale(var(--viking-state-active-scale));
 }
@@ -234,7 +352,12 @@ export const VIKING_BUTTON_STYLES = `
 .viking-btn-label {
   display: inline-flex;
   align-items: center;
-  line-height: inherit;
+  gap: var(--viking-space-1);
+  line-height: 1.2;
+  min-width: 0;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .viking-btn-spinner {

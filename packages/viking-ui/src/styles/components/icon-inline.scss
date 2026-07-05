@@ -12,6 +12,19 @@ viking-icon,
   vertical-align: middle;
 }
 
+[data-viking-icon] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+[data-viking-icon] svg {
+  display: inline-block;
+  line-height: 1;
+}
+
 .nav-btn,
 .mobile-nav-btn,
 .auth-btn,
@@ -35,11 +48,21 @@ viking-icon,
 .nav-btn viking-app-icon,
 .nav-btn viking-icon,
 .mobile-nav-btn viking-app-icon,
+.nav-btn [data-viking-icon],
+.mobile-nav-btn [data-viking-icon],
 .auth-btn viking-app-icon,
 .mobile-auth-btn viking-app-icon {
   width: var(--viking-icon-size-md, var(--base-font-size));
   height: var(--viking-icon-size-md, var(--base-font-size));
   align-self: center;
+}
+
+.nav-btn [data-viking-icon] svg,
+.mobile-nav-btn [data-viking-icon] svg,
+.auth-btn [data-viking-icon] svg,
+.mobile-auth-btn [data-viking-icon] svg {
+  width: var(--viking-icon-size-md, var(--base-font-size));
+  height: var(--viking-icon-size-md, var(--base-font-size));
 }
 
 .theme-toggle-btn viking-app-icon,
