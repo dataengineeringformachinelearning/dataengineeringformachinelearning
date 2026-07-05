@@ -1,7 +1,5 @@
 ---
 import { SITE } from '../lib/site';
-import '@dataengineeringformachinelearning/viking-ui/viking-ui.css';
-import '@dataengineeringformachinelearning/viking-ui/web-components.js';
 
 export interface Props {
   title?: string;
@@ -33,6 +31,7 @@ const pageTitle = title === SITE.title ? title : `${title} · ${SITE.name}`;
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/assets/viking-ui.css" />
 
     <link
       rel="preload"
@@ -42,6 +41,7 @@ const pageTitle = title === SITE.title ? title : `${title} · ${SITE.name}`;
       crossorigin
     />
 
+    <script type="module" src="/assets/viking-ui-elements.js"></script>
     <script is:inline src="/assets/widgets/command-palette.js" defer></script>
 
     <script is:inline>

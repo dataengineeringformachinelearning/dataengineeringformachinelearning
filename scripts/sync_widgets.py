@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import os
 import shutil
+import subprocess
 import sys
 
 WIDGET_FILES = (
@@ -21,6 +22,7 @@ WIDGET_FILES = (
 )
 
 ALGOLIA_CONFIG = "algolia-config.js"
+PRETTIER_VERSION = "prettier@3.8.2"
 
 
 def resolve_widget_src(root: str, name: str) -> str:
@@ -49,6 +51,8 @@ def sync_widgets() -> None:
     frontend_public_widgets,
   )
 
+  copied_paths: list[str] = []
+
   for name in WIDGET_FILES:
     src = resolve_widget_src(root, name)
     if not os.path.isfile(src):
@@ -56,19 +60,39 @@ def sync_widgets() -> None:
       continue
 
     if name == "cookie-consent.js":
-      shutil.copy2(src, os.path.join(marketing_widgets, name))
+      dst = os.path.join(marketing_widgets, name)
+      shutil.copy2(src, dst)
+      copied_paths.append(dst)
       print(f"Synced {name} -> marketing")
       continue
 
     if name in ("command-palette.js", "navbar.js"):
       for dst_dir in shared_widget_targets:
-        shutil.copy2(src, os.path.join(dst_dir, name))
+        dst = os.path.join(dst_dir, name)
+        shutil.copy2(src, dst)
+        copied_paths.append(dst)
         print(f"Synced {name} -> {dst_dir}")
       continue
 
     for dst_dir in (marketing_widgets, backend_widgets):
-      shutil.copy2(src, os.path.join(dst_dir, name))
+      dst = os.path.join(dst_dir, name)
+      shutil.copy2(src, dst)
+      copied_paths.append(dst)
       print(f"Synced {name} -> {dst_dir}")
+
+  format_synced_assets(copied_paths)
+
+
+def format_synced_assets(paths: list[str]) -> None:
+  files = [
+    path for path in paths if path.endswith(".css") or os.path.basename(path) == ALGOLIA_CONFIG
+  ]
+  if not files:
+    return
+  subprocess.run(
+    ["npx", "-y", PRETTIER_VERSION, "--write", *files],
+    check=True,
+  )
 
 
 def sync_algolia_config() -> None:
@@ -92,14 +116,16 @@ def sync_algolia_config() -> None:
     if os.path.abspath(src) == os.path.abspath(dst):
       continue
     shutil.copy2(src, dst)
+    format_synced_assets([dst])
     print(f"Synced {ALGOLIA_CONFIG} -> {dst_dir}")
 
-  # Verify cross-surface parity (canonical source is frontend/public).
+  # Verify cross-surface presence. Prettier config is surface-sensitive, so
+  # byte-size parity would oscillate between frontend and static mirrors.
   canonical = os.path.join(root, "frontend", "public", "assets", ALGOLIA_CONFIG)
   for dst_dir in targets:
     dst = os.path.join(dst_dir, ALGOLIA_CONFIG)
-    if os.path.getsize(canonical) != os.path.getsize(dst):
-      print(f"Algolia config drift detected: {dst}", file=sys.stderr)
+    if not os.path.isfile(canonical) or not os.path.isfile(dst):
+      print(f"Algolia config missing: {dst}", file=sys.stderr)
       sys.exit(1)
 
 

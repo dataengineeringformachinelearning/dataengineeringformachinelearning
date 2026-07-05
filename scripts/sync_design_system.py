@@ -44,6 +44,7 @@ def sync_design_system() -> None:
       sys.exit(1)
 
   viking_css_targets = [
+    os.path.join(root_dir, "frontend", "public", "assets", "viking-ui.css"),
     os.path.join(root_dir, "backend", "static", "viking-ui.css"),
     os.path.join(root_dir, "marketing", "public", "assets", "viking-ui.css"),
     os.path.join(root_dir, "viking-ui-docs", "public", "assets", "viking-ui.css"),

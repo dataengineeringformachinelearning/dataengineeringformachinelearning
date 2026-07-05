@@ -132,22 +132,22 @@
   --viking-control-height: var(--viking-touch-target-min, 44px);
   --viking-control-height-sm: 40px;
   --viking-control-height-xs: 24px;
-  --viking-control-padding-x: var(--space-2, var(--viking-space-2, 16px));
+  --viking-control-padding-x: var(--viking-space-2, 16px);
   --viking-btn-min-width: var(--btn-min-width, 120px);
 
-  /* Spacing — 4px grid with legacy aliases */
+  /* Spacing — canonical 4px grid. Legacy --space-* aliases map to these values. */
   --viking-grid-unit: 4px;
   --viking-space-0: 0;
-  --viking-space-half: var(--space-half, 4px);
-  --viking-space-1: var(--space-1, 8px);
-  --viking-space-1-5: var(--space-1-5, 12px);
-  --viking-space-2: var(--space-2, 16px);
-  --viking-space-3: var(--space-3, 24px);
-  --viking-space-4: var(--space-4, 32px);
-  --viking-space-5: var(--space-5, 40px);
-  --viking-space-6: var(--space-6, 48px);
-  --viking-space-7: var(--space-7, 56px);
-  --viking-space-8: var(--space-8, 64px);
+  --viking-space-half: 4px;
+  --viking-space-1: 8px;
+  --viking-space-1-5: 12px;
+  --viking-space-2: 16px;
+  --viking-space-3: 24px;
+  --viking-space-4: 32px;
+  --viking-space-5: 40px;
+  --viking-space-6: 48px;
+  --viking-space-7: 56px;
+  --viking-space-8: 64px;
 
   /* Chart axis labels */
   --viking-chart-axis-size: 12px;
