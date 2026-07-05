@@ -32,7 +32,9 @@
 
 .auth-btn,
 a.auth-btn,
-button.auth-btn {
+button.auth-btn,
+viking-button-wc.auth-btn::part(control),
+viking-button.auth-btn viking-button-wc::part(control) {
   @include viking-drakkar-btn-primary;
   color: var(--viking-white-pure, var(--viking-white-pure)) !important;
 
@@ -52,7 +54,9 @@ a.auth-btn.auth-btn-outline {
 
 .mobile-auth-btn,
 a.mobile-auth-btn,
-button.mobile-auth-btn {
+button.mobile-auth-btn,
+viking-button-wc.mobile-auth-btn::part(control),
+viking-button.mobile-auth-btn viking-button-wc::part(control) {
   @include viking-drakkar-btn-primary;
   width: 100%;
   min-width: 0;

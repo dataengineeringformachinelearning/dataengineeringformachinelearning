@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  OnDestroy,
   effect,
   input,
   model,
@@ -63,6 +64,10 @@ import { VikingIcon } from "../icon/icon";
         animation: viking-modal-in var(--viking-duration)
           var(--viking-ease-default);
         overflow: hidden;
+      }
+      .viking-modal:not([open]) {
+        display: none !important;
+        pointer-events: none;
       }
       .viking-modal::backdrop {
         background: var(--viking-overlay-backdrop);
@@ -176,7 +181,7 @@ import { VikingIcon } from "../icon/icon";
     `,
   ],
 })
-export class VikingModal {
+export class VikingModal implements OnDestroy {
   private readonly dialogRef =
     viewChild.required<ElementRef<HTMLDialogElement>>("dialog");
 
@@ -197,6 +202,13 @@ export class VikingModal {
         dialog.close();
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    const dialog = this.dialogRef()?.nativeElement;
+    if (dialog?.open) {
+      dialog.close();
+    }
   }
 
   protected onBackdropClick = (event: MouseEvent): void => {
