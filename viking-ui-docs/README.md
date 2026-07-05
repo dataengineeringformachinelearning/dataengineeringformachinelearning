@@ -20,13 +20,13 @@ Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` de
 
 ## Repository layout
 
-| Path                           | Role                                                                 |
-| ------------------------------ | -------------------------------------------------------------------- |
-| `viking-ui-docs/`              | Astro showcase + **static CSS build owner**                          |
-| `viking-ui-docs/src/`          | Astro pages, component registry, token inspector                     |
-| `packages/viking-ui/`          | Canonical library, Web Components, SCSS source, and package metadata |
-| `frontend/projects/viking-ui/` | Angular wrappers while migration continues                           |
-| `CONTRIBUTING.md`              | Root contribution guidelines                                         |
+| Path                           | Role                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------ |
+| `viking-ui-docs/`              | Astro showcase + static CSS build entrypoint (build assets from package) |
+| `viking-ui-docs/src/`          | Astro pages, component registry, token inspector                         |
+| `packages/viking-ui/`          | Canonical library, Web Components, SCSS source, and package metadata     |
+| `frontend/projects/viking-ui/` | Angular wrappers while migration continues                               |
+| `CONTRIBUTING.md`              | Root contribution guidelines                                             |
 
 ## Local development
 
