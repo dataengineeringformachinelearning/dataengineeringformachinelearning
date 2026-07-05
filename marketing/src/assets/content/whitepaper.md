@@ -307,8 +307,14 @@ This architecture rests on open-source foundations, enterprise design references
 A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 4px grid for zero layout shift. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css` with matching component scripts available as `web-components.js`.
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
 ```
 
 On the infrastructure side, the deployment pipeline leverages strict Google Distroless multi-stage container builds (`gcr.io/distroless/nodejs22-debian12` for Angular SSR and `gcr.io/distroless/python3-debian12` for Django), fundamentally reducing attack surface by eliminating unnecessary shells and package managers in production. Django ORM queries and ML workers have been rigorously audited to ensure leak-proof data tenancy and strict adherence to the 30-day data retention policy.

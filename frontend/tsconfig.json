@@ -3,6 +3,11 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@dataengineeringformachinelearning/viking-ui": ["./projects/viking-ui/src/public-api.ts"]
+    },
     "strict": true,
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

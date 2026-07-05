@@ -2438,7 +2438,7 @@ Furthermore, critical business logic—such as billing, telemetry, and backgroun
 
 ## Chapter 31: Viking-UI — The Zero-Dependency UI Kit
 
-The frontend design language of the platform is consolidated into a dedicated, workspace-local Angular library: `@dataengineeringformachinelearning/viking-ui` (`frontend/projects/viking-ui`). The kit ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 4px grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. The library covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
+The frontend design language of the platform is delivered by the published package `@dataengineeringformachinelearning/viking-ui`, with `frontend/projects/viking-ui` kept as the Angular-specific wrapper project for compatibility paths and internal source references. The package ships native [Angular](https://angular.dev/) standalone components with zero third-party UI runtime dependencies. Icons use an internal inline-SVG registry, charts render as native SVG paths, modals use the platform `<dialog>` element, and every color resolves through [THEME.md](THEME.md) semantic tokens — light/dark modes, the 4px grid, 16px main content typography, and 14px UI chrome are enforced by construction rather than convention. The system covers the full DEML component surface, from `viking-button` and `viking-badge` through `viking-command`, `viking-editor`, `viking-kanban`, `viking-tabs`, `viking-table`, and `viking-toast`.
 
 ### Design philosophy (THEME.md)
 
@@ -2471,7 +2471,7 @@ Changes to design governance must update `.cursorrules`, `THEME.md`, `AGENTS.md`
 
 deml.app ships a marketing-parity landing page at `/home` (hero, capability bands, pricing, Polars-style whitepaper CTA) so the authenticated app feels cohesive with [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com/). Unauthenticated visitors hitting `/` are routed to `/home`; signed-in users go to `/dashboard`.
 
-Consumption follows the path of least resistance. Inside the repository, deml.app imports `@dataengineeringformachinelearning/viking-ui` as a local npm package (`file:dist/viking-ui`, built via `prebuild`) while development can still resolve the library from source through the TypeScript path alias. Production pages consume Viking-UI components directly — buttons, fields, charts, modals, toasts, and selects — rather than embedding a component gallery inside deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). The project is registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, so the same source produces a publishable Angular Package Format bundle. Component documentation and visual regression live in the **standalone docs site** (`viking-ui-docs/`, deployed to [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)) — build with `npm run build:viking-ui-docs` from the repo root. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, constructor parameter injection (never field-level `inject()` in library code — avoids NG0203 in cross-package bundles), and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box.
+Consumption follows the published path first: Angular app shells install and load from npm (`npm install @dataengineeringformachinelearning/viking-ui`) and consume components + CSS from that package. The wrapper project at `frontend/projects/viking-ui` remains only as the Angular-specific wrapper layer while the package remains the source of truth. Production pages consume components directly — buttons, fields, charts, modals, toasts, and selects — rather than embedding a library-specific gallery inside deml.app. Angular Material, ng-apexcharts, and @angular/cdk have been removed from the frontend; telemetry charts use native SVG `viking-chart` (line, bar, donut). The project is registered as an [ng-packagr](https://github.com/ng-packagr/ng-packagr) library in `angular.json`, and tests validate manifest parity during release. Component documentation and visual regression live in the standalone docs site (`viking-ui-docs/`, deployed to [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com)) — build with `npm run build:viking-ui-docs` from the repo root. Components follow modern Angular idioms end-to-end: signal-based `input()`/`model()` APIs, `OnPush` change detection, constructor parameter injection (never field-level `inject()` in library code — avoids NG0203 in cross-package bundles), and `ControlValueAccessor` implementations on every form control so both template-driven (`ngModel`) and reactive forms work out of the box.
 
 Non-Angular surfaces (marketing Astro pages, Django templates) load the single static CSS bundle synced from the design system:
 
@@ -2535,7 +2535,7 @@ The main Angular app rebuilds the library automatically via `prebuild` / `presta
 
 ### Version bump
 
-The published version lives in `frontend/projects/viking-ui/package.json` (currently read by ng-packagr into `dist/viking-ui/package.json` on build). Bump **before** every npm publish — npm rejects re-publishing an existing version.
+The published version lives in `packages/viking-ui/package.json`. Bump **before** every npm publish — npm rejects re-publishing an existing version.
 
 Follow [Semantic Versioning](https://semver.org/):
 
@@ -2546,7 +2546,7 @@ Follow [Semantic Versioning](https://semver.org/):
 | major | Breaking changes to inputs, outputs, or removed exports |
 
 ```bash
-cd frontend/projects/viking-ui
+cd packages/viking-ui
 
 # Choose one:
 npm version patch --no-git-tag-version # 1.0.0 → 1.0.1
@@ -2561,10 +2561,10 @@ npm version major --no-git-tag-version # 1.0.0 → 2.0.0
 Published scope: `@dataengineeringformachinelearning` (npm org `dataengineeringformachinelearning`). You must be a member of that org and use a 2FA one-time password when publishing.
 
 ```bash
-cd frontend
-npm run test:viking-ui
-npm run build:viking-ui
-cd dist/viking-ui
+cd packages/viking-ui
+npm run test
+npm run build
+npm pack
 npm publish --access public --otp=YOUR_CODE
 ```
 

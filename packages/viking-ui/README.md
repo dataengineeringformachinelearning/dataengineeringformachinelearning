@@ -36,8 +36,8 @@ release, visual regression, and propagation workflow.
 
 Use this for app-first surfaces such as deml.app, internal dashboards, and any build chain that supports package installs.
 
-```html
-<link rel="stylesheet" href="/assets/viking-ui.css" />
+```ts
+import "@dataengineeringformachinelearning/viking-ui/viking-ui.css";
 ```
 
 ```ts
@@ -62,7 +62,7 @@ import {
 } from "@dataengineeringformachinelearning/viking-ui";
 
 // or when building custom element demos:
-import "@dataengineeringformachinelearning/viking-ui/elements.js";
+import "@dataengineeringformachinelearning/viking-ui/web-components.js";
 import "@dataengineeringformachinelearning/viking-ui/viking-ui.css";
 ```
 
@@ -112,11 +112,11 @@ builds.
 <!-- Latest -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
 ></script>
 ```
 
@@ -124,11 +124,11 @@ builds.
 <!-- Pinned -->
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/viking-ui.css"
 />
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/web-components.js"
 ></script>
 ```
 
@@ -214,7 +214,7 @@ Pinned release example:
 
 ```html
 <script
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.2/dist/widget.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.3/dist/widget.js"
   async
   defer
   data-page-id="platform-status"
@@ -231,7 +231,10 @@ Angular app shells consume the package CSS from `angular.json`:
 
 ```json
 {
-  "styles": ["../packages/viking-ui/dist/viking-ui.css", "src/styles.scss"]
+  "styles": [
+    "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
+    "src/styles.scss"
+  ]
 }
 ```
 
