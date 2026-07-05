@@ -70,6 +70,15 @@
     />
   </viking-card>
 
+  <viking-card class="ml-stat-panels-row status-card-extracted-1" [compact]="true">
+    <viking-status-metric-row
+      icon="trending-up"
+      title="Temporal Forecast"
+      subtitle="Norse SNN spike risk (0–100)"
+      [value]="((predictedTemporalForecast ?? 0) | number:'1.1-2')"
+    />
+  </viking-card>
+
   @if (showViewButton) {
   <div class="view-btn-container">
     <viking-button

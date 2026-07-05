@@ -11,6 +11,14 @@ export interface TrainingResponse {
   created_at?: string;
 }
 
+export interface TemporalForecastResponse {
+  status: string;
+  message?: string;
+  spiking_temporal_forecast: number | null;
+  uses_norse?: boolean;
+  created_at?: string | null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,6 +27,7 @@ export class MlService {
 
   public latestStat = signal<number | null>(null);
   public latestStats = signal<Record<string, number | null>>({});
+  public latestTemporalForecasts = signal<Record<string, number | null>>({});
   public isTraining = signal<boolean>(false);
   public trainError = signal<string | null>(null);
 
@@ -38,6 +47,28 @@ export class MlService {
         }
       },
       error: err => console.error('Error fetching latest stat:', err),
+    });
+  }
+
+  fetchTemporalForecast(statusPageId?: string): void {
+    const url = statusPageId
+      ? `${API_ENDPOINTS.ML.TEMPORAL_FORECAST}?status_page_id=${statusPageId}`
+      : API_ENDPOINTS.ML.TEMPORAL_FORECAST;
+
+    this.http.get<TemporalForecastResponse>(url).subscribe({
+      next: data => {
+        const forecast =
+          data.spiking_temporal_forecast !== null && data.spiking_temporal_forecast !== undefined
+            ? data.spiking_temporal_forecast
+            : null;
+        if (statusPageId) {
+          this.latestTemporalForecasts.update(forecasts => ({
+            ...forecasts,
+            [statusPageId]: forecast,
+          }));
+        }
+      },
+      error: err => console.error('Error fetching temporal forecast:', err),
     });
   }
 

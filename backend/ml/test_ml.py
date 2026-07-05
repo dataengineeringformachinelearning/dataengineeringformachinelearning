@@ -54,7 +54,9 @@ def test_get_latest_training(client: Client) -> None:
   assert response.status_code == 200
   assert response.json()["average_sla"] is None
 
-  TrainingRun.objects.create(average_sla=98.5, loss=0.012, is_platform=True, user=None)
+  TrainingRun.objects.create(
+    average_sla=98.5, loss=0.012, is_platform=True, user=None, model_type=TrainingRun.MODEL_TYPE_SLA
+  )
 
   response = client.get("/api/v1/ml/latest")
   assert response.status_code == 200
@@ -88,3 +90,50 @@ def test_train_and_latest_with_status_page(client: Client) -> None:
   latest_res = client.get(f"/api/v1/ml/latest?status_page_id={page.id}")
   assert latest_res.status_code == 200
   assert latest_res.json()["average_sla"] == train_res.json()["average_sla"]
+
+
+@pytest.mark.django_db
+def test_get_temporal_forecast(client: Client) -> None:
+  page = ensure_platform_status_page()
+  response = client.get(f"/api/v1/ml/temporal-forecast?status_page_id={page.id}")
+  assert response.status_code == 200
+  data = response.json()
+  assert data["status"] == "success"
+  assert data["spiking_temporal_forecast"] is not None
+
+  TrainingRun.objects.create(
+    average_sla=72.5,
+    loss=0.04,
+    is_platform=True,
+    user=None,
+    model_type=TrainingRun.MODEL_TYPE_SPIKING,
+  )
+  from django.core.cache import cache
+
+  cache.delete(f"ml:temporal_forecast:{page.id}")
+  response = client.get(f"/api/v1/ml/temporal-forecast?status_page_id={page.id}")
+  assert response.status_code == 200
+  assert response.json()["spiking_temporal_forecast"] == 72.5
+
+
+@pytest.mark.django_db
+def test_latest_training_ignores_spiking_runs(client: Client) -> None:
+  ensure_platform_status_page()
+  TrainingRun.objects.create(
+    average_sla=55.0,
+    loss=0.02,
+    is_platform=True,
+    user=None,
+    model_type=TrainingRun.MODEL_TYPE_SPIKING,
+  )
+  TrainingRun.objects.create(
+    average_sla=98.5,
+    loss=0.012,
+    is_platform=True,
+    user=None,
+    model_type=TrainingRun.MODEL_TYPE_SLA,
+  )
+
+  response = client.get("/api/v1/ml/latest")
+  assert response.status_code == 200
+  assert response.json()["average_sla"] == 98.5

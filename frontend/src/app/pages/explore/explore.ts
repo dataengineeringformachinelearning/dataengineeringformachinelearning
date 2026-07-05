@@ -103,6 +103,7 @@ export class Explore implements OnInit {
         for (const page of publicPages) {
           this.mlService.fetchLatestStat(page.id);
           this.mlService.fetchThreatReport(page.id);
+          this.mlService.fetchTemporalForecast(page.id);
         }
 
         this.isLoading.set(false);

@@ -24,9 +24,13 @@ except ImportError:
   HAS_NORSE = False
 
 from django.conf import settings
-from monitor.models import Endpoints
+from django.utils import timezone
+from monitor.models import AggregatedAnalytics, Endpoints
 
 from ml.models import ThreatReport, TrainingRun
+
+MODEL_TYPE_SLA: Final[str] = TrainingRun.MODEL_TYPE_SLA
+MODEL_TYPE_SPIKING: Final[str] = TrainingRun.MODEL_TYPE_SPIKING
 
 
 def get_platform_model_path():
@@ -39,6 +43,108 @@ def get_ces_model_path():
   path = os.path.join(settings.BASE_DIR, "ml", "saved_models")
   os.makedirs(path, exist_ok=True)
   return os.path.join(path, "ces_model.pt")
+
+
+def get_spiking_model_path(*, user: Any = None, is_platform: bool = False) -> str:
+  path = os.path.join(settings.BASE_DIR, "ml", "saved_models")
+  os.makedirs(path, exist_ok=True)
+  if is_platform:
+    return os.path.join(path, "platform_spiking_temporal_forecaster.pt")
+
+  import hashlib
+
+  identifier = getattr(user, "username", "default")
+  safe_identifier = hashlib.sha256(identifier.encode()).hexdigest()[:12]
+  return os.path.join(path, f"{safe_identifier}_spiking_temporal_forecaster.pt")
+
+
+def build_temporal_sequence(
+  user: Any = None, *, is_platform: bool = False, seq_len: int = 8
+) -> list[list[float]]:
+  """Build a feature sequence from AggregatedAnalytics rollups or endpoint snapshots."""
+  from datetime import timedelta
+
+  last_window = timezone.now() - timedelta(hours=seq_len)
+  if is_platform:
+    buckets = list(
+      AggregatedAnalytics.objects.filter(
+        is_platform=True, user__isnull=True, timestamp__gte=last_window, bucket_size="1h"
+      ).order_by("timestamp")
+    )
+    endpoints = Endpoints.objects.filter(is_platform=True, user__isnull=True)
+  else:
+    buckets = list(
+      AggregatedAnalytics.objects.filter(
+        user=user, is_platform=False, timestamp__gte=last_window, bucket_size="1h"
+      ).order_by("timestamp")
+    )
+    endpoints = Endpoints.objects.filter(user=user, is_platform=False)
+
+  seq: list[list[float]] = []
+  for bucket in buckets:
+    status = max(0.0, min(1.0, 1.0 - (bucket.error_rate_percent / 100.0)))
+    resp = max(0.0, bucket.avg_latency_ms / 1000.0)
+    active = 1.0 if bucket.error_rate_percent < 50.0 else 0.0
+    seq.append(
+      [
+        status,
+        resp,
+        active,
+        max(0.0, bucket.p99_latency_ms / 1000.0),
+        max(0.0, bucket.total_requests / 1000.0),
+        max(0.0, bucket.active_incidents / 10.0),
+      ]
+    )
+
+  if not seq:
+    for ep in list(endpoints)[:seq_len]:
+      status = max(0.0, min(1.0, float(ep.status_code) / 100.0))
+      resp = max(0.0, ep.response_time.total_seconds())
+      active = 1.0 if ep.is_active else 0.0
+      seq.append([status, resp, active, 0.0, 0.0, 0.0])
+
+  default_step = [1.0, 0.0, 1.0, 0.0, 0.0, 0.0]
+  while len(seq) < seq_len:
+    seq.insert(0, default_step.copy())
+
+  return seq[-seq_len:]
+
+
+def infer_spiking_temporal_forecast(
+  user: Any = None, *, is_platform: bool = False, fallback_score: float = 50.0
+) -> float:
+  """Run live SpikingTemporalForecaster inference; falls back to latest training run or default."""
+  if torch is None:
+    return fallback_score
+
+  run_filter = {
+    "is_platform": is_platform,
+    "model_type": MODEL_TYPE_SPIKING,
+    "user": None if is_platform else user,
+  }
+  latest_run = TrainingRun.objects.filter(**run_filter).order_by("-created_at").first()
+
+  model_path = get_spiking_model_path(user=user, is_platform=is_platform)
+  if not os.path.exists(model_path):
+    if latest_run:
+      return max(0.0, min(100.0, latest_run.average_sla))
+    return fallback_score
+
+  try:
+    model = SpikingTemporalForecaster()
+    model.load_state_dict(torch.load(model_path, weights_only=True))
+    model.eval()
+    seq = build_temporal_sequence(user, is_platform=is_platform)
+    with torch.no_grad():
+      x = torch.tensor([seq], dtype=torch.float32)
+      output = model(x)
+      score = float(output.item()) * 100.0
+    return max(0.0, min(100.0, score))
+  except Exception as exc:
+    logger.warning("Spiking temporal inference failed: %s", exc)
+    if latest_run:
+      return max(0.0, min(100.0, latest_run.average_sla))
+    return fallback_score
 
 
 def query_teacher_model(prompt: str) -> float:
@@ -430,6 +536,7 @@ def train_tenant_sla(user: Any = None, *, is_platform: bool = False) -> Training
   run = TrainingRun.objects.create(
     user=None if is_platform else user,
     is_platform=is_platform,
+    model_type=MODEL_TYPE_SLA,
     average_sla=avg_predicted_sla,
     loss=final_loss,
   )
@@ -798,13 +905,54 @@ def train_spiking_temporal_forecaster(
   if not endpoints.exists():
     return None
 
-  # Prepare temporal sequences (simplified: create fake sequences from recent endpoints)
-  # In production, use AggregatedAnalytics over time windows or event sequences from projections.
-  seq_len = 8  # temporal steps
+  seq_len = 8
   x_data = []
   y_data = []
 
-  for ep in list(endpoints)[:100]:
+  if is_platform:
+    analytics = list(
+      AggregatedAnalytics.objects.filter(
+        is_platform=True, user__isnull=True, bucket_size="1h"
+      ).order_by("-timestamp")[:seq_len * 12]
+    )
+  else:
+    analytics = list(
+      AggregatedAnalytics.objects.filter(user=user, is_platform=False, bucket_size="1h").order_by(
+        "-timestamp"
+      )[: seq_len * 12]
+    )
+
+  if analytics:
+    step = max(1, len(analytics) // 20)
+    for idx in range(0, len(analytics) - seq_len + 1, step):
+      window = analytics[idx : idx + seq_len]
+      seq = []
+      for bucket in window:
+        status = max(0.0, min(1.0, 1.0 - (bucket.error_rate_percent / 100.0)))
+        resp = max(0.0, bucket.avg_latency_ms / 1000.0)
+        active = 1.0 if bucket.error_rate_percent < 50.0 else 0.0
+        seq.append(
+          [
+            status,
+            resp,
+            active,
+            max(0.0, bucket.p99_latency_ms / 1000.0),
+            max(0.0, bucket.total_requests / 1000.0),
+            max(0.0, bucket.active_incidents / 10.0),
+          ]
+        )
+      if len(seq) < seq_len:
+        continue
+      x_data.append(seq)
+      prompt = (
+        f"Temporal analytics window: recent error rates "
+        f"{[round(s[0], 2) for s in seq[-3:]]}, p99 latency trend "
+        f"{[round(s[3], 2) for s in seq[-3:]]}. "
+        f"Predict probability (0.0-1.0) of anomaly/spike in next window."
+      )
+      y_data.append([query_teacher_model(prompt)])
+
+  for ep in list(endpoints)[: max(0, 20 - len(x_data))]:
     base_status = float(ep.status_code) / 100.0
     base_resp = ep.response_time.total_seconds()
     base_active = 1.0 if ep.is_active else 0.0
@@ -854,10 +1002,8 @@ def train_spiking_temporal_forecaster(
     loss.backward()
     optimizer.step()
 
-  # Save
-  model_path = get_platform_model_path().replace("threat_model", "spiking_temporal_forecaster")
-  if is_platform:
-    model_path = model_path.replace("platform", "platform")
+  # Save per-tenant/platform weights locally for live inference.
+  model_path = get_spiking_model_path(user=user, is_platform=is_platform)
   torch.save(model.state_dict(), model_path)
 
   # HF push (simplified, similar to others)
@@ -893,7 +1039,8 @@ def train_spiking_temporal_forecaster(
   run = TrainingRun.objects.create(
     user=None if is_platform else user,
     is_platform=is_platform,
-    average_sla=avg_pred,  # reuse field or extend later
+    model_type=MODEL_TYPE_SPIKING,
+    average_sla=avg_pred,
     loss=float(loss.item()) if "loss" in locals() else 0.0,
   )
 
@@ -901,10 +1048,12 @@ def train_spiking_temporal_forecaster(
   from django.core.cache import cache as _cache
 
   _cache.delete("ml:latest_run:platform")
+  _cache.delete("ml:temporal_forecast:platform")
   if not is_platform and user:
     from monitor.models import StatusPage as _SP
 
     for _page in _SP.objects.filter(user=user):
       _cache.delete(f"ml:latest_run:{_page.id}")
+      _cache.delete(f"ml:temporal_forecast:{_page.id}")
 
   return run

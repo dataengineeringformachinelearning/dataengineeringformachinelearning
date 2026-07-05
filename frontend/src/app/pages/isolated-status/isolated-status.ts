@@ -193,6 +193,7 @@ export class IsolatedStatus implements OnInit {
           runInInjectionContext(this.injector, () => {
             this.mlService.fetchLatestStat(page.id);
             this.mlService.fetchThreatReport(page.id);
+            this.mlService.fetchTemporalForecast(page.id);
           });
 
           this.titleService.setTitle(`${page.title} Status - DEML APP`);
