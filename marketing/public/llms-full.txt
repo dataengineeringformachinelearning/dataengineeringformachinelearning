@@ -3807,7 +3807,7 @@ Viking-UI expresses **precision engineering** and **high-end industrial tech** �
 - **Refined accent discipline** — deep teal for primary action, rich crimson for secondary emphasis and danger.
 - **WCAG 2.1 AA** — contrast, focus rings, 44px mobile touch targets, keyboard navigation.
 
-Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle built from `packages/viking-ui/src/styles/` and synced via `scripts/sync_design_system.py`.
+Every surface — [dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), [ui.dataengineeringformachinelearning.com](https://ui.dataengineeringformachinelearning.com), Django templates, and Swagger UI — loads the same compiled `viking-ui.css` bundle built from `packages/viking-ui/src/styles/` and synced via `scripts/sync_design_system.py`; external sites can load the same style bundle from jsDelivr.
 
 ### Unified design governance
 
@@ -3834,6 +3834,19 @@ Non-Angular surfaces (marketing Astro pages, Django templates) load the single s
 
 ```html
 <link rel="stylesheet" href="/assets/viking-ui.css" />
+```
+
+External HTML hosts can also use the jsDelivr CDN:
+
+```html
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
 ```
 
 ```ts
@@ -3934,7 +3947,7 @@ Mobile-first is non-negotiable. Every stylesheet defaults to single-column layou
 
 ### Framework cohesion and light/dark modes
 
-Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the same compiled `viking-ui.css` bundle synced from `packages/viking-ui/src/styles/` via `scripts/sync_design_system.py`. Static CSS is built by `packages/viking-ui/scripts/build-css.mjs`, and Angular keeps `includePaths` pointed at the canonical package token directory for library component SCSS. Light mode shifts lightness only; semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`) preserve WCAG 2.1 AA contrast in both themes. `node scripts/enforce-theme.js` blocks hardcoded hex drift before merge.
+Angular deml.app, Astro marketing, Django templates, and Swagger UI all load the same compiled `viking-ui.css` bundle synced from `packages/viking-ui/src/styles/` via `scripts/sync_design_system.py`; external consumers can use the equivalent CDN assets from jsDelivr. Static CSS is built by `packages/viking-ui/scripts/build-css.mjs`, and Angular keeps `includePaths` pointed at the canonical package token directory for library component SCSS. Light mode shifts lightness only; semantic aliases (`--viking-bg`, `--viking-surface`, `--viking-accent`) preserve WCAG 2.1 AA contrast in both themes. `node scripts/enforce-theme.js` blocks hardcoded hex drift before merge.
 
 ### Accessibility and Section 508
 
@@ -4458,7 +4471,14 @@ This architecture rests on open-source foundations, enterprise design references
 
 ## 15. DevSecOps and Platform Standardization Audit
 
-A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 4px grid for zero layout shift. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. On the infrastructure side, the deployment pipeline leverages strict Google Distroless multi-stage container builds (`gcr.io/distroless/nodejs22-debian12` for Angular SSR and `gcr.io/distroless/python3-debian12` for Django), fundamentally reducing attack surface by eliminating unnecessary shells and package managers in production. Django ORM queries and ML workers have been rigorously audited to ensure leak-proof data tenancy and strict adherence to the 30-day data retention policy.
+A comprehensive DevSecOps and UI/UX standardization audit guarantees an uncompromising mobile-first foundation across the platform—standardizing layout wrappers and enforcing identical maximum-width containers (`1260px`) on the Viking-UI 4px grid for zero layout shift. Every surface—[dataengineeringformachinelearning.com](https://dataengineeringformachinelearning.com), [deml.app](https://deml.app), Django templates, and Swagger UI—shares the same compiled `viking-ui.css` bundle and [THEME.md](THEME.md) token matrix. For unmanaged sites or external integrations, the same bundle is available on jsDelivr CDN as `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css` with matching component scripts available as `web-components.js`.
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
+```
+
+On the infrastructure side, the deployment pipeline leverages strict Google Distroless multi-stage container builds (`gcr.io/distroless/nodejs22-debian12` for Angular SSR and `gcr.io/distroless/python3-debian12` for Django), fundamentally reducing attack surface by eliminating unnecessary shells and package managers in production. Django ORM queries and ML workers have been rigorously audited to ensure leak-proof data tenancy and strict adherence to the 30-day data retention policy.
 
 Application-level Zeek-equivalent middleware with zero-latency cached domain mappings enables real-time passive telemetry ingestion. Native OSINT and Dark Web scanners serialize threat findings directly into `ThreatIntelligence` database records instead of static logs. Post-Quantum Cryptography (PQC) integration enforces strict Forward Secrecy: the KEM architecture caches ephemeral secret keys for exactly 5 minutes using UUIDs and destroys them immediately upon decapsulation—neutralizing "Store Now, Decrypt Later" attacks at the ingestion gateway.
 

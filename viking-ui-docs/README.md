@@ -74,6 +74,7 @@ Firebase Hosting site **`deml-ui`** — not marketing or deml.app.
 
 - **Astro 7** for static documentation
 - **viking-ui.css** + **viking-ui-elements.js** for live previews
+- **jsDelivr CDN alternative**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js`
 - Token-only SCSS in `src/styles/` — no hardcoded hex
 
 Port **4300** by default.

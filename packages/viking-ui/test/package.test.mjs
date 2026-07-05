@@ -33,6 +33,7 @@ test("build writes the framework-neutral distribution files", () => {
     "viking-components.css",
     "deml-components.css",
     "viking-ui-elements.js",
+    "web-components.js",
     "viking-tokens.json",
   ];
 

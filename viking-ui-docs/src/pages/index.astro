@@ -135,80 +135,123 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
         </div>
       </div>
       <div class="landing-quickstart-steps viking-card">
-        <span class="viking-label">jsDelivr CDN (copy-paste ready)</span>
+        <span class="viking-label">Delivery decision</span>
         <p class="viking-text-muted">
-          Load directly from published assets on any host. Swap <code>@latest</code> with a pinned
-          version when you need deterministic releases.
+          Use npm for app-level bundles (Angular + private deployments). Use CDN for static pages,
+          external integrations, and rapid embeds when you only need runtime assets.
         </p>
+        <ul class="landing-step-list viking-text-muted">
+          <li>
+            <strong>npm install</strong>: strongest version control for code-first apps and bundlers.
+          </li>
+          <li>
+            <strong>CDN</strong>: fastest way to ship assets to external pages, static docs, and
+            status widgets.
+          </li>
+        </ul>
+      </div>
+    </section>
 
-        <div class="viking-demo-stack">
-          <p class="viking-label">1) CSS only</p>
-          <pre><code>{`<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
-/>`}</code></pre>
+    <section class="landing-section" aria-labelledby="cdn-usage">
+      <header class="landing-section-header">
+        <span class="section-tag">Distribution</span>
+        <h2 class="showcase-section-title" id="cdn-usage">Use via jsDelivr CDN</h2>
+      </header>
+      <p class="viking-text-muted showcase-section-desc">
+        Copy-ready CDN snippets for every scenario. Use <code>@latest</code> for automatic updates,
+        or pin to a specific version for reproducible releases.
+      </p>
 
-          <p class="viking-label">2) Web Components only</p>
-          <pre><code>{`<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
-></script>`}</code></pre>
+      <p class="viking-label">1) CSS only</p>
+      <div class="code-block" data-code-block="cdn-css-only">
+        <div class="code-block-tabs" role="presentation">
+          <span class="code-block-tab is-active" role="presentation">CSS only</span>
+          <button type="button" class="code-block-copy" data-copy-btn aria-label="Copy code to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="code-block-copy-label">Copy</span>
+          </button>
+        </div>
+        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />`}</code></pre>
+      </div>
 
-          <p class="viking-label">3) CSS + Web Components</p>
-          <pre><code>{`<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
-/>
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
-></script>`}</code></pre>
+      <p class="viking-label">2) Web Components only</p>
+      <div class="code-block" data-code-block="cdn-wc-only">
+        <div class="code-block-tabs" role="presentation">
+          <span class="code-block-tab is-active" role="presentation">Web Components only</span>
+          <button type="button" class="code-block-copy" data-copy-btn aria-label="Copy code to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="code-block-copy-label">Copy</span>
+          </button>
+        </div>
+        <pre class="code-block-panel is-active"><code>{`<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>`}</code></pre>
+      </div>
 
-          <p class="viking-label">4) Version pinning</p>
-          <pre><code>{`<!-- Latest -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
-/>
+      <p class="viking-label">3) CSS + Web Components</p>
+      <div class="code-block" data-code-block="cdn-css-wc">
+        <div class="code-block-tabs" role="presentation">
+          <span class="code-block-tab is-active" role="presentation">CSS + Web Components</span>
+          <button type="button" class="code-block-copy" data-copy-btn aria-label="Copy code to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="code-block-copy-label">Copy</span>
+          </button>
+        </div>
+        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>`}</code></pre>
+      </div>
 
-<!-- Pinned -->
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/viking-ui.css"
-/>
-<script
-  type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.1/dist/web-components.js"
-></script>`}</code></pre>
+      <p class="viking-label">4) Version pinning</p>
+      <p class="viking-text-muted">
+        Prefer pinned versions for immutable environments:
+      </p>
+      <div class="code-block" data-code-block="cdn-version-pinning">
+        <div class="code-block-tabs" role="presentation">
+          <span class="code-block-tab is-active" role="presentation">Version pinning</span>
+          <button type="button" class="code-block-copy" data-copy-btn aria-label="Copy code to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="code-block-copy-label">Copy</span>
+          </button>
+        </div>
+        <pre class="code-block-panel is-active"><code>{`<!-- Latest behavior -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
 
-          <p class="viking-label">5) Full minimal HTML (vanilla widget + external sites)</p>
-          <pre><code>{`<!doctype html>
+<!-- Deterministic release -->
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.0/dist/web-components.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.0/dist/viking-ui.css" />`}</code></pre>
+      </div>
+
+      <p class="viking-label">5) Full minimal HTML for external sites</p>
+      <div class="code-block" data-code-block="cdn-minimal-html">
+        <div class="code-block-tabs" role="presentation">
+          <span class="code-block-tab is-active" role="presentation">Minimal HTML</span>
+          <button type="button" class="code-block-copy" data-copy-btn aria-label="Copy code to clipboard">
+            <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            <span class="code-block-copy-label">Copy</span>
+          </button>
+        </div>
+        <pre class="code-block-panel is-active"><code>{`<!doctype html>
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Viking-UI CDN Example</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
-    />
-    <script
-      type="module"
-      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+    <title>DEML Widget Embed</title>
+    <meta name="description" content="DEML status widget via jsDelivr" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/widget.js" async defer
+      data-page-id="platform-status"
+      data-backend-url="https://api.example.com"
+      data-frontend-url="https://deml.app"
     ></script>
   </head>
   <body>
-    <main style="max-width: 640px; margin: 2rem auto; display: grid; gap: 1rem;">
-      <h1 class="viking-heading viking-heading-lg">DEML Widget</h1>
+    <main style="max-width: 720px; margin: 2rem auto;">
       <viking-card-wc compact>
-        <h2 class="viking-heading viking-heading-sm">Tokenized status card</h2>
-        <p class="viking-text-muted">This runs on any static site.</p>
+        <h1 class="viking-heading viking-heading-lg">Platform status</h1>
+        <p class="viking-text-muted">Drop this file into a marketing page or partner dashboard.</p>
       </viking-card-wc>
-      <viking-button-wc variant="primary">Open dashboard</viking-button-wc>
     </main>
   </body>
 </html>`}</code></pre>
-        </div>
       </div>
     </section>
 

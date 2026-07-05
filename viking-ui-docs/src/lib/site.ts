@@ -14,6 +14,7 @@ export const NAV_LINKS = [
   { href: "/", label: "Overview" },
   { href: "/components", label: "Components" },
   { href: "/playground", label: "Playground" },
+  { href: "/#cdn-usage", label: "CDN" },
   { href: "/architecture", label: "Architecture" },
   { href: "/tokens", label: "Tokens" },
   { href: "/theming", label: "Theming" },

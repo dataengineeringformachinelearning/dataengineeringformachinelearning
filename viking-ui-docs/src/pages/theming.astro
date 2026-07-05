@@ -50,7 +50,11 @@ import { SITE } from '../lib/site';
     <section class="showcase-category" aria-labelledby="load-css-heading">
       <header class="showcase-category-header">
         <h2 class="viking-heading viking-heading-sm" id="load-css-heading">Minimal CSS setup</h2>
-        <p class="viking-text-muted">Load the full package CSS once. Split token/component CSS is exported for tooling and advanced partial builds.</p>
+        <p class="viking-text-muted">
+          Load the full package CSS once. Split token/component CSS is exported for tooling and
+          advanced partial builds. If you can’t use repo-synced assets, the same bundle is available on
+          jsDelivr CDN.
+        </p>
       </header>
 
       <article class="viking-card theming-setup-card">
@@ -67,15 +71,24 @@ import { SITE } from '../lib/site';
 
       <article class="viking-card theming-setup-card">
         <h3 class="viking-heading viking-heading-sm">Astro / static sites</h3>
+        <p class="viking-text-muted">
+          Default: local build artifacts from sync, or CDN for unmanaged surfaces.
+        </p>
         <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="/assets/viking-ui.css" />
 <script type="module" src="/assets/viking-ui-elements.js"></script>`}</code></pre>
+        <p class="viking-label">CDN alternative:</p>
+        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>`}</code></pre>
       </article>
 
       <article class="viking-card theming-setup-card">
-<h3 class="viking-heading viking-heading-sm">Django</h3>
+        <h3 class="viking-heading viking-heading-sm">Django</h3>
+        <p class="viking-text-muted">Default: sync from local Django static files, with CDN override below.</p>
         <pre class="code-block-panel is-active"><code>{`{# base.html #}
 {% load static %}
 <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />`}</code></pre>
+        <p class="viking-label">CDN alternative:</p>
+        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />`}</code></pre>
       </article>
     </section>
 

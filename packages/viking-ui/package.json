@@ -23,18 +23,24 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./dist/index.js": "./dist/index.js",
+    "./dist/viking-ui.css": "./dist/viking-ui.css",
+    "./dist/viking-ui-elements.js": "./dist/viking-ui-elements.js",
+    "./dist/web-components.js": "./dist/web-components.js",
+    "./dist/widget.js": "./dist/widget.js",
     "./elements": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/web-components.js",
+      "default": "./dist/web-components.js"
     },
     "./elements.js": "./dist/viking-ui-elements.js",
     "./viking-ui-elements.js": "./dist/viking-ui-elements.js",
+    "./web-components.js": "./dist/web-components.js",
     "./web-components": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "import": "./dist/web-components.js",
+      "default": "./dist/web-components.js"
     },
-    "./web-components.js": "./dist/viking-ui-elements.js",
-    "./dist/viking-ui-elements.js": "./dist/viking-ui-elements.js",
     "./css": "./dist/viking-ui.css",
     "./css/index.css": "./dist/viking-ui.css",
     "./css/viking-ui.css": "./dist/viking-ui.css",

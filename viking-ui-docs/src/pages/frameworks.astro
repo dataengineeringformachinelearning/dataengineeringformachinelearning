@@ -38,7 +38,7 @@ import { SITE } from '../lib/site';
           with Astro.
         </p>
         <ul class="viking-text-muted">
-          <li>Load synced <code>viking-ui.css</code></li>
+          <li>Load synced <code>viking-ui.css</code> or jsDelivr CDN</li>
           <li>Use <code>&lt;viking-button-wc&gt;</code> in .astro files</li>
           <li>Token-only SCSS for custom layouts</li>
         </ul>
@@ -49,7 +49,7 @@ import { SITE } from '../lib/site';
           CSS-only primitives for Swagger, admin templates, and backend-rendered pages.
         </p>
         <ul class="viking-text-muted">
-          <li>Load synced <code>viking-ui.css</code> once</li>
+          <li>Load synced <code>viking-ui.css</code> or jsDelivr CDN</li>
           <li><code>viking-btn</code>, <code>viking-input-shell</code> classes</li>
           <li>Set <code>data-theme</code> on <code>&lt;html&gt;</code></li>
         </ul>
@@ -61,6 +61,7 @@ import { SITE } from '../lib/site';
         </p>
         <ul class="viking-text-muted">
           <li><code>viking-ui-elements.js</code> auto-registers tags</li>
+          <li>Prefer jsDelivr <code>web-components.js</code> for external or unmanaged pages</li>
           <li><code>viking-button-wc</code>, <code>viking-input-wc</code> today</li>
           <li>More primitives shipping incrementally</li>
         </ul>
@@ -188,7 +189,17 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
 <viking-button-wc variant="primary">Launch</viking-button-wc>
 <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>`,
           django: '',
-          javascript: '',
+          javascript: `<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>
+
+<viking-button-wc variant="primary">Launch</viking-button-wc>
+<viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>`,
         }}
         defaultTab="astro"
       />
@@ -204,6 +215,8 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
           astro: '',
 django: `{# base.html #}
 <link rel="stylesheet" href="{% static 'viking-ui.css' %}" />
+<!-- or CDN alternative -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
 
 <html data-theme="dark">
   <button type="button" class="viking-btn viking-btn-primary">Deploy</button>
@@ -232,7 +245,17 @@ django: `{# base.html #}
 <viking-button-wc variant="primary">Launch</viking-button-wc>
 <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
 <viking-badge-wc tone="success">Healthy</viking-badge-wc>
-<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>`,
+<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>
+
+<!-- Or jsDelivr CDN -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+/>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+></script>`,
         }}
         defaultTab="javascript"
       />

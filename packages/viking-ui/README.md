@@ -141,6 +141,53 @@ builds.
 </html>
 ```
 
+### 6) Status widget via jsDelivr (no npm install)
+
+Use this when embedding a live status badge on external pages:
+
+```html
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DEML Status Widget</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
+    />
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/widget.js"
+      async
+      defer
+      data-page-id="platform-status"
+      data-backend-url="https://api.example.com"
+      data-frontend-url="https://deml.app"
+    ></script>
+  </head>
+  <body></body>
+</html>
+```
+
+Pinned release example:
+
+```html
+<script
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@3.0.0-alpha.0/dist/widget.js"
+  async
+  defer
+  data-page-id="platform-status"
+  data-backend-url="https://api.example.com"
+  data-frontend-url="https://deml.app"
+></script>
+```
+
+Replace `api.example.com` with your backend URL and update `data-page-id` / `data-frontend-url` for your status page.
+
 This package is the source of truth. Existing Angular wrappers in `frontend/projects/viking-ui` adapt the design system for Angular while migration continues; Astro and Django consume the package artifacts directly through synced static assets.
 
 Angular app shells consume the package CSS from `angular.json`:

@@ -405,10 +405,9 @@
             </div>
             <div class="panel-section">
               <h3 class="section-heading"><viking-app-icon name="code" /> Embeddable Widget</h3>
-              <p class="embed-desc">
-                Copy and paste this script tag onto your website to display a live status badge.
-              </p>
+              <p class="embed-desc">Copy and paste one of these options onto your website.</p>
               <div class="code-block-container">
+                <p class="embed-desc">Option A: script served by this site (default)</p>
                 <div class="code-block-outlined">
                   <code>{{ getWidgetCode() }}</code>
                 </div>
@@ -420,6 +419,12 @@
                 >
                   {{ copied() ? 'Copied' : 'Copy' }}
                 </viking-button>
+              </div>
+              <div class="code-block-container">
+                <p class="embed-desc">Option B: jsDelivr CDN (no npm install)</p>
+                <div class="code-block-outlined">
+                  <code>{{ getWidgetCdnCode() }}</code>
+                </div>
               </div>
             </div>
             <div class="panel-section">
