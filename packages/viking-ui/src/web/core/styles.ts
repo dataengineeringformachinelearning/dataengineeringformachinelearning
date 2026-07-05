@@ -919,6 +919,11 @@ export const VIKING_MODAL_STYLES = `
   display: contents;
 }
 
+.viking-modal-backdrop:not([open]) {
+  display: none !important;
+  pointer-events: none;
+}
+
 .viking-modal-backdrop {
   position: fixed;
   inset: 0;

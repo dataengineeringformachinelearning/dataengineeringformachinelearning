@@ -9,7 +9,6 @@ declare global {
   interface HTMLElementTagNameMap {
     "viking-badge": import("./badge/viking-badge-wc").VikingBadgeWc;
     "viking-badge-wc": import("./badge/viking-badge-wc").VikingBadgeWc;
-    "viking-button": import("./button/viking-button-wc").VikingButtonWc;
     "viking-button-wc": import("./button/viking-button-wc").VikingButtonWc;
     "viking-callout": import("./callout/viking-callout-wc").VikingCalloutWc;
     "viking-callout-wc": import("./callout/viking-callout-wc").VikingCalloutWc;
@@ -20,7 +19,6 @@ declare global {
     "viking-input": import("./input/viking-input-wc").VikingInputWc;
     "viking-input-wc": import("./input/viking-input-wc").VikingInputWc;
     "viking-dialog": import("./modal/viking-modal-wc").VikingModalWc;
-    "viking-modal": import("./modal/viking-modal-wc").VikingModalWc;
     "viking-modal-wc": import("./modal/viking-modal-wc").VikingModalWc;
     "viking-command-palette": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;
     "viking-search-palette": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;

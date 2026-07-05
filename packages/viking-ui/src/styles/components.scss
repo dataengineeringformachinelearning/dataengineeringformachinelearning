@@ -138,6 +138,24 @@ a {
     var(--viking-shadow-sm);
 }
 
+// Angular wrapper hosts delegate visuals to viking-button-wc shadow controls.
+viking-button {
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  min-height: 0;
+  overflow: visible;
+  cursor: default;
+
+  &::before,
+  &::after {
+    display: none;
+  }
+}
+
 .viking-button,
 .viking-btn {
   --viking-btn-depth-shadow: var(--viking-shadow-sm);

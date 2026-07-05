@@ -1219,6 +1219,7 @@
   justify-content: center;
   max-width: 800px;
   margin: 0 auto;
+  padding-top: var(--viking-space-3);
 
   @media (min-width: 600px) {
     flex-direction: row;
@@ -1326,6 +1327,7 @@
     &.pro-tier {
       border: 2px solid var(--viking-accent);
       position: relative;
+      overflow: visible;
       background: color-mix(
         in srgb,
         var(--viking-accent) 6%,
@@ -1340,13 +1342,14 @@
         left: 50%;
         transform: translateX(-50%);
         background: var(--viking-accent);
-        color: var(--white);
+        color: var(--viking-accent-content, var(--viking-white-pure));
         padding: 6px 14px;
         border-radius: 1000px;
         font-size: 0.75rem;
         font-weight: 800;
         letter-spacing: 0.1em;
         text-transform: uppercase;
+        z-index: 1;
       }
 
       .pro-btn {

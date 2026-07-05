@@ -1,7 +1,6 @@
 import { attachShadowStyles, readBoolAttr } from "../core/base";
 import {
   defineCustomElement,
-  defineCustomElementAlias,
   escapeHtml,
   HTMLElementBase,
 } from "../core/dom";
@@ -21,14 +20,15 @@ const SIZES = new Set(["sm", "xs"]);
 
 /**
  * Framework-agnostic Viking button Web Component.
- * Tag: `viking-button` (legacy alias: `viking-button-wc`)
+ * Tag: `viking-button-wc` (Angular reserves `viking-button` for its wrapper component)
  *
  * @example
- * <viking-button variant="primary">Launch</viking-button>
+ * <viking-button-wc variant="primary">Launch</viking-button-wc>
  */
 export class VikingButtonWc extends HTMLElementBase {
-  static readonly tag = "viking-button";
-  static readonly legacyTag = "viking-button-wc";
+  /** Reserved for Angular `viking-button` — do not register as a custom element. */
+  static readonly angularTag = "viking-button";
+  static readonly tag = "viking-button-wc";
 
   static get observedAttributes(): string[] {
     return [
@@ -58,7 +58,6 @@ export class VikingButtonWc extends HTMLElementBase {
 
   connectedCallback(): void {
     this.render();
-    this.syncHostSemantics();
     this.control?.addEventListener("click", this.onClick);
   }
 
@@ -69,7 +68,6 @@ export class VikingButtonWc extends HTMLElementBase {
   attributeChangedCallback(): void {
     if (this.isConnected) {
       this.render();
-      this.syncHostSemantics();
     }
   }
 
@@ -108,12 +106,6 @@ export class VikingButtonWc extends HTMLElementBase {
 
   private get square(): boolean {
     return readBoolAttr(this, "square");
-  }
-
-  private syncHostSemantics(): void {
-    if (!this.hasAttribute("role")) {
-      this.setAttribute("role", this.getAttribute("href") ? "link" : "button");
-    }
   }
 
   private render(): void {
@@ -161,5 +153,4 @@ export class VikingButtonWc extends HTMLElementBase {
 
 export const registerVikingButtonWc = (): void => {
   defineCustomElement(VikingButtonWc.tag, VikingButtonWc);
-  defineCustomElementAlias(VikingButtonWc.legacyTag, VikingButtonWc);
 };

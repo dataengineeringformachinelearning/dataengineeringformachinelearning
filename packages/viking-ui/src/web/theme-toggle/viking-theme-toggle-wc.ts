@@ -75,6 +75,9 @@ export class VikingThemeToggleWc extends HTMLElementBase {
   private button: HTMLButtonElement | null = null;
   private sunIcon: SVGElement | null = null;
   private moonIcon: SVGElement | null = null;
+  private readonly onStorage = (): void => {
+    this.syncIcons();
+  };
 
   constructor() {
     super();
@@ -83,17 +86,22 @@ export class VikingThemeToggleWc extends HTMLElementBase {
   }
 
   connectedCallback(): void {
-    if (!this.hasAttribute("role")) {
-      this.setAttribute("role", "button");
-    }
     this.render();
     this.syncIcons();
     this.button?.addEventListener("click", this.onClick);
+    window.addEventListener("storage", this.onStorage);
+    window.addEventListener("viking-theme-change", this.onThemeChange);
   }
 
   disconnectedCallback(): void {
     this.button?.removeEventListener("click", this.onClick);
+    window.removeEventListener("storage", this.onStorage);
+    window.removeEventListener("viking-theme-change", this.onThemeChange);
   }
+
+  private readonly onThemeChange = (): void => {
+    this.syncIcons();
+  };
 
   private readonly onClick = (): void => {
     const next = readTheme() === "light" ? "dark" : "light";
@@ -109,9 +117,10 @@ export class VikingThemeToggleWc extends HTMLElementBase {
   };
 
   private syncIcons = (): void => {
-    const isLight = readTheme() === "light";
-    this.sunIcon?.classList.toggle("is-visible", isLight);
-    this.moonIcon?.classList.toggle("is-visible", !isLight);
+    // Match Angular viking-theme-toggle: sun in dark mode (switch to light).
+    const isDark = readTheme() === "dark";
+    this.sunIcon?.classList.toggle("is-visible", isDark);
+    this.moonIcon?.classList.toggle("is-visible", !isDark);
   };
 
   private render(): void {

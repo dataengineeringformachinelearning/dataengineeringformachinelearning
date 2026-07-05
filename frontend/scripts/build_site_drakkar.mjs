@@ -198,7 +198,6 @@ const navbarRightWc = (
           square
           compact
           class="navbar-search-trigger"
-          role="button"
           aria-label="Open search (⌘K)"
           id="navbar-search-trigger"
         >
@@ -221,9 +220,9 @@ const navbarRightWc = (
         </viking-button-wc>
       </div>
 
-      <viking-theme-toggle-wc class="theme-toggle-btn" role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
+      <viking-theme-toggle-wc class="theme-toggle-btn" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
-      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
+      <viking-button-wc variant="outline" square class="menu-toggle-btn" aria-label="Toggle navigation menu" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
         ${iconSlot('menu', 24)}
       </viking-button-wc>`;
 
@@ -233,7 +232,6 @@ const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" ro
           square
           compact
           class="navbar-search-trigger"
-          role="button"
           aria-label="Open search (⌘K)"
           id="navbar-search-trigger"
         >
@@ -256,9 +254,9 @@ const navbarRightWcAstro = loginHrefExpr => `      <div class="navbar-search" ro
         </viking-button-wc>
       </div>
 
-      <viking-theme-toggle-wc class="theme-toggle-btn" role="button" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
+      <viking-theme-toggle-wc class="theme-toggle-btn" aria-label="Toggle light and dark theme"></viking-theme-toggle-wc>
 
-      <viking-button-wc variant="outline" square class="menu-toggle-btn" role="button" aria-label="Toggle navigation menu" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
+      <viking-button-wc variant="outline" square class="menu-toggle-btn" aria-label="Toggle navigation menu" aria-controls="mobile-menu" aria-expanded="false" id="mobile-menu-btn">
         <span data-viking-icon="menu" data-viking-icon-size="24" aria-hidden="true"></span>
       </viking-button-wc>`;
 
