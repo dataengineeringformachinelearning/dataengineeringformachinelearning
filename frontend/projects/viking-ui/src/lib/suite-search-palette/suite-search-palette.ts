@@ -21,7 +21,7 @@ import { registerVikingElements } from '../../web/index';
 registerVikingElements();
 
 /**
- * viking-suite-search-palette — thin Angular wrapper around `viking-suite-search-palette-wc`.
+ * viking-suite-search-palette — thin Angular wrapper around `viking-suite-command-palette`.
  * Unified ⌘K command palette for deml.app with curated suite navigation.
  */
 @Component({
@@ -29,7 +29,7 @@ registerVikingElements();
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <viking-suite-search-palette-wc
+    <viking-suite-command-palette
       #palette
       [attr.context]="context()"
       [attr.app-url]="urls().app"

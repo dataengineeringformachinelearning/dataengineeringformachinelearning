@@ -1,3 +1,6 @@
+export const HTMLElementBase: typeof HTMLElement =
+  typeof HTMLElement === 'undefined' ? (class {} as unknown as typeof HTMLElement) : HTMLElement;
+
 /** Stable unique id for associating labels and controls. */
 export const vikingWcUid = (prefix: string): string =>
   `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
@@ -25,4 +28,15 @@ export const defineCustomElement = (tag: string, ctor: CustomElementConstructor)
     return;
   }
   customElements.define(tag, ctor);
+};
+
+/** Register an alias tag with a fresh subclass; customElements disallows reusing constructors. */
+export const defineCustomElementAlias = <T extends CustomElementConstructor>(
+  tag: string,
+  ctor: T,
+): void => {
+  if (typeof customElements === 'undefined' || customElements.get(tag)) {
+    return;
+  }
+  customElements.define(tag, class extends ctor {});
 };

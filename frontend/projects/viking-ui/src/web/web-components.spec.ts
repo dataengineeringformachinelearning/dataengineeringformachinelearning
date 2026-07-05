@@ -67,7 +67,7 @@ describe('Viking Web Components v2', () => {
     expect(native.options.length).toBe(2);
 
     let changed = '';
-    select.addEventListener('viking-change', (event) => {
+    select.addEventListener('viking-change', event => {
       changed = (event as CustomEvent<{ value: string }>).detail.value;
     });
     native.value = '30d';
@@ -88,8 +88,8 @@ describe('Viking Web Components v2', () => {
     expect(modal.hasAttribute('open')).toBe(false);
   });
 
-  it('filters search palette items and supports keyboard selection', async () => {
-    const palette = document.createElement('viking-search-palette-wc');
+  it('filters command palette items and supports keyboard selection', async () => {
+    const palette = document.createElement('viking-command-palette');
     palette.setAttribute(
       'items',
       JSON.stringify([
@@ -103,6 +103,9 @@ describe('Viking Web Components v2', () => {
     await Promise.resolve();
     expect(palette.shadowRoot?.querySelectorAll('.viking-search-result').length).toBe(2);
 
+    const input = palette.shadowRoot?.querySelector('input');
+    expect(input?.getAttribute('aria-controls')).toMatch(/^viking-search-results-/);
+
     palette.search('primitives');
     await Promise.resolve();
 
@@ -110,14 +113,45 @@ describe('Viking Web Components v2', () => {
     expect(results?.length).toBe(1);
     expect(results?.[0]?.textContent).toContain('Components');
 
-    palette.shadowRoot
-      ?.querySelector('input')
-      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    input?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
     expect(palette.hasAttribute('open')).toBe(false);
   });
 
+  it('closes command palette from close button, Escape key, and outside click', async () => {
+    const palette = document.createElement('viking-command-palette');
+    palette.setAttribute('items', JSON.stringify([{ title: 'Docs', href: '/docs' }]));
+    document.body.append(palette);
+
+    palette.openPalette();
+    await Promise.resolve();
+    palette.shadowRoot?.querySelector<HTMLButtonElement>('.viking-search-palette-close')?.click();
+    expect(palette.hasAttribute('open')).toBe(false);
+
+    palette.openPalette();
+    await Promise.resolve();
+    palette.shadowRoot
+      ?.querySelector('input')
+      ?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    expect(palette.hasAttribute('open')).toBe(false);
+
+    palette.openPalette();
+    await Promise.resolve();
+    const dialog = palette.shadowRoot?.querySelector('dialog');
+    dialog?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(palette.hasAttribute('open')).toBe(false);
+  });
+
+  it('registers command palette aliases for legacy and semantic tags', () => {
+    expect(customElements.get('viking-command-palette')).toBeTruthy();
+    expect(customElements.get('viking-search-palette')).toBeTruthy();
+    expect(customElements.get('viking-search-palette-wc')).toBeTruthy();
+    expect(customElements.get('viking-suite-command-palette')).toBeTruthy();
+    expect(customElements.get('viking-suite-search-palette')).toBeTruthy();
+    expect(customElements.get('viking-suite-search-palette-wc')).toBeTruthy();
+  });
+
   it('toggles open state with the global shortcut handler', async () => {
-    const palette = document.createElement('viking-search-palette-wc');
+    const palette = document.createElement('viking-command-palette');
     palette.setAttribute('global-shortcut', '');
     palette.setAttribute('items', JSON.stringify([{ title: 'Docs', href: '/docs' }]));
     document.body.append(palette);
@@ -137,7 +171,7 @@ describe('Viking Web Components v2', () => {
 
   it('mounts suite palette with curated items and openPalette()', async () => {
     document.documentElement.setAttribute('data-deml-context', 'marketing');
-    const suite = document.createElement('viking-suite-search-palette-wc');
+    const suite = document.createElement('viking-suite-command-palette');
     document.body.append(suite);
 
     await Promise.resolve();
@@ -146,11 +180,11 @@ describe('Viking Web Components v2', () => {
     suite.openPalette();
     await Promise.resolve();
 
-    const inner = suite.querySelector('viking-search-palette-wc');
+    const inner = suite.querySelector('viking-command-palette');
     expect(inner?.hasAttribute('open')).toBe(true);
 
     const itemsRaw = inner?.getAttribute('items') ?? '[]';
-    const items = JSON.parse(itemsRaw) as Array<{ title: string }>;
+    const items = JSON.parse(itemsRaw) as { title: string }[];
     const titles = items.map(item => item.title);
     expect(titles).toContain('Documentation');
     expect(titles).toContain('Privacy Policy');

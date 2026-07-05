@@ -60,7 +60,7 @@ const filterItems = (
 
 const groupItems = (
   items: VikingSearchPaletteItem[],
-): Array<{ group: string | null; items: VikingSearchPaletteItem[] }> => {
+): { group: string | null; items: VikingSearchPaletteItem[] }[] => {
   const groups = new Map<string | null, VikingSearchPaletteItem[]>();
   items.forEach((item) => {
     const key = item.group ?? null;
@@ -377,7 +377,7 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
           : "";
         const rows = groupItemsList
           .map((item) => {
-            const id = `viking-search-result-${resultIndex}`;
+            const id = `${this.resultsId}-result-${resultIndex}`;
             const selected = resultIndex === this.activeIndex;
             resultIndex += 1;
             return `
@@ -403,7 +403,7 @@ export class VikingSearchPaletteWc extends HTMLElementBase {
 
     this.resultsEl.innerHTML = `<div class="viking-search-results" id="${this.resultsId}" role="listbox" aria-label="Search results">${markup}</div>`;
 
-    const activeId = `viking-search-result-${this.activeIndex}`;
+    const activeId = `${this.resultsId}-result-${this.activeIndex}`;
     this.inputEl?.setAttribute("aria-activedescendant", activeId);
     this.inputEl?.setAttribute("role", "combobox");
     this.inputEl?.setAttribute("aria-expanded", "true");

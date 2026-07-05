@@ -13,8 +13,13 @@ declare global {
     'viking-card-wc': import('./card/viking-card-wc').VikingCardWc;
     'viking-input-wc': import('./input/viking-input-wc').VikingInputWc;
     'viking-modal-wc': import('./modal/viking-modal-wc').VikingModalWc;
+    'viking-command-palette': import('./search-palette/viking-search-palette-wc').VikingSearchPaletteWc;
+    'viking-search-palette': import('./search-palette/viking-search-palette-wc').VikingSearchPaletteWc;
     'viking-search-palette-wc': import('./search-palette/viking-search-palette-wc').VikingSearchPaletteWc;
     'viking-select-wc': import('./select/viking-select-wc').VikingSelectWc;
+    'viking-suite-command-palette': import('./suite-search-palette/viking-suite-search-palette-wc').VikingSuiteSearchPaletteWc;
+    'viking-suite-search-palette': import('./suite-search-palette/viking-suite-search-palette-wc').VikingSuiteSearchPaletteWc;
+    'viking-suite-search-palette-wc': import('./suite-search-palette/viking-suite-search-palette-wc').VikingSuiteSearchPaletteWc;
     'viking-theme-toggle-wc': import('./theme-toggle/viking-theme-toggle-wc').VikingThemeToggleWc;
   }
 }

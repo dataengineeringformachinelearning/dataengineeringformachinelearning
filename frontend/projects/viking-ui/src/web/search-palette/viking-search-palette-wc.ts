@@ -1,5 +1,12 @@
 import { attachShadowStyles, readBoolAttr, closeModalDialog, showModalDialog } from '../core/base';
-import { defineCustomElement, escapeHtml, modKeyLabel } from '../core/dom';
+import {
+  defineCustomElement,
+  defineCustomElementAlias,
+  escapeHtml,
+  HTMLElementBase,
+  modKeyLabel,
+  vikingWcUid,
+} from '../core/dom';
 import { renderInlineIcon } from '../core/icons-inline';
 import { VIKING_SEARCH_PALETTE_STYLES } from '../core/styles';
 import type { VikingSearchPaletteItem } from '../core/types';
@@ -45,7 +52,7 @@ const filterItems = (
 
 const groupItems = (
   items: VikingSearchPaletteItem[],
-): Array<{ group: string | null; items: VikingSearchPaletteItem[] }> => {
+): { group: string | null; items: VikingSearchPaletteItem[] }[] => {
   const groups = new Map<string | null, VikingSearchPaletteItem[]>();
   items.forEach(item => {
     const key = item.group ?? null;
@@ -58,7 +65,8 @@ const groupItems = (
 
 /**
  * Framework-agnostic command palette / search overlay Web Component.
- * Tag: `viking-search-palette-wc`
+ * Tag: `viking-command-palette`
+ * Aliases: `viking-search-palette`, `viking-search-palette-wc`
  *
  * @attr open - When present, shows the palette
  * @attr global-shortcut - Bind ⌘K / Ctrl+K to open
@@ -73,16 +81,18 @@ const groupItems = (
  * @event viking-select - `{ detail: { item } }` when a result is activated
  *
  * @example
- * <viking-search-palette-wc
+ * <viking-command-palette
  *   global-shortcut
  *   items='[{"title":"Components","href":"/components","group":"Docs"}]'
- * ></viking-search-palette-wc>
+ * ></viking-command-palette>
  */
-export class VikingSearchPaletteWc extends HTMLElement {
-  static readonly tag = 'viking-search-palette-wc';
+export class VikingSearchPaletteWc extends HTMLElementBase {
+  static readonly tag = 'viking-command-palette';
+  static readonly searchTag = 'viking-search-palette';
+  static readonly legacyTag = 'viking-search-palette-wc';
 
   static get observedAttributes(): string[] {
-    return ['open', 'placeholder', 'items'];
+    return ['open', 'placeholder', 'items', 'global-shortcut'];
   }
 
   private readonly shadow: ShadowRoot;
@@ -90,6 +100,8 @@ export class VikingSearchPaletteWc extends HTMLElement {
   private inputEl: HTMLInputElement | null = null;
   private resultsEl: HTMLDivElement | null = null;
   private globalKeyHandler: ((event: KeyboardEvent) => void) | null = null;
+  private readonly resultsId = vikingWcUid('viking-search-results');
+  private readonly inputId = vikingWcUid('viking-search-input');
   private query = '';
   private activeIndex = 0;
   private flatResults: VikingSearchPaletteItem[] = [];
@@ -124,6 +136,10 @@ export class VikingSearchPaletteWc extends HTMLElement {
     }
     if (name === 'open') {
       this.syncOpen();
+    }
+    if (name === 'global-shortcut') {
+      this.unbindGlobalShortcut();
+      this.bindGlobalShortcut();
     }
     if (name === 'items' || name === 'placeholder') {
       if (name === 'placeholder' && this.inputEl) {
@@ -197,6 +213,10 @@ export class VikingSearchPaletteWc extends HTMLElement {
 
   private readonly onInputKeydown = (event: KeyboardEvent): void => {
     if (this.flatResults.length === 0) {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        this.closePalette();
+      }
       return;
     }
 
@@ -334,7 +354,7 @@ export class VikingSearchPaletteWc extends HTMLElement {
           : '';
         const rows = groupItemsList
           .map(item => {
-            const id = `viking-search-result-${resultIndex}`;
+            const id = `${this.resultsId}-result-${resultIndex}`;
             const selected = resultIndex === this.activeIndex;
             resultIndex += 1;
             return `
@@ -358,13 +378,13 @@ export class VikingSearchPaletteWc extends HTMLElement {
       })
       .join('');
 
-    this.resultsEl.innerHTML = `<div class="viking-search-results" role="listbox">${markup}</div>`;
+    this.resultsEl.innerHTML = `<div class="viking-search-results" id="${this.resultsId}" role="listbox" aria-label="Search results">${markup}</div>`;
 
-    const activeId = `viking-search-result-${this.activeIndex}`;
+    const activeId = `${this.resultsId}-result-${this.activeIndex}`;
     this.inputEl?.setAttribute('aria-activedescendant', activeId);
     this.inputEl?.setAttribute('role', 'combobox');
     this.inputEl?.setAttribute('aria-expanded', 'true');
-    this.inputEl?.setAttribute('aria-controls', 'viking-search-results-list');
+    this.inputEl?.setAttribute('aria-controls', this.resultsId);
 
     this.resultsEl.querySelectorAll('.viking-search-result').forEach(node => {
       node.addEventListener('click', event => {
@@ -389,10 +409,11 @@ export class VikingSearchPaletteWc extends HTMLElement {
 
     this.shadow.innerHTML = `
       <dialog class="viking-search-palette-backdrop" aria-label="Search" aria-hidden="true">
-        <div class="viking-search-palette" part="panel" role="dialog" aria-modal="true">
+        <div class="viking-search-palette" part="panel" role="document">
           <div class="viking-search-palette-header" part="header">
             <span class="viking-search-palette-icon" aria-hidden="true">${renderInlineIcon('search', 24)}</span>
             <input
+              id="${this.inputId}"
               type="search"
               class="viking-search-palette-input"
               part="input"
@@ -406,7 +427,7 @@ export class VikingSearchPaletteWc extends HTMLElement {
           </div>
           <div class="viking-search-palette-body" part="body">
             <slot></slot>
-            <div class="viking-search-results-host" id="viking-search-results-list"></div>
+            <div class="viking-search-results-host"></div>
           </div>
           <footer class="viking-search-palette-footer" part="footer">
             <span class="viking-kbd">${mod}</span><span class="viking-kbd">K</span> toggle ·
@@ -437,4 +458,6 @@ export class VikingSearchPaletteWc extends HTMLElement {
 
 export const registerVikingSearchPaletteWc = (): void => {
   defineCustomElement(VikingSearchPaletteWc.tag, VikingSearchPaletteWc);
+  defineCustomElementAlias(VikingSearchPaletteWc.searchTag, VikingSearchPaletteWc);
+  defineCustomElementAlias(VikingSearchPaletteWc.legacyTag, VikingSearchPaletteWc);
 };

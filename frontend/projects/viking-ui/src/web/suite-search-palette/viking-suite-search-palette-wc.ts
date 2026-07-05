@@ -5,7 +5,7 @@ import {
 } from '../../lib/site-drakkar/site-drakkar.config';
 import { buildSuiteSearchItems } from '../../lib/site-drakkar/suite-search-items';
 import { readBoolAttr } from '../core/base';
-import { defineCustomElement } from '../core/dom';
+import { defineCustomElement, defineCustomElementAlias, HTMLElementBase } from '../core/dom';
 import {
   VikingSearchPaletteWc,
   registerVikingSearchPaletteWc,
@@ -52,10 +52,11 @@ const readContext = (el: HTMLElement): SiteDrakkarContext => {
 
 /**
  * Unified cross-suite command palette Web Component.
- * Tag: `viking-suite-search-palette-wc`
+ * Tag: `viking-suite-command-palette`
+ * Aliases: `viking-suite-search-palette`, `viking-suite-search-palette-wc`
  *
  * Curated ⌘K navigation for marketing, docs, deml.app, and backend surfaces.
- * Composes `viking-search-palette-wc` with suite links from site-drakkar config.
+ * Composes `viking-command-palette` with suite links from site-drakkar config.
  *
  * @attr context - Surface: app | marketing | backend | docs (auto-detected when omitted)
  * @attr app-url - Override deml.app origin
@@ -68,10 +69,12 @@ const readContext = (el: HTMLElement): SiteDrakkarContext => {
  * @method closePalette() - Programmatically close
  *
  * @example
- * <viking-suite-search-palette-wc context="marketing" global-shortcut></viking-suite-search-palette-wc>
+ * <viking-suite-command-palette context="marketing" global-shortcut></viking-suite-command-palette>
  */
-export class VikingSuiteSearchPaletteWc extends HTMLElement {
-  static readonly tag = 'viking-suite-search-palette-wc';
+export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
+  static readonly tag = 'viking-suite-command-palette';
+  static readonly searchTag = 'viking-suite-search-palette';
+  static readonly legacyTag = 'viking-suite-search-palette-wc';
 
   static get observedAttributes(): string[] {
     return ['context', 'app-url', 'marketing-url', 'backend-url', 'placeholder', 'global-shortcut'];
@@ -104,7 +107,12 @@ export class VikingSuiteSearchPaletteWc extends HTMLElement {
       }
       return;
     }
-    if (name === 'context' || name === 'app-url' || name === 'marketing-url' || name === 'backend-url') {
+    if (
+      name === 'context' ||
+      name === 'app-url' ||
+      name === 'marketing-url' ||
+      name === 'backend-url'
+    ) {
       void this.loadItems(true);
     }
   }
@@ -125,7 +133,7 @@ export class VikingSuiteSearchPaletteWc extends HTMLElement {
       return;
     }
 
-    this.paletteEl = document.createElement('viking-search-palette-wc') as VikingSearchPaletteWc;
+    this.paletteEl = document.createElement('viking-command-palette') as VikingSearchPaletteWc;
     this.paletteEl.id = 'deml-command-palette';
 
     const placeholder =
@@ -174,4 +182,6 @@ export class VikingSuiteSearchPaletteWc extends HTMLElement {
 
 export const registerVikingSuiteSearchPaletteWc = (): void => {
   defineCustomElement(VikingSuiteSearchPaletteWc.tag, VikingSuiteSearchPaletteWc);
+  defineCustomElementAlias(VikingSuiteSearchPaletteWc.searchTag, VikingSuiteSearchPaletteWc);
+  defineCustomElementAlias(VikingSuiteSearchPaletteWc.legacyTag, VikingSuiteSearchPaletteWc);
 };

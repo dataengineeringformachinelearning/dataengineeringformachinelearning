@@ -67,10 +67,11 @@ const readContext = (el: HTMLElement): SiteDrakkarContext => {
 
 /**
  * Unified cross-suite command palette Web Component.
- * Tag: `viking-suite-search-palette-wc`
+ * Tag: `viking-suite-command-palette`
+ * Aliases: `viking-suite-search-palette`, `viking-suite-search-palette-wc`
  *
  * Curated ⌘K navigation for marketing, docs, deml.app, and backend surfaces.
- * Composes `viking-search-palette-wc` with suite links from site-drakkar config.
+ * Composes `viking-command-palette` with suite links from site-drakkar config.
  *
  * @attr context - Surface: app | marketing | backend | docs (auto-detected when omitted)
  * @attr app-url - Override deml.app origin
@@ -83,7 +84,7 @@ const readContext = (el: HTMLElement): SiteDrakkarContext => {
  * @method closePalette() - Programmatically close
  *
  * @example
- * <viking-suite-search-palette-wc context="marketing" global-shortcut></viking-suite-search-palette-wc>
+ * <viking-suite-command-palette context="marketing" global-shortcut></viking-suite-command-palette>
  */
 export class VikingSuiteSearchPaletteWc extends HTMLElementBase {
   static readonly tag = "viking-suite-command-palette";

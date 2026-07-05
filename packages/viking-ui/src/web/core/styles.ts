@@ -932,9 +932,7 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
 .viking-search-palette {
   display: flex;
   flex-direction: column;
-  background: var(--viking-surface-glass, color-mix(in srgb, var(--viking-surface) 82%, transparent));
-  backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
-  -webkit-backdrop-filter: blur(var(--viking-surface-glass-blur, 12px));
+  background: var(--viking-surface-raised, var(--viking-surface));
   border: 1px solid var(--viking-border-strong);
   border-radius: var(--viking-radius-lg);
   box-shadow: var(--viking-shadow-lg);
@@ -946,6 +944,7 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   color: var(--viking-text);
   animation: viking-modal-in var(--viking-duration) var(--viking-ease-default);
   position: relative;
+  isolation: isolate;
 }
 
 .viking-search-palette::before {
@@ -969,7 +968,7 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   padding: var(--viking-space-2);
   border-bottom: 1px solid var(--viking-border);
   gap: var(--viking-space-1);
-  background: color-mix(in srgb, var(--viking-bg) 20%, transparent);
+  background: color-mix(in srgb, var(--viking-bg) 26%, var(--viking-surface-raised));
 }
 
 .viking-search-palette-header:focus-within {
@@ -1075,8 +1074,8 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
   min-height: var(--viking-control-height-sm, 36px);
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius);
-  background: color-mix(in srgb, var(--viking-surface) 2%, transparent);
-  border: 1px solid transparent;
+  background: var(--viking-surface-alt);
+  border: 1px solid var(--viking-border-subtle);
   cursor: pointer;
   transition: var(--viking-transition-interactive);
   gap: var(--viking-space-1);
@@ -1086,8 +1085,8 @@ export const VIKING_SEARCH_PALETTE_STYLES = `
 
 .viking-search-result:hover,
 .viking-search-result.is-selected {
-  background: color-mix(in srgb, var(--viking-accent) 5%, transparent);
-  border-color: color-mix(in srgb, var(--viking-accent) 30%, transparent);
+  background: color-mix(in srgb, var(--viking-accent) 10%, var(--viking-surface-alt));
+  border-color: color-mix(in srgb, var(--viking-accent) 42%, var(--viking-border-strong));
   box-shadow: var(--viking-shadow-sm);
 }
 
