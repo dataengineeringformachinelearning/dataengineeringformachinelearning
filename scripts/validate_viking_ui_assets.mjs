@@ -143,6 +143,9 @@ for (const relativePath of removedFrontendMirrors) {
 }
 
 for (const relativePath of sourceImportChecks) {
+  if (!existsSync(path.join(rootDir, relativePath))) {
+    continue;
+  }
   const content = readText(relativePath);
   if (content.includes("packages/viking-ui/src/styles")) {
     failures.push(

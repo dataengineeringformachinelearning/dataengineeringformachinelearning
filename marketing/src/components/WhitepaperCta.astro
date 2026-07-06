@@ -21,10 +21,9 @@ const {
 <section class="viking-whitepaper-cta" aria-labelledby="whitepaper-cta-title">
   <div class="viking-whitepaper-cta-bg" aria-hidden="true">
     <div class="viking-whitepaper-polars-grid">
-      {barHeights.map((height) => (
+{barHeights.map((height) => (
         <span
-          class="viking-bar viking-whitepaper-polars-bar"
-          style={`--viking-bar-height: ${height}`}
+          class={`viking-bar viking-whitepaper-polars-bar viking-whitepaper-polars-bar-${height}`}
         />
       ))}
     </div>

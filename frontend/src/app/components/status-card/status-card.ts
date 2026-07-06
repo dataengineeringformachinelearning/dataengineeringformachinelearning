@@ -1,26 +1,24 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   Input,
-  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   OnInit,
   OnChanges,
   SimpleChanges,
   inject,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import {
   VikingButton,
-  VikingStatusMetricRow,
   VikingCard,
-  VikingCardHeader,
-  VikingHeading,
+  VikingStatusCard,
+  VikingStatusMetricRow,
+  VikingStatusPill,
 } from '@dataengineeringformachinelearning/viking-ui';
 
 import { StatusPageData, MonitoredServiceData, IncidentData } from '../../services/monitor.service';
 import { ThreatReportResponse } from '../../services/ml.service';
-import { formatServiceName } from '../../core/utils/formatter.utils';
 import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
 
 @Component({
@@ -28,16 +26,14 @@ import { ProVerifiedBadge } from '../pro-verified-badge/pro-verified-badge';
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,
     VikingButton,
-    VikingStatusMetricRow,
     VikingCard,
-    VikingCardHeader,
-    VikingHeading,
+    VikingStatusCard,
+    VikingStatusMetricRow,
+    VikingStatusPill,
     ProVerifiedBadge,
   ],
   templateUrl: './status-card.html',
-  styleUrl: './status-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusCard implements OnInit, OnChanges {
@@ -51,44 +47,7 @@ export class StatusCard implements OnInit, OnChanges {
   @Input() showIncidents = false;
   @Input() linkHeader = false;
 
-  // Analytics local state
-  public p99Latency?: number = 0;
-  public totalRequests?: number = 0;
-  public uptimePercent?: number = 0;
-  public simulatedThreatReport?: { suspicious_ratio: number; anomaly_score: number } = {
-    suspicious_ratio: 0,
-    anomaly_score: 0,
-  };
-
-  get totalRequestsValue(): string | number {
-    if (this.totalRequests == null) return 'N/A';
-    return this.totalRequests.toLocaleString();
-  }
-
-  private cdr = inject(ChangeDetectorRef);
-
-  ngOnInit() {
-    this.syncDerivedMetrics();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes['page']) {
-      this.syncDerivedMetrics();
-    }
-  }
-
-  private syncDerivedMetrics() {
-    this.p99Latency = this.page?.p99_latency ?? 0;
-    this.totalRequests = this.page?.total_requests ?? 0;
-    this.uptimePercent = this.page?.cumulative_sla ?? 99.9;
-    this.simulatedThreatReport = {
-      suspicious_ratio: 0,
-      anomaly_score: 0,
-    };
-    this.cdr.markForCheck();
-  }
-
-  formatServiceName = formatServiceName;
+  readonly cdr = inject(ChangeDetectorRef);
 
   getPageStatus(): string {
     const active = (this.incidents || []).filter(i => i.status !== 'Resolved');
@@ -98,9 +57,57 @@ export class StatusCard implements OnInit, OnChanges {
     return 'Operational';
   }
 
-  getPageStatusClass(): string {
-    const status = this.getPageStatus();
-    if (status === 'Operational') return 'operational';
-    return status.toLowerCase();
+  get statusTone(): 'accent' | 'success' | 'warning' | 'danger' | 'muted' {
+    const status = this.getPageStatus().toLowerCase();
+    if (status === 'operational') return 'success';
+    if (status === 'degraded') return 'warning';
+    if (status === 'outage' || status === 'major outage') return 'danger';
+    return 'muted';
+  }
+
+  get p99Latency(): number {
+    return this.page?.p99_latency ?? 0;
+  }
+
+  get totalRequests(): number {
+    return this.page?.total_requests ?? 0;
+  }
+
+  get cumulativeSla(): number {
+    return this.page?.cumulative_sla ?? 0;
+  }
+
+  get predictedSlaValue(): number {
+    return this.predictedSla ?? 0;
+  }
+
+  get predictedTemporalForecastValue(): number {
+    return this.predictedTemporalForecast ?? 0;
+  }
+
+  get suspiciousRatio(): number {
+    return this.threatReport?.suspicious_ratio ?? 0;
+  }
+
+  get anomalyScore(): number {
+    return this.threatReport?.anomaly_score ?? 0;
+  }
+
+  getPageUrl(): string {
+    return `/status/${this.page.slug}`;
+  }
+
+  get activeIncidents(): IncidentData[] {
+    return (this.incidents || []).filter(i => i.status !== 'Resolved');
+  }
+
+  ngOnInit() {
+    this.cdr.markForCheck();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['page'] || changes['incidents'] || changes['threatReport']) {
+      this.cdr.markForCheck();
+    }
   }
 }

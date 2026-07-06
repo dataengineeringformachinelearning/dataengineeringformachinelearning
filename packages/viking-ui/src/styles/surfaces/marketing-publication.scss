@@ -175,7 +175,7 @@
     padding-bottom: 0;
   }
 
-  :global(h2) {
+  h2 {
     font-size: 1.35rem;
     font-weight: 800;
     margin: 0 0 16px;
@@ -185,39 +185,39 @@
     padding-bottom: 8px;
   }
 
-  :global(h3) {
+  h3 {
     font-size: 1.05rem;
     font-weight: 700;
     margin: 24px 0 10px;
     color: var(--text-color);
   }
 
-  :global(h4) {
+  h4 {
     font-size: 0.95rem;
     font-weight: 700;
     margin: 20px 0 8px;
     color: var(--text-color);
   }
 
-  :global(p),
-  :global(li) {
+  p,
+  li {
     font-size: 1rem;
     line-height: 1.65;
     color: var(--text-muted);
     margin: 0 0 14px;
   }
 
-  :global(ul),
-  :global(ol) {
+  ul,
+  ol {
     padding-left: 1.35rem;
     margin: 0 0 14px;
   }
 
-  :global(a) {
+  a {
     color: var(--viking-teal-600);
   }
 
-  :global(pre) {
+  pre {
     background: var(--viking-charcoal-900);
     border: 1px solid var(--viking-border-subtle);
     border-radius: 10px;
@@ -228,7 +228,7 @@
     line-height: 1.55;
   }
 
-  :global(:not(pre) > code) {
+  :not(pre) > code {
     background: color-mix(in srgb, var(--color-dark-grey-btn-bg) 70%, transparent);
     padding: 0.1em 0.35em;
     border-radius: 4px;
@@ -240,7 +240,7 @@
     vertical-align: baseline;
   }
 
-  :global(table) {
+  table {
     width: 100%;
     border-collapse: collapse;
     margin: 16px 0;
@@ -258,7 +258,7 @@
     }
   }
 
-  :global(blockquote) {
+  blockquote {
     margin: 16px 0;
     padding: 12px 16px;
     border-left: 3px solid var(--viking-teal-600);
@@ -523,13 +523,29 @@
   }
 
   .progress-bar-fill {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: var(--progress, 0%);
-    background-color: var(--color-primary);
+    width: 100%;
+    height: 100%;
+    appearance: none;
+    border: none;
+    background: transparent;
     transition: width 0.3s ease-out;
     border-radius: 999px;
+
+    &::-webkit-progress-bar {
+      background-color: transparent;
+      border-radius: 999px;
+    }
+
+    &::-webkit-progress-value {
+      background-color: var(--color-primary);
+      border-radius: 999px;
+      transition: width 0.3s ease-out;
+    }
+
+    &::-moz-progress-bar {
+      background-color: var(--color-primary);
+      border-radius: 999px;
+      transition: width 0.3s ease-out;
+    }
   }
 }

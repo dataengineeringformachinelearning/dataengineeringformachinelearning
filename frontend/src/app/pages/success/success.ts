@@ -16,7 +16,6 @@ import { VikingButton } from '@dataengineeringformachinelearning/viking-ui';
   standalone: true,
   imports: [CommonModule, VikingButton],
   templateUrl: './success.html',
-  styleUrl: './success.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Success implements OnInit {

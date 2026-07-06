@@ -12,74 +12,47 @@
           >
             @if (authService.isAuthenticated()) {
             <div vikingPageHeaderActions>
-              <viking-button variant="filled" href="/manage" icon="settings"
-                >Manage Pages</viking-button
-              >
+              <viking-button variant="filled" href="/manage" icon="settings">
+                Manage Pages
+              </viking-button>
             </div>
             }
           </viking-page-header>
-          <!-- Sanity.io Announcements Feed -->
+
           @if (sanityService.announcements().length > 0 || sanityService.loading() ||
           sanityService.error()) {
-          <div class="announcements-container">
-            <h2 class="section-title-premium">
-              <viking-app-icon name="campaign" />
-              Latest System Announcements
-            </h2>
+          <viking-card>
+            <viking-heading [level]="2" size="xl">Latest System Announcements</viking-heading>
 
             @if (sanityService.error()) {
-            <div class="announcements-error">
-              <viking-app-icon name="error_outline" />
-              <span>{{ sanityService.error() }}</span>
-            </div>
-            } @else {
-
-            <div class="announcements-list-premium">
-              @if (sanityService.loading()) {
-              <div class="viking-card announcement-card-premium info">
-                <div class="ann-header">
-                  <viking-badge tone="accent">info</viking-badge>
-                  <span class="ann-date">Jun 13, 2026</span>
-                </div>
-                <h3 class="ann-title">System Status Update</h3>
-                <p class="ann-body">
-                  We are investigating reports of system latency. Our engineering team is currently
-                  working to resolve the issue as quickly as possible.
-                </p>
-              </div>
-              } @else { @for (ann of sanityService.announcements(); track ann._id) {
-              <div class="viking-card announcement-card-premium" [ngClass]="ann.severity || 'info'">
-                <div class="ann-header">
-                  <viking-badge [tone]="announcementTone(ann.severity)"
-                    >{{ ann.severity || 'info' }}</viking-badge
-                  >
-                  <span class="ann-date">{{ ann.publishedAt | date:'mediumDate' }}</span>
-                </div>
-                <h3 class="ann-title">{{ ann.title }}</h3>
-                <p class="ann-body">{{ ann.body }}</p>
-              </div>
-              } }
-            </div>
-
-            }
-          </div>
+            <viking-callout tone="danger" heading="Announcements Unavailable">
+              <p>{{ sanityService.error() }}</p>
+            </viking-callout>
+            } @else { @if (sanityService.loading()) {
+            <viking-callout tone="info" heading="System Status Update">
+              We are investigating reports of system latency. Our engineering team is currently
+              working to resolve the issue as quickly as possible.
+            </viking-callout>
+            } @else { @for (ann of sanityService.announcements(); track ann._id) {
+            <viking-callout
+              [tone]="announcementTone(ann.severity)"
+              [attr.heading]="ann.severity || 'info'"
+            >
+              <strong>{{ ann.title }}</strong>
+              <p>Published {{ ann.publishedAt | date:'mediumDate' }}</p>
+              <p>{{ ann.body }}</p>
+            </viking-callout>
+            } } }
+          </viking-card>
           }
 
-          <!-- Analytics Overview CTA -->
-          <div class="analytics-cta-container panel-clean status-extracted-2">
-            <div>
-              <h2 class="section-title-premium status-extracted-3">
-                <viking-app-icon name="analytics" />
-                System Telemetry
-              </h2>
-              <p class="embed-desc status-extracted-1">
-                View detailed real-time metrics, latency charts, and traffic analysis.
-              </p>
-            </div>
+          <viking-card>
+            <viking-heading [level]="2" size="xl">System Telemetry</viking-heading>
+            <p>View detailed real-time metrics, latency charts, and traffic analysis.</p>
             <viking-button variant="primary" href="/dashboard">View Dashboard</viking-button>
-          </div>
+          </viking-card>
 
-          <div class="status-stack">
+          <div>
             @for (page of displayPages(); track page.id) {
             <app-status-card
               [page]="page"
@@ -91,16 +64,13 @@
               [showIncidents]="true"
             ></app-status-card>
             } @if (loadFailed()) {
-            <div class="status-error-state" role="alert">
-              <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />
-              <h2 class="error-title">Unable to Connect</h2>
-              <p class="error-subtitle">
+            <viking-callout tone="danger" heading="Unable to Connect">
+              <p>
                 We couldn't reach the status service. Verify the backend is running, then retry.
               </p>
               <viking-button
                 variant="primary"
                 type="button"
-                class="retry-btn"
                 icon="refresh"
                 [loading]="isRetrying()"
                 [disabled]="isRetrying()"
@@ -108,7 +78,7 @@
               >
                 Retry Connection
               </viking-button>
-            </div>
+            </viking-callout>
             } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
             <app-status-cta></app-status-cta>
             }

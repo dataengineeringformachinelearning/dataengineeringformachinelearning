@@ -30,12 +30,12 @@ const paths =
     ? VIKING_ICON_FILLED_PATHS[resolved]
     : (VIKING_ICON_PATHS[resolved] ?? VIKING_ICON_PATHS.info);
 const viewBox = vikingIconViewBox(resolved);
-const colorStyle =
+const iconColor =
   color === 'accent'
-    ? 'color: var(--viking-accent, var(--viking-teal-600))'
+    ? 'var(--viking-accent)'
     : color === 'muted'
-      ? 'color: var(--viking-text-muted, var(--text-muted))'
-      : undefined;
+      ? 'var(--viking-text-muted)'
+      : 'currentColor';
 const brandSvg = isBrandIntegration
   ? VIKING_INTEGRATION_BRAND_SVGS[resolved as VikingIntegrationBrandName]
   : null;
@@ -55,15 +55,14 @@ const brandSvg = isBrandIntegration
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox={viewBox}
-    fill={isFilled ? 'currentColor' : 'none'}
-    stroke={isFilled ? 'none' : 'currentColor'}
+    fill={isFilled ? iconColor : 'none'}
+    stroke={isFilled ? 'none' : iconColor}
     stroke-width={isFilled ? undefined : '1.8'}
     stroke-linecap={isFilled ? undefined : 'round'}
     stroke-linejoin={isFilled ? undefined : 'round'}
     width={size}
     height={size}
     class={className}
-    style={colorStyle}
     aria-hidden="true"
     set:html={paths}
   />

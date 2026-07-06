@@ -18,16 +18,16 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Calendar",
           description:
             "Month-grid date picker with keyboard navigation and ISO value binding.",
-          preview: `<div class="viking-card viking-card-compact" style="max-width:18rem">
-  <div class="viking-demo-row" style="justify-content:space-between">
+          preview: `<div class="viking-card viking-card-compact viking-demo-card-lg">
+  <div class="viking-demo-row viking-demo-row-between">
     <viking-button-wc variant="ghost" size="sm" aria-label="Previous month">‹</viking-button-wc>
     <span class="viking-label">July 2026</span>
     <viking-button-wc variant="ghost" size="sm" aria-label="Next month">›</viking-button-wc>
   </div>
-  <div class="viking-demo-row" style="flex-wrap:wrap;gap:var(--viking-space-half);font-size:var(--viking-font-size-xs);color:var(--viking-text-muted)">
+  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs viking-demo-muted-xs">
     <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
   </div>
-  <div class="viking-demo-row" style="flex-wrap:wrap;gap:var(--viking-space-half)">
+  <div class="viking-demo-row viking-demo-row-wrap viking-demo-row-gap-xs">
     <viking-button-wc variant="ghost" size="sm">1</viking-button-wc>
     <viking-button-wc variant="ghost" size="sm">2</viking-button-wc>
     <viking-button-wc variant="primary" size="sm">3</viking-button-wc>
@@ -54,10 +54,10 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           description:
             "Series preset swatches plus custom color input — maps to --viking-series-* tokens.",
           preview: `<div class="viking-demo-row" role="group" aria-label="Color picker">
-  <button type="button" class="viking-btn viking-btn-outline viking-btn-compact" style="border-color:var(--viking-series-1)" aria-label="Series 1" aria-pressed="true">✓</button>
-  <button type="button" class="viking-btn viking-btn-outline viking-btn-compact" style="border-color:var(--viking-series-2)" aria-label="Series 2"></button>
-  <button type="button" class="viking-btn viking-btn-outline viking-btn-compact" style="border-color:var(--viking-series-3)" aria-label="Series 3"></button>
-  <input type="color" class="viking-input-native" value="#2176FF" aria-label="Custom color" style="width:2.5rem;height:2.5rem;padding:0" />
+  <button type="button" class="viking-btn viking-btn-outline viking-btn-compact viking-series-border-1" aria-label="Series 1" aria-pressed="true">✓</button>
+  <button type="button" class="viking-btn viking-btn-outline viking-btn-compact viking-series-border-2" aria-label="Series 2"></button>
+  <button type="button" class="viking-btn viking-btn-outline viking-btn-compact viking-series-border-3" aria-label="Series 3"></button>
+  <input type="color" class="viking-input-native viking-demo-color-input" aria-label="Custom color" />
 </div>`,
           selector: "viking-color-picker",
           tags: ["angular", "forms"],
@@ -81,9 +81,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           preview: `<div class="viking-field">
   <label class="viking-field-label" for="worker-select">Worker</label>
   <div class="viking-input-shell">
-    <button id="worker-select" type="button" class="viking-input-native" style="text-align:left;width:100%">telemetry_worker ▾</button>
+    <button id="worker-select" type="button" class="viking-input-native viking-demo-text-left-full">telemetry_worker ▾</button>
   </div>
-  <div class="viking-card viking-card-compact" style="margin-top:var(--viking-space-half);max-width:16rem">
+  <div class="viking-card viking-card-compact viking-demo-card-md viking-demo-mt-half">
     <span class="viking-text">telemetry_worker</span>
     <span class="viking-text-muted">outbox_relay</span>
     <span class="viking-text-muted">threat_scanner</span>
@@ -149,7 +149,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Message composer with attachments slot and send action for incident threads.",
           preview: `<div class="viking-card viking-card-compact">
   <textarea class="viking-textarea-static" rows="2" placeholder="Add a runbook note…"></textarea>
-  <div class="viking-demo-row" style="justify-content:space-between;margin-top:var(--viking-space-1)">
+  <div class="viking-demo-row viking-demo-row-between viking-demo-mt-1">
     <viking-button-wc variant="ghost" size="sm">Attach</viking-button-wc>
     <viking-button-wc variant="primary" size="sm">Send</viking-button-wc>
   </div>
@@ -181,7 +181,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     <viking-button-wc variant="ghost" size="sm" aria-label="Italic"><em>I</em></viking-button-wc>
     <viking-button-wc variant="ghost" size="sm" aria-label="List">≡</viking-button-wc>
   </div>
-  <div class="viking-textarea-static" contenteditable="true" role="textbox" aria-label="Rich text editor" style="min-height:4rem">Document rollback steps for <strong>telemetry_worker</strong>…</div>
+  <div class="viking-textarea-static viking-demo-textarea" contenteditable="true" role="textbox" aria-label="Rich text editor">Document rollback steps for <strong>telemetry_worker</strong>…</div>
 </div>`,
           selector: "viking-editor",
           tags: ["angular"],
@@ -230,7 +230,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Icon text",
           description:
             "Icon beside title and description for status rows and account settings.",
-          preview: `<div class="viking-demo-row" style="align-items:flex-start">
+          preview: `<div class="viking-demo-row viking-demo-row-top">
   <span class="viking-icon-badge-static" aria-hidden="true">✓</span>
   <div>
     <strong class="viking-text">MFA enrolled</strong>
@@ -360,7 +360,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           description:
             "Marketing-grade footer with directory columns and compliance links.",
           preview: `<footer class="viking-card viking-card-compact">
-  <div class="viking-demo-row" style="align-items:flex-start;flex-wrap:wrap;gap:var(--viking-space-4)">
+  <div class="viking-demo-row viking-demo-row-top viking-demo-row-wrap viking-demo-row-gap-lg">
     <div>
       <span class="viking-label">Product</span>
       <p class="viking-text-muted">Platform</p>
@@ -395,7 +395,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           description:
             "Consistent dashboard back navigation with icon and tokenized spacing.",
           preview: `<nav class="viking-page-back-link-host" aria-label="Back navigation">
-  <a href="/components" class="viking-page-back-link" style="display:inline-flex;align-items:center;gap:var(--viking-space-1);color:var(--viking-accent);text-decoration:none">
+  <a href="/components" class="viking-page-back-link">
     <span aria-hidden="true">←</span>
     <span>Back to components</span>
   </a>
@@ -423,9 +423,9 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Context menu",
           description:
             "Right-click menu wrapper — project viking-menu-item elements with vikingMenu attribute.",
-          preview: `<div class="viking-card viking-card-compact" style="max-width:16rem">
+          preview: `<div class="viking-card viking-card-compact viking-demo-card-md">
   <p class="viking-text-muted">Right-click this card in Angular apps</p>
-  <div class="viking-card viking-card-compact" style="margin-top:var(--viking-space-1);box-shadow:var(--viking-shadow-md)">
+  <div class="viking-card viking-card-compact viking-demo-mt-1 viking-demo-elevated">
     <span class="viking-text">Deploy</span>
     <span class="viking-text-muted">View logs</span>
     <span class="viking-text-muted">Rollback</span>

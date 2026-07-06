@@ -72,7 +72,6 @@ type DashboardTab = 'overview' | 'performance' | 'security';
     VikingTabPanel,
   ],
   templateUrl: './dashboard.html',
-  styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard implements OnInit, OnDestroy {

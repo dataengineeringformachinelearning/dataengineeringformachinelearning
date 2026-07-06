@@ -1203,6 +1203,108 @@ viking-card-wc.landing-doctrine-card > * {
   text-align: center;
 }
 
+.viking-demo-card-sm {
+  max-width: 14rem;
+}
+
+.viking-demo-card-md {
+  max-width: 16rem;
+}
+
+.viking-demo-card-lg {
+  max-width: 18rem;
+}
+
+.viking-demo-row-between {
+  justify-content: space-between;
+}
+
+.viking-demo-row-wrap {
+  flex-wrap: wrap;
+}
+
+.viking-demo-row-top {
+  align-items: flex-start;
+}
+
+.viking-demo-row-gap-xs {
+  gap: var(--viking-space-half);
+}
+
+.viking-demo-row-gap-lg {
+  gap: var(--viking-space-4);
+}
+
+.viking-demo-caption {
+  margin-top: var(--viking-space-1);
+  font-size: var(--viking-font-size-xs);
+}
+
+.viking-demo-label-compact {
+  margin: 0 0 var(--viking-space-half);
+}
+
+.viking-demo-muted-xs {
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
+}
+
+.viking-demo-mt-half {
+  margin-top: var(--viking-space-half);
+}
+
+.viking-demo-mt-1 {
+  margin-top: var(--viking-space-1);
+}
+
+.viking-demo-elevated {
+  box-shadow: var(--viking-shadow-md);
+}
+
+.viking-demo-text-left-full {
+  width: 100%;
+  text-align: left;
+}
+
+.viking-demo-textarea {
+  min-height: 4rem;
+}
+
+.viking-demo-relative-min {
+  position: relative;
+  min-height: 5rem;
+}
+
+.viking-demo-color-input {
+  width: var(--viking-space-5);
+  height: var(--viking-space-5);
+  padding: 0;
+}
+
+.viking-series-border-1 {
+  border-color: var(--viking-series-1);
+}
+
+.viking-series-border-2 {
+  border-color: var(--viking-series-2);
+}
+
+.viking-series-border-3 {
+  border-color: var(--viking-series-3);
+}
+
+.viking-page-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  color: var(--viking-accent);
+  text-decoration: none;
+}
+
+.viking-kbd-end {
+  margin-left: auto;
+}
+
 .showcase-chart-demo {
   width: 100%;
   max-width: 24rem;
@@ -1257,4 +1359,179 @@ viking-card-wc.landing-doctrine-card > * {
   height: var(--viking-space-5);
   color: var(--viking-accent);
   font-size: var(--viking-font-size-lg);
+}
+
+.theme-toggle-btn {
+  padding: var(--viking-space-2);
+  border: 1px solid var(--viking-accent);
+  border-radius: var(--viking-radius-md);
+  color: var(--viking-accent-content);
+  background: var(--viking-accent);
+  cursor: pointer;
+  transition: var(--viking-transition-interactive);
+  font: inherit;
+  font-size: var(--viking-font-size-sm);
+  min-height: 44px;
+}
+
+.theme-toggle-btn:hover,
+.theme-toggle-btn:focus-visible {
+  background: color-mix(in srgb, var(--viking-accent) 86%, var(--viking-bg));
+  border-color: var(--viking-accent-strong);
+}
+
+.theming-setup-card {
+  margin-bottom: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-alt);
+}
+
+.theming-setup-card pre {
+  margin: var(--viking-space-2) 0 0;
+  padding: var(--viking-space-2);
+  border-radius: var(--viking-radius);
+  overflow-x: auto;
+  font-size: var(--viking-font-size-sm);
+  background: color-mix(in srgb, var(--viking-surface-alt) 86%, transparent);
+}
+
+.theming-rules {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+  padding-left: var(--viking-space-3);
+}
+
+.architecture-layer-grid {
+  display: grid;
+  gap: var(--viking-space-2);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .architecture-layer-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.architecture-layer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+}
+
+.architecture-flow {
+  margin: 0;
+  padding: var(--viking-space-2);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  overflow-x: auto;
+  font-size: var(--viking-font-size-sm);
+  line-height: var(--viking-line-height-relaxed);
+  background: color-mix(in srgb, var(--viking-surface) 88%, var(--viking-bg));
+}
+
+.architecture-pattern {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-2);
+}
+
+@media (min-width: 900px) {
+  .architecture-pattern {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.architecture-arrow {
+  text-align: center;
+  font-size: var(--viking-font-size-xl);
+  color: var(--viking-accent);
+}
+
+.playground-layout {
+  display: grid;
+  gap: var(--viking-page-section-gap);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .playground-layout {
+    grid-template-columns: minmax(280px, 360px) 1fr;
+  }
+}
+
+.playground-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+  align-self: start;
+  position: sticky;
+  top: calc(var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) + var(--viking-space-3));
+}
+
+.playground-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-stack-gap);
+}
+
+.playground-preview,
+.playground-code {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+}
+
+.playground-preview-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: clamp(14rem, 28vw, 20rem);
+  padding: var(--viking-card-padding);
+  margin-top: 0;
+  border: 1px dashed var(--viking-border);
+  border-radius: var(--viking-radius);
+  background: var(--viking-surface-alt);
+}
+
+.playground-preview-stage viking-input-wc {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.playground-preview-stage viking-card-wc {
+  width: min(100%, 24rem);
+}
+
+.contribute-steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-stack-gap);
+}
+
+.contribute-step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+}
+
+.contribute-code {
+  margin: 0;
+  padding: var(--viking-space-3);
+  background: color-mix(in srgb, var(--viking-surface-alt) 88%, var(--viking-bg));
+  border-radius: var(--viking-radius);
+  overflow-x: auto;
+  font-size: var(--viking-font-size-sm);
+}
+
+.contribute-checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+  padding-left: var(--viking-space-3);
 }

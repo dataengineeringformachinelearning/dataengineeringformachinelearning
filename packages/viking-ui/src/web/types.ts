@@ -23,6 +23,10 @@ declare global {
     "viking-command-palette": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;
     "viking-search-palette": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;
     "viking-search-palette-wc": import("./search-palette/viking-search-palette-wc").VikingSearchPaletteWc;
+    "viking-site-footer": import("./site-footer/viking-site-footer-wc").VikingSiteFooterWc;
+    "viking-site-footer-wc": import("./site-footer/viking-site-footer-wc").VikingSiteFooterWc;
+    "viking-site-navbar": import("./site-navbar/viking-site-navbar-wc").VikingSiteNavbarWc;
+    "viking-site-navbar-wc": import("./site-navbar/viking-site-navbar-wc").VikingSiteNavbarWc;
     "viking-select": import("./select/viking-select-wc").VikingSelectWc;
     "viking-select-wc": import("./select/viking-select-wc").VikingSelectWc;
     "viking-suite-command-palette": import("./suite-search-palette/viking-suite-search-palette-wc").VikingSuiteSearchPaletteWc;

@@ -66,7 +66,6 @@ import {
   ],
   templateUrl: './settings.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './settings.scss',
 })
 export class Settings implements OnInit {
   private monitorService = inject(MonitorService);

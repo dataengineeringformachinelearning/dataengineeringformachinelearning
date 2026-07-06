@@ -2,7 +2,6 @@
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import '@dataengineeringformachinelearning/viking-ui/viking-ui.css';
-import '@dataengineeringformachinelearning/viking-ui/web-components.js';
 import { algoliaEnv } from '../lib/site-env';
 import {
 	SITE_NAME,
@@ -109,8 +108,8 @@ const jsonLdPayload = jsonLd
 
 
 
-		<script is:inline>
-			(function () {
+			<script is:inline>
+				(function () {
 				var savedTheme = localStorage.getItem('theme');
 				var theme = 'dark';
 				if (savedTheme === 'light' || savedTheme === 'dark') {
@@ -126,9 +125,10 @@ const jsonLdPayload = jsonLd
 					document.documentElement.classList.remove('dark');
 				}
 			})();
-		</script>
+			</script>
 
-		<script is:inline define:vars={{ algolia }}>
+			<script type="module" src="/assets/viking-ui-elements.js"></script>
+			<script is:inline define:vars={{ algolia }}>
 			window.ALGOLIA_CONFIG = {
 				appId: algolia.APP_ID,
 				apiKey: algolia.API_KEY,

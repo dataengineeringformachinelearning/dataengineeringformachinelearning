@@ -136,45 +136,7 @@
       crossorigin
     />
 
-    <!-- Critical skip-link styles: axe pre-commit scans this file without Angular bundles. -->
-    <style>
-      a.skip-link {
-        position: absolute;
-        top: 0;
-        left: 16px;
-        z-index: 10000;
-        padding: 8px 16px;
-        border-radius: 8px;
-        background-color: var(--viking-black);
-        color: var(--viking-white-pure);
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 16px;
-        line-height: 1.4;
-        clip: rect(0 0 0 0);
-        clip-path: inset(50%);
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-        white-space: nowrap;
-        border: 0;
-      }
-
-      a.skip-link:focus,
-      a.skip-link:focus-visible {
-        clip: auto;
-        clip-path: none;
-        width: auto;
-        height: auto;
-        overflow: visible;
-        white-space: normal;
-        outline: 3px solid var(--viking-teal-600);
-        outline-offset: 2px;
-      }
-    </style>
-
-    <!-- Theme tokens are included via Angular global styles (styles.scss + theme.scss).
-         Dedicated per-app stylesheets + shared tokens for other services (marketing, backend). -->
+    <!-- Theme tokens are included via Viking-UI global styles. -->
 
     <!-- Local Firebase Configuration Override -->
     <script src="assets/firebase-config.js"></script>

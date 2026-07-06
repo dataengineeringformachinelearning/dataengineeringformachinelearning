@@ -69,6 +69,8 @@ export {
   VikingSelectWc,
   VikingSuiteHeaderWc,
   VikingSuiteSearchPaletteWc,
+  VikingStatusCardWc,
+  VikingStatusPillWc,
   VikingThemeToggleWc,
   registerVikingBadgeWc,
   registerVikingButtonWc,
@@ -79,6 +81,8 @@ export {
   registerVikingModalWc,
   registerVikingSearchPaletteWc,
   registerVikingSelectWc,
+  registerVikingStatusCardWc,
+  registerVikingStatusPillWc,
   registerVikingSuiteHeaderWc,
   registerVikingSuiteSearchPaletteWc,
   registerVikingThemeToggleWc,
@@ -170,7 +174,9 @@ export * from "./lib/sheet/sheet";
 export * from "./lib/sidebar-nav/sidebar-nav";
 export * from "./lib/skeleton/skeleton";
 export * from "./lib/spinner/spinner";
+export * from "./lib/status-card/status-card";
 export * from "./lib/status-metric-row/status-metric-row";
+export * from "./lib/status-pill/status-pill";
 export * from "./lib/slider/slider";
 export * from "./lib/switch/switch";
 export * from "./lib/table/table";

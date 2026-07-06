@@ -114,9 +114,7 @@ import { SITE } from '../lib/site';
           astro: `---
 // Scoped override in layout or component
 ---
-<style is:global>
-  :root { --viking-accent: var(--viking-teal-500); }
-</style>`,
+document.documentElement.style.setProperty('--viking-accent', 'var(--viking-teal-500)');`,
           django: `/* static/css/tenant-overrides.css */
 :root[data-tenant="acme"] {
   --viking-accent: var(--viking-teal-400);
@@ -188,25 +186,3 @@ import { SITE } from '../lib/site';
     root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
   });
 </script>
-
-<style>
-  .theming-setup-card {
-    margin-bottom: var(--viking-space-2);
-  }
-
-  .theming-setup-card pre {
-    margin: var(--viking-space-2) 0 0;
-    padding: var(--viking-space-2);
-    background: var(--viking-charcoal-950);
-    border-radius: var(--viking-radius);
-    overflow-x: auto;
-    font-size: var(--viking-font-size-sm);
-  }
-
-  .theming-rules {
-    display: flex;
-    flex-direction: column;
-    gap: var(--viking-space-1);
-    padding-left: var(--viking-space-3);
-  }
-</style>

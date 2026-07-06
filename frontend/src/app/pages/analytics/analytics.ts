@@ -56,7 +56,6 @@ import * as L from 'leaflet';
     VikingChartEmptyState,
   ],
   templateUrl: './analytics.html',
-  styleUrls: ['./analytics.scss'],
 })
 export class AnalyticsComponent implements OnInit, OnDestroy {
   private http = inject(HttpClient);

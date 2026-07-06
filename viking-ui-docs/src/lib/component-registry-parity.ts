@@ -42,7 +42,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "App sidebar",
           description:
             "Collapsible workspace navigation with icon + label items.",
-          preview: `<nav class="viking-card viking-card-compact" aria-label="Sidebar demo" style="max-width:14rem">
+          preview: `<nav class="viking-card viking-card-compact viking-demo-card-sm" aria-label="Sidebar demo">
   <span class="viking-label">Workspace</span>
   <div class="viking-demo-row viking-demo-row-stack">
     <span class="viking-text">Overview</span>
@@ -636,15 +636,15 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           description: "Horizontal bar visualization for comparative metrics.",
           preview: `<div class="viking-bar-static">
   <span class="viking-label">Tenant isolation</span>
-  <div class="viking-bar-track"><div class="viking-bar-fill" style="width:94%"></div></div>
+  <div class="viking-bar-track"><div class="viking-bar-fill viking-bar-value-94"></div></div>
   <span class="viking-text-muted">94%</span>
 </div>`,
           selector: "viking-bar",
         },
         snippets(
           `<viking-bar [value]="94" label="Tenant isolation" />`,
-          `<div class="viking-bar-static"><div class="viking-bar-track"><div class="viking-bar-fill" style="width:94%"></div></div></div>`,
-          `<div class="viking-bar-static"><div class="viking-bar-fill" style="width:{{ pct }}%"></div></div>`,
+          `<div class="viking-bar-static"><div class="viking-bar-track"><div class="viking-bar-fill viking-bar-value-94"></div></div></div>`,
+          `<div class="viking-bar-static"><div class="viking-bar-fill"></div></div>`,
           `fill.style.width = '94%';`,
         ),
       ),
@@ -746,7 +746,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Anchored floating panel for contextual actions and filters.",
           preview: `<div class="viking-popover-demo">
   <viking-button-wc variant="outline">Filters</viking-button-wc>
-  <div class="viking-card viking-card-compact" style="margin-top:var(--viking-space-1);max-width:16rem">
+  <div class="viking-card viking-card-compact viking-demo-card-md viking-demo-mt-1">
   <span class="viking-label">Retention</span>
   <viking-select-wc label="Window"><option>30 days</option></viking-select-wc>
   </div>
@@ -854,7 +854,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           id: "fab",
           name: "FAB",
           description: "Floating action button for primary mobile workflows.",
-          preview: `<div style="position:relative;min-height:5rem">
+          preview: `<div class="viking-demo-relative-min">
   <button type="button" class="viking-fab-static" aria-label="Create incident">+</button>
 </div>`,
           selector: "viking-fab",

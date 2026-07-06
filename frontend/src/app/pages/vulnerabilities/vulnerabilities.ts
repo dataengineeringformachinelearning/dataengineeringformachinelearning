@@ -59,7 +59,6 @@ import {
     UnifiedSelect,
   ],
   templateUrl: './vulnerabilities.html',
-  styleUrl: './vulnerabilities.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Vulnerabilities implements OnInit {

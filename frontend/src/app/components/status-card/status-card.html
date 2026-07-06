@@ -1,94 +1,91 @@
-<viking-card class="status-card-outlined" [id]="page.slug">
-  <viking-card-header>
-    <div class="header-main-info">
-      <div class="card-title-row">
-        <viking-heading [level]="2" size="xl" class="card-title">{{ page.title }}</viking-heading>
-        <app-pro-verified-badge [show]="!!page.is_pro_verified"></app-pro-verified-badge>
-      </div>
-      <p class="card-subtitle">{{ page.description || 'Monitoring core services' }}</p>
-    </div>
+<viking-status-card
+  [attr.id]="page.slug"
+  [title]="page.title"
+  [subtitle]="page.description || 'Monitoring core services'"
+  [status]="getPageStatus()"
+  [statusTone]="statusTone"
+  [statusDot]="true"
+  [href]="linkHeader ? getPageUrl() : ''"
+>
+  <div>
+    <app-pro-verified-badge [show]="!!page.is_pro_verified"></app-pro-verified-badge>
+    <viking-status-pill [tone]="statusTone" [dot]="true">{{ getPageStatus() }}</viking-status-pill>
+  </div>
 
-    @if (linkHeader) {
-    <a
-      [routerLink]="['/status', page.slug]"
-      class="status-badge-premium"
-      [ngClass]="getPageStatusClass()"
-    >
-      <span class="status-dot" aria-hidden="true"></span>
-      {{ getPageStatus() }}
-    </a>
-    } @else {
-    <div class="status-badge-premium" [ngClass]="getPageStatusClass()">
-      <span class="status-dot" aria-hidden="true"></span>
-      {{ getPageStatus() }}
-    </div>
-    }
-  </viking-card-header>
-
-  <div class="ml-stat-panels-row">
+  <div>
     <viking-status-metric-row
       icon="server"
       title="Cumulative SLA"
       subtitle="Based on real telemetry"
-      [value]="((page.cumulative_sla ?? 0) | number:'1.2-2') + '%'"
+      [value]="(cumulativeSla | number:'1.2-2') + '%'"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Predicted SLA"
       subtitle="30-day forecast via ML"
-      [value]="((predictedSla ?? 0) | number:'1.2-2') + '%'"
+      [value]="(predictedSlaValue | number:'1.2-2') + '%'"
     />
   </div>
 
-  <viking-card class="ml-stat-panels-row status-card-extracted-1" [compact]="true">
+  <div>
     <viking-status-metric-row
       icon="clock"
       title="P99 Latency"
       subtitle="Last 24h"
-      [value]="p99Latency != null ? p99Latency + 'ms' : 'N/A'"
+      [value]="p99Latency + 'ms'"
     />
     <viking-status-metric-row
       icon="bar-chart"
       title="Total Requests"
       subtitle="Last 24h"
-      [value]="totalRequestsValue"
+      [value]="(totalRequests | number) ?? '0'"
     />
-  </viking-card>
+  </div>
 
-  <viking-card class="ml-stat-panels-row status-card-extracted-1" [compact]="true">
+  <div>
     <viking-status-metric-row
       icon="shield"
       title="Cumulative TA"
       subtitle="Based on real telemetry"
-      [value]="(((threatReport ? threatReport.suspicious_ratio : simulatedThreatReport?.suspicious_ratio) || 0) * 100 | number:'1.1-2') + '%'"
+      [value]="(suspiciousRatio * 100 | number:'1.1-2') + '%'"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Predicted TA"
       subtitle="30-day threat forecast via ML"
-      [value]="(((threatReport ? threatReport.anomaly_score : simulatedThreatReport?.anomaly_score) || 0) * 100 | number:'1.1-2') + '%'"
+      [value]="(anomalyScore * 100 | number:'1.1-2') + '%'"
     />
-  </viking-card>
+  </div>
 
-  <viking-card class="ml-stat-panels-row status-card-extracted-1" [compact]="true">
+  <div>
     <viking-status-metric-row
       icon="trending-up"
       title="Temporal Forecast"
-      subtitle="Norse SNN spike risk (0–100)"
-      [value]="((predictedTemporalForecast ?? 0) | number:'1.1-2')"
+      subtitle="Norse SNN spike risk (0-100)"
+      [value]="(predictedTemporalForecastValue | number:'1.1-2') ?? '0'"
     />
-  </viking-card>
+  </div>
 
-  @if (showViewButton) {
-  <div class="view-btn-container">
+  @if (showIncidents && activeIncidents.length > 0) {
+  <div>
+    @for (incident of activeIncidents; track incident.id || incident.title) {
+    <viking-card [compact]="true">
+      <strong>{{ incident.status }}</strong>
+      <span>{{ incident.title }}</span>
+      <small>{{ incident.message }}</small>
+    </viking-card>
+    }
+  </div>
+  } @if (showViewButton) {
+  <div>
     <viking-button
       variant="primary"
       [fullWidth]="true"
-      [href]="'/status/' + page.slug"
+      [href]="getPageUrl()"
       iconTrailing="arrow-right"
     >
       View Dedicated Page
     </viking-button>
   </div>
   }
-</viking-card>
+</viking-status-card>

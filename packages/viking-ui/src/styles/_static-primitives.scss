@@ -151,9 +151,25 @@
 
 .viking-progress-bar {
   height: 100%;
+  width: var(--viking-progress-value, 0%);
   background: var(--viking-accent);
   border-radius: inherit;
   transition: width var(--viking-duration) var(--viking-ease-out);
+}
+
+.viking-progress-value-33,
+.viking-bar-value-33 {
+  --viking-progress-value: 33%;
+}
+
+.viking-progress-value-72,
+.viking-bar-value-72 {
+  --viking-progress-value: 72%;
+}
+
+.viking-progress-value-94,
+.viking-bar-value-94 {
+  --viking-progress-value: 94%;
 }
 
 .viking-progress-indeterminate .viking-progress-bar {
@@ -703,6 +719,7 @@
 
 .viking-bar-fill {
   height: 100%;
+  width: var(--viking-progress-value, 0%);
   background: var(--viking-accent);
   border-radius: inherit;
 }
@@ -815,6 +832,14 @@
   gap: var(--viking-space-half);
 }
 
+.viking-icon-color-accent {
+  color: var(--viking-accent);
+}
+
+.viking-icon-color-muted {
+  color: var(--viking-text-muted);
+}
+
 .viking-whitepaper-cta-static {
   display: flex;
   flex-direction: column;
@@ -824,12 +849,16 @@
 
 .viking-search-result-static {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: var(--viking-space-half);
+  width: 100%;
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius);
   border: 1px solid transparent;
+  background: transparent;
+  cursor: default;
   text-decoration: none;
+  text-align: left;
   color: inherit;
   transition: var(--viking-transition-interactive);
 }

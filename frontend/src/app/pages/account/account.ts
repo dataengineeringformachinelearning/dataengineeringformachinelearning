@@ -65,7 +65,6 @@ import {
   ],
   templateUrl: './account.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './account.scss',
 })
 export class Account implements OnInit {
   public authService = inject(AuthService);

@@ -13,9 +13,23 @@ Before editing HTML, CSS/SCSS, Tailwind config, or Angular templates: **read THE
 
 ---
 
+## Styling ownership law (hard gate)
+
+`packages/viking-ui/` is the only place where visual styling may be authored. Application and site surfaces consume Viking-UI; they do not own styling.
+
+- **Do not create or modify custom SCSS/CSS outside `packages/viking-ui/`.** This includes Angular component styles, Astro `<style>` blocks, global app stylesheets, widget-local CSS, Tailwind utility styling, and one-off visual classes.
+- **Do not add inline `style=""` attributes** unless the value is non-visual runtime geometry that cannot be represented by a Viking-UI prop or class. If the value affects color, spacing, layout, typography, borders, shadows, motion, or sizing, move it to Viking-UI.
+- **Do not introduce new non-Viking visual class systems** in `frontend/`, `marketing/`, `viking-ui-docs/`, Django templates, or static widget consumers. Markup may use `viking-*` elements/classes and semantic content classes only when those classes are styled by the Viking-UI bundle.
+- **If a component or pattern is missing, add it to Viking-UI first.** Create framework-neutral Web Components in `packages/viking-ui/src/web/`, Angular wrappers in `packages/viking-ui/src/lib/` when needed, and shared surface styles under `packages/viking-ui/src/styles/`.
+- **After changing Viking-UI styles or components, rebuild and sync** with `npm run build:viking-ui:package` and `python scripts/sync_design_system.py` so all consuming surfaces receive the same artifacts.
+
+Consuming apps may compose UI, bind data, pass props/attributes, and choose existing Viking-UI variants. They may not define the visual implementation.
+
+---
+
 ## Composable primitive quality (structure, not palette)
 
-Viking-UI follows a **composable primitive** model: install behavior in Angular, style from tokens, customize without a monolithic theme runtime.
+Viking-UI follows a **composable primitive** model: install behavior in Angular, style from package-owned tokens/components, and avoid app-local styling entirely.
 
 | Pattern                  | Viking-UI equivalent                                                   | You must                                                     |
 | ------------------------ | ---------------------------------------------------------------------- | ------------------------------------------------------------ |
@@ -44,6 +58,7 @@ Viking-UI follows a **composable primitive** model: install behavior in Angular,
 - **Loading:** `viking-skeleton`, `viking-loading-overlay`, `viking-progress` — not generic spinners.
 - **Framework-neutral shared UI** (styles, primitives, services, utilities) belongs in `packages/viking-ui/` first.
 - `packages/viking-ui/` is the single home for all Viking-UI code, including token SCSS, static CSS bundles, Web Components, Angular-free utility exports, package metadata, and all Angular wrapper components.
+- Do not add `styleUrl`, `styleUrls`, inline `styles`, or component-local SCSS to Angular app components. If a visual rule is needed, create or extend a Viking-UI component.
 - Never import from retired frontend-local library paths or from `packages/viking-ui/src/...` in app/runtime code. Consume public entrypoints: package root or `/angular` for Angular, `/web-components.js` for custom elements, `/icons` and `/site-drakkar` for static-site utilities, `/tokens.json` for design tooling.
 
 ```typescript
@@ -59,7 +74,7 @@ import {
 
 - Load synced CSS: `design-tokens.css` + `viking-ui.css` (from `scripts/sync_design_system.py`).
 - Use `@dataengineeringformachinelearning/viking-ui/icons`, `@dataengineeringformachinelearning/viking-ui/site-drakkar`, `@dataengineeringformachinelearning/viking-ui/tokens.json`, and `@dataengineeringformachinelearning/viking-ui/manifest` for build-time/static-site data. Do not pull the Angular barrel into Astro prerender paths.
-- Use semantic HTML + `var(--viking-*)` tokens and documented utility classes — no inline hex, no one-off palettes.
+- Use semantic HTML plus documented `viking-*` components/classes from the synced Viking-UI bundle — no local `<style>` blocks, inline styles, one-off palettes, or platform-specific CSS.
 - Mirror composable field ergonomics with tokenized form markup; do not embed React/Vue widget runtimes.
 
 ---

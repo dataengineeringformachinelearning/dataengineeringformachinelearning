@@ -46,7 +46,6 @@ type WizardStep = (typeof STEPS)[number];
     VikingAppIcon,
   ],
   templateUrl: './onboarding-wizard.html',
-  styleUrl: './onboarding-wizard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnboardingWizard {

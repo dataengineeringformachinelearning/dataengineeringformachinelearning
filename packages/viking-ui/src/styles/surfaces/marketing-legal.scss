@@ -1,0 +1,274 @@
+.legal-document,
+.page-content {
+  color: var(--viking-text);
+}
+
+.legal-document-header,
+.privacy-header,
+.terms-header {
+  border-bottom: 1px solid var(--viking-border);
+  padding-bottom: var(--viking-space-3);
+  margin-bottom: var(--viking-space-4);
+  text-align: center;
+}
+
+.legal-document-header h1,
+.privacy-header h1,
+.terms-header h1 {
+  font-size: var(--viking-font-size-3xl);
+  font-weight: var(--viking-font-weight-bold);
+  margin: 0 0 var(--viking-space-1);
+  letter-spacing: var(--viking-letter-spacing-tight);
+  color: var(--viking-text);
+}
+
+.last-updated {
+  font-size: var(--viking-font-size);
+  color: var(--viking-text-muted);
+  margin: 0;
+}
+
+.legal-section,
+.privacy-section,
+.terms-section {
+  margin-bottom: var(--viking-space-4);
+}
+
+.legal-section h2,
+.privacy-section h2,
+.terms-section h2 {
+  font-size: var(--viking-font-size-xl);
+  font-weight: var(--viking-font-weight-semibold);
+  margin: 0 0 var(--viking-space-2);
+  letter-spacing: var(--viking-letter-spacing-normal);
+  color: var(--viking-text);
+  border-left: var(--viking-grid-unit) solid var(--viking-success);
+  padding-left: var(--viking-space-1);
+}
+
+.legal-section p,
+.privacy-section p,
+.terms-section p {
+  font-size: var(--viking-font-size);
+  line-height: var(--viking-line-height-relaxed);
+  color: var(--viking-text);
+  margin: 0 0 var(--viking-space-2);
+}
+
+.legal-section ul,
+.privacy-section ul,
+.terms-section ul {
+  padding-left: var(--viking-space-3);
+  margin: 0 0 var(--viking-space-2);
+}
+
+.legal-section li,
+.privacy-section li,
+.terms-section li {
+  margin-bottom: var(--viking-space-1);
+  font-size: var(--viking-font-size);
+}
+
+.legal-section strong,
+.privacy-section strong,
+.terms-section strong {
+  color: var(--viking-text);
+}
+
+.cookie-types-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-2);
+  margin: var(--viking-space-3) 0;
+}
+
+.cookie-card,
+.contact-card,
+.compliance-form-card {
+  background: color-mix(in srgb, var(--viking-surface-alt) 40%, transparent);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  padding: var(--viking-space-2);
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.cookie-card h3,
+.compliance-form-card h3 {
+  font-size: var(--viking-font-size-md);
+  font-weight: var(--viking-font-weight-semibold);
+  margin: 0 0 var(--viking-space-1);
+  color: var(--viking-text);
+}
+
+.cookie-card p,
+.contact-card p,
+.compliance-form-card .form-instruction {
+  font-size: var(--viking-font-size);
+  line-height: var(--viking-line-height-normal);
+  margin: 0 0 var(--viking-space-1);
+  color: var(--viking-text-muted);
+}
+
+.contact-card {
+  margin-top: var(--viking-space-2);
+}
+
+.contact-card p:last-child {
+  margin-bottom: 0;
+}
+
+.contact-card a {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.cookie-action-box {
+  background: color-mix(in srgb, var(--viking-success) 8%, transparent);
+  border: 1px dashed var(--viking-success);
+  border-radius: var(--viking-radius-xl);
+  padding: var(--viking-space-3);
+  text-align: center;
+  margin-top: var(--viking-space-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--viking-space-1);
+}
+
+.cookie-action-box p {
+  margin: 0;
+  font-weight: var(--viking-font-weight-medium);
+}
+
+.compliance-form-card {
+  margin-top: var(--viking-space-4);
+}
+
+.compliance-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-1);
+}
+
+.form-group label {
+  font-size: var(--viking-font-size);
+  font-weight: var(--viking-font-weight-medium);
+  color: var(--viking-text);
+}
+
+.form-input {
+  background-color: var(--viking-surface);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  color: var(--viking-text);
+  font-family: var(--viking-font-family);
+  font-size: var(--viking-font-size);
+  outline: none;
+  transition: var(--viking-transition-colors);
+}
+
+.form-input:focus {
+  border-color: var(--viking-success);
+  box-shadow: 0 0 0 var(--viking-ring-width) color-mix(in srgb, var(--viking-success) 20%, transparent);
+}
+
+textarea.form-input {
+  resize: vertical;
+}
+
+select.form-input {
+  cursor: pointer;
+}
+
+.gdpr-success-callout {
+  margin: var(--viking-space-2) 0 0;
+  padding: var(--viking-space-2);
+  border-radius: var(--viking-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--viking-success) 35%, transparent);
+  background: color-mix(in srgb, var(--viking-success) 12%, transparent);
+  color: var(--viking-text);
+  font-size: var(--viking-font-size-sm);
+}
+
+.marketing-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - var(--viking-navbar-height));
+  text-align: center;
+  padding-block: var(--viking-space-6);
+}
+
+.marketing-not-found-icon {
+  color: var(--viking-accent);
+  opacity: 0.6;
+  margin-bottom: var(--viking-space-2);
+}
+
+.marketing-not-found-code {
+  font-size: var(--viking-font-size-4xl);
+  font-weight: var(--viking-font-weight-bold);
+  margin: 0;
+  line-height: var(--viking-line-height-tight);
+  color: var(--viking-accent);
+}
+
+.marketing-not-found-title {
+  font-size: var(--viking-font-size-2xl);
+  margin: var(--viking-space-2) 0;
+  color: var(--viking-text);
+}
+
+.marketing-not-found-message {
+  color: var(--viking-text-muted);
+  max-width: var(--viking-content-readable-max-width);
+  margin: 0 0 var(--viking-space-4);
+  font-size: var(--viking-font-size-md);
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.docs-hero-actions {
+  justify-content: center;
+  align-self: center;
+  width: 100%;
+  overflow: visible;
+}
+
+.docs-cta-secondary {
+  background: var(--viking-surface);
+  color: var(--viking-accent) !important;
+  border-color: color-mix(in srgb, var(--viking-accent) 35%, var(--viking-border));
+  box-shadow: var(--viking-shadow-sm);
+  flex-shrink: 0;
+}
+
+.docs-cta-secondary:hover,
+.docs-cta-secondary:focus-visible {
+  border-color: var(--viking-accent);
+  background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface));
+  color: var(--viking-accent-strong) !important;
+}
+
+@media (min-width: 600px) {
+  .docs-hero-actions {
+    width: auto;
+  }
+}
+
+@media (min-width: 768px) {
+  .cookie-types-grid {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .compliance-form-card {
+    padding: var(--viking-space-3);
+  }
+}

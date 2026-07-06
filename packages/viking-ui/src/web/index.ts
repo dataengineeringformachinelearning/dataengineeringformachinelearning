@@ -6,6 +6,16 @@ import { registerVikingFieldWc } from "./field/viking-field-wc";
 import { registerVikingInputWc } from "./input/viking-input-wc";
 import { registerVikingModalWc } from "./modal/viking-modal-wc";
 import { registerVikingSearchPaletteWc } from "./search-palette/viking-search-palette-wc";
+import { registerVikingStatusCardWc } from "./status-card/viking-status-card-wc";
+import { registerVikingStatusPillWc } from "./status-pill/viking-status-pill-wc";
+import {
+  registerVikingSiteFooterWc,
+  VikingSiteFooterWc,
+} from "./site-footer/viking-site-footer-wc";
+import {
+  registerVikingSiteNavbarWc,
+  VikingSiteNavbarWc,
+} from "./site-navbar/viking-site-navbar-wc";
 import { registerVikingSuiteHeaderWc } from "./suite-header/viking-suite-header-wc";
 import { registerVikingSuiteSearchPaletteWc } from "./suite-search-palette/viking-suite-search-palette-wc";
 import { registerVikingSelectWc } from "./select/viking-select-wc";
@@ -30,6 +40,14 @@ export {
   type VikingSearchPaletteItem,
 } from "./search-palette/viking-search-palette-wc";
 export {
+  VikingStatusCardWc,
+  registerVikingStatusCardWc,
+} from "./status-card/viking-status-card-wc";
+export {
+  VikingStatusPillWc,
+  registerVikingStatusPillWc,
+} from "./status-pill/viking-status-pill-wc";
+export {
   VikingSuiteSearchPaletteWc,
   registerVikingSuiteSearchPaletteWc,
 } from "./suite-search-palette/viking-suite-search-palette-wc";
@@ -37,6 +55,14 @@ export {
   VikingSuiteHeaderWc,
   registerVikingSuiteHeaderWc,
 } from "./suite-header/viking-suite-header-wc";
+export {
+  VikingSiteFooterWc,
+  registerVikingSiteFooterWc,
+} from "./site-footer/viking-site-footer-wc";
+export {
+  VikingSiteNavbarWc,
+  registerVikingSiteNavbarWc,
+} from "./site-navbar/viking-site-navbar-wc";
 export {
   VikingSelectWc,
   registerVikingSelectWc,
@@ -58,8 +84,12 @@ export const registerVikingElements = (): void => {
   registerVikingSelectWc();
   registerVikingModalWc();
   registerVikingSearchPaletteWc();
+  registerVikingStatusCardWc();
+  registerVikingStatusPillWc();
   registerVikingSuiteHeaderWc();
   registerVikingSuiteSearchPaletteWc();
+  registerVikingSiteNavbarWc();
+  registerVikingSiteFooterWc();
   registerVikingThemeToggleWc();
 };
 

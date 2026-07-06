@@ -18,10 +18,14 @@ import { MlService, ThreatReportResponse } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
   VikingButton,
-  VikingUptimeBar,
-  VikingUptimeStatus,
+  VikingCallout,
+  VikingCard,
+  VikingHeading,
+  VikingPageHeader,
+  VikingStatusMetricRow,
+  VikingStatusPill,
 } from '@dataengineeringformachinelearning/viking-ui';
-import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
+import type { VikingTone } from '@dataengineeringformachinelearning/viking-ui';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatServiceName } from '../../core/utils/formatter.utils';
@@ -36,14 +40,17 @@ import { timeout } from 'rxjs';
   imports: [
     CommonModule,
     VikingButton,
-    VikingUptimeBar,
-    VikingAppIcon,
+    VikingCallout,
+    VikingCard,
+    VikingHeading,
+    VikingPageHeader,
+    VikingStatusMetricRow,
+    VikingStatusPill,
     RouterModule,
     ProVerifiedBadge,
   ],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './isolated-status.scss',
 })
 export class IsolatedStatus implements OnInit {
   private monitorService = inject(MonitorService);
@@ -238,28 +245,39 @@ export class IsolatedStatus implements OnInit {
     return this.threatReportsByPage()[pageId];
   }
 
-  isRetrying = signal<boolean>(false);
-
-  getPageStatusClass(pageId: string): string {
-    const status = this.getPageStatus(pageId);
-    if (status === 'Operational') return 'operational';
-    return status.toLowerCase();
+  protected announcementTone(severity?: string | null): 'accent' | 'warning' | 'danger' | 'muted' {
+    const key = (severity || 'info').toLowerCase();
+    if (key === 'critical' || key === 'error' || key === 'danger') return 'danger';
+    if (key === 'warning') return 'warning';
+    if (key === 'info' || key === 'primary') return 'accent';
+    return 'muted';
   }
+
+  protected globalStatusTone(status: string): VikingTone {
+    if (status === 'Outage') return 'danger';
+    if (status === 'Degraded') return 'warning';
+    return 'success';
+  }
+
+  protected serviceStatusTone(status?: string | null): VikingTone {
+    const value = (status || 'Operational').toLowerCase();
+    if (value === 'outage' || value === 'major outage') return 'danger';
+    if (value === 'degraded') return 'warning';
+    if (value === 'operational') return 'success';
+    return 'muted';
+  }
+
+  protected incidentTone(status?: string | null): VikingTone {
+    const value = (status || '').toLowerCase();
+    if (value === 'resolved') return 'success';
+    if (value === 'investigating' || value === 'maintenance') return 'warning';
+    return 'danger';
+  }
+
+  isRetrying = signal<boolean>(false);
 
   retryLoad() {
     this.isRetrying.set(true);
     window.location.reload();
-  }
-
-  protected uptimeBarStatus(status: string): VikingUptimeStatus {
-    if (
-      status === 'operational' ||
-      status === 'partial_outage' ||
-      status === 'major_outage' ||
-      status === 'no_data'
-    ) {
-      return status;
-    }
-    return 'operational';
   }
 }

@@ -42,7 +42,6 @@
             },
             "styles": [
               "@dataengineeringformachinelearning/viking-ui/viking-ui.css",
-              "src/styles.scss",
               "prismjs/themes/prism-okaidia.css"
             ],
             "scripts": [

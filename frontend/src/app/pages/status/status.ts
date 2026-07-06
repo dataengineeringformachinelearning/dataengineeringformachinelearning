@@ -16,11 +16,12 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
-  VikingBadge,
   VikingButton,
+  VikingCallout,
+  VikingCard,
+  VikingHeading,
   VikingPageHeader,
 } from '@dataengineeringformachinelearning/viking-ui';
-import { VikingAppIcon } from '../../components/viking-app-icon/viking-app-icon';
 import { RouterModule, Router } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
@@ -34,10 +35,11 @@ import { timeout } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
-    VikingBadge,
     VikingButton,
+    VikingCallout,
+    VikingCard,
+    VikingHeading,
     VikingPageHeader,
-    VikingAppIcon,
     RouterModule,
     Sidebar,
     StatusCta,
@@ -45,7 +47,6 @@ import { timeout } from 'rxjs';
   ],
   templateUrl: './status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './status.scss',
 })
 export class Status implements OnInit {
   private monitorService = inject(MonitorService);

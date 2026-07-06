@@ -10,7 +10,6 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [VikingButton, VikingAppIcon],
   templateUrl: './status-cta.html',
-  styleUrl: './status-cta.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusCta {

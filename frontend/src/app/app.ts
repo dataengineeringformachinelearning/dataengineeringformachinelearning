@@ -40,7 +40,6 @@ import { SessionStateService } from './services/session-state.service';
   ],
   templateUrl: './app.html',
   changeDetection: ChangeDetectionStrategy.Eager,
-  styleUrl: './app.scss',
 })
 export class App implements OnInit {
   protected readonly title = signal('frontend');

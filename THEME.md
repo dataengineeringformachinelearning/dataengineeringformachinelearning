@@ -15,6 +15,16 @@
 **Canonical implementation:** `packages/viking-ui/` (tokens, static CSS, Web Components, utility exports, package metadata, and Angular wrappers)
 **Compiled artifacts:** `packages/viking-ui/dist/` (`design-tokens.css`, `viking-components.css`, `viking-ui.css`, `web-components.js`, `viking-ui-elements.js`, `icons.js`, `site-drakkar.js`, `widget.js`, `viking-tokens.json`)
 
+## Viking-UI Styling Ownership Law
+
+Viking-UI is the single source of truth for all DEML styling. Every visual rule used by the Angular frontend, Astro marketing site, Viking-UI docs, Django templates, Swagger, widgets, and future surfaces must originate in `packages/viking-ui/`.
+
+- **Components first:** new UI must use existing `viking-*` components or Web Components before adding markup. If the primitive is missing, create it in `packages/viking-ui/src/web/` and, when Angular needs it, expose a thin wrapper in `packages/viking-ui/src/lib/`.
+- **Tokens only:** every color, spacing, radius, shadow, font, motion, and data visualization value must resolve to a `--viking-*` token from `packages/viking-ui/src/styles/_variables.scss` or a semantic alias exported by the Viking-UI bundle.
+- **No app-owned visuals:** `frontend/`, `marketing/`, `viking-ui-docs/`, Django templates, and widget consumers may compose Viking components, pass content/props, and load synced assets, but they must not define page-level SCSS/CSS, local `<style>` blocks, inline `style=""`, Tailwind utility styling, hardcoded palettes, or one-off visual class systems.
+- **Extend, then consume:** when a consuming surface needs a new layout, card, CTA, legal/prose surface, nav/footer pattern, status display, chart treatment, or form pattern, add the primitive or surface style to `packages/viking-ui/src/styles/`, rebuild the package, and sync with `scripts/sync_design_system.py`.
+- **Generated assets are mirrors:** files such as `frontend/public/assets/viking-ui.css`, `marketing/public/assets/viking-ui.css`, `backend/static/viking-ui.css`, and `viking-ui-docs/public/assets/viking-ui.css` are compiled outputs. Do not hand-edit them except through the Viking-UI build and sync pipeline.
+
 ### Token artifacts (single source of truth)
 
 | Artifact           | Path                                                                                  | Purpose                                                                                                      |
@@ -45,7 +55,7 @@ Viking-UI's locked aesthetic is **precision-engineered industrial luxury**: dark
 
 ### Composable primitive model
 
-[Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/packages/viking-ui) follows a **composable primitive** model: install behavior in Angular, copy styles from tokens, customize without fighting a monolithic theme.
+[Viking-UI](https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning/tree/main/packages/viking-ui) follows a **composable primitive** model: consume package components and synced CSS from applications, and place all styling behavior in the package.
 
 | Pattern                  | Viking-UI equivalent                                                   | Notes                                                                |
 | ------------------------ | ---------------------------------------------------------------------- | -------------------------------------------------------------------- |
@@ -56,7 +66,7 @@ Viking-UI's locked aesthetic is **precision-engineered industrial luxury**: dark
 | Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                     |
 | Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
 
-**Palette discipline:** **deep navy/black surfaces, metallic borders, and restrained electric-teal/crimson accents** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** so Django, Astro, and Swagger share the same CSS variables without Tailwind runtime.
+**Palette discipline:** **deep navy/black surfaces, metallic borders, and restrained electric-teal/crimson accents** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** inside Viking-UI so Django, Astro, Angular, docs, widgets, and Swagger share the same CSS variables without Tailwind runtime or platform-local stylesheets.
 
 ### Directional language
 

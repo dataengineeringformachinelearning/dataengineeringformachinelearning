@@ -11,7 +11,6 @@ import {
   selector: 'app-not-found',
   imports: [VikingButton, VikingCard, VikingHeading, VikingText],
   templateUrl: './not-found.html',
-  styleUrl: './not-found.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotFound implements OnInit {

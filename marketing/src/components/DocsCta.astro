@@ -20,19 +20,3 @@ const className =
     <span class="cta-label"><slot /></span>
   </span>
 </a>
-
-<style lang="scss">
-  .docs-cta-secondary {
-    background: var(--color-surface);
-    color: var(--viking-accent, var(--viking-teal-600)) !important;
-    border: 1px solid color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 35%, var(--border));
-    box-shadow: var(--shadow-sm);
-    flex-shrink: 0;
-
-    &:hover {
-      border-color: var(--viking-accent, var(--viking-teal-600));
-      background: color-mix(in srgb, var(--viking-accent, var(--viking-teal-600)) 8%, var(--color-surface));
-      color: var(--viking-accent-strong, var(--viking-teal-400)) !important;
-    }
-  }
-</style>

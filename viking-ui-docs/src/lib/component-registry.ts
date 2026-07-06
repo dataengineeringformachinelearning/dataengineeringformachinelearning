@@ -194,10 +194,10 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Card title",
         description:
           "Icon badge + heading row for viking-card-header — premium section titles on settings, account, and dashboard cards.",
-        preview: `<div class="viking-card" style="padding:var(--viking-card-padding)">
-  <div class="viking-card-header" style="display:flex;align-items:center;gap:var(--viking-space-2);padding-bottom:var(--viking-space-2);margin-bottom:var(--viking-space-2);border-bottom:1px solid var(--viking-border-subtle)">
+        preview: `<div class="viking-card">
+  <div class="viking-card-header">
     <span class="viking-icon-badge-static" aria-hidden="true">◆</span>
-    <strong class="viking-heading viking-heading-xl" style="margin:0">Multi-Factor Authentication</strong>
+    <strong class="viking-heading viking-heading-xl">Multi-Factor Authentication</strong>
   </div>
   <p class="viking-text-muted">Secure your account with SMS verification.</p>
 </div>`,
@@ -397,7 +397,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     </footer>
   </div>
 </div>
-<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: <code>viking-modal-wc</code> with native dialog + focus trap</p>`,
+<p class="viking-text-muted viking-demo-caption">Live: <code>viking-modal-wc</code> with native dialog + focus trap</p>`,
         snippets: {
           angular: `<viking-modal [(open)]="confirmOpen" title="Confirm deploy" size="md">
   <p>Push v2.0.0 to production?</p>
@@ -443,13 +443,13 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         name: "Progress",
         description: "Determinate and indeterminate loading indicators.",
         preview: `<div class="viking-progress" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100">
-  <div class="viking-progress-bar" style="width: 72%"></div>
+  <div class="viking-progress-bar viking-progress-value-72"></div>
 </div>
 <div class="viking-progress viking-progress-indeterminate" role="progressbar" aria-label="Loading"></div>`,
         snippets: {
           angular: `<viking-progress [value]="72" />`,
-          astro: `<div class="viking-progress" role="progressbar" aria-valuenow="72"><div class="viking-progress-bar" style="width:72%"></div></div>`,
-          django: `<div class="viking-progress"><div class="viking-progress-bar" style="width:{{ pct }}%"></div></div>`,
+          astro: `<div class="viking-progress" role="progressbar" aria-valuenow="72"><div class="viking-progress-bar viking-progress-value-72"></div></div>`,
+          django: `<div class="viking-progress"><div class="viking-progress-bar"></div></div>`,
           javascript: `bar.style.width = \`\${value}%\`;`,
         },
       },
@@ -616,7 +616,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
     <span class="viking-kbd-static">⌘K</span> toggle · <span class="viking-kbd-static">↑↓</span> navigate · <span class="viking-kbd-static">Enter</span> open · <span class="viking-kbd-static">Esc</span> close
   </footer>
 </div>
-<p class="viking-text-muted" style="margin-top:var(--viking-space-1);font-size:var(--viking-font-size-xs)">Live: press <strong>⌘K</strong> anywhere in this site — powered by <code>viking-suite-command-palette</code></p>`,
+<p class="viking-text-muted viking-demo-caption">Live: press <strong>⌘K</strong> anywhere in this site — powered by <code>viking-suite-command-palette</code></p>`,
         snippets: {
           angular: `import { VikingSuiteSearchPalette } from '@dataengineeringformachinelearning/viking-ui';
 
@@ -728,13 +728,13 @@ palette.openPalette();
     <input type="search" class="showcase-search-input" placeholder="Type a command or search…" aria-label="Commands" readonly />
   </div>
   <div class="showcase-search-palette-body">
-    <p class="viking-label" style="margin:0 0 var(--viking-space-half)">Actions</p>
-    <button type="button" class="viking-search-result-static" style="width:100%;text-align:left;border:none;background:transparent;cursor:default">
+    <p class="viking-label viking-demo-label-compact">Actions</p>
+    <button type="button" class="viking-search-result-static" >
       <span class="viking-search-result-title">Trigger SLA model training</span>
     </button>
-    <button type="button" class="viking-search-result-static" style="width:100%;text-align:left;border:none;background:transparent;cursor:default">
+    <button type="button" class="viking-search-result-static" >
       <span class="viking-search-result-title">Rotate encryption keys</span>
-      <span class="viking-kbd-static" style="margin-left:auto">R</span>
+      <span class="viking-kbd-static viking-kbd-end">R</span>
     </button>
   </div>
   <footer class="showcase-search-palette-footer">

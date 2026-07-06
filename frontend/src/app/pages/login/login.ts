@@ -53,7 +53,6 @@ import {
   ],
   templateUrl: './login.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styleUrl: './login.scss',
 })
 export class Login implements OnInit, OnDestroy {
   private readonly platformId = inject(PLATFORM_ID);

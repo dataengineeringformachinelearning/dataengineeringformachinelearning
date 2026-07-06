@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.1.0
+
+### Minor Changes
+
+- Make Viking-UI the single source of truth for DEML styling, adding status/site primitives and package-owned surface styles for Angular, marketing, docs, and widgets.
+
 ## 4.0.6
 
 ### Patch Changes

@@ -24,10 +24,10 @@
     }
   };
 
-  const resolveIconColor = color => {
-    if (color === 'accent') return 'var(--viking-accent, var(--viking-teal-600))';
-    if (color === 'muted') return 'var(--viking-text-muted, #777777)';
-    return color || '';
+  const resolveIconColorClass = color => {
+    if (color === 'accent') return 'viking-icon-color-accent';
+    if (color === 'muted') return 'viking-icon-color-muted';
+    return '';
   };
 
   const svgIcon = (name, size = 16, options = {}) => {
@@ -36,9 +36,9 @@
     const paths = isFilled
       ? (filledIconPaths()[name] ?? iconPaths()[name] ?? iconPaths().info ?? '')
       : (iconPaths()[name] ?? iconPaths().info ?? '');
-    const color = resolveIconColor(options.color);
-    const style = color ? ` style="color:${color}"` : '';
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${isFilled ? 'currentColor' : 'none'}" stroke="${isFilled ? 'none' : 'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" aria-hidden="true"${style}>${paths}</svg>`;
+    const colorClass = resolveIconColorClass(options.color);
+    const className = colorClass ? ` class="${colorClass}"` : '';
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${isFilled ? 'currentColor' : 'none'}" stroke="${isFilled ? 'none' : 'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" aria-hidden="true"${className}>${paths}</svg>`;
   };
 
   const setIcon = (el, name, size = 16, options = {}) => {
