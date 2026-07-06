@@ -913,7 +913,7 @@ def train_spiking_temporal_forecaster(
     analytics = list(
       AggregatedAnalytics.objects.filter(
         is_platform=True, user__isnull=True, bucket_size="1h"
-      ).order_by("-timestamp")[:seq_len * 12]
+      ).order_by("-timestamp")[: seq_len * 12]
     )
   else:
     analytics = list(

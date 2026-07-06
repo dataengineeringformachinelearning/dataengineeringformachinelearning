@@ -1,9 +1,5 @@
 import { attachShadowStyles, readBoolAttr } from "../core/base";
-import {
-  defineCustomElement,
-  escapeHtml,
-  HTMLElementBase,
-} from "../core/dom";
+import { defineCustomElement, escapeHtml, HTMLElementBase } from "../core/dom";
 import { VIKING_BUTTON_STYLES } from "../core/styles";
 
 const VARIANTS = new Set([

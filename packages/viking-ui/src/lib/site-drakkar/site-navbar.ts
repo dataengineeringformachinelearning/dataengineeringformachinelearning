@@ -281,14 +281,17 @@ export class VikingSiteNavbar {
     this.mobileMenuOpen.set(false);
   }
 
-  @HostListener('document:click', ['$event'])
+  @HostListener("document:click", ["$event"])
   protected closeMobileMenuOnOutsideClick(event: MouseEvent): void {
     if (!this.mobileMenuOpen()) return;
     const target = event.target;
     if (!(target instanceof Node)) return;
-    const path = typeof event.composedPath === 'function' ? event.composedPath() : [target];
-    const menu = document.getElementById('mobile-menu');
-    const toggle = document.getElementById('mobile-menu-btn');
+    const path =
+      typeof event.composedPath === "function"
+        ? event.composedPath()
+        : [target];
+    const menu = document.getElementById("mobile-menu");
+    const toggle = document.getElementById("mobile-menu-btn");
     const clickedInside = path.some(
       (node) =>
         node instanceof Node &&
