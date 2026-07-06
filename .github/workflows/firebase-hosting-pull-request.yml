@@ -13,7 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npm ci --prefix marketing && npm run build --prefix marketing
+      - name: Install marketing dependencies
+        run: npm ci --prefix marketing --legacy-peer-deps
+      - name: Build marketing site
+        run: npm run build --prefix marketing
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}

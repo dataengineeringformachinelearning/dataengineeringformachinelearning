@@ -34,12 +34,12 @@ jobs:
 
       - name: Sync design-system assets from canonical package
         run: |
-          npm ci
+          npm ci --legacy-peer-deps
           npm run sync:design-system
 
       - name: Install and build Viking-UI docs site (Astro + static CSS)
         run: |
-          npm ci --prefix viking-ui-docs
+          npm ci --prefix viking-ui-docs --legacy-peer-deps
           npm run build --prefix viking-ui-docs
 
       - name: Authenticate to Google Cloud / Firebase
