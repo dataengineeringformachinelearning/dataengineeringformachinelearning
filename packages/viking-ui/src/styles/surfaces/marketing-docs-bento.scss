@@ -22,7 +22,8 @@
   flex-direction: column;
   gap: var(--viking-space-3, 24px);
   box-shadow: var(--shadow-sm);
-  transition: transform var(--viking-duration-normal, 0.3s) ease,
+  transition:
+    transform var(--viking-duration-normal, 0.3s) ease,
     border-color var(--viking-duration-normal, 0.3s) ease,
     box-shadow var(--viking-duration-normal, 0.3s) ease;
   overflow: hidden;
@@ -85,7 +86,11 @@
   max-width: var(--viking-content-readable-max-width);
   margin: 0;
   color: var(--viking-text);
-  font-size: clamp(var(--viking-font-size-2xl), 5vw, var(--viking-font-size-5xl));
+  font-size: clamp(
+    var(--viking-font-size-2xl),
+    5vw,
+    var(--viking-font-size-5xl)
+  );
   font-weight: var(--viking-font-weight-extrabold);
   line-height: var(--viking-line-height-none);
   letter-spacing: var(--viking-letter-spacing-normal);
@@ -339,7 +344,7 @@
 
 .code-block-premium {
   --viking-code-panel-bg: var(--viking-charcoal-950);
-  --viking-code-panel-text: var(--viking-electric-200);
+  --viking-code-panel-text: var(--viking-white-pure);
   --viking-code-panel-header: var(--viking-crimson-300);
   color-scheme: dark;
   overflow: hidden;
@@ -367,24 +372,33 @@
   padding: var(--viking-space-2);
   overflow-x: auto;
   background: transparent !important;
-  color: var(--viking-code-panel-text);
+  color: var(--viking-code-panel-text) !important;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .code-block-premium code {
-  color: var(--viking-code-panel-text);
+  display: block;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: var(--viking-code-panel-text) !important;
   font-family: var(--viking-font-family-mono);
   font-size: var(--viking-font-size-sm);
   line-height: var(--viking-line-height-relaxed);
+  white-space: inherit;
   text-shadow: none;
+  box-shadow: none !important;
 }
 
 .code-block-premium.compact pre {
   padding: var(--viking-space-1-5);
 }
 
-html[data-theme='light'] .code-block-premium {
+html[data-theme="light"] .code-block-premium {
   --viking-code-panel-bg: var(--viking-charcoal-950);
-  --viking-code-panel-text: var(--viking-electric-200);
+  --viking-code-panel-text: var(--viking-white-pure);
   --viking-code-panel-header: var(--viking-crimson-400);
   background: var(--viking-code-panel-bg) !important;
 
@@ -399,9 +413,9 @@ html[data-theme='light'] .code-block-premium {
 }
 
 @media (prefers-color-scheme: light) {
-  html:not([data-theme='dark']) .code-block-premium {
+  html:not([data-theme="dark"]) .code-block-premium {
     --viking-code-panel-bg: var(--viking-charcoal-950);
-    --viking-code-panel-text: var(--viking-electric-200);
+    --viking-code-panel-text: var(--viking-white-pure);
     --viking-code-panel-header: var(--viking-crimson-400);
     background: var(--viking-code-panel-bg) !important;
 
@@ -435,7 +449,7 @@ html[data-theme='light'] .code-block-premium {
 // Design rule: full-width lead + even half-width count (2, 4, 6…).
 // Safety net — if authors slip an odd half count, expand the orphan to full width.
 @media (min-width: 768px) {
-  .docs-bento-grid[data-bento-even-pairs='true']
+  .docs-bento-grid[data-bento-even-pairs="true"]
     .docs-bento-card:not(.docs-bento-full):last-child:nth-child(even) {
     grid-column: span 12;
   }

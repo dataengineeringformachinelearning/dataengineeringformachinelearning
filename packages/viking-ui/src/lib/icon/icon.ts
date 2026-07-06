@@ -108,32 +108,19 @@ const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);
         />
       </svg>
     } @else if (isIntegrationBrand()) {
-      <svg
-        class="viking-icon-svg viking-icon-brand viking-icon-integration-brand"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
+      <span
+        class="viking-icon-svg-host"
         [style.width.px]="resolvedSize()"
         [style.height.px]="resolvedSize()"
-        aria-hidden="true"
-      >
-        <g [innerHTML]="integrationBrandSvg()"></g>
-      </svg>
+        [innerHTML]="integrationBrandSvg()"
+      ></span>
     } @else {
-      <svg
-        class="viking-icon-svg"
-        xmlns="http://www.w3.org/2000/svg"
-        [attr.viewBox]="viewBox()"
-        [attr.fill]="isFilled() ? 'currentColor' : 'none'"
-        [attr.fill-rule]="isFilled() ? 'evenodd' : null"
-        [attr.stroke]="isFilled() ? 'none' : 'currentColor'"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+      <span
+        class="viking-icon-svg-host"
         [style.width.px]="resolvedSize()"
         [style.height.px]="resolvedSize()"
-      >
-        <!-- innerHTML on <g> — binding on <svg> throws NotYetImplemented under SSR (domino). -->
-        <g [innerHTML]="paths()"></g>
-      </svg>
+        [innerHTML]="svgMarkup()"
+      ></span>
     }
   `,
   styles: [
@@ -145,6 +132,19 @@ const VIKING_DRAKKAR_ICON_SET = new Set<string>(VIKING_DRAKKAR_ICON_NAMES_LIST);
         flex-shrink: 0;
         line-height: 0;
         color: inherit;
+      }
+
+      .viking-icon-svg-host {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        line-height: 0;
+      }
+
+      .viking-icon-svg-host .viking-icon-svg {
+        width: 100%;
+        height: 100%;
       }
 
       :host(.viking-icon-outline) .viking-icon-svg {
@@ -263,18 +263,26 @@ export class VikingIcon {
 
   protected readonly integrationBrandSvg = computed<SafeHtml>(() => {
     const name = this.resolvedName() as VikingIntegrationBrandName;
+    const html = VIKING_INTEGRATION_BRAND_SVGS[name] ?? "";
+    const size = this.resolvedSize();
     return this.sanitizer.bypassSecurityTrustHtml(
-      VIKING_INTEGRATION_BRAND_SVGS[name] ?? "",
+      `<svg class="viking-icon-svg viking-icon-brand viking-icon-integration-brand" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="width: ${size}px; height: ${size}px;" aria-hidden="true"><g>${html}</g></svg>`,
     );
   });
 
-  protected readonly paths = computed<SafeHtml>(() => {
+  protected readonly svgMarkup = computed<SafeHtml>(() => {
     const name = this.resolvedName();
     const html =
       this.isFilled() && VIKING_ICON_FILLED_PATHS[name]
         ? VIKING_ICON_FILLED_PATHS[name]
         : (VIKING_ICON_PATHS[name] ?? "");
-    return this.sanitizer.bypassSecurityTrustHtml(html);
+    const fill = this.isFilled() ? "currentColor" : "none";
+    const fillRule = this.isFilled() ? ' fill-rule="evenodd"' : "";
+    const stroke = this.isFilled() ? "none" : "currentColor";
+    const size = this.resolvedSize();
+    return this.sanitizer.bypassSecurityTrustHtml(
+      `<svg class="viking-icon-svg" xmlns="http://www.w3.org/2000/svg" viewBox="${this.viewBox()}" fill="${fill}"${fillRule} stroke="${stroke}" stroke-linecap="round" stroke-linejoin="round" style="width: ${size}px; height: ${size}px;" aria-hidden="true"><g>${html}</g></svg>`,
+    );
   });
 
   constructor(private readonly sanitizer: DomSanitizer) {}

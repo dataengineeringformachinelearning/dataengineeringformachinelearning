@@ -1,11 +1,20 @@
 .viking-footer,
 .mega-footer {
-  background-color: var(--viking-surface, var(--card-bg, var(--viking-charcoal-950)));
+  background-color: var(
+    --viking-surface,
+    var(--card-bg, var(--viking-charcoal-950))
+  );
   border-top: 1px solid
-    var(--viking-border-strong, var(--border-layout, var(--border, var(--viking-charcoal-700))));
+    var(
+      --viking-border-strong,
+      var(--border-layout, var(--border, var(--viking-charcoal-700)))
+    );
   padding: calc(var(--viking-space-2) * 2) var(--viking-space-2);
   font-family: var(--viking-font-family);
-  color: var(--viking-text-muted, var(--text-muted, var(--viking-metallic-300)));
+  color: var(
+    --viking-text-muted,
+    var(--text-muted, var(--viking-metallic-300))
+  );
 }
 
 .viking-footer-content,
@@ -21,7 +30,10 @@
   gap: calc(var(--viking-space-2) * 1.75);
   padding-bottom: calc(var(--viking-space-2) * 2);
   border-bottom: 1px solid
-    var(--viking-border-strong, var(--border-layout, var(--border, var(--viking-charcoal-700))));
+    var(
+      --viking-border-strong,
+      var(--border-layout, var(--border, var(--viking-charcoal-700)))
+    );
 }
 
 @media (min-width: 600px) {
@@ -60,10 +72,15 @@
 .viking-footer-list a,
 .footer-list a {
   font-size: var(--viking-font-size);
-  color: var(--viking-text-muted, var(--text-muted, var(--viking-metallic-300)));
+  color: var(
+    --viking-text-muted,
+    var(--text-muted, var(--viking-metallic-300))
+  );
   text-decoration: none !important;
   border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .viking-footer-list a:hover,
@@ -111,7 +128,9 @@
   color: var(--viking-text-muted);
   text-decoration: none !important;
   border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .viking-copyright-info a:hover,
@@ -124,16 +143,24 @@
 .usa-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--viking-space-1);
+  min-height: var(--viking-control-height, 44px);
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius-pill);
   background-color: transparent;
-  border: 1px solid var(--viking-border, var(--border, var(--viking-charcoal-700)));
+  border: 1px solid
+    var(--viking-border, var(--border, var(--viking-charcoal-700)));
   cursor: pointer;
   transition: var(--viking-transition-colors);
   font-size: var(--viking-font-size);
   font-weight: 500;
-  color: var(--viking-text-muted, var(--text-muted, var(--viking-metallic-300)));
+  color: var(
+    --viking-text-muted,
+    var(--text-muted, var(--viking-metallic-300))
+  );
+  line-height: 1.2;
+  text-align: center;
 }
 
 .viking-usa-badge:focus-visible,

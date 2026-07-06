@@ -8,6 +8,15 @@
   const iconPaths = () => window.__VIKING_ICON_PATHS ?? {};
   const filledIconPaths = () => window.__VIKING_ICON_FILLED_PATHS ?? {};
 
+  const normalizeIconName = name => {
+    const outlinePaths = iconPaths();
+    const filledPaths = filledIconPaths();
+    if (outlinePaths[name] || filledPaths[name]) return name;
+    const kebabName = name.replaceAll('_', '-');
+    if (outlinePaths[kebabName] || filledPaths[kebabName]) return kebabName;
+    return name;
+  };
+
   const closeStaticMobileMenu = () => {
     const menuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -33,29 +42,36 @@
   const svgIcon = (name, size = 16, options = {}) => {
     const variant = options.variant ?? 'outline';
     const isFilled = variant === 'filled';
+    const normalizedName = normalizeIconName(name);
     const paths = isFilled
-      ? (filledIconPaths()[name] ?? iconPaths()[name] ?? iconPaths().info ?? '')
-      : (iconPaths()[name] ?? iconPaths().info ?? '');
+      ? (filledIconPaths()[normalizedName] ?? iconPaths()[normalizedName] ?? iconPaths().info ?? '')
+      : (iconPaths()[normalizedName] ?? iconPaths().info ?? '');
     const colorClass = resolveIconColorClass(options.color);
     const className = colorClass ? ` class="${colorClass}"` : '';
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="${isFilled ? 'currentColor' : 'none'}" stroke="${isFilled ? 'none' : 'currentColor'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="${size}" height="${size}" aria-hidden="true"${className}>${paths}</svg>`;
   };
 
   const setIcon = (el, name, size = 16, options = {}) => {
-    if (!el) return;
+    if (!el) return false;
     el.innerHTML = svgIcon(name, size, options);
+    const rendered = el.querySelector('svg path, svg circle, svg rect, svg line, svg polyline');
+    el.toggleAttribute('data-viking-icon-pending', !rendered);
+    return Boolean(rendered);
   };
 
   const initNavIcons = () => {
+    let missing = 0;
     document.querySelectorAll('[data-viking-icon]').forEach(el => {
       const name = el.getAttribute('data-viking-icon');
       const size = Number(el.getAttribute('data-viking-icon-size') || 16);
       const variant = el.getAttribute('data-viking-icon-variant') || 'outline';
       const color = el.getAttribute('data-viking-icon-color') || undefined;
       if (name) {
-        setIcon(el, name, size, { variant, color });
+        const rendered = setIcon(el, name, size, { variant, color });
+        if (!rendered) missing += 1;
       }
     });
+    return missing;
   };
 
   const initThemeToggle = () => {
@@ -167,8 +183,7 @@
 
     const eventPathContains = (event, node) => {
       if (!node) return false;
-      const path =
-        typeof event.composedPath === 'function' ? event.composedPath() : [event.target];
+      const path = typeof event.composedPath === 'function' ? event.composedPath() : [event.target];
       return path.includes(node);
     };
 
@@ -497,12 +512,12 @@
     });
   };
 
-  const loadIconPaths = async () => {
-    if (Object.keys(iconPaths()).length > 0) return;
+  const loadIconPaths = async (force = false) => {
+    if (!force && Object.keys(iconPaths()).length > 0) return;
     try {
       const [pathsRes, filledRes] = await Promise.all([
-        fetch('/assets/viking-icon-paths.json'),
-        fetch('/assets/viking-icon-filled-paths.json'),
+        fetch('/assets/viking-icon-paths.json', { cache: 'no-store' }),
+        fetch('/assets/viking-icon-filled-paths.json', { cache: 'no-store' }),
       ]);
       if (pathsRes.ok) {
         window.__VIKING_ICON_PATHS = await pathsRes.json();
@@ -515,9 +530,22 @@
     }
   };
 
+  const recoverNavIcons = () => {
+    const retryDelays = [100, 350, 900, 1800];
+    retryDelays.forEach(delay => {
+      window.setTimeout(async () => {
+        if (!document.querySelector('[data-viking-icon-pending]')) return;
+        await loadIconPaths(true);
+        initNavIcons();
+      }, delay);
+    });
+  };
+
   const init = async () => {
     await loadIconPaths();
-    initNavIcons();
+    if (initNavIcons() > 0) {
+      recoverNavIcons();
+    }
     initThemeToggle();
     initSearchTrigger();
     initMobileMenu();

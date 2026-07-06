@@ -154,6 +154,33 @@ export class VikingSiteFooterWc extends HTMLElement {
         </div>
       </footer>
     `;
+    this.bindUsaBadge();
+  }
+
+  private readonly emitUsaBadgeHover = (event: Event): void => {
+    if (event.type === "keydown") {
+      const key = (event as KeyboardEvent).key;
+      if (key !== "Enter" && key !== " ") {
+        return;
+      }
+      event.preventDefault();
+    }
+    this.dispatchEvent(
+      new CustomEvent("usaBadgeHover", {
+        bubbles: true,
+        composed: true,
+        detail: event,
+      }),
+    );
+  };
+
+  private bindUsaBadge(): void {
+    const badge = this.querySelector("#usa-badge");
+    if (!badge) return;
+    badge.addEventListener("mouseenter", this.emitUsaBadgeHover);
+    badge.addEventListener("focusin", this.emitUsaBadgeHover);
+    badge.addEventListener("click", this.emitUsaBadgeHover);
+    badge.addEventListener("keydown", this.emitUsaBadgeHover);
   }
 }
 

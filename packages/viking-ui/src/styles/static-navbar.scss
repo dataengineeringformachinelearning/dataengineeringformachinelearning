@@ -135,6 +135,20 @@
   justify-content: center;
 }
 
+.navbar-brand [data-viking-icon],
+.navbar-brand [data-viking-icon] svg,
+.navbar-brand .brand-icon,
+.navbar-brand .brand-icon svg {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  color: var(--color-primary, var(--viking-accent)) !important;
+  overflow: visible;
+}
+
 .navbar-brand .navbar-logo,
 .navbar-brand viking-icon.navbar-logo {
   color: var(--color-primary, var(--viking-accent)) !important;
@@ -440,6 +454,20 @@ html[data-theme="light"] {
     color: var(--viking-text, var(--text-color)) !important;
   }
 
+  viking-button-wc.auth-btn::part(control),
+  .auth-btn::part(control),
+  .mobile-auth-btn::part(control) {
+    border-color: color-mix(
+      in srgb,
+      var(--viking-accent-strong, var(--viking-accent)) 72%,
+      var(--viking-border-strong, var(--border))
+    ) !important;
+    box-shadow:
+      inset 0 1px 0
+        color-mix(in srgb, var(--viking-white-pure) 34%, transparent),
+      var(--viking-shadow-sm, var(--shadow-sm)) !important;
+  }
+
   .nav-btn:hover,
   .mobile-nav-btn:hover {
     background-color: color-mix(
@@ -625,7 +653,16 @@ viking-button-wc.auth-btn::part(control),
   height: var(--viking-control-height, 40px) !important;
   padding: 0 var(--viking-space-2, 16px) !important;
   box-sizing: border-box !important;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--viking-accent-strong, var(--viking-accent)) 72%,
+      var(--viking-white-pure)
+    ) !important;
   border-radius: var(--viking-radius-md, var(--viking-radius, 8px)) !important;
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 24%, transparent),
+    var(--viking-shadow-sm, var(--shadow-sm)) !important;
 }
 
 .auth-btn[aria-busy="true"]::part(control),
@@ -684,7 +721,7 @@ viking-button-wc.auth-btn[loading]::part(control) {
 
 #auth-icon-desktop,
 #auth-icon-mobile {
-  display: contents;
+  display: inline-flex !important;
 }
 
 #auth-text-desktop,

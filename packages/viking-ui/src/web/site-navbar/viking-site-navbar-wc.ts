@@ -11,6 +11,7 @@ import {
   defineCustomElementAlias,
   escapeHtml,
 } from "../core/dom";
+import { renderInlineIcon } from "../core/icons-inline";
 
 const VALID_CONTEXTS = new Set<SiteDrakkarContext>([
   "app",
@@ -88,6 +89,21 @@ const readSignInHref = (el: HTMLElement, urls: SiteUrls): string => {
   return `${urls.app}/login?returnUrl=${encodeURIComponent(landing)}`;
 };
 
+const renderNavIcon = (
+  name: string,
+  size: number,
+  options: { color?: string; id?: string; className?: string } = {},
+): string => {
+  const id = options.id ? ` id="${escapeHtml(options.id)}"` : "";
+  const color = options.color
+    ? ` data-viking-icon-color="${escapeHtml(options.color)}"`
+    : "";
+  const className = options.className
+    ? ` class="${escapeHtml(options.className)}"`
+    : "";
+  return `<span${id}${className} data-viking-icon="${escapeHtml(name)}" data-viking-icon-size="${size}"${color} aria-hidden="true">${renderInlineIcon(name, size, "viking-navbar-inline-icon")}</span>`;
+};
+
 /**
  * viking-site-navbar-wc — unified static Drakkar navbar for non-Angular surfaces.
  * Styling is supplied by viking-ui global CSS.
@@ -140,7 +156,7 @@ export class VikingSiteNavbarWc extends HTMLElement {
           ${authAttr}
           ${hidden}
         >
-          <span data-viking-icon="${escapeHtml(link.icon)}" data-viking-icon-size="16" aria-hidden="true"></span>
+          ${renderNavIcon(link.icon, 16)}
           <span>${escapeHtml(link.label)}</span>
         </a>
       `;
@@ -161,12 +177,9 @@ export class VikingSiteNavbarWc extends HTMLElement {
           href="${escapeHtml(href)}"
           id="auth-btn-desktop"
         >
-          <span
-            id="auth-icon-desktop"
-            data-viking-icon="${authenticated ? "home" : "arrow-right"}"
-            data-viking-icon-size="16"
-            aria-hidden="true"
-          ></span>
+          ${renderNavIcon(authenticated ? "home" : "arrow-right", 16, {
+            id: "auth-icon-desktop",
+          })}
           <span id="auth-text-desktop">${
             authenticated ? "Dashboard" : "Sign In"
           }</span>
@@ -197,12 +210,9 @@ export class VikingSiteNavbarWc extends HTMLElement {
         href="${escapeHtml(authenticated ? dashboardHref : signInHref)}"
         id="auth-btn-mobile"
       >
-        <span
-          id="auth-icon-mobile"
-          data-viking-icon="${authenticated ? "home" : "arrow-right"}"
-          data-viking-icon-size="16"
-          aria-hidden="true"
-        ></span>
+        ${renderNavIcon(authenticated ? "home" : "arrow-right", 16, {
+          id: "auth-icon-mobile",
+        })}
         <span id="auth-text-mobile">${
           authenticated ? "Dashboard" : "Sign In"
         }</span>
@@ -237,7 +247,7 @@ export class VikingSiteNavbarWc extends HTMLElement {
           aria-label="Open search (${shortcut})"
           id="navbar-search-trigger"
         >
-          <span data-viking-icon="search" data-viking-icon-size="20" aria-hidden="true"></span>
+          ${renderNavIcon("search", 20)}
         </viking-button-wc>
       </div>
     `;
@@ -271,13 +281,10 @@ export class VikingSiteNavbarWc extends HTMLElement {
         <div class="navbar-content">
           <div class="navbar-left">
             <a href="${escapeHtml(brandHref)}" class="navbar-brand" aria-label="Go to homepage" id="navbar-brand-link">
-              <span
-                class="brand-icon navbar-logo"
-                data-viking-icon="drakkar"
-                data-viking-icon-color="accent"
-                data-viking-icon-size="28"
-                aria-hidden="true"
-              ></span>
+              ${renderNavIcon("drakkar", 28, {
+                color: "accent",
+                className: "brand-icon navbar-logo",
+              })}
             </a>
           </div>
 
@@ -298,7 +305,7 @@ export class VikingSiteNavbarWc extends HTMLElement {
               aria-expanded="false"
               id="mobile-menu-btn"
             >
-              <span data-viking-icon="menu" data-viking-icon-size="24" aria-hidden="true"></span>
+              ${renderNavIcon("menu", 24)}
             </viking-button-wc>
           </div>
         </div>

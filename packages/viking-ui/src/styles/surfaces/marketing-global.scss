@@ -1,9 +1,8 @@
-
 // Shared tokens, navbar, footer, page shell: /assets/viking-ui.css (@deml/viking-ui)
 
 // ====================== LEAFLET ======================
 
-pre[class*='language-'] {
+pre[class*="language-"] {
   background-color: var(--viking-charcoal-900) !important;
   border: 1px solid var(--border);
   border-radius: var(--border-radius-md);
@@ -13,7 +12,7 @@ pre[class*='language-'] {
   tab-size: 4;
 }
 
-code[class*='language-'] {
+code[class*="language-"] {
   font-size: 1rem;
   line-height: 1.65;
   color: var(--white) !important;
@@ -32,8 +31,20 @@ pre,
 pre code {
   white-space: pre-wrap !important;
   word-wrap: break-word !important;
-  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
   max-width: 100%;
+}
+
+pre code {
+  display: block;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
 }
 
 html,
@@ -64,7 +75,7 @@ body {
     color 0.3s;
 }
 
-html[data-theme='light'] body {
+html[data-theme="light"] body {
   background-color: var(--bg-color);
 }
 
@@ -108,7 +119,11 @@ li {
   margin-bottom: var(--space-1);
 }
 
-a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item) {
+a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(
+    .nav-btn
+  ):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
+    .integration-link
+  ):not(.integration-logo-item) {
   color: var(--link-color);
   font-weight: 500;
   text-decoration: none;
@@ -120,11 +135,21 @@ a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(.nav-
     color 0.2s ease;
 }
 
-a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):hover,
-a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(.nav-btn):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(.integration-link):not(.integration-logo-item):focus-visible {
+a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(
+    .nav-btn
+  ):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
+    .integration-link
+  ):not(.integration-logo-item):hover,
+a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(
+    .nav-btn
+  ):not(.auth-btn):not(.mobile-auth-btn):not(.mobile-nav-btn):not(
+    .integration-link
+  ):not(.integration-logo-item):focus-visible {
   color: var(--link-hover-color);
   text-decoration: none;
-  border-bottom-color: var(--link-hover-color); /* WCAG requirement: non-color hover indicator */
+  border-bottom-color: var(
+    --link-hover-color
+  ); /* WCAG requirement: non-color hover indicator */
 }
 
 // ====================== INLINE CODE ======================
@@ -263,7 +288,7 @@ main.main {
   --toast-shadow: var(--shadow-hover);
 }
 
-html[data-theme='light'] #global-error-toast {
+html[data-theme="light"] #global-error-toast {
   /* Light Theme variables */
   --toast-bg: var(--color-surface);
   --toast-border: 1px solid var(--color-error);
@@ -433,7 +458,7 @@ html[data-theme='light'] #global-error-toast {
 .sidebar-footer,
 .dashboard-sidebar,
 .vuln-profile-header,
-.page-content:not([style*='border']) {
+.page-content:not([style*="border"]) {
   border-radius: 0 !important;
 }
 
@@ -483,16 +508,16 @@ html[data-theme='light'] #global-error-toast {
 div.grecaptcha-bubble-holder,
 #recaptcha-container,
 #firebase-recaptcha-container,
-iframe[src*='recaptcha'],
-iframe[src*='google.com/recaptcha'],
-body > div[style*='z-index']:has(iframe[src*='recaptcha']),
-body > div[style*='z-index']:has(iframe[src*='google.com/recaptcha']),
-body > div:has(iframe[src*='recaptcha']),
-body > div:has(iframe[src*='google.com/recaptcha']),
-body > div:has(iframe[title*='recaptcha']),
-body > div:has(iframe[title*='reCAPTCHA']),
-div[style*='z-index']:has(iframe[src*='recaptcha']),
-div[style*='z-index']:has(iframe[src*='google.com/recaptcha']) {
+iframe[src*="recaptcha"],
+iframe[src*="google.com/recaptcha"],
+body > div[style*="z-index"]:has(iframe[src*="recaptcha"]),
+body > div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]),
+body > div:has(iframe[src*="recaptcha"]),
+body > div:has(iframe[src*="google.com/recaptcha"]),
+body > div:has(iframe[title*="recaptcha"]),
+body > div:has(iframe[title*="reCAPTCHA"]),
+div[style*="z-index"]:has(iframe[src*="recaptcha"]),
+div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
   z-index: 2000000000 !important;
 }
 
@@ -736,7 +761,9 @@ select option {
 select option:hover,
 select option:focus {
   background-color: var(--hover-color);
-  color: var(--color-on-primary); /* Ensure white text on primary hover background */
+  color: var(
+    --color-on-primary
+  ); /* Ensure white text on primary hover background */
 }
 
 select option:checked {
@@ -884,14 +911,18 @@ select option:checked {
 }
 
 .panel-clean::before {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+    color-mix(
+      in srgb,
+      var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%),
+      transparent
+    ),
     transparent
   );
   pointer-events: none;

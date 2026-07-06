@@ -56,19 +56,26 @@ const currentYear = new Date().getFullYear();
     });
   };
 
-  const bindUsaBadgeConfetti = () => {
+  const bindUsaBadgeConfetti = (attempt = 0) => {
     const usaBadge = document.getElementById('usa-badge');
-    if (!usaBadge || usaBadge.dataset.confettiBound === 'true') return;
+    if (!usaBadge) {
+      if (attempt < 8) {
+        window.setTimeout(() => bindUsaBadgeConfetti(attempt + 1), 100);
+      }
+      return;
+    }
+    if (usaBadge.dataset.confettiBound === 'true') return;
     usaBadge.dataset.confettiBound = 'true';
     usaBadge.addEventListener('mouseenter', event =>
-      fireUsaConfetti(event.currentTarget),
+      fireUsaConfetti(event.currentTarget as HTMLElement),
     );
     usaBadge.addEventListener('focusin', event =>
-      fireUsaConfetti(event.currentTarget),
+      fireUsaConfetti(event.currentTarget as HTMLElement),
     );
-    usaBadge.addEventListener('click', event =>
-      fireUsaConfetti(event.currentTarget),
-    );
+    usaBadge.addEventListener('click', event => {
+      event.preventDefault();
+      fireUsaConfetti(event.currentTarget as HTMLElement);
+    });
     usaBadge.addEventListener('keydown', event => {
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();

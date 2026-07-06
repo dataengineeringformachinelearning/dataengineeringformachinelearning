@@ -54,11 +54,11 @@ export class VikingButtonWc extends HTMLElementBase {
 
   connectedCallback(): void {
     this.render();
-    this.control?.addEventListener("click", this.onClick);
+    this.addEventListener("click", this.onClick);
   }
 
   disconnectedCallback(): void {
-    this.control?.removeEventListener("click", this.onClick);
+    this.removeEventListener("click", this.onClick);
   }
 
   attributeChangedCallback(): void {
@@ -108,6 +108,7 @@ export class VikingButtonWc extends HTMLElementBase {
     const href = this.getAttribute("href");
     const isLink = Boolean(href);
     const tag = isLink ? "a" : "button";
+    this.setAttribute("role", isLink ? "link" : "button");
 
     const classes = [
       "viking-btn",

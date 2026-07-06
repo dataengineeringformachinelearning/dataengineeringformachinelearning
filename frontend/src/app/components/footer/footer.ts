@@ -30,18 +30,36 @@ export class Footer {
   }
 
   async fireConfetti(event: Event): Promise<void> {
-    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const sourceEvent =
+      event instanceof CustomEvent && event.detail instanceof Event ? event.detail : event;
+    const target =
+      sourceEvent.currentTarget instanceof HTMLElement &&
+      sourceEvent.currentTarget.matches('.usa-badge')
+        ? sourceEvent.currentTarget
+        : sourceEvent.target instanceof HTMLElement
+          ? sourceEvent.target.closest<HTMLElement>('.usa-badge')
+          : event.target instanceof HTMLElement
+            ? event.target.querySelector<HTMLElement>('.usa-badge')
+            : null;
+    if (!target) {
+      return;
+    }
+    const rect = target.getBoundingClientRect();
     const x = (rect.left + rect.width / 2) / window.innerWidth;
     const y = (rect.top + rect.height / 2) / window.innerHeight;
 
-    const confettiModule = await import('canvas-confetti');
-    confettiModule.default({
-      particleCount: 50,
-      spread: 60,
-      origin: { x, y },
-      colors: [...USA_CONFETTI_COLORS],
-      disableForReducedMotion: true,
-      zIndex: 9999,
-    });
+    try {
+      const confettiModule = await import('canvas-confetti');
+      confettiModule.default({
+        particleCount: 50,
+        spread: 60,
+        origin: { x, y },
+        colors: [...USA_CONFETTI_COLORS],
+        disableForReducedMotion: true,
+        zIndex: 9999,
+      });
+    } catch {
+      /* celebratory enhancement only */
+    }
   }
 }

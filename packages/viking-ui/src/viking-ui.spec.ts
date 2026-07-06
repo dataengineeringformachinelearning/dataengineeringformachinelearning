@@ -47,6 +47,19 @@ class SelectHost {
   readonly value = signal<unknown>(null);
 }
 
+@Component({
+  imports: [VikingButton],
+  template: `
+    <viking-button [loading]="loading()" (pressed)="pressed += 1">
+      Continue
+    </viking-button>
+  `,
+})
+class ButtonPressHost {
+  readonly loading = signal(false);
+  pressed = 0;
+}
+
 describe("viking-ui", () => {
   const render = async <T>(
     component: new () => T,
@@ -83,6 +96,25 @@ describe("viking-ui", () => {
     const button = wc?.shadowRoot?.querySelector("button") as HTMLButtonElement;
     expect(button.classList.contains("viking-btn-primary")).toBe(true);
     expect(button.disabled).toBe(true);
+  });
+
+  it("keeps button press events wired after attribute-driven rerenders", async (): Promise<void> => {
+    const fixture = await render(ButtonPressHost);
+    const wc = fixture.nativeElement.querySelector(
+      "viking-button-wc",
+    ) as HTMLElement;
+
+    fixture.componentInstance.loading.set(true);
+    fixture.detectChanges();
+    fixture.componentInstance.loading.set(false);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const button = wc.shadowRoot?.querySelector("button") as HTMLButtonElement;
+    button.click();
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.pressed).toBe(1);
   });
 
   it("renders an anchor with rel guard when href and target are set", async (): Promise<void> => {

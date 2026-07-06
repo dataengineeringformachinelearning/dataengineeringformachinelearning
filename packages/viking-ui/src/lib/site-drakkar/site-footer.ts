@@ -73,8 +73,11 @@ import {
             (mouseenter)="usaBadgeHover.emit($event)"
             (focusin)="usaBadgeHover.emit($event)"
             (click)="usaBadgeHover.emit($event)"
+            (keydown.enter)="onUsaBadgeKeydown($event)"
+            (keydown.space)="onUsaBadgeKeydown($event)"
             role="button"
             tabindex="0"
+            aria-label="Celebrate Made in the U.S.A"
           >
             <span
               class="usa-badge-icon viking-usa-badge-icon"
@@ -129,5 +132,10 @@ export class VikingSiteFooter {
   protected onBugReport(event: Event): void {
     event.preventDefault();
     this.bugReport.emit(event);
+  }
+
+  protected onUsaBadgeKeydown(event: Event): void {
+    event.preventDefault();
+    this.usaBadgeHover.emit(event);
   }
 }

@@ -61,7 +61,9 @@
   color: var(--viking-text-muted);
   text-decoration: none !important;
   border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .viking-footer-list a:hover,
@@ -109,7 +111,9 @@
   color: var(--viking-text-muted);
   text-decoration: none !important;
   border-bottom: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .viking-copyright-info a:hover,
@@ -122,7 +126,9 @@
 .usa-badge {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--viking-space-1);
+  min-height: var(--viking-control-height, 44px);
   padding: var(--viking-space-1) var(--viking-space-2);
   border-radius: var(--viking-radius-pill);
   background-color: transparent;
@@ -132,6 +138,8 @@
   font-size: var(--viking-font-size);
   font-weight: 500;
   color: var(--viking-text-muted);
+  line-height: 1.2;
+  text-align: center;
 }
 
 .viking-usa-badge:focus-visible,
@@ -143,7 +151,11 @@
 
 .viking-usa-badge:hover,
 .usa-badge:hover {
-  background-color: color-mix(in srgb, var(--viking-surface) 95%, var(--viking-accent) 5%);
+  background-color: color-mix(
+    in srgb,
+    var(--viking-surface) 95%,
+    var(--viking-accent) 5%
+  );
   border-color: var(--viking-border-strong);
   color: var(--viking-text);
   box-shadow: var(--viking-shadow-sm);
