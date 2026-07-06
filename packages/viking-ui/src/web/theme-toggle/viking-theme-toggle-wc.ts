@@ -137,6 +137,7 @@ export class VikingThemeToggleWc extends HTMLElementBase {
         </svg>
       </button>
     `;
+    attachShadowStyles(this.shadow, VIKING_THEME_TOGGLE_STYLES);
     this.button = this.shadow.querySelector("button");
     this.sunIcon = this.shadow.querySelector(".theme-icon-sun");
     this.moonIcon = this.shadow.querySelector(".theme-icon-moon");

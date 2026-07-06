@@ -216,8 +216,9 @@
 }
 
 .mockup-window {
-  background: var(--color-surface);
-  border: 1px solid var(--border);
+  background: var(--viking-charcoal-800);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400) 54%, transparent);
   border-radius: 16px;
   overflow: hidden;
   box-shadow:
@@ -273,12 +274,9 @@
   align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  background: color-mix(
-    in srgb,
-    var(--viking-charcoal-900) 60%,
-    var(--color-surface)
-  );
-  border-bottom: 1px solid var(--border);
+  background: var(--viking-charcoal-900);
+  border-bottom: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400) 42%, transparent);
 
   .mockup-dot {
     width: 10px;
@@ -305,7 +303,7 @@
     margin-left: 8px;
     font-size: 0.85rem;
     font-family: monospace;
-    color: var(--text-muted);
+    color: var(--viking-electric-200);
     letter-spacing: 0.04em;
   }
 }
@@ -321,8 +319,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border-right: 1px solid var(--border);
-  background: color-mix(in srgb, var(--viking-charcoal-900) 30%, transparent);
+  border-right: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400) 36%, transparent);
+  background: var(--viking-charcoal-900);
 
   .mockup-nav-item {
     height: 32px;
@@ -355,12 +354,9 @@
 }
 
 .mockup-gauge {
-  background: color-mix(
-    in srgb,
-    var(--viking-charcoal-900) 40%,
-    var(--color-surface)
-  );
-  border: 1px solid var(--border);
+  background: var(--viking-charcoal-700);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400) 42%, transparent);
   border-radius: var(--viking-radius-lg);
   padding: var(--viking-card-padding-compact);
   text-align: center;
@@ -376,14 +372,14 @@
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--text-muted);
+    color: var(--viking-metallic-200);
     margin-bottom: 4px;
   }
 
   .gauge-val {
     font-size: 1.25rem;
     font-weight: 800;
-    color: var(--text-color);
+    color: var(--viking-white);
   }
 }
 
@@ -393,9 +389,10 @@
   align-items: flex-end;
   gap: var(--viking-space-half);
   padding: var(--viking-card-padding-compact);
-  background: color-mix(in srgb, var(--viking-charcoal-900) 50%, transparent);
+  background: var(--viking-charcoal-950);
   border-radius: var(--viking-radius-lg);
-  border: 1px solid var(--border);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-metallic-400) 36%, transparent);
   min-height: 100px;
 
   .chart-bar {
@@ -444,8 +441,9 @@
   }
 
   .mockup-stat {
-    background: var(--viking-surface);
-    border: 1px solid var(--border);
+    background: var(--viking-charcoal-700);
+    border: 1px solid
+      color-mix(in srgb, var(--viking-metallic-400) 42%, transparent);
     border-radius: var(--viking-radius-lg);
     padding: var(--viking-card-padding-compact);
 
@@ -454,12 +452,12 @@
       font-size: 0.7rem;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: var(--text-muted);
+      color: var(--viking-metallic-200);
     }
 
     strong {
       font-size: 1rem;
-      color: var(--viking-accent);
+      color: var(--viking-electric-300);
     }
   }
 }
@@ -1104,14 +1102,14 @@
   }
 
   .embed-code {
-    background: color-mix(in srgb, var(--viking-charcoal-900) 70%, transparent);
+    background: var(--viking-charcoal-950);
     padding: 16px;
     border-radius: var(--viking-radius-lg);
     border: 1px solid color-mix(in srgb, var(--viking-accent) 30%, transparent);
     overflow-x: auto;
 
     code {
-      color: var(--viking-accent);
+      color: var(--viking-electric-200);
       font-family: monospace;
       font-size: 0.85rem;
       white-space: pre-wrap;

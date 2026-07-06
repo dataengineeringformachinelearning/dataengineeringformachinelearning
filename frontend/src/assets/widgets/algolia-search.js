@@ -1,7 +1,10 @@
 /**
  * Bridge for Algolia Experiences autocomplete (#autocomplete).
- * Opens in a viking-search-palette modal on all breakpoints (trigger: navbar button or ⌘K).
+ * Opens in a viking-search-palette modal on all breakpoints (trigger: navbar button or Cmd/Ctrl+K).
  */
+if (window.__DEML_ALGOLIA_SEARCH_READY__ !== true) {
+  window.__DEML_ALGOLIA_SEARCH_READY__ = true;
+
 const loadAlgoliaExperiences = () => {
   if (document.querySelector('script[data-deml-algolia-experiences]')) {
     return;
@@ -56,13 +59,22 @@ const setSearchActive = active => {
 const focusAlgoliaSearch = () => {
   const host = document.getElementById('autocomplete');
   if (!host) return;
+  loadAlgoliaExperiences();
   host.classList.add('algolia-autocomplete-open');
   host.setAttribute('aria-hidden', 'false');
   setSearchActive(true);
-  const input = host.querySelector("input, textarea, [contenteditable='true']");
-  if (input && typeof input.focus === 'function') {
-    input.focus();
-    if (typeof input.select === 'function') input.select();
+  const focusInput = () => {
+    const input = host.querySelector("input, textarea, [contenteditable='true']");
+    if (input && typeof input.focus === 'function') {
+      input.focus();
+      if (typeof input.select === 'function') input.select();
+      return true;
+    }
+    return false;
+  };
+  if (!focusInput()) {
+    window.setTimeout(focusInput, 100);
+    window.setTimeout(focusInput, 350);
   }
 };
 
@@ -137,4 +149,5 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', watchForAutocompleteHost);
 } else {
   watchForAutocompleteHost();
+}
 }

@@ -284,10 +284,11 @@ viking-theme-toggle-wc {
   border-radius: var(--border-radius-sm) var(--border-radius-sm) 0 0 !important;
   padding: 0 var(--viking-space-1-5, 12px) !important;
   height: var(--viking-control-height, 40px) !important;
-  line-height: var(--viking-control-height, 40px) !important;
+  line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: 6px !important;
+  justify-content: center !important;
+  gap: var(--viking-space-1, 8px) !important;
   text-decoration: none;
   background: transparent;
   border: none;
@@ -371,6 +372,10 @@ viking-button[hidden] {
 .navbar-search-mobile-btn [data-viking-icon] {
   margin: 0;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .nav-btn svg,

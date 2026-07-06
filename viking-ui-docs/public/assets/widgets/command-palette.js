@@ -3,6 +3,11 @@
  * Trigger: navbar search button or ⌘K / Ctrl+K.
  */
 (() => {
+  if (window.__DEML_COMMAND_PALETTE_READY__ === true) {
+    return;
+  }
+  window.__DEML_COMMAND_PALETTE_READY__ = true;
+
   const PALETTE_ID = 'deml-suite-command-palette';
   const getFrontendUrl = () => {
     const config = window.__DEML || {};
@@ -74,6 +79,7 @@
   const existingOpenCookieSettings = typeof window.DemlWidgets?.openCookieSettings === 'function' ? window.DemlWidgets?.openCookieSettings : null;
   const usesAlgoliaSearch = window.__DEML?.USE_ALGOLIA_SEARCH === true;
   const hasSearchHandlers =
+    usesAlgoliaSearch ||
     typeof window.DemlWidgets?.openSearch === 'function' ||
     typeof window.DemlWidgets?.closeSearch === 'function';
   const shouldBindShortcuts = !hasSearchHandlers;
