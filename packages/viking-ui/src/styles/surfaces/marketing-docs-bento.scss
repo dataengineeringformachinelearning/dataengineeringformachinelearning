@@ -154,6 +154,12 @@
   color: var(--viking-text-muted);
 }
 
+.docs-quick-start {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+}
+
 .docs-quick-start-steps,
 .integration-cards {
   display: grid;
@@ -167,11 +173,22 @@
 @media (min-width: 768px) {
   .docs-quick-start-steps {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--viking-space-4);
   }
 
   .integration-cards {
     grid-template-columns: repeat(3, 1fr);
   }
+}
+
+@media (min-width: 1100px) {
+  .docs-quick-start-steps {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.docs-quick-start-steps > li {
+  min-width: 0;
 }
 
 .docs-quick-start-card,
@@ -184,11 +201,115 @@
   text-decoration: none;
 }
 
+.docs-quick-start-card {
+  position: relative;
+  overflow: visible;
+  padding: var(--viking-card-padding);
+  transition:
+    border-color var(--viking-duration-normal, 0.3s) ease,
+    box-shadow var(--viking-duration-normal, 0.3s) ease,
+    transform var(--viking-duration-normal, 0.3s) ease;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--viking-accent-strong);
+    box-shadow: var(--viking-shadow-hover);
+    transform: translateY(var(--viking-state-hover-lift));
+  }
+
+  &:focus-visible {
+    outline: var(--viking-ring-width) solid var(--viking-ring);
+    outline-offset: var(--viking-ring-offset);
+  }
+
+  .step-index {
+    align-self: flex-start;
+    font-family: var(--viking-font-family-mono);
+    font-size: var(--viking-font-size-xs);
+    font-weight: var(--viking-font-weight-extrabold);
+    letter-spacing: var(--viking-letter-spacing-wider);
+    color: var(--viking-accent);
+    line-height: var(--viking-line-height-none);
+  }
+
+  h3 {
+    font-size: var(--viking-font-size-lg);
+    font-weight: var(--viking-font-weight-extrabold);
+    letter-spacing: var(--viking-letter-spacing-wide);
+    text-transform: uppercase;
+  }
+
+  p {
+    color: var(--viking-text-muted);
+    line-height: var(--viking-line-height-relaxed);
+  }
+}
+
 .docs-quick-start-card h3,
 .docs-quick-start-card p,
 .integration-card h3,
 .integration-card p {
   margin: 0;
+}
+
+.docs-operations-section,
+.integrations-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-section-gap, var(--viking-space-6));
+}
+
+.integrations-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  max-width: var(--viking-content-readable-max-width);
+
+  h2,
+  h3 {
+    margin: 0;
+    color: var(--viking-text);
+    font-size: clamp(
+      var(--viking-font-size-xl),
+      3vw,
+      var(--viking-font-size-3xl)
+    );
+    font-weight: var(--viking-font-weight-extrabold);
+    letter-spacing: var(--viking-letter-spacing-tight);
+    line-height: var(--viking-line-height-tight);
+    text-transform: uppercase;
+  }
+
+  p {
+    margin: 0;
+    color: var(--viking-text-muted);
+    line-height: var(--viking-line-height-relaxed);
+  }
+
+  .section-tag {
+    margin: 0;
+    font-family: var(--viking-font-family-mono);
+    font-size: var(--viking-font-size-xs);
+    font-weight: var(--viking-font-weight-extrabold);
+    letter-spacing: var(--viking-letter-spacing-wider);
+    text-transform: uppercase;
+    color: var(--viking-accent);
+  }
+}
+
+.integration-link {
+  margin-top: auto;
+  color: var(--viking-text-link);
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-semibold);
+  text-decoration: none;
+}
+
+.integration-link:hover,
+.integration-link:focus-visible {
+  color: var(--viking-text-link-hover);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
 }
 
 .endpoint-badge {
@@ -217,11 +338,15 @@
 }
 
 .code-block-premium {
+  --viking-code-panel-bg: var(--viking-charcoal-950);
+  --viking-code-panel-text: var(--viking-electric-200);
+  --viking-code-panel-header: var(--viking-crimson-300);
+  color-scheme: dark;
   overflow: hidden;
   border: 1px solid
     color-mix(in srgb, var(--viking-electric-400) 34%, var(--viking-border));
   border-radius: var(--viking-radius-lg);
-  background: var(--viking-charcoal-950);
+  background: var(--viking-code-panel-bg);
   box-shadow: var(--viking-shadow-sm);
 }
 
@@ -229,7 +354,7 @@
   padding: var(--viking-space-1) var(--viking-space-2);
   border-bottom: 1px solid
     color-mix(in srgb, var(--viking-metallic-400) 38%, transparent);
-  color: var(--viking-crimson-300);
+  color: var(--viking-code-panel-header);
   font-family: var(--viking-font-family-mono);
   font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-bold);
@@ -242,10 +367,11 @@
   padding: var(--viking-space-2);
   overflow-x: auto;
   background: transparent !important;
+  color: var(--viking-code-panel-text);
 }
 
 .code-block-premium code {
-  color: var(--viking-white);
+  color: var(--viking-code-panel-text);
   font-family: var(--viking-font-family-mono);
   font-size: var(--viking-font-size-sm);
   line-height: var(--viking-line-height-relaxed);
@@ -256,8 +382,54 @@
   padding: var(--viking-space-1-5);
 }
 
+html[data-theme='light'] .code-block-premium {
+  --viking-code-panel-bg: var(--viking-charcoal-950);
+  --viking-code-panel-text: var(--viking-electric-200);
+  --viking-code-panel-header: var(--viking-crimson-400);
+  background: var(--viking-code-panel-bg) !important;
+
+  pre,
+  code {
+    color: var(--viking-code-panel-text) !important;
+  }
+
+  .code-header {
+    color: var(--viking-code-panel-header);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-theme='dark']) .code-block-premium {
+    --viking-code-panel-bg: var(--viking-charcoal-950);
+    --viking-code-panel-text: var(--viking-electric-200);
+    --viking-code-panel-header: var(--viking-crimson-400);
+    background: var(--viking-code-panel-bg) !important;
+
+    pre,
+    code {
+      color: var(--viking-code-panel-text) !important;
+    }
+
+    .code-header {
+      color: var(--viking-code-panel-header);
+    }
+  }
+}
+
 .health-check-block {
   flex-direction: column;
+  gap: var(--viking-space-2);
+  margin-top: var(--viking-page-section-gap, var(--viking-space-6));
+  padding-top: var(--viking-space-3);
+
+  h3 {
+    margin: 0;
+    color: var(--viking-text);
+    font-size: var(--viking-font-size-xl);
+    font-weight: var(--viking-font-weight-extrabold);
+    letter-spacing: var(--viking-letter-spacing-wide);
+    text-transform: uppercase;
+  }
 }
 
 // Design rule: full-width lead + even half-width count (2, 4, 6…).
