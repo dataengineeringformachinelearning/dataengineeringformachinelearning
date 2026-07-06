@@ -154,13 +154,19 @@ a:not(.viking-button):not(.viking-btn):not(.cta-button):not(.nav-item):not(
 
 // ====================== INLINE CODE ======================
 :not(pre) > code {
-  background-color: var(--color-dark-grey-btn-bg);
-  padding: 0.1em 0.35em;
-  border-radius: 4px;
+  background: var(--viking-charcoal-950);
+  padding: 0.12em 0.42em;
+  border-radius: var(--viking-radius-sm, 6px);
   font-size: 0.875em;
   line-height: inherit;
-  color: var(--text-muted);
+  color: var(--viking-white-pure);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-electric-400) 34%, var(--viking-border));
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--viking-white-pure) 8%, transparent);
   white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   vertical-align: baseline;
 }
 

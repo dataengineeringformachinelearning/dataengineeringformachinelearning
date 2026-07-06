@@ -66,8 +66,14 @@ a:hover {
 code {
   font-family: var(--viking-font-family-mono, ui-monospace, monospace);
   font-size: 0.9em;
-  background: var(--viking-surface-alt);
-  padding: 0.1em 0.35em;
-  border-radius: var(--viking-radius-xs);
-  border: 1px solid var(--viking-border-subtle);
+  background: var(--viking-charcoal-950);
+  color: var(--viking-white-pure);
+  padding: 0.12em 0.42em;
+  border-radius: var(--viking-radius-sm);
+  border: 1px solid
+    color-mix(in srgb, var(--viking-electric-400) 34%, var(--viking-border));
+  box-shadow: inset 0 1px 0
+    color-mix(in srgb, var(--viking-white-pure) 8%, transparent);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }

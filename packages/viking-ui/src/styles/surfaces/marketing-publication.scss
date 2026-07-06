@@ -382,18 +382,19 @@
   }
 
   :not(pre) > code {
-    background: color-mix(
-      in srgb,
-      var(--color-dark-grey-btn-bg) 70%,
-      transparent
-    );
-    padding: 0.1em 0.35em;
-    border-radius: 4px;
+    background: var(--viking-charcoal-950);
+    padding: 0.12em 0.42em;
+    border-radius: var(--viking-radius-sm, 6px);
     font-size: 0.875em;
     line-height: inherit;
-    color: var(--text-color);
-    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent);
+    color: var(--viking-white-pure);
+    border: 1px solid
+      color-mix(in srgb, var(--viking-electric-400) 34%, var(--viking-border));
+    box-shadow: inset 0 1px 0
+      color-mix(in srgb, var(--viking-white-pure) 8%, transparent);
     white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
     vertical-align: baseline;
   }
 
@@ -512,6 +513,42 @@ a.book-toc-link.sidebar-search {
     justify-content: flex-start;
     gap: var(--viking-space-1, 8px);
     overflow: visible;
+  }
+}
+
+// Book chapter sidebar — keep the table of contents off the viewport edge.
+#book-app > .dashboard-sidebar {
+  width: min(22rem, 34vw);
+  padding: var(--viking-space-3, 24px) var(--viking-space-2, 16px);
+  background: color-mix(
+    in srgb,
+    var(--viking-surface, var(--color-surface)) 92%,
+    var(--viking-charcoal-950) 8%
+  );
+  border-right-color: color-mix(
+    in srgb,
+    var(--viking-border-strong, var(--border)) 72%,
+    var(--viking-border)
+  );
+  overflow-y: auto;
+}
+
+#book-app .sidebar-section {
+  padding: var(--viking-space-2, 16px) 0 var(--viking-space-4, 32px);
+}
+
+#book-app .sidebar-section .section-title {
+  margin-inline: var(--viking-space-1, 8px);
+}
+
+#book-app .pub-chapter-item {
+  min-height: var(--viking-space-5, 40px);
+}
+
+@media (min-width: 1200px) {
+  #book-app > .dashboard-sidebar {
+    width: 24rem;
+    padding-inline: var(--viking-space-3, 24px);
   }
 }
 

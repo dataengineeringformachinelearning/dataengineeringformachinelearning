@@ -10,10 +10,10 @@
           to see an example of real-time service health tracking.
         </p>
       </viking-page-header>
-      <div class="status-stack grid-layout">
+      <div class="status-stack status-directory-grid">
         @for (page of displayPages(); track page) {
         <app-status-card
-          class="col-span-4 col-span-md-12"
+          class="status-directory-card"
           [page]="page"
           [services]="servicesMap()[page.id] || []"
           [predictedSla]="mlService.latestStats()[page.id]"
@@ -24,7 +24,7 @@
           [showViewButton]="true"
         ></app-status-card>
         } @if (loadFailed()) {
-        <div class="status-error-state col-span-4 col-span-md-12" role="alert">
+        <div class="status-error-state status-directory-card" role="alert">
           <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />
           <h2 class="error-title">Unable to Connect</h2>
           <p class="error-subtitle">
@@ -44,7 +44,7 @@
         </div>
         } @if (!loadFailed() && !isLoading() && statusPages().length === 0) {
         <app-status-cta
-          class="col-span-4 col-span-md-12"
+          class="status-directory-card"
           badgeIcon="explore"
           badgeText="Explore Directory"
           title="No Public Status Pages"

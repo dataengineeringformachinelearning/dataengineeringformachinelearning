@@ -7,12 +7,12 @@
   [statusDot]="true"
   [href]="linkHeader ? getPageUrl() : ''"
 >
-  <div>
+  <div class="status-card-actions">
     <app-pro-verified-badge [show]="!!page.is_pro_verified"></app-pro-verified-badge>
     <viking-status-pill [tone]="statusTone" [dot]="true">{{ getPageStatus() }}</viking-status-pill>
   </div>
 
-  <div>
+  <div class="status-summary-grid">
     <viking-status-metric-row
       icon="server"
       title="Cumulative SLA"
@@ -27,7 +27,7 @@
     />
   </div>
 
-  <div>
+  <div class="status-summary-grid">
     <viking-status-metric-row
       icon="clock"
       title="P99 Latency"
@@ -42,7 +42,7 @@
     />
   </div>
 
-  <div>
+  <div class="status-summary-grid">
     <viking-status-metric-row
       icon="shield"
       title="Cumulative TA"
@@ -57,7 +57,7 @@
     />
   </div>
 
-  <div>
+  <div class="status-summary-grid status-summary-grid-single">
     <viking-status-metric-row
       icon="trending-up"
       title="Temporal Forecast"
@@ -67,7 +67,7 @@
   </div>
 
   @if (showIncidents && activeIncidents.length > 0) {
-  <div>
+  <div class="status-incidents-list">
     @for (incident of activeIncidents; track incident.id || incident.title) {
     <viking-card [compact]="true">
       <strong>{{ incident.status }}</strong>
@@ -77,7 +77,7 @@
     }
   </div>
   } @if (showViewButton) {
-  <div>
+  <div class="status-card-footer-action">
     <viking-button
       variant="primary"
       [fullWidth]="true"

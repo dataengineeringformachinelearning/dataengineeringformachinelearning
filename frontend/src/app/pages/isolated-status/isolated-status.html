@@ -47,6 +47,7 @@
       </viking-page-header>
 
       <viking-callout
+        class="status-hero-callout"
         [tone]="globalStatusTone(globalPageStatus())"
         [attr.heading]="globalPageStatus() + ' — ' + page.title"
       >
@@ -60,7 +61,7 @@
 
       @if (sanityService.announcements().length > 0 || sanityService.loading() ||
       sanityService.error()) {
-      <viking-card>
+      <viking-card class="status-section-card">
         <viking-heading [level]="2" size="xl">Latest System Announcements</viking-heading>
         @if (sanityService.error()) {
         <viking-callout tone="danger" heading="Announcements Unavailable">
@@ -83,7 +84,7 @@
       </viking-card>
       }
 
-      <viking-card>
+      <viking-card class="status-section-card status-metric-grid-card">
         <viking-heading [level]="2" size="xl">Analytics & Traffic</viking-heading>
         <viking-status-metric-row
           icon="clock"
@@ -101,7 +102,7 @@
         />
       </viking-card>
 
-      <viking-card>
+      <viking-card class="status-section-card status-metric-grid-card">
         <viking-heading [level]="2" size="xl">Service Level Agreement (SLA)</viking-heading>
         <viking-status-metric-row
           icon="server"
@@ -119,7 +120,7 @@
         />
       </viking-card>
 
-      <viking-card>
+      <viking-card class="status-section-card status-metric-grid-card">
         <viking-heading [level]="2" size="xl">Temporal Forecast (Norse SNN)</viking-heading>
         <viking-status-metric-row
           icon="trending-up"
@@ -132,7 +133,7 @@
         />
       </viking-card>
 
-      <viking-card>
+      <viking-card class="status-section-card status-metric-grid-card">
         <viking-heading [level]="2" size="xl">Threat Intelligence</viking-heading>
         <viking-status-metric-row
           icon="shield"
@@ -148,7 +149,7 @@
         />
       </viking-card>
 
-      <viking-card>
+      <viking-card class="status-section-card status-metric-grid-card">
         <viking-heading [level]="2" size="xl">Threat Details</viking-heading>
         <p>
           Status: {{ (threatReportsByPage()[page.id]?.anomaly_score ?? 0) > 0.5 ? 'Active
@@ -174,7 +175,7 @@
         />
       </viking-card>
 
-      <viking-card>
+      <viking-card class="status-section-card monitored-services-card">
         <viking-heading [level]="2" size="xl">Active Monitored Services</viking-heading>
         @for (s of servicesMap()[page.id] || []; track s) {
         <viking-callout
@@ -192,7 +193,7 @@
         }
       </viking-card>
 
-      <viking-card>
+      <viking-card class="status-section-card uptime-history-card">
         <viking-heading [level]="2" size="xl">Uptime History (Last 30 Days)</viking-heading>
         <p>
           {{ (page.overall_uptime !== null ? page.overall_uptime : 0) | number:'1.2-2' }}%
@@ -209,7 +210,7 @@
       </viking-card>
 
       @if (incidentsMap()[page.id]?.length) {
-      <viking-card>
+      <viking-card class="status-section-card">
         <viking-heading [level]="2" size="xl">Recent Incidents & Maintenance</viking-heading>
         @for (incident of incidentsMap()[page.id]; track incident) {
         <viking-callout
@@ -224,7 +225,11 @@
       </viking-card>
       }
 
-      <viking-callout tone="accent" heading="Predictive Status Pages for Your Own Products">
+      <viking-callout
+        class="status-hero-callout"
+        tone="accent"
+        heading="Predictive Status Pages for Your Own Products"
+      >
         <p>
           Impress your users with status dashboards, latency telemetry, and deep-learning
           forecasting modules.

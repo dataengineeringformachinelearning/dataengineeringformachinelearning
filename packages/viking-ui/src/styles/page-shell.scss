@@ -744,6 +744,126 @@
   font-weight: var(--viking-font-weight-medium, 500);
 }
 
+/* Public status directory + standalone status templates */
+.status-directory-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-page-section-gap, var(--viking-space-5));
+  width: 100%;
+  max-width: 56rem;
+  margin-inline: auto;
+}
+
+.status-directory-card,
+app-status-card.status-directory-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+
+.status-card-actions,
+.status-card-footer-action,
+.status-incidents-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-2);
+  min-width: 0;
+}
+
+.status-card-actions {
+  justify-content: flex-start;
+}
+
+.status-card-footer-action {
+  padding-top: var(--viking-space-1);
+}
+
+.status-incidents-list {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.status-summary-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-space-2);
+  min-width: 0;
+}
+
+@media (min-width: 720px) {
+  .status-summary-grid:not(.status-summary-grid-single) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+viking-card.status-section-card {
+  gap: var(--viking-space-3);
+}
+
+viking-card.status-section-card viking-heading {
+  margin: 0;
+}
+
+viking-card.status-metric-grid-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+}
+
+viking-card.status-metric-grid-card > viking-heading,
+viking-card.status-metric-grid-card > p {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 760px) {
+  viking-card.status-metric-grid-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+viking-card.status-metric-grid-card viking-status-metric-row {
+  height: 100%;
+}
+
+viking-card.uptime-history-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+viking-card.uptime-history-card > viking-heading,
+viking-card.uptime-history-card > p {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 720px) {
+  viking-card.uptime-history-card {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1180px) {
+  viking-card.uptime-history-card {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+viking-card.monitored-services-card {
+  background: color-mix(
+    in srgb,
+    var(--viking-surface-recipe, var(--viking-surface)) 88%,
+    var(--viking-accent) 12%
+  );
+}
+
+.status-hero-callout {
+  border-color: color-mix(
+    in srgb,
+    var(--viking-accent-strong) 48%,
+    var(--viking-border)
+  );
+}
+
 /* CES / analytics gauge cards */
 .ces-meter-section {
   margin-bottom: var(--viking-space-4);
