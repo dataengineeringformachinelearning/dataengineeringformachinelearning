@@ -33,6 +33,9 @@ jobs:
   release:
     name: Release Viking-UI package, Storybook, and showcase
     runs-on: ubuntu-latest
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+      FIREBASE_SERVICE_ACCOUNT_DEML_UI: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -108,9 +111,7 @@ jobs:
           exit 1
 
       - name: Build Storybook and publish to Chromatic
-        if: steps.ensure-release.outputs.published == 'true' && secrets.CHROMATIC_PROJECT_TOKEN != ''
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        if: steps.ensure-release.outputs.published == 'true' && env.CHROMATIC_PROJECT_TOKEN != ''
         run: |
           npm run build-storybook --workspace @dataengineeringformachinelearning/viking-ui
           npx chromatic \
@@ -119,7 +120,7 @@ jobs:
             --exit-zero-on-changes
 
       - name: Skip Storybook publish
-        if: steps.ensure-release.outputs.published == 'true' && secrets.CHROMATIC_PROJECT_TOKEN == ''
+        if: steps.ensure-release.outputs.published == 'true' && env.CHROMATIC_PROJECT_TOKEN == ''
         run: echo "CHROMATIC_PROJECT_TOKEN is not set; skipping Storybook publish."
 
       - name: Sync canonical design-system assets
@@ -131,7 +132,7 @@ jobs:
         run: npm run build-viking-ui-docs
 
       - name: Authenticate to Firebase
-        if: steps.ensure-release.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
+        if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
         id: firebase-auth
         uses: google-github-actions/auth@v2
         with:
@@ -139,7 +140,7 @@ jobs:
           create_credentials_file: true
 
       - name: Deploy UI showcase
-        if: steps.ensure-release.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
+        if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI != ''
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ steps.firebase-auth.outputs.credentials_file_path }}
         run: |
@@ -147,5 +148,5 @@ jobs:
           firebase deploy --only hosting:deml-ui --project deml-ui --non-interactive
 
       - name: Skip showcase deploy
-        if: steps.ensure-release.outputs.published == 'true' && secrets.FIREBASE_SERVICE_ACCOUNT_DEML_UI == ''
+        if: steps.ensure-release.outputs.published == 'true' && env.FIREBASE_SERVICE_ACCOUNT_DEML_UI == ''
         run: echo "FIREBASE_SERVICE_ACCOUNT_DEML_UI is not set; showcase deploy skipped."

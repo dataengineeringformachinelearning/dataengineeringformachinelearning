@@ -35,6 +35,8 @@ jobs:
   quality-gates:
     name: Theme, accessibility, tests, visual regression, and security
     runs-on: ubuntu-latest
+    env:
+      CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -74,9 +76,7 @@ jobs:
           fi
 
       - name: Run visual regression in Chromatic
-        if: secrets.CHROMATIC_PROJECT_TOKEN != ''
-        env:
-          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+        if: env.CHROMATIC_PROJECT_TOKEN != ''
         run: |
           npx chromatic \
             --project-token "$CHROMATIC_PROJECT_TOKEN" \
@@ -84,5 +84,5 @@ jobs:
             --exit-zero-on-changes
 
       - name: Skip Chromatic
-        if: secrets.CHROMATIC_PROJECT_TOKEN == ''
+        if: env.CHROMATIC_PROJECT_TOKEN == ''
         run: echo "CHROMATIC_PROJECT_TOKEN is not set; skipping PR visual-regression publish."
