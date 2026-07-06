@@ -117,7 +117,9 @@ const jsonLdPayload = jsonLd
 			})();
 		</script>
 
-		<script type="module" src="/assets/viking-ui-elements.js"></script>
+		<script>
+			import '@dataengineeringformachinelearning/viking-ui/web-components.js';
+		</script>
 		<script is:inline define:vars={{ algolia }}>
 			window.ALGOLIA_CONFIG = {
 				appId: algolia.APP_ID,

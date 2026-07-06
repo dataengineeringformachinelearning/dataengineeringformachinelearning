@@ -189,10 +189,10 @@ const VIKING_STATUS_CARD_STYLES = `
   width: 100%;
   padding: var(--viking-card-padding);
   border-radius: var(--viking-radius-lg);
-  border: 1px solid var(--viking-border);
-  background: var(--viking-surface);
+  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
+  background: var(--viking-surface-recipe, var(--viking-surface));
   color: var(--viking-text);
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-shadow-md);
   box-sizing: border-box;
   position: relative;
   transition: var(--viking-transition-interactive);
@@ -208,7 +208,7 @@ const VIKING_STATUS_CARD_STYLES = `
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--viking-metallic-200) 24%, transparent),
+    color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%), transparent),
     transparent
   );
   pointer-events: none;

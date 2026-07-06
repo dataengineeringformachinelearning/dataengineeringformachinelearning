@@ -44,16 +44,16 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         border: 1px solid
           color-mix(
             in srgb,
-            var(--viking-border-strong) 72%,
+            var(--viking-border-strong) 86%,
             var(--viking-border)
           );
         border-radius: var(--viking-radius-lg);
         box-shadow:
-          var(--viking-shadow-sm),
+          var(--viking-shadow-md),
           inset 0 1px 0
-            color-mix(in srgb, var(--viking-white-pure) 7%, transparent),
+            color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
           inset 0 -1px 0
-            color-mix(in srgb, var(--viking-black) 18%, transparent);
+            color-mix(in srgb, var(--viking-black) 24%, transparent);
         padding: var(--viking-card-padding, var(--viking-space-3));
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
@@ -78,7 +78,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
           color-mix(
             in srgb,
             var(--viking-metallic-200)
-              var(--viking-surface-hairline-strength, 28%),
+              var(--viking-surface-hairline-strength, 36%),
             transparent
           ),
           transparent
@@ -95,7 +95,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         height: var(--viking-space-4);
         background: linear-gradient(
           180deg,
-          color-mix(in srgb, var(--viking-metallic-100) 24%, transparent),
+          color-mix(in srgb, var(--viking-metallic-100) 30%, transparent),
           transparent
         );
         pointer-events: none;
@@ -114,9 +114,9 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         box-shadow:
           var(--viking-shadow-hover),
           inset 0 1px 0
-            color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
+            color-mix(in srgb, var(--viking-white-pure) 10%, transparent),
           inset 0 -1px 0
-            color-mix(in srgb, var(--viking-black) 18%, transparent);
+            color-mix(in srgb, var(--viking-black) 22%, transparent);
         transform: translateY(var(--viking-state-hover-lift));
       }
       :host(.viking-card-interactive):active {
@@ -169,7 +169,7 @@ export class VikingCard {
         align-items: center;
         justify-content: space-between;
         gap: var(--viking-space-3);
-        padding-bottom: var(--viking-space-2);
+        padding-bottom: var(--viking-space-2-5);
         margin-bottom: 0;
         border-bottom: 1px solid var(--viking-border-subtle);
       }
@@ -200,7 +200,7 @@ export class VikingCardHeader {}
         align-items: center;
         justify-content: flex-end;
         gap: var(--viking-space-2);
-        padding-top: var(--viking-space-2);
+        padding-top: var(--viking-space-2-5);
         margin-top: 0;
         border-top: 1px solid var(--viking-border-subtle);
       }

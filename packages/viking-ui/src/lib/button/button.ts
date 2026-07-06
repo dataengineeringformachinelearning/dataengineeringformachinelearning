@@ -42,6 +42,7 @@ export type VikingButtonVariant =
       [attr.size]="size() === 'base' ? null : size()"
       [attr.type]="type()"
       [attr.disabled]="disabled() || loading() ? '' : null"
+      [attr.loading]="loading() ? '' : null"
       [attr.aria-busy]="loading() ? 'true' : null"
       [attr.href]="href()"
       [attr.target]="target()"
@@ -51,9 +52,7 @@ export type VikingButtonVariant =
       [attr.compact]="compact() ? '' : null"
       (viking-press)="onPress($event)"
     >
-      @if (loading()) {
-        <viking-icon name="loader" [size]="iconSize()" [spin]="true" />
-      } @else if (icon()) {
+      @if (!loading() && icon()) {
         <viking-icon [name]="icon()!" [size]="iconSize()" />
       }
       <ng-content />

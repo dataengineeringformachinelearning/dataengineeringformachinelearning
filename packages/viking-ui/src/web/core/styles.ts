@@ -28,10 +28,14 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn {
-  --viking-btn-depth-shadow: var(--viking-shadow-sm);
+  --viking-btn-depth-shadow:
+    var(--viking-shadow-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 7%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 18%, transparent);
   --viking-btn-hover-shadow: var(--viking-shadow-hover);
   --viking-btn-press-shadow:
-    inset 0 1px 2px color-mix(in srgb, var(--viking-black) 28%, transparent),
+    inset 0 1px 3px color-mix(in srgb, var(--viking-black) 34%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--viking-white-pure) 3%, transparent),
     var(--viking-shadow-xs);
 
   font-family: inherit;
@@ -45,7 +49,7 @@ export const VIKING_BUTTON_STYLES = `
   gap: var(--viking-space-1-5);
   min-height: var(--viking-control-height);
   padding: var(--viking-space-half) var(--viking-control-padding-x);
-  border-radius: var(--viking-radius-md);
+  border-radius: var(--viking-button-radius, var(--viking-radius-lg));
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -71,7 +75,7 @@ export const VIKING_BUTTON_STYLES = `
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--viking-metallic-100) 45%, transparent),
+    color-mix(in srgb, var(--viking-metallic-100) 58%, transparent),
     transparent
   );
   pointer-events: none;
@@ -97,6 +101,13 @@ export const VIKING_BUTTON_STYLES = `
   cursor: wait;
 }
 
+.viking-btn[aria-busy='true']:not(.viking-btn-square) {
+  min-width: var(
+    --viking-btn-loading-min-width,
+    var(--viking-btn-min-width, 120px)
+  );
+}
+
 .viking-btn[aria-busy='true']::before,
 .viking-btn[aria-busy='true'] .viking-btn-label {
   opacity: 0.78;
@@ -117,7 +128,7 @@ export const VIKING_BUTTON_STYLES = `
     transparent,
     color-mix(
       in srgb,
-      var(--viking-metallic-100) 18%,
+      var(--viking-metallic-100) 24%,
       transparent
     ),
     transparent
@@ -136,7 +147,7 @@ export const VIKING_BUTTON_STYLES = `
 
 .viking-btn-xs {
   min-height: var(--viking-control-height-xs);
-  padding: 0 var(--viking-space-1);
+  padding: 0 var(--viking-space-1-5);
   font-size: var(--viking-font-size-xs);
   min-width: auto;
 }
@@ -204,10 +215,11 @@ export const VIKING_BUTTON_STYLES = `
   pointer-events: none;
   flex: 0 0 auto;
   margin-block: calc(var(--viking-space-half) * -1);
+  align-self: center;
 }
 
 .viking-btn-outline {
-  background: var(--viking-surface);
+  background: var(--viking-surface-recipe, var(--viking-surface));
   color: var(--viking-text);
   border-color: var(--viking-border-strong);
   box-shadow: var(--viking-btn-depth-shadow);
@@ -227,7 +239,18 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-primary {
-  background: var(--viking-accent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 12%, transparent) 0%,
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--viking-electric-300) 18%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--viking-accent);
   color: var(--viking-accent-content);
   border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
   box-shadow:
@@ -236,7 +259,18 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-primary:hover:not(:disabled):not([aria-busy='true']) {
-  background: var(--viking-accent-hover);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 16%, transparent) 0%,
+      transparent 44%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--viking-electric-200) 20%, transparent) 0%,
+      transparent 58%
+    ),
+    var(--viking-accent-hover);
   border-color: var(--viking-accent-hover);
   box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
@@ -249,7 +283,13 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-secondary {
-  background: var(--viking-accent-secondary);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 11%, transparent) 0%,
+      transparent 42%
+    ),
+    var(--viking-accent-secondary);
   color: var(--viking-accent-secondary-content);
   border-color: color-mix(in srgb, var(--viking-accent-secondary) 82%, var(--viking-black));
   box-shadow:
@@ -258,7 +298,13 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-secondary:hover:not(:disabled):not([aria-busy='true']) {
-  background: var(--viking-accent-secondary-hover);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 14%, transparent) 0%,
+      transparent 44%
+    ),
+    var(--viking-accent-secondary-hover);
   border-color: var(--viking-accent-secondary-hover);
   box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
@@ -271,7 +317,7 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-filled {
-  background: var(--viking-surface-alt);
+  background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
   color: var(--viking-text);
   border-color: var(--viking-border);
   box-shadow: var(--viking-shadow-xs);
@@ -280,7 +326,7 @@ export const VIKING_BUTTON_STYLES = `
 .viking-btn-filled:hover:not(:disabled):not([aria-busy='true']) {
   border-color: color-mix(in srgb, var(--viking-accent) 45%, var(--viking-border));
   background: color-mix(in srgb, var(--viking-accent) 8%, var(--viking-surface-alt));
-  box-shadow: var(--viking-btn-depth-shadow);
+  box-shadow: var(--viking-btn-hover-shadow);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
@@ -292,7 +338,13 @@ export const VIKING_BUTTON_STYLES = `
 }
 
 .viking-btn-danger {
-  background: var(--viking-danger);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 10%, transparent) 0%,
+      transparent 42%
+    ),
+    var(--viking-danger);
   color: var(--viking-on-danger);
   border-color: color-mix(in srgb, var(--viking-danger) 85%, var(--viking-black));
   box-shadow:
@@ -326,6 +378,7 @@ export const VIKING_BUTTON_STYLES = `
   background: var(--viking-accent-soft);
   color: var(--viking-accent-strong);
   border-color: var(--viking-border-subtle);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 5%, transparent);
   transform: translateY(var(--viking-state-hover-lift));
 }
 
@@ -347,6 +400,7 @@ export const VIKING_BUTTON_STYLES = `
   color: var(--viking-text);
   background: var(--viking-accent-soft);
   border-color: var(--viking-border-strong);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 5%, transparent);
 }
 
 .viking-btn-subtle:active:not(:disabled):not([aria-busy='true']) {
@@ -366,6 +420,7 @@ export const VIKING_BUTTON_STYLES = `
   justify-content: center;
   gap: var(--viking-space-1);
   line-height: 1.2;
+  min-height: var(--viking-icon-size-md);
   min-width: 0;
   text-align: center;
   white-space: nowrap;
@@ -394,6 +449,7 @@ export const VIKING_BUTTON_STYLES = `
   border-right-color: transparent;
   border-radius: var(--viking-radius-pill);
   animation: viking-spin 0.8s linear infinite;
+  margin-inline-end: var(--viking-space-half);
 }
 
 @keyframes viking-spin {
@@ -417,14 +473,16 @@ export const VIKING_INPUT_STYLES = `
   align-items: center;
   gap: var(--viking-space-1);
   min-height: var(--viking-control-height);
-  padding: 0 var(--viking-space-2);
+  padding: 0 var(--viking-control-padding-x);
   font-family: inherit;
   font-size: var(--viking-font-size);
   color: var(--viking-text);
-  background: var(--viking-surface-alt);
-  border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-sm);
-  box-shadow: var(--viking-shadow-xs);
+  background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
+  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 68%, var(--viking-border));
+  border-radius: var(--viking-radius-md);
+  box-shadow:
+    var(--viking-shadow-xs),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 4%, transparent);
   transition: var(--viking-transition-interactive);
   width: 100%;
   min-width: 0;
@@ -440,7 +498,9 @@ export const VIKING_INPUT_STYLES = `
   outline: var(--viking-ring-width) solid var(--viking-ring);
   outline-offset: var(--viking-ring-offset);
   border-color: var(--viking-accent);
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow:
+    var(--viking-shadow-sm),
+    0 0 0 1px color-mix(in srgb, var(--viking-accent) 22%, transparent);
 }
 
 .viking-input-shell.viking-disabled,

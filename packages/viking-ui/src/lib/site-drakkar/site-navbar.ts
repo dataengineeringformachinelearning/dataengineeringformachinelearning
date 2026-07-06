@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
   ViewEncapsulation,
   computed,
@@ -255,6 +256,8 @@ export class VikingSiteNavbar {
 
   protected readonly mobileMenuOpen = signal(false);
 
+  constructor(private readonly host: ElementRef<HTMLElement>) {}
+
   protected readonly navLinks = computed(() =>
     visibleNavLinks(SITE_NAV_LINKS, this.isAuthenticated()),
   );
@@ -274,6 +277,10 @@ export class VikingSiteNavbar {
   }
 
   protected toggleMobileMenu(): void {
+    if (!this.isMobileViewport()) {
+      this.closeMobileMenu();
+      return;
+    }
     this.mobileMenuOpen.update((open) => !open);
   }
 
@@ -290,8 +297,8 @@ export class VikingSiteNavbar {
       typeof event.composedPath === "function"
         ? event.composedPath()
         : [target];
-    const menu = document.getElementById("mobile-menu");
-    const toggle = document.getElementById("mobile-menu-btn");
+    const menu = this.host.nativeElement.querySelector("#mobile-menu");
+    const toggle = this.host.nativeElement.querySelector("#mobile-menu-btn");
     const clickedInside = path.some(
       (node) =>
         node instanceof Node &&
@@ -314,10 +321,7 @@ export class VikingSiteNavbar {
 
   @HostListener("window:resize")
   protected closeMobileMenuOnDesktop(): void {
-    if (
-      typeof window !== "undefined" &&
-      window.matchMedia("(min-width: 768px)").matches
-    ) {
+    if (!this.isMobileViewport()) {
       this.closeMobileMenu();
     }
   }
@@ -325,5 +329,12 @@ export class VikingSiteNavbar {
   @HostListener("document:keydown.escape")
   protected closeMobileMenuOnEscape(): void {
     this.closeMobileMenu();
+  }
+
+  private isMobileViewport(): boolean {
+    return (
+      typeof window === "undefined" ||
+      !window.matchMedia("(min-width: 768px)").matches
+    );
   }
 }

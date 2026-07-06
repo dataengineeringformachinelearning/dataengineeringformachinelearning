@@ -635,7 +635,12 @@ viking-button-wc.auth-btn {
 .auth-btn::part(label),
 .auth-signout-btn::part(label),
 .mobile-auth-btn::part(label) {
-  display: contents;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--viking-space-1, 8px);
+  min-width: 0;
+  line-height: 1;
 }
 
 .auth-btn::part(control),
@@ -663,6 +668,15 @@ viking-button-wc.auth-btn::part(control),
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 24%, transparent),
     var(--viking-shadow-sm, var(--shadow-sm)) !important;
+}
+
+.auth-btn[aria-busy="true"]::part(label),
+.auth-btn[loading]::part(label),
+.mobile-auth-btn[aria-busy="true"]::part(label),
+.mobile-auth-btn[loading]::part(label),
+.auth-signout-btn[aria-busy="true"]::part(label),
+.auth-signout-btn[loading]::part(label) {
+  min-width: max-content;
 }
 
 .auth-btn[aria-busy="true"]::part(control),

@@ -31,10 +31,14 @@
 }
 
 @mixin viking-drakkar-part-base {
-  --viking-btn-depth-shadow: var(--viking-shadow-sm);
+  --viking-btn-depth-shadow:
+    var(--viking-shadow-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 7%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 18%, transparent);
   --viking-btn-hover-shadow: var(--viking-shadow-hover);
   --viking-btn-press-shadow:
-    inset 0 1px 2px color-mix(in srgb, var(--viking-black) 28%, transparent),
+    inset 0 1px 3px color-mix(in srgb, var(--viking-black) 34%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--viking-white-pure) 3%, transparent),
     var(--viking-shadow-xs);
 
   font-family: var(--viking-font-family);
@@ -68,7 +72,18 @@
 
 @mixin viking-drakkar-part-primary {
   @include viking-drakkar-part-base;
-  background: var(--viking-accent);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 12%, transparent) 0%,
+      transparent 42%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--viking-electric-300) 18%, transparent) 0%,
+      transparent 55%
+    ),
+    var(--viking-accent);
   color: var(--viking-accent-content);
   border-color: color-mix(in srgb, var(--viking-accent) 82%, var(--viking-black));
   box-shadow:
@@ -78,7 +93,7 @@
 
 @mixin viking-drakkar-part-outline {
   @include viking-drakkar-part-base;
-  background: var(--viking-surface);
+  background: var(--viking-surface-recipe, var(--viking-surface));
   color: var(--viking-text);
   border-color: var(--viking-border-strong);
   box-shadow: var(--viking-btn-depth-shadow);
@@ -107,7 +122,18 @@ viking-button.auth-btn viking-button-wc::part(control) {
 
 viking-button-wc.auth-btn:hover::part(control),
 viking-button.auth-btn:hover viking-button-wc::part(control) {
-  background: var(--viking-accent-hover);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-white-pure) 16%, transparent) 0%,
+      transparent 44%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--viking-electric-200) 20%, transparent) 0%,
+      transparent 58%
+    ),
+    var(--viking-accent-hover);
   border-color: var(--viking-accent-hover);
   color: var(--viking-accent-content);
   box-shadow: var(--viking-btn-hover-shadow);

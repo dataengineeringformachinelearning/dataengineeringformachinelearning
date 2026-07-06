@@ -9,7 +9,6 @@
   "module": "./dist/fesm2022/dataengineeringformachinelearning-viking-ui.mjs",
   "types": "./dist/types/dataengineeringformachinelearning-viking-ui.d.ts",
   "style": "./dist/viking-ui.css",
-  "browser": "./dist/viking-ui-elements.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dataengineeringformachinelearning/dataengineeringformachinelearning.git",

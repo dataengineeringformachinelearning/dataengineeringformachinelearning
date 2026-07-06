@@ -126,8 +126,21 @@ export class VikingSiteNavbarWc extends HTMLElement {
     ];
   }
 
+  private mobileMenuOpen = false;
+
   connectedCallback(): void {
     this.render();
+    this.addEventListener("click", this.onHostClick);
+    document.addEventListener("click", this.onDocumentClick);
+    document.addEventListener("keydown", this.onDocumentKeydown);
+    window.addEventListener("resize", this.onWindowResize);
+  }
+
+  disconnectedCallback(): void {
+    this.removeEventListener("click", this.onHostClick);
+    document.removeEventListener("click", this.onDocumentClick);
+    document.removeEventListener("keydown", this.onDocumentKeydown);
+    window.removeEventListener("resize", this.onWindowResize);
   }
 
   attributeChangedCallback(): void {
@@ -316,6 +329,87 @@ export class VikingSiteNavbarWc extends HTMLElement {
         </nav>
       </header>
     `;
+    this.syncMobileMenu();
+  }
+
+  private readonly onHostClick = (event: Event): void => {
+    const path =
+      typeof event.composedPath === "function" ? event.composedPath() : [];
+    const clickedToggle = path.some(
+      (node) => node instanceof HTMLElement && node.id === "mobile-menu-btn",
+    );
+
+    if (clickedToggle) {
+      event.preventDefault();
+      this.toggleMobileMenu();
+      return;
+    }
+
+    const clickedMobileItem = path.some(
+      (node) =>
+        node instanceof HTMLElement &&
+        node.closest?.("#mobile-menu") &&
+        (node.matches("a") || node.matches("viking-button-wc")),
+    );
+
+    if (clickedMobileItem) {
+      this.closeMobileMenu();
+    }
+  };
+
+  private readonly onDocumentClick = (event: MouseEvent): void => {
+    if (!this.mobileMenuOpen) {
+      return;
+    }
+    const target = event.target;
+    if (target instanceof Node && !this.contains(target)) {
+      this.closeMobileMenu();
+    }
+  };
+
+  private readonly onDocumentKeydown = (event: KeyboardEvent): void => {
+    if (event.key === "Escape") {
+      this.closeMobileMenu();
+    }
+  };
+
+  private readonly onWindowResize = (): void => {
+    if (window.matchMedia("(min-width: 768px)").matches) {
+      this.closeMobileMenu();
+    }
+  };
+
+  private toggleMobileMenu(): void {
+    this.mobileMenuOpen = !this.mobileMenuOpen;
+    this.syncMobileMenu();
+  }
+
+  private closeMobileMenu(): void {
+    if (!this.mobileMenuOpen) {
+      return;
+    }
+    this.mobileMenuOpen = false;
+    this.syncMobileMenu();
+  }
+
+  private syncMobileMenu(): void {
+    const menu = this.querySelector<HTMLElement>("#mobile-menu");
+    const toggle = this.querySelector<HTMLElement>("#mobile-menu-btn");
+    if (!menu || !toggle) {
+      return;
+    }
+
+    menu.classList.toggle("open", this.mobileMenuOpen);
+    menu.toggleAttribute("hidden", !this.mobileMenuOpen);
+    toggle.setAttribute(
+      "aria-expanded",
+      this.mobileMenuOpen ? "true" : "false",
+    );
+    toggle.setAttribute(
+      "aria-label",
+      this.mobileMenuOpen ? "Close navigation menu" : "Toggle navigation menu",
+    );
+    toggle.innerHTML = renderNavIcon(this.mobileMenuOpen ? "x" : "menu", 24);
   }
 }
 

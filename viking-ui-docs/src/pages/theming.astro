@@ -72,10 +72,15 @@ import { SITE } from '../lib/site';
       <article class="viking-card theming-setup-card">
         <h3 class="viking-heading viking-heading-sm">Astro / static sites</h3>
         <p class="viking-text-muted">
-          Default: local build artifacts from sync, or CDN for unmanaged surfaces.
+          Managed Astro sites import from the package. Use CDN for unmanaged surfaces.
         </p>
-        <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="/assets/viking-ui.css" />
-<script type="module" src="/assets/viking-ui-elements.js"></script>`}</code></pre>
+        <pre class="code-block-panel is-active"><code>{`---
+import '@dataengineeringformachinelearning/viking-ui/viking-ui.css';
+---
+
+<script>
+  import '@dataengineeringformachinelearning/viking-ui/web-components.js';
+</script>`}</code></pre>
         <p class="viking-label">CDN alternative:</p>
         <pre class="code-block-panel is-active"><code>{`<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
 <script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"></script>`}</code></pre>

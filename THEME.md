@@ -23,6 +23,7 @@ Viking-UI is the single source of truth for all DEML styling. Every visual rule 
 - **Tokens only:** every color, spacing, radius, shadow, font, motion, and data visualization value must resolve to a `--viking-*` token from `packages/viking-ui/src/styles/_variables.scss` or a semantic alias exported by the Viking-UI bundle.
 - **No app-owned visuals:** `frontend/`, `marketing/`, `viking-ui-docs/`, Django templates, and widget consumers may compose Viking components, pass content/props, and load synced assets, but they must not define page-level SCSS/CSS, local `<style>` blocks, inline `style=""`, Tailwind utility styling, hardcoded palettes, or one-off visual class systems.
 - **Extend, then consume:** when a consuming surface needs a new layout, card, CTA, legal/prose surface, nav/footer pattern, status display, chart treatment, or form pattern, add the primitive or surface style to `packages/viking-ui/src/styles/`, rebuild the package, and sync with `scripts/sync_design_system.py`.
+- **Aesthetic changes are package changes:** every styling decision required by the final aesthetic below must be implemented inside `packages/viking-ui/` only, then consumed through public package entrypoints, synced artifacts, or CDN delivery. Do not implement aesthetic fixes directly in `frontend/`, `marketing/`, `viking-ui-docs/`, or `backend/`.
 - **Generated assets are mirrors:** files such as `frontend/public/assets/viking-ui.css`, `marketing/public/assets/viking-ui.css`, `backend/static/viking-ui.css`, and `viking-ui-docs/public/assets/viking-ui.css` are compiled outputs. Do not hand-edit them except through the Viking-UI build and sync pipeline.
 
 ### Token artifacts (single source of truth)
@@ -42,14 +43,27 @@ Viking-UI is the single source of truth for all DEML styling. Every visual rule 
 
 ## Design philosophy
 
-Viking-UI's locked aesthetic is **precision-engineered industrial luxury**: dark-first command hardware with machined metallic surfaces and restrained operational presence.
+Viking-UI's final locked aesthetic is **Lockheed Martin × The Northman precision digital battlefield**: premium aerospace-defense command hardware crossed with austere Nordic geometry, expressed through clean component primitives and dense operational data surfaces. The system must feel engineered, battle-ready, restrained, and expensive without becoming militarized cosplay, fantasy decoration, or generic enterprise SaaS.
+
+### Reference synthesis
+
+| Reference                                                          | Viking-UI interpretation                                                                                         | Implementation rule                                                                                           |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [Lockheed Martin](https://www.lockheedmartin.com/en-us/index.html) | Premium engineering confidence, mission hardware, command systems, advanced technology, aerospace-grade surfaces | Use machined shell structure, exact alignment, low-noise hierarchy, crisp borders, and instrument readability |
+| [spartan.ng](https://spartan.ng/)                                  | Clean Angular primitive language, accessible composition, simple layouts, direct component ergonomics            | Keep `viking-*` APIs composable, readable, SSR-safe, and behavior-first; never solve design with page CSS     |
+| [fluxui.dev](https://fluxui.dev/)                                  | Balanced spacing, practical data density, responsive dark surfaces, reusable layouts, lightweight charts         | Favor dense dashboards, compact chart panels, strong form/list ergonomics, and native SVG data visualization  |
+| The Northman direction                                             | Severe silhouettes, runic restraint, cold materiality, ceremonial weight, disciplined asymmetry                  | Use geometric dividers, sparse notches, dark steel surfaces, and structural accents only where they aid use   |
+
+This is a design translation, not a dependency policy. Viking-UI may take direction from those references, but DEML does not import their UI libraries, copy their source, duplicate their visual systems, or move styling ownership out of `packages/viking-ui/`.
 
 - **Precision engineering** — clean hierarchy, machined surfaces, deterministic rhythm, high-contrast operational readability, and zero visual drift under pressure.
-- **Operational restraint** — subtle geometric structure, strong silhouettes, ceremonial restraint, and presence without fantasy illustration or decorative clutter.
+- **Digital battlefield restraint** — subtle tactical structure, strong silhouettes, ceremonial severity, and presence without fantasy illustration, decorative clutter, or roleplay UI.
 - **Dark-first command surfaces** — deep navy/charcoal backgrounds, machined metallic edges, no decorative noise.
 - **Tactile surface depth** — crisp borders, directional elevation, and subtle top-edge highlights (`inset 0 1px 0 rgba(255,255,255,0.04–0.06)`) on cards, panels, and buttons.
 - **Refined accent discipline** — restrained electric-teal (`#2176ff`) for command/confirmation, rich crimson for escalation, secondary emphasis, and danger; no neon gradients or ambient glow orbs on base surfaces.
-- **Generous precision** — spacing breathes, but every gap resolves to the 4px grid and `--viking-space-*`; no Spartan tightness, no loose ornamental sprawl.
+- **Dense, breathable telemetry** — spacing follows Flux-like density: compact enough for operational dashboards and charts, but never cramped; every gap resolves to the 4px grid and `--viking-space-*`.
+- **Primitive clarity** — component language follows spartan.ng-style clarity: compose small accessible primitives, keep APIs predictable, and make layout visible through structure rather than bespoke styling.
+- **Nordic severity, not fantasy** — The Northman influence appears as severe geometry, cold materiality, and sparse runic restraint, never themed illustration, faux-medieval ornament, or decorative storytelling.
 - **WCAG 2.1 AA** — contrast, focus rings, touch targets (44px mobile minimum), keyboard navigation.
 - **Zero arbitrary hex** — all colors resolve to tokens below.
 
@@ -66,15 +80,17 @@ Viking-UI's locked aesthetic is **precision-engineered industrial luxury**: dark
 | Accessible focus         | `--viking-ring` 2px + 2px offset                                       | Visible on keyboard; never remove for aesthetics                     |
 | Settings / billing forms | `viking-form-section`, grouped fields                                  | Section titles at `--viking-font-size-lg`, 24px vertical rhythm      |
 
-**Palette discipline:** **deep navy/black surfaces, metallic borders, and restrained electric-teal/crimson accents** — luxurious and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** inside Viking-UI so Django, Astro, Angular, docs, widgets, and Swagger share the same CSS variables without Tailwind runtime or platform-local stylesheets.
+**Palette discipline:** **deep navy/black command surfaces, dark steel metallic borders, and restrained electric-teal/crimson battlefield accents** — luxurious, severe, and industrial, not startup-neutral. All styling resolves to **`--viking-*` tokens** inside Viking-UI so Django, Astro, Angular, docs, widgets, and Swagger share the same CSS variables without Tailwind runtime or platform-local stylesheets.
 
 ### Directional language
 
-- Name the direction as **precision-engineered industrial luxury** in docs, reviews, and implementation notes.
+- Name the direction as **Lockheed Martin × The Northman precision digital battlefield** in docs, reviews, and implementation notes.
+- Translate the name into concrete UI decisions: aerospace-grade shell precision, austere Nordic geometry, clean primitive composition, dense operational charts, and restrained tactical accents.
 - Machined precision: clean seams, deterministic rhythm, machined hierarchy, and zero visual drift under stress.
-- Geometric discipline: accents are strategic, not ornamental, and reserved for section boundaries, shell framing, and critical-state callouts.
+- Geometric discipline: accents are strategic, not ornamental, and reserved for section boundaries, shell framing, chart emphasis, and critical-state callouts.
 - Surfaces stay deeply navy/charcoal with **machined metallic borders**, consistent top-edge highlights, and stronger tactile depth on cards/buttons.
-- Never soften the system into startup SaaS neutrality, fantasy theming, glassmorphism, neon cyberpunk, or cramped utilitarian austerity.
+- Never soften the system into startup SaaS neutrality, fantasy theming, glassmorphism, neon cyberpunk, Lockheed brand mimicry, or cramped utilitarian austerity.
+- Implement every visual adjustment inside `packages/viking-ui/`; consuming apps only compose primitives, bind data, and load package artifacts.
 
 ---
 
@@ -739,6 +755,8 @@ Utility examples: `bg-viking-surface`, `text-viking-text-muted`, `rounded-viking
 ### Do
 
 - Use `--viking-*` tokens everywhere; compile from `_variables.scss` when changing the palette.
+- Implement every visual decision inside `packages/viking-ui/`, then consume it through the package, synced artifacts, or CDN delivery.
+- Keep the final aesthetic anchored in **Lockheed Martin × The Northman precision digital battlefield**: premium engineering, austere geometry, clean primitives, dense operational data.
 - Keep layouts on the 4px grid; max content width 1260px.
 - Use negative letter-spacing on headings for a precision instrument feel.
 - Prefer `viking-chart` native SVG for all data visualization.
@@ -749,6 +767,8 @@ Utility examples: `bg-viking-surface`, `text-viking-text-muted`, `rounded-viking
 
 ### Don't
 
+- Add new styles, visual overrides, or component-local CSS in `frontend/`, `marketing/`, `viking-ui-docs/`, or `backend/`.
+- Copy reference-site styling, import their component libraries, or mimic Lockheed Martin branding. Use the references as directional quality bars only.
 - Hardcode hex colors (`#2176FF`, `#31393C`, etc.) — the legacy Lab Coat palette is **retired**.
 - Add gradient orbs, mesh backgrounds, or stock illustration clutter.
 - Use emojis in product UI (exception: 🇺🇸 on approved badges only).
@@ -802,9 +822,10 @@ All contributors, LLMs, and Cursor agents must keep DEML visually unified throug
 - **Angular:** always `@dataengineeringformachinelearning/viking-ui` — no Material, no third-party UI runtimes, no one-off styled controls when a `viking-*` exists.
 - **Extend the library first:** shared primitives ship in `packages/viking-ui/`; apps consume public package entrypoints, they do not duplicate or import package source internals.
 - **Composable ergonomics, Viking palette:** field stacks (`viking-field` → control), card surfaces (`viking-card`), button variants (`viking-button`) per §8 and the pattern mapping table in §Design philosophy.
-- **Premium restrained luxury:** machined surfaces, restrained elevation, electric/crimson accent discipline — data dominates ornament.
+- **Final aesthetic:** Lockheed Martin × The Northman precision digital battlefield — machined aerospace surfaces, austere Nordic geometry, clean component language, Flux-like data density, and electric/crimson accent discipline. Data dominates ornament.
 - **Non-Angular:** static `viking-ui.css` + semantic aliases, Web Components from `web-components.js`, and Angular-free utility subpaths only; run `sync_design_system.py` after token edits.
+- **Styling ownership:** all CSS, tokens, wrappers, Web Components, and chart treatments live in `packages/viking-ui/`; app surfaces never receive bespoke visual patches.
 
 When changing governance text, update **.cursorrules**, **AGENTS.md**, **README.md**, and **BOOK.md Ch.31** in the same change set so agents and humans never drift.
 
-**Version:** Viking-UI premium palette v4.0 (precision-engineered industrial luxury, deep navy / teal / crimson, composable primitives, unified package governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).
+**Version:** Viking-UI premium palette v4.1 (Lockheed Martin × The Northman precision digital battlefield, deep navy / teal / crimson, composable primitives, dense operational charts, unified package governance). Supersedes Lab Coat (`jet-black`, `crayola-blue`, `blue-bell`, `golden-pollen`, `carrot-orange`).

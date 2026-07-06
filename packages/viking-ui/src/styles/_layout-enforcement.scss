@@ -1,6 +1,6 @@
 // ============================================================================
 // Viking-UI Layout Enforcement — premium rhythm applied globally
-// Prevents Spartan-style drift: generous gutters, card padding, readable widths.
+// Prevents cramped drift: generous gutters, card padding, readable widths.
 // Imported by viking-ui.scss and viking-ui-bundle.scss on every DEML surface.
 // ============================================================================
 
@@ -15,7 +15,7 @@
       transparent,
       color-mix(
         in srgb,
-        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 28%),
+        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
         transparent
       ),
       transparent
@@ -58,12 +58,12 @@
   gap: var(--viking-card-content-gap, var(--viking-space-3));
   background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 72%, var(--viking-border));
+    color-mix(in srgb, var(--viking-border-strong) 86%, var(--viking-border));
   border-radius: var(--viking-radius-lg);
   box-shadow:
-    var(--viking-shadow-sm),
-    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 7%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 18%, transparent);
+    var(--viking-shadow-md),
+    inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 24%, transparent);
   padding: var(--viking-card-padding);
   color: var(--viking-text);
   min-width: var(--viking-card-min-width);
@@ -82,7 +82,7 @@
     height: var(--viking-space-4);
     background: linear-gradient(
       180deg,
-      color-mix(in srgb, var(--viking-metallic-100) 24%, transparent),
+      color-mix(in srgb, var(--viking-metallic-100) 30%, transparent),
       transparent
     );
     pointer-events: none;
@@ -101,8 +101,8 @@
     border-color: var(--viking-accent-strong);
     box-shadow:
       var(--viking-shadow-hover),
-      inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
-      inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 18%, transparent);
+      inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent),
+      inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 22%, transparent);
     transform: translateY(var(--viking-state-hover-lift));
   }
 
@@ -140,7 +140,7 @@ viking-card .viking-card {
   align-items: center;
   justify-content: space-between;
   gap: var(--viking-space-3);
-  padding-bottom: var(--viking-space-2);
+  padding-bottom: var(--viking-space-2-5);
   margin-bottom: 0;
   border-bottom: 1px solid var(--viking-border-subtle);
 }
@@ -150,7 +150,7 @@ viking-card .viking-card {
   align-items: center;
   justify-content: flex-end;
   gap: var(--viking-space-2);
-  padding-top: var(--viking-space-2);
+  padding-top: var(--viking-space-2-5);
   margin-top: 0;
   border-top: 1px solid var(--viking-border-subtle);
 }

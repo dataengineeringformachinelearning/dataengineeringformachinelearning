@@ -13,17 +13,37 @@
   --viking-state-disabled-opacity: 0.48;
   --viking-state-hover-lift: -1px;
   --viking-state-active-scale: 0.985;
-  --viking-state-press-inset: inset 0 1px 2px rgba(0, 0, 0, 0.18);
+  --viking-state-press-inset:
+    inset 0 1px 3px rgba(0, 0, 0, 0.32),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.02);
 
   --viking-shadow-hover: var(
     --shadow-hover,
-    0 8px 16px rgba(0, 0, 0, 0.14),
-    0 4px 8px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06)
+    0 22px 42px rgba(0, 0, 0, 0.34),
+    0 8px 18px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08)
   );
 
-  --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --viking-surface-recipe: var(--viking-surface) linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --viking-surface-recipe:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-metallic-100) 7%, transparent) 0%,
+      transparent 38%
+    ),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--viking-accent) 5%, transparent) 0%,
+      transparent 48%
+    ),
+    var(--viking-surface);
+  --viking-surface-recipe-muted:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--viking-metallic-100) 5%, transparent) 0%,
+      transparent 42%
+    ),
+    var(--viking-surface-alt);
 
   --viking-transition-interactive:
     color var(--viking-duration) var(--viking-ease-default),

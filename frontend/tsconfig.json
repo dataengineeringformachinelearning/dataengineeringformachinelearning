@@ -12,6 +12,20 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
+    "paths": {
+      "@dataengineeringformachinelearning/viking-ui": ["../packages/viking-ui"],
+      "@dataengineeringformachinelearning/viking-ui/angular": ["../packages/viking-ui"],
+      "@dataengineeringformachinelearning/viking-ui/icons": ["../packages/viking-ui/dist/icons.js"],
+      "@dataengineeringformachinelearning/viking-ui/manifest": [
+        "../packages/viking-ui/dist/viking.manifest.json"
+      ],
+      "@dataengineeringformachinelearning/viking-ui/site-drakkar": [
+        "../packages/viking-ui/dist/site-drakkar.js"
+      ],
+      "@dataengineeringformachinelearning/viking-ui/tokens.json": [
+        "../packages/viking-ui/dist/viking-tokens.json"
+      ]
+    },
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",

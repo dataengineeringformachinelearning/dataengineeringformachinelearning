@@ -47,9 +47,10 @@ const btnSnippets = (label = "Launch sequence"): ComponentSnippet => ({
   django: `<button type="button" class="viking-btn viking-btn-primary">${label}</button>
 <button type="button" class="viking-btn viking-btn-secondary">Secondary</button>
 <button type="button" class="viking-btn viking-btn-outline">Outline</button>`,
-  javascript: `<viking-button-wc variant="primary">${label}</viking-button-wc>
+  javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"><\/script>
 
-<script type="module" src="/assets/viking-ui-elements.js"><\/script>`,
+<viking-button-wc variant="primary">${label}</viking-button-wc>`,
 });
 
 const inputSnippets: ComponentSnippet = {
@@ -626,18 +627,21 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
   placeholder="Search documentation, dashboard, settings…"
 />`,
           astro: `---
-// In the shared Astro layout, after viking-ui.css
+// In the shared Astro layout, after the package CSS import
 ---
-<script type="module" src="/assets/viking-ui-elements.js"></script>
+<script>
+  import '@dataengineeringformachinelearning/viking-ui/web-components.js';
+</script>
 <viking-suite-command-palette
   context="marketing"
   global-shortcut
 ></viking-suite-command-palette>`,
           django: `{# Static surfaces can keep using the auto-mount widget. #}
-<script src="/static/assets/viking-ui-elements.js" type="module"></script>
+{% load static %}
+<script src="{% static 'viking-ui-elements.js' %}" type="module"></script>
 <script src="/static/widgets/command-palette.js" defer></script>`,
-          javascript: `<link rel="stylesheet" href="/assets/viking-ui.css">
-<script type="module" src="/assets/viking-ui-elements.js"><\/script>
+          javascript: `<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"><\/script>
 
 <button type="button" onclick="DemlWidgets.openSearch()">Search</button>
 <viking-suite-command-palette global-shortcut></viking-suite-command-palette>
@@ -687,7 +691,9 @@ window.DemlWidgets = {
     }
   </div>
 </viking-search-palette>`,
-          astro: `<script type="module" src="/assets/viking-ui-elements.js"></script>
+          astro: `<script>
+  import '@dataengineeringformachinelearning/viking-ui/web-components.js';
+</script>
 <viking-command-palette
   global-shortcut
   placeholder="Search…"

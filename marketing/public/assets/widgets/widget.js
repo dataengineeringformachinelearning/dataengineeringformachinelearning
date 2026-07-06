@@ -48,6 +48,8 @@
   };
 
   const DEFAULT_STATUS_APP = 'https://deml.app';
+  const VIKING_UI_CSS_CDN =
+    'https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css';
 
   const isMarketingHost = hostname =>
     hostname === 'dataengineeringformachinelearning.com' ||
@@ -346,7 +348,7 @@
 
         // Set up Shadow DOM structure including status indicators and vulnerability modal triggers
         this.shadowRoot.innerHTML = `
-        <link rel="stylesheet" href="${scriptOrigin}/assets/viking-ui.css" />
+        <link rel="stylesheet" href="${VIKING_UI_CSS_CDN}" />
         <div class="widget-container">
           <a class="widget-link" href="${statusPageUrl(frontendHost, pageId)}" target="_blank">
             <span class="status-dot"></span>

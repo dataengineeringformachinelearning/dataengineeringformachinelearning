@@ -19,7 +19,7 @@
 }
 
 .viking-stack--loose {
-  --viking-stack-gap: var(--viking-space-4);
+  --viking-stack-gap: var(--viking-space-5);
 }
 
 .viking-stack--center {
@@ -67,7 +67,7 @@
 }
 
 .viking-grid--loose {
-  --viking-grid-gap: var(--viking-space-4);
+  --viking-grid-gap: var(--viking-space-5);
 }
 
 .viking-grid--2,
@@ -100,7 +100,7 @@
 .viking-divider {
   border: 0;
   border-top: 1px solid var(--viking-border-subtle);
-  margin: var(--viking-space-3) 0;
+  margin: var(--viking-space-4) 0;
 }
 
 .viking-divider--strong {
@@ -109,10 +109,11 @@
 
 .viking-surface-panel,
 .glass-panel {
-  background: var(--viking-surface);
-  border: 1px solid var(--viking-border);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  border: 1px solid
+    color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
   border-radius: var(--viking-radius-lg);
-  box-shadow: var(--viking-shadow-sm);
+  box-shadow: var(--viking-shadow-md);
   position: relative;
   overflow: hidden;
 
@@ -124,7 +125,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 22%), transparent),
+      color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%), transparent),
       transparent
     );
     pointer-events: none;

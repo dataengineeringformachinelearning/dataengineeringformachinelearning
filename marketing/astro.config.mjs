@@ -24,6 +24,12 @@ export default defineConfig({
       alias: {
         "@dataengineeringformachinelearning/viking-ui/icons":
           vikingUiDist("icons.js"),
+        "@dataengineeringformachinelearning/viking-ui/viking-ui.css":
+          vikingUiDist("viking-ui.css"),
+        "@dataengineeringformachinelearning/viking-ui/web-components.js":
+          vikingUiDist("web-components.js"),
+        "@dataengineeringformachinelearning/viking-ui/viking-ui-elements.js":
+          vikingUiDist("viking-ui-elements.js"),
         "@dataengineeringformachinelearning/viking-ui/site-drakkar":
           vikingUiDist("site-drakkar.js"),
         "@dataengineeringformachinelearning/viking-ui/manifest": vikingUiDist(

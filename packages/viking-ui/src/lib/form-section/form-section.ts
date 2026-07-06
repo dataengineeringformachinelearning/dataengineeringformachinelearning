@@ -23,8 +23,8 @@ export type VikingFormSectionLayout = "inline" | "stack" | "status";
       }
       :host ::ng-deep viking-form-section + viking-form-section {
         border-top: 1px solid var(--viking-border-subtle);
-        margin-top: var(--viking-space-4);
-        padding-top: var(--viking-space-4);
+        margin-top: var(--viking-space-5);
+        padding-top: var(--viking-space-5);
       }
     `,
   ],
@@ -84,7 +84,7 @@ export class VikingFormPanel {}
       .viking-form-section-header {
         display: flex;
         align-items: center;
-        gap: var(--viking-space-1);
+        gap: var(--viking-space-1-5);
         min-width: 0;
       }
 
@@ -114,7 +114,7 @@ export class VikingFormPanel {}
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: var(--viking-space-3);
+        gap: var(--viking-space-4);
         width: 100%;
         min-width: 0;
       }
@@ -131,7 +131,7 @@ export class VikingFormPanel {}
         display: flex;
         flex-direction: column;
         align-items: stretch;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-2-5);
         flex-shrink: 0;
       }
 

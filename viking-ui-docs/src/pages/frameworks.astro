@@ -110,12 +110,12 @@ import { SITE } from '../lib/site';
 <!-- Pinned release -->
 <script
   type="module"
-  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.6/dist/web-components.js"
+  src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.1.5/dist/web-components.js"
 ></script>
 
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.0.6/dist/viking-ui.css"
+  href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.1.5/dist/viking-ui.css"
 />`}</code></pre>
 
       <p class="viking-label">5) Full minimal HTML</p>
@@ -183,9 +183,12 @@ import { VikingButton, VikingField, VikingInput } from '${SITE.npm}';
           angular: '',
           astro: `---
 // Layout.astro — load once globally
+import '${SITE.npm}/viking-ui.css';
 ---
-<link rel="stylesheet" href="/assets/viking-ui.css" />
-<script type="module" src="/assets/viking-ui-elements.js"></script>
+
+<script>
+  import '${SITE.npm}/web-components.js';
+</script>
 
 // prerender-safe utilities
 import { resolveVikingIcon } from '${SITE.npm}/icons';
@@ -244,23 +247,19 @@ django: `{# base.html #}
           angular: '',
           astro: '',
           django: '',
-          javascript: `<link rel="stylesheet" href="/assets/viking-ui.css" />
-<script type="module" src="/assets/viking-ui-elements.js"></script>
-
-<viking-button-wc variant="primary">Launch</viking-button-wc>
-<viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
-<viking-badge-wc tone="success">Healthy</viking-badge-wc>
-<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>
-
-<!-- Or jsDelivr CDN -->
-<link
+          javascript: `<link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css"
 />
 <script
   type="module"
   src="https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/web-components.js"
-></script>`,
+></script>
+
+<viking-button-wc variant="primary">Launch</viking-button-wc>
+<viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
+<viking-badge-wc tone="success">Healthy</viking-badge-wc>
+<viking-theme-toggle-wc aria-label="Toggle theme"></viking-theme-toggle-wc>`,
         }}
         defaultTab="javascript"
       />

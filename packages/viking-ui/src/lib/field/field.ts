@@ -48,7 +48,7 @@ import { vikingUid } from "../../core/uid";
       .viking-field-label-wrap {
         display: flex;
         flex-direction: column;
-        gap: var(--viking-space-half);
+        gap: var(--viking-space-1);
       }
       .viking-field-label {
         font-size: var(--viking-font-size-sm);
@@ -63,7 +63,7 @@ import { vikingUid } from "../../core/uid";
       }
       .viking-field-description,
       .viking-field-error {
-        margin: var(--viking-space-half) 0 0;
+        margin: var(--viking-space-1) 0 0;
         font-size: var(--viking-font-size-sm);
         line-height: var(--viking-line-height-normal);
       }

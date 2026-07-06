@@ -24,7 +24,7 @@
   .viking-section-inner {
     padding-inline: var(
       --viking-page-gutter-lg,
-      var(--viking-space-3, var(--space-3, 24px))
+      var(--viking-space-5, var(--space-5, 40px))
     );
   }
 }
@@ -35,7 +35,7 @@
   .viking-section-inner {
     padding-inline: var(
       --viking-page-gutter-xl,
-      var(--viking-space-4, var(--space-4, 32px))
+      var(--viking-space-7, var(--space-7, 56px))
     );
   }
 }
@@ -98,7 +98,7 @@
 .viking-section-header {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, var(--space-2, 16px));
+  gap: var(--viking-space-2-5, var(--space-2, 20px));
   margin-bottom: var(
     --viking-page-section-gap,
     var(--viking-space-6, var(--space-6, 48px))
@@ -126,7 +126,7 @@
 .viking-cta-row {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2, var(--space-2, 16px));
+  gap: var(--viking-space-2-5, var(--space-2, 20px));
   align-items: stretch;
   width: 100%;
 
