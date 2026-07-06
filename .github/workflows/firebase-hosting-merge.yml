@@ -25,10 +25,15 @@ jobs:
         with:
           node-version: '22'
           cache: npm
-          cache-dependency-path: marketing/package-lock.json
+          cache-dependency-path: |
+            package-lock.json
+            marketing/package-lock.json
 
-      - name: Install marketing dependencies
-        run: npm ci --prefix marketing --legacy-peer-deps
+      - name: Install workspace dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build canonical Viking-UI package
+        run: npm run build:viking-ui:package
 
       - name: Build marketing site
         run: npm run build --prefix marketing

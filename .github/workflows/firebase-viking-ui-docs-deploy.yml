@@ -35,6 +35,7 @@ jobs:
       - name: Sync design-system assets from canonical package
         run: |
           npm ci --legacy-peer-deps
+          npm run build:viking-ui:package
           npm run sync:design-system
 
       - name: Install and build Viking-UI docs site (Astro + static CSS)
