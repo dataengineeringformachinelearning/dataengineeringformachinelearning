@@ -81,20 +81,6 @@ import { VikingIcon } from "../icon/icon";
         padding: var(--viking-space-3);
         gap: var(--viking-space-2);
         font-family: var(--viking-font-family);
-        position: relative;
-      }
-      .viking-modal-surface::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto;
-        height: 1px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          color-mix(in srgb, var(--viking-metallic-200) 22%, transparent),
-          transparent
-        );
-        pointer-events: none;
       }
       .viking-modal-header {
         display: flex;

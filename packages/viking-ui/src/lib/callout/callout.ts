@@ -63,92 +63,48 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         gap: var(--viking-space-2);
         padding: var(--viking-space-2);
         border-radius: var(--viking-radius-lg);
-        border: 1px solid var(--viking-border);
-        border-left-width: 3px;
-        background: var(--viking-surface-alt);
+        background: var(--viking-surface);
         color: var(--viking-text);
         font-family: var(--viking-font-family);
         font-size: var(--viking-font-size-sm);
-        box-shadow: var(--viking-shadow-sm);
-        animation: viking-fade-in var(--viking-duration)
-          var(--viking-ease-default);
+        transition: var(--viking-transition-interactive);
       }
       .viking-callout-icon {
         margin-top: 2px;
         color: var(--viking-text-muted);
       }
       :host(.viking-callout-accent) {
-        border-color: var(--viking-accent);
-        border-left-color: var(--viking-accent);
         background: var(--viking-accent-soft);
       }
       :host(.viking-callout-accent) .viking-callout-icon {
         color: var(--viking-accent);
       }
       :host(.viking-callout-secondary) {
-        border-color: color-mix(
-          in srgb,
-          var(--viking-accent-secondary) 45%,
-          transparent
-        );
-        border-left-color: var(--viking-accent-secondary);
         background: var(--viking-accent-secondary-soft);
       }
       :host(.viking-callout-secondary) .viking-callout-icon {
         color: var(--viking-accent-secondary);
       }
       :host(.viking-callout-info) {
-        border-color: color-mix(in srgb, var(--viking-info) 45%, transparent);
-        border-left-color: var(--viking-info);
-        background: color-mix(
-          in srgb,
-          var(--viking-info) 10%,
-          var(--viking-surface)
-        );
+        background: color-mix(in srgb, var(--viking-info) 10%, var(--viking-surface));
       }
       :host(.viking-callout-info) .viking-callout-icon {
         color: var(--viking-info);
       }
       :host(.viking-callout-success) {
-        border-color: color-mix(
-          in srgb,
-          var(--viking-success) 45%,
-          transparent
-        );
-        border-left-color: var(--viking-success);
-        background: color-mix(
-          in srgb,
-          var(--viking-success) 10%,
-          var(--viking-surface)
-        );
+        background: color-mix(in srgb, var(--viking-success) 10%, var(--viking-surface));
       }
       :host(.viking-callout-success) .viking-callout-icon {
         color: var(--viking-success);
       }
       :host(.viking-callout-warning) {
-        border-color: color-mix(
-          in srgb,
-          var(--viking-warning) 45%,
-          transparent
-        );
-        border-left-color: var(--viking-warning);
-        background: color-mix(
-          in srgb,
-          var(--viking-warning) 12%,
-          var(--viking-surface)
-        );
+        background: color-mix(in srgb, var(--viking-warning) 12%, var(--viking-surface));
       }
       :host(.viking-callout-warning) .viking-callout-icon {
         color: var(--viking-warning);
       }
       :host(.viking-callout-danger) {
-        border-color: var(--viking-danger);
-        border-left-color: var(--viking-danger);
-        background: color-mix(
-          in srgb,
-          var(--viking-crimson-600) 22%,
-          var(--viking-surface)
-        );
+        background: color-mix(in srgb, var(--viking-danger) 16%, var(--viking-surface));
         color: var(--viking-white);
       }
       :host(.viking-callout-danger) .viking-callout-icon {

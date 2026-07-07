@@ -26,9 +26,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-1-5);
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   padding: var(--viking-card-padding-compact, var(--viking-space-2));
   border-radius: var(--viking-radius-lg);
   min-width: 0;
@@ -37,32 +36,7 @@
   justify-content: center;
   text-align: center;
   box-sizing: border-box;
-  box-shadow: var(--viking-shadow-md);
   transition: var(--viking-transition-interactive);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(
-        in srgb,
-        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
-        transparent
-      ),
-      transparent
-    );
-    pointer-events: none;
-  }
-
-  @media (min-width: 481px) {
-    min-width: var(--viking-metric-card-min-width);
-  }
 }
 
 .viking-metric-card-tall,
@@ -111,35 +85,13 @@
 
 .viking-hud-panel,
 .panel-section {
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--viking-shadow-md);
   min-width: 0;
-  position: relative;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(
-        in srgb,
-        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
-        transparent
-      ),
-      transparent
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
 }
 
 .viking-table-scroll,
@@ -182,30 +134,14 @@
 .status-card-outlined {
   position: relative;
   border-radius: var(--viking-radius-lg);
-  border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
-  background: var(--viking-surface-recipe, var(--viking-surface));
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface);
   overflow: hidden;
-  box-shadow: var(--viking-shadow-md);
+}
 
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(
-        in srgb,
-        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
-        transparent
-      ),
-      transparent
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
+.viking-panel-card::before,
+.status-card-outlined::before {
+  display: none;
 }
 
 .viking-panel-card-header,
@@ -233,14 +169,10 @@
   gap: var(--viking-space-4);
   padding-bottom: var(--viking-space-5);
   margin-bottom: var(--viking-page-section-gap, var(--viking-space-4));
-  border-bottom: 1px solid var(--viking-border);
 }
 
 .viking-page-header-sidebar.dashboard-topbar {
   padding: var(--viking-panel-padding, var(--viking-space-3));
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  border-bottom: 1px solid var(--viking-border-subtle);
-  box-shadow: var(--viking-shadow-sm);
 }
 
 .viking-page-header-main,
@@ -364,11 +296,6 @@
   justify-content: center;
   text-align: center;
   padding: var(--viking-space-6) var(--viking-space-4);
-  border-radius: var(--viking-radius-lg);
-  background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
-  border: 1px dashed var(--viking-border-strong);
-  box-shadow: var(--viking-shadow-inner);
-  min-height: 220px;
   gap: var(--viking-space-2);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
@@ -379,16 +306,14 @@
 
   &.inline {
     min-height: auto;
-    border-style: solid;
-    border-color: var(--viking-border);
-    background: color-mix(in srgb, var(--viking-surface-alt) 50%, transparent);
+    background: var(--viking-surface-alt);
   }
 
   &.is-secure {
     .empty-icon,
     viking-app-icon {
-      background: color-mix(in srgb, var(--viking-success) 14%, transparent);
-      color: var(--viking-success);
+      background: var(--viking-accent-soft);
+      color: var(--viking-accent-strong);
     }
   }
 
@@ -402,10 +327,8 @@
     border-radius: var(--viking-radius-lg);
     background: var(--viking-accent-soft);
     color: var(--viking-accent-strong);
-    box-shadow: var(--viking-shadow-sm);
     margin-bottom: var(--viking-space-2);
     font-size: 28px;
-    opacity: 1;
   }
 
   .empty-title,
@@ -474,33 +397,10 @@
 }
 
 .panel-card {
-  position: relative;
   padding: var(--viking-panel-padding, var(--viking-space-3));
   border-radius: var(--viking-radius-lg);
-  border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  overflow: hidden;
-  box-shadow: var(--viking-shadow-md);
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(
-        in srgb,
-        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
-        transparent
-      ),
-      transparent
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface);
 }
 
 .status-error-state {
@@ -511,10 +411,8 @@
   text-align: center;
   padding: var(--viking-space-6) var(--viking-space-4);
   margin-top: var(--viking-space-4);
-  background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
-  border: 1px dashed var(--viking-border-strong);
+  background: var(--viking-surface-alt);
   border-radius: var(--viking-radius-lg);
-  box-shadow: var(--viking-shadow-inner);
   gap: var(--viking-space-1-5);
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 
@@ -530,11 +428,10 @@
     width: var(--viking-space-7);
     height: var(--viking-space-7);
     border-radius: var(--viking-radius-lg);
-    background: color-mix(in srgb, var(--viking-text-muted) 10%, transparent);
+    background: var(--viking-accent-soft);
     color: var(--viking-text-muted);
     font-size: 36px;
     margin-bottom: var(--viking-space-1);
-    opacity: 0.85;
   }
 
   .error-title {
@@ -678,41 +575,18 @@
 }
 
 .ml-stat-panel {
-  position: relative;
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  border: 1px solid
-    color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
+  background: var(--viking-surface);
+  border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
   padding: var(--viking-card-padding-compact, var(--viking-space-3));
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--viking-shadow-md);
   transition: var(--viking-transition-interactive);
-  overflow: hidden;
   min-width: 0;
 
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(
-        in srgb,
-        var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%),
-        transparent
-      ),
-      transparent
-    );
-    pointer-events: none;
-  }
-
   &:hover {
-    box-shadow: var(--viking-shadow-hover);
-    border-color: var(--viking-border-strong);
+    box-shadow: var(--viking-shadow-sm);
   }
 
   &.viking-stat-alert {
@@ -765,67 +639,23 @@
   margin-inline: auto;
 }
 
-/* Premium status directory cards — machined surface with tactical depth */
+/* Premium status directory cards — clean container */
 .status-directory-card,
 app-status-card.status-directory-card {
   display: block;
   width: 100%;
   min-width: 0;
   border-radius: var(--viking-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 68%, transparent);
-  background: var(--viking-surface-recipe, var(--viking-surface));
-  box-shadow: var(--viking-shadow-md);
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface);
   transition: var(--viking-transition-interactive);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      color-mix(in srgb, var(--viking-metallic-200) 42%, transparent),
-      transparent
-    );
-    pointer-events: none;
-  }
-
-  app-status-card,
-  viking-status-card {
-    border: none;
-    box-shadow: none;
-    background: transparent;
-    border-radius: var(--viking-radius-lg);
-    transition: none;
-
-    &::before {
-      display: none;
-    }
-
-    &:hover {
-      transform: none;
-      border-color: none;
-    }
-  }
 }
 
 /* Hover state for the directory card wrapper */
 .status-directory-card:hover {
   border-color: var(--viking-accent-strong);
-  box-shadow: var(--viking-shadow-hover);
+  box-shadow: var(--viking-shadow-sm);
   transform: translateY(calc(var(--viking-state-hover-lift) * -1));
-}
-
-.status-directory-card:hover::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 0 auto;
-  width: 2px;
-  background: var(--viking-accent-strong);
-  pointer-events: none;
 }
 
 .status-card-actions,

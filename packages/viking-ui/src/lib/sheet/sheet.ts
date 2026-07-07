@@ -82,8 +82,7 @@ export type VikingSheetSide = "left" | "right";
         width: min(420px, 100vw);
         height: 100%;
         background: var(--viking-surface);
-        border-left: 1px solid var(--viking-border-strong);
-        box-shadow: var(--viking-shadow-lg);
+        border-left: 1px solid var(--viking-border);
         font-family: var(--viking-font-family);
         animation: viking-slide-in-right var(--viking-duration)
           var(--viking-ease-default);

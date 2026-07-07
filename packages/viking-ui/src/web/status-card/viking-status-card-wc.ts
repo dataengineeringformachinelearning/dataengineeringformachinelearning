@@ -189,40 +189,12 @@ const VIKING_STATUS_CARD_STYLES = `
   width: 100%;
   padding: var(--viking-card-padding);
   border-radius: var(--viking-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 68%, transparent);
-  background: var(--viking-surface-recipe, var(--viking-surface));
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface);
   color: var(--viking-text);
-  box-shadow: var(--viking-shadow-md);
   box-sizing: border-box;
-  position: relative;
   transition: var(--viking-transition-interactive);
   text-decoration: none;
-  overflow: hidden;
-}
-
-.status-card::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--viking-metallic-200) 52%, transparent),
-    transparent
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-.status-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--viking-duration-fast) var(--viking-ease-default);
 }
 
 .status-card--interactive {
@@ -231,15 +203,8 @@ const VIKING_STATUS_CARD_STYLES = `
 
 .status-card--interactive:hover {
   border-color: var(--viking-accent-strong);
-  box-shadow: var(--viking-shadow-hover);
+  box-shadow: var(--viking-shadow-sm);
   transform: translateY(calc(var(--viking-state-hover-lift) * -1));
-}
-
-.status-card--interactive:hover::after {
-  inset: 0 0 0 auto;
-  width: 2px;
-  opacity: 1;
-  background: var(--viking-accent-strong);
 }
 
 .status-card--loading {
@@ -254,7 +219,8 @@ const VIKING_STATUS_CARD_STYLES = `
   align-items: flex-start;
   min-width: 0;
   padding-bottom: var(--viking-space-2);
-  border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 24%, transparent);
+  margin-bottom: var(--viking-space-2);
+  border-bottom: 1px solid var(--viking-border);
 }
 
 .status-card__title-wrap {

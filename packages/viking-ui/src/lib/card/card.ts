@@ -40,91 +40,32 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       :host {
         display: grid;
         gap: var(--viking-card-content-gap, var(--viking-space-3));
-        background: var(--viking-surface-recipe, var(--viking-surface));
-        border: 1px solid
-          color-mix(
-            in srgb,
-            var(--viking-border-strong) 86%,
-            var(--viking-border)
-          );
+        background: var(--viking-surface);
+        border: 1px solid var(--viking-border);
         border-radius: var(--viking-radius-lg);
-        box-shadow:
-          var(--viking-shadow-md),
-          inset 0 1px 0
-            color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
-          inset 0 -1px 0
-            color-mix(in srgb, var(--viking-black) 24%, transparent);
         padding: var(--viking-card-padding, var(--viking-space-3));
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
         min-width: 0;
-        background-clip: padding-box;
       }
       :host(.viking-card-headerless) .viking-card-header,
       :host(.viking-card-headerless) viking-card-header {
         display: none;
       }
-      :host::before {
-        content: "";
-        position: absolute;
-        inset: 0 0 auto;
-        height: 2px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          color-mix(
-            in srgb,
-            var(--viking-metallic-200)
-              var(--viking-surface-hairline-strength, 36%),
-            transparent
-          ),
-          transparent
-        );
-        pointer-events: none;
-      }
-
-      :host::after {
-        content: "";
-        position: absolute;
-        inset: 0 auto auto 0;
-        right: 0;
-        width: 2px;
-        height: var(--viking-space-4);
-        background: linear-gradient(
-          180deg,
-          color-mix(in srgb, var(--viking-metallic-100) 30%, transparent),
-          transparent
-        );
-        pointer-events: none;
-      }
-
       :host(.viking-card-interactive) {
         cursor: pointer;
       }
-
       :host(.viking-card-interactive):focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
       }
       :host(.viking-card-interactive):hover {
         border-color: var(--viking-accent-strong);
-        box-shadow:
-          var(--viking-shadow-hover),
-          inset 0 1px 0
-            color-mix(in srgb, var(--viking-white-pure) 10%, transparent),
-          inset 0 -1px 0
-            color-mix(in srgb, var(--viking-black) 22%, transparent);
+        box-shadow: var(--viking-shadow-sm);
         transform: translateY(var(--viking-state-hover-lift));
       }
       :host(.viking-card-interactive):active {
         transform: translateY(0) scale(var(--viking-state-active-scale));
-        box-shadow:
-          inset 0 1px 2px
-            color-mix(in srgb, var(--viking-black) 24%, transparent),
-          var(--viking-shadow-sm);
       }
       :host(.viking-card-loading) {
         pointer-events: none;
