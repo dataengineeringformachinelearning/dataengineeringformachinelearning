@@ -199,14 +199,22 @@
           {{ (page.overall_uptime !== null ? page.overall_uptime : 0) | number:'1.2-2' }}%
           operational
         </p>
-        @for (day of page.uptime_history || []; track day; let idx = $index) {
-        <viking-status-metric-row
-          icon="clock"
-          [title]="'Day ' + (idx + 1)"
-          [subtitle]="day.status"
-          [value]="(day.uptime | number:'1.1-2') + '%'"
-        />
-        }
+        <div class="uptime-bar">
+          <div class="uptime-bar-visual">
+            @for (day of page.uptime_history || []; track day) {
+            <div
+              class="uptime-bar-segment"
+              [class.uptime-bar-up]="day.status === 'up'"
+              [class.uptime-bar-degraded]="day.status === 'degraded'"
+              [class.uptime-bar-down]="day.status === 'down'"
+            ></div>
+            }
+          </div>
+          <div class="uptime-bar-legend">
+            <span>30 days ago</span>
+            <span>Today</span>
+          </div>
+        </div>
       </viking-card>
 
       @if (incidentsMap()[page.id]?.length) {
@@ -244,6 +252,21 @@
         </viking-button>
         }
       </viking-callout>
+
+      <!-- Footer status bar -->
+      <div class="status-bar" aria-label="Page status summary">
+        <span class="status-bar-metric">
+          <span class="status-bar-metric-dot" aria-hidden="true"></span>
+          Status: {{ globalPageStatus() }}
+        </span>
+        <span class="status-bar-metric">
+          Cumulative SLA: {{ ((page.cumulative_sla !== null ? page.cumulative_sla : 0) |
+          number:'1.2-2') }}%
+        </span>
+        <span class="status-bar-metric">
+          Last Updated: {{ statusUpdatedAt(page) | date:'shortTime' }}
+        </span>
+      </div>
       }
     </div>
   </div>
