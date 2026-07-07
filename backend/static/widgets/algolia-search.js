@@ -34,9 +34,14 @@
 
   const getSearchPanel = host =>
     host?.querySelector('.aa-Panel, .aa-Autocomplete, .aa-DetachedContainer, .aa-Form, form') ??
-    null;
+    getDetachedSearchPanel();
 
   const getDetachedSearchPanel = () => document.querySelector('.aa-DetachedContainer');
+
+  const getSearchInput = host =>
+    host?.querySelector("input, textarea, [contenteditable='true']") ??
+    getDetachedSearchPanel()?.querySelector("input, textarea, [contenteditable='true']") ??
+    null;
 
   const isSearchTarget = target => {
     if (!target) return false;
@@ -65,7 +70,7 @@
     host.setAttribute('aria-hidden', 'false');
     setSearchActive(true);
     const focusInput = () => {
-      const input = host.querySelector("input, textarea, [contenteditable='true']");
+      const input = getSearchInput(host);
       if (input && typeof input.focus === 'function') {
         input.focus();
         if (typeof input.select === 'function') input.select();

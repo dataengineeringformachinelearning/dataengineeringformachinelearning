@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import VikingIcon from '../components/VikingIcon.astro';
 import WhitepaperCta from '../components/WhitepaperCta.astro';
+import vikingUiPackage from '@dataengineeringformachinelearning/viking-ui/package.json';
 import { siteEnv } from '../lib/site-env';
 import {
   DEFAULT_KEYWORDS,
@@ -26,7 +27,7 @@ const widgetEmbedSnippet = `<script src="${WIDGET_SCRIPT_PATH}" ${widgetEmbedAtt
 const widgetEmbedSnippetHtml = widgetEmbedSnippet
   .replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;');
-const version = '2.0.0';
+const version = vikingUiPackage.version;
 
 const capabilities = [
   {

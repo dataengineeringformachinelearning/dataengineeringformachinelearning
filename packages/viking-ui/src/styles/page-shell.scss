@@ -674,12 +674,18 @@
 
 /* Public status directory + standalone status templates */
 .status-directory-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: var(--viking-page-section-gap, var(--viking-space-6));
   width: 100%;
   max-width: 60rem;
-  margin-inline: auto;
+}
+
+/* Status pages stay stacked — no side-by-side grid */
+@media (min-width: 880px) {
+  .status-directory-grid {
+    max-width: 68rem;
+  }
 }
 
 /* Premium status directory cards — clean container */
@@ -838,25 +844,50 @@ viking-card.status-metric-grid-card viking-status-metric-row {
 }
 
 viking-card.uptime-history-card {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
 }
 
-viking-card.uptime-history-card > viking-heading,
-viking-card.uptime-history-card > p {
-  grid-column: 1 / -1;
+/* Uptime bar — clean visual history instead of individual boxes */
+.uptime-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
 }
 
-@media (min-width: 720px) {
-  viking-card.uptime-history-card {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+.uptime-bar-visual {
+  display: flex;
+  gap: var(--viking-space-1);
+  height: var(--viking-space-2);
+  border-radius: var(--viking-radius-full);
+  overflow: hidden;
+  background: var(--viking-surface-inset);
 }
 
-@media (min-width: 1180px) {
-  viking-card.uptime-history-card {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+.uptime-bar-segment {
+  flex: 1;
+  min-width: 4px;
+  border-radius: 1px;
+}
+
+.uptime-bar-up {
+  background: var(--viking-success);
+}
+
+.uptime-bar-degraded {
+  background: var(--viking-warning);
+}
+
+.uptime-bar-down {
+  background: var(--viking-danger);
+}
+
+.uptime-bar-legend {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--viking-font-size-xs);
+  color: var(--viking-text-muted);
 }
 
 viking-card.monitored-services-card {

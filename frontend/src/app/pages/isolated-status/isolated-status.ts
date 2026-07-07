@@ -245,6 +245,9 @@ export class IsolatedStatus implements OnInit {
     return this.threatReportsByPage()[pageId];
   }
 
+  statusUpdatedAt = (page: StatusPageData): string =>
+    this.incidentsMap()[page.id]?.[0]?.updated_at ?? page.created_at;
+
   protected announcementTone(severity?: string | null): 'accent' | 'warning' | 'danger' | 'muted' {
     const key = (severity || 'info').toLowerCase();
     if (key === 'critical' || key === 'error' || key === 'danger') return 'danger';
