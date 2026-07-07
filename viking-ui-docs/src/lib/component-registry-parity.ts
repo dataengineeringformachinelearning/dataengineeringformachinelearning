@@ -614,18 +614,24 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           id: "status-metric-row",
           name: "Status metric row",
           description:
-            "Horizontal KPI strip with tone badge — never color alone.",
-          preview: `<div class="viking-status-metric-row">
-  <span class="viking-label">Outbox relay</span>
-  <strong class="viking-metric">0.1s</strong>
-  <viking-badge-wc tone="success">Healthy</viking-badge-wc>
+            "Horizontal KPI strip with icon, title, subtitle, and value — spans full card width.",
+          preview: `<div class="viking-status-metric-row" style="width:100%">
+  <div class="stat-info" style="display:flex;align-items:center;gap:var(--viking-space-2)">
+    <span data-viking-icon="server" data-viking-icon-size="22" aria-hidden="true"></span>
+    <div>
+      <span class="viking-label" style="display:block;text-transform:uppercase">Cumulative SLA</span>
+      <span class="viking-text-muted" style="display:block;font-size:var(--viking-font-size-3xs)">Based on real telemetry</span>
+    </div>
+  </div>
+  <strong class="viking-metric">99.97%</strong>
 </div>`,
           selector: "viking-status-metric-row",
+          related: ["status-card", "status-panel", "uptime-history"],
         },
         snippets(
-          `<viking-status-metric-row label="Outbox relay" value="0.1s" tone="success" />`,
-          `<div class="viking-status-metric-row"><span class="viking-label">Outbox relay</span><strong class="viking-metric">0.1s</strong></div>`,
-          `<div class="viking-status-metric-row">{{ row.label }} · {{ row.value }}</div>`,
+          `<viking-status-metric-row icon="server" title="Cumulative SLA" subtitle="Based on real telemetry" value="99.97%" />`,
+          `<div class="viking-status-metric-row"><span class="viking-label">Cumulative SLA</span><strong class="viking-metric">99.97%</strong></div>`,
+          `<div class="viking-status-metric-row"><span class="viking-label">{{ row.title }}</span><strong class="viking-metric">{{ row.value }}</strong></div>`,
           `row.className = 'viking-status-metric-row';`,
         ),
       ),

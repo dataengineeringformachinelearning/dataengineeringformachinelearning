@@ -461,20 +461,27 @@
 .viking-uptime-demo {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1);
-  max-width: 20rem;
+  gap: var(--viking-space-2);
+  width: 100%;
+  min-width: 0;
 }
 
 .viking-uptime-segments {
   display: flex;
   gap: 2px;
-  height: var(--viking-space-2);
+  width: 100%;
+  min-width: 0;
+  height: var(--viking-space-3);
+  padding: var(--viking-space-half);
+  border-radius: var(--viking-radius-full);
+  background: var(--viking-surface-inset);
+  box-sizing: border-box;
 }
 
 .viking-uptime-seg {
-  flex: 1;
-  border-radius: 1px;
-  min-width: 4px;
+  flex: 1 1 0;
+  min-width: 3px;
+  border-radius: var(--viking-radius-pill);
 }
 
 .viking-uptime-up {
@@ -695,11 +702,15 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: var(--viking-space-2);
+  width: 100%;
+  min-width: 0;
   padding: var(--viking-space-2);
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius);
   background: var(--viking-surface-alt);
+  box-sizing: border-box;
 }
 
 .viking-bar-static {

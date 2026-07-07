@@ -258,14 +258,29 @@
     "tooltip": {
       "exports": ["VikingTooltip"]
     },
-    "typography": {
-      "exports": ["VikingHeading", "VikingText"]
+    "status-card": {
+      "exports": ["VikingStatusCard"]
+    },
+    "status-metric-row": {
+      "exports": ["VikingStatusMetricRow"]
+    },
+    "status-panel": {
+      "exports": ["VikingStatusPanel"]
+    },
+    "status-pill": {
+      "exports": ["VikingStatusPill"]
     },
     "uptime-bar": {
       "exports": ["VikingUptimeBar", "VikingUptimeStatus"]
     },
+    "uptime-history": {
+      "exports": ["VikingUptimeHistory", "VikingUptimeSegment"]
+    },
     "whitepaper-cta": {
       "exports": ["VikingWhitepaperCta"]
+    },
+    "typography": {
+      "exports": ["VikingHeading", "VikingText"]
     }
   }
 }

@@ -190,6 +190,8 @@ export * from "./lib/time-picker/time-picker";
 export * from "./lib/timeline/timeline";
 export * from "./lib/toast/toast";
 export * from "./lib/uptime-bar/uptime-bar";
+export * from "./lib/uptime-history/uptime-history";
+export * from "./lib/status-panel/status-panel";
 export * from "./lib/whitepaper-cta/whitepaper-cta";
 export * from "./lib/wizard/wizard";
 export * from "./lib/tooltip/tooltip";

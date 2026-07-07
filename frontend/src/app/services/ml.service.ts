@@ -28,6 +28,7 @@ export class MlService {
   public latestStat = signal<number | null>(null);
   public latestStats = signal<Record<string, number | null>>({});
   public latestTemporalForecasts = signal<Record<string, number | null>>({});
+  public latestTemporalUsesNorse = signal<Record<string, boolean | null>>({});
   public isTraining = signal<boolean>(false);
   public trainError = signal<string | null>(null);
 
@@ -65,6 +66,13 @@ export class MlService {
           this.latestTemporalForecasts.update(forecasts => ({
             ...forecasts,
             [statusPageId]: forecast,
+          }));
+          this.latestTemporalUsesNorse.update(flags => ({
+            ...flags,
+            [statusPageId]:
+              data.uses_norse !== undefined && data.uses_norse !== null
+                ? data.uses_norse
+                : null,
           }));
         }
       },

@@ -36,6 +36,8 @@ import type { VikingIconName } from "../../core/icons";
         align-items: center;
         justify-content: space-between;
         gap: var(--viking-space-2);
+        width: 100%;
+        min-width: 0;
         min-height: var(--viking-space-6);
         padding: var(--viking-space-1-5);
         border-radius: var(--viking-radius-sm);

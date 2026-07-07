@@ -12,7 +12,7 @@
           >
             @if (authService.isAuthenticated()) {
             <div vikingPageHeaderActions>
-              <viking-button variant="filled" href="/manage" icon="settings">
+              <viking-button variant="filled" href="/settings" icon="settings">
                 Manage Pages
               </viking-button>
             </div>
@@ -65,10 +65,12 @@
           <div>
             @for (page of displayPages(); track page.id) {
             <app-status-card
+              variant="full"
               [page]="page"
               [services]="servicesMap()[page.id] || []"
               [predictedSla]="mlService.latestStats()[page.id]"
               [predictedTemporalForecast]="mlService.latestTemporalForecasts()[page.id]"
+              [usesNorse]="mlService.latestTemporalUsesNorse()[page.id]"
               [threatReport]="mlService.latestThreatReports()[page.id] || null"
               [incidents]="incidentsMap()[page.id] || []"
               [showIncidents]="true"

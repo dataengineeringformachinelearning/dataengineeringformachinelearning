@@ -20,12 +20,15 @@ import {
   VikingButton,
   VikingCallout,
   VikingCard,
+  VikingChart,
   VikingHeading,
   VikingPageHeader,
   VikingStatusMetricRow,
+  VikingStatusPanel,
   VikingStatusPill,
+  VikingUptimeHistory,
 } from '@dataengineeringformachinelearning/viking-ui';
-import type { VikingTone } from '@dataengineeringformachinelearning/viking-ui';
+import type { VikingChartSeries, VikingTone } from '@dataengineeringformachinelearning/viking-ui';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatServiceName } from '../../core/utils/formatter.utils';
@@ -42,10 +45,13 @@ import { timeout } from 'rxjs';
     VikingButton,
     VikingCallout,
     VikingCard,
+    VikingChart,
     VikingHeading,
     VikingPageHeader,
     VikingStatusMetricRow,
+    VikingStatusPanel,
     VikingStatusPill,
+    VikingUptimeHistory,
     RouterModule,
     ProVerifiedBadge,
   ],
@@ -247,6 +253,22 @@ export class IsolatedStatus implements OnInit {
 
   statusUpdatedAt = (page: StatusPageData): string =>
     this.incidentsMap()[page.id]?.[0]?.updated_at ?? page.created_at;
+
+  norseSnnLabel(pageId: string): string {
+    const usesNorse = this.mlService.latestTemporalUsesNorse()[pageId];
+    if (usesNorse === true) return 'Active';
+    if (usesNorse === false) return 'MLP Fallback';
+    return 'Pending';
+  }
+
+  availabilitySeries(page: StatusPageData): VikingChartSeries[] {
+    const history = page.uptime_history ?? [];
+    const values = history.map(day => day.uptime ?? 100);
+    if (values.length === 0) {
+      return [{ name: 'Availability', tone: 'accent', data: [100, 100, 100, 100, 100, 100, 100] }];
+    }
+    return [{ name: 'Availability', tone: 'accent', data: values }];
+  }
 
   protected announcementTone(severity?: string | null): 'accent' | 'warning' | 'danger' | 'muted' {
     const key = (severity || 'info').toLowerCase();

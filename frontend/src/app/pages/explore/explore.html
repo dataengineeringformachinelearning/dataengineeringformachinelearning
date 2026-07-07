@@ -14,10 +14,12 @@
         @for (page of displayPages(); track page) {
         <app-status-card
           class="status-directory-card"
+          variant="compact"
           [page]="page"
           [services]="servicesMap()[page.id] || []"
           [predictedSla]="mlService.latestStats()[page.id]"
           [predictedTemporalForecast]="mlService.latestTemporalForecasts()[page.id]"
+          [usesNorse]="mlService.latestTemporalUsesNorse()[page.id]"
           [threatReport]="mlService.latestThreatReports()[page.id] || null"
           [incidents]="incidentsMap()[page.id] || []"
           [linkHeader]="true"

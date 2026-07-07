@@ -321,6 +321,12 @@ const VIKING_STATUS_CARD_STYLES = `
   display: grid;
   gap: var(--viking-space-3);
   min-width: 0;
+  width: 100%;
+}
+
+.status-card__body > * {
+  width: 100%;
+  min-width: 0;
 }
 `;
 
