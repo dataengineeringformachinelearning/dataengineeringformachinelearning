@@ -159,7 +159,12 @@
         <viking-card class="status-section-card status-chart-panel">
           <viking-heading [level]="2" size="xl">Availability Trend</viking-heading>
           <p class="hud-subtitle">Last 30 days — higher is better</p>
-          <viking-chart kind="line" [series]="availabilitySeries(page)" [showArea]="true" fill />
+          <viking-chart
+            kind="line"
+            [series]="availabilitySeries(page)"
+            [showArea]="true"
+            [fill]="true"
+          />
         </viking-card>
 
         <viking-card class="status-section-card uptime-history-card">

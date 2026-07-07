@@ -112,7 +112,7 @@
   <viking-card class="status-chart-panel">
     <viking-heading [level]="3" size="lg">Availability Trend</viking-heading>
     <p class="hud-subtitle">Last 30 days — higher is better</p>
-    <viking-chart kind="line" [series]="latencyChartSeries" [showArea]="true" fill />
+    <viking-chart kind="line" [series]="latencyChartSeries" [showArea]="true" [fill]="true" />
   </viking-card>
 
   <viking-uptime-history
@@ -122,9 +122,7 @@
     label="Uptime"
     [showLegend]="true"
   />
-  }
-
-  @if (showIncidents && activeIncidents.length > 0) {
+  } @if (showIncidents && activeIncidents.length > 0) {
   <div class="status-incidents-list">
     @for (incident of activeIncidents; track incident.id || incident.title) {
     <viking-card [compact]="true">
