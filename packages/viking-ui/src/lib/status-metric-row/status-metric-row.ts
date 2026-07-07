@@ -41,20 +41,31 @@ import type { VikingIconName } from "../../core/icons";
         border: 1px solid
           color-mix(
             in srgb,
-            var(--viking-border-strong) 64%,
+            var(--viking-border-strong) 48%,
             var(--viking-border)
           );
-        border-radius: var(--viking-radius-lg);
-        background: color-mix(
-          in srgb,
-          var(--viking-surface-alt) 82%,
-          var(--viking-surface)
-        );
+        border-radius: var(--viking-radius-md);
+        background:
+          linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--viking-metallic-100) 6%, transparent) 0%,
+            transparent 38%
+          ),
+          color-mix(
+            in srgb,
+            var(--viking-surface-alt) 86%,
+            var(--viking-surface)
+          );
         box-shadow:
           inset 0 1px 0
             color-mix(in srgb, var(--viking-white-pure) 6%, transparent),
           var(--viking-shadow-xs);
         box-sizing: border-box;
+        transition: var(--viking-transition-interactive);
+      }
+      :host(:hover) {
+        border-color: var(--viking-accent-strong);
+        box-shadow: var(--viking-shadow-sm);
       }
       .stat-info {
         display: flex;
@@ -64,16 +75,17 @@ import type { VikingIconName } from "../../core/icons";
       }
       .stat-title {
         display: block;
-        font-size: var(--viking-font-size-sm);
-        font-weight: var(--viking-font-weight-bold);
+        font-size: var(--viking-font-size-xs);
+        font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-caps);
         text-transform: uppercase;
-        color: var(--viking-text);
+        color: var(--viking-text-muted);
       }
       .stat-subtitle {
         display: block;
-        font-size: var(--viking-font-size-xs);
-        color: var(--viking-text-muted);
+        font-size: var(--viking-font-size-2xs);
+        color: var(--viking-text-subtle);
+        margin-top: var(--viking-space-px);
       }
       .stat-value-container {
         display: inline-flex;

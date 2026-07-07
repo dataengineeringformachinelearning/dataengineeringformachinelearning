@@ -54,10 +54,10 @@ npm run dev</code></pre>
       <article class="contribute-step viking-card">
         <h3 class="viking-heading viking-heading-sm">3. Add or update a component</h3>
         <ol class="viking-text-muted contribute-checklist">
-          <li>Token-only SCSS in <code>src/styles/</code></li>
-          <li>Optional Web Component: <code>{'viking-{name}-wc'}</code> in <code>src/web/</code></li>
+          <li>Token-only SCSS in <code>packages/viking-ui/src/styles/</code></li>
+          <li>Optional Web Component: <code>{'viking-{name}-wc'}</code> in <code>packages/viking-ui/src/web/</code></li>
           <li>Angular wrapper with signal <code>input()</code> / <code>output()</code></li>
-          <li>Export from <code>public-api.ts</code>, update <code>package.json</code> subpaths when needed, and update <code>viking.manifest.json</code></li>
+          <li>Export from <code>packages/viking-ui/src/public-api.ts</code>, update <code>packages/viking-ui/package.json</code> subpaths when needed, and update <code>viking.manifest.json</code></li>
           <li>Showcase demo in <code>viking-ui-docs/src/lib/component-registry.ts</code></li>
           <li>API reference in <code>component-api.ts</code> when adding new props</li>
         </ol>
@@ -110,10 +110,10 @@ python scripts/sync_design_system.py</code></pre>
       <ul class="viking-text-muted contribute-checklist">
         <li>Use <code>--viking-*</code> tokens only — no hardcoded hex in components</li>
         <li>WCAG 2.1 AA: visible focus rings, 44px touch targets, no color-only status</li>
-        <li>New shared UI in <code>viking-ui</code> library first, then consume in apps</li>
+        <li>New shared UI in <code>packages/viking-ui</code> library first, then consume in apps</li>
         <li>Use public package entrypoints; do not import from <code>packages/viking-ui/src/...</code> in app or docs runtime code</li>
         <li>Compose form controls through <code>viking-field</code> stacks</li>
-        <li>Web Components: Shadow DOM + token styles from <code>src/web/core/</code></li>
+        <li>Web Components: Shadow DOM + token styles from <code>packages/viking-ui/src/web/core/</code></li>
         <li>Tests required for charts, forms, icons, and auth surfaces</li>
         <li>Never add Material, Bootstrap, PrimeNG, or other third-party UI kits</li>
       </ul>

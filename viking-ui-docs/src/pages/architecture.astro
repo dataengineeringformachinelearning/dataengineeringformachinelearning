@@ -18,6 +18,9 @@ import { API_CONVENTIONS } from '../lib/component-api';
         <code>packages/viking-ui/</code> is the single source of truth for tokens, static CSS,
         Web Components, Angular wrappers, and framework-neutral utility exports.
       </p>
+      <viking-callout-wc tone="accent" heading="Single-source discipline" class="viking-story-footer-space">
+        All styling originates in <code>packages/viking-ui/</code>. Never add app-local CSS, SCSS, or <code>--viking-*</code> tokens elsewhere. After token or component changes, run the sync script to propagate built artifacts.
+      </viking-callout-wc>
     </header>
 
     <section class="showcase-category" aria-labelledby="layers-heading">

@@ -759,17 +759,73 @@
 .status-directory-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--viking-page-section-gap, var(--viking-space-5));
+  gap: var(--viking-page-section-gap, var(--viking-space-6));
   width: 100%;
-  max-width: 56rem;
+  max-width: 60rem;
   margin-inline: auto;
 }
 
+/* Premium status directory cards — machined surface with tactical depth */
 .status-directory-card,
 app-status-card.status-directory-card {
   display: block;
   width: 100%;
   min-width: 0;
+  border-radius: var(--viking-radius-lg);
+  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 68%, transparent);
+  background: var(--viking-surface-recipe, var(--viking-surface));
+  box-shadow: var(--viking-shadow-md);
+  transition: var(--viking-transition-interactive);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--viking-metallic-200) 42%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  app-status-card,
+  viking-status-card {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    border-radius: var(--viking-radius-lg);
+    transition: none;
+
+    &::before {
+      display: none;
+    }
+
+    &:hover {
+      transform: none;
+      border-color: none;
+    }
+  }
+}
+
+/* Hover state for the directory card wrapper */
+.status-directory-card:hover {
+  border-color: var(--viking-accent-strong);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(calc(var(--viking-state-hover-lift) * -1));
+}
+
+.status-directory-card:hover::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 2px;
+  background: var(--viking-accent-strong);
+  pointer-events: none;
 }
 
 .status-card-actions,
@@ -783,28 +839,102 @@ app-status-card.status-directory-card {
 }
 
 .status-card-actions {
-  justify-content: flex-start;
+  justify-content: space-between;
+  padding: var(--viking-space-2) 0 0;
+  border-top: 1px solid color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
+  margin-top: var(--viking-space-2);
 }
 
 .status-card-footer-action {
-  padding-top: var(--viking-space-1);
+  padding-top: var(--viking-space-3);
+  margin-top: var(--viking-space-2);
+  border-top: 1px solid color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
 }
 
 .status-incidents-list {
   flex-direction: column;
   align-items: stretch;
+  margin-top: var(--viking-space-2);
+  gap: var(--viking-space-2);
 }
 
+.status-incidents-list viking-card {
+  background: color-mix(in srgb, var(--viking-surface-alt) 88%, var(--viking-surface));
+  border-color: color-mix(in srgb, var(--viking-border) 72%, transparent);
+}
+
+/* Status page section wrapper - premium visual separation */
+.status-page-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-2);
+  padding: var(--viking-space-3);
+  border-radius: var(--viking-radius-md);
+  border: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
+  background: color-mix(in srgb, var(--viking-surface-alt) 92%, var(--viking-surface));
+}
+
+.status-page-section + .status-page-section {
+  margin-top: var(--viking-space-4);
+}
+
+/* Metric grid with premium rhythm */
 .status-summary-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-2);
   min-width: 0;
+  padding: var(--viking-space-2);
+  border-radius: var(--viking-radius-md);
+  border: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
+  background: color-mix(in srgb, var(--viking-surface-alt) 92%, var(--viking-surface));
+  box-shadow: var(--viking-shadow-xs);
+  transition: var(--viking-transition-interactive);
+}
+
+.status-summary-grid:hover {
+  border-color: color-mix(in srgb, var(--viking-accent) 38%, transparent);
+  box-shadow: var(--viking-shadow-sm);
+}
+
+/* Section separator for metric grids */
+.status-summary-grid:not(:last-of-type) {
+  margin-bottom: var(--viking-space-3);
+}
+
+/* Section heading for metric grids */
+.status-summary-grid[data-section-title]::before {
+  content: attr(data-section-title);
+  display: block;
+  padding: var(--viking-space-1-5) 0;
+  margin-bottom: var(--viking-space-1);
+  font-size: var(--viking-font-size-sm);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--viking-text-muted);
+  border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 28%, transparent);
 }
 
 @media (min-width: 720px) {
   .status-summary-grid:not(.status-summary-grid-single) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Premium responsive grid for explore page */
+@media (min-width: 880px) {
+  .status-directory-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 68rem;
+    gap: var(--viking-page-section-gap, var(--viking-space-7));
+  }
+}
+
+@media (min-width: 1160px) {
+  .status-directory-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 72rem;
   }
 }
 

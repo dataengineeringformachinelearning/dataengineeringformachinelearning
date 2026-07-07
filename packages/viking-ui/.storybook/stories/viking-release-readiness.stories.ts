@@ -15,7 +15,7 @@ const renderPublishingReadiness = () => `
       <div class="viking-story-metric-row" aria-label="Release gates">
         <div class="viking-story-metric">
           <span class="viking-label">Package</span>
-          <strong class="viking-metric">v4.0.4</strong>
+          <strong class="viking-metric">v4.1.5</strong>
           <viking-badge tone="success" icon="check">npm ready</viking-badge>
         </div>
         <div class="viking-story-metric">

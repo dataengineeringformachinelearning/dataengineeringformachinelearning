@@ -1499,11 +1499,11 @@ input:disabled {
 
 .status-card {
   display: grid;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-4);
   width: 100%;
   padding: var(--viking-card-padding);
   border-radius: var(--viking-radius-lg);
-  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
+  border: 1px solid color-mix(in srgb, var(--viking-border-strong) 68%, transparent);
   background: var(--viking-surface-recipe, var(--viking-surface));
   color: var(--viking-text);
   box-shadow: var(--viking-shadow-md);
@@ -1522,10 +1522,21 @@ input:disabled {
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--viking-metallic-200) var(--viking-surface-hairline-strength, 36%), transparent),
+    color-mix(in srgb, var(--viking-metallic-200) 52%, transparent),
     transparent
   );
   pointer-events: none;
+  z-index: 1;
+}
+
+.status-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--viking-duration-fast) var(--viking-ease-default);
 }
 
 .status-card--interactive {
@@ -1535,7 +1546,14 @@ input:disabled {
 .status-card--interactive:hover {
   border-color: var(--viking-accent-strong);
   box-shadow: var(--viking-shadow-hover);
-  transform: translateY(var(--viking-state-hover-lift));
+  transform: translateY(calc(var(--viking-state-hover-lift) * -1));
+}
+
+.status-card--interactive:hover::after {
+  inset: 0 0 0 auto;
+  width: 2px;
+  opacity: 1;
+  background: var(--viking-accent-strong);
 }
 
 .status-card--loading {
@@ -1549,6 +1567,8 @@ input:disabled {
   gap: var(--viking-space-3);
   align-items: flex-start;
   min-width: 0;
+  padding-bottom: var(--viking-space-2);
+  border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 24%, transparent);
 }
 
 .status-card__title-wrap {
@@ -1569,7 +1589,7 @@ input:disabled {
   margin: 0;
   max-width: 60ch;
   color: var(--viking-text-muted);
-  font-size: var(--viking-font-size-base);
+  font-size: var(--viking-font-size-sm);
   line-height: var(--viking-line-height-relaxed);
 }
 
