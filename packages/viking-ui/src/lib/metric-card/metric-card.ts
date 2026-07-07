@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, input } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from "@angular/core";
+import { VikingIcon } from "../icon/icon";
+import type { VikingIconName } from "../../core/icons";
+import type { VikingTone } from "../../core/types";
 
 /** viking-metric-row — responsive grid row for HUD metric cards. */
 @Component({
@@ -11,23 +19,159 @@ export class VikingMetricRow {}
 /** viking-metric-card — single KPI tile in a metric row. */
 @Component({
   selector: "viking-metric-card",
+  imports: [VikingIcon],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: "viking-metric-card metric-card col-span-4 col-span-md-4",
+    "[class]": "hostClass()",
+    "[attr.aria-label]": "ariaLabel()",
     "[class.viking-metric-card-warning]": "variant() === 'warning'",
     "[class.warning]": "variant() === 'warning'",
     "[class.viking-metric-card-critical]": "variant() === 'critical'",
     "[class.critical]": "variant() === 'critical'",
   },
   template: `
-    <span class="viking-metric-label metric-label">{{ label() }}</span>
-    <span class="viking-metric-value metric-value"
-      ><ng-content />{{ value() }}</span
-    >
+    @if (icon()) {
+      <viking-icon
+        class="viking-metric-card-icon"
+        [name]="icon()!"
+        [size]="20"
+        [color]="iconColor()"
+        aria-hidden="true"
+      />
+    }
+    <span class="viking-metric-card-copy">
+      @if (label()) {
+        <span class="viking-metric-label metric-label">{{ label() }}</span>
+      }
+      <span class="viking-metric-value metric-value">
+        <ng-content />{{ value() }}
+      </span>
+      @if (sublabel()) {
+        <span class="viking-metric-sublabel">{{ sublabel() }}</span>
+      }
+    </span>
   `,
+  styles: [
+    `
+      :host {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--viking-space-2);
+        width: 100%;
+        min-width: 0;
+        min-height: var(--viking-touch-target-comfort);
+        padding: var(--viking-space-2);
+        border-radius: var(--viking-radius);
+        background: color-mix(
+          in srgb,
+          var(--viking-surface-alt) 74%,
+          var(--viking-surface)
+        );
+        color: var(--viking-text);
+        box-sizing: border-box;
+      }
+
+      .viking-metric-card-icon {
+        color: var(--viking-text-muted);
+      }
+
+      .viking-metric-card-copy {
+        display: grid;
+        gap: var(--viking-space-half);
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+
+      .viking-metric-label {
+        display: block;
+        color: var(--viking-text-muted);
+        font-size: var(--viking-font-size-2xs);
+        font-weight: var(--viking-font-weight-semibold);
+        letter-spacing: var(--viking-letter-spacing-caps);
+        line-height: var(--viking-line-height-snug);
+        text-transform: uppercase;
+      }
+
+      .viking-metric-value {
+        display: block;
+        color: var(--viking-text);
+        font-size: var(--viking-font-size-lg);
+        font-weight: var(--viking-font-weight-bold);
+        line-height: var(--viking-line-height-tight);
+        font-variant-numeric: tabular-nums;
+        overflow-wrap: anywhere;
+      }
+
+      .viking-metric-sublabel {
+        display: block;
+        color: var(--viking-text-subtle);
+        font-size: var(--viking-font-size-xs);
+        line-height: var(--viking-line-height-snug);
+      }
+
+      :host(.viking-metric-card-success) .viking-metric-card-icon,
+      :host(.viking-metric-card-success) .viking-metric-value {
+        color: var(--viking-success);
+      }
+
+      :host(.viking-metric-card-warning) .viking-metric-card-icon,
+      :host(.viking-metric-card-warning) .viking-metric-value {
+        color: var(--viking-warning);
+      }
+
+      :host(.viking-metric-card-critical) .viking-metric-card-icon,
+      :host(.viking-metric-card-critical) .viking-metric-value {
+        color: var(--viking-danger-text);
+      }
+
+      :host(.viking-metric-card-info) .viking-metric-card-icon,
+      :host(.viking-metric-card-info) .viking-metric-value {
+        color: var(--viking-info);
+      }
+    `,
+  ],
 })
-export class VikingMetricCard {
-  readonly label = input.required<string>();
+export class MetricCardComponent {
+  readonly icon = input<VikingIconName | string | null>(null);
+  readonly label = input<string>("");
   readonly value = input<string | number>("");
-  readonly variant = input<"default" | "warning" | "critical">("default");
+  readonly sublabel = input<string>("");
+  readonly tone = input<VikingTone | "default">("default");
+  readonly variant = input<
+    "default" | "success" | "warning" | "critical" | "info"
+  >("default");
+
+  protected readonly resolvedTone = computed(() => {
+    const variant = this.variant();
+    if (variant !== "default") {
+      return variant;
+    }
+    return this.tone() === "danger" ? "critical" : this.tone();
+  });
+
+  protected readonly iconColor = computed(() => {
+    const tone = this.resolvedTone();
+    if (tone === "critical") {
+      return "danger";
+    }
+    return tone === "default" ? "muted" : tone;
+  });
+
+  protected readonly hostClass = computed(() => ({
+    "viking-metric-card metric-card col-span-4 col-span-md-4": true,
+    [`viking-metric-card-${this.resolvedTone()}`]:
+      this.resolvedTone() !== "default",
+  }));
+
+  protected readonly ariaLabel = computed(() => {
+    const label = this.label();
+    const value = this.value();
+    if (label && value !== "") {
+      return `${label}: ${value}`;
+    }
+    return label || `${value}`;
+  });
 }
+
+export { MetricCardComponent as VikingMetricCard };

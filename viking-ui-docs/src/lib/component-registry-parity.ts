@@ -44,7 +44,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Collapsible workspace navigation with icon + label items.",
           preview: `<nav class="viking-card viking-card-compact viking-demo-card-sm" aria-label="Sidebar demo">
   <span class="viking-label">Workspace</span>
-  <div class="viking-demo-row viking-demo-row-stack">
+  <div class="viking-demo-row viking-demo-full viking-demo-row-stack">
     <span class="viking-text">Overview</span>
     <span class="viking-text-muted">Metrics</span>
     <span class="viking-text-muted">Security</span>
@@ -215,7 +215,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           name: "Separator",
           description:
             "Visual divider between sections — horizontal or vertical.",
-          preview: `<div class="viking-demo-row-stack">
+          preview: `<div class="viking-demo-full viking-demo-row-stack">
   <span class="viking-text">Billing</span>
   <hr class="viking-separator-static" />
   <span class="viking-text-muted">Payment methods</span>
@@ -669,7 +669,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
             "Action menu with keyboard roving focus and escape dismiss.",
           preview: `<div class="viking-dropdown-demo viking-card viking-card-compact">
   <viking-button-wc variant="outline">Actions ▾</viking-button-wc>
-  <div class="viking-demo-row viking-demo-row-stack">
+  <div class="viking-demo-row viking-demo-full viking-demo-row-stack">
     <span class="viking-text">Deploy</span>
     <span class="viking-text-muted">Rollback</span>
     <span class="viking-text-muted">View logs</span>

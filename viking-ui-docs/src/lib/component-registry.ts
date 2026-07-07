@@ -255,7 +255,7 @@ const CORE_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         id: "input",
         name: "Input",
         description: "Text inputs with clearable state and field composition.",
-        preview: `<div class="viking-demo-row viking-demo-row-stack">
+        preview: `<div class="viking-demo-full viking-demo-row viking-demo-row-stack">
   <viking-input-wc placeholder="Mission ID" clearable></viking-input-wc>
   <div class="viking-field">
     <label class="viking-field-label" for="email-demo">Email</label>
@@ -527,7 +527,7 @@ this.toast.show({ message: 'Deployment queued', tone: 'success' });`,
         name: "Table",
         description:
           "Scrollable data tables with semantic thead/tbody structure.",
-        preview: `<div class="viking-table-wrap">
+        preview: `<div class="viking-demo-full viking-table-wrap">
   <table class="viking-table">
     <thead><tr><th scope="col">Worker</th><th scope="col">Status</th><th scope="col">Lag</th></tr></thead>
     <tbody>
@@ -820,7 +820,7 @@ palette.openPalette();
         preview: `<div class="showcase-auth-panel">
   <h3 class="viking-heading viking-heading-sm">Sign in to DEML</h3>
   <p class="viking-text-muted">Operational intelligence for your ML infrastructure.</p>
-  <div class="viking-demo-row viking-demo-row-stack">
+  <div class="viking-demo-full viking-demo-row viking-demo-row-stack">
     <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Continue with Google</button>
     <button type="button" class="viking-btn viking-btn-outline viking-btn-full">Continue with GitHub</button>
   </div>

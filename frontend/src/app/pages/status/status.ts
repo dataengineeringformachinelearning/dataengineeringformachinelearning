@@ -12,21 +12,31 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title, Meta } from '@angular/platform-browser';
-import { MonitorService, StatusPageData } from '../../services/monitor.service';
+import {
+  IncidentData,
+  MonitorService,
+  MonitoredServiceData,
+  StatusPageData,
+} from '../../services/monitor.service';
 import { MlService } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
+  AnnouncementCardComponent,
   VikingButton,
   VikingCallout,
-  VikingCard,
-  VikingHeading,
+  VikingChart,
+  VikingMetricCard,
   VikingPageHeader,
+  VikingStatusBadge,
+  VikingStatusSection,
+  VikingUptimeHistory,
 } from '@dataengineeringformachinelearning/viking-ui';
+import type { VikingChartSeries } from '@dataengineeringformachinelearning/viking-ui';
 import { RouterModule, Router } from '@angular/router';
 import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { SanityService } from '../../services/sanity.service';
-import { StatusCard } from '../../components/status-card/status-card';
+import { formatServiceName } from '../../core/utils/formatter.utils';
 
 import { timeout } from 'rxjs';
 
@@ -35,15 +45,18 @@ import { timeout } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
+    AnnouncementCardComponent,
     VikingButton,
     VikingCallout,
-    VikingCard,
-    VikingHeading,
+    VikingChart,
+    VikingMetricCard,
     VikingPageHeader,
+    VikingStatusBadge,
+    VikingStatusSection,
+    VikingUptimeHistory,
     RouterModule,
     Sidebar,
     StatusCta,
-    StatusCard,
   ],
   templateUrl: './status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,8 +75,10 @@ export class Status implements OnInit {
   statusPages = signal<StatusPageData[]>([]);
   loadFailed = signal<boolean>(false);
   isLoading = signal<boolean>(true);
+  showIncidents = true;
   incidentsMap = this.monitorService.incidentsMap;
   servicesMap = this.monitorService.servicesMap;
+  formatServiceName = formatServiceName;
 
   announcementTone(severity?: string | null): 'accent' | 'warning' | 'danger' | 'muted' {
     const key = (severity || 'info').toLowerCase();
@@ -88,6 +103,56 @@ export class Status implements OnInit {
     }
     return this.statusPages();
   });
+
+  getPageStatus(pageId: string): string {
+    const active = this.activeIncidents(pageId);
+    if (active.length > 0) {
+      return active[0].status;
+    }
+    const services = this.servicesMap()[pageId] || [];
+    if (services.some(service => this.statusVariant(service.status) === 'outage')) {
+      return 'Outage';
+    }
+    if (services.some(service => this.statusVariant(service.status) === 'degraded')) {
+      return 'Degraded';
+    }
+    return 'Operational';
+  }
+
+  statusVariant(status?: string | null): 'operational' | 'degraded' | 'outage' | 'maintenance' {
+    const value = (status || 'Operational').toLowerCase();
+    if (value === 'outage' || value === 'major outage' || value === 'down') return 'outage';
+    if (value === 'degraded' || value === 'partial outage') return 'degraded';
+    if (value === 'maintenance') return 'maintenance';
+    return 'operational';
+  }
+
+  statusDescription(pageId: string): string {
+    const status = this.getPageStatus(pageId);
+    if (status === 'Operational') return 'All systems are functioning normally.';
+    if (status === 'Degraded') return 'Some services are experiencing degraded performance.';
+    if (status === 'Maintenance') return 'Planned maintenance is currently in progress.';
+    return 'Some services are currently experiencing downtime.';
+  }
+
+  activeIncidents(pageId: string): IncidentData[] {
+    return (this.incidentsMap()[pageId] || []).filter(incident => incident.status !== 'Resolved');
+  }
+
+  serviceUptime(page: StatusPageData, service: MonitoredServiceData): number {
+    return service.sla ?? page.overall_uptime ?? page.cumulative_sla ?? 100;
+  }
+
+  availabilitySeries(page: StatusPageData): VikingChartSeries[] {
+    const values = (page.uptime_history ?? []).map(day => day.uptime ?? 100);
+    return [
+      {
+        name: 'Availability',
+        tone: 'success',
+        data: values.length > 0 ? values : [100, 100, 100, 100, 100, 100, 100],
+      },
+    ];
+  }
 
   login() {
     this.router.navigate(['/login']);

@@ -16,7 +16,6 @@ import {
   VikingHeading,
   VikingStatusCard,
   VikingStatusMetricRow,
-  VikingStatusPanel,
   VikingStatusPill,
   VikingUptimeHistory,
 } from '@dataengineeringformachinelearning/viking-ui';
@@ -39,7 +38,6 @@ export type StatusCardVariant = 'compact' | 'full';
     VikingHeading,
     VikingStatusCard,
     VikingStatusMetricRow,
-    VikingStatusPanel,
     VikingStatusPill,
     VikingUptimeHistory,
     ProVerifiedBadge,

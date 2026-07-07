@@ -10,7 +10,7 @@ import {
 } from "../uptime-bar/uptime-bar";
 
 export type VikingUptimeSegment = {
-  status: string;
+  status: string | VikingUptimeStatus;
   uptime?: number;
   date?: string;
 };
@@ -35,7 +35,18 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
 };
 
 /**
- * viking-uptime-history — full-width uptime timeline with labeled segments.
+ * UptimeHistoryComponent — full-width segmented uptime timeline.
+ *
+ * Accepts date + status samples and exposes native, visible hover/focus
+ * tooltips for each segment.
+ *
+ * @example
+ * ```html
+ * <viking-uptime-history
+ *   [segments]="[{ date: '2026-06-13', status: 'operational', uptime: 100 }]"
+ *   [percentage]="100"
+ * />
+ * ```
  */
 @Component({
   selector: "viking-uptime-history",
@@ -52,16 +63,19 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         <span class="uptime-history-value">{{ headerValue() }}</span>
       </div>
     }
-    <div
-      class="uptime-history-bar"
-      role="img"
-      [attr.aria-label]="ariaLabel()"
-    >
+    <div class="uptime-history-bar" role="img" [attr.aria-label]="ariaLabel()">
       @for (segment of segments(); track $index) {
-        <viking-uptime-bar
-          [status]="resolveStatus(segment)"
-          [title]="segmentTitle(segment)"
-        />
+        <span
+          class="uptime-history-segment"
+          tabindex="0"
+          [attr.aria-label]="segmentTitle(segment)"
+          [attr.data-tooltip]="segmentTitle(segment)"
+        >
+          <viking-uptime-bar
+            [status]="resolveStatus(segment)"
+            [title]="segmentTitle(segment)"
+          />
+        </span>
       }
     </div>
     @if (showLegend()) {
@@ -129,6 +143,51 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         border-radius: var(--viking-radius-pill);
       }
 
+      .uptime-history-segment {
+        position: relative;
+        display: flex;
+        flex: 1 1 0;
+        min-width: 3px;
+        height: 100%;
+        border-radius: var(--viking-radius-pill);
+      }
+
+      .uptime-history-segment:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
+        z-index: 2;
+      }
+
+      .uptime-history-segment::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 50%;
+        bottom: calc(100% + var(--viking-space-1));
+        transform: translateX(-50%) translateY(var(--viking-space-half));
+        width: max-content;
+        max-width: min(16rem, 80vw);
+        padding: var(--viking-space-half) var(--viking-space-1);
+        border: 1px solid var(--viking-border);
+        border-radius: var(--viking-radius-sm);
+        background: var(--viking-surface-raised);
+        color: var(--viking-text);
+        box-shadow: var(--viking-shadow-md);
+        font-size: var(--viking-font-size-xs);
+        line-height: var(--viking-line-height-snug);
+        opacity: 0;
+        pointer-events: none;
+        transition:
+          opacity var(--viking-duration-fast) var(--viking-ease-out),
+          transform var(--viking-duration-fast) var(--viking-ease-out);
+        z-index: 10;
+      }
+
+      .uptime-history-segment:hover::after,
+      .uptime-history-segment:focus-visible::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
       .uptime-history-legend {
         display: flex;
         justify-content: space-between;
@@ -139,7 +198,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
     `,
   ],
 })
-export class VikingUptimeHistory {
+export class UptimeHistoryComponent {
   readonly segments = input<VikingUptimeSegment[]>([]);
   readonly percentage = input<number | null>(null);
   readonly statusSummary = input<string>("");
@@ -179,3 +238,5 @@ export class VikingUptimeHistory {
     return segmentTitle(segment);
   }
 }
+
+export { UptimeHistoryComponent as VikingUptimeHistory };

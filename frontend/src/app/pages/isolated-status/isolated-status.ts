@@ -17,15 +17,14 @@ import { MonitorService, StatusPageData } from '../../services/monitor.service';
 import { MlService, ThreatReportResponse } from '../../services/ml.service';
 import { AuthService } from '../../services/auth.service';
 import {
+  AnnouncementCardComponent,
   VikingButton,
   VikingCallout,
-  VikingCard,
   VikingChart,
-  VikingHeading,
+  VikingMetricCard,
   VikingPageHeader,
-  VikingStatusMetricRow,
-  VikingStatusPanel,
-  VikingStatusPill,
+  VikingStatusBadge,
+  VikingStatusSection,
   VikingUptimeHistory,
 } from '@dataengineeringformachinelearning/viking-ui';
 import type { VikingChartSeries, VikingTone } from '@dataengineeringformachinelearning/viking-ui';
@@ -33,7 +32,6 @@ import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { formatServiceName } from '../../core/utils/formatter.utils';
 import { SanityService } from '../../services/sanity.service';
-import { ProVerifiedBadge } from '../../components/pro-verified-badge/pro-verified-badge';
 
 import { timeout } from 'rxjs';
 
@@ -42,18 +40,16 @@ import { timeout } from 'rxjs';
   standalone: true,
   imports: [
     CommonModule,
+    AnnouncementCardComponent,
     VikingButton,
     VikingCallout,
-    VikingCard,
     VikingChart,
-    VikingHeading,
+    VikingMetricCard,
     VikingPageHeader,
-    VikingStatusMetricRow,
-    VikingStatusPanel,
-    VikingStatusPill,
+    VikingStatusBadge,
+    VikingStatusSection,
     VikingUptimeHistory,
     RouterModule,
-    ProVerifiedBadge,
   ],
   templateUrl: './isolated-status.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -268,6 +264,27 @@ export class IsolatedStatus implements OnInit {
       return [{ name: 'Availability', tone: 'accent', data: [100, 100, 100, 100, 100, 100, 100] }];
     }
     return [{ name: 'Availability', tone: 'accent', data: values }];
+  }
+
+  protected statusVariant(
+    status?: string | null,
+  ): 'operational' | 'degraded' | 'outage' | 'maintenance' {
+    const value = (status || 'Operational').toLowerCase();
+    if (value === 'outage' || value === 'major outage' || value === 'down') return 'outage';
+    if (value === 'degraded' || value === 'partial outage') return 'degraded';
+    if (value === 'maintenance') return 'maintenance';
+    return 'operational';
+  }
+
+  protected statusDescription(status: string): string {
+    if (status === 'Operational') return 'All systems are functioning normally.';
+    if (status === 'Degraded') return 'Some services are experiencing degraded performance.';
+    if (status === 'Maintenance') return 'Planned maintenance is currently in progress.';
+    return 'Some services are currently experiencing downtime.';
+  }
+
+  protected serviceUptime(page: StatusPageData, service: { sla?: number | null }): number {
+    return service.sla ?? page.overall_uptime ?? page.cumulative_sla ?? 100;
   }
 
   protected announcementTone(severity?: string | null): 'accent' | 'warning' | 'danger' | 'muted' {

@@ -150,7 +150,7 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         name: "Kanban",
         description:
           "Drag-ready columns for incident and vulnerability triage.",
-        preview: `<div class="viking-kanban-demo">
+        preview: `<div class="viking-demo-full viking-kanban-demo">
   <div class="viking-kanban-col viking-card">
     <span class="viking-label">Open</span>
     <div class="viking-kanban-card">Semgrep: SQL injection</div>

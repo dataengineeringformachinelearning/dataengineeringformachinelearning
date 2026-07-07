@@ -26,6 +26,76 @@ npm run build --prefix packages/viking-ui
 npm run test:viking-ui:package
 ```
 
+## Status Monitoring Components
+
+Viking-UI includes standalone Angular status-page primitives for cohesive, full-width
+monitoring surfaces. They are token-based and inherit light/dark mode from the
+global Viking theme, so consuming apps should not add Tailwind or app-local visual
+classes around them.
+
+```ts
+import {
+  AnnouncementCardComponent,
+  StatusBadgeComponent,
+  StatusSectionComponent,
+  VikingMetricCard,
+  VikingUptimeHistory,
+  type StatusBadgeVariant,
+  type VikingUptimeSegment,
+} from "@dataengineeringformachinelearning/viking-ui";
+```
+
+```html
+<viking-status-section
+  title="Operational — joealongi"
+  description="All systems are functioning normally."
+  status="operational"
+  liveLabel="Live Predictions Active"
+>
+  <section class="viking-status-section-block">
+    <h3 class="viking-status-section-heading">Latest System Announcements</h3>
+    <viking-announcement-card
+      tone="info"
+      title="Sanity.io Integration Active"
+      publishedAt="2026-06-13"
+    >
+      Announcements are now served globally from edge CDNs.
+    </viking-announcement-card>
+  </section>
+
+  <section class="viking-status-section-block">
+    <div class="viking-status-section-metrics">
+      <viking-metric-card
+        icon="clock"
+        label="Response Time"
+        value="158.71ms"
+        sublabel="Latest observation"
+        tone="info"
+      />
+      <viking-metric-card
+        icon="shield-check"
+        label="Uptime"
+        value="100.00%"
+        sublabel="30-day SLA"
+        tone="success"
+      />
+    </div>
+
+    <viking-uptime-history
+      [segments]="uptimeSegments"
+      [percentage]="100"
+      statusSummary="100.00% SLA"
+    />
+  </section>
+</viking-status-section>
+```
+
+Core types:
+
+- `StatusBadgeVariant`: `operational | degraded | outage | maintenance`
+- `VikingUptimeSegment`: `{ date?: string; status: string; uptime?: number }`
+- `AnnouncementCardComponent` tones: `info | warning`
+
 ## Storybook and Chromatic
 
 Storybook is the release-grade visual cockpit for the Web Component layer and
