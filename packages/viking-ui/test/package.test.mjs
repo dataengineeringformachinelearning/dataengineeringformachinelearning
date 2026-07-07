@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
@@ -64,6 +65,30 @@ test("build writes the framework-neutral distribution files", () => {
       existsSync(path.join(distDir, fileName)),
       true,
       `Expected ${fileName} in ${distDir}`,
+    );
+  }
+});
+
+test("npm pack includes runtime distribution artifacts", () => {
+  const packOutput = execFileSync("npm", ["pack", "--dry-run", "--json"], {
+    cwd: packageDir,
+    encoding: "utf8",
+  });
+  const [packManifest] = JSON.parse(packOutput);
+  const packedPaths = new Set(packManifest.files.map((file) => file.path));
+
+  for (const artifact of [
+    "dist/fesm2022/dataengineeringformachinelearning-viking-ui.mjs",
+    "dist/types/dataengineeringformachinelearning-viking-ui.d.ts",
+    "dist/viking-ui.css",
+    "dist/web-components.js",
+    "dist/viking-ui-elements.js",
+    "dist/widget.js",
+  ]) {
+    assert.equal(
+      packedPaths.has(artifact),
+      true,
+      `Expected ${artifact} in npm tarball`,
     );
   }
 });
