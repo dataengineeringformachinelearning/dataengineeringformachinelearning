@@ -142,7 +142,7 @@ export class VikingVerificationCodeField extends VikingControl<string> {
   }
 
   protected onValueChange = (next: string): void => {
-    // The model already emitted valueChange, just notify the parent form
+    this.value.set(next);
     this.onChange(next);
     this.onTouched();
   };
