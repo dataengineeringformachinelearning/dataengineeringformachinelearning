@@ -467,10 +467,21 @@
   border-radius: var(--viking-radius-lg);
   min-height: 7rem;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   justify-content: center;
+  gap: var(--viking-space-2);
+  width: 100%;
+  min-width: 0;
   position: relative;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+.component-showcase-preview > * {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
 }
 
 .component-showcase-preview::before {

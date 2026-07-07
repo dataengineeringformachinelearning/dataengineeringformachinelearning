@@ -1635,6 +1635,12 @@ input:disabled {
   display: grid;
   gap: var(--viking-space-3);
   min-width: 0;
+  width: 100%;
+}
+
+.status-card__body > * {
+  width: 100%;
+  min-width: 0;
 }
 `,st=()=>{l(L.tag,L),d(L.legacyTag,L)};var ye=new Set(["accent","secondary","success","warning","danger","info","muted"]),T=class extends c{static tag="viking-status-pill";static legacyTag="viking-status-pill-wc";static get observedAttributes(){return["tone","icon","href","target","compact","dot","removable","aria-label"]}shadow;constructor(){super(),this.shadow=this.attachShadow({mode:"open"}),u(this.shadow,we)}connectedCallback(){this.render()}attributeChangedCallback(){this.isConnected&&this.render()}get tone(){let t=this.getAttribute("tone")??"muted";return ye.has(t)?t:"muted"}get compact(){let t=this.getAttribute("compact");return t!==null&&t!=="false"}get removable(){let t=this.getAttribute("removable");return t!==null&&t!=="false"}get href(){return this.getAttribute("href")}get icon(){return this.getAttribute("icon")}get showDot(){let t=this.getAttribute("dot");return t!==null&&t!=="false"}onRemove=()=>{this.dispatchEvent(new CustomEvent("viking-pill-removed",{bubbles:!0,composed:!0}))};render(){let t=this.tone,i=this.compact?" status-pill--compact":"",n=this.icon?v(this.icon,14,"status-pill__icon"):"",a=this.showDot?'<span class="status-pill__dot" aria-hidden="true"></span>':"",o='<span class="status-pill__label" part="label"><slot></slot></span>',s=r(this.getAttribute("aria-label")??""),h=this.href,g=this.getAttribute("target"),p=h&&g==="_blank"?' rel="noopener noreferrer"':"";if(h){this.shadow.innerHTML=`
         <a

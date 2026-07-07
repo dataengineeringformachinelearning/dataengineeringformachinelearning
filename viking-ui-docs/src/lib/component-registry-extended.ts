@@ -173,24 +173,207 @@ export const EXTENDED_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
         id: "uptime-bar",
         name: "Uptime bar",
         description:
-          "Status history strip with tone + label — never color alone.",
-        preview: `<div class="viking-uptime-demo" role="img" aria-label="99.97% uptime last 90 days">
+          "Single uptime segment — compose into viking-uptime-history for full timelines.",
+        preview: `<div class="viking-uptime-demo" role="img" aria-label="Uptime segment" style="width:100%">
   <div class="viking-uptime-segments">
-    <span class="viking-uptime-seg viking-uptime-up" title="Up"></span>
-    <span class="viking-uptime-seg viking-uptime-up" title="Up"></span>
-    <span class="viking-uptime-seg viking-uptime-degraded" title="Degraded"></span>
-    <span class="viking-uptime-seg viking-uptime-up" title="Up"></span>
+    <span class="viking-uptime-seg viking-uptime-up" title="Operational"></span>
+    <span class="viking-uptime-seg viking-uptime-up" title="Operational"></span>
+    <span class="viking-uptime-seg viking-uptime-degraded" title="Partial outage"></span>
+    <span class="viking-uptime-seg viking-uptime-up" title="Operational"></span>
+    <span class="viking-uptime-seg viking-uptime-down" title="Major outage"></span>
+    <span class="viking-uptime-seg viking-uptime-up" title="Operational"></span>
   </div>
   <span class="viking-badge viking-badge-success">99.97%</span>
 </div>`,
         snippets: {
-          angular: `<viking-uptime-bar [segments]="uptimeSegments" [label]="'99.97%'" />`,
-          astro: `<div class="viking-uptime-demo" role="img" aria-label="Uptime history">...</div>`,
-          django: `<div class="viking-uptime-demo">{% for seg in segments %}<span class="viking-uptime-seg"></span>{% endfor %}</div>`,
-          javascript: `bar.setAttribute('role', 'img');`,
+          angular: `<viking-uptime-bar status="operational" title="Apr 21 — 100%" />`,
+          astro: `<div class="viking-uptime-demo" role="img" aria-label="Uptime history"><div class="viking-uptime-segments">...</div></div>`,
+          django: `<div class="viking-uptime-demo">{% for seg in segments %}<span class="viking-uptime-seg viking-uptime-{{ seg.status }}"></span>{% endfor %}</div>`,
+          javascript: `bar.setAttribute('status', 'operational');`,
         },
         selector: "viking-uptime-bar",
-        api: getComponentApi("uptime-bar"),
+        related: ["uptime-history", "status-panel"],
+      },
+      {
+        id: "uptime-history",
+        name: "Uptime history",
+        description:
+          "Full-width 30-day uptime timeline with labeled header and date legend.",
+        preview: `<div class="viking-uptime-demo" style="width:100%">
+  <div style="display:flex;justify-content:space-between;width:100%">
+    <span class="viking-label">Uptime</span>
+    <span class="viking-text-muted">99.97% — No current issues</span>
+  </div>
+  <div class="viking-uptime-segments" role="img" aria-label="99.97% uptime last 30 days">
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-degraded"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+    <span class="viking-uptime-seg viking-uptime-up"></span>
+  </div>
+  <div style="display:flex;justify-content:space-between;width:100%;font-size:var(--viking-font-size-2xs);color:var(--viking-text-subtle)">
+    <span>30 days ago</span>
+    <span>Today</span>
+  </div>
+</div>`,
+        snippets: {
+          angular: `<viking-uptime-history [segments]="uptimeHistory" [percentage]="99.97" statusSummary="No current issues" />`,
+          astro: `<div class="viking-uptime-demo">...</div>`,
+          django: `<div class="viking-uptime-demo">{% include "partials/uptime_history.html" %}</div>`,
+          javascript: `// Use viking-uptime-history in Angular apps`,
+        },
+        selector: "viking-uptime-history",
+        tags: ["angular"],
+        related: ["uptime-bar", "status-panel", "status-card"],
+      },
+      {
+        id: "status-panel",
+        name: "Status panel",
+        description:
+          "Service/component status card with header badge, metrics slot, and uptime timeline.",
+        preview: `<div class="viking-card" style="width:100%;display:flex;flex-direction:column;gap:var(--viking-space-3)">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;width:100%;padding-bottom:var(--viking-space-2);border-bottom:1px solid var(--viking-border-subtle)">
+    <div>
+      <h3 class="viking-heading viking-heading-sm" style="margin:0">API Layer</h3>
+      <p class="viking-text-muted" style="margin:var(--viking-space-1) 0 0">Core ingestion endpoints</p>
+    </div>
+    <viking-status-pill-wc tone="success" dot>Operational</viking-status-pill-wc>
+  </div>
+  <div class="viking-uptime-demo" style="width:100%">
+    <div style="display:flex;justify-content:space-between;width:100%">
+      <span class="viking-label">Uptime</span>
+      <span class="viking-text-muted">100% — No current issues</span>
+    </div>
+    <div class="viking-uptime-segments" role="img" aria-label="100% uptime">
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+    </div>
+    <div style="display:flex;justify-content:space-between;width:100%;font-size:var(--viking-font-size-2xs);color:var(--viking-text-subtle)">
+      <span>30 days ago</span>
+      <span>Today</span>
+    </div>
+  </div>
+</div>`,
+        snippets: {
+          angular: `<viking-status-panel title="API Layer" status="Operational" statusTone="success" [uptimeSegments]="history" [uptimePercentage]="100" />`,
+          astro: `{/* Status panel requires Angular runtime */}`,
+          django: `{# Status panels in Angular status pages #}`,
+          javascript: `// viking-status-panel is Angular-only`,
+        },
+        selector: "viking-status-panel",
+        wcSelector: "viking-status-card-wc",
+        tags: ["angular"],
+        related: ["status-card", "uptime-history", "status-metric-row"],
+      },
+      {
+        id: "status-card",
+        name: "Status card",
+        description:
+          "Status page shell with title, operational badge, and full-width metric slots.",
+        preview: `<viking-status-card-wc title="Platform Status" subtitle="Real-time telemetry and ML forecasting" status="Operational" status-tone="success" status-dot style="width:100%;display:block">
+  <div class="viking-status-metric-row" style="width:100%;margin-bottom:var(--viking-space-2)">
+    <span class="viking-label">Cumulative SLA</span>
+    <strong class="viking-metric">99.97%</strong>
+  </div>
+  <div class="viking-uptime-demo" style="width:100%">
+    <div class="viking-uptime-segments" role="img" aria-label="Uptime history">
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-degraded"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+      <span class="viking-uptime-seg viking-uptime-up"></span>
+    </div>
+  </div>
+</viking-status-card-wc>`,
+        snippets: {
+          angular: `<viking-status-card title="Platform Status" subtitle="Real-time telemetry" status="Operational" statusTone="success" [statusDot]="true">...</viking-status-card>`,
+          astro: `<viking-status-card-wc title="Platform Status" status="Operational" status-tone="success" status-dot>...</viking-status-card-wc>`,
+          django: `<viking-status-card-wc title="{{ page.title }}" status="{{ page.status }}">...</viking-status-card-wc>`,
+          javascript: `card.setAttribute('title', 'Platform Status');`,
+        },
+        selector: "viking-status-card",
+        wcSelector: "viking-status-card-wc",
+        related: ["status-panel", "status-metric-row", "uptime-history"],
       },
     ],
   },

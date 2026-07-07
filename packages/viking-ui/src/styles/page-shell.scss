@@ -761,8 +761,14 @@ app-status-card.status-directory-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-2);
+  width: 100%;
   min-width: 0;
   padding: var(--viking-space-1-5);
+}
+
+.status-summary-grid > * {
+  width: 100%;
+  min-width: 0;
 }
 
 /* Status metric rows add their own subtle separation, no grid background/border */
@@ -850,37 +856,52 @@ viking-card.uptime-history-card {
 }
 
 /* Uptime bar — clean visual history instead of individual boxes */
-.uptime-bar {
+.uptime-bar,
+.viking-uptime-history {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2);
+  width: 100%;
+  min-width: 0;
 }
 
 .uptime-bar-visual {
   display: flex;
-  gap: var(--viking-space-1);
-  height: var(--viking-space-2);
+  gap: 2px;
+  width: 100%;
+  min-width: 0;
+  height: var(--viking-space-3);
+  padding: var(--viking-space-half);
   border-radius: var(--viking-radius-full);
   overflow: hidden;
   background: var(--viking-surface-inset);
+  box-sizing: border-box;
 }
 
 .uptime-bar-segment {
-  flex: 1;
-  min-width: 4px;
-  border-radius: 1px;
+  flex: 1 1 0;
+  min-width: 3px;
+  border-radius: var(--viking-radius-pill);
 }
 
-.uptime-bar-up {
+.uptime-bar-up,
+.uptime-bar-operational {
   background: var(--viking-success);
 }
 
-.uptime-bar-degraded {
+.uptime-bar-degraded,
+.uptime-bar-partial_outage {
   background: var(--viking-warning);
 }
 
-.uptime-bar-down {
+.uptime-bar-down,
+.uptime-bar-major_outage {
   background: var(--viking-danger);
+}
+
+.uptime-bar-no_data {
+  background: var(--viking-text-muted);
+  opacity: 0.35;
 }
 
 .uptime-bar-legend {
@@ -896,6 +917,47 @@ viking-card.monitored-services-card {
     var(--viking-surface-recipe, var(--viking-surface)) 88%,
     var(--viking-accent) 12%
   );
+}
+
+/* Full status page — service panel grid */
+.status-panel-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-page-section-gap, var(--viking-space-6));
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 760px) {
+  .status-panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.status-panel-grid > * {
+  width: 100%;
+  min-width: 0;
+}
+
+.status-chart-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.status-chart-panel viking-chart {
+  width: 100%;
+  min-width: 0;
+}
+
+.status-overview-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-page-section-gap, var(--viking-space-6));
+  width: 100%;
+  min-width: 0;
 }
 
 .status-hero-callout {
