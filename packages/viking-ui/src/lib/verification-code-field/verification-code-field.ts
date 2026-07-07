@@ -2,8 +2,8 @@ import {
   ChangeDetectionStrategy,
   Component,
   input,
+  model,
   output,
-  signal,
 } from "@angular/core";
 import { VikingControl, provideVikingCva } from "../core/cva";
 import { vikingUid } from "../../core/uid";
@@ -130,7 +130,7 @@ export class VikingVerificationCodeField extends VikingControl<string> {
 
   readonly completed = output<string>();
 
-  protected readonly value = signal<string>("");
+  readonly value = model<string>("");
   protected readonly labelId = vikingUid("viking-verification-code-label");
   protected readonly descriptionId = vikingUid(
     "viking-verification-code-description",
@@ -142,7 +142,7 @@ export class VikingVerificationCodeField extends VikingControl<string> {
   }
 
   protected onValueChange = (next: string): void => {
-    this.value.set(next);
+    // The model already emitted valueChange, just notify the parent form
     this.onChange(next);
     this.onTouched();
   };
