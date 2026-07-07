@@ -86,25 +86,41 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         color: var(--viking-accent-secondary);
       }
       :host(.viking-callout-info) {
-        background: color-mix(in srgb, var(--viking-info) 10%, var(--viking-surface));
+        background: color-mix(
+          in srgb,
+          var(--viking-info) 10%,
+          var(--viking-surface)
+        );
       }
       :host(.viking-callout-info) .viking-callout-icon {
         color: var(--viking-info);
       }
       :host(.viking-callout-success) {
-        background: color-mix(in srgb, var(--viking-success) 10%, var(--viking-surface));
+        background: color-mix(
+          in srgb,
+          var(--viking-success) 10%,
+          var(--viking-surface)
+        );
       }
       :host(.viking-callout-success) .viking-callout-icon {
         color: var(--viking-success);
       }
       :host(.viking-callout-warning) {
-        background: color-mix(in srgb, var(--viking-warning) 12%, var(--viking-surface));
+        background: color-mix(
+          in srgb,
+          var(--viking-warning) 12%,
+          var(--viking-surface)
+        );
       }
       :host(.viking-callout-warning) .viking-callout-icon {
         color: var(--viking-warning);
       }
       :host(.viking-callout-danger) {
-        background: color-mix(in srgb, var(--viking-danger) 16%, var(--viking-surface));
+        background: color-mix(
+          in srgb,
+          var(--viking-danger) 16%,
+          var(--viking-surface)
+        );
         color: var(--viking-white);
       }
       :host(.viking-callout-danger) .viking-callout-icon {

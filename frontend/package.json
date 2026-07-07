@@ -41,7 +41,7 @@
     "@angular/platform-server": "^22.0.0",
     "@angular/router": "^22.0.0",
     "@angular/ssr": "^22.0.0",
-    "@dataengineeringformachinelearning/viking-ui": "^4.1.11",
+    "@dataengineeringformachinelearning/viking-ui": "^4.1.12",
     "@sanity/client": "^7.22.1",
     "@sentry/angular": "^10.57.0",
     "canvas-confetti": "^1.9.4",
