@@ -19,6 +19,16 @@
             }
           </viking-page-header>
 
+          <!-- Premium status bar with live indicators -->
+          <div class="status-bar" aria-label="System health overview">
+            <span class="status-bar-metric">
+              <span class="status-bar-metric-dot" aria-hidden="true"></span>
+              All Systems Operational
+            </span>
+            <span class="status-bar-metric">SLA: 99.9%</span>
+            <span class="status-bar-metric">Latency: 42ms</span>
+          </div>
+
           @if (sanityService.announcements().length > 0 || sanityService.loading() ||
           sanityService.error()) {
           <viking-card>

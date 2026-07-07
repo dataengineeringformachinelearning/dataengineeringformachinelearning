@@ -274,7 +274,7 @@
                 role="button"
                 [attr.aria-pressed]="selectedIncident()?.id === incident.id"
                 [attr.aria-label]="'Select incident ' + incident.title"
-                (click)="selectIncident(incident)"
+                (click)="selectIncidentFromCard($event, incident)"
                 (keydown.enter)="selectIncident(incident)"
                 (keydown.space)="$event.preventDefault(); selectIncident(incident)"
               >
@@ -287,7 +287,7 @@
                 <h3 class="soc-card-title">{{ incident.title }}</h3>
                 <p class="soc-card-desc">{{ incident.description }}</p>
                 <div class="soc-card-footer">
-                  <div class="soc-status-field" (click)="$event.stopPropagation()">
+                  <div class="soc-status-field" data-card-action="ignore">
                     <app-unified-select
                       [id]="'incident-status-' + incident.id"
                       label="Status"
@@ -361,7 +361,7 @@
                   </div>
                   <p class="soc-card-desc">{{ playbook.description }}</p>
                 </div>
-                <div class="playbook-toggle-row" (click)="$event.stopPropagation()">
+                <div class="playbook-toggle-row">
                   <label class="playbook-toggle">
                     <span class="sr-only"
                       >{{ playbook.is_active ? 'Deactivate' : 'Activate' }} playbook {{

@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { VikingSiteFooter } from '@dataengineeringformachinelearning/viking-ui';
 import { environment } from '../../../environments/environment';
 

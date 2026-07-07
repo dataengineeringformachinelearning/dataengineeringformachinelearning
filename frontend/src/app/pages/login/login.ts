@@ -28,7 +28,6 @@ import {
   mapFirebaseMfaError,
   mapFirebasePhoneError,
   normalizePhoneE164,
-  phoneFormatHint,
   phoneValidationError,
 } from '../../core/utils/phone.utils';
 import {
