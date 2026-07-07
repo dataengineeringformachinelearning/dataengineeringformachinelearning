@@ -169,33 +169,41 @@
 .showcase-hero-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
   position: relative;
   overflow: hidden;
   border: 1px solid var(--viking-border);
   border-radius: var(--viking-radius-lg);
-  padding: var(--viking-space-2);
+  padding: var(--viking-space-3);
   background: var(--viking-surface);
   box-shadow: var(--viking-shadow-sm);
+  transition: var(--viking-transition-interactive);
 }
 
-.showcase-hero-panel::before {
+.showcase-hero-panel:hover {
+  border-color: var(--viking-accent-strong);
+}
+
+/* Subtle accent notch in hero panel header */
+.showcase-hero-panel::after {
   content: "";
   position: absolute;
-  inset: 0 0 auto;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--viking-accent) 40%, transparent),
-    transparent
-  );
+  top: 10px;
+  right: 18px;
+  width: 22px;
+  height: 14px;
+  border-top: 1px solid color-mix(in srgb, var(--viking-accent) 40%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--viking-accent) 24%, transparent);
+  opacity: 0.5;
   pointer-events: none;
-  opacity: 0.7;
 }
 
-/* ── Toolbar ── */
+/* Toolbar — unified with hero panel aesthetic */
 .showcase-toolbar {
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface);
+  box-shadow: var(--viking-shadow-xs);
   padding: var(--viking-card-padding);
 }
 
@@ -314,10 +322,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-4);
-  padding-block: var(--viking-space-5);
-  border-top: 1px solid
-    color-mix(in srgb, var(--viking-accent) 20%, transparent);
-  border-bottom: 1px solid var(--viking-border);
+  padding-block: var(--viking-space-6);
+  border-top: 1px solid var(--viking-border-subtle);
   scroll-margin-top: calc(
     var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
       56px
@@ -325,29 +331,14 @@
   position: relative;
 }
 
-.showcase-section::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--viking-accent),
-    transparent
-  );
-  opacity: 0.25;
-}
+/* Removed decorative ::after accent line — cleaner premium look */
 
 .showcase-section:last-child {
   border-bottom: 0;
 }
 
 .showcase-section-compact {
-  padding-block: var(--viking-space-4);
+  padding-block: var(--viking-space-5);
 }
 
 .showcase-section-header {
@@ -374,13 +365,36 @@
 .showcase-component-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-4);
 }
 
 @media (min-width: 768px) {
   .showcase-component-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--viking-space-5);
   }
+}
+
+/* ── Category sections (component gallery) ── */
+.showcase-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--viking-space-4);
+  padding-block: var(--viking-space-6);
+  border-top: 1px solid var(--viking-border-subtle);
+  scroll-margin-top: calc(
+    var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
+      56px
+  );
+  position: relative;
+}
+
+.showcase-section:last-child {
+  border-bottom: 0;
+}
+
+.showcase-section-compact {
+  padding-block: var(--viking-space-5);
 }
 
 /* ── Component showcase card ── */

@@ -159,6 +159,49 @@
   padding: var(--viking-panel-padding, var(--viking-space-3));
 }
 
+/* ── Premium Status Bar ── */
+.status-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--viking-space-3);
+  padding: var(--viking-space-3) 0;
+  margin-bottom: var(--viking-space-4);
+  border-bottom: 1px solid var(--viking-border);
+}
+
+.status-bar-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  padding: var(--viking-space-1) var(--viking-space-2);
+  border-radius: var(--viking-radius-pill);
+  background: color-mix(in srgb, var(--viking-surface-alt) 82%, var(--viking-surface));
+  font-size: var(--viking-font-size-xs);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+  color: var(--viking-text);
+}
+
+.status-bar-metric-dot {
+  width: var(--viking-space-1);
+  height: var(--viking-space-1);
+  border-radius: 50%;
+  background: var(--viking-accent);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+@keyframes pulseDot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--viking-accent) 60%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--viking-accent) 0%, transparent);
+  }
+}
+
 .viking-page-header,
 .hud-header,
 .dashboard-topbar {
@@ -693,57 +736,54 @@ app-status-card.status-directory-card {
   border-color: color-mix(in srgb, var(--viking-border) 72%, transparent);
 }
 
-/* Status page section wrapper - premium visual separation */
+/* Status page section — clean division, no heavy borders */
 .status-page-section {
   display: flex;
   flex-direction: column;
   gap: var(--viking-space-2);
-  padding: var(--viking-space-3);
-  border-radius: var(--viking-radius-md);
-  border: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
-  background: color-mix(in srgb, var(--viking-surface-alt) 92%, var(--viking-surface));
+  padding: var(--viking-space-2);
 }
 
 .status-page-section + .status-page-section {
   margin-top: var(--viking-space-4);
+  padding-top: var(--viking-space-3);
+  border-top: 1px solid var(--viking-border-subtle);
 }
 
-/* Metric grid with premium rhythm */
+/* Metric grid — subtle interior rhythm, no nested borders */
 .status-summary-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-2);
   min-width: 0;
-  padding: var(--viking-space-2);
-  border-radius: var(--viking-radius-md);
-  border: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
-  background: color-mix(in srgb, var(--viking-surface-alt) 92%, var(--viking-surface));
-  box-shadow: var(--viking-shadow-xs);
-  transition: var(--viking-transition-interactive);
+  padding: var(--viking-space-1-5);
+}
+
+/* Status metric rows add their own subtle separation, no grid background/border */
+.status-summary-grid .viking-status-metric-row {
+  margin-bottom: 0;
 }
 
 .status-summary-grid:hover {
-  border-color: color-mix(in srgb, var(--viking-accent) 38%, transparent);
-  box-shadow: var(--viking-shadow-sm);
+  /* No card-like hover on interior grids — keep focus on metrics */
 }
 
-/* Section separator for metric grids */
+/* Section separator for metric grids — hairline only */
 .status-summary-grid:not(:last-of-type) {
-  margin-bottom: var(--viking-space-3);
+  margin-bottom: var(--viking-space-2-5);
 }
 
 /* Section heading for metric grids */
 .status-summary-grid[data-section-title]::before {
   content: attr(data-section-title);
   display: block;
-  padding: var(--viking-space-1-5) 0;
+  padding: var(--viking-space-1) 0;
   margin-bottom: var(--viking-space-1);
-  font-size: var(--viking-font-size-sm);
+  font-size: var(--viking-font-size-xs);
   font-weight: var(--viking-font-weight-semibold);
   letter-spacing: var(--viking-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--viking-text-muted);
-  border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 28%, transparent);
 }
 
 @media (min-width: 720px) {

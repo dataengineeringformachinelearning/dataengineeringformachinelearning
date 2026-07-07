@@ -272,12 +272,13 @@ This architecture rests on open-source foundations, enterprise design references
 
 **Authoring environments:**
 
-- **Visual Studio Code + Cline** — Grok Code Fast 1 (xAI)
-- **Windsurf** — Grok Code Fast 1 (xAI)
+- **Visual Studio Code + Cline** — Grok Code Fast 1 (SpaceXAI)
+- **Windsurf** — Grok Code Fast 1 (SpaceXAI)
 - **Google Antigravity** — Gemini 3.1 Pro, Gemini 3.5 Flash, Claude Opus, Claude Sonnet
 - **[OpenAI Codex](https://openai.com/codex/)** — Codex: GPT-5.5, GPT-5.3-Codex-Spark
 - **[Grok Build Beta](https://x.ai/news/grok-build-cli)**
-- **[Cursor](https://cursor.com/)** — [Grok 4.3](https://docs.x.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
+- **[Cursor](https://cursor.com/)** — [Grok 4.3](https://docs.spacex.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
+- **[Pool](https://pool.ps/)** — Pool: Laguna M.1
 
 ## 14. References
 

@@ -466,12 +466,13 @@ The DEML platform stands on open-source foundations, enterprise design reference
 - **Billing & Payments**: [Stripe](https://stripe.com/)
 - **Organizations & Standards**: [NIST](https://www.nist.gov/), [OASIS CTI](https://www.oasis-open.org/committees/cyber-threat-intelligence/) (STIX 2.1 / TAXII 2.1), [The Python Software Foundation](https://www.python.org/), [The Angular Team](https://angular.dev/)
 - **IDEs & AI Coding Assistants** (used to author and maintain this codebase):
-  - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (xAI)
-  - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (xAI)
+  - [Visual Studio Code](https://code.visualstudio.com/) + [Cline](https://cline.bot/) — [Grok Code Fast 1](https://x.ai/) (SpaceXAI)
+  - [Windsurf](https://windsurf.com/) — Grok Code Fast 1 (SpaceXAI)
   - [Google Antigravity](https://antigravity.google/) — [Gemini 3.1 Pro](https://deepmind.google/technologies/gemini/), [Gemini 3.5 Flash](https://deepmind.google/technologies/gemini/), [Gemini 3.5 (High)](https://deepmind.google/technologies/gemini/), [Claude Opus](https://www.anthropic.com/claude/opus), [Claude Sonnet](https://www.anthropic.com/claude/sonnet)
   - [OpenAI Codex](https://openai.com/codex/) — Codex: GPT-5.5, GPT-5.3-Codex-Spark
   - [Grok Build Beta](https://x.ai/news/grok-build-cli)
-  - [Cursor](https://cursor.com/) — [Grok 4.3](https://docs.x.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
+  - [Cursor](https://cursor.com/) — [Grok 4.3](https://docs.spacex.ai/developers/models/grok-4.3), [Grok Build Beta](https://x.ai/news/grok-build-cli), [Fable](https://www.anthropic.com/claude/fable)
+  - [Pool](https://pool.ps/) — Pool: Laguna M.1
 
 ---
 

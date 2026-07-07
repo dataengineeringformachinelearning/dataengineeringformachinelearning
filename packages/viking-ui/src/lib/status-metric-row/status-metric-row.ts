@@ -36,36 +36,24 @@ import type { VikingIconName } from "../../core/icons";
         align-items: center;
         justify-content: space-between;
         gap: var(--viking-space-2);
-        min-height: var(--viking-space-7);
-        padding: var(--viking-space-2);
-        border: 1px solid
-          color-mix(
-            in srgb,
-            var(--viking-border-strong) 48%,
-            var(--viking-border)
-          );
-        border-radius: var(--viking-radius-md);
-        background:
-          linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--viking-metallic-100) 6%, transparent) 0%,
-            transparent 38%
-          ),
-          color-mix(
-            in srgb,
-            var(--viking-surface-alt) 86%,
-            var(--viking-surface)
-          );
-        box-shadow:
-          inset 0 1px 0
-            color-mix(in srgb, var(--viking-white-pure) 6%, transparent),
-          var(--viking-shadow-xs);
+        min-height: var(--viking-space-6);
+        padding: var(--viking-space-1-5);
+        border-radius: var(--viking-radius-sm);
+        background: color-mix(
+          in srgb,
+          var(--viking-surface-alt) 82%,
+          var(--viking-surface)
+        );
         box-sizing: border-box;
-        transition: var(--viking-transition-interactive);
+        transition: background var(--viking-duration-fast)
+          var(--viking-ease-out);
       }
       :host(:hover) {
-        border-color: var(--viking-accent-strong);
-        box-shadow: var(--viking-shadow-sm);
+        background: color-mix(
+          in srgb,
+          var(--viking-surface-alt) 92%,
+          var(--viking-surface)
+        );
       }
       .stat-info {
         display: flex;
@@ -75,7 +63,7 @@ import type { VikingIconName } from "../../core/icons";
       }
       .stat-title {
         display: block;
-        font-size: var(--viking-font-size-xs);
+        font-size: var(--viking-font-size-2xs);
         font-weight: var(--viking-font-weight-semibold);
         letter-spacing: var(--viking-letter-spacing-caps);
         text-transform: uppercase;
@@ -83,7 +71,7 @@ import type { VikingIconName } from "../../core/icons";
       }
       .stat-subtitle {
         display: block;
-        font-size: var(--viking-font-size-2xs);
+        font-size: var(--viking-font-size-3xs);
         color: var(--viking-text-subtle);
         margin-top: var(--viking-space-px);
       }
@@ -93,7 +81,7 @@ import type { VikingIconName } from "../../core/icons";
         min-width: max-content;
       }
       .stat-value {
-        font-size: calc(var(--viking-font-size) * 1.25);
+        font-size: calc(var(--viking-font-size) * 1.15);
         font-weight: var(--viking-font-weight-bold);
         color: var(--viking-accent-strong);
         font-variant-numeric: tabular-nums;

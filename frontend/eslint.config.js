@@ -87,6 +87,23 @@ module.exports = defineConfig([
     },
   },
   {
+    files: [
+      'src/app/components/deml-brand-logo/deml-brand-logo.ts',
+      'src/app/components/viking-app-icon/viking-app-icon.ts',
+      'src/app/components/navbar/navbar.spec.ts',
+    ],
+    rules: {
+      '@angular-eslint/component-selector': [
+        'error',
+        {
+          type: 'element',
+          prefix: ['app', 'deml', 'viking'],
+          style: 'kebab-case',
+        },
+      ],
+    },
+  },
+  {
     // viking-ui may set dynamic presentation via host bindings.
     files: ['packages/viking-ui/**/*.html', 'packages/viking-ui/**/*.ts'],
     rules: {

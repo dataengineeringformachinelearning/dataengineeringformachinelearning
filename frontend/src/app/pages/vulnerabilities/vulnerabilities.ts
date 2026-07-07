@@ -305,12 +305,20 @@ export class Vulnerabilities implements OnInit {
     });
   }
 
-  selectIncident(incident: IncidentCase) {
+  selectIncident(incident: IncidentCase): void {
     this.selectedIncident.set(incident);
     this.cdr.markForCheck();
   }
 
-  selectPlaybook(playbook: Playbook) {
+  selectIncidentFromCard(event: Event, incident: IncidentCase): void {
+    const target = event.target;
+    if (target instanceof HTMLElement && target.closest('[data-card-action="ignore"]')) {
+      return;
+    }
+    this.selectIncident(incident);
+  }
+
+  selectPlaybook(playbook: Playbook): void {
     this.selectedPlaybook.set(playbook);
     this.cdr.markForCheck();
   }
