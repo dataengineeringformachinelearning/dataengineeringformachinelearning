@@ -209,3 +209,8 @@ export const registerVikingInputWc = (): void => {
   defineCustomElement(VikingInputWc.tag, VikingInputWc);
   defineCustomElementAlias(VikingInputWc.legacyTag, VikingInputWc);
 };
+
+/** Register only the internal wrapper tag used by Angular components. */
+export const registerVikingInputWcElement = (): void => {
+  defineCustomElementAlias(VikingInputWc.legacyTag, VikingInputWc);
+};

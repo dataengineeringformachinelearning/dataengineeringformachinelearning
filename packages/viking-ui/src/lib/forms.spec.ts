@@ -79,6 +79,12 @@ describe("viking forms", () => {
     expect(fixture.componentInstance.email).toBe("ops@deml.app");
   });
 
+  it("does not register the Angular wrapper tag as a custom element", async () => {
+    await render(FieldInputHost);
+    expect(customElements.get("viking-input")).toBeUndefined();
+    expect(customElements.get("viking-input-wc")).toBeDefined();
+  });
+
   it("renders stacked form section with icon heading", async () => {
     const fixture = await render(FormStackHost);
     const section = fixture.nativeElement.querySelector(

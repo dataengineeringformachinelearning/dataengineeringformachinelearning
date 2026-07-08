@@ -16,9 +16,9 @@ import {
   type SiteDrakkarContext,
   type SiteUrls,
 } from "../site-drakkar/site-drakkar.config";
-import { registerVikingElements } from "../../web/index";
+import { registerVikingSuiteSearchPaletteWc } from "../../web/suite-search-palette/viking-suite-search-palette-wc";
 
-registerVikingElements();
+registerVikingSuiteSearchPaletteWc();
 
 /**
  * viking-suite-search-palette — thin Angular wrapper around `viking-suite-command-palette`.

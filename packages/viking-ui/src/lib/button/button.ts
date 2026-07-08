@@ -9,9 +9,9 @@ import {
 import { VikingIcon } from "../icon/icon";
 import { VikingIconName } from "../../core/icons";
 import { VikingSize } from "../../core/types";
-import { registerVikingElements } from "../../web/index";
+import { registerVikingButtonWc } from "../../web/button/viking-button-wc";
 
-registerVikingElements();
+registerVikingButtonWc();
 
 export type VikingButtonVariant =
   | "outline"

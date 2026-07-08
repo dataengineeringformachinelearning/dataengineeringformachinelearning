@@ -5,10 +5,10 @@ import {
   input,
   output,
 } from "@angular/core";
-import { registerVikingElements } from "../../web/index";
+import { registerVikingStatusPillWcElement } from "../../web/status-pill/viking-status-pill-wc";
 import type { VikingTone } from "../../core/types";
 
-registerVikingElements();
+registerVikingStatusPillWcElement();
 
 /**
  * viking-status-pill — status badge for status cards and operational states.

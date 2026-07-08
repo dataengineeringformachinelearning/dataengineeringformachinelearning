@@ -294,3 +294,8 @@ export const registerVikingStatusPillWc = (): void => {
   defineCustomElement(VikingStatusPillWc.tag, VikingStatusPillWc);
   defineCustomElementAlias(VikingStatusPillWc.legacyTag, VikingStatusPillWc);
 };
+
+/** Register only the internal wrapper tag used by Angular components. */
+export const registerVikingStatusPillWcElement = (): void => {
+  defineCustomElementAlias(VikingStatusPillWc.legacyTag, VikingStatusPillWc);
+};

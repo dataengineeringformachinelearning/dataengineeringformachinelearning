@@ -283,6 +283,18 @@ export class Login implements OnInit, OnDestroy {
     this.loginForm.get('password')?.updateValueAndValidity();
   }
 
+  private readonly setMfaVerificationValidators = (): void => {
+    for (const controlName of ['username', 'password', 'email', 'phone']) {
+      const control = this.loginForm.get(controlName);
+      control?.clearValidators();
+      control?.updateValueAndValidity();
+    }
+
+    const verificationCode = this.loginForm.get('verificationCode');
+    verificationCode?.setValidators([Validators.required]);
+    verificationCode?.updateValueAndValidity();
+  };
+
   initRecaptcha(): void {
     if (this.recaptchaVerifier) return;
     if (!this.authService.auth) {
@@ -395,10 +407,9 @@ export class Login implements OnInit, OnDestroy {
       );
       this.verificationId.set(verifyId);
       this.resolver = resolver;
+      this.setMfaVerificationValidators();
       this.mfaRequired.set(true);
       this.codeSent.set(true);
-      this.loginForm.get('verificationCode')?.setValidators([Validators.required]);
-      this.loginForm.get('verificationCode')?.updateValueAndValidity();
     } catch (e: unknown) {
       logFirebaseAuthError('MFA SMS send', e);
       const code =

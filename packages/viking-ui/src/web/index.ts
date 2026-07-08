@@ -92,12 +92,3 @@ export const registerVikingElements = (): void => {
   registerVikingSiteFooterWc();
   registerVikingThemeToggleWc();
 };
-
-// Auto-register when loaded as a script bundle (Astro, Django, static HTML).
-if (typeof globalThis !== "undefined" && typeof document !== "undefined") {
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", registerVikingElements);
-  } else {
-    registerVikingElements();
-  }
-}

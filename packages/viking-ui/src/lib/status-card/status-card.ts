@@ -4,10 +4,10 @@ import {
   CUSTOM_ELEMENTS_SCHEMA,
   input,
 } from "@angular/core";
-import { registerVikingElements } from "../../web/index";
+import { registerVikingStatusCardWcElement } from "../../web/status-card/viking-status-card-wc";
 import type { VikingTone } from "../../core/types";
 
-registerVikingElements();
+registerVikingStatusCardWcElement();
 
 /**
  * viking-status-card — wrapper around the web component.

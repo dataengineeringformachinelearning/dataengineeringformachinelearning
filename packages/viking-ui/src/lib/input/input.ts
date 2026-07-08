@@ -10,10 +10,10 @@ import { VikingControl, provideVikingCva } from "../core/cva";
 import { VikingIcon } from "../icon/icon";
 import { VikingIconName } from "../../core/icons";
 import { VikingSpinner } from "../spinner/spinner";
-import { registerVikingElements } from "../../web/index";
+import { registerVikingInputWcElement } from "../../web/input/viking-input-wc";
 import type { VikingInputWc } from "../../web/input/viking-input-wc";
 
-registerVikingElements();
+registerVikingInputWcElement();
 
 /**
  * viking-input — thin Angular wrapper around `viking-input-wc`.
