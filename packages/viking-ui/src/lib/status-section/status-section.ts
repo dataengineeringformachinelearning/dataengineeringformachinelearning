@@ -172,18 +172,14 @@ import {
 
       .viking-status-section-content ::ng-deep .viking-status-section-block {
         display: grid;
-        gap: var(
-          --viking-space-5
-        ); /* Consistent grid rhythm between sub-elements */
-        padding: var(
-          --viking-space-4
-        ); /* Generous horizontal spacing inside containers */
+        gap: var(--viking-space-6);
+        padding: var(--viking-space-5);
         border-top: 1px solid var(--viking-border-subtle);
       }
 
-      /* Extra breathing around charts for Flux-like clean aesthetics */
+      /* System chart breathing — consistent with viking-chart-panel + Flux spacing */
       .viking-status-section-content ::ng-deep viking-chart {
-        margin: var(--viking-space-2) 0;
+        margin: var(--viking-space-2) 0 var(--viking-space-1);
       }
 
       .viking-status-section-content
@@ -198,7 +194,7 @@ import {
         align-items: center;
         justify-content: space-between;
         gap: var(--viking-space-2);
-        margin: 0;
+        margin: 0 0 var(--viking-space-2) 0;
         color: var(--viking-text);
         font-size: var(--viking-font-size-lg);
         font-weight: var(--viking-font-weight-bold);
@@ -206,7 +202,7 @@ import {
       }
 
       .viking-status-section-content ::ng-deep .viking-status-section-subtitle {
-        margin: 0;
+        margin: 0 0 var(--viking-space-2) 0;
         color: var(--viking-text-muted);
         font-size: var(--viking-font-size-sm);
         line-height: var(--viking-line-height-relaxed);
@@ -215,13 +211,8 @@ import {
       .viking-status-section-content ::ng-deep .viking-status-section-grid,
       .viking-status-section-content ::ng-deep .viking-status-section-metrics {
         display: grid;
-        grid-template-columns: minmax(
-          0,
-          1fr
-        ); /* Mobile-first: single column, large touch targets */
-        gap: var(
-          --viking-space-4
-        ); /* 32px — better breathing and scannability like Flux cards */
+        grid-template-columns: minmax(0, 1fr);
+        gap: var(--viking-space-5);
         width: 100%;
       }
 
@@ -237,14 +228,14 @@ import {
 
       .viking-status-section-content ::ng-deep .viking-status-service-list {
         display: grid;
-        gap: var(--viking-space-4); /* Consistent section rhythm */
+        gap: var(--viking-space-5);
         width: 100%;
       }
 
       .viking-status-section-content ::ng-deep .viking-status-service {
         display: grid;
-        gap: var(--viking-space-3);
-        padding: var(--viking-space-3) 0; /* Improved horizontal breathing inside service cards */
+        gap: var(--viking-space-4);
+        padding: var(--viking-space-4) 0;
         border-top: 1px solid var(--viking-border-subtle);
       }
 
@@ -259,37 +250,31 @@ import {
       @media (min-width: 768px) {
         .viking-status-section-content ::ng-deep .viking-status-section-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: var(--viking-space-4);
+          gap: var(--viking-space-5);
         }
 
         .viking-status-section-content
           ::ng-deep
           .viking-status-section-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: var(--viking-space-4); /* Consistent breathing */
+          gap: var(--viking-space-5);
         }
       }
 
-      /* lg breakpoint: full 4-col metrics on larger screens */
       @media (min-width: 1024px) {
         .viking-status-section-content
           ::ng-deep
           .viking-status-section-metrics {
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: var(
-            --viking-space-5
-          ); /* More generous for desktop scannability */
+          gap: var(--viking-space-6);
         }
       }
 
-      /* Mobile: comfortable padding + touch targets, still on the grid */
       @media (max-width: 767px) {
         .viking-status-section-hero,
         .viking-status-section-content ::ng-deep .viking-status-section-block {
-          padding: var(
-            --viking-space-3
-          ); /* 24px — good breathing without cramping */
-          gap: var(--viking-space-3);
+          padding: var(--viking-space-4);
+          gap: var(--viking-space-4);
         }
 
         .viking-status-section-title {

@@ -6,7 +6,7 @@
 @mixin viking-control-surface {
   display: flex;
   align-items: center;
-  gap: var(--viking-space-1);
+  gap: var(--viking-space-2); /* Better breathing */
   min-height: var(--viking-control-height);
   padding: 0 var(--viking-control-padding-x);
   font-family: var(--viking-font-family);
@@ -15,7 +15,7 @@
   background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
   border: 1px solid
     color-mix(in srgb, var(--viking-border-strong) 68%, var(--viking-border));
-  border-radius: var(--viking-radius-md);
+  border-radius: var(--viking-radius-lg); /* Consistent with cards/buttons */
   box-shadow:
     var(--viking-shadow-xs),
     inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 4%, transparent);

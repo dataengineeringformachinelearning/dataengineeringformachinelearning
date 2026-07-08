@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { VikingIconBadge } from "../icon-badge/icon-badge";
 import { VikingIconName } from "../../core/icons";
 
-export type VikingChartEmptyTone = "default" | "secure";
+export type VikingChartEmptyTone = "default" | "secure" | "loading";
 export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
 
 /**
@@ -17,18 +17,25 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
     role: "status",
     class: "viking-chart-empty-state empty-chart-state",
     "[class.is-secure]": "tone() === 'secure'",
+    "[class.is-loading]": "tone() === 'loading'",
     "[class.compact]": "layout() === 'compact'",
     "[class.viking-chart-empty-overlay]": "layout() === 'overlay'",
     "[class.viking-chart-empty-fill]": "layout() === 'fill'",
     "[class.viking-chart-empty-inline]": "layout() === 'inline'",
   },
   template: `
-    <viking-icon-badge
-      [icon]="icon()"
-      [tone]="tone() === 'secure' ? 'success' : 'default'"
-    />
-    <h3 class="empty-title">{{ title() }}</h3>
-    <p class="empty-subtitle">{{ description() }}</p>
+    @if (tone() === 'loading') {
+      <div class="viking-chart-skeleton" aria-hidden="true"></div>
+      <h3 class="empty-title">{{ title() }}</h3>
+      <p class="empty-subtitle">{{ description() }}</p>
+    } @else {
+      <viking-icon-badge
+        [icon]="icon()"
+        [tone]="tone() === 'secure' ? 'success' : 'default'"
+      />
+      <h3 class="empty-title">{{ title() }}</h3>
+      <p class="empty-subtitle">{{ description() }}</p>
+    }
     <div class="viking-chart-empty-actions">
       <ng-content />
     </div>
@@ -43,12 +50,13 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
         text-align: center;
         width: 100%;
         box-sizing: border-box;
-        padding: var(--viking-space-5) var(--viking-space-4); /* better breathing room */
+        /* Unified clean empty — Flux modern spacing */
+        padding: var(--viking-chart-empty-padding, var(--viking-space-5) var(--viking-space-4));
         border-radius: var(--viking-radius-xl);
         background: var(--viking-surface-alt);
         border: 1px dashed var(--viking-border);
         box-shadow: var(--viking-shadow-inner);
-        gap: var(--viking-space-3);
+        gap: var(--viking-chart-empty-gap, var(--viking-space-3));
         animation: viking-fade-in var(--viking-duration)
           var(--viking-ease-default);
       }
@@ -106,6 +114,19 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
       :host(.is-secure) .viking-icon-badge {
         background: color-mix(in srgb, var(--viking-success) 14%, transparent);
         color: var(--viking-success);
+      }
+
+      :host(.is-loading) {
+        background: transparent;
+        border-style: solid;
+        box-shadow: none;
+        padding: var(--viking-space-2);
+      }
+
+      :host(.is-loading) .viking-chart-skeleton {
+        width: 100%;
+        min-height: 120px;
+        border-radius: var(--viking-radius-md);
       }
 
       .empty-subtitle {

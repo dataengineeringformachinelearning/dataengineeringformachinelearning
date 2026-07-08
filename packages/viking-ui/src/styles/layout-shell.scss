@@ -13,8 +13,16 @@
     --viking-page-gutter,
     var(--viking-space-2, var(--space-2, 16px))
   );
-  padding-block: var(--viking-space-5, 40px) var(--viking-space-7, 56px);
+  padding-block: var(--viking-space-6, 48px) var(--viking-space-8, 64px);
   box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-page-stack-gap, var(--viking-space-6));
+}
+
+.viking-page-shell > *,
+.page-inner-wrapper > * {
+  min-width: 0;
 }
 
 /* Phone → TV: keep content centered with breathable gutters on ultra-wide displays */
@@ -44,13 +52,13 @@
   width: 100%;
   padding-block: var(
     --viking-section-padding-y,
-    var(--viking-space-6, var(--space-6, 48px))
-  );
+    var(--viking-space-10, 80px)
+  ); /* More generous premium rhythm to match component showcase */
 }
 
 .viking-content-stack {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(
     --viking-page-section-gap,
     var(--viking-space-6, var(--space-6, 48px))
@@ -90,50 +98,48 @@
   margin-inline: auto;
   padding-inline: var(
     --viking-page-gutter,
-    var(--viking-space-3, var(--space-3, 24px))
+    var(--viking-space-4, 32px)
   );
   box-sizing: border-box;
 }
 
 .viking-section-header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-2-5, var(--space-2, 20px));
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-3);
   margin-bottom: var(
     --viking-page-section-gap,
-    var(--viking-space-6, var(--space-6, 48px))
+    var(--viking-space-8)
   );
   max-width: 48rem;
 }
 
 .viking-section-title {
-  margin: 0;
+  margin: 0 0 var(--viking-space-3) 0;
   font-family: var(--viking-font-family);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  font-weight: 700;
-  letter-spacing: var(--header-letter-spacing, -0.02em);
-  color: var(--viking-text, var(--text-color));
+  font-size: var(--viking-font-size-xl);
+  font-weight: var(--viking-font-weight-bold);
+  letter-spacing: var(--viking-letter-spacing-tight);
+  color: var(--viking-text);
 }
 
 .viking-section-lead {
-  margin: 0;
+  margin: 0 0 var(--viking-space-4) 0;
   font-family: var(--viking-font-family);
-  font-size: var(--viking-font-size, var(--base-font-size, 16px));
-  line-height: 1.6;
-  color: var(--viking-text-muted, var(--text-muted));
+  font-size: var(--viking-font-size);
+  line-height: var(--viking-line-height-relaxed);
+  color: var(--viking-text-muted);
 }
 
 .viking-cta-row {
-  display: flex;
-  flex-direction: column;
-  gap: var(--viking-space-2-5, var(--space-2, 20px));
-  align-items: stretch;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-space-4);
   width: 100%;
 
   @media (min-width: 600px) {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--viking-space-3);
     width: auto;
   }
 }

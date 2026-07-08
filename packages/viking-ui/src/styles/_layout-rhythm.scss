@@ -6,20 +6,20 @@
 .viking-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-stack-gap, var(--viking-space-3));
+  gap: var(--viking-stack-gap, var(--viking-space-6)); /* More generous default for component-like breathing */
   align-items: var(--viking-stack-align, stretch);
 }
 
 .viking-stack--tight {
-  --viking-stack-gap: var(--viking-space-1);
+  --viking-stack-gap: var(--viking-space-2);
 }
 
 .viking-stack--compact {
-  --viking-stack-gap: var(--viking-space-1-5);
+  --viking-stack-gap: var(--viking-space-3);
 }
 
 .viking-stack--loose {
-  --viking-stack-gap: var(--viking-space-5);
+  --viking-stack-gap: var(--viking-space-8);
 }
 
 .viking-stack--center {
@@ -58,24 +58,27 @@
 
 .viking-grid {
   display: grid;
-  gap: var(--viking-grid-gap, var(--viking-space-3));
+  gap: var(--viking-grid-gap, var(--viking-space-6)); /* Premium spacing parity with components */
   width: 100%;
 }
 
 .viking-grid--tight {
-  --viking-grid-gap: var(--viking-space-1);
+  --viking-grid-gap: var(--viking-space-2);
 }
 
 .viking-grid--loose {
-  --viking-grid-gap: var(--viking-space-5);
+  --viking-grid-gap: var(--viking-space-8);
 }
 
+/* Mobile-first grid foundation: always start single column */
+.viking-grid--1,
 .viking-grid--2,
 .viking-grid--3,
 .viking-grid--4 {
   grid-template-columns: 1fr;
 }
 
+/* Tablet and up: predictable scaling */
 @media (min-width: 768px) {
   .viking-grid--2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -97,6 +100,11 @@
   }
 }
 
+/* Explicit full-width single column utility for dense content */
+.viking-grid--1 {
+  grid-template-columns: 1fr;
+}
+
 .viking-divider {
   border: 0;
   border-top: 1px solid var(--viking-border-subtle);
@@ -107,12 +115,32 @@
   border-top-color: var(--viking-border);
 }
 
+/* Strong mobile-first main content grid for pages/sections */
+.viking-main-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-grid-gap, var(--viking-space-4));
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .viking-main-grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .viking-main-grid--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .viking-surface-panel,
 .glass-panel {
   background: var(--viking-surface-recipe, var(--viking-surface));
   border: 1px solid
     color-mix(in srgb, var(--viking-border-strong) 78%, var(--viking-border));
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   box-shadow: var(--viking-shadow-md);
   position: relative;
   overflow: hidden;

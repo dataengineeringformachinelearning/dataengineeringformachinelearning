@@ -39,18 +39,20 @@ import { VikingSkeleton } from "../skeleton/skeleton";
     `
       :host {
         display: grid;
-        gap: var(--viking-card-content-gap, var(--viking-space-3));
-        background: var(--viking-surface);
+        gap: var(--viking-card-content-gap, var(--viking-space-5));
+        background: var(--viking-surface-recipe);
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius-lg);
-        padding: var(
-          --viking-card-padding,
-          var(--viking-space-4)
-        ); /* Consistent with THEME.md: space-4 default for polished feel */
+        border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+        padding: var(--viking-card-padding, var(--viking-space-5));
         color: var(--viking-text);
         transition: var(--viking-transition-interactive);
         min-width: 0;
         box-shadow: var(--viking-shadow-sm);
+      }
+
+      /* Clearer visual separation when cards sit on other surfaces */
+      :host(.viking-card) {
+        border-color: var(--viking-border);
       }
       :host(.viking-card-headerless) .viking-card-header,
       :host(.viking-card-headerless) viking-card-header {
@@ -62,14 +64,17 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       :host(.viking-card-interactive):focus-visible {
         outline: var(--viking-ring-width) solid var(--viking-ring);
         outline-offset: var(--viking-ring-offset);
+        border-color: var(--viking-accent-strong);
       }
       :host(.viking-card-interactive):hover {
         border-color: var(--viking-accent-strong);
-        box-shadow: var(--viking-shadow-sm);
+        box-shadow: var(--viking-shadow-hover);
+        background: var(--viking-surface-recipe-elevated);
         transform: translateY(var(--viking-state-hover-lift));
       }
       :host(.viking-card-interactive):active {
         transform: translateY(0) scale(var(--viking-state-active-scale));
+        box-shadow: var(--viking-shadow-sm);
       }
       :host(.viking-card-loading) {
         pointer-events: none;
@@ -82,19 +87,19 @@ import { VikingSkeleton } from "../skeleton/skeleton";
       /* Structured content sections for better Spartan-like polish */
       :host ::ng-deep .viking-card-header,
       :host ::ng-deep viking-card-header {
-        padding-bottom: var(--viking-space-2);
-        margin-bottom: var(--viking-space-2);
+        padding-bottom: var(--viking-space-3);
+        margin-bottom: var(--viking-space-3);
         border-bottom: 1px solid var(--viking-border-subtle);
       }
 
       :host ::ng-deep .viking-card-content,
       :host ::ng-deep .viking-card-body {
-        padding: var(--viking-space-1) 0;
+        padding: var(--viking-space-2) 0;
       }
 
       :host ::ng-deep .viking-card-footer {
-        padding-top: var(--viking-space-2);
-        margin-top: var(--viking-space-2);
+        padding-top: var(--viking-space-3);
+        margin-top: var(--viking-space-3);
         border-top: 1px solid var(--viking-border-subtle);
       }
 
@@ -134,7 +139,7 @@ export class VikingCard {
         align-items: center;
         justify-content: space-between;
         gap: var(--viking-space-3);
-        padding-bottom: var(--viking-space-2-5);
+        padding-bottom: var(--viking-space-3);
         margin-bottom: 0;
         border-bottom: 1px solid var(--viking-border-subtle);
       }

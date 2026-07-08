@@ -55,27 +55,37 @@ a {
 }
 
 .viking-section {
-  padding-block: var(--viking-page-section-gap);
+  padding-block: var(--viking-page-section-gap, var(--viking-space-8)); /* Improved section breathing */
 }
 
 .viking-card {
   display: grid;
-  gap: var(--viking-card-content-gap, var(--viking-space-3));
+  gap: var(--viking-card-content-gap, var(--viking-space-5));
   position: relative;
   overflow: hidden;
   background-clip: padding-box;
   isolation: isolate;
-  padding: var(--viking-card-padding);
+  padding: var(--viking-card-padding, var(--viking-space-5));
   border: 1px solid
     color-mix(in srgb, var(--viking-border-strong) 86%, var(--viking-border));
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-recipe);
   color: var(--viking-text);
   box-shadow:
     var(--viking-shadow-md),
     inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 8%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 24%, transparent);
-  /* Polished: consistent with Spartan structure expectations for spacing/rounding */
+}
+
+/* Better integration of text with card UI */
+.viking-card > p,
+.viking-card .viking-text {
+  margin-bottom: var(--viking-space-2);
+}
+
+.viking-card > p:last-child,
+.viking-card .viking-text:last-child {
+  margin-bottom: 0;
 }
 
 .viking-card::before {
@@ -113,7 +123,8 @@ a {
 
 .viking-card[data-compact="true"] {
   padding: var(--viking-card-padding-compact);
-  gap: var(--viking-card-content-gap-compact, var(--viking-space-2));
+  gap: var(--viking-card-content-gap-compact, var(--viking-space-3));
+  border-radius: var(--viking-radius-lg);
 }
 
 .viking-card[data-interactive="true"],
@@ -129,6 +140,7 @@ a {
     inset 0 1px 0 color-mix(in srgb, var(--viking-white-pure) 10%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--viking-black) 22%, transparent);
   transform: translateY(var(--viking-state-hover-lift));
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
 }
 
 .viking-card[data-interactive="true"]:active,
@@ -311,6 +323,43 @@ viking-button {
 .viking-button:active:not(:disabled):not([aria-busy="true"]),
 .viking-btn:active:not(:disabled):not([aria-busy="true"]) {
   transform: translateY(0) scale(var(--viking-state-active-scale));
+}
+
+/* Universal high-quality interactive polish — makes custom-built sections
+   feel identical to library components (focus, hover, active, rounding) */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+.viking-link:focus-visible,
+.viking-interactive:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+a:hover,
+.viking-link:hover {
+  color: var(--viking-accent);
+  transition: color var(--viking-duration-fast) var(--viking-ease-default);
+}
+
+li > a:focus-visible {
+  outline-offset: 2px;
+}
+
+/* Consistent machined radius + surface for any ad-hoc cards/panels using base tokens */
+.viking-surface,
+.surface-card,
+.content-card {
+  background: var(--viking-surface-recipe);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+  transition: var(--viking-transition-interactive);
+}
+
+.viking-surface:hover,
+.surface-card:hover,
+.content-card:hover {
+  border-color: var(--viking-border-strong);
 }
 
 .viking-button[data-variant="primary"],

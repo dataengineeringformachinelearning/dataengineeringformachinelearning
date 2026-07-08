@@ -64,7 +64,7 @@ export class VikingMetricRow {}
         padding: var(
           --viking-space-3
         ); /* Increased for breathing room, matching Spartan polish */
-        border-radius: var(--viking-radius-lg); /* More generous rounding */
+        border-radius: var(--viking-radius-xl); /* Softer modern feel */
         background: color-mix(
           in srgb,
           var(--viking-surface-alt) 74%,
@@ -96,6 +96,7 @@ export class VikingMetricRow {}
         letter-spacing: var(--viking-letter-spacing-caps);
         line-height: var(--viking-line-height-snug);
         text-transform: uppercase;
+        margin-bottom: var(--viking-space-half);
       }
 
       .viking-metric-value {
@@ -113,6 +114,7 @@ export class VikingMetricRow {}
         color: var(--viking-text-subtle);
         font-size: var(--viking-font-size-xs);
         line-height: var(--viking-line-height-snug);
+        margin-top: var(--viking-space-half);
       }
 
       :host(.viking-metric-card-success) .viking-metric-card-icon,

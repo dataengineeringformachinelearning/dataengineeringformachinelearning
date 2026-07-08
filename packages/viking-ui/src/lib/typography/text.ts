@@ -21,9 +21,7 @@ import {
         font-size: var(--viking-font-size);
         line-height: var(--viking-line-height-relaxed);
         color: var(--viking-text);
-        margin-bottom: var(
-          --viking-space-half
-        ); /* Improved paragraph spacing */
+        margin: 0 0 var(--viking-space-2) 0;
       }
       :host(.viking-text-inline) {
         display: inline;
@@ -32,11 +30,11 @@ import {
         color: var(--viking-text-muted);
       }
       :host(.viking-text-strong) {
-        font-weight: 600;
+        font-weight: var(--viking-font-weight-semibold);
       }
       :host(.viking-text-accent) {
         color: var(--viking-accent);
-        font-weight: 500;
+        font-weight: var(--viking-font-weight-medium);
       }
     `,
   ],

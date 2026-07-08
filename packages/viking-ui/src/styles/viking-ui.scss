@@ -11,6 +11,7 @@
 @use 'layout-shell';
 @use 'static-navbar';
 @use 'components/footer';
+@use 'components/chart';
 
 // ============================================================================
 // Viking-UI design tokens
@@ -33,14 +34,20 @@
   --viking-accent-secondary-content: var(--viking-white-pure);
   --viking-accent-secondary-soft: color-mix(in srgb, var(--viking-accent-secondary) 16%, transparent);
 
-  /* Surfaces */
+  /* Surfaces — refined hierarchy for depth (dark-first)
+     bg          : deepest page / backdrop
+     surface     : primary cards, panels
+     surface-alt : inset wells, secondary content
+     surface-inset : recessed / nested content areas (stronger recession)
+     surface-raised: elevated chips, hover targets, controls */
   --viking-bg: var(--bg-color, var(--viking-charcoal-900));
   --viking-surface: var(--card-bg, var(--viking-charcoal-800));
   --viking-surface-alt: var(--color-surface-variant, var(--viking-charcoal-700));
+  --viking-surface-inset: var(--viking-charcoal-850);
   --viking-surface-raised: var(--viking-charcoal-600);
   --viking-overlay-backdrop: color-mix(in srgb, var(--viking-charcoal-950) 72%, transparent);
 
-  /* Text */
+  /* Text — improved hierarchy and contrast on deep navy */
   --viking-text: var(--text-color, var(--viking-white));
   --viking-text-muted: var(--text-muted, var(--viking-metallic-200));
   --viking-text-subtle: var(--viking-metallic-300);
@@ -155,8 +162,40 @@
   --viking-space-7: 56px;
   --viking-space-8: 64px;
 
-  /* Chart axis labels */
-  --viking-chart-axis-size: 11px; /* slightly smaller, cleaner on dense UIs */
+  /* Chart — unified visual language (Flux-inspired: clean, modern, well-spaced) */
+  --viking-chart-axis-size: 11px;
+  --viking-chart-axis-size-mobile: 12px;
+  --viking-chart-gutter-default: 16px 24px 44px 52px;
+  --viking-chart-gutter-fill: 8px 12px 28px 36px;
+  --viking-chart-padding: var(--viking-space-2) var(--viking-space-1);
+  --viking-chart-padding-fill: var(--viking-space-3) var(--viking-space-2);
+  --viking-chart-grid-stroke: color-mix(in srgb, var(--viking-border) 32%, transparent);
+  --viking-chart-grid-width: 0.75;
+  --viking-chart-grid-dash: 2 3;
+  --viking-chart-axis-stroke: color-mix(in srgb, var(--viking-border) 68%, transparent);
+  --viking-chart-axis-width: 1;
+  --viking-chart-tick-length: 5px;
+  --viking-chart-axis-color: var(--viking-text-subtle);
+  --viking-chart-line-width: 2.25;
+  --viking-chart-line-width-fill: 2.5;
+  --viking-chart-area-opacity: 0.22;
+  --viking-chart-point-radius: 3.5;
+  --viking-chart-point-stroke: var(--viking-surface);
+  --viking-chart-bar-radius: 3px;
+  --viking-chart-bar-min-height: 3px;
+  --viking-chart-legend-gap: var(--viking-space-2) var(--viking-space-3);
+  --viking-chart-legend-margin: var(--viking-space-3) 0 0;
+  --viking-chart-legend-margin-fill: var(--viking-space-4) 0 0;
+  --viking-chart-swatch-size: 8px;
+  --viking-chart-legend-size: var(--viking-font-size-xs);
+  --viking-chart-tooltip-bg: var(--viking-surface-raised);
+  --viking-chart-tooltip-border: var(--viking-border-strong);
+  --viking-chart-tooltip-text: var(--viking-text);
+  --viking-chart-tooltip-size: var(--viking-font-size-xs);
+  --viking-chart-tooltip-padding: var(--viking-space-half) var(--viking-space-1-5);
+  --viking-chart-tooltip-radius: var(--viking-radius);
+  --viking-chart-empty-padding: var(--viking-space-5) var(--viking-space-4);
+  --viking-chart-empty-gap: var(--viking-space-3);
 
   /* Page shell */
   --viking-container-max-width: var(--container-max-width, 1260px);
@@ -181,14 +220,39 @@
   --viking-z-tooltip: 1200;
 }
 
-/* Dark surfaces — danger text uses full crimson */
+/* Dark surfaces — refined depth, borders, and hierarchy */
 html[data-theme='dark'] {
   --viking-danger-text: var(--viking-danger);
+
+  /* Stronger recession for page background vs cards */
+  --viking-bg: var(--viking-navy-900);
+  --viking-surface: var(--viking-navy-800);
+  --viking-surface-alt: var(--viking-navy-700);
+  --viking-surface-inset: var(--viking-navy-850);
+  --viking-surface-raised: var(--viking-navy-600);
+
+  /* More sophisticated border separation in dark */
+  --viking-border: color-mix(in srgb, var(--viking-metallic-600) 52%, transparent);
+  --viking-border-strong: color-mix(in srgb, var(--viking-metallic-400) 72%, transparent);
+  --viking-border-subtle: color-mix(in srgb, var(--viking-metallic-600) 26%, transparent);
+
+  /* Better text contrast hierarchy on richer navy */
+  --viking-text-muted: var(--viking-metallic-200);
+  --viking-text-subtle: var(--viking-metallic-300);
 }
 
 @media (prefers-color-scheme: dark) {
   html:not([data-theme='light']) {
     --viking-danger-text: var(--viking-danger);
+
+    --viking-bg: var(--viking-navy-900);
+    --viking-surface: var(--viking-navy-800);
+    --viking-surface-alt: var(--viking-navy-700);
+    --viking-surface-inset: var(--viking-navy-850);
+    --viking-surface-raised: var(--viking-navy-600);
+
+    --viking-text-muted: var(--viking-metallic-200);
+    --viking-text-subtle: var(--viking-metallic-300);
   }
 }
 
@@ -228,25 +292,25 @@ body,
   font-size: var(--viking-font-size-ui);
   line-height: var(--viking-line-height-snug);
   color: var(--viking-text-inverted);
-  background: var(--viking-charcoal-900);
+  background: var(--viking-surface-raised);
   border: 1px solid var(--viking-border-strong);
   border-radius: var(--viking-radius);
-  box-shadow: var(--viking-shadow-md);
+  box-shadow: var(--viking-shadow-lg);
   pointer-events: none;
   animation: viking-tooltip-in var(--viking-duration-fast) var(--viking-ease-out);
 }
 
 html[data-theme='light'] .viking-tooltip {
   color: var(--viking-white-pure);
-  background: var(--viking-charcoal-800);
-  border-color: color-mix(in srgb, var(--viking-charcoal-600) 45%, transparent);
+  background: var(--viking-surface-raised);
+  border-color: var(--viking-border-strong);
 }
 
 @media (prefers-color-scheme: light) {
   html:not([data-theme='dark']) .viking-tooltip {
     color: var(--viking-white-pure);
-    background: var(--viking-charcoal-800);
-    border-color: color-mix(in srgb, var(--viking-charcoal-600) 45%, transparent);
+    background: var(--viking-surface-raised);
+    border-color: var(--viking-border-strong);
   }
 }
 

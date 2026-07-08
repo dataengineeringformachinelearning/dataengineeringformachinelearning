@@ -8,6 +8,9 @@ import {
 export type VikingChartPanelSize = "large" | "medium";
 export type VikingChartPanelBody = "default" | "origin-map";
 
+/** Optional loading flag — when true renders a skeleton in body for chart content. */
+
+
 /**
  * viking-chart-panel — outlined analytics card shell with consistent header/body rhythm.
  */
@@ -19,11 +22,16 @@ export type VikingChartPanelBody = "default" | "origin-map";
     "[class.viking-chart-panel-large]": "size() === 'large'",
     "[class.viking-chart-panel-medium]": "size() === 'medium'",
     "[class.viking-chart-panel-origin-map]": "body() === 'origin-map'",
+    "[class.viking-chart-panel-loading]": "loading()",
   },
   template: `
     <ng-content select="viking-chart-card-header" />
     <div [class]="bodyClasses()">
-      <ng-content />
+      @if (loading()) {
+        <div class="viking-chart-skeleton" aria-hidden="true"></div>
+      } @else {
+        <ng-content />
+      }
     </div>
   `,
   styles: [
@@ -50,9 +58,10 @@ export type VikingChartPanelBody = "default" | "origin-map";
         flex-direction: column;
         position: relative;
         overflow: hidden;
-        padding: var(--viking-space-2) var(--viking-space-4)
-          var(--viking-space-4);
+        /* Flux-like well spaced internal padding */
+        padding: var(--viking-space-3) var(--viking-space-4) var(--viking-space-4);
         box-sizing: border-box;
+        gap: var(--viking-space-2);
       }
 
       :host(.viking-chart-panel-large) .viking-chart-panel-body {
@@ -114,12 +123,18 @@ export type VikingChartPanelBody = "default" | "origin-map";
         position: relative;
         visibility: visible;
       }
+
+      :host(.viking-chart-panel-loading) .viking-chart-panel-body {
+        align-items: center;
+        justify-content: center;
+      }
     `,
   ],
 })
 export class VikingChartPanel {
   readonly size = input<VikingChartPanelSize>("medium");
   readonly body = input<VikingChartPanelBody>("default");
+  readonly loading = input<boolean>(false);
 
   protected readonly bodyClasses = computed(() => {
     const sizeClass =

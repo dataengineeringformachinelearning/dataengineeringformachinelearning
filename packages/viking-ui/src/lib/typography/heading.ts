@@ -27,22 +27,23 @@ import {
         letter-spacing: var(--viking-letter-spacing-tight);
         font-size: var(--viking-font-size);
         line-height: var(--viking-line-height-tight);
-        margin-bottom: var(--viking-space-1); /* Consistent vertical rhythm */
+        margin: 0 0 var(--viking-space-3) 0;
       }
       :host(.viking-heading-sm) {
         font-size: var(--viking-font-size-sm);
         font-weight: var(--viking-font-weight-medium);
-        margin-bottom: var(--viking-space-half);
+        margin-bottom: var(--viking-space-2);
       }
       :host(.viking-heading-lg) {
         font-size: var(--viking-font-size-lg);
         font-weight: var(--viking-font-weight-semibold);
+        margin-bottom: var(--viking-space-4);
       }
       :host(.viking-heading-xl) {
         font-size: var(--viking-font-size-xl);
         font-weight: var(--viking-font-weight-bold);
         letter-spacing: var(--viking-letter-spacing-tight);
-        margin-bottom: var(--viking-space-2);
+        margin-bottom: var(--viking-space-4);
       }
     `,
   ],

@@ -25,8 +25,8 @@ import { ChangeDetectionStrategy, Component, input } from "@angular/core";
         flex-direction: column;
         align-items: flex-start;
         gap: var(--viking-space-1);
-        padding: var(--viking-space-3) var(--viking-space-4)
-          var(--viking-space-2);
+        /* Integrated with viking-card rhythm — generous but not sparse */
+        padding: var(--viking-space-3) var(--viking-space-4) var(--viking-space-2);
         width: 100%;
         box-sizing: border-box;
         flex-shrink: 0;
@@ -54,7 +54,7 @@ import { ChangeDetectionStrategy, Component, input } from "@angular/core";
       }
 
       .chart-custom-trend {
-        color: var(--color-primary);
+        color: var(--viking-accent);
         font-size: var(--viking-font-size-sm, 14px);
         font-family: var(--viking-font-family);
         font-weight: var(--viking-font-weight-semibold, 600);

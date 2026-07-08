@@ -10,12 +10,18 @@
 :root {
   color-scheme: dark light;
 
-  /* ── Deep navy surfaces (precision-engineered industrial luxury) ──── */
+  /* ── Deep navy surfaces (precision-engineered industrial luxury) ────
+     Stepped elevation for visual depth and hierarchy. Darker steps recede,
+     mid steps provide rich card surfaces, lighter steps for raised controls.
+     All elevation uses token stepping, never stacked opacity. */
   --viking-navy-1000: #01030a;
-  --viking-navy-950: #030818;
-  --viking-navy-900: #0a1024;
+  --viking-navy-950: #020610;
+  --viking-navy-900: #080d1f;
+  --viking-navy-850: #0c1229;
   --viking-navy-800: #101b33;
-  --viking-navy-700: #162544;
+  --viking-navy-750: #14203c;
+  --viking-navy-700: #18263f;
+  --viking-navy-650: #1c2a48;
   --viking-navy-600: #1e3054;
   --viking-navy-500: #284068;
   --viking-navy-400: #39547f;
@@ -37,8 +43,11 @@
   /* ── Charcoal surfaces (legacy alias — maps to navy in semantic tokens) ─ */
   --viking-charcoal-950: var(--viking-navy-950);
   --viking-charcoal-900: var(--viking-navy-900);
+  --viking-charcoal-850: var(--viking-navy-850);
   --viking-charcoal-800: var(--viking-navy-800);
+  --viking-charcoal-750: var(--viking-navy-750);
   --viking-charcoal-700: var(--viking-navy-700);
+  --viking-charcoal-650: var(--viking-navy-650);
   --viking-charcoal-600: var(--viking-navy-600);
   --viking-charcoal-500: var(--viking-navy-500);
   --viking-charcoal-400: var(--viking-navy-400);
@@ -200,34 +209,49 @@
   --viking-radius-pill: 999px;
   --viking-radius-full: var(--viking-radius-pill);
 
-  /* ── Elevation — tactile shadows with subtle metallic top-edge ───────────── */
+  /* Softer modern defaults: favor larger radii */
+  --viking-card-radius: var(--viking-radius-xl);
+  --viking-button-radius: var(--viking-radius-xl);
+
+  /* ── Elevation — sophisticated machined depth and hierarchy ─────────────
+     Dark navy benefits from layered low-opacity drops + crisp metallic
+     top-edge specular highlights. Higher elevation = stronger drop + brighter
+     inset line. Use token stepping for surfaces; shadows provide tactile lift.
+     Never stack many layers — prefer stepped navy + one good shadow. */
   --viking-shadow-xs:
-    0 1px 2px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    0 1px 1px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.025);
   --viking-shadow-sm:
-    0 2px 5px rgba(0, 0, 0, 0.22),
-    0 1px 2px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 2px 4px rgba(0, 0, 0, 0.26),
+    0 1px 2px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
   --viking-shadow-md:
-    0 10px 24px rgba(0, 0, 0, 0.18),
-    0 3px 8px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    0 8px 18px rgba(0, 0, 0, 0.28),
+    0 2px 6px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
   --viking-shadow-lg:
-    0 20px 44px rgba(0, 0, 0, 0.26),
-    0 8px 18px rgba(0, 0, 0, 0.22),
+    0 16px 32px rgba(0, 0, 0, 0.32),
+    0 4px 12px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.065);
+  --viking-shadow-xl:
+    0 24px 48px rgba(0, 0, 0, 0.36),
+    0 8px 18px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.07);
   --viking-shadow-inner:
-    inset 0 1px 2px rgba(0, 0, 0, 0.22),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.02);
+    inset 0 1px 2px rgba(0, 0, 0, 0.32),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.015);
   --viking-shadow-hover:
-    0 18px 36px rgba(0, 0, 0, 0.26),
-    0 6px 14px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 14px 28px rgba(0, 0, 0, 0.30),
+    0 4px 10px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075);
   --viking-shadow-focus:
     0 0 0 var(--viking-ring-offset) var(--viking-bg),
     0 0 0 calc(var(--viking-ring-offset) + var(--viking-ring-width))
       var(--viking-ring);
-  --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --viking-surface-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.055);
+
+  /* ── Refined surface layering for depth (dark-first) ───────────────────── */
+  --viking-surface-inset: var(--viking-navy-850);
 
   /* ── Chart scale — unified responsive min/max (matches 720×240 SVG viewBox) ─ */
   --viking-chart-ratio: 3 / 1;
@@ -312,16 +336,17 @@
   --viking-page-gutter: clamp(var(--viking-space-2), 5vw, var(--viking-space-4));
   --viking-page-gutter-lg: var(--viking-space-5);
   --viking-page-gutter-xl: var(--viking-space-7);
-  --viking-page-stack-gap: var(--viking-space-5);
-  --viking-page-section-gap: var(--viking-space-8);
-  --viking-section-padding-y: var(--viking-space-9);
-  --viking-section-padding-y-compact: var(--viking-space-7);
-  --viking-card-padding: var(--viking-space-4);
-  --viking-card-padding-compact: var(--viking-space-3);
-  --viking-card-content-gap: var(--viking-space-3);
-  --viking-card-content-gap-compact: var(--viking-space-2);
-  --viking-panel-padding: var(--viking-space-4);
-  --viking-panel-header-padding: var(--viking-space-3) var(--viking-space-4);
+  --viking-page-stack-gap: var(--viking-space-6);
+  --viking-page-section-gap: var(--viking-space-10);
+  --viking-dashboard-grid-gap: var(--viking-space-5);
+  --viking-section-padding-y: var(--viking-space-10);
+  --viking-section-padding-y-compact: var(--viking-space-8);
+  --viking-card-padding: var(--viking-space-5); /* 40px - more generous breathing */
+  --viking-card-padding-compact: var(--viking-space-4);
+  --viking-card-content-gap: var(--viking-space-5);
+  --viking-card-content-gap-compact: var(--viking-space-3);
+  --viking-panel-padding: var(--viking-space-5);
+  --viking-panel-header-padding: var(--viking-space-4) var(--viking-space-5);
   --viking-form-max-width: 42rem;
   --viking-form-narrow-max-width: 28rem;
   --viking-content-readable-max-width: 48rem;
@@ -337,8 +362,47 @@
   --viking-z-toast: 1100;
   --viking-z-tooltip: 1200;
 
-  /* ── Chart ───────────────────────────────────────────────────────────────── */
-  --viking-chart-axis-size: 11px; /* slightly smaller, cleaner on dense UIs */
+  /* ── Chart — unified visual language (Flux-inspired clean, modern, well-spaced) ─ */
+  --viking-chart-axis-size: 11px;
+  --viking-chart-axis-size-mobile: 12px;
+  --viking-chart-label-size: 10px;
+  /* Internal breathing (gutters + viewport padding) */
+  --viking-chart-gutter-default: 16px 24px 44px 52px; /* top right bottom left — generous for axes */
+  --viking-chart-gutter-fill: 8px 12px 28px 36px;
+  --viking-chart-padding: var(--viking-space-2) var(--viking-space-1);
+  --viking-chart-padding-fill: var(--viking-space-3) var(--viking-space-2);
+  /* Grid & axes */
+  --viking-chart-grid-stroke: color-mix(in srgb, var(--viking-border) 32%, transparent);
+  --viking-chart-grid-width: 0.75;
+  --viking-chart-grid-dash: 2 3;
+  --viking-chart-axis-stroke: color-mix(in srgb, var(--viking-border) 68%, transparent);
+  --viking-chart-axis-width: 1;
+  --viking-chart-tick-length: 5px;
+  --viking-chart-axis-color: var(--viking-text-subtle);
+  /* Lines, areas, points, bars */
+  --viking-chart-line-width: 2.25;
+  --viking-chart-line-width-fill: 2.5;
+  --viking-chart-area-opacity: 0.22;
+  --viking-chart-point-radius: 3.5;
+  --viking-chart-point-stroke: var(--viking-surface);
+  --viking-chart-bar-radius: 3px;
+  --viking-chart-bar-min-height: 3px;
+  /* Legend */
+  --viking-chart-legend-gap: var(--viking-space-2) var(--viking-space-3);
+  --viking-chart-legend-margin: var(--viking-space-3) 0 0;
+  --viking-chart-legend-margin-fill: var(--viking-space-4) 0 0;
+  --viking-chart-swatch-size: 8px;
+  --viking-chart-legend-size: var(--viking-font-size-xs);
+  /* Tooltip */
+  --viking-chart-tooltip-bg: var(--viking-surface-raised);
+  --viking-chart-tooltip-border: var(--viking-border-strong);
+  --viking-chart-tooltip-text: var(--viking-text);
+  --viking-chart-tooltip-size: var(--viking-font-size-xs);
+  --viking-chart-tooltip-padding: var(--viking-space-half) var(--viking-space-1-5);
+  --viking-chart-tooltip-radius: var(--viking-radius);
+  /* Empty / loading */
+  --viking-chart-empty-padding: var(--viking-space-5) var(--viking-space-4);
+  --viking-chart-empty-gap: var(--viking-space-3);
 
   /* ── Icons ─────────────────────────────────────────────────────────────────── */
   --viking-icon-size-sm: 16px;

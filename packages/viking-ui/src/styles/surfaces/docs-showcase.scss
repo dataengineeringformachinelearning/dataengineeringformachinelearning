@@ -173,7 +173,7 @@
   position: relative;
   overflow: hidden;
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   padding: var(--viking-space-3);
   background: var(--viking-surface);
   box-shadow: var(--viking-shadow-sm);
@@ -201,7 +201,7 @@
 /* Toolbar — unified with hero panel aesthetic */
 .showcase-toolbar {
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface);
   box-shadow: var(--viking-shadow-xs);
   padding: var(--viking-card-padding);
@@ -372,27 +372,44 @@
 .component-showcase-card {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-4);
+  gap: var(--viking-space-5);
   scroll-margin-top: calc(
     var(--viking-navbar-height, 64px) + var(--showcase-subnav-height, 52px) +
       56px
   );
-  transition:
-    transform var(--viking-duration-normal) var(--viking-ease-out),
-    border-color var(--viking-duration-normal) var(--viking-ease-out),
-    box-shadow var(--viking-duration-normal) var(--viking-ease-out);
+  transition: var(--viking-transition-interactive);
+  border: 1px solid var(--viking-border);
+  background: var(--viking-surface-recipe);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+  padding: var(--viking-card-padding, var(--viking-space-5));
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.component-showcase-card:hover {
+  border-color: var(--viking-accent-strong);
+  box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
+}
+
+.component-showcase-card:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: var(--viking-ring-offset);
+}
+
+.component-showcase-card-compact {
+  padding: var(--viking-card-padding-compact, var(--viking-space-4));
 }
 
 .component-showcase-card-compact:hover {
-  transform: translateY(var(--viking-state-hover-lift, -3px));
-  border-color: var(--viking-accent);
+  border-color: var(--viking-accent-strong);
   box-shadow: var(--viking-shadow-hover);
+  transform: translateY(var(--viking-state-hover-lift));
 }
 
 .component-showcase-header {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3); /* Better breathing in showcase headers */
 }
 
 .component-showcase-title-block {
@@ -432,19 +449,20 @@
   /* Premium centered stage — clean recessed surface for demos (excellent light + dark) */
   padding: var(--viking-space-6);
   background: color-mix(in srgb, var(--viking-surface) 82%, var(--viking-bg));
-  border: 1px solid var(--viking-border-subtle);
-  border-radius: var(--viking-radius-lg);
-  min-height: 8.5rem;
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-xl); /* Softer for showcase cards */
+  min-height: 10rem; /* Generous breathing */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--viking-space-3);
+  gap: var(--viking-space-4);
   width: 100%;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  /* Machined depth */
+  /* Machined depth + subtle elevation */
   box-shadow:
+    var(--viking-shadow-sm),
     inset 0 1px 0 color-mix(in srgb, var(--viking-border) 40%, transparent),
     inset 0 -1px 0 color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
 }
@@ -791,7 +809,7 @@
 .landing-stat {
   padding: var(--viking-card-padding-compact);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-recipe, var(--viking-surface));
   min-width: 0;
   box-shadow: var(--viking-shadow-sm);
@@ -855,7 +873,7 @@
 .landing-preview-panel {
   padding: var(--viking-card-padding);
   border: 1px solid var(--viking-border-strong);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background:
     linear-gradient(
       135deg,
@@ -1108,7 +1126,7 @@ viking-card-wc.landing-doctrine-card > * {
   align-items: center;
   padding: var(--viking-space-4);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-recipe, var(--viking-surface));
   box-shadow: var(--viking-shadow-md);
 }
@@ -1147,7 +1165,7 @@ viking-card-wc.landing-doctrine-card > * {
   max-width: 24rem;
   padding: var(--viking-space-3);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-alt);
   display: flex;
   flex-direction: column;
@@ -1159,7 +1177,7 @@ viking-card-wc.landing-doctrine-card > * {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--viking-border-strong);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-raised, var(--viking-surface));
   box-shadow: var(--viking-shadow-lg);
   overflow: hidden;
@@ -1340,7 +1358,7 @@ viking-card-wc.landing-doctrine-card > * {
 .showcase-modal-demo {
   position: relative;
   padding: var(--viking-space-4);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-alt);
   overflow: hidden;
 }
@@ -1396,7 +1414,7 @@ viking-card-wc.landing-doctrine-card > * {
   margin-bottom: var(--viking-space-2);
   padding: var(--viking-space-3);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-alt);
 }
 
@@ -1438,7 +1456,7 @@ viking-card-wc.landing-doctrine-card > * {
   margin: 0;
   padding: var(--viking-space-2);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   overflow-x: auto;
   font-size: var(--viking-font-size-sm);
   line-height: var(--viking-line-height-relaxed);

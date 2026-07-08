@@ -25,7 +25,7 @@
   gap: var(--viking-space-2); /* Improved spacing for icons + label, Spartan-like */
   min-height: var(--viking-control-height);
   padding: var(--viking-space-1) var(--viking-control-padding-x); /* More generous vertical breathing */
-  border-radius: var(--viking-button-radius, var(--viking-radius-lg));
+  border-radius: var(--viking-button-radius, var(--viking-radius-xl)); /* Softer modern buttons */
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;

@@ -42,10 +42,10 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         width: 100%;
         overflow-x: auto;
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius-lg);
-        background: var(--viking-surface);
+        border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+        background: var(--viking-surface-recipe);
         box-shadow: var(--viking-shadow-sm);
-        transition: var(--viking-transition-colors);
+        transition: var(--viking-transition-interactive);
         position: relative;
       }
       :host::before {
@@ -87,12 +87,21 @@ import { VikingSkeleton } from "../skeleton/skeleton";
           var(--viking-bg) 40%,
           var(--viking-surface)
         );
-        padding: var(--viking-space-1-5) var(--viking-space-2);
+        padding: var(--viking-space-2) var(--viking-space-3);
         border-bottom: 1px solid var(--viking-border-strong);
         white-space: nowrap;
       }
+      :host ::ng-deep tbody tr:hover td {
+        background: var(--viking-surface-alt);
+      }
+
+      :host ::ng-deep tbody tr:focus-visible td {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: -2px;
+      }
+
       :host ::ng-deep tbody td {
-        padding: var(--viking-space-1-5) var(--viking-space-2);
+        padding: var(--viking-space-2) var(--viking-space-3);
         border-bottom: 1px solid var(--viking-border-subtle);
         vertical-align: middle;
         transition: background-color var(--viking-duration-fast)

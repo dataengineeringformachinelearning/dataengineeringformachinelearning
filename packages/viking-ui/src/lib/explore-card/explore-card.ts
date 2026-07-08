@@ -134,37 +134,33 @@ const segmentToDataPoint = (
         display: grid;
         grid-template-columns: minmax(0, 1fr) max-content;
         align-items: center;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         min-width: 0;
         min-height: var(--viking-touch-target-comfort);
-        padding: var(
-          --viking-space-2
-        ); /* Increased internal padding for breathing room */
-        border-radius: var(--viking-radius); /* Larger rounding for structure */
-        background: color-mix(
-          in srgb,
-          var(--viking-surface-alt) 78%,
-          var(--viking-surface)
-        );
+        padding: var(--viking-space-4);
+        border-radius: var(--viking-radius-md);
+        background: var(--viking-surface-alt);
+        border: 1px solid var(--viking-border-subtle);
         color: var(--viking-text);
         box-sizing: border-box;
         transition: var(--viking-transition-interactive);
       }
 
       :host(:hover) {
-        background: color-mix(
-          in srgb,
-          var(--viking-surface-alt) 92%,
-          var(--viking-surface)
-        );
+        background: var(--viking-surface-raised);
+        border-color: var(--viking-border);
+        transform: translateY(var(--viking-state-hover-lift));
+      }
+
+      :host(:focus-visible) {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
       }
 
       .viking-explore-card-metric-copy {
         display: flex;
         align-items: center;
-        gap: var(
-          --viking-space-2
-        ); /* Better breathing between icon and labels */
+        gap: var(--viking-space-3);
         min-width: 0;
       }
 
@@ -374,39 +370,35 @@ export class ExploreCardMetricItemComponent {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
-        gap: var(--viking-space-2);
+        gap: var(--viking-space-3);
         min-width: 0;
       }
 
       .viking-explore-card-badges {
         justify-content: space-between;
-        padding-top: var(--viking-space-3); /* Increased breathing room */
-        margin-top: var(--viking-space-2);
+        padding-top: var(--viking-space-4);
+        margin-top: var(--viking-space-3);
         border-top: 1px solid var(--viking-border-subtle);
       }
 
       .viking-explore-card-metrics {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
-        gap: var(
-          --viking-space-3
-        ); /* Increased for better on-grid spacing and breathing */
+        gap: var(--viking-space-5);
         width: 100%;
         min-width: 0;
-        align-items: start; /* Structured alignment across the 2x2 */
+        align-items: start;
       }
 
       .viking-explore-card-footer {
-        padding-top: var(
-          --viking-space-4
-        ); /* Better separation and breathing from uptime/metrics */
+        padding-top: var(--viking-space-5);
         border-top: 1px solid var(--viking-border-subtle);
       }
 
       /* Uptime bar section breathing — more space above/below for visual separation */
       .viking-explore-card-metrics + viking-uptime-history {
-        margin-top: var(--viking-space-2);
-        padding-top: var(--viking-space-2);
+        margin-top: var(--viking-space-3);
+        padding-top: var(--viking-space-3);
         border-top: 1px solid var(--viking-border-subtle);
       }
 

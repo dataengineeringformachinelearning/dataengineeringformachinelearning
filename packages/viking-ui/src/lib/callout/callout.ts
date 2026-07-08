@@ -61,10 +61,8 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         display: flex;
         align-items: flex-start;
         gap: var(--viking-space-3); /* Improved gap for polish */
-        padding: var(
-          --viking-space-3
-        ); /* More consistent, generous padding like Spartan alerts */
-        border-radius: var(--viking-radius-lg);
+        padding: var(--viking-space-4); /* Generous breathing room */
+        border-radius: var(--viking-radius-xl); /* Consistent softer */
         background: var(--viking-surface);
         color: var(--viking-text);
         font-family: var(--viking-font-family);

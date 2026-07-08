@@ -6,7 +6,7 @@
 
 // Typography
 .viking-heading {
-  margin: 0;
+  margin: 0 0 var(--viking-space-3) 0;
   font-weight: var(--viking-font-weight-bold);
   letter-spacing: var(--viking-letter-spacing-tight);
   line-height: var(--viking-line-height-tight);
@@ -14,25 +14,29 @@
 }
 
 .viking-heading-xl {
-  font-size: clamp(var(--viking-font-size-2xl), 4vw, var(--viking-font-size-4xl));
+  font-size: var(--viking-font-size-xl);
+  margin-bottom: var(--viking-space-4);
 }
 
 .viking-heading-lg {
-  font-size: var(--viking-font-size-xl);
+  font-size: var(--viking-font-size-lg);
+  margin-bottom: var(--viking-space-3);
 }
 
 .viking-heading-sm {
   font-size: var(--viking-font-size-lg);
+  font-weight: var(--viking-font-weight-semibold);
+  margin-bottom: var(--viking-space-2);
 }
 
 .viking-text {
-  margin: 0;
+  margin: 0 0 var(--viking-space-2) 0;
   line-height: var(--viking-line-height-relaxed);
   color: var(--viking-text);
 }
 
 .viking-text-muted {
-  margin: 0;
+  margin: 0 0 var(--viking-space-2) 0;
   line-height: var(--viking-line-height-relaxed);
   color: var(--viking-text-muted);
   max-width: var(--viking-content-readable-max-width, 48rem);
@@ -45,14 +49,16 @@
   letter-spacing: var(--viking-letter-spacing-caps);
   text-transform: uppercase;
   color: var(--viking-text-muted);
+  margin-bottom: var(--viking-space-half);
 }
 
 .viking-metric {
   display: block;
-  font-size: var(--viking-font-size-2xl);
+  font-size: var(--viking-font-size-xl);
   font-weight: var(--viking-font-weight-bold);
   font-variant-numeric: tabular-nums;
   color: var(--viking-text);
+  margin-bottom: var(--viking-space-1);
 }
 
 // Badge
@@ -333,7 +339,7 @@
   gap: var(--viking-space-2);
   padding: var(--viking-space-4);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   background: var(--viking-surface-recipe, var(--viking-surface));
   box-shadow: var(--viking-shadow-md);
 }
@@ -523,13 +529,12 @@
 .viking-hud-panel {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-1);
-  padding: var(--viking-card-padding);
-  border: 1px solid var(--viking-border-strong);
-  border-radius: var(--viking-radius-lg);
+  gap: var(--viking-space-4);
+  padding: var(--viking-space-5);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-xl);
   background: var(--viking-surface-recipe, var(--viking-surface));
-  box-shadow: var(--viking-shadow-md);
-  max-width: 20rem;
+  box-shadow: var(--viking-shadow-sm);
 }
 
 .viking-avatar-static {
@@ -560,7 +565,7 @@
   padding: var(--viking-space-4);
   text-align: center;
   border: 1px dashed var(--viking-border);
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   max-width: 24rem;
 }
 
@@ -603,7 +608,7 @@
   height: var(--viking-icon-badge-size, var(--viking-space-6));
   padding: var(--viking-icon-badge-padding, var(--viking-space-half));
   box-sizing: border-box;
-  border-radius: var(--viking-radius-lg);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   border: none;
   background: var(--viking-accent-soft);
   color: var(--viking-accent-strong);

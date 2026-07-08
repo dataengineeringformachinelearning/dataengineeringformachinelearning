@@ -113,6 +113,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         width: 100%;
         min-width: 0;
         box-sizing: border-box;
+        /* Unified with chart visual language */
       }
 
       .uptime-history-header {
@@ -148,7 +149,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         min-width: 0;
         height: var(--viking-uptime-history-height, var(--viking-space-4));
         padding: var(--viking-space-1);
-        border-radius: var(--viking-radius-lg); /* more structured rounding */
+        border-radius: var(--viking-radius-lg);
         background: var(--viking-surface-inset);
         box-sizing: border-box;
         border: 1px solid var(--viking-border-subtle);
@@ -158,6 +159,16 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         height: var(--viking-space-3);
         padding: var(--viking-space-half);
         border-radius: var(--viking-radius);
+      }
+
+      /* Mobile: ensure minimum segment width for readability */
+      @media (max-width: 480px) {
+        .uptime-history-bar {
+          gap: 1px;
+        }
+        .uptime-history-segment {
+          min-width: 2.5px;
+        }
       }
 
       .uptime-history-bar viking-uptime-bar {
@@ -225,7 +236,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
 export class UptimeHistoryComponent {
   readonly data = input<UptimeHistoryDataPoint[]>([]);
   readonly segments = input<VikingUptimeSegment[]>([]);
-  readonly height = input<number>(28); /* better visibility and breathing */
+  readonly height = input<number>(32); /* Flux-style visible breathing on timeline */
   readonly showLabels = input<boolean | undefined>(undefined);
   readonly percentage = input<number | null>(null);
   readonly statusSummary = input<string>("");

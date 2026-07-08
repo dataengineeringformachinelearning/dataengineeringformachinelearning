@@ -249,16 +249,17 @@ main.main {
 }
 
 .dashboard-content-area {
+  display: grid;
+  grid-template-columns: 1fr;
   flex: 1;
-  padding: var(--viking-space-4) 0 var(--viking-space-6); /* Mobile: generous vertical rhythm */
+  padding: var(--viking-space-5) 0 var(--viking-space-8);
   position: relative;
   z-index: 1;
   box-sizing: border-box;
 
-  /* Progressive: more breathing on larger screens */
   @media (min-width: 768px) {
-    padding-top: var(--viking-space-6);
-    padding-bottom: var(--viking-space-8);
+    padding-top: var(--viking-space-8);
+    padding-bottom: var(--viking-space-10);
   }
 }
 
@@ -266,9 +267,9 @@ main.main {
   max-width: var(--container-max-width, 1260px);
   margin: 0 auto;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--grid-gap);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--viking-grid-gap, var(--viking-space-5));
 
   &.full-width {
     max-width: 100%;
@@ -579,16 +580,15 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 .dashboard-layout {
   position: relative;
   z-index: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   width: 100%;
   min-height: calc(100vh - var(--navbar-height, 64px));
 }
 
 .dashboard-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   min-width: 0;
 }
 
@@ -615,7 +615,7 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
 
 @media (min-width: 901px) {
   .dashboard-layout {
-    flex-direction: row;
+    grid-template-columns: auto 1fr;
   }
 
   .dashboard-sidebar {
@@ -891,8 +891,8 @@ select option:checked {
 .dashboard-content .dashboard-content-area,
 .dashboard-content .page-inner-wrapper {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 @keyframes viking-loader-pulse {
@@ -1159,10 +1159,12 @@ select option:checked {
 }
 
 .alert {
-  padding: var(--viking-space-2);
-  border-radius: var(--viking-radius-md);
+  padding: var(--viking-space-3) var(--viking-space-4);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
   border: 1px solid var(--viking-border);
+  background: var(--viking-surface-alt);
   line-height: var(--viking-line-height-relaxed);
+  transition: var(--viking-transition-interactive);
 }
 
 .alert-success {

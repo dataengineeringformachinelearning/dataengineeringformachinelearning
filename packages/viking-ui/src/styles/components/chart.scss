@@ -1,0 +1,290 @@
+/* ==========================================================================
+   Viking-UI Chart System — unified visual language
+   Clean, modern, well-spaced (Flux reference), fully token-driven.
+   All chart primitives (viking-chart, uptime, panels) share this language.
+   ========================================================================== */
+
+/* Base chart surface integration */
+.viking-chart,
+viking-chart {
+  container-type: inline-size;
+}
+
+/* Chart viewport & SVG base — generous breathing */
+.viking-chart-viewport {
+  position: relative;
+  width: 100%;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: var(--viking-chart-padding, var(--viking-space-2) var(--viking-space-1));
+}
+
+.viking-chart-fill .viking-chart-viewport {
+  padding: var(--viking-chart-padding-fill, var(--viking-space-3) var(--viking-space-2));
+}
+
+/* Grid lines — subtle dashed for modern minimal (Flux clean) */
+.viking-chart-grid {
+  stroke: var(--viking-chart-grid-stroke, color-mix(in srgb, var(--viking-border) 32%, transparent));
+  stroke-width: var(--viking-chart-grid-width, 0.75);
+  stroke-dasharray: var(--viking-chart-grid-dash, 2 3);
+}
+
+/* Axes and ticks — consistent, readable, restrained */
+.viking-chart-axis-line,
+.viking-chart-tick {
+  stroke: var(--viking-chart-axis-stroke, color-mix(in srgb, var(--viking-border) 68%, transparent));
+  stroke-width: var(--viking-chart-axis-width, 1);
+}
+
+.viking-chart-axis-y,
+.viking-chart-axis-x {
+  fill: var(--viking-chart-axis-color, var(--viking-text-subtle));
+  font-size: max(var(--viking-chart-label-size, 10px), var(--viking-chart-axis-size, 11px));
+  font-family: var(--viking-font-family);
+  font-weight: var(--viking-font-weight-medium);
+  letter-spacing: 0.01em;
+}
+
+/* Primary data lines — solid, crisp weight, round joins */
+.viking-chart-line {
+  fill: none;
+  stroke-width: var(--viking-chart-line-width, 2.25);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.viking-chart-fill .viking-chart-line {
+  stroke-width: var(--viking-chart-line-width-fill, 2.5);
+}
+
+/* Area fill — restrained opacity */
+.viking-chart-area {
+  opacity: var(--viking-chart-area-opacity, 0.22);
+  stroke: none;
+}
+
+.viking-chart-fill .viking-chart-area {
+  opacity: 0.28;
+}
+
+/* Data points — small, high-contrast, surface stroke */
+.viking-chart-point {
+  stroke: var(--viking-chart-point-stroke, var(--viking-surface));
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Bars — unified radius + solid */
+.viking-chart-bar {
+  opacity: 1;
+  rx: var(--viking-chart-bar-radius, 3px);
+  ry: var(--viking-chart-bar-radius, 3px);
+}
+
+/* Donut */
+.viking-chart-donut-slice {
+  stroke: var(--viking-surface);
+  stroke-width: 2;
+}
+
+.viking-chart-donut-hole {
+  fill: var(--viking-surface);
+}
+
+.viking-chart-donut-total {
+  fill: var(--viking-text);
+  font-size: max(12px, min(16px, 3.5cqw));
+  font-weight: 700;
+  font-family: var(--viking-font-family);
+}
+
+.viking-chart-fill .viking-chart-donut-total {
+  font-size: max(15px, min(22px, 4.5cqw));
+}
+
+/* Legend — clean, centered, good spacing (Flux style) */
+.viking-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--viking-chart-legend-gap, var(--viking-space-2) var(--viking-space-3));
+  margin: var(--viking-chart-legend-margin, var(--viking-space-3) 0 0);
+  font-size: var(--viking-chart-legend-size, var(--viking-font-size-xs));
+  color: var(--viking-text-muted);
+  padding-inline: var(--viking-space-1);
+}
+
+.viking-chart-fill .viking-chart-legend {
+  margin: var(--viking-chart-legend-margin-fill, var(--viking-space-4) 0 0);
+}
+
+.viking-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--viking-space-1);
+  line-height: 1.2;
+}
+
+.viking-chart-swatch {
+  width: var(--viking-chart-swatch-size, 8px);
+  height: var(--viking-chart-swatch-size, 8px);
+  border-radius: var(--viking-radius-sm);
+  display: inline-block;
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--viking-border) 40%, transparent);
+}
+
+/* Chart tooltip (integrated, uses global surface language) */
+.viking-chart-tooltip {
+  position: absolute;
+  z-index: var(--viking-z-tooltip);
+  pointer-events: none;
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 92px;
+  padding: var(--viking-chart-tooltip-padding, var(--viking-space-half) var(--viking-space-1-5));
+  background: var(--viking-chart-tooltip-bg, var(--viking-surface-raised));
+  border: 1px solid var(--viking-chart-tooltip-border, var(--viking-border-strong));
+  border-radius: var(--viking-chart-tooltip-radius, var(--viking-radius));
+  box-shadow: var(--viking-shadow-md);
+  font-size: var(--viking-chart-tooltip-size, var(--viking-font-size-xs));
+  color: var(--viking-chart-tooltip-text, var(--viking-text));
+  white-space: nowrap;
+}
+
+.viking-chart-tooltip.visible {
+  display: flex;
+}
+
+.viking-chart-tooltip .tt-label {
+  font-weight: var(--viking-font-weight-medium);
+  color: var(--viking-text-muted);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.viking-chart-tooltip .tt-value {
+  font-weight: var(--viking-font-weight-semibold);
+  font-feature-settings: "tnum";
+}
+
+/* Zoom reset button — restrained, integrated */
+.viking-chart-zoom-reset {
+  position: absolute;
+  top: var(--viking-space-half);
+  right: var(--viking-space-half);
+  z-index: 2;
+  padding: var(--viking-space-half) var(--viking-space-1);
+  font-size: var(--viking-font-size-sm);
+  font-family: var(--viking-font-family);
+  color: var(--viking-text-muted);
+  background: color-mix(in srgb, var(--viking-surface) 90%, transparent);
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-radius-md);
+  cursor: pointer;
+  transition: var(--viking-transition-fast);
+}
+
+.viking-chart-zoom-reset:hover {
+  background: var(--viking-surface);
+  color: var(--viking-text);
+}
+
+.viking-chart-zoom-reset:focus-visible {
+  outline: var(--viking-ring-width) solid var(--viking-ring);
+  outline-offset: 2px;
+}
+
+/* Responsive refinements */
+@media (max-width: 640px) {
+  .viking-chart-axis-y,
+  .viking-chart-axis-x {
+    font-size: var(--viking-chart-axis-size-mobile, 12px);
+  }
+
+  .viking-chart-legend {
+    font-size: 10px;
+    gap: var(--viking-space-1) var(--viking-space-2);
+  }
+
+  .viking-chart-tooltip {
+    font-size: 11px;
+    min-width: 80px;
+    padding: 4px 8px;
+  }
+}
+
+/* Sparkline specific — minimal chrome */
+.viking-chart-sparkline {
+  --viking-chart-line-width: 1.75;
+  --viking-chart-area-opacity: 0.18;
+}
+
+.viking-chart-sparkline .viking-chart-legend {
+  display: none;
+}
+
+/* Uptime history integration — shares chart language */
+.viking-uptime-history {
+  gap: var(--viking-space-2);
+}
+
+.viking-uptime-history .uptime-history-bar {
+  padding: var(--viking-space-1);
+  border-radius: var(--viking-radius-lg);
+  background: var(--viking-surface-inset);
+  border: 1px solid var(--viking-border-subtle);
+}
+
+.viking-uptime-history-compact .uptime-history-bar {
+  padding: var(--viking-space-half);
+  border-radius: var(--viking-radius);
+}
+
+/* Empty state inside chart contexts */
+.viking-chart-empty-state {
+  padding: var(--viking-chart-empty-padding, var(--viking-space-5) var(--viking-space-4));
+  gap: var(--viking-chart-empty-gap, var(--viking-space-3));
+}
+
+/* Panel body chart containment */
+.viking-chart-panel-body viking-chart,
+.viking-chart-panel-body .viking-chart {
+  width: 100%;
+  min-height: inherit;
+}
+
+/* Loading skeleton treatment for charts (use with .viking-skeleton) */
+.viking-chart-skeleton {
+  width: 100%;
+  height: 100%;
+  min-height: var(--viking-chart-fill-min-height, clamp(16rem, 32vw, 18rem));
+  border-radius: var(--viking-radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--viking-charcoal-700) 25%,
+    var(--viking-charcoal-600) 50%,
+    var(--viking-charcoal-700) 75%
+  );
+  background-size: 200% 100%;
+  animation: viking-shimmer 1.4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viking-chart-skeleton {
+    animation: none;
+    background: var(--viking-surface-alt);
+  }
+}
+
+@keyframes viking-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

@@ -357,11 +357,11 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 **Rules:**
 
 - Outer page gutters: `--viking-space-2` (mobile) -> `--viking-space-3` (tablet+).
-- Card interior padding: `--viking-card-padding` default; `--viking-card-padding-compact` for compact metric tiles.
-- Form field vertical stack: `--viking-space-3` between sections, `--viking-space-half` between label and control.
-- Button groups / inline chips: `--viking-space-1` gap.
-- Section breaks (page shell): `--viking-page-section-gap` preferred, `--viking-space-4` minimum.
-- Avoid Spartan tightness: dashboards may be dense, but cards, buttons, and panels must still feel like precise hardware, not compressed tables.
+- Card interior padding: `--viking-card-padding` (space-5/40px default); `--viking-card-padding-compact` (space-4) for dense tiles. Use generous padding for comfortable, modern feel.
+- Form field vertical stack: `--viking-space-3` between sections, `--viking-space-1` between label and control.
+- Button groups / inline chips: `--viking-space-2` gap for better breathing.
+- Section breaks (page shell): `--viking-page-section-gap` preferred, `--viking-space-6` or larger for rhythm.
+- Dense but breathable: Use viking-stack / viking-grid utilities with --loose variants for consistent vertical/horizontal rhythm. Cards and sections should have clear separation without sparseness.
 
 | Token                 | Value | Multiples |
 | --------------------- | ----- | --------- |
@@ -387,11 +387,11 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 | `--viking-container-max-width`        | 1260px (`.page-inner-wrapper`) |
 | `--viking-page-gutter`                | `--viking-space-2` (mobile)    |
 | `--viking-page-gutter-lg`             | `--viking-space-3` (tablet+)   |
-| `--viking-page-stack-gap`             | `--viking-space-3`             |
-| `--viking-page-section-gap`           | `--viking-space-6`             |
-| `--viking-card-padding`               | `--viking-space-4` (default)   |
-| `--viking-card-padding-compact`       | `--viking-space-3` (metrics)   |
-| `--viking-panel-padding`              | `--viking-space-4`             |
+| `--viking-page-stack-gap`             | `--viking-space-6`             |
+| `--viking-page-section-gap`           | `--viking-space-10`            |
+| `--viking-card-padding`               | `--viking-space-5` (default)   |
+| `--viking-card-padding-compact`       | `--viking-space-4` (metrics)   |
+| `--viking-panel-padding`              | `--viking-space-5`             |
 | `--viking-form-max-width`             | 42rem                          |
 | `--viking-form-narrow-max-width`      | 28rem                          |
 | `--viking-content-readable-max-width` | 48rem                          |
@@ -404,23 +404,26 @@ All layout, padding, and gaps are multiples of `--viking-grid-unit: 4px`. Aim fo
 | `--viking-control-height-xs` | 24px |
 | `--viking-btn-min-width` | 120px |
 
-**Mobile-first:** default styles target small screens; scale up with `@media (min-width: 768px)`.
+**Mobile-first + Grid foundation:** All layouts start as single-column grid (`grid-template-columns: 1fr`). Use `.viking-grid`, `.viking-grid--2` / `--3` / `--4`, and `.viking-stack` for predictable vertical/horizontal rhythm on the 4px grid. Scale columns at 768px (tablet) and 1024px (desktop). Avoid deep flex nesting in favor of CSS Grid for alignment.
 
 ---
 
 ## 4. Border radius
 
-Premium feel: 6–12px for interactive surfaces; pills for tags only.
+Softer, more modern premium feel: favor 12–16px for cards and containers for a less harsh, more approachable machined aesthetic while retaining precision. Use smaller for controls.
 
-| Token                  | Value | Use                    |
-| ---------------------- | ----- | ---------------------- |
-| `--viking-radius-xs`   | 4px   | Kbd, micro chips       |
-| `--viking-radius-sm`   | 6px   | Inputs (compact)       |
-| `--viking-radius`      | 8px   | Buttons, swatches      |
-| `--viking-radius-md`   | 10px  | Modals (inner)         |
-| `--viking-radius-lg`   | 12px  | Cards, panels          |
-| `--viking-radius-xl`   | 16px  | Hero cards (marketing) |
-| `--viking-radius-pill` | 999px | Badges, pills          |
+| Token                  | Value | Use                              |
+| ---------------------- | ----- | -------------------------------- |
+| `--viking-radius-xs`   | 4px   | Kbd, micro chips                 |
+| `--viking-radius-sm`   | 6px   | Inputs (compact)                 |
+| `--viking-radius`      | 8px   | Buttons, swatches                |
+| `--viking-radius-md`   | 10px  | Modals (inner)                   |
+| `--viking-radius-lg`   | 12px  | Smaller cards, dense panels      |
+| `--viking-radius-xl`   | 16px  | Main cards, panels, containers   |
+| `--viking-radius-2xl`  | 24px  | Hero/feature cards (marketing)   |
+| `--viking-radius-pill` | 999px | Badges, pills                    |
+
+**Recommendation:** Primary cards, panels, and containers use `--viking-radius-xl` (or the --viking-card-radius token) for the softer, more modern feel. This gives generous rounding without losing the machined precision.
 
 ---
 
@@ -606,7 +609,9 @@ readonly value = model<string>(VIKING_SERIES_DEFAULT);
 
 Custom colors via the native `<input type="color">` are allowed for power users but should be validated against brand guidelines in production UIs.
 
-### 8.5 Charts (`viking-chart`)
+### 8.5 Charts (`viking-chart`, `viking-chart-panel`, uptime history)
+
+Zero-dependency native SVG charts. Unified visual language across line/area/bar/donut/sparkline + uptime timelines. Reference aesthetic: clean, modern, well-spaced (Flux).
 
 Map series tones to semantic tokens — never raw hex in chart code.
 
@@ -618,13 +623,27 @@ Map series tones to semantic tokens — never raw hex in chart code.
 | `danger`  | `var(--viking-danger)`     | Series 5            |
 | `muted`   | `var(--viking-text-muted)` | Baseline            |
 
-| Chart element | Token                                                        |
-| ------------- | ------------------------------------------------------------ |
-| Grid lines    | `--viking-border` at ~55% mix                                |
-| Axis labels   | `--viking-text-muted`, `--viking-chart-axis-size` (12px min) |
-| Chart surface | `--viking-surface`                                           |
+| Chart element       | Token / behavior                                                                 |
+| ------------------- | -------------------------------------------------------------------------------- |
+| Grid lines          | `--viking-chart-grid-stroke` (subtle dashed ~32% mix), width 0.75                |
+| Axis + ticks        | `--viking-chart-axis-color` (text-subtle), `--viking-chart-axis-size` (11–12px)  |
+| Lines               | `--viking-chart-line-width` (2.25 base / 2.5 fill), round caps                   |
+| Areas               | `--viking-chart-area-opacity` ~0.22–0.28                                         |
+| Points / bars       | Small radius, surface stroke contrast                                            |
+| Legend              | Centered, `--viking-chart-legend-gap`, small rounded swatches                    |
+| Tooltip             | Surface-raised, token styled, positioned on hover (line/area)                    |
+| Gutter / spacing    | Generous default (Flux well-spaced): 12/20/36/44 or fill variant                 |
+| Empty / loading     | `viking-chart-empty-state` (fill/overlay/inline) + loading skeleton support      |
+| Panel shell         | `viking-chart-panel` + `viking-chart-card-header` for consistent card rhythm     |
 
-**Rules:** solid fills/strokes only (no chart gradients); `aria-hidden` on decorative SVG; data charts expose `label` / `summary`.
+**Rules:**
+- All values resolve to `--viking-*` tokens.
+- Solid fills/strokes (no gradients).
+- `aria` on figure + accessible labels.
+- Interactive tooltips + zoom/pan on zoomable line/bar.
+- Mobile-first: readable axis (min 12px), reduced label density, min segment widths.
+- Use `viking-chart-panel[loading]="true"` + `viking-chart-empty-state` for states.
+- Uptime timelines share the same surface / radius / gap language.
 
 ### 8.6 Badges, callouts, toasts
 
