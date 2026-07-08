@@ -1,11 +1,13 @@
 @use 'buttons' as btn;
 
 :host {
-  display: inline-flex;
-  align-items: center;
+  /* Use contents to avoid extra wrapper element in DOM (prevents "button in button" perception
+     when Angular viking-button wraps the viking-button-wc). The wc provides the box. */
+  display: contents;
 }
 
 :host(.viking-full) {
+  /* When full width, we need to generate a box; contents would collapse it. */
   display: flex;
 
   .viking-btn {

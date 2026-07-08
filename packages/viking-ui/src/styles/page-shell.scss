@@ -624,7 +624,8 @@
 
 /* Section rhythm — analytics, status, dashboard hierarchy
    Locked with Viking-UI: uses stack-gap equivalents, viking-card inside for alignment.
-   References: component lib migration (tighter than pre-lib custom to prevent mess/big after full-width cards). */
+   References: component lib migration (tighter than pre-lib custom to prevent mess/big after full-width cards);
+   settings-stack/grid-layout forced to 1fr in _layout-enforcement to fix desktop cram (see below). */
 .metrics-overview-header {
   display: flex;
   flex-direction: column;

@@ -127,15 +127,6 @@ import {
               </viking-button>
             } @else {
               <viking-button
-                variant="primary"
-                icon="home"
-                class="auth-btn auth-btn-desktop"
-                id="auth-btn-desktop"
-                [href]="urls().app + '/dashboard'"
-              >
-                Dashboard
-              </viking-button>
-              <viking-button
                 variant="ghost"
                 class="auth-btn auth-signout-btn"
                 id="auth-signout-desktop"
@@ -215,17 +206,6 @@ import {
             Sign In
           </viking-button>
         } @else {
-          <viking-button
-            variant="primary"
-            icon="home"
-            class="mobile-auth-btn auth-btn"
-            id="auth-btn-mobile"
-            [fullWidth]="true"
-            [href]="urls().app + '/dashboard'"
-            (pressed)="closeMobileMenu()"
-          >
-            Dashboard
-          </viking-button>
           <viking-button
             variant="ghost"
             class="mobile-auth-btn auth-btn auth-signout-btn"

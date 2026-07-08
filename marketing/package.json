@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "@dataengineeringformachinelearning/viking-ui": "^4.1.21",
+    "@dataengineeringformachinelearning/viking-ui": "^4.2.0",
     "astro": "^7.0.3",
     "canvas-confetti": "^1.9.4",
     "marked": "^18.0.5"

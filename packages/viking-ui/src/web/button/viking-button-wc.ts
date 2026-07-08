@@ -108,7 +108,8 @@ export class VikingButtonWc extends HTMLElementBase {
     const href = this.getAttribute("href");
     const isLink = Boolean(href);
     const tag = isLink ? "a" : "button";
-    this.setAttribute("role", isLink ? "link" : "button");
+    // Do not set role on host; the inner native <button> or <a> provides the semantics.
+    // Setting role here caused "button in button" perception with the Angular wrapper and accessibility double announcement.
 
     const classes = [
       "viking-btn",
