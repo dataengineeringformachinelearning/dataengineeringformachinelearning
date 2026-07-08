@@ -1,6 +1,6 @@
 # AGENTS.md - Coding Principles and Architectural Vision for the DEML Platform
 
-**Mission**: Build a zero-compromise, precision-engineered Data Engineering for Machine Learning (DEML) platform that merges rigorous data engineering with predictive machine learning. Prioritize quality, security, scalability, multi-tenancy isolation, and resilience at every step. The platform dogfoods itself as Tenant0 and must be production-grade, observable, secure, and maintainable.
+**Mission**: Build a zero-compromise, precision-engineered Data Engineering for AI Engineering and Cybersecurity (DEML) platform that merges rigorous data engineering with AI engineering (predictive ML, model lifecycles, intelligent systems) and cybersecurity (threat analytics, defense-in-depth, compliance). Prioritize quality, security, scalability, multi-tenancy isolation, and resilience at every step. The platform dogfoods itself as Tenant0 and must be production-grade, observable, secure, and maintainable.
 
 **Operations**: Production behavior—vendor split (Cloud Run / Firebase / GCP), command/projection/query paths, actor workflows, maintenance cadence, and degraded modes—is defined in [BOOK.md § CONOPS](BOOK.md#concept-of-operations-conops), [WHITEPAPER.md §2](WHITEPAPER.md#2-concept-of-operations-conops), and [`docs/conops.md`](docs/conops.md). Architectural code changes must remain consistent with that CONOPS.
 

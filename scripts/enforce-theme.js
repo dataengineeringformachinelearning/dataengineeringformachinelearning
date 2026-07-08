@@ -1124,12 +1124,12 @@ const scanFooterBrand = (content, filePath) => {
   }
   if (
     /©\s*20\d{2}\s+DEML\s+App/i.test(content) &&
-    !/Data Engineering for Machine Learning/i.test(content)
+    !/Data Engineering for AI Engineering and Cybersecurity|Data Engineering for Machine Learning/i.test(content)
   ) {
     addFinding(
       "footer-brand",
       filePath,
-      'Footer copyright should reference "Data Engineering for Machine Learning"',
+      'Footer copyright should reference "Data Engineering for AI Engineering and Cybersecurity"',
     );
   }
 };

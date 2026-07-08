@@ -1,6 +1,6 @@
 # Concept of Operations (CONOPS)
 
-**Platform:** Data Engineering for Machine Learning (DEML)
+**Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
 **Last aligned:** June 2026 (Event Projections architecture)
 **Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
 **Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)

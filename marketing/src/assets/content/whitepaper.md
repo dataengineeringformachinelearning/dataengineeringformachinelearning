@@ -1,6 +1,6 @@
 # The Whitepaper: Operational Intelligence for the Digital Battlefield
 
-**Abstract:** This paper specifies the architecture of the Data Engineering for Machine Learning (DEML) platform—a multi-tenant observability and threat-analytics system engineered for the new digital battlefield. The design unifies high-throughput event projections, ML-forecasted service levels, automated STIX 2.1 indicator federation, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
+**Abstract:** This paper specifies the architecture of the Data Engineering for AI Engineering and Cybersecurity (DEML) platform—a multi-tenant observability, AI intelligence, and threat-analytics system engineered for the new digital battlefield. The design unifies high-throughput event projections, AI/ML-forecasted service levels, automated STIX 2.1 indicator federation, model lifecycle management, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
 
 **Published:** July 2026
 **Author:** Joe Alongi [(ORCID: 0009-0007-2401-2603)](https://orcid.org/0009-0007-2401-2603)
@@ -14,7 +14,7 @@
 
 The operational tempo of modern SaaS infrastructure has outpaced traditional observability. Status dashboards and SLA trackers remain predominantly reactive—recording failure only after user impact materializes. In adversarial network environments, that posture is tactically untenable.
 
-This paper presents DEML: a next-generation observability and intelligence pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep-learning stack with two active prediction modules—Service Level Agreement (SLA) forecasting and Threat Anomaly (TA) analytics. The architecture embodies _Defendable Architectures_ principles—Visibility, Manageability, and Survivability—across every operational plane.
+This paper presents DEML: a next-generation observability, AI intelligence, and cybersecurity pipeline that ingests real-time telemetry at scale and orchestrates an extensible AI/ML stack with active prediction modules—Service Level Agreement (SLA) forecasting, Threat Anomaly (TA) analytics, and adversarial detection—alongside secure model serving and compliance controls. The architecture embodies _Defendable Architectures_ principles—Visibility, Manageability, and Survivability—across every operational plane.
 
 As operational proof, the platform dogfoods its own infrastructure continuously. The public **`platform-status`** sentinel (`user=null`, `is_platform=True`) functions as a living Apex Sandbox and Public Witness—streaming real-time telemetry and threat analysis to anonymous observers without requiring a separate organizational login.
 

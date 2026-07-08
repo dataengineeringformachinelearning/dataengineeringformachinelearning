@@ -11,8 +11,9 @@
         </p>
       </viking-page-header>
 
-      <!-- Consistent grid + breathing for status cards (Spartan/Flux inspired organization) -->
-      <div class="viking-grid status-directory-grid">
+      <!-- Always stacked (single column) for dense status cards.
+           These cards have too much information (metrics + uptime + status) to render side-by-side. -->
+      <div class="status-directory-grid">
         @for (page of displayPages(); track page) {
         <viking-explore-card
           [title]="page.title"

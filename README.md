@@ -10,16 +10,16 @@ pinned: false
 license: apache-2.0
 ---
 
-# Data Engineering for Machine Learning: Developer Platform
+# Data Engineering for AI Engineering and Cybersecurity: Developer Platform
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
 
-**Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, predictive machine learning, and intelligence-driven defense into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
+**Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering (including predictive machine learning, model serving, and intelligent systems), and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
-In contested operational environments, reactive dashboards are insufficient. DEML ingests telemetry at scale, forecasts SLA breach before degradation manifests, and serializes high-confidence anomalies into STIX 2.1 for downstream SOAR consumption. The architecture is specified with doctoral rigor; the system is deployed for production operations today.
+In contested operational environments, reactive dashboards are insufficient. DEML ingests telemetry at scale, forecasts SLA breach before degradation manifests, detects AI threats and anomalies, manages secure model lifecycles, and serializes high-confidence indicators into STIX 2.1 for downstream SOAR consumption. The architecture is specified with doctoral rigor; the system is deployed for production operations today.
 
 > **Looking for the Book or Whitepaper?**
-> The philosophical, educational, and narrative deep dives into data engineering, MLOps, and the architecture of this system can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
+> The philosophical, educational, and narrative deep dives into data engineering, AI engineering, MLOps, and cybersecurity operations can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
 >
 > For a brief summary of the platform's hypothesis, architecture diagrams, and algorithms, please read the **[Whitepaper (WHITEPAPER.md)](WHITEPAPER.md)**.
 >
@@ -434,7 +434,7 @@ We take data security seriously. As a multi-account SaaS platform, we employ str
 ## Disclaimer & Liability
 
 > [!WARNING]
-> **Liability Disclaimer:** The Data Engineering for Machine Learning (DEML) Platform, including all associated models, dashboards, and integrations, is provided "as-is" and without warranty of any kind.
+> **Liability Disclaimer:** The Data Engineering for AI Engineering and Cybersecurity (DEML) Platform, including all associated models, dashboards, and integrations, is provided "as-is" and without warranty of any kind.
 >
 > Our primary objective is to **highlight and support the identification of potential threats** and anomalies based on aggregated telemetry data. The platform should be used as a supplementary tool for threat intelligence and not as a guaranteed preventative measure or absolute security solution.
 >

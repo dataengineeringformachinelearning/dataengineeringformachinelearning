@@ -4,7 +4,7 @@ _By Joe Alongi_
 
 This volume constitutes the authoritative build specification for a production-grade, full-stack telemetry and machine-learning platform. It is neither a tutorial nor a marketing narrative—it is an operational record: each chapter delivers comprehensive architectural analysis (minimum 600 words), executable code artifacts, and direct technology references. The prose adheres to the precision expected of enterprise systems engineering and doctoral specification—distinct, rigorous, and unambiguous.
 
-The platform addresses a structural gap in modern infrastructure. Observability tooling remains predominantly reactive; threat analytics remain siloed; multi-tenant isolation remains inconsistently enforced. DEML closes that gap by fusing rigorous data engineering with predictive machine learning under defense-in-depth security—prioritizing quality, symmetry, and precision at every architectural boundary. The build sequence proceeds from bare-metal environment setup through deployed, secure, observable ML-driven operations.
+The platform addresses a structural gap in modern infrastructure. Observability tooling remains predominantly reactive; threat analytics remain siloed; multi-tenant isolation remains inconsistently enforced. DEML closes that gap by fusing rigorous **data engineering** (high-throughput pipelines, event projections, schema evolution), **AI engineering** (model lifecycle management, inference serving, hyperparameter automation, responsible AI), and **cybersecurity** (threat intelligence fusion, adversarial detection, compliance-grade controls, zero-trust tenancy) under defense-in-depth security—prioritizing quality, symmetry, and precision at every architectural boundary. The build sequence proceeds from bare-metal environment setup through deployed, secure, observable AI- and security-driven operations.
 
 For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
@@ -28,7 +28,7 @@ This section constitutes the **single operational narrative** for the DEML platf
 
 ### 1. Purpose & Scope
 
-DEML is a multi-tenant observability and machine-learning SaaS engineered for the new digital battlefield. Operators, security engineers, and integrators employ it to ingest telemetry, publish status pages, forecast SLAs, evaluate threat anomalies, and federate STIX 2.1 indicators. This CONOPS specifies:
+DEML is a multi-tenant observability, AI intelligence, and cybersecurity SaaS engineered for the new digital battlefield. Operators, security engineers, AI/ML practitioners, and integrators employ it to ingest telemetry, publish status pages, forecast SLAs, evaluate threat anomalies, manage AI model lifecycles, and federate STIX 2.1 indicators. This CONOPS specifies:
 
 - Normal steady-state operations across all production services
 - User-facing workflows (anonymous visitors, account owners, API integrators)

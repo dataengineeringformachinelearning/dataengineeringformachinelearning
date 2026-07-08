@@ -87,7 +87,7 @@ export const PARITY_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
           description: "Application footer with links and compliance slots.",
           preview: `<footer class="viking-card viking-card-compact">
   <span class="viking-label">DEML Platform</span>
-  <p class="viking-text-muted">© 2026 Data Engineering for Machine Learning</p>
+  <p class="viking-text-muted">© 2026 Data Engineering for AI Engineering and Cybersecurity</p>
 </footer>`,
           selector: "viking-footer",
         },

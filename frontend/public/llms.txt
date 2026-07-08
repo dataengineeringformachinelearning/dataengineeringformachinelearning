@@ -1,6 +1,6 @@
-# Data Engineering for Machine Learning (DEML APP)
+# Data Engineering for AI Engineering and Cybersecurity (DEML APP)
 
-Developer Portal, API Gateway, and the Book on Data Engineering for Machine Learning by Joe Alongi.
+Developer Portal, API Gateway, and the Book on Data Engineering for AI Engineering and Cybersecurity by Joe Alongi.
 
 ## Homepage
 /

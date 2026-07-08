@@ -1,6 +1,6 @@
 # Platform Features
 
-The Data Engineering for Machine Learning (DEML) Platform provides a comprehensive ecosystem built for robust observability, data intelligence, and security.
+The Data Engineering for AI Engineering and Cybersecurity (DEML) Platform provides a comprehensive ecosystem built for robust observability, AI intelligence, data engineering, and security.
 
 ## Concept of Operations (CONOPS)
 

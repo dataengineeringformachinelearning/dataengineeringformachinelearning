@@ -652,7 +652,7 @@ export class VikingSuiteHeaderWc extends HTMLElementBase {
         <div class="suite-header__bar">
           <a class="suite-header__brand" href="${escapeHtml(
             brandHref,
-          )}" aria-label="Data Engineering for Machine Learning home">
+          )}" aria-label="Data Engineering for AI Engineering and Cybersecurity home">
             <span class="suite-header__mark" aria-hidden="true">
               ${renderInlineIcon("drakkar", 28, "suite-header__brand-icon")}
             </span>

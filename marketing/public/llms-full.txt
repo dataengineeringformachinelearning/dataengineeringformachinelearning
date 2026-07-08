@@ -10,16 +10,16 @@ pinned: false
 license: apache-2.0
 ---
 
-# Data Engineering for Machine Learning: Developer Platform
+# Data Engineering for AI Engineering and Cybersecurity: Developer Platform
 
 ![Project Banner](https://raw.githubusercontent.com/dataengineeringformachinelearning/dataengineeringformachinelearning/main/frontend/public/data-engineering-for-machine-learning-preview.png)
 
-**Data Engineering for Machine Learning (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, predictive machine learning, and intelligence-driven defense into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
+**Data Engineering for AI Engineering and Cybersecurity (DEML)** is operational intelligence infrastructure for the new digital battlefield. The platform fuses high-throughput telemetry engineering, AI engineering (including predictive machine learning, model serving, and intelligent systems), and intelligence-driven cybersecurity into a single multi-tenant SaaS fabric—where every command path is versioned, every projection is idempotent, and every tenant traverses identical symmetrical pipelines without exception.
 
-In contested operational environments, reactive dashboards are insufficient. DEML ingests telemetry at scale, forecasts SLA breach before degradation manifests, and serializes high-confidence anomalies into STIX 2.1 for downstream SOAR consumption. The architecture is specified with doctoral rigor; the system is deployed for production operations today.
+In contested operational environments, reactive dashboards are insufficient. DEML ingests telemetry at scale, forecasts SLA breach before degradation manifests, detects AI threats and anomalies, manages secure model lifecycles, and serializes high-confidence indicators into STIX 2.1 for downstream SOAR consumption. The architecture is specified with doctoral rigor; the system is deployed for production operations today.
 
 > **Looking for the Book or Whitepaper?**
-> The philosophical, educational, and narrative deep dives into data engineering, MLOps, and the architecture of this system can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
+> The philosophical, educational, and narrative deep dives into data engineering, AI engineering, MLOps, and cybersecurity operations can be found in our comprehensive book: **[Read the Book (BOOK.md)](BOOK.md)**
 >
 > For a brief summary of the platform's hypothesis, architecture diagrams, and algorithms, please read the **[Whitepaper (WHITEPAPER.md)](WHITEPAPER.md)**.
 >
@@ -434,7 +434,7 @@ We take data security seriously. As a multi-account SaaS platform, we employ str
 ## Disclaimer & Liability
 
 > [!WARNING]
-> **Liability Disclaimer:** The Data Engineering for Machine Learning (DEML) Platform, including all associated models, dashboards, and integrations, is provided "as-is" and without warranty of any kind.
+> **Liability Disclaimer:** The Data Engineering for AI Engineering and Cybersecurity (DEML) Platform, including all associated models, dashboards, and integrations, is provided "as-is" and without warranty of any kind.
 >
 > Our primary objective is to **highlight and support the identification of potential threats** and anomalies based on aggregated telemetry data. The platform should be used as a supplementary tool for threat intelligence and not as a guaranteed preventative measure or absolute security solution.
 >
@@ -497,7 +497,7 @@ The DEML platform stands on open-source foundations, enterprise design reference
 
 # Concept of Operations (CONOPS)
 
-**Platform:** Data Engineering for Machine Learning (DEML)
+**Platform:** Data Engineering for AI Engineering and Cybersecurity (DEML)
 **Last aligned:** June 2026 (Event Projections architecture)
 **Canonical narrative:** [BOOK.md § CONOPS](../BOOK.md#concept-of-operations-conops)
 **Architecture summary:** [WHITEPAPER.md §2](../WHITEPAPER.md#2-concept-of-operations-conops)
@@ -1357,11 +1357,11 @@ curl https://backend.deml.app/api/v1/integrations/tensorflow \
 ```
 
 
-# Data Engineering for Machine Learning: The Book
+# Data Engineering for AI Engineering and Cybersecurity: The Book
 
 _Operational Intelligence for the New Digital Battlefield_
 
-The definitive architectural specification and build narrative for production-grade data engineering and machine-learning systems—documented with doctoral rigor and engineered for deployment.
+The definitive architectural specification and build narrative for production-grade data engineering, AI engineering, and cybersecurity systems—documented with doctoral rigor and engineered for deployment.
 
 > **Looking for the API Documentation & Developer Portal?**
 > If you are looking to integrate with our API, view endpoints, or deploy the platform, please see the **[Developer Portal (README.md)](README.md)**
@@ -1374,7 +1374,7 @@ _By Joe Alongi_
 
 This volume constitutes the authoritative build specification for a production-grade, full-stack telemetry and machine-learning platform. It is neither a tutorial nor a marketing narrative—it is an operational record: each chapter delivers comprehensive architectural analysis (minimum 600 words), executable code artifacts, and direct technology references. The prose adheres to the precision expected of enterprise systems engineering and doctoral specification—distinct, rigorous, and unambiguous.
 
-The platform addresses a structural gap in modern infrastructure. Observability tooling remains predominantly reactive; threat analytics remain siloed; multi-tenant isolation remains inconsistently enforced. DEML closes that gap by fusing rigorous data engineering with predictive machine learning under defense-in-depth security—prioritizing quality, symmetry, and precision at every architectural boundary. The build sequence proceeds from bare-metal environment setup through deployed, secure, observable ML-driven operations.
+The platform addresses a structural gap in modern infrastructure. Observability tooling remains predominantly reactive; threat analytics remain siloed; multi-tenant isolation remains inconsistently enforced. DEML closes that gap by fusing rigorous **data engineering** (high-throughput pipelines, event projections, schema evolution), **AI engineering** (model lifecycle management, inference serving, hyperparameter automation, responsible AI), and **cybersecurity** (threat intelligence fusion, adversarial detection, compliance-grade controls, zero-trust tenancy) under defense-in-depth security—prioritizing quality, symmetry, and precision at every architectural boundary. The build sequence proceeds from bare-metal environment setup through deployed, secure, observable AI- and security-driven operations.
 
 For the platform hypothesis, value proposition, architecture diagrams, and algorithmic foundations, consult the [Whitepaper](WHITEPAPER.md). For production operations—vendor boundaries, actor workflows, maintenance cadence, and degraded-mode behavior—read [Concept of Operations (CONOPS)](#concept-of-operations-conops) or the operator quick reference [`docs/conops.md`](docs/conops.md). For a visual overview, see the companion [Gamma presentation](https://gamma.app/docs/Data-Engineering-for-Machine-Learning-v25eoog2k8kxuvg).
 
@@ -1398,7 +1398,7 @@ This section constitutes the **single operational narrative** for the DEML platf
 
 ### 1. Purpose & Scope
 
-DEML is a multi-tenant observability and machine-learning SaaS engineered for the new digital battlefield. Operators, security engineers, and integrators employ it to ingest telemetry, publish status pages, forecast SLAs, evaluate threat anomalies, and federate STIX 2.1 indicators. This CONOPS specifies:
+DEML is a multi-tenant observability, AI intelligence, and cybersecurity SaaS engineered for the new digital battlefield. Operators, security engineers, AI/ML practitioners, and integrators employ it to ingest telemetry, publish status pages, forecast SLAs, evaluate threat anomalies, manage AI model lifecycles, and federate STIX 2.1 indicators. This CONOPS specifies:
 
 - Normal steady-state operations across all production services
 - User-facing workflows (anonymous visitors, account owners, API integrators)
@@ -4179,7 +4179,7 @@ DEML adopts two white papers as guiding references for its threat-driven securit
 
 # The Whitepaper: Operational Intelligence for the Digital Battlefield
 
-**Abstract:** This paper specifies the architecture of the Data Engineering for Machine Learning (DEML) platform—a multi-tenant observability and threat-analytics system engineered for the new digital battlefield. The design unifies high-throughput event projections, ML-forecasted service levels, automated STIX 2.1 indicator federation, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
+**Abstract:** This paper specifies the architecture of the Data Engineering for AI Engineering and Cybersecurity (DEML) platform—a multi-tenant observability, AI intelligence, and threat-analytics system engineered for the new digital battlefield. The design unifies high-throughput event projections, AI/ML-forecasted service levels, automated STIX 2.1 indicator federation, model lifecycle management, and integrated vulnerability management under a single defendable operational fabric. Command ingress is non-blocking; projections are idempotent; tenant isolation is symmetrical and UUID-scoped throughout.
 
 **Published:** July 2026
 **Author:** Joe Alongi [(ORCID: 0009-0007-2401-2603)](https://orcid.org/0009-0007-2401-2603)
@@ -4193,7 +4193,7 @@ DEML adopts two white papers as guiding references for its threat-driven securit
 
 The operational tempo of modern SaaS infrastructure has outpaced traditional observability. Status dashboards and SLA trackers remain predominantly reactive—recording failure only after user impact materializes. In adversarial network environments, that posture is tactically untenable.
 
-This paper presents DEML: a next-generation observability and intelligence pipeline that ingests real-time telemetry at scale and orchestrates an extensible deep-learning stack with two active prediction modules—Service Level Agreement (SLA) forecasting and Threat Anomaly (TA) analytics. The architecture embodies _Defendable Architectures_ principles—Visibility, Manageability, and Survivability—across every operational plane.
+This paper presents DEML: a next-generation observability, AI intelligence, and cybersecurity pipeline that ingests real-time telemetry at scale and orchestrates an extensible AI/ML stack with active prediction modules—Service Level Agreement (SLA) forecasting, Threat Anomaly (TA) analytics, and adversarial detection—alongside secure model serving and compliance controls. The architecture embodies _Defendable Architectures_ principles—Visibility, Manageability, and Survivability—across every operational plane.
 
 As operational proof, the platform dogfoods its own infrastructure continuously. The public **`platform-status`** sentinel (`user=null`, `is_platform=True`) functions as a living Apex Sandbox and Public Witness—streaming real-time telemetry and threat analysis to anonymous observers without requiring a separate organizational login.
 

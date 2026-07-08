@@ -373,7 +373,7 @@ export const FULL_SHOWCASE_CATEGORIES: ShowcaseCategory[] = [
     </div>
   </div>
   <hr class="viking-separator-static" />
-  <p class="viking-text-muted">© 2026 Data Engineering for Machine Learning</p>
+  <p class="viking-text-muted">© 2026 Data Engineering for AI Engineering and Cybersecurity</p>
 </footer>`,
           selector: "viking-site-footer",
           tags: ["angular", "marketing"],

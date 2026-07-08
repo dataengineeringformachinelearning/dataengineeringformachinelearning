@@ -51,7 +51,7 @@ api = CustomAPI(
   docs_url="/docs",
   docs=CustomSwagger(),
   description=(
-    "Data Engineering for Machine Learning (DEML) public integration endpoints.\n\n"
+    "Data Engineering for AI Engineering and Cybersecurity (DEML) public integration endpoints.\n\n"
     "**Sandbox Demo Key**: For public demonstration and sandbox testing, authorize using the token "
     f"`{SWAGGER_DEMO_API_KEY}` (Bearer authentication in the top-right 'Authorize' button). "
     "This maps requests to a scoped, unprivileged demo operator user."

@@ -672,13 +672,15 @@
   font-weight: var(--viking-font-weight-medium, 500);
 }
 
-/* Public status directory (Explore page) — truly mobile-first grid foundation */
+/* Public status directory (Explore page) — always stacked single column on all screen sizes.
+   These cards contain too much information (title + status + Pro badge + 4 metrics + uptime history + CTA)
+   to be rendered side-by-side. They become unreadable when narrow. */
 .status-directory-grid {
   display: grid;
-  grid-template-columns: 1fr; /* Mobile: single column, comfortable touch targets */
-  gap: var(--viking-space-6); /* Consistent vertical rhythm (24px) */
+  grid-template-columns: 1fr; /* Always stacked, desktop and mobile */
+  gap: var(--viking-space-6); /* Good vertical rhythm between dense cards */
   width: 100%;
-  max-width: 60rem;
+  max-width: 52rem; /* Comfortable reading width for information-heavy status cards */
 }
 
 /* Cards and content align to the invisible grid */
@@ -803,32 +805,8 @@ app-status-card.status-directory-card {
   }
 }
 
-/* Premium responsive grid for explore page — progressive enhancement */
-/* md: 2 columns */
-@media (min-width: 768px) {
-  .status-directory-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    max-width: 68rem;
-    gap: var(--viking-space-8); /* 32px — stronger horizontal/vertical rhythm */
-  }
-}
-
-/* lg: 3 columns */
-@media (min-width: 1024px) {
-  .status-directory-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    max-width: 72rem;
-    gap: var(--viking-space-8);
-  }
-}
-
-/* xl: slightly wider breathing room */
-@media (min-width: 1280px) {
-  .status-directory-grid {
-    max-width: 78rem;
-    gap: var(--viking-space-10); /* ~40px for very large screens */
-  }
-}
+/* No multi-column variants — these cards are deliberately kept stacked on all screen sizes
+   for scannability (see comment on .status-directory-grid above). */
 
 viking-card.status-section-card {
   gap: var(--viking-space-3);

@@ -3,7 +3,7 @@
   "info": {
     "title": "DEML Public Ingestion & Inference API",
     "version": "2.0.0",
-    "description": "Data Engineering for Machine Learning (DEML) public integration endpoints.\n\n**Sandbox Demo Key**: For public demonstration and sandbox testing, authorize using the token `deml_swagger_api_key` (Bearer authentication in the top-right 'Authorize' button). This maps requests to a scoped, unprivileged demo operator user."
+    "description": "Data Engineering for AI Engineering and Cybersecurity (DEML) public integration endpoints.\n\n**Sandbox Demo Key**: For public demonstration and sandbox testing, authorize using the token `deml_swagger_api_key` (Bearer authentication in the top-right 'Authorize' button). This maps requests to a scoped, unprivileged demo operator user."
   },
   "paths": {
     "/api/v1/ingest": {

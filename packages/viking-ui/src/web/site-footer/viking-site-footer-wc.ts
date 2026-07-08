@@ -144,7 +144,7 @@ export class VikingSiteFooterWc extends HTMLElement {
             <div class="footer-compliance-row">
               <div class="copyright-info">
                 <span class="copyright-text">
-                  Copyright © ${year} Data Engineering for Machine Learning by
+                  Copyright © ${year} Data Engineering for AI Engineering and Cybersecurity by
                   <a href="https://joealongi.dev/" target="_blank" rel="noopener noreferrer">Joe Alongi</a>.
                   All rights reserved.
                 </span>
