@@ -37,7 +37,7 @@ This document tracks the machine learning models used across the platform, outli
 
 - **Purpose**: Forecasts temporal patterns and future anomalies in telemetry/event streams using Spiking Neural Networks (SNNs). Ideal for processing time-series sequences from Redpanda events, latency spikes, and error bursts over time windows. Outputs a forecast score (0.0-1.0) for upcoming issues.
 - **Data Scope**: **Tenant-Specific + Platform**. Processes sequences of features (e.g., latency, errors over seq_len timesteps) from endpoints and analytics.
-- **Architecture**: PyTorch + optional Norse SNN (LIFCell layers for spiking dynamics) or MLP fallback. Handles sequential input for native temporal modeling.
+- **Architecture**: PyTorch + Dynamic Temporal Forecasting with optional Norse-backed LIFCell layers for spiking dynamics or MLP fallback. Handles sequential input for native temporal modeling.
 - **Teacher Model**: `meta-llama/Meta-Llama-3-8B-Instruct` (via Hugging Face Inference API) or Gemini 2.5 Flash.
 - **Knowledge Distillation Strategy**: Prompt the Teacher with temporal sequences of telemetry (recent error rates, response time variations over windows) and ask for the probability of a future spike/anomaly. Use the score to supervise the SNN on sequence data. This teaches the model precise timing and event-driven patterns better than static MLPs.
 - **Deployment**:

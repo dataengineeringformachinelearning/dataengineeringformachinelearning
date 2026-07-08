@@ -37,13 +37,9 @@ export type VikingUptimeStatus =
         align-self: stretch;
       }
       :host(.viking-uptime-partial) {
-        height: 70%;
-        align-self: flex-end;
         background: var(--viking-warning);
       }
       :host(.viking-uptime-major) {
-        height: 40%;
-        align-self: flex-end;
         background: var(--viking-danger);
       }
       :host(.viking-uptime-nodata) {

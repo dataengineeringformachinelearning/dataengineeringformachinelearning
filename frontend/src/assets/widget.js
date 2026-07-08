@@ -50,6 +50,400 @@
   const DEFAULT_STATUS_APP = 'https://deml.app';
   const VIKING_UI_CSS_CDN =
     'https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@latest/dist/viking-ui.css';
+  const PLATFORM_WIDGET_STYLES = `
+    :host {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      margin: var(--viking-space-2) auto;
+      min-height: var(--viking-control-height);
+      opacity: 0;
+      transition: opacity var(--viking-duration-fast) var(--viking-ease-default);
+    }
+
+    :host(.deml-ready) {
+      opacity: 1;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    .widget-container {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      gap: var(--viking-space-1);
+      padding: var(--viking-space-1-5) var(--viking-space-2);
+      border: 1px solid color-mix(in srgb, var(--viking-border-strong) 52%, transparent);
+      border-radius: var(--viking-radius-pill);
+      background: var(--viking-surface-recipe, var(--viking-surface));
+      color: var(--viking-text);
+      font-family: var(--viking-font-family);
+      font-size: var(--viking-font-size-sm);
+      font-weight: var(--viking-font-weight-medium);
+      box-shadow: var(--viking-shadow-md);
+      transition: var(--viking-transition-interactive);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .widget-container::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--viking-metallic-200) 42%, transparent),
+        transparent
+      );
+      pointer-events: none;
+    }
+
+    .widget-container:hover {
+      border-color: var(--viking-accent-strong);
+      box-shadow: var(--viking-shadow-hover);
+      transform: translateY(calc(var(--viking-state-hover-lift) * -1));
+    }
+
+    .widget-link {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--viking-space-half);
+      text-decoration: none;
+      color: var(--viking-text);
+    }
+
+    .status-dot {
+      width: var(--viking-space-1);
+      height: var(--viking-space-1);
+      border-radius: var(--viking-radius-full);
+      background-color: var(--viking-text-muted);
+      margin-right: var(--viking-space-1);
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .divider {
+      color: var(--viking-border);
+      user-select: none;
+    }
+
+    .report-trigger,
+    .close-btn {
+      appearance: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--viking-transition-colors);
+      font: inherit;
+    }
+
+    .report-trigger {
+      color: var(--viking-danger);
+      padding: var(--viking-space-half);
+      border-radius: var(--viking-radius-pill);
+    }
+
+    .report-trigger:hover,
+    .report-trigger:focus-visible {
+      background-color: color-mix(in srgb, var(--viking-danger) 15%, transparent);
+      outline: var(--viking-ring-width) solid var(--viking-ring);
+      outline-offset: var(--viking-ring-offset);
+    }
+
+    .report-icon {
+      width: var(--viking-space-2);
+      height: var(--viking-space-2);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--viking-overlay-backdrop);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 99999;
+      padding: var(--viking-space-2);
+    }
+
+    .modal-content {
+      background-color: var(--viking-surface-recipe, var(--viking-surface));
+      border: 1px solid color-mix(in srgb, var(--viking-border-strong) 62%, transparent);
+      border-radius: var(--viking-radius-lg);
+      width: min(100%, 480px);
+      max-height: calc(100vh - var(--viking-space-4));
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--viking-shadow-lg);
+      color: var(--viking-text);
+      font-family: var(--viking-font-family);
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .modal-content::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        color-mix(in srgb, var(--viking-metallic-200) 48%, transparent),
+        transparent
+      );
+      pointer-events: none;
+    }
+
+    .modal-header,
+    .modal-footer {
+      display: flex;
+      align-items: center;
+      padding: var(--viking-space-2-5) var(--viking-space-3);
+      border-color: var(--viking-border);
+      flex: 0 0 auto;
+    }
+
+    .modal-header {
+      justify-content: space-between;
+      gap: var(--viking-space-2);
+      border-bottom: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      font-size: var(--viking-font-size-md);
+      font-weight: var(--viking-font-weight-semibold);
+      letter-spacing: var(--viking-letter-spacing-wide);
+      display: flex;
+      align-items: center;
+      gap: var(--viking-space-1);
+      color: var(--viking-text);
+    }
+
+    .modal-title-icon {
+      color: var(--viking-danger);
+      flex: 0 0 auto;
+    }
+
+    .close-btn {
+      min-width: var(--viking-touch-target-min);
+      min-height: var(--viking-touch-target-min);
+      color: var(--viking-text-muted);
+      font-size: var(--viking-font-size-xl);
+      line-height: 1;
+      border-radius: var(--viking-radius-pill);
+    }
+
+    .close-btn:hover,
+    .close-btn:focus-visible {
+      color: var(--viking-text);
+      background: color-mix(in srgb, var(--viking-surface-alt) 70%, transparent);
+      outline: var(--viking-ring-width) solid var(--viking-ring);
+      outline-offset: var(--viking-ring-offset);
+    }
+
+    .modal-body {
+      padding: var(--viking-space-3);
+      display: flex;
+      flex-direction: column;
+      gap: var(--viking-space-2);
+      overflow: auto;
+      min-height: 0;
+    }
+
+    .helper-text {
+      font-size: var(--viking-font-size-sm);
+      color: var(--viking-text-muted);
+      margin: 0;
+      line-height: var(--viking-line-height-normal);
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: var(--viking-space-1);
+    }
+
+    .form-field label {
+      font-size: var(--viking-font-size-sm);
+      font-weight: var(--viking-font-weight-semibold);
+      letter-spacing: var(--viking-letter-spacing-caps);
+      text-transform: uppercase;
+      color: var(--viking-text);
+    }
+
+    .form-field input,
+    .form-field textarea,
+    .form-field select {
+      width: 100%;
+      min-height: var(--viking-control-height);
+      padding: var(--viking-space-1-5) var(--viking-space-2);
+      border: 1px solid color-mix(in srgb, var(--viking-border-strong) 48%, transparent);
+      border-radius: var(--viking-radius-md);
+      font-size: var(--viking-font-size);
+      outline: none;
+      background-color: color-mix(in srgb, var(--viking-surface-alt) 82%, var(--viking-surface));
+      color: var(--viking-text);
+      font-family: inherit;
+      transition: var(--viking-transition-interactive);
+    }
+
+    .form-field textarea {
+      resize: vertical;
+      min-height: calc(var(--viking-control-height) * 2);
+    }
+
+    .form-field input:focus,
+    .form-field textarea:focus,
+    .form-field select:focus {
+      border-color: var(--viking-accent);
+      box-shadow: 0 0 0 var(--viking-ring-width) color-mix(in srgb, var(--viking-accent) 25%, transparent);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--viking-space-2);
+    }
+
+    .modal-footer {
+      justify-content: flex-end;
+      gap: var(--viking-space-2);
+      border-top: 1px solid color-mix(in srgb, var(--viking-border) 32%, transparent);
+      background: var(--viking-surface-recipe-muted, var(--viking-surface-alt));
+    }
+
+    .btn {
+      min-height: var(--viking-control-height);
+      padding: var(--viking-space-1-5) var(--viking-space-2-5);
+      font-size: var(--viking-font-size-sm);
+      font-weight: var(--viking-font-weight-semibold);
+      border-radius: var(--viking-radius-pill);
+      cursor: pointer;
+      border: 1px solid transparent;
+      font-family: inherit;
+      transition: var(--viking-transition-interactive);
+      min-width: 100px;
+    }
+
+    .btn:focus-visible {
+      outline: var(--viking-ring-width) solid var(--viking-ring);
+      outline-offset: var(--viking-ring-offset);
+    }
+
+    .btn-cancel {
+      background-color: transparent;
+      border-color: color-mix(in srgb, var(--viking-border) 48%, transparent);
+      color: var(--viking-text-muted);
+    }
+
+    .btn-cancel:hover {
+      background: color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
+      color: var(--viking-text);
+      border-color: var(--viking-border);
+    }
+
+    .btn-submit {
+      background: var(--viking-accent);
+      color: var(--viking-accent-content);
+      box-shadow: var(--viking-shadow-xs);
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--viking-accent-hover);
+      box-shadow: var(--viking-shadow-sm);
+    }
+
+    .btn-submit:disabled {
+      opacity: var(--viking-state-disabled-opacity);
+      cursor: not-allowed;
+    }
+
+    .status-msg,
+    .security-banner {
+      padding: var(--viking-space-2);
+      border-radius: var(--viking-radius);
+      font-size: var(--viking-font-size-sm);
+    }
+
+    .status-msg {
+      font-weight: var(--viking-font-weight-medium);
+      margin-top: var(--viking-space-2);
+    }
+
+    .status-msg.success {
+      background-color: color-mix(in srgb, var(--viking-success) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--viking-success) 30%, transparent);
+      color: var(--viking-success);
+    }
+
+    .status-msg.error {
+      background-color: color-mix(in srgb, var(--viking-danger) 15%, transparent);
+      border: 1px solid color-mix(in srgb, var(--viking-danger) 30%, transparent);
+      color: var(--viking-danger);
+    }
+
+    .status-msg.warning,
+    .security-banner {
+      background-color: color-mix(in srgb, var(--viking-warning) 12%, transparent);
+      border: 1px solid color-mix(in srgb, var(--viking-warning) 35%, transparent);
+      color: var(--viking-warning);
+    }
+
+    .security-banner {
+      display: flex;
+      gap: var(--viking-space-1);
+      line-height: var(--viking-line-height-normal);
+      margin-bottom: var(--viking-space-1);
+    }
+
+    .security-banner svg {
+      flex-shrink: 0;
+      color: var(--viking-warning);
+    }
+
+    .is-hidden {
+      display: none !important;
+    }
+
+    .honeypot-field {
+      position: absolute !important;
+      left: -9999px !important;
+      top: -9999px !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+
+    @media (min-width: 560px) {
+      .form-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 520px) {
+      .modal-footer {
+        align-items: stretch;
+        flex-direction: column-reverse;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  `;
 
   const isMarketingHost = hostname =>
     hostname === 'dataengineeringformachinelearning.com' ||
@@ -349,6 +743,7 @@
         // Set up Shadow DOM structure including status indicators and vulnerability modal triggers
         this.shadowRoot.innerHTML = `
         <link rel="stylesheet" href="${VIKING_UI_CSS_CDN}" />
+        <style>${PLATFORM_WIDGET_STYLES}</style>
         <div class="widget-container">
           <a class="widget-link" href="${statusPageUrl(frontendHost, pageId)}" target="_blank">
             <span class="status-dot"></span>

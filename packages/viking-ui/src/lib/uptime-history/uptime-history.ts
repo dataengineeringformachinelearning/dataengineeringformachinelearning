@@ -15,18 +15,35 @@ export type VikingUptimeSegment = {
   date?: string;
 };
 
+export type UptimeHistoryDataPoint = {
+  date: string;
+  status: "up" | "down" | "partial";
+};
+
 const normalizeUptimeStatus = (raw: string): VikingUptimeStatus => {
   const key = (raw || "").toLowerCase().replace(/-/g, "_");
   if (key === "operational" || key === "up") return "operational";
-  if (key === "partial_outage" || key === "degraded") return "partial_outage";
+  if (key === "partial_outage" || key === "degraded" || key === "partial")
+    return "partial_outage";
   if (key === "major_outage" || key === "down" || key === "outage")
     return "major_outage";
   return "no_data";
 };
 
+const formatStatus = (raw: string): string => {
+  const normalized = normalizeUptimeStatus(raw);
+  if (normalized === "operational") return "Up";
+  if (normalized === "partial_outage") return "Partial";
+  if (normalized === "major_outage") return "Down";
+  return "No data";
+};
+
 const segmentTitle = (segment: VikingUptimeSegment): string => {
   if (segment.date) {
-    return `${segment.date}: ${segment.uptime ?? 100}%`;
+    if (segment.uptime !== undefined) {
+      return `${segment.date}: ${formatStatus(segment.status)} (${segment.uptime}%)`;
+    }
+    return `${segment.date}: ${formatStatus(segment.status)}`;
   }
   if (segment.uptime !== undefined) {
     return `${segment.uptime}% uptime`;
@@ -43,8 +60,9 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
  * @example
  * ```html
  * <viking-uptime-history
- *   [segments]="[{ date: '2026-06-13', status: 'operational', uptime: 100 }]"
- *   [percentage]="100"
+ *   [data]="[{ date: '2026-06-13', status: 'up' }]"
+ *   [height]="24"
+ *   [showLabels]="true"
  * />
  * ```
  */
@@ -55,6 +73,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
   host: {
     class: "viking-uptime-history",
     "[class.viking-uptime-history-compact]": "compact()",
+    "[style.--viking-uptime-history-height]": "heightStyle()",
   },
   template: `
     @if (showHeader()) {
@@ -64,7 +83,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
       </div>
     }
     <div class="uptime-history-bar" role="img" [attr.aria-label]="ariaLabel()">
-      @for (segment of segments(); track $index) {
+      @for (segment of historySegments(); track $index) {
         <span
           class="uptime-history-segment"
           tabindex="0"
@@ -78,7 +97,7 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
         </span>
       }
     </div>
-    @if (showLegend()) {
+    @if (resolvedShowLabels()) {
       <div class="uptime-history-legend">
         <span>{{ legendStart() }}</span>
         <span>{{ legendEnd() }}</span>
@@ -122,10 +141,10 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
       .uptime-history-bar {
         display: flex;
         align-items: stretch;
-        gap: 2px;
+        gap: var(--viking-space-px);
         width: 100%;
         min-width: 0;
-        height: var(--viking-space-3);
+        height: var(--viking-uptime-history-height, var(--viking-space-3));
         padding: var(--viking-space-half);
         border-radius: var(--viking-radius-full);
         background: var(--viking-surface-inset);
@@ -199,7 +218,10 @@ const segmentTitle = (segment: VikingUptimeSegment): string => {
   ],
 })
 export class UptimeHistoryComponent {
+  readonly data = input<UptimeHistoryDataPoint[]>([]);
   readonly segments = input<VikingUptimeSegment[]>([]);
+  readonly height = input<number>(24);
+  readonly showLabels = input<boolean | undefined>(undefined);
   readonly percentage = input<number | null>(null);
   readonly statusSummary = input<string>("");
   readonly label = input<string>("Uptime");
@@ -208,6 +230,23 @@ export class UptimeHistoryComponent {
   readonly legendStart = input<string>("30 days ago");
   readonly legendEnd = input<string>("Today");
   readonly compact = input<boolean>(false);
+
+  readonly heightStyle = computed(() => `${Math.max(this.height(), 1)}px`);
+
+  readonly historySegments = computed<VikingUptimeSegment[]>(() => {
+    const data = this.data();
+    if (data.length > 0) {
+      return data.map((item) => ({
+        date: item.date,
+        status: item.status,
+      }));
+    }
+    return this.segments();
+  });
+
+  readonly resolvedShowLabels = computed(
+    () => this.showLabels() ?? this.showLegend(),
+  );
 
   readonly headerValue = computed(() => {
     const pct = this.percentage();
@@ -223,7 +262,7 @@ export class UptimeHistoryComponent {
 
   readonly ariaLabel = computed(() => {
     const pct = this.percentage();
-    const count = this.segments().length;
+    const count = this.historySegments().length;
     if (pct !== null && pct !== undefined) {
       return `Uptime history: ${pct.toFixed(2)}% over ${count} periods`;
     }

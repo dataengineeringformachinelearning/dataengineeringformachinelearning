@@ -32,7 +32,7 @@ Operational doctrine—how the platform runs in production, who performs which w
    - Dedicated PyTorch models (`sla_models`) forecast uptime SLAs per account. They ingest temporal vectors, endpoint latency, and variance, updating predictions without manual tuning.
 
 6. **Spiking Temporal Forecasting (Fourth Model)**
-   - New SpikingTemporalForecaster (Norse SNN or MLP fallback) for temporal/event-driven data. Processes sequences from telemetry streams (Redpanda events) to forecast spikes/anomalies. Trained with same teacher distillation. Exposed in status/analytics as "spiking_temporal_forecast". See models_inventory.md.
+   - New SpikingTemporalForecaster (Dynamic Temporal Forecasting with Norse-backed or MLP fallback execution) for temporal/event-driven data. Processes sequences from telemetry streams (Redpanda events) to forecast spikes/anomalies. Trained with same teacher distillation. Exposed in status/analytics as "spiking_temporal_forecast". See models_inventory.md.
 
 7. **Next-Generation SIEM / SOAR Digest & Sharing**
    - Automated serialization of AI anomaly predictions into industry-standard STIX 2.1 JSON payloads. These indicators are shared natively via TAXII 2.1 to central hubs (like MS-ISAC).

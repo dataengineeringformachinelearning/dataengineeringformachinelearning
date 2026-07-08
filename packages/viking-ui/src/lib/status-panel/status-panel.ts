@@ -1,6 +1,9 @@
 import { ChangeDetectionStrategy, Component, input } from "@angular/core";
 import { VikingStatusPill } from "../status-pill/status-pill";
-import { VikingUptimeHistory, type VikingUptimeSegment } from "../uptime-history/uptime-history";
+import {
+  VikingUptimeHistory,
+  type VikingUptimeSegment,
+} from "../uptime-history/uptime-history";
 import type { VikingTone } from "../../core/types";
 
 /**

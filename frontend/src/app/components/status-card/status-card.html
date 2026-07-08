@@ -30,12 +30,12 @@
     <viking-status-metric-row
       icon="trending-up"
       title="Spike Risk"
-      subtitle="Norse SNN forecast (0-100)"
+      subtitle="Dynamic Temporal Forecasting (0-100)"
       [value]="(predictedTemporalForecastValue | number:'1.1-2') ?? '0'"
     />
     <viking-status-metric-row
       icon="bolt"
-      title="Norse SNN"
+      title="Dynamic Temporal Forecasting"
       subtitle="Temporal inference engine"
       [value]="norseSnnLabel"
     />
@@ -94,17 +94,17 @@
     />
   </div>
 
-  <div class="status-summary-grid" data-section-title="Norse SNN">
+  <div class="status-summary-grid" data-section-title="Dynamic Temporal Forecasting">
     <viking-status-metric-row
       icon="bolt"
-      title="Norse SNN Engine"
-      subtitle="Spiking temporal inference"
+      title="Dynamic Temporal Forecasting"
+      subtitle="Temporal inference engine"
       [value]="norseSnnLabel"
     />
     <viking-status-metric-row
       icon="trending-up"
       title="Spike Risk Score"
-      subtitle="Norse SNN on telemetry sequences"
+      subtitle="Dynamic Temporal Forecasting on telemetry sequences"
       [value]="(predictedTemporalForecastValue | number:'1.1-2') ?? '0'"
     />
   </div>

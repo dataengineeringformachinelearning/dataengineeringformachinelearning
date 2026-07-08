@@ -241,7 +241,7 @@ class OverviewService:
     except Exception:
       ces_level = max(0, min(100, ces_sla * 0.5 + ces_stability * 0.4 + (100 - ces_threat) * 0.1))
 
-    # Fourth model integration (Spiking Temporal Forecaster / Norse SNN):
+    # Fourth model integration (Spiking Temporal Forecaster / Dynamic Temporal Forecasting):
     # temporal_score exposed for status pages, analytics, and dashboards.
     temporal_score = infer_spiking_temporal_forecast(
       None,

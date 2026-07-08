@@ -70,9 +70,7 @@ export class MlService {
           this.latestTemporalUsesNorse.update(flags => ({
             ...flags,
             [statusPageId]:
-              data.uses_norse !== undefined && data.uses_norse !== null
-                ? data.uses_norse
-                : null,
+              data.uses_norse !== undefined && data.uses_norse !== null ? data.uses_norse : null,
           }));
         }
       },

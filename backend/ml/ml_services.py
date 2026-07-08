@@ -877,7 +877,7 @@ def train_ces_model() -> dict:
 
 
 # Fourth model: Spiking Temporal Forecaster
-# Uses Norse SNN for temporal data processing on event/telemetry sequences.
+# Uses Dynamic Temporal Forecasting for temporal data processing on event/telemetry sequences.
 # This is the new fourth model, focused on forecasting temporal patterns
 # (e.g., upcoming latency spikes or anomaly sequences from Redpanda streams).
 def train_spiking_temporal_forecaster(

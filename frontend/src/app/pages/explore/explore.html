@@ -12,19 +12,18 @@
       </viking-page-header>
       <div class="status-stack status-directory-grid">
         @for (page of displayPages(); track page) {
-        <app-status-card
-          class="status-directory-card"
-          variant="compact"
-          [page]="page"
-          [services]="servicesMap()[page.id] || []"
-          [predictedSla]="mlService.latestStats()[page.id]"
-          [predictedTemporalForecast]="mlService.latestTemporalForecasts()[page.id]"
-          [usesNorse]="mlService.latestTemporalUsesNorse()[page.id]"
-          [threatReport]="mlService.latestThreatReports()[page.id] || null"
-          [incidents]="incidentsMap()[page.id] || []"
-          [linkHeader]="true"
-          [showViewButton]="true"
-        ></app-status-card>
+        <viking-explore-card
+          [title]="page.title"
+          [description]="page.description || 'Monitoring core services'"
+          [href]="getPageUrl(page)"
+          [proVerified]="!!page.is_pro_verified"
+          [status]="getPageStatus(page)"
+          [statusLabel]="getPageStatusLabel(page)"
+          [metrics]="exploreMetrics(page)"
+          [uptimeHistory]="exploreUptimeHistory(page)"
+          [uptimePercentage]="overallUptime(page)"
+          [uptimeSummary]="getPageStatusLabel(page)"
+        />
         } @if (loadFailed()) {
         <div class="status-error-state status-directory-card" role="alert">
           <viking-app-icon name="cloud_off" hostClass="error-state-icon" [ariaHidden]="true" />

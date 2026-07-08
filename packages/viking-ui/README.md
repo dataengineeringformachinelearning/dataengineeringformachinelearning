@@ -36,11 +36,19 @@ classes around them.
 ```ts
 import {
   AnnouncementCardComponent,
+  ExploreCardComponent,
   StatusBadgeComponent,
+  StatusDashboardComponent,
   StatusSectionComponent,
+  UptimeHistoryComponent,
+  type ExploreCardMetric,
+  type ExploreCardUptimePoint,
   VikingMetricCard,
-  VikingUptimeHistory,
   type StatusBadgeVariant,
+  type StatusDashboardAnnouncement,
+  type StatusDashboardMetric,
+  type StatusDashboardService,
+  type UptimeHistoryDataPoint,
   type VikingUptimeSegment,
 } from "@dataengineeringformachinelearning/viking-ui";
 ```
@@ -82,19 +90,194 @@ import {
     </div>
 
     <viking-uptime-history
-      [segments]="uptimeSegments"
-      [percentage]="100"
-      statusSummary="100.00% SLA"
+      [data]="last30Days"
+      [height]="24"
+      [showLabels]="true"
     />
   </section>
 </viking-status-section>
 ```
 
+```ts
+const last30Days: UptimeHistoryDataPoint[] = Array.from(
+  { length: 30 },
+  (_, index) => {
+    const date = new Date("2026-06-08T00:00:00Z");
+    date.setUTCDate(date.getUTCDate() + index);
+    return {
+      date: date.toISOString().slice(0, 10),
+      status: index === 12 ? "partial" : index === 21 ? "down" : "up",
+    };
+  },
+);
+```
+
 Core types:
 
 - `StatusBadgeVariant`: `operational | degraded | outage | maintenance`
+- `StatusDashboardMetric`: `icon`, `label`, `value`, optional `sublabel`, `tone`
+- `StatusDashboardService`: service name, status, latency, uptime, and 30-day history
+- `StatusDashboardAnnouncement`: title/body, `info | warning`, and optional publish date
+- `ExploreCardMetric`: icon, label, value, optional sublabel/tone for public cards
+- `ExploreCardUptimePoint`: `{ date: string; status: 'up' | 'down' | 'partial' }`
+- `UptimeHistoryDataPoint`: `{ date: string; status: 'up' | 'down' | 'partial' }`
 - `VikingUptimeSegment`: `{ date?: string; status: string; uptime?: number }`
 - `AnnouncementCardComponent` tones: `info | warning`
+
+### Cohesive Status Dashboard
+
+```html
+<viking-status-dashboard
+  title="Operational — joealongi"
+  description="All systems are functioning normally."
+  status="operational"
+  statusLabel="Operational"
+  liveLabel="Live Predictions Active"
+  [metrics]="statusMetrics"
+  [services]="statusServices"
+  [announcements]="statusAnnouncements"
+  [showThemeVersions]="true"
+/>
+```
+
+```ts
+const historyFor = (
+  partialIndex: number,
+  downIndex: number,
+): UptimeHistoryDataPoint[] =>
+  Array.from({ length: 30 }, (_, index) => {
+    const date = new Date("2026-06-08T00:00:00Z");
+    date.setUTCDate(date.getUTCDate() + index);
+    return {
+      date: date.toISOString().slice(0, 10),
+      status:
+        index === downIndex
+          ? "down"
+          : index === partialIndex
+            ? "partial"
+            : "up",
+    };
+  });
+
+const statusMetrics: StatusDashboardMetric[] = [
+  {
+    icon: "server",
+    label: "SLA",
+    value: "99.99%",
+    sublabel: "30-day service level",
+    tone: "success",
+  },
+  {
+    icon: "clock",
+    label: "Latency",
+    value: "158.71ms",
+    sublabel: "Latest observation",
+    tone: "info",
+  },
+  {
+    icon: "bar-chart",
+    label: "Requests",
+    value: "2.4M",
+    sublabel: "Last 24 hours",
+  },
+  {
+    icon: "trending-up",
+    label: "Forecast",
+    value: "100.00%",
+    sublabel: "Predicted SLA",
+  },
+];
+
+const statusServices: StatusDashboardService[] = [
+  {
+    name: "Primary Site",
+    url: "https://joealongi.dev",
+    status: "operational",
+    statusLabel: "Operational",
+    latency: "158.71ms",
+    uptime: "100.00%",
+    history: historyFor(12, 21),
+  },
+  {
+    name: "API Gateway",
+    url: "https://api.deml.app",
+    status: "degraded",
+    statusLabel: "Partial",
+    latency: "212.08ms",
+    uptime: "99.94%",
+    history: historyFor(7, 22),
+  },
+];
+
+const statusAnnouncements: StatusDashboardAnnouncement[] = [
+  {
+    tone: "info",
+    title: "Sanity.io Integration Active",
+    publishedAt: "2026-06-13",
+    body: "Announcements are served globally from edge CDNs for lightning-fast status page updates.",
+  },
+];
+```
+
+### Explore Public Status Card
+
+```html
+<viking-explore-card
+  title="joealongi.dev"
+  description="Public status for the primary site, API gateway, and edge announcement feed."
+  href="/status/platform-status"
+  status="operational"
+  statusLabel="Operational"
+  [proVerified]="true"
+  [metrics]="exploreMetrics"
+  [uptimeHistory]="exploreUptime"
+  [uptimePercentage]="100"
+  uptimeSummary="No current issues"
+/>
+```
+
+```ts
+const exploreMetrics: ExploreCardMetric[] = [
+  {
+    icon: "server",
+    label: "Cumulative SLA",
+    value: "100.00%",
+    sublabel: "Based on real telemetry",
+    tone: "success",
+  },
+  {
+    icon: "clock",
+    label: "P99 Latency",
+    value: "158.71ms",
+    sublabel: "Last 24h",
+    tone: "info",
+  },
+  {
+    icon: "trending-up",
+    label: "Spike Risk",
+    value: "0.08",
+    sublabel: "Dynamic Temporal Forecasting",
+  },
+  {
+    icon: "shield",
+    label: "Threat Anomaly",
+    value: "0.00%",
+    sublabel: "Active",
+  },
+];
+
+const exploreUptime: ExploreCardUptimePoint[] = Array.from(
+  { length: 30 },
+  (_, index) => {
+    const date = new Date("2026-06-08T00:00:00Z");
+    date.setUTCDate(date.getUTCDate() + index);
+    return {
+      date: date.toISOString().slice(0, 10),
+      status: index === 18 ? "partial" : "up",
+    };
+  },
+);
+```
 
 ## Storybook and Chromatic
 
