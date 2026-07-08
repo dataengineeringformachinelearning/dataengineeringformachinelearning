@@ -23,7 +23,9 @@ import { ChangeDetectionStrategy, Component, input } from "@angular/core";
           <div class="viking-app-header-desktop-auth">
             <ng-content select="[vikingAppHeaderAuth]" />
           </div>
-          <ng-content select="[vikingAppHeaderActions]" />
+          <div class="viking-app-header-actions">
+            <ng-content select="[vikingAppHeaderActions]" />
+          </div>
         </div>
       </div>
       <nav

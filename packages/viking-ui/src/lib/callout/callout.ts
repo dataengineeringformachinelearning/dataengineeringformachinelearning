@@ -137,7 +137,7 @@ const TONE_ICONS: Record<string, VikingIconName> = {
         display: grid;
         gap: var(
           --viking-space-1
-        ); /* Consistent typography spacing per Spartan ref */
+        ); /* Consistent typography spacing */
       }
       .viking-callout-heading {
         margin: 0;

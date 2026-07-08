@@ -336,7 +336,7 @@
   animation: viking-fade-in var(--viking-duration) var(--viking-ease-default);
 }
 
-/* Chart cards — unified header/body rhythm (system-level, Flux clean spacing) */
+/* Chart cards — unified header/body rhythm (system-level, premium clean spacing) */
 .status-card-outlined:has(.chart-custom-header),
 .viking-chart-panel:has(viking-chart-card-header) {
   .chart-custom-header,
@@ -584,6 +584,9 @@
   grid-template-columns: 1fr;
   width: 100%;
   min-height: calc(100vh - 64px);
+  /* Locked with Viking-UI components: sidebar (from app-sidebar) + main content using viking-dashboard-main + .page-inner-wrapper.
+     Full-width 1fr cards, consistent with explore/status changes. Prevents scrunch/overlap on desktop (see navbar fixes).
+     References prior: full-width stacked (removed narrow max-widths), moderate app rhythm vs marketing. */
 }
 
 @media (min-width: 901px) {
@@ -598,34 +601,39 @@
   display: grid;
   grid-template-columns: 1fr;
   min-width: 0;
-  padding: var(--viking-space-4) var(--viking-page-gutter);
+  /* Padding here + inner .page-inner-wrapper (see _layout-enforcement) provides breathing.
+     Locked post-component-lib: reduced duplication for /dashboard /analytics etc. to match pre-lib polish while using viking primitives.
+     Full sidebar+main grid + viking-card composition prevents messiness. */
+  padding: var(--viking-space-2) var(--viking-page-gutter);
   box-sizing: border-box;
 }
 
 @media (min-width: 768px) {
   .viking-dashboard-main,
   .dashboard-main {
-    padding: var(--viking-space-5) var(--viking-page-gutter-lg);
+    padding: var(--viking-space-3) var(--viking-page-gutter-lg);
   }
 }
 
 @media (min-width: 1024px) {
   .viking-dashboard-main,
   .dashboard-main {
-    padding: var(--viking-space-6) var(--viking-page-gutter-lg);
+    padding: var(--viking-space-4) var(--viking-page-gutter-lg);
   }
 }
 
-/* Section rhythm — analytics, status, dashboard hierarchy */
+/* Section rhythm — analytics, status, dashboard hierarchy
+   Locked with Viking-UI: uses stack-gap equivalents, viking-card inside for alignment.
+   References: component lib migration (tighter than pre-lib custom to prevent mess/big after full-width cards). */
 .metrics-overview-header {
   display: flex;
   flex-direction: column;
-  gap: var(--viking-space-2-5);
-  margin-bottom: var(--viking-space-6);
+  gap: var(--viking-space-2);
+  margin-bottom: var(--viking-space-5);
 }
 
 .metrics-section-spacing {
-  margin-top: var(--viking-page-section-gap, var(--viking-space-7));
+  margin-top: var(--viking-page-stack-gap, var(--viking-space-5));
 }
 
 .section-title-premium {
@@ -668,8 +676,10 @@
 .stat-panels-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--viking-dashboard-grid-gap, var(--viking-space-3, var(--grid-gap)));
-  margin-bottom: var(--viking-page-section-gap, var(--viking-space-6));
+  /* Locked to Viking-UI viking-card / viking-grid primitives for consistency across /analytics /dashboard etc.
+     Uses dashboard-grid-gap and card-like treatment post-lib migration. */
+  gap: var(--viking-dashboard-grid-gap, var(--viking-space-4));
+  margin-bottom: var(--viking-page-stack-gap, var(--viking-space-5));
 
   @media (min-width: 600px) {
     grid-template-columns: repeat(2, 1fr);
@@ -681,10 +691,11 @@
 }
 
 .ml-stat-panel {
-  background: var(--viking-surface);
+  /* Aligns with viking-card: surface-recipe, radius-xl, shadow, hover states. */
+  background: var(--viking-surface-recipe);
   border: 1px solid var(--viking-border);
-  border-radius: var(--viking-radius-xl);
-  padding: var(--viking-space-5);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+  padding: var(--viking-card-padding-compact, var(--viking-space-4));
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -745,7 +756,6 @@
   grid-template-columns: 1fr;
   gap: var(--viking-space-8);
   width: 100%;
-  max-width: 56rem;
 }
 
 /* Cards and content align to the invisible grid */

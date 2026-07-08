@@ -2,7 +2,7 @@
 
 Premium Astro showcase for the `@dataengineeringformachinelearning/viking-ui` design system — the canonical open-source documentation site for community adoption and contributions.
 
-Publish target: **`@dataengineeringformachinelearning/viking-ui@4.1.20`**
+Publish target: **`@dataengineeringformachinelearning/viking-ui@4.1.21`**
 Consolidation status: **single source of truth under `packages/viking-ui/`** for token SCSS, static CSS, Web Components, framework-neutral utilities, package metadata, and Angular wrappers.
 
 Showcase rendering follows the DEML premium restrained luxury aesthetic: machined control surfaces, disciplined contrast, and restrained accents for technical precision.
@@ -87,7 +87,7 @@ Firebase Hosting site **`deml-ui`** — not marketing or deml.app.
 - **Astro 7** for static documentation
 - **viking-ui.css** + **web-components.js** / **viking-ui-elements.js** for live previews
 - Angular-free utility imports from `@dataengineeringformachinelearning/viking-ui/icons`, `/site-drakkar`, `/tokens.json`, and `/manifest`
-- **jsDelivr CDN alternative after publish**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.1.20/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.1.20/dist/web-components.js`
+- **jsDelivr CDN alternative after publish**: `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.1.21/dist/viking-ui.css` and `https://cdn.jsdelivr.net/npm/@dataengineeringformachinelearning/viking-ui@4.1.21/dist/web-components.js`
   (`@latest` resolves to this release after npm publication)
 - Token-only SCSS in `src/styles/` — no hardcoded hex
 

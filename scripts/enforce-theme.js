@@ -100,7 +100,7 @@ const LAYOUT_RHYTHM_TOKENS = [
   "--viking-surface-hairline-strength",
 ];
 
-/** Washed-out border mixes retired after Spartan reference drift. */
+/** Washed-out border mixes retired for premium palette consistency. */
 const WASHED_BORDER_PATTERNS = [
   {
     pattern: /metallic-600[^)]*\)\s*35%/g,

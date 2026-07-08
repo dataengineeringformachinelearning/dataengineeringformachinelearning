@@ -66,6 +66,6 @@ def test_get_soc_status(client: Client) -> None:
   assert len(data["criteria"]) == 5
 
   criteria_names = [c["name"] for c in data["criteria"]]
-  assert "End-to-End Encryption in Transit" in criteria_names
+  assert "End-to-End Encryption" in criteria_names
   assert "AES-256 Encryption at Rest" in criteria_names
   assert "Multi-Factor Authentication (MFA) & Google SSO" in criteria_names

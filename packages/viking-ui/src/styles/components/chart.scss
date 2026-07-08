@@ -1,6 +1,6 @@
 /* ==========================================================================
    Viking-UI Chart System — unified visual language
-   Clean, modern, well-spaced (Flux reference), fully token-driven.
+   Clean, modern, well-spaced, fully token-driven.
    All chart primitives (viking-chart, uptime, panels) share this language.
    ========================================================================== */
 
@@ -26,7 +26,7 @@ viking-chart {
   padding: var(--viking-chart-padding-fill, var(--viking-space-3) var(--viking-space-2));
 }
 
-/* Grid lines — subtle dashed for modern minimal (Flux clean) */
+/* Grid lines — subtle dashed for modern minimal */
 .viking-chart-grid {
   stroke: var(--viking-chart-grid-stroke, color-mix(in srgb, var(--viking-border) 32%, transparent));
   stroke-width: var(--viking-chart-grid-width, 0.75);
@@ -107,7 +107,7 @@ viking-chart {
   font-size: max(15px, min(22px, 4.5cqw));
 }
 
-/* Legend — clean, centered, good spacing (Flux style) */
+/* Legend — clean, centered, good spacing */
 .viking-chart-legend {
   display: flex;
   flex-wrap: wrap;

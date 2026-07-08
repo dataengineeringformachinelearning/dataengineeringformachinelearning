@@ -63,7 +63,7 @@ export class VikingMetricRow {}
         min-height: var(--viking-touch-target-comfort);
         padding: var(
           --viking-space-3
-        ); /* Increased for breathing room, matching Spartan polish */
+        ); /* Increased for breathing room and premium polish */
         border-radius: var(--viking-radius-xl); /* Softer modern feel */
         background: color-mix(
           in srgb,

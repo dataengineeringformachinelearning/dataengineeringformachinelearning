@@ -58,7 +58,7 @@ export type VikingChartPanelBody = "default" | "origin-map";
         flex-direction: column;
         position: relative;
         overflow: hidden;
-        /* Flux-like well spaced internal padding */
+        /* Premium well-spaced internal padding */
         padding: var(--viking-space-3) var(--viking-space-4) var(--viking-space-4);
         box-sizing: border-box;
         gap: var(--viking-space-2);

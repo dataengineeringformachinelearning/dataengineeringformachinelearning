@@ -84,7 +84,7 @@ import { VikingSkeleton } from "../skeleton/skeleton";
         gap: var(--viking-card-content-gap-compact, var(--viking-space-2));
       }
 
-      /* Structured content sections for better Spartan-like polish */
+      /* Structured content sections for premium polish */
       :host ::ng-deep .viking-card-header,
       :host ::ng-deep viking-card-header {
         padding-bottom: var(--viking-space-3);

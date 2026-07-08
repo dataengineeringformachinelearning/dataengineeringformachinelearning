@@ -33,7 +33,7 @@ class SOCStatusOut(Schema):
 
 _SOC_CRITERIA: list[dict[str, str]] = [
   {
-    "name": "End-to-End Encryption in Transit",
+    "name": "End-to-End Encryption",
     "category": "Security / Confidentiality",
     "status": "compliant",
     "description": "All data payloads transmitted between user, browser, and ingestion services must use secure TLS 1.3 / SSL.",

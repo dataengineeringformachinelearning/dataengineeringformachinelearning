@@ -50,7 +50,7 @@ export type VikingChartEmptyLayout = "fill" | "overlay" | "compact" | "inline";
         text-align: center;
         width: 100%;
         box-sizing: border-box;
-        /* Unified clean empty — Flux modern spacing */
+        /* Unified clean empty state with modern spacing */
         padding: var(--viking-chart-empty-padding, var(--viking-space-5) var(--viking-space-4));
         border-radius: var(--viking-radius-xl);
         background: var(--viking-surface-alt);

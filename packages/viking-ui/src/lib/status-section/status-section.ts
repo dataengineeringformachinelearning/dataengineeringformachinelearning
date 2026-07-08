@@ -177,7 +177,7 @@ import {
         border-top: 1px solid var(--viking-border-subtle);
       }
 
-      /* System chart breathing — consistent with viking-chart-panel + Flux spacing */
+      /* System chart breathing — consistent with viking-chart-panel + premium spacing */
       .viking-status-section-content ::ng-deep viking-chart {
         margin: var(--viking-space-2) 0 var(--viking-space-1);
       }

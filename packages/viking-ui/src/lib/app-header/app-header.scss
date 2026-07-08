@@ -23,7 +23,7 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   width: 100%;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
 }
 
 .viking-app-header-left {
@@ -46,14 +46,20 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
   flex-shrink: 0;
+}
+
+.viking-app-header-right > * {
+  display: flex;
+  align-items: center;
+  gap: var(--viking-space-2);
 }
 
 .viking-app-header-desktop-nav {
   display: none;
   align-items: center;
-  gap: var(--viking-space-2);
+  gap: var(--viking-space-3);
   padding: calc(var(--viking-space-1) / 2) 0;
 }
 
@@ -61,6 +67,7 @@
   display: none;
   align-items: center;
   gap: var(--viking-space-2);
+  flex-shrink: 0;
 }
 
 ::ng-deep .viking-app-header-nav-link {
@@ -76,13 +83,13 @@
     box-shadow 0.2s ease,
     transform 0.2s ease !important;
   border-radius: var(--viking-radius) var(--viking-radius) 0 0 !important;
-  padding: 0 var(--viking-space-1-5) !important;
+  padding: 0 var(--viking-space-2) !important;
   height: 36px !important;
   min-height: 36px !important;
   line-height: 1 !important;
   display: inline-flex !important;
   align-items: center !important;
-  gap: var(--viking-space-half) !important;
+  gap: var(--viking-space-1) !important;
   text-decoration: none;
   background: transparent;
   border: none;

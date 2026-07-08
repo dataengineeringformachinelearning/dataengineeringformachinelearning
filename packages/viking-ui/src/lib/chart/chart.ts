@@ -154,7 +154,7 @@ const parseGutter = (
     return { top: 0, right: 0, bottom: 0, left: 0 };
   }
   if (value === undefined || value === null) {
-    // Flux-style well-spaced breathing: generous for clean axes & labels
+    // Premium well-spaced breathing: generous for clean axes & labels
     return { top: 12, right: 20, bottom: 36, left: 44 };
   }
   if (typeof value === "number") {
@@ -726,7 +726,7 @@ export class VikingChart {
   readonly tickCount = input<number>(3); /* cleaner, less crowded on mobile */
   readonly showLegend = input<boolean | undefined>(undefined);
   readonly summary = input<string>("");
-  /** Enable wheel zoom + drag pan on line/bar charts (Flux-style interaction). */
+  /** Enable wheel zoom + drag pan on line/bar charts (premium clean interaction). */
   readonly zoomable = input<boolean>(false);
 
   private readonly zoomWindow = signal<ChartZoomWindow | null>(null);
@@ -838,7 +838,7 @@ export class VikingChart {
     this.panStartWindow = null;
   };
 
-  /* ===== Tooltip (Flux-style clean hover) ===== */
+  /* ===== Tooltip (premium clean hover) ===== */
   protected readonly activeTooltip = signal<ChartTooltip | null>(null);
 
   protected onPointerMove = (event: PointerEvent): void => {
@@ -1054,7 +1054,7 @@ export class VikingChart {
     const cats = this.effectiveCategories();
     const plotWidth =
       WIDTH - this.resolvedGutter().left - this.resolvedGutter().right;
-    // Cleaner density: fewer labels on mobile-ish, Flux well-spaced aesthetic
+    // Cleaner density: fewer labels on mobile-ish, premium well-spaced aesthetic
     const maxLabels = this.fill() ? 7 : 5;
     const labelMax = this.fill() ? LABEL_MAX_FILL : LABEL_MAX_DEFAULT;
     const step = Math.max(1, Math.ceil(count / maxLabels));

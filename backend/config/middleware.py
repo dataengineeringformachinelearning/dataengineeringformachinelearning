@@ -69,7 +69,12 @@ class FirebaseAuthenticationMiddleware(MiddlewareMixin):
       if session_id and firebase_uid:
         from utils.session_registry import is_session_valid, touch_session
 
-        if not is_session_valid(session_id, firebase_uid):
+        # Allow auth handshake endpoints (/auth/user, /auth/sessions register) to
+        # proceed even if the server-side session_id is not yet registered.
+        # The register endpoint creates the entry; other calls require a valid one.
+        # This prevents chicken-egg 401s on initial bindServerSession.
+        is_auth_handshake = request.path.startswith("/api/v1/auth/")
+        if not is_auth_handshake and not is_session_valid(session_id, firebase_uid):
           from django.http import JsonResponse
 
           return JsonResponse({"detail": "Session revoked or expired"}, status=401)

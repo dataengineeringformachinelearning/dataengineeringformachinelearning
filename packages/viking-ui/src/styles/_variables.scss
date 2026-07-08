@@ -1,7 +1,7 @@
 // ============================================================================
 // Viking-UI Premium Foundation Tokens
 // ----------------------------------------------------------------------------
-// Locked Viking-UI aesthetic: Lockheed Martin x The Northman precision digital battlefield.
+// Locked Viking-UI aesthetic: premium precision-engineered industrial command surfaces with machined metallic borders and dense operational data.
 // Deep navy/black command surfaces, #2176ff command accent, crimson escalation,
 // machined dark-steel borders, tactile top-edge highlights, and Inter typography.
 // All --viking-* semantic tokens in viking-ui.scss map from these values.
@@ -332,15 +332,19 @@
   --viking-navbar-height: 64px;
   --viking-sidebar-width: 256px;
 
-  /* ── Layout rhythm — premium spacing enforcement (THEME.md §3) ─────────── */
+  /* ── Layout rhythm — premium spacing enforcement (THEME.md §3) ───────────
+     Locked to Viking-UI components for app pages (/dashboard /analytics /settings etc.):
+     - App contexts use stack-gap + moderate paddings (see _layout-enforcement) to avoid "too big" post-component-lib.
+     - dashboard-grid-gap, card paddings align with viking-card / full-width changes.
+     - References: previous full-width stacked cards, navbar scrunch fixes, dark theme surfaces. */
   --viking-page-gutter: clamp(var(--viking-space-2), 5vw, var(--viking-space-4));
   --viking-page-gutter-lg: var(--viking-space-5);
   --viking-page-gutter-xl: var(--viking-space-7);
   --viking-page-stack-gap: var(--viking-space-6);
   --viking-page-section-gap: var(--viking-space-10);
-  --viking-dashboard-grid-gap: var(--viking-space-5);
-  --viking-section-padding-y: var(--viking-space-10);
-  --viking-section-padding-y-compact: var(--viking-space-8);
+  --viking-dashboard-grid-gap: var(--viking-space-4); /* slightly tighter for dense app data pages */
+  --viking-section-padding-y: var(--viking-space-8);
+  --viking-section-padding-y-compact: var(--viking-space-6);
   --viking-card-padding: var(--viking-space-5); /* 40px - more generous breathing */
   --viking-card-padding-compact: var(--viking-space-4);
   --viking-card-content-gap: var(--viking-space-5);
@@ -362,7 +366,7 @@
   --viking-z-toast: 1100;
   --viking-z-tooltip: 1200;
 
-  /* ── Chart — unified visual language (Flux-inspired clean, modern, well-spaced) ─ */
+  /* ── Chart — unified visual language (clean, modern, well-spaced) ─ */
   --viking-chart-axis-size: 11px;
   --viking-chart-axis-size-mobile: 12px;
   --viking-chart-label-size: 10px;

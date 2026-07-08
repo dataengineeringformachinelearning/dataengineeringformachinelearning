@@ -705,17 +705,25 @@ export class AuthService {
       return;
     }
     let id = sessionStorage.getItem('deml_session_id');
-    if (!id) {
+    const isNew = !id;
+    if (isNew) {
       id = crypto.randomUUID();
-      sessionStorage.setItem('deml_session_id', id);
     }
     this.sessionId.set(id);
     try {
       const token = await user.getIdToken();
-      await this.sessionApi.register(id, token);
-      this.sessionWs.connect(token, id);
+      await this.sessionApi.register(id!, token);
+      if (isNew) {
+        sessionStorage.setItem('deml_session_id', id!);
+      }
+      this.sessionWs.connect(token, id!);
     } catch (error) {
       console.warn('Session registry unavailable', error);
+      // Clear bad/stale id so it doesn't cause 401s on subsequent calls
+      this.sessionId.set(null);
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('deml_session_id');
+      }
     }
   }
 

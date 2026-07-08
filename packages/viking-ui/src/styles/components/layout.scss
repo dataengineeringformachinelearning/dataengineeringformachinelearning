@@ -1,5 +1,7 @@
 // Shared layout utilities (4px grid, visibility toggles, typography floor).
 // Page width shell (.page-inner-wrapper) lives in viking-ui layout-shell.scss — do not duplicate here.
+// App dashboard pages (/dashboard, /analytics, /settings, /account, /vulnerabilities) lock to these + page-shell/_layout-enforcement
+// for consistency with viking-card etc. See comments there for post-component-lib changes (full-width, moderate rhythm).
 
 .viking-page-stack {
   display: flex;
