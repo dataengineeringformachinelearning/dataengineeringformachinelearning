@@ -7,17 +7,15 @@
   grid-template-columns: 1fr;
   gap: var(--viking-dashboard-grid-gap, var(--viking-space-3));
   margin-bottom: var(--viking-page-section-gap, var(--viking-space-6));
+  width: 100%;
+  min-width: 0;
 
   @media (min-width: 480px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (min-width: 600px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
-
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(12, 1fr);
+  @media (min-width: 760px) {
+    grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
   }
 }
 
@@ -36,6 +34,7 @@
   justify-content: center;
   text-align: center;
   box-sizing: border-box;
+  overflow: hidden;
   transition: var(--viking-transition-interactive);
   box-shadow: var(--viking-shadow-xs);
 }
@@ -76,6 +75,8 @@
   font-weight: 700;
   font-family: var(--viking-font-family);
   line-height: 1.2;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .viking-metric-card-warning,
@@ -622,10 +623,258 @@
   }
 }
 
+/* App dashboard pages: responsive grids that never collapse cards into slivers. */
+.overview-grid,
+.detail-grid,
+.triage-grid,
+.soc-operations-grid,
+.ces-gauge-cluster {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-dashboard-grid-gap, var(--viking-space-4));
+  width: 100%;
+  min-width: 0;
+}
+
+.overview-grid > *,
+.detail-grid > *,
+.triage-grid > *,
+.soc-operations-grid > *,
+.ces-gauge-cluster > *,
+.dashboard-grid > * {
+  min-width: 0;
+}
+
+.triage-grid > .col-span-1,
+.triage-grid > .col-span-2,
+.triage-grid > .col-span-3,
+.triage-grid > .col-span-4,
+.triage-grid > .col-span-md-1,
+.triage-grid > .col-span-md-2,
+.triage-grid > .col-span-md-3,
+.triage-grid > .col-span-md-4,
+.triage-grid > .col-span-md-5,
+.triage-grid > .col-span-md-6,
+.triage-grid > .col-span-md-7,
+.triage-grid > .col-span-md-8,
+.triage-grid > .col-span-md-9,
+.triage-grid > .col-span-md-10,
+.triage-grid > .col-span-md-11,
+.triage-grid > .col-span-md-12 {
+  grid-column: 1 / -1;
+}
+
+.ces-gauge-cluster > .col-span-1,
+.ces-gauge-cluster > .col-span-2,
+.ces-gauge-cluster > .col-span-3,
+.ces-gauge-cluster > .col-span-4,
+.ces-gauge-cluster > .col-span-md-1,
+.ces-gauge-cluster > .col-span-md-2,
+.ces-gauge-cluster > .col-span-md-3,
+.ces-gauge-cluster > .col-span-md-4,
+.ces-gauge-cluster > .col-span-md-5,
+.ces-gauge-cluster > .col-span-md-6,
+.ces-gauge-cluster > .col-span-md-7,
+.ces-gauge-cluster > .col-span-md-8,
+.ces-gauge-cluster > .col-span-md-9,
+.ces-gauge-cluster > .col-span-md-10,
+.ces-gauge-cluster > .col-span-md-11,
+.ces-gauge-cluster > .col-span-md-12 {
+  grid-column: auto;
+}
+
+.setup-banner,
+.col-span-full {
+  grid-column: 1 / -1;
+}
+
+.setup-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--viking-space-3);
+  padding: var(--viking-card-padding, var(--viking-space-4));
+  border: 1px solid var(--viking-border);
+  border-radius: var(--viking-card-radius, var(--viking-radius-xl));
+  background: var(--viking-surface-recipe);
+  box-shadow: var(--viking-shadow-sm);
+}
+
+.setup-banner-content {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--viking-space-2);
+  min-width: 0;
+}
+
+.setup-banner p {
+  margin: var(--viking-space-1) 0 0;
+  color: var(--viking-text-muted);
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-dashboard-grid-gap, var(--viking-space-3));
+  min-width: 0;
+}
+
+.health-card,
+.kpi-card,
+.overview-panel,
+.chart-panel,
+.security-panel,
+.queue-panel,
+.detail-panel,
+.soc-panel,
+.gauge-card {
+  width: 100%;
+  min-width: 0;
+}
+
+.health-card {
+  align-content: center;
+}
+
+.health-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, clamp(14rem, 38vw, 26rem));
+  margin-inline: auto;
+}
+
+.health-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: var(--viking-space-1);
+  text-align: center;
+  pointer-events: none;
+}
+
+.health-value {
+  font-size: clamp(var(--viking-font-size-2xl), 7vw, 4rem);
+  font-weight: var(--viking-font-weight-bold);
+  line-height: var(--viking-line-height-tight);
+}
+
+.health-label,
+.health-caption,
+.kpi-label,
+.kpi-subtitle {
+  color: var(--viking-text-muted);
+}
+
+.health-caption {
+  margin: 0;
+  line-height: var(--viking-line-height-relaxed);
+}
+
+.kpi-card {
+  overflow: hidden;
+}
+
+.kpi-label {
+  font-size: var(--viking-font-size-xs);
+  font-weight: var(--viking-font-weight-semibold);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+.kpi-value {
+  font-size: clamp(var(--viking-font-size-xl), 5vw, var(--viking-font-size-3xl));
+  font-weight: var(--viking-font-weight-bold);
+  line-height: var(--viking-line-height-tight);
+  overflow-wrap: anywhere;
+}
+
+.kpi-sparkline-slot {
+  min-height: var(--viking-space-5);
+  min-width: 0;
+}
+
+.panel-header,
+.snapshot-stats,
+.panel-title-group,
+.detail-actions,
+.soc-header-actions {
+  min-width: 0;
+}
+
+.snapshot-stats {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--viking-space-2);
+}
+
+.snapshot-stat {
+  min-width: 0;
+}
+
+.snapshot-label {
+  display: block;
+  color: var(--viking-text-muted);
+  font-size: var(--viking-font-size-xs);
+  letter-spacing: var(--viking-letter-spacing-caps);
+  text-transform: uppercase;
+}
+
+.snapshot-value {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 600px) {
+  .setup-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .kpi-grid,
+  .snapshot-stats,
+  .soc-operations-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 760px) {
+  .triage-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .triage-grid > .col-span-md-4 {
+    grid-column: span 4;
+  }
+
+  .triage-grid > .col-span-md-8 {
+    grid-column: span 8;
+  }
+}
+
+/* overview-grid template areas + breakpoints live in surfaces/app-pages.scss
+   (restored dashboard command-center layout). Keep page-shell free of competing tracks. */
+@media (min-width: 1180px) {
+  .detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .soc-operations-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Section rhythm — analytics, status, dashboard hierarchy
    Locked with Viking-UI: uses stack-gap equivalents, viking-card inside for alignment.
+   Reference: account page desktop layout (great vertical stack of full-width viking-cards with moderate breathing inside .page-inner-wrapper).
    References: component lib migration (tighter than pre-lib custom to prevent mess/big after full-width cards);
-   settings-stack/grid-layout forced to 1fr in _layout-enforcement to fix desktop cram (see below). */
+   settings-stack/grid-layout forced to 1fr in _layout-enforcement to fix desktop cram (see below);
+   stat panels capped at 2 cols to match account-style stacked full-width cards. */
 .metrics-overview-header {
   display: flex;
   flex-direction: column;
@@ -678,16 +927,18 @@
   display: grid;
   grid-template-columns: 1fr;
   /* Locked to Viking-UI viking-card / viking-grid primitives for consistency across /analytics /dashboard etc.
-     Uses dashboard-grid-gap and card-like treatment post-lib migration. */
+     Uses dashboard-grid-gap and card-like treatment post-lib migration.
+     Reference: account page desktop layout (vertical stack of full-width cards with good breathing, using .page-inner-wrapper + viking-card).
+     Limited to 2 cols max on desktop to avoid "too big/messy" spread; matches stacked full-width like settings-stack and explore cards. */
   gap: var(--viking-dashboard-grid-gap, var(--viking-space-4));
   margin-bottom: var(--viking-page-stack-gap, var(--viking-space-5));
 
   @media (min-width: 600px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -732,7 +983,7 @@
   letter-spacing: var(--viking-letter-spacing-caps, 0.04em);
   text-transform: uppercase;
   color: var(--viking-text-muted, var(--text-muted));
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .stat-value {
@@ -741,6 +992,8 @@
   color: var(--viking-accent-strong, var(--viking-accent));
   letter-spacing: var(--viking-letter-spacing-tight, -0.02em);
   line-height: var(--viking-line-height-tight, 1.2);
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .stat-unit {
@@ -1049,11 +1302,19 @@ viking-card.monitored-services-card {
 
 .ces-gauge-cluster {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--viking-space-3, var(--grid-gap));
 
+  @media (min-width: 600px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   @media (min-width: 768px) {
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @media (min-width: 1180px) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

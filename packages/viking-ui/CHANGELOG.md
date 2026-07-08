@@ -1,5 +1,11 @@
 # @dataengineeringformachinelearning/viking-ui
 
+## 4.3.0
+
+### Minor Changes
+
+- Update mobile to desktop
+
 ## 4.2.0
 
 ### Minor Changes

@@ -126,36 +126,34 @@
           @if (selectedPage()) {
           <div>
             @if (selectedPage()?.slug === 'platform-status') {
-            <div class="alert alert-info alert-fallback-banner u-style-315505">
-              <div class="u-style-0f195f">
-                <viking-app-icon name="info" hostClass="u-style-6784e6" />
+            <div class="platform-fallback-banner" role="status">
+              <div class="platform-fallback-row">
+                <viking-app-icon name="info" [ariaHidden]="true" />
                 <div>
-                  <strong class="u-style-04b067">Platform Status Fallback:</strong>
-                  <span class="u-style-39bd7e">
+                  <strong>Platform Status Fallback:</strong>
+                  <span class="embed-desc">
                     You are currently viewing the system-wide Platform Status page configuration as
                     a fallback because you have not created your own custom status page yet.
                   </span>
                 </div>
               </div>
-              <div class="fallback-cta-box u-style-197c13">
-                <h3 class="u-style-4d9a87">Create Your Own Custom Status Page</h3>
-                <div class="u-style-bb5495">
-                  <div class="u-style-eb2b00">
-                    <viking-field label="Title" class="u-style-a7e5d2">
-                      <viking-input
-                        [(ngModel)]="newPageTitle"
-                        placeholder="e.g. My API Status"
-                        [disabled]="!canMutateSites"
-                      />
-                    </viking-field>
-                    <viking-field label="Slug" class="u-style-a7e5d2">
-                      <viking-input
-                        [(ngModel)]="newPageSlug"
-                        placeholder="e.g. my-api"
-                        [disabled]="!canMutateSites"
-                      />
-                    </viking-field>
-                  </div>
+              <div class="fallback-cta-box">
+                <h3 class="section-heading">Create Your Own Custom Status Page</h3>
+                <div class="platform-fallback-fields">
+                  <viking-field label="Title">
+                    <viking-input
+                      [(ngModel)]="newPageTitle"
+                      placeholder="e.g. My API Status"
+                      [disabled]="!canMutateSites"
+                    />
+                  </viking-field>
+                  <viking-field label="Slug">
+                    <viking-input
+                      [(ngModel)]="newPageSlug"
+                      placeholder="e.g. my-api"
+                      [disabled]="!canMutateSites"
+                    />
+                  </viking-field>
                   <viking-button
                     variant="primary"
                     type="button"
@@ -163,7 +161,6 @@
                     [disabled]="!newPageTitle || !newPageSlug || isCreatingPage() || !canMutateSites"
                     [loading]="isCreatingPage()"
                     icon="plus"
-                    class="u-style-a1ae42"
                   >
                     Create Custom Page
                   </viking-button>

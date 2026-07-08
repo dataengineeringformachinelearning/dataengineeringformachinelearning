@@ -74,8 +74,11 @@ export class App implements OnInit {
           '/account',
           '/vulnerabilities',
           '/analytics',
-        ].some(path => url.startsWith(path));
-        this.isDashboardPage.set(isDashboard);
+          '/status',
+        ].some(path => url === path || url.startsWith(`${path}/`) || url.startsWith(`${path}?`));
+        // Isolated public status pages (/status/:slug) stay full-bleed without app chrome sidebar.
+        const isStandaloneStatus = url.startsWith('/status/') && url !== '/status';
+        this.isDashboardPage.set(isDashboard && !isStandaloneStatus);
 
         if (isPlatformBrowser(this.platformId)) {
           setTimeout(() => {

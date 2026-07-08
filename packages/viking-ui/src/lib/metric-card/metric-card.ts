@@ -54,6 +54,7 @@ export class VikingMetricRow {}
   styles: [
     `
       :host {
+        position: relative;
         display: flex;
         align-items: flex-start;
         justify-content: space-between;
@@ -61,18 +62,65 @@ export class VikingMetricRow {}
         width: 100%;
         min-width: 0;
         min-height: var(--viking-touch-target-comfort);
-        padding: var(
-          --viking-space-3
-        ); /* Increased for breathing room and premium polish */
-        border-radius: var(--viking-radius-xl); /* Softer modern feel */
-        background: color-mix(
-          in srgb,
-          var(--viking-surface-alt) 74%,
-          var(--viking-surface)
+        padding: var(--viking-card-padding-compact, var(--viking-space-3));
+        border: 1px solid var(--viking-border-subtle);
+        border-radius: var(--viking-radius-xl);
+        background: var(
+          --viking-surface-recipe,
+          color-mix(
+            in srgb,
+            var(--viking-surface-alt) 74%,
+            var(--viking-surface)
+          )
         );
         color: var(--viking-text);
         box-sizing: border-box;
-        box-shadow: var(--viking-shadow-xs);
+        box-shadow: var(--viking-shadow-sm);
+        overflow: hidden;
+        transition: var(--viking-transition-interactive);
+      }
+
+      :host::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(
+            in srgb,
+            var(--viking-metallic-200)
+              var(--viking-surface-hairline-strength, 28%),
+            transparent
+          ),
+          transparent
+        );
+        pointer-events: none;
+      }
+
+      :host:hover {
+        border-color: var(--viking-border-strong);
+        box-shadow: var(--viking-shadow-md);
+        transform: translateY(var(--viking-state-hover-lift));
+        background: var(
+          --viking-surface-recipe-elevated,
+          var(--viking-surface-raised)
+        );
+      }
+
+      :host:focus-visible {
+        outline: var(--viking-ring-width) solid var(--viking-ring);
+        outline-offset: var(--viking-ring-offset);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        :host {
+          transition: none;
+        }
+        :host:hover {
+          transform: none;
+        }
       }
 
       .viking-metric-card-icon {

@@ -650,6 +650,16 @@ div[style*="z-index"]:has(iframe[src*="google.com/recaptcha"]) {
   }
 }
 
+.settings-stack.grid-layout {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: var(--viking-space-5) !important;
+}
+
+.settings-stack.grid-layout > * {
+  grid-column: 1 / -1 !important;
+  min-width: 0;
+}
+
 .col-span-1 {
   grid-column: span 1;
 }

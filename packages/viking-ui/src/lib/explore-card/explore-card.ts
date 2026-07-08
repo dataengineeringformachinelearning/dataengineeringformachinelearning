@@ -131,13 +131,14 @@ const segmentToDataPoint = (
   styles: [
     `
       :host {
+        container-type: inline-size;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) max-content;
-        align-items: center;
-        gap: var(--viking-space-3);
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+        gap: var(--viking-space-2);
         min-width: 0;
         min-height: var(--viking-touch-target-comfort);
-        padding: var(--viking-space-4);
+        padding: var(--viking-space-3);
         border-radius: var(--viking-radius-md);
         background: var(--viking-surface-alt);
         border: 1px solid var(--viking-border-subtle);
@@ -159,8 +160,8 @@ const segmentToDataPoint = (
 
       .viking-explore-card-metric-copy {
         display: flex;
-        align-items: center;
-        gap: var(--viking-space-3);
+        align-items: flex-start;
+        gap: var(--viking-space-2);
         min-width: 0;
       }
 
@@ -178,6 +179,7 @@ const segmentToDataPoint = (
         letter-spacing: var(--viking-letter-spacing-caps);
         line-height: var(--viking-line-height-snug);
         text-transform: uppercase;
+        overflow-wrap: anywhere;
       }
 
       .viking-explore-card-metric-sublabel {
@@ -192,12 +194,39 @@ const segmentToDataPoint = (
 
       .viking-explore-card-metric-value {
         color: var(--viking-accent-strong);
-        font-size: var(--viking-font-size-sm);
+        font-size: clamp(
+          var(--viking-font-size-sm),
+          7cqw,
+          var(--viking-font-size-xl)
+        );
         font-weight: var(--viking-font-weight-bold);
         font-variant-numeric: tabular-nums;
         line-height: var(--viking-line-height-tight);
         overflow-wrap: anywhere;
-        text-align: right;
+        text-align: left;
+        max-width: 100%;
+      }
+
+      @media (min-width: 480px) {
+        :host {
+          grid-template-columns: minmax(0, 1fr) minmax(4rem, max-content);
+          align-items: center;
+          padding: var(--viking-space-4);
+        }
+
+        .viking-explore-card-metric-copy {
+          align-items: center;
+          gap: var(--viking-space-3);
+        }
+
+        .viking-explore-card-metric-value {
+          text-align: right;
+          font-size: clamp(
+            var(--viking-font-size-sm),
+            3.5cqw,
+            var(--viking-font-size-lg)
+          );
+        }
       }
 
       :host(.viking-explore-card-metric-success)
@@ -384,7 +413,7 @@ export class ExploreCardMetricItemComponent {
       .viking-explore-card-metrics {
         display: grid;
         grid-template-columns: minmax(0, 1fr);
-        gap: var(--viking-space-5);
+        gap: var(--viking-space-3);
         width: 100%;
         min-width: 0;
         align-items: start;
@@ -406,7 +435,7 @@ export class ExploreCardMetricItemComponent {
       @media (min-width: 768px) {
         .viking-explore-card-metrics {
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: var(--viking-space-4); /* Stronger horizontal/vertical rhythm */
+          gap: var(--viking-space-3);
         }
       }
     `,

@@ -33,7 +33,6 @@ import type {
   UptimeHistoryDataPoint,
 } from '@dataengineeringformachinelearning/viking-ui';
 import { RouterModule, Router } from '@angular/router';
-import { Sidebar } from '../../components/sidebar/sidebar';
 import { StatusCta } from '../../components/status-cta/status-cta';
 import { SanityService } from '../../services/sanity.service';
 import { formatServiceName } from '../../core/utils/formatter.utils';
@@ -50,7 +49,6 @@ import { timeout } from 'rxjs';
     VikingPageHeader,
     VikingStatusDashboard,
     RouterModule,
-    Sidebar,
     StatusCta,
   ],
   templateUrl: './status.html',

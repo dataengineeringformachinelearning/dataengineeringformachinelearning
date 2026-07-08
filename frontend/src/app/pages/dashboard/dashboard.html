@@ -47,7 +47,7 @@
         <viking-tab-panel value="overview">
           <section class="overview-grid">
             @if (!setupComplete()) {
-            <div class="setup-banner col-span-full">
+            <div class="setup-banner">
               <div class="setup-banner-content">
                 <viking-app-icon name="rocket_launch" [ariaHidden]="true" />
                 <div>
@@ -64,7 +64,7 @@
             </div>
             }
 
-            <div class="viking-card health-card">
+            <div class="viking-card health-card kpi-card">
               <div class="health-ring" [attr.data-status]="healthLabel()">
                 <viking-ring-gauge [value]="healthScore()" [status]="healthLabel()" />
                 <div class="health-center">

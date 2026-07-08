@@ -54,7 +54,10 @@ import { VIKING_TABS, VikingTabs } from "./tabs";
       @media (max-width: 767px) {
         .viking-tab {
           min-height: var(--viking-control-height);
-          flex: 1 1 auto;
+          flex: 1 0 auto;
+          min-width: max-content;
+          scroll-snap-align: start;
+          padding-inline: var(--viking-space-2);
         }
       }
       .viking-tab:hover:not(:disabled):not(.viking-active) {

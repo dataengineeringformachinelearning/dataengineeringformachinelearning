@@ -1529,6 +1529,7 @@ input:disabled {
 
 .status-card__header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: var(--viking-space-3);
   align-items: flex-start;
@@ -1542,6 +1543,7 @@ input:disabled {
   display: grid;
   gap: var(--viking-space-1);
   min-width: 0;
+  flex: 1 1 min(100%, 18rem);
 }
 
 .status-card__title {
@@ -1564,6 +1566,8 @@ input:disabled {
   display: inline-flex;
   align-items: center;
   justify-content: flex-end;
+  flex: 0 1 auto;
+  min-width: 0;
 }
 
 .status-card__status {

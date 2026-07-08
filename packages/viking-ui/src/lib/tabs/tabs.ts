@@ -41,13 +41,39 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
         gap: var(--viking-space-half);
         padding: var(--viking-space-half);
         border: 1px solid var(--viking-border);
-        border-radius: var(--viking-radius-lg);
-        background: color-mix(
-          in srgb,
-          var(--viking-surface-alt) 80%,
-          var(--viking-surface)
+        border-radius: var(--viking-radius-xl);
+        background: var(
+          --viking-surface-recipe,
+          color-mix(
+            in srgb,
+            var(--viking-surface-alt) 80%,
+            var(--viking-surface)
+          )
         );
-        box-shadow: var(--viking-shadow-sm);
+        box-shadow:
+          var(--viking-shadow-sm),
+          inset 0 1px 0
+            color-mix(in srgb, var(--viking-white-pure) 6%, transparent);
+        position: relative;
+      }
+      .viking-tabs-list::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto;
+        height: 1px;
+        border-radius: inherit;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(
+            in srgb,
+            var(--viking-metallic-200)
+              var(--viking-surface-hairline-strength, 28%),
+            transparent
+          ),
+          transparent
+        );
+        pointer-events: none;
       }
       @media (max-width: 767px) {
         .viking-tabs-list {
@@ -56,6 +82,7 @@ export const VIKING_TABS = new InjectionToken<VikingTabs>("VIKING_TABS");
           scroll-snap-type: x proximity;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
+          overscroll-behavior-x: contain;
         }
         .viking-tabs-list::-webkit-scrollbar {
           display: none;

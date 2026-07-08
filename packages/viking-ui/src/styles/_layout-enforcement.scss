@@ -53,20 +53,18 @@
   }
 }
 
-/* Force stacked full-width layout for app settings, dashboard, analytics, account, threats/vulnerabilities pages.
-   These use .settings-stack.grid-layout or similar .grid-layout containing viking-cards.
-   On desktop multi-col grids made them look bad/crammed (unlike mobile 1fr stack).
+/* Force stacked full-width layout for settings/account stacks only.
+   Reference: account page (desktop should be a vertical stack of full-width viking-cards with good spacing/breathing inside .page-inner-wrapper).
+   These use .settings-stack.grid-layout containing viking-cards.
+   On desktop multi-col grids made them look bad/crammed, while other dashboard grids need their own responsive tracks.
    Locked to Viking-UI components: single 1fr column like status-directory-grid and explore cards,
    using viking-space-5 gap, full width cards with status-card-outlined treatment.
    References: previous full-width stacked card decision, dashboard main padding adjustments,
    moderate rhythm to prevent huge gaps or mess post-component-library migration.
-   Now consistent with components on desktop (full width, proper breathing) and mobile. */
+   Now consistent with account page on desktop (full width, proper breathing) and mobile. */
 .viking-dashboard-page .settings-stack,
 .viking-app-page .settings-stack,
-.dashboard-page-container .settings-stack,
-.viking-dashboard-page .grid-layout,
-.viking-app-page .grid-layout,
-.dashboard-page-container .grid-layout {
+.dashboard-page-container .settings-stack {
   display: grid !important;
   grid-template-columns: 1fr !important;
   gap: var(--viking-space-5) !important;
@@ -77,9 +75,6 @@
 .viking-dashboard-page .settings-stack > viking-card,
 .viking-app-page .settings-stack > viking-card,
 .dashboard-page-container .settings-stack > viking-card,
-.viking-dashboard-page .grid-layout > viking-card,
-.viking-app-page .grid-layout > viking-card,
-.dashboard-page-container .grid-layout > viking-card,
 .viking-dashboard-page .settings-stack > .status-card-outlined,
 .viking-app-page .settings-stack > .status-card-outlined,
 .dashboard-page-container .settings-stack > .status-card-outlined {

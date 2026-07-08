@@ -139,7 +139,7 @@
               <span class="stat-title">API USAGE (LAST MIN)</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768"
+          <span class="stat-value stat-value-emphasis"
             >{{ (apiUsageCurrent || 0) | number }}
             <span class="stat-unit">/ {{ (apiUsageQuota || 60) | number }}</span></span
           >
@@ -150,7 +150,7 @@
               <span class="stat-title">P99 LATENCY</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768"
+          <span class="stat-value stat-value-emphasis"
             >{{ (p99Latency || 0) | number:'1.2-2' }} <span class="stat-unit">ms</span></span
           >
         </div>
@@ -160,7 +160,7 @@
               <span class="stat-title">SERVICE UPTIME</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768"
+          <span class="stat-value stat-value-emphasis"
             >{{ (uptimePercent || 0) | number:'1.2-2' }} <span class="stat-unit">%</span></span
           >
         </div>
@@ -170,7 +170,7 @@
               <span class="stat-title">TOTAL REQUESTS</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768">{{ (totalRequests || 0) | number }}</span>
+          <span class="stat-value stat-value-emphasis">{{ (totalRequests || 0) | number }}</span>
         </div>
         <div class="ml-stat-panel" [class.viking-stat-alert]="activeIncidents > 0">
           <div class="stat-info">
@@ -178,7 +178,7 @@
               <span class="stat-title">ACTIVE INCIDENTS</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768">{{ activeIncidents || 0 }}</span>
+          <span class="stat-value stat-value-emphasis">{{ activeIncidents || 0 }}</span>
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -186,7 +186,9 @@
               <span class="stat-title">WIDGET INTERACTIONS</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768">{{ (widgetInteractions || 0) | number }}</span>
+          <span class="stat-value stat-value-emphasis"
+            >{{ (widgetInteractions || 0) | number }}</span
+          >
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -194,7 +196,7 @@
               <span class="stat-title">UNIQUE VISITORS</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768">{{ (uniqueVisitors || 0) | number }}</span>
+          <span class="stat-value stat-value-emphasis">{{ (uniqueVisitors || 0) | number }}</span>
         </div>
         <div class="ml-stat-panel">
           <div class="stat-info">
@@ -202,14 +204,14 @@
               <span class="stat-title">COOKIE CONSENTS</span>
             </div>
           </div>
-          <span class="stat-value u-style-324768">{{ (cookieConsents || 0) | number }}</span>
+          <span class="stat-value stat-value-emphasis">{{ (cookieConsents || 0) | number }}</span>
         </div>
       </div>
 
       <!-- ACTIVE PROVIDERS CHIPS -->
       @if (activeProviders.length > 0) {
-      <div class="u-style-1e3398">
-        <span class="u-style-bd64a0">Active Providers:</span>
+      <div class="active-providers-row">
+        <span class="active-providers-label">Active Providers:</span>
         @for (provider of activeProviders; track provider) {
         <viking-badge tone="accent" size="sm">{{ provider }}</viking-badge>
         }

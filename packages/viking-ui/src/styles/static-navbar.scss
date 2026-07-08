@@ -756,6 +756,41 @@ viking-button-wc.auth-btn[loading]::part(control) {
   ) !important;
 }
 
+.navbar viking-button.auth-btn,
+.navbar viking-button.auth-signout-btn,
+.navbar viking-button.mobile-auth-btn,
+.navbar viking-button.navbar-search-trigger,
+.navbar viking-button.menu-toggle-btn,
+.navbar viking-button-wc.auth-btn,
+.navbar viking-button-wc.auth-signout-btn,
+.navbar viking-button-wc.mobile-auth-btn,
+.navbar viking-button-wc.navbar-search-trigger,
+.navbar viking-button-wc.menu-toggle-btn {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: 0;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: inherit !important;
+}
+
+.navbar viking-button.auth-btn,
+.navbar viking-button.auth-signout-btn,
+.navbar viking-button.navbar-search-trigger,
+.navbar viking-button.menu-toggle-btn {
+  display: contents !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.navbar viking-button.mobile-auth-btn {
+  display: block !important;
+  width: 100% !important;
+}
+
 .mobile-menu:not(.open) {
   display: none !important;
 }
@@ -1580,4 +1615,44 @@ body.algolia-search-open > .aa-DetachedOverlay .aa-DetachedContainer {
     font-size: var(--viking-font-size, 16px) !important;
     letter-spacing: 0.08em !important;
   }
+}
+
+/* Final host reset: the native control inside viking-button owns the visible button chrome. */
+.navbar viking-button.auth-btn,
+.navbar viking-button.auth-signout-btn,
+.navbar viking-button.navbar-search-trigger,
+.navbar viking-button.menu-toggle-btn {
+  display: contents !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.navbar viking-button.mobile-auth-btn {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.navbar viking-button-wc.auth-btn,
+.navbar viking-button-wc.auth-signout-btn,
+.navbar viking-button-wc.mobile-auth-btn,
+.navbar viking-button-wc.navbar-search-trigger,
+.navbar viking-button-wc.menu-toggle-btn {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
